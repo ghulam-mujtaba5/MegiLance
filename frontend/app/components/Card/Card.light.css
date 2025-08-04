@@ -1,10 +1,5 @@
 .Card--light {
   background-color: #ffffff; /* White */
   border: 1px solid #e5e7eb; /* Gray 200 */
-}
-
-.Card--light {
-  background: #fff;
-  color: #23272f;
   box-shadow: 0 2px 8px rgba(69, 115, 223, 0.08);
 }
