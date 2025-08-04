@@ -1,8 +1,46 @@
-/* @AI-HINT: Dark theme overrides for Home page. Do not use global or theme CSS. */
+/* @AI-HINT: Dark theme styles for Home following MegiLance brand guidelines. Professional dark mode with proper contrast and accessibility. */
+
 .Home--dark {
-  background: #1d2127; /* Brand Playbook: Background Dark */
-  color: #fff;
+  --home-bg: #0f172a;
+  --home-text-color: #f1f5f9;
+  --home-section-bg: #1e293b;
+  --home-heading-color: #f9fafb;
+  
+  /* Navigation */
+  --home-nav-bg: rgba(15, 23, 42, 0.95);
+  --home-nav-border: rgba(255, 255, 255, 0.1);
+  --home-nav-link-color: #cbd5e1;
+  --home-nav-link-hover-color: #f1f5f9;
+  --home-nav-link-hover-bg: rgba(255, 255, 255, 0.1);
+  
+  /* Cards */
+  --home-card-bg: #1e293b;
+  --home-card-text: #e2e8f0;
+  --home-card-border: #334155;
+  --home-card-border-hover: #475569;
+  
+  /* Icons and Accents */
+  --home-icon-color: #818cf8;
+  --home-icon-hover-color: #a5b4fc;
+  --home-accent-color: #818cf8;
+  
+  /* Links */
+  --home-link-color: #cbd5e1;
+  --home-link-hover-color: #f1f5f9;
+  --home-link-hover-bg: #334155;
+  
+  /* Footer */
+  --home-footer-bg: #020617;
+  --home-footer-text: #cbd5e1;
+  --home-footer-link: #94a3b8;
+  --home-footer-link-hover: #f1f5f9;
 }
+
+.Home--dark {
+  background: var(--home-bg);
+  color: var(--home-text-color);
+}
+
 .Home--dark .Home-header h1 {
-  color: #4573df; /* Brand Primary (Blue) */
+  color: var(--home-heading-color);
 }
