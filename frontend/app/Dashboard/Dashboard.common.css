@@ -27,3 +27,16 @@
 .Dashboard-activity li {
   margin-bottom: 0.5em;
 }
+
+/* Layout for Dashboard page (was inline style) */
+.Dashboard-layout {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.Dashboard-maincol {
+  flex: 1;
+}
+

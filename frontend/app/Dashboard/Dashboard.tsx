@@ -18,14 +18,14 @@ const Dashboard: React.FC<DashboardProps> = ({ theme = "light" }) => {
         <a href="/Dashboard">Dashboard</a>
         <a href="/Login">Logout</a>
       </Navbar>
-      <div style={{ display: "flex", width: "100%", maxWidth: 1200, margin: "0 auto" }}>
+      <div className="Dashboard-layout">
         <Sidebar theme={theme}>
           <a href="/Dashboard">Overview</a>
           <a href="/Dashboard/projects">Projects</a>
           <a href="/Dashboard/payments">Payments</a>
           <a href="/Dashboard/profile">Profile</a>
         </Sidebar>
-        <div style={{ flex: 1 }}>
+        <div className="Dashboard-maincol">
           <header className="Dashboard-header">
             <h1>Welcome to Your Dashboard</h1>
             <p>Manage your projects, payments, and profile.</p>

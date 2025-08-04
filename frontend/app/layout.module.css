@@ -1,0 +1,13 @@
+/* @AI-HINT: Styles for ThemeSwitcher in layout. Do not use or import any global or theme CSS. */
+.ThemeSwitcher {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 100;
+}
+.ThemeSwitcherButton {
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}

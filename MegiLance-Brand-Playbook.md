@@ -38,14 +38,6 @@ ai_agent_optimized: true
 
 ## 3.2 Colors
 
-### 3.2.1 Primary Palette
-| Purpose      | Color Name      | Hex      |
-|--------------|----------------|----------|
-| Primary      | Deep Indigo     | #3C3C88  |
-| Accent       | Electric Blue   | #2F80ED  |
-| Secondary    | Emerald Green   | #27AE60  |
-| Background   | Light Gray      | #F4F6F8  |
-| Text         | Charcoal        | #333333  |
 
 ### 3.2.2 Extended Palette
 | Name                | HEX      | RGB           | Usage                       |
