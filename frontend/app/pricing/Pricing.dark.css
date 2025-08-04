@@ -1,34 +1,23 @@
+/* AI-HINT: This file contains the dark theme color variables for the Pricing page, based on the MegiLance Brand Playbook. */
+
 .Pricing--dark {
-  background-color: #1f2937;
-  color: #f9fafb;
-}
+  /* --- Brand Palette --- */
+  --color-primary: #5f89e8; /* Brighter blue for better contrast */
+  --color-primary-light-accent: #2c323a; /* Darker accent for backgrounds */
+  --color-accent-orange: #ff9800;
+  --color-success-green: #27AE60;
+  --color-success-light-accent: #2c3a33;
+  --color-error-red: #e81123;
 
-.Pricing--dark .Pricing-header p {
-  color: #d1d5db;
-}
+  /* --- UI Colors --- */
+  --color-background-light: #1d2127;
+  --color-surface-light: #2c323a; /* For cards, form inputs */
+  --color-border-light: #3a414a;
+  --color-shadow: rgba(0, 0, 0, 0.2);
+  --color-primary-shadow: rgba(95, 137, 232, 0.2);
 
-.Pricing--dark .Pricing-card {
-  border-color: #4b5563;
-  background-color: #374151;
-}
-
-.Pricing--dark .Pricing-card.popular {
-  border-color: #818cf8;
-}
-
-.Pricing--dark .Pricing-card-badge {
-  background-color: #818cf8;
-  color: #111827;
-}
-
-.Pricing--dark .Pricing-card-fee, .Pricing--dark .Pricing-card-desc {
-  color: #9ca3af;
-}
-
-.Pricing--dark .Pricing-card ul li::before {
-  color: #4ade80;
-}
-
-.Pricing--dark .Pricing-estimator-promo {
-  background-color: #312e81;
+  /* --- Text Colors --- */
+  --color-text-main: #f5f7fa;
+  --color-text-secondary: #a0a7b2; /* Lighter gray for readability */
+  --color-text-on-primary: #ffffff;
 }

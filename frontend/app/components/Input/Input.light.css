@@ -1,4 +1,50 @@
-/* @AI-HINT: Light theme overrides for Input. Do not use global or theme CSS. */
+/* @AI-HINT: Light theme for the enterprise-grade Input component. Defines brand-compliant colors for all states. Do not use or import any global or theme CSS. */
+
+.Input-wrapper--light .Input-label {
+  color: #23272f; /* Main Text (Brand Playbook) */
+}
+
+.Input-wrapper--light .Input-field {
+  background-color: #ffffff;
+  border-color: #d1d5db; /* Default Border */
+  color: #23272f;
+}
+
+.Input-wrapper--light .Input-field::placeholder {
+  color: #9ca3af; /* Placeholder Text */
+}
+
+.Input-wrapper--light .Input-field:focus {
+  --focus-border-color: #4573df; /* Primary Action (Brand Playbook) */
+  --focus-ring-color: rgba(69, 115, 223, 0.2);
+}
+
+/* Icon Colors */
+.Input-wrapper--light .Input-icon {
+  color: #6b7280; /* Icon Color */
+}
+
+/* Error State */
+.Input-wrapper--light.Input-wrapper--error .Input-label {
+  color: #e81123; /* Danger/Error (Brand Playbook) */
+}
+
+.Input-wrapper--light.Input-wrapper--error .Input-field {
+  --error-color: #e81123;
+  --error-focus-ring-color: rgba(232, 17, 35, 0.2);
+}
+
+.Input-wrapper--light.Input-wrapper--error .Input-error-message {
+  color: #e81123;
+}
+
+/* Disabled State */
+.Input-wrapper--light.Input-wrapper--disabled .Input-field {
+  background-color: #f3f4f6; /* Disabled Background */
+  border-color: #e5e7eb;
+  color: #9ca3af;
+}
+
 .Input--light {
   background: #f4f6f8;
   color: #23272f;

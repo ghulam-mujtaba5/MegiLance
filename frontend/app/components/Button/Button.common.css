@@ -1,16 +1,98 @@
-/* @AI-HINT: Shared styles for Button component. Do not use or import any global or theme CSS. */
+/* @AI-HINT: Shared styles for the enterprise-grade Button component. Defines layout, typography, sizes, loading spinner, and states. Do not use or import any global or theme CSS. */
+
 .Button {
-  padding: 0.8em 1.5em;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  font-family: 'Poppins', 'Inter', sans-serif;
   font-weight: 600;
-  font-family: 'Inter', Arial, sans-serif;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
-  text-align: center;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
+.Button:focus-visible {
+  outline: 2px solid var(--focus-ring-color, #4573df);
+  outline-offset: 2px;
+}
+
+.Button:active {
+  transform: scale(0.98);
+}
+
+/* Sizes */
+.Button--small {
+  font-size: 0.875rem;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+}
+
+.Button--medium {
+  font-size: 1rem;
+  padding: 0.65em 1.5em;
+}
+
+.Button--large {
+  font-size: 1.125rem;
+  padding: 0.8em 2em;
+  border-radius: 12px;
+}
+
+/* Content and Icons */
+.Button-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  visibility: visible;
+  gap: 0.6em;
+}
+
+.Button-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Disabled State */
+.Button--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Loading State */
+.Button--loading .Button-content {
+  visibility: hidden;
+}
+
+.Button-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: Button-spin 0.8s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes Button-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Full Width */
 .Button--fullWidth {
   width: 100%;
 }

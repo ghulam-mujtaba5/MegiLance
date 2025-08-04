@@ -1,28 +1,56 @@
-// @AI-HINT: This is the Input component entry point. All styles are per-component only. See Input.common.css, Input.light.css, and Input.dark.css for theming.
-import React, { useId, InputHTMLAttributes } from 'react';
+// @AI-HINT: This is a versatile, enterprise-grade Input component. It supports labels, icons, validation states (error), and is fully themed. All styles are per-component only. See Input.common.css, Input.light.css, and Input.dark.css for theming.
+
+import React, { useId } from 'react';
 import './Input.common.css';
 import './Input.light.css';
 import './Input.dark.css';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  theme?: 'light' | 'dark';
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  error?: string;
+  iconBefore?: React.ReactNode;
+  iconAfter?: React.ReactNode;
+  error?: string | boolean;
+  theme?: 'light' | 'dark';
+  wrapperClassName?: string;
 }
 
-const Input: React.FC<InputProps> = ({ theme = 'light', label, error, ...rest }) => {
+const Input: React.FC<InputProps> = ({
+  label,
+  iconBefore,
+  iconAfter,
+  error,
+  theme = 'light',
+  className = '',
+  wrapperClassName = '',
+  ...props
+}) => {
   const id = useId();
-  const inputClassName = `Input Input--${theme} ${error ? 'Input--error' : ''}`;
+  const hasError = !!error;
+
+  const wrapperClasses = [
+    'Input-wrapper',
+    `Input-wrapper--${theme}`,
+    hasError ? 'Input-wrapper--error' : '',
+    props.disabled ? 'Input-wrapper--disabled' : '',
+    wrapperClassName,
+  ].filter(Boolean).join(' ');
+
+  const inputClasses = [
+    'Input-field',
+    iconBefore ? 'Input-field--with-icon-before' : '',
+    iconAfter ? 'Input-field--with-icon-after' : '',
+    className,
+  ].filter(Boolean).join(' ');
 
   return (
-    <div className="Input-wrapper">
-      <label htmlFor={id} className="Input-label">{label}</label>
-      <input
-        id={id}
-        className={inputClassName}
-        {...rest}
-      />
-      {error && <span className="Input-error-message">{error}</span>}
+    <div className={wrapperClasses}>
+      {label && <label htmlFor={id} className="Input-label">{label}</label>}
+      <div className="Input-container">
+        {iconBefore && <span className="Input-icon Input-icon--before">{iconBefore}</span>}
+        <input id={id} className={inputClasses} {...props} />
+        {iconAfter && <span className="Input-icon Input-icon--after">{iconAfter}</span>}
+      </div>
+      {hasError && typeof error === 'string' && <p className="Input-error-message">{error}</p>}
     </div>
   );
 };

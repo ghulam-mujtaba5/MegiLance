@@ -1,22 +1,13 @@
 /* @AI-HINT: Light theme overrides for Login. Do not use global or theme CSS. */
 .Login--light {
-  background-color: #f8f9fa;
+  --login-brand-bg: #4573df;
+  --login-brand-text-color: #ffffff;
+  --login-form-bg: #f9faff;
+  --login-title-color: #1e293b;
+  --login-subtitle-color: #64748b;
+  --login-link-color: #4573df;
+  --login-link-hover-color: #3b5fbc;
+  --login-divider-color: #94a3b8;
+  --login-divider-border-color: #e2e8f0;
 }
 
-.Login--light .Login-container {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
-}
-
-.Login--light .Login-title {
-  color: #212529;
-}
-
-.Login--light .Login-signup-link a {
-  color: #2F80ED;
-}
-
-.Login--light .Login-signup-link a:hover {
-  color: #1a6ac4;
-}

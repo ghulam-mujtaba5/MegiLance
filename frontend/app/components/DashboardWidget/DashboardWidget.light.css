@@ -1,6 +1,37 @@
-/* @AI-HINT: Light theme overrides for DashboardWidget. Do not use global or theme CSS. */
+/* @AI-HINT: Light theme for DashboardWidget. Brand-compliant metrics card, trend colors, and clickable state. */
+
 .DashboardWidget--light {
-  background: #fff;
+  background-color: #fff;
   color: #23272f;
-  border: 1px solid #e2e6ee;
+  border-color: #e5e7eb;
+  --DashboardWidget-bg: #fff;
+}
+
+.DashboardWidget--light .DashboardWidget-icon {
+  background: #f5f7fa;
+  color: #4573df;
+}
+
+.DashboardWidget--light .DashboardWidget-title {
+  color: #6b7280;
+}
+
+.DashboardWidget--light .DashboardWidget-value {
+  color: #23272f;
+}
+
+.DashboardWidget--light .DashboardWidget-trend--positive {
+  color: #27ae60;
+}
+
+.DashboardWidget--light .DashboardWidget-trend--negative {
+  color: #e81123;
+}
+
+.DashboardWidget--light .DashboardWidget-trend--neutral {
+  color: #888;
+}
+
+.DashboardWidget--light .DashboardWidget-footer {
+  color: #888;
 }

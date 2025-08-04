@@ -1,9 +1,19 @@
 /* @AI-HINT: Light theme overrides for Navbar. Do not use global or theme CSS. */
+
 .Navbar--light {
-  background: #fff;
-  color: #23272f;
-  border-bottom: 1px solid #f4f6f8;
-}
-.Navbar--light .Navbar-logo {
-  color: #3C3C88;
+  /*
+   * ===========================================================================
+   * Light Theme Color Variables for Navbar
+   * ===========================================================================
+   * Adheres to MegiLance Brand Playbook for a professional and consistent UI.
+   * These variables are used by Navbar.common.css.
+   * ------------------------------------------------------------------------ */
+
+  --navbar-bg-color: #ffffff;
+  --navbar-border-color: #e2e8f0; /* slate-200 */
+  --navbar-logo-text-color: #1a202c; /* slate-800 */
+  --navbar-link-text-color: #475569; /* slate-600 */
+  --navbar-link-hover-bg-color: #f1f5f9; /* slate-100 */
+  --navbar-link-hover-text-color: #1e293b; /* slate-800 */
+  --navbar-mobile-toggle-color: #475569; /* slate-600 */
 }

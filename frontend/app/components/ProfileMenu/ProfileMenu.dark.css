@@ -1,9 +1,28 @@
 /* @AI-HINT: Dark theme overrides for ProfileMenu. Do not use global or theme CSS. */
-.ProfileMenu--dark .ProfileMenu-dropdown {
-  background: #23272f;
-  color: #fff;
-  border: 1px solid #2a2e38;
-}
-.ProfileMenu--dark .ProfileMenu-item:hover {
-  background: #2a2e38;
+
+.ProfileMenu--dark {
+  /*
+   * ===========================================================================
+   * Dark Theme Color Variables for ProfileMenu
+   * ===========================================================================
+   * Adheres to MegiLance Brand Playbook for a professional and consistent UI.
+   * These variables are used by ProfileMenu.common.css.
+   * ------------------------------------------------------------------------ */
+
+  /* --- Base Colors --- */
+  --menu-bg-color: #1f2937; /* A deep, professional dark slate background */
+  --menu-border-color: #374151; /* A slightly lighter border for subtle separation */
+  --menu-divider-color: #374151; /* Use the same color as the border for dividers */
+
+  /* --- Text Colors --- */
+  --text-primary-color: #f9fafb; /* Off-white for primary text, easy on the eyes */
+  --text-secondary-color: #9ca3af; /* Lighter gray for secondary text */
+
+  /* --- Menu Item Colors --- */
+  --menu-item-text-color: #d1d5db; /* Default text color for menu items */
+  --menu-item-hover-bg-color: #374151; /* A slightly lighter slate for hover */
+  --menu-item-hover-text-color: #ffffff; /* Pure white text on hover for emphasis */
+
+  /* --- Accessibility --- */
+  --focus-ring-color: #3b82f6; /* MegiLance primary blue for focus rings */
 }

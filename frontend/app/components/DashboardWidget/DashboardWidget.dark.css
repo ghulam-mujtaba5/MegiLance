@@ -1,6 +1,37 @@
-/* @AI-HINT: Dark theme overrides for DashboardWidget. Do not use global or theme CSS. */
+/* @AI-HINT: Dark theme for DashboardWidget. Brand-compliant metrics card, trend colors, and clickable state. */
+
 .DashboardWidget--dark {
-  background: #23272f;
+  background-color: #23272f;
   color: #fff;
-  border: 1px solid #2a2e38;
+  border-color: #3f4651;
+  --DashboardWidget-bg: #23272f;
+}
+
+.DashboardWidget--dark .DashboardWidget-icon {
+  background: #374151;
+  color: #5b8def;
+}
+
+.DashboardWidget--dark .DashboardWidget-title {
+  color: #9ca3af;
+}
+
+.DashboardWidget--dark .DashboardWidget-value {
+  color: #fff;
+}
+
+.DashboardWidget--dark .DashboardWidget-trend--positive {
+  color: #27ae60;
+}
+
+.DashboardWidget--dark .DashboardWidget-trend--negative {
+  color: #e81123;
+}
+
+.DashboardWidget--dark .DashboardWidget-trend--neutral {
+  color: #9ca3af;
+}
+
+.DashboardWidget--dark .DashboardWidget-footer {
+  color: #9ca3af;
 }

@@ -1,9 +1,19 @@
 /* @AI-HINT: Dark theme overrides for Navbar. Do not use global or theme CSS. */
+
 .Navbar--dark {
-  background: #23272f;
-  color: #fff;
-  border-bottom: 1px solid #1d2127;
-}
-.Navbar--dark .Navbar-logo {
-  color: #4573df;
+  /*
+   * ===========================================================================
+   * Dark Theme Color Variables for Navbar
+   * ===========================================================================
+   * Adheres to MegiLance Brand Playbook for a professional and consistent UI.
+   * These variables are used by Navbar.common.css.
+   * ------------------------------------------------------------------------ */
+
+  --navbar-bg-color: #1f2937; /* slate-800 */
+  --navbar-border-color: #374151; /* slate-700 */
+  --navbar-logo-text-color: #f9fafb; /* slate-50 */
+  --navbar-link-text-color: #d1d5db; /* slate-300 */
+  --navbar-link-hover-bg-color: #374151; /* slate-700 */
+  --navbar-link-hover-text-color: #ffffff; /* white */
+  --navbar-mobile-toggle-color: #d1d5db; /* slate-300 */
 }

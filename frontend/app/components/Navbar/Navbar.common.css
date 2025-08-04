@@ -1,19 +1,141 @@
 /* @AI-HINT: Shared styles for Navbar component. Do not use or import any global or theme CSS. */
+
+/*
+ * ===========================================================================
+ * Foundational Styles for Navbar Component
+ * ===========================================================================
+ * Defines layout, structure, and responsive behavior. Uses CSS variables
+ * for theming, which are defined in Navbar.light.css and Navbar.dark.css.
+ * ------------------------------------------------------------------------ */
+
 .Navbar {
+  background-color: var(--navbar-bg-color);
+  border-bottom: 1px solid var(--navbar-border-color);
+  padding: 0 1.5rem; /* 24px */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.Navbar-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 2rem;
-  font-family: 'Poppins', Arial, sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  border-bottom: 1px solid #eee;
+  height: 4.5rem; /* 72px */
+  margin: 0 auto;
+  max-width: 100%;
 }
+
+/* --- Logo --- */
 .Navbar-logo {
-  font-size: 1.3rem;
-  letter-spacing: 0.04em;
+  flex-shrink: 0;
 }
-.Navbar-links {
+
+.Navbar-logo a {
   display: flex;
-  gap: 1.5rem;
+  align-items: center;
+  color: var(--navbar-logo-text-color);
+  font-weight: 700;
+  font-size: 1.5rem; /* 24px */
+  text-decoration: none;
+}
+
+/* --- Desktop Navigation --- */
+.Navbar-desktop-nav {
+  display: none; /* Hidden on mobile by default */
+}
+
+.Navbar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem; /* 8px 16px */
+  margin: 0 0.25rem; /* 4px */
+  border-radius: 0.375rem; /* 6px */
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--navbar-link-text-color);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.Navbar-link:hover {
+  background-color: var(--navbar-link-hover-bg-color);
+  color: var(--navbar-link-hover-text-color);
+}
+
+.Navbar-link-icon {
+  margin-right: 0.5rem; /* 8px */
+  display: flex;
+  align-items: center;
+}
+
+/* --- Action Buttons (ThemeSwitcher, ProfileMenu) --- */
+.Navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* 16px */
+}
+
+/* --- Mobile Navigation --- */
+.Navbar-mobile-toggle {
+  display: flex; /* Shown on mobile by default */
+  align-items: center;
+}
+
+.Navbar-mobile-toggle button {
+  background: none;
+  border: none;
+  color: var(--navbar-mobile-toggle-color);
+  font-size: 1.5rem; /* 24px */
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.Navbar-mobile-toggle button:hover {
+  background-color: var(--navbar-link-hover-bg-color);
+}
+
+.Navbar-mobile-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0 1.5rem;
+  border-top: 1px solid var(--navbar-border-color);
+}
+
+.Navbar-mobile-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--navbar-link-text-color);
+  border-radius: 0.375rem; /* 6px */
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.Navbar-mobile-link:hover {
+  background-color: var(--navbar-link-hover-bg-color);
+  color: var(--navbar-link-hover-text-color);
+}
+
+/* --- Responsive Breakpoints --- */
+@media (min-width: 768px) { /* md breakpoint */
+  .Navbar-desktop-nav {
+    display: flex; /* Show desktop nav */
+    align-items: center;
+    gap: 0.5rem; /* 8px */
+  }
+
+  .Navbar-mobile-toggle {
+    display: none; /* Hide mobile toggle */
+  }
+
+  .Navbar-mobile-menu {
+    display: none; /* Hide mobile menu */
+  }
 }

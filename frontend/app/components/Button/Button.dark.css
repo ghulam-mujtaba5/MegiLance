@@ -1,4 +1,82 @@
-/* @AI-HINT: Dark theme overrides for Button. Do not use global or theme CSS. */
+/* @AI-HINT: Dark theme for the enterprise-grade Button. Defines brand-compliant colors for all variants and states. Do not use global or theme CSS. */
+
+.Button--dark {
+  --focus-ring-color: #5b8def;
+}
+
+/* Primary Variant */
+.Button--dark.Button--primary {
+  background-color: #4573df;
+  color: #ffffff;
+  box-shadow: 0 2px 8px 0 rgba(69, 115, 223, 0.2);
+}
+.Button--dark.Button--primary:hover {
+  background-color: #5b8def;
+}
+.Button--dark.Button--primary:active {
+  background-color: #3a65c9;
+}
+
+/* Secondary Variant */
+.Button--dark.Button--secondary {
+  background-color: #374151;
+  color: #e5e7eb;
+}
+.Button--dark.Button--secondary:hover {
+  background-color: #4b5563;
+}
+.Button--dark.Button--secondary:active {
+  background-color: #586474;
+}
+
+/* Outline Variant */
+.Button--dark.Button--outline {
+  background-color: transparent;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+.Button--dark.Button--outline:hover {
+  background-color: #374151;
+  border-color: #5b8def;
+}
+.Button--dark.Button--outline:active {
+  background-color: #4b5563;
+}
+
+/* Danger Variant */
+.Button--dark.Button--danger {
+  background-color: #e81123;
+  color: #ffffff;
+  box-shadow: 0 2px 8px 0 rgba(232, 17, 35, 0.15);
+}
+.Button--dark.Button--danger:hover {
+  background-color: #f13a48;
+}
+.Button--dark.Button--danger:active {
+  background-color: #d30f1f;
+}
+
+/* Ghost Variant */
+.Button--dark.Button--ghost {
+  background-color: transparent;
+  color: #e5e7eb;
+  border-color: transparent;
+}
+.Button--dark.Button--ghost:hover {
+  background-color: #374151;
+}
+.Button--dark.Button--ghost:active {
+  background-color: #4b5563;
+}
+
+/* Disabled State */
+.Button--dark.Button--disabled {
+  background-color: #374151;
+  color: #6b7280;
+  border-color: #4b5563;
+  box-shadow: none;
+}
+
 .Button--dark.Button--primary {
   background: #23272f; /* Main Text (Brand Playbook) */
   color: #fff;

@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import Dashboard from './dashboard';
+import Dashboard from './Dashboard';
 import { useTheme } from '@/app/contexts/ThemeContext';
 
 const DashboardPage = () => {

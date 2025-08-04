@@ -1,31 +1,119 @@
 /* @AI-HINT: Shared styles for Login page. Do not use or import any global or theme CSS. */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
 .Login {
   display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  padding: 2rem;
-  box-sizing: border-box;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
 }
 
-.Login-container {
+.Login-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.Login-panel--brand {
+  flex-basis: 45%;
+  background-color: var(--login-brand-bg);
+  color: var(--login-brand-text-color);
+  text-align: left;
+}
+
+.Login-brand-content {
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+.Login-logo-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.Login-brand-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.Login-brand-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.Login-brand-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.8;
+}
+
+.Login-panel--form {
+  flex-basis: 55%;
+  align-items: center;
+  background-color: var(--login-form-bg);
+}
+
+.Login-form-container {
   width: 100%;
-  max-width: 420px;
-  padding: 2.5rem;
-  border-radius: 16px;
-  text-align: center;
+  max-width: 400px;
 }
 
 .Login-title {
-  font-size: 2rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.25rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--login-title-color);
 }
 
 .Login-subtitle {
   font-size: 1rem;
   margin-bottom: 2rem;
-  color: #6c757d;
+  color: var(--login-subtitle-color);
+}
+
+.Login-social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.Login-social-buttons .Button {
+    justify-content: center;
+}
+
+.Login-social-buttons svg {
+    margin-right: 0.75rem;
+}
+
+.Login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: var(--login-divider-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.Login-divider::before,
+.Login-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--login-divider-border-color);
+}
+
+.Login-divider:not(:empty)::before {
+  margin-right: 1em;
+}
+
+.Login-divider:not(:empty)::after {
+  margin-left: 1em;
 }
 
 .Login-form {
@@ -35,26 +123,61 @@
   text-align: left;
 }
 
-.Login-mock-credentials {
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 16px;
-  text-align: left;
+.Login-forgot-password {
+  text-align: right;
+  font-size: 0.875rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.Login-forgot-password a {
+  color: var(--login-link-color);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.Login-forgot-password a:hover {
+  color: var(--login-link-hover-color);
+  text-decoration: underline;
 }
 
 .Login-signup-link {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   font-size: 0.95rem;
+  color: var(--login-subtitle-color);
 }
 
 .Login-signup-link a {
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.2s;
+  color: var(--login-link-color);
+  transition: color 0.2s ease-in-out;
 }
 
 .Login-signup-link a:hover {
+  color: var(--login-link-hover-color);
   text-decoration: underline;
 }
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .Login {
+    flex-direction: column;
+  }
+
+  .Login-panel {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .Login-panel--brand {
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .Login-panel--form {
+    padding: 3rem 2rem;
+  }
+}
+

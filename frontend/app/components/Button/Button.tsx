@@ -1,35 +1,54 @@
-// @AI-HINT: This is the Button component for user actions. All styles are per-component only. See Button.common.css, Button.light.css, and Button.dark.css for theming.
-import React, { ButtonHTMLAttributes } from 'react';
+// @AI-HINT: This is a versatile, enterprise-grade Button component for all user actions. It supports multiple variants (primary, secondary, outline, danger), sizes, loading/disabled states, and icons. All styles are per-component only. See Button.common.css, Button.light.css, and Button.dark.css for theming.
+
+import React from 'react';
 import './Button.common.css';
 import './Button.light.css';
 import './Button.dark.css';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  theme?: 'light' | 'dark';
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
   size?: 'small' | 'medium' | 'large';
+  isLoading?: boolean;
+  iconBefore?: React.ReactNode;
+  iconAfter?: React.ReactNode;
+  theme?: 'light' | 'dark';
   fullWidth?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
-  theme = 'light',
+  children,
   variant = 'primary',
   size = 'medium',
+  isLoading = false,
+  disabled = false,
+  iconBefore,
+  iconAfter,
+  className = '',
+  theme = 'light',
   fullWidth = false,
-  children,
-  ...rest
+  ...props
 }) => {
-  const className = `
-    Button
-    Button--${theme}
-    Button--${variant}
-    Button--${size}
-    ${fullWidth ? 'Button--fullWidth' : ''}
-  `;
+  const isDisabled = isLoading || disabled;
+
+  const buttonClasses = [
+    'Button',
+    `Button--${variant}`,
+    `Button--${size}`,
+    `Button--${theme}`,
+    isDisabled ? 'Button--disabled' : '',
+    isLoading ? 'Button--loading' : '',
+    fullWidth ? 'Button--fullWidth' : '',
+    className,
+  ].filter(Boolean).join(' ');
 
   return (
-    <button className={className.trim().replace(/\s+/g, ' ')} {...rest}>
-      {children}
+    <button className={buttonClasses} disabled={isDisabled} {...props}>
+      {isLoading && <div className="Button-spinner"></div>}
+      <span className="Button-content">
+        {iconBefore && <span className="Button-icon Button-icon--before">{iconBefore}</span>}
+        {children}
+        {iconAfter && <span className="Button-icon Button-icon--after">{iconAfter}</span>}
+      </span>
     </button>
   );
 };

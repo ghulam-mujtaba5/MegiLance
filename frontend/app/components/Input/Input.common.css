@@ -1,13 +1,97 @@
-/* @AI-HINT: Shared styles for Input component. Do not use or import any global or theme CSS. */
+/* @AI-HINT: Shared styles for the enterprise-grade Input component. Defines layout, typography, icons, and states. Do not use or import any global or theme CSS. */
+
 .Input-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
   width: 100%;
+  position: relative;
 }
 
-.Input--error {
-  border-color: #dc3545 !important;
+.Input-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5em;
+  display: block;
+  font-family: 'Inter', sans-serif;
+}
+
+.Input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Input-field {
+  width: 100%;
+  padding: 0.75em 1em;
+  border-radius: 10px;
+  border: 1.5px solid;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+
+.Input-field:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring-color, rgba(69, 115, 223, 0.3));
+  border-color: var(--focus-border-color, #4573df);
+}
+
+/* Icon Styles */
+.Input-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.Input-icon--before {
+  left: 0.8em;
+}
+
+.Input-icon--after {
+  right: 0.8em;
+}
+
+.Input-field--with-icon-before {
+  padding-left: 2.8em;
+}
+
+.Input-field--with-icon-after {
+  padding-right: 2.8em;
+}
+
+/* Error State */
+.Input-wrapper--error .Input-field {
+  border-color: var(--error-color, #e81123);
+}
+
+.Input-wrapper--error .Input-field:focus {
+  box-shadow: 0 0 0 3px var(--error-focus-ring-color, rgba(232, 17, 35, 0.25));
+  border-color: var(--error-color, #e81123);
+}
+
+.Input-error-message {
+  font-size: 0.875rem;
+  margin-top: 0.5em;
+  color: var(--error-color, #e81123);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Disabled State */
+.Input-wrapper--disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.Input-wrapper--disabled .Input-field {
+  cursor: not-allowed;
 }
 
 .Input-error-message {
@@ -16,11 +100,6 @@
   margin-top: 0.25rem;
 }
 
-.Input-label {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
-}
 
 .Input {
   width: 100%;
