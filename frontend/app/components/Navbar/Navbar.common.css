@@ -1,0 +1,19 @@
+/* @AI-HINT: Shared styles for Navbar component. Do not use or import any global or theme CSS. */
+.Navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #eee;
+}
+.Navbar-logo {
+  font-size: 1.3rem;
+  letter-spacing: 0.04em;
+}
+.Navbar-links {
+  display: flex;
+  gap: 1.5rem;
+}

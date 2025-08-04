@@ -1,0 +1,13 @@
+/* @AI-HINT: Shared styles for Sidebar component. Do not use or import any global or theme CSS. */
+.Sidebar {
+  width: 220px;
+  min-height: 80vh;
+  border-radius: 10px;
+  margin: 2rem 0.5rem;
+  padding: 1.5rem 1rem;
+  font-family: 'Inter', Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(44, 50, 58, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}

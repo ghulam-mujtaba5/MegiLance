@@ -1,0 +1,13 @@
+/* @AI-HINT: Dark theme overrides for Login page. Do not use global or theme CSS. */
+.Login--dark {
+  background: #1d2127;
+  color: #fff;
+}
+.Login--dark .Login-header h1 {
+  color: #4573df;
+}
+.Login--dark .Login-form input {
+  background: #23272f;
+  color: #fff;
+  border: 1px solid #444;
+}

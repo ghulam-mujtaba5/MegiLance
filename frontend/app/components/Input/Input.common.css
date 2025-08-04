@@ -1,0 +1,11 @@
+/* @AI-HINT: Shared styles for Input component. Do not use or import any global or theme CSS. */
+.Input {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 1rem;
+  padding: 0.7em 1em;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+  margin: 0.25em 0;
+  transition: border-color 0.14s, background 0.14s, color 0.14s;
+}

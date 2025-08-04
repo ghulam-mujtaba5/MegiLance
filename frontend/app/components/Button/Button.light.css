@@ -1,0 +1,10 @@
+/* @AI-HINT: Light theme overrides for Button. Do not use global or theme CSS. */
+.Button--light.Button--primary {
+  background: #4573df; /* Brand Primary (Blue) */
+  color: #fff;
+}
+.Button--light.Button--secondary {
+  background: transparent;
+  color: #4573df;
+  border: 2px solid #4573df;
+}

@@ -1,0 +1,6 @@
+/* @AI-HINT: Light theme overrides for Sidebar. Do not use global or theme CSS. */
+.Sidebar--light {
+  background: #fff;
+  color: #23272f;
+  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.04);
+}

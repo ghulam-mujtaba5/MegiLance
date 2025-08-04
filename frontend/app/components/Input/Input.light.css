@@ -1,0 +1,10 @@
+/* @AI-HINT: Light theme overrides for Input. Do not use global or theme CSS. */
+.Input--light {
+  background: #f4f6f8;
+  color: #23272f;
+  border: 1px solid #ccc;
+}
+.Input--light:focus {
+  border-color: #4573df;
+  background: #fff;
+}

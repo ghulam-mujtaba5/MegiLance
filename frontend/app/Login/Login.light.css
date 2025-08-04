@@ -1,0 +1,12 @@
+/* @AI-HINT: Light theme overrides for Login page. Do not use global or theme CSS. */
+.Login--light {
+  background: #fff;
+  color: #23272f;
+}
+.Login--light .Login-header h1 {
+  color: #3C3C88;
+}
+.Login--light .Login-form input {
+  background: #f4f6f8;
+  color: #23272f;
+}

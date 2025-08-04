@@ -1,0 +1,17 @@
+/* @AI-HINT: Shared styles for Home page. Do not use or import any global or theme CSS. */
+.Home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Inter', Arial, sans-serif;
+  padding: 2rem 1rem;
+}
+.Home-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.Home-main {
+  display: flex;
+  gap: 1rem;
+}

@@ -1,0 +1,10 @@
+/* @AI-HINT: Dark theme overrides for Button. Do not use global or theme CSS. */
+.Button--dark.Button--primary {
+  background: #23272f; /* Main Text (Brand Playbook) */
+  color: #fff;
+}
+.Button--dark.Button--secondary {
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+}

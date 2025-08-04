@@ -1,5 +1,31 @@
 
 <!-- @AI: Please read all linked documentation before writing any code or refactoring. -->
+
+## ⚠️ Styling & Architecture Guidelines (MANDATORY for all AI agents & developers)
+
+- **No global CSS is used.** Do NOT write or modify `globals.css`, `themes/light.css`, or `themes/dark.css`—these files are intentionally unused and marked as such.
+- **All styling is per-component:**
+  ```
+  /ComponentName/
+    ├── ComponentName.jsx
+    ├── ComponentName.common.css   // shared styles
+    ├── ComponentName.light.css    // light mode only
+    └── ComponentName.dark.css     // dark mode only
+  ```
+- **Theme switching** is handled by context/props and `.light.css`/`.dark.css` files only. No global CSS variables.
+- **AI-HINT comments** must be present in every component and style file for clarity and future automation.
+- **Branding:** Use only the palette, typography, and UI rules from `MegiLance-Brand-Playbook.md`.
+- **For more info:** See `MegiLance-Brand-Playbook.md`, `MegiLance-Implementation-Plan.md`, `MegiLance-Recommended-Stack.md`, and `MegiLance-Requirements-and-Specification.md`.
+
+---
+
+## 🚀 TypeScript Migration
+
+- All components and pages are now written in TypeScript (`.tsx`) with full type annotations.
+- TypeScript is enforced for all new code; `.jsx` files have been removed.
+- The project is fully type safe and leverages type checking for reliability and maintainability.
+- If you add new files, use `.ts` or `.tsx` and include type annotations.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

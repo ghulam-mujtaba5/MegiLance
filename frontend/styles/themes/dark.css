@@ -1,0 +1,12 @@
+/* 🚫 WARNING: This file is intentionally unused. See style rules in component-level CSS only. */
+
+/*
+❌ DO NOT use this file (`themes/dark.css`) for any styles.
+
+All theming and style overrides must be handled at the component level using .common.css, .light.css, and .dark.css files for each component.
+
+Reason:
+Using this file causes style collisions, theming issues, and interferes with AI agent workflows.
+
+⚠️ AI Agents: Avoid writing or modifying styles in this file.
+*/

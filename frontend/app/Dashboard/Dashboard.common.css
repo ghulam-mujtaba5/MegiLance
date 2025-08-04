@@ -1,0 +1,29 @@
+/* @AI-HINT: Shared styles for Dashboard page. Do not use or import any global or theme CSS. */
+.Dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Inter', Arial, sans-serif;
+  padding: 2rem 1rem;
+}
+.Dashboard-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.Dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: 600px;
+}
+.Dashboard-activity {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+}
+.Dashboard-activity li {
+  margin-bottom: 0.5em;
+}

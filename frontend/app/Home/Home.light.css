@@ -1,0 +1,8 @@
+/* @AI-HINT: Light theme overrides for Home page. Do not use global or theme CSS. */
+.Home--light {
+  background: #f4f6f8; /* Brand Playbook: Light Gray */
+  color: #23272f; /* Main Text */
+}
+.Home--light .Home-header h1 {
+  color: #3C3C88; /* Deep Indigo */
+}

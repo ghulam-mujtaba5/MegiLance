@@ -1,0 +1,8 @@
+/* @AI-HINT: Dark theme overrides for Home page. Do not use global or theme CSS. */
+.Home--dark {
+  background: #1d2127; /* Brand Playbook: Background Dark */
+  color: #fff;
+}
+.Home--dark .Home-header h1 {
+  color: #4573df; /* Brand Primary (Blue) */
+}

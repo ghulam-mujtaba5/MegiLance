@@ -1,0 +1,6 @@
+/* @AI-HINT: Dark theme overrides for Card. Do not use global or theme CSS. */
+.Card--dark {
+  background: #23272f;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.13);
+}

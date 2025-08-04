@@ -1,0 +1,9 @@
+/* @AI-HINT: Light theme overrides for Navbar. Do not use global or theme CSS. */
+.Navbar--light {
+  background: #fff;
+  color: #23272f;
+  border-bottom: 1px solid #f4f6f8;
+}
+.Navbar--light .Navbar-logo {
+  color: #3C3C88;
+}
