@@ -5,11 +5,9 @@ import './Projects.common.css';
 import './Projects.light.css';
 import './Projects.dark.css';
 
-interface ProjectsProps {
-  theme?: 'light' | 'dark';
-}
+interface ProjectsProps {}
 
-const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
+const Projects: React.FC<ProjectsProps> = () => {
   const mockProjects = [
     {
       title: 'E-commerce Platform Redesign',
@@ -38,7 +36,7 @@ const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
   ];
 
   return (
-    <div className={`Projects Projects--${theme}`}>
+    <div className={`Projects`}>
       <div className="Projects-header">
         <h1>My Projects</h1>
         {/* Add Project Button will go here */}
@@ -47,7 +45,7 @@ const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
         {mockProjects.map((project, index) => (
           <ProjectCard
             key={index}
-            theme={theme}
+
             title={project.title}
             client={project.client}
             budget={project.budget}

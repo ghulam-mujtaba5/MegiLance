@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
 import './BarChart.common.css';
 import './BarChart.light.css';
 import './BarChart.dark.css';
@@ -43,10 +42,8 @@ const Bar: React.FC<{ item: BarChartDataItem }> = ({ item }) => {
 };
 
 const BarChart: React.FC<BarChartProps> = ({ data }) => {
-  const { theme } = useTheme();
-
   return (
-    <div className={`BarChart BarChart--${theme}`}>
+    <div className={`BarChart`}>
       {data.map(item => (
         <Bar key={item.label} item={item} />
       ))}

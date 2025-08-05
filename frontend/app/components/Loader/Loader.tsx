@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
 import './Loader.common.css';
 import './Loader.light.css';
 import './Loader.dark.css';
@@ -22,11 +21,9 @@ const Loader: React.FC<LoaderProps> = ({
   variant = 'spinner',
   className = '' 
 }) => {
-  const { theme } = useTheme();
-
   const loaderContent = (
     <div 
-      className={`Loader Loader--${theme} Loader--${size} Loader--${variant} ${className}`}
+      className={`Loader Loader--${size} Loader--${variant} ${className}`}
       role="status"
       aria-live="polite"
       aria-label={text || 'Loading'}
@@ -51,7 +48,7 @@ const Loader: React.FC<LoaderProps> = ({
 
   if (overlay) {
     return (
-      <div className={`Loader-overlay Loader-overlay--${theme}`}>
+      <div className={`Loader-overlay`}>
         {loaderContent}
       </div>
     );

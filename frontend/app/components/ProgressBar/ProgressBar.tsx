@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
 import './ProgressBar.common.css';
 import './ProgressBar.light.css';
 import './ProgressBar.dark.css';
@@ -32,13 +31,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   'aria-label': ariaLabel,
   'aria-describedby': ariaDescribedBy
 }) => {
-  const { theme } = useTheme();
   const progressId = React.useId();
   const safeProgress = Math.min(100, Math.max(0, progress || 0));
   
   const progressBarClasses = [
     'ProgressBar',
-    `ProgressBar--${theme}`,
     `ProgressBar--${size}`,
     `ProgressBar--${variant}`,
     striped && 'ProgressBar--striped',

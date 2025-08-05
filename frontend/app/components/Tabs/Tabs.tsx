@@ -4,7 +4,6 @@
 import React, {
   useState, createContext, useContext, useId, Children, isValidElement, cloneElement, useRef, useEffect, KeyboardEvent, FC, ReactNode, ForwardRefExoticComponent, RefAttributes
 } from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
 import './Tabs.common.css';
 import './Tabs.light.css';
 import './Tabs.dark.css';
@@ -123,12 +122,11 @@ interface TabsComposition {
 }
 
 const Tabs: FC<{ children: ReactNode; defaultIndex?: number; className?: string }> & TabsComposition = ({ children, defaultIndex = 0, className = '' }) => {
-  const { theme } = useTheme();
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const tabsId = useId();
   return (
     <TabsContext.Provider value={{ selectedIndex, setSelectedIndex, tabsId }}>
-      <div className={`Tabs Tabs--${theme} ${className}`}>{children}</div>
+      <div className={`Tabs ${className}`}>{children}</div>
     </TabsContext.Provider>
   );
 };

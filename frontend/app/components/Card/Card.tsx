@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
 import './Card.common.css';
 import './Card.light.css';
 import './Card.dark.css';
@@ -24,11 +23,8 @@ const Card: React.FC<CardProps> = ({
   footer,
   paddingSize = 'medium',
 }) => {
-  const { theme } = useTheme();
-
   const cardClasses = [
     'Card',
-    `Card--${theme}`,
     `Card--padding-${paddingSize}`,
     className,
   ].filter(Boolean).join(' ');

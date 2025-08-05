@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
 import './Table.common.css';
 import './Table.light.css';
 import './Table.dark.css';
@@ -24,11 +23,9 @@ interface TableProps {
 }
 
 const Table: React.FC<TableProps> = ({ columns, data, caption }) => {
-  const { theme } = useTheme();
-
   return (
-    <div className={`Table-container Table-container--${theme}`}>
-      <table className={`Table Table--${theme}`}>
+    <div className={`Table-container`}>
+      <table className={`Table`}>
         {caption && <caption>{caption}</caption>}
         <thead>
           <tr>

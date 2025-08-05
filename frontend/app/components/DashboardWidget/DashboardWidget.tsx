@@ -5,7 +5,6 @@ import "./DashboardWidget.light.css";
 import "./DashboardWidget.dark.css";
 
 export interface DashboardWidgetProps {
-  theme?: "light" | "dark";
   title: string;
   value?: string | number;
   icon?: React.ReactNode | string;
@@ -21,7 +20,6 @@ export interface DashboardWidgetProps {
 }
 
 const DashboardWidget: React.FC<DashboardWidgetProps> = ({ 
-  theme = "light", 
   title, 
   value, 
   icon, 
@@ -34,7 +32,7 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
 }) => {
   return (
     <div 
-      className={`DashboardWidget DashboardWidget--${theme} ${onClick ? 'DashboardWidget--clickable' : ''}`}
+      className={`DashboardWidget ${onClick ? 'DashboardWidget--clickable' : ''}`}
       onClick={onClick}
     >
       <div className="DashboardWidget-header">

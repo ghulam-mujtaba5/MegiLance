@@ -100,7 +100,7 @@ const Notification: React.FC<NotificationProps> = ({
 
   return (
     <div 
-      className={`Notification Notification--${theme} Notification--${type} Notification--${position} ${isVisible ? 'Notification--visible' : 'Notification--hidden'} ${className}`}
+      className={`Notification Notification--${type} Notification--${position} ${isVisible ? 'Notification--visible' : 'Notification--hidden'} ${className}`}
       role="alert"
       aria-live="assertive"
       aria-atomic="true"

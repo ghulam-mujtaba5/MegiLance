@@ -1,14 +1,11 @@
-// @AI-HINT: This is the Next.js route file for the Projects page. It delegates to the Projects component.
+// @AI-HINT: This is the Next.js route file for the projects page. Uses proper lowercase routing.
 'use client';
 
 import React from 'react';
-import Projects from './Projects';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import Projects from '../Projects/Projects';
 
 const ProjectsPage = () => {
-  const { theme } = useTheme();
-
-  return <Projects theme={theme} />;
+  return <Projects />;
 };
 
 export default ProjectsPage;

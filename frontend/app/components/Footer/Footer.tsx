@@ -30,7 +30,7 @@ const Footer: React.FC<FooterProps> = ({ className = '' }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={`Footer Footer--${theme} ${className}`} role="contentinfo">
+    <footer className={`Footer ${className}`} role="contentinfo">
       <div className="Footer-container">
         {/* Main Footer Content */}
         <div className="Footer-main">

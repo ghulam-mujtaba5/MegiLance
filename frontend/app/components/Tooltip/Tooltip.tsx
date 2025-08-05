@@ -52,7 +52,7 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text, position = 'top', del
         <div
           id={tooltipId}
           role="tooltip"
-          className={`Tooltip Tooltip--${position} Tooltip--${theme}`}
+          className={`Tooltip Tooltip--${position}`}
         >
           {text}
           <div className="Tooltip-arrow" data-popper-arrow />

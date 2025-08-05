@@ -1,14 +1,11 @@
-// @AI-HINT: This is the Next.js route file for the Payments page. It delegates to the Payments component.
+// @AI-HINT: This is the Next.js route file for the payments page. Uses proper lowercase routing.
 'use client';
 
 import React from 'react';
-import Payments from './Payments';
-import { useTheme } from '../contexts/ThemeContext';
+import Payments from '../Payments/Payments';
 
 const PaymentsPage = () => {
-  const { theme } = useTheme();
-
-  return <Payments theme={theme} />;
+  return <Payments />;
 };
 
 export default PaymentsPage;

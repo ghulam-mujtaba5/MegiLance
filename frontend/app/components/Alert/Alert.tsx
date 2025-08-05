@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { FiInfo, FiCheckCircle, FiAlertTriangle, FiXCircle, FiX } from 'react-icons/fi';
-import { useTheme } from '@/app/contexts/ThemeContext';
 import './Alert.common.css';
 import './Alert.light.css';
 import './Alert.dark.css';
@@ -30,12 +29,9 @@ const Alert: React.FC<AlertProps> = ({
   onClose,
   className = '',
 }) => {
-  const { theme } = useTheme();
-
   const alertClasses = [
     'Alert',
     `Alert--${variant}`,
-    `Alert--${theme}`,
     className,
   ].filter(Boolean).join(' ');
 
