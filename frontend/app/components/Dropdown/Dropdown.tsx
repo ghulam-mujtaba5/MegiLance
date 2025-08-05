@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect, useId } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
-import { useTheme } from '@/app/contexts/ThemeContext';
+
 import './Dropdown.common.css';
 import './Dropdown.light.css';
 import './Dropdown.dark.css';
@@ -22,7 +22,6 @@ export interface DropdownProps {
 }
 
 const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeholder = 'Select...', className = '' }) => {
-  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -93,7 +92,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeh
   }, [isOpen, focusedIndex, listId]);
 
   return (
-    <div className={`Dropdown Dropdown--${theme} ${className}`} ref={dropdownRef}>
+    <div className={`Dropdown ${className}`} ref={dropdownRef}>
       <button
         ref={triggerRef}
         type="button"

@@ -3,20 +3,20 @@
 .Dashboard--light {
   --dashboard-bg-primary: var(--color-brand-white);
   --dashboard-bg-secondary: var(--color-brand-gray-50);
-  --dashboard-text-primary: var(--color-brand-gray-800);
-  --dashboard-text-secondary: var(--color-brand-gray-500);
+  --dashboard-text-primary: var(--color-brand-gray-900);
+  --dashboard-text-secondary: var(--color-brand-gray-600);
   --dashboard-text-title: var(--color-brand-gray-900);
   --dashboard-border-color: var(--color-brand-gray-200);
   --dashboard-border-color-hover: var(--color-brand-gray-300);
   --dashboard-card-bg: var(--color-brand-white);
   --dashboard-card-bg-hover: var(--color-brand-gray-50);
-  --dashboard-icon-color: var(--color-brand-gray-600);
+  --dashboard-icon-color: var(--color-brand-gray-500);
 
   /* Status Badges */
-  --dashboard-status-inprogress-bg: var(--color-brand-blue-100);
-  --dashboard-status-inprogress-text: var(--color-brand-blue-800);
-  --dashboard-status-review-bg: var(--color-brand-amber-100);
-  --dashboard-status-review-text: var(--color-brand-amber-800);
-  --dashboard-status-completed-bg: var(--color-brand-green-100);
-  --dashboard-status-completed-text: var(--color-brand-green-800);
+  --dashboard-status-inprogress-bg: var(--color-brand-primary-100);
+  --dashboard-status-inprogress-text: var(--color-brand-primary-800);
+  --dashboard-status-review-bg: var(--color-brand-warning-100);
+  --dashboard-status-review-text: var(--color-brand-warning-800);
+  --dashboard-status-completed-bg: var(--color-brand-success-100);
+  --dashboard-status-completed-text: var(--color-brand-success-800);
 }

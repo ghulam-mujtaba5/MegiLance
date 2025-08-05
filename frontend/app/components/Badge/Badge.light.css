@@ -1,45 +1,50 @@
-:root {
-  --badge-default-bg-light: #e5e7eb;      /* Gray 200 */
-  --badge-default-text-light: #4b5563;    /* Gray 600 */
-  --badge-primary-bg-light: #e0e7ff;      /* Indigo 100 */
-  --badge-primary-text-light: #3730a3;    /* Indigo 800 */
-  --badge-secondary-bg-light: #f3f4f6;    /* Gray 100 */
-  --badge-secondary-text-light: #374151;  /* Gray 700 */
-  --badge-success-bg-light: #dcfce7;      /* Green 100 */
-  --badge-success-text-light: #166534;    /* Green 800 */
-  --badge-warning-bg-light: #fef9c3;      /* Yellow 100 */
-  --badge-warning-text-light: #854d0e;    /* Yellow 800 */
-  --badge-danger-bg-light: #fee2e2;       /* Red 100 */
-  --badge-danger-text-light: #991b1b;     /* Red 800 */
-  --badge-info-bg-light: #dbeafe;         /* Blue 100 */
-  --badge-info-text-light: #1e40af;       /* Blue 800 */
+/* @AI-HINT: Light theme for Badge. Do not use or import any other CSS. */
+
+/*
+ * ===========================================================================
+ * Light Theme for Badge
+ * ===========================================================================
+ * Defines color variables for all badge variants in light mode.
+ * ------------------------------------------------------------------------ */
+
+/* Default Variant */
+.Badge--default {
+  --badge-bg: var(--color-brand-gray-200);
+  --badge-text: var(--color-brand-gray-700);
 }
 
-.Badge--light.Badge--default {
-  background-color: var(--badge-default-bg-light);
-  color: var(--badge-default-text-light);
+/* Primary Variant */
+.Badge--primary {
+  --badge-bg: var(--color-brand-primary-100);
+  --badge-text: var(--color-brand-primary-800);
 }
-.Badge--light.Badge--primary {
-  background-color: var(--badge-primary-bg-light);
-  color: var(--badge-primary-text-light);
+
+/* Secondary Variant */
+.Badge--secondary {
+  --badge-bg: var(--color-brand-gray-100);
+  --badge-text: var(--color-brand-gray-700);
 }
-.Badge--light.Badge--secondary {
-  background-color: var(--badge-secondary-bg-light);
-  color: var(--badge-secondary-text-light);
+
+/* Success Variant */
+.Badge--success {
+  --badge-bg: var(--color-brand-success-100);
+  --badge-text: var(--color-brand-success-800);
 }
-.Badge--light.Badge--success {
-  background-color: var(--badge-success-bg-light);
-  color: var(--badge-success-text-light);
+
+/* Warning Variant */
+.Badge--warning {
+  --badge-bg: var(--color-brand-warning-100);
+  --badge-text: var(--color-brand-warning-800);
 }
-.Badge--light.Badge--warning {
-  background-color: var(--badge-warning-bg-light);
-  color: var(--badge-warning-text-light);
+
+/* Danger Variant */
+.Badge--danger {
+  --badge-bg: var(--color-brand-danger-100);
+  --badge-text: var(--color-brand-danger-800);
 }
-.Badge--light.Badge--danger {
-  background-color: var(--badge-danger-bg-light);
-  color: var(--badge-danger-text-light);
-}
-.Badge--light.Badge--info {
-  background-color: var(--badge-info-bg-light);
-  color: var(--badge-info-text-light);
+
+/* Info Variant */
+.Badge--info {
+  --badge-bg: var(--color-brand-info-100);
+  --badge-text: var(--color-brand-info-800);
 }

@@ -1,37 +1,37 @@
 .Badge {
   display: inline-flex;
   align-items: center;
-  font-weight: 600;
+  font-family: var(--font-family-body);
+  font-weight: var(--font-weight-semibold);
   line-height: 1;
   white-space: nowrap;
-  vertical-align: middle; /* Better alignment */
-  border-radius: 9999px;
-  font-family: 'Inter', sans-serif;
-  transition: background-color 0.2s, color 0.2s;
+  vertical-align: middle;
+  border-radius: var(--border-radius-full);
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  transition: var(--transition-all-fast);
 }
 
-/* Size Variants */
 .Badge--small {
-  padding: 0.2rem 0.5rem;
-  font-size: 0.75rem;
+  padding: var(--spacing-1) var(--spacing-2);
+  font-size: var(--font-size-xs);
 }
 
 .Badge--medium {
-  padding: 0.25rem 0.65rem;
-  font-size: 0.875rem;
+  padding: var(--spacing-1) var(--spacing-3);
+  font-size: var(--font-size-sm);
 }
 
-/* Icon Styles */
 .Badge-icon {
   display: inline-flex;
   align-items: center;
-  font-size: 1.1em; /* Relative to parent font-size */
+  font-size: 1.1em;
 }
 
 .Badge-icon--before {
-  margin-right: 0.35em;
+  margin-right: var(--spacing-1);
 }
 
 .Badge-icon--after {
-  margin-left: 0.35em;
+  margin-left: var(--spacing-1);
 }

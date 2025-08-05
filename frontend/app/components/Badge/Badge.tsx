@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
+
 import './Badge.common.css';
 import './Badge.light.css';
 import './Badge.dark.css';
@@ -24,12 +24,9 @@ const Badge: React.FC<BadgeProps> = ({
   iconAfter,
   className = '',
 }) => {
-  const { theme } = useTheme();
-
   const badgeClasses = [
     'Badge',
     `Badge--${variant}`,
-    `Badge--${theme}`,
     `Badge--${size}`,
     className,
   ].filter(Boolean).join(' ');

@@ -4,7 +4,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { IoClose } from 'react-icons/io5';
-import { useTheme } from '@/app/contexts/ThemeContext';
+
 import './Modal.common.css';
 import './Modal.light.css';
 import './Modal.dark.css';
@@ -20,7 +20,6 @@ export interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer, size = 'medium', className = '' }) => {
-  const { theme } = useTheme();
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -75,14 +74,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer,
 
   const modalContent = (
     <div
-      className={`Modal-overlay Modal-overlay--${theme}`}
+      className="Modal-overlay"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
     >
       <div
-        className={`Modal-content Modal-content--${theme} Modal-content--${size} ${className}`}
+        className={`Modal-content Modal-content--${size} ${className}`}
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
