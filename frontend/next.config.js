@@ -1,6 +1,5 @@
 // @AI-HINT: This file configures Next.js, with PWA support enabled via next-pwa.
-import type { NextConfig } from 'next';
-import withPWAInit from 'next-pwa';
+const withPWAInit = require('next-pwa');
 
 const withPWA = withPWAInit({
   dest: 'public', // Service worker files will be generated in public/
@@ -9,9 +8,10 @@ const withPWA = withPWAInit({
   disable: process.env.NODE_ENV === 'development', // Disable PWA in development
 });
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   // Your Next.js config options can go here.
 };
 
-export default withPWA(nextConfig);
+module.exports = withPWA(nextConfig);
 

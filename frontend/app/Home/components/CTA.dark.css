@@ -1,0 +1,8 @@
+.Home--dark .Home-cta-section {
+  background-color: var(--primary-color);
+}
+
+.Home--dark .Home-cta-title,
+.Home--dark .Home-cta-subtitle {
+  color: #ffffff;
+}

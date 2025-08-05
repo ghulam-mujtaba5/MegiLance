@@ -171,7 +171,10 @@
   left: 0;
   height: 3px;
   background-color: currentColor;
-  animation: progressBar linear;
+  animation-name: progressBar;
+  animation-timing-function: linear;
+  animation-duration: var(--notification-duration);
+  animation-play-state: var(--notification-play-state);
   opacity: 0.7;
 }
 

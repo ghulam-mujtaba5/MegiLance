@@ -1,7 +1,7 @@
 // @AI-HINT: This is the Payments Management page for admins to view all platform transactions. All styles are per-component only.
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '@/app/components/Input/Input';
 import './Payments.common.css';
 import './Payments.light.css';
@@ -11,22 +11,55 @@ interface PaymentsProps {
   theme?: 'light' | 'dark';
 }
 
-// Mock data for payments
-const mockPayments = [
-  { id: 'txn1', date: '2025-08-03', type: 'Milestone Release', from: 'Innovate Inc.', to: 'John D.', amount: 5000, status: 'Completed' },
-  { id: 'txn2', date: '2025-08-02', type: 'Deposit', from: 'Shopify Plus Store', to: 'Platform Wallet', amount: 8000, status: 'Completed' },
-  { id: 'txn3', date: '2025-08-01', type: 'Withdrawal', from: 'Mike R.', to: 'Bank Account', amount: 7500, status: 'Pending' },
-  { id: 'txn4', date: '2025-07-31', type: 'Platform Fee', from: 'Innovate Inc.', to: 'Platform', amount: 250, status: 'Completed' },
-  { id: 'txn5', date: '2025-07-30', type: 'Refund', from: 'Platform', to: 'Startup X', amount: 1500, status: 'Failed' },
-];
+interface Payment {
+  id: string;
+  date: string;
+  type: string;
+  from: string;
+  to: string;
+  amount: number;
+  status: string;
+}
 
 const Payments: React.FC<PaymentsProps> = ({ theme = 'light' }) => {
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/admin/payments');
+        if (!response.ok) {
+          throw new Error('Failed to fetch payments');
+        }
+        const data: Payment[] = await response.json();
+        setPayments(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPayments();
+  }, []);
+
+  if (loading) {
+    return <div className={`Payments-status Payments-status--${theme}`}>Loading payments...</div>;
+  }
+
+  if (error) {
+    return <div className={`Payments-status Payments-status--error Payments-status--${theme}`}>Error: {error}</div>;
+  }
+
   return (
     <div className={`Payments Payments--${theme}`}>
       <header className="Payments-header">
         <h1>Payments & Transactions</h1>
         <div className="Payments-actions">
-          <Input theme={theme} type="search" placeholder="Search by user or transaction ID..." />
+          <Input type="search" placeholder="Search by user or transaction ID..." />
         </div>
       </header>
 
@@ -44,7 +77,7 @@ const Payments: React.FC<PaymentsProps> = ({ theme = 'light' }) => {
             </tr>
           </thead>
           <tbody>
-            {mockPayments.map(payment => (
+            {payments.map(payment => (
               <tr key={payment.id}>
                 <td>{payment.id}</td>
                 <td>{payment.date}</td>
@@ -53,7 +86,7 @@ const Payments: React.FC<PaymentsProps> = ({ theme = 'light' }) => {
                 <td>{payment.to}</td>
                 <td>${payment.amount.toLocaleString()}</td>
                 <td>
-                  <span className={`status-badge status-badge--${payment.status}`}>{payment.status}</span>
+                  <span className={`status-badge status-badge--${payment.status.toLowerCase()}`}>{payment.status}</span>
                 </td>
               </tr>
             ))}

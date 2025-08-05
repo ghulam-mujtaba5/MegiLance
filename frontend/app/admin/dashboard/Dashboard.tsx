@@ -1,7 +1,7 @@
 // @AI-HINT: This is the main Admin Dashboard page, providing an overview of platform activity. All styles are per-component only.
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
 import './Dashboard.common.css';
 import './Dashboard.light.css';
@@ -11,26 +11,71 @@ interface DashboardProps {
   theme?: 'light' | 'dark';
 }
 
-// Mock data for the admin dashboard
-const adminStats = {
-  totalUsers: 1250,
-  activeProjects: 340,
-  totalTransactions: 5200,
-  pendingTickets: 15,
-};
+interface AdminStats {
+  totalUsers: number;
+  activeProjects: number;
+  totalTransactions: number;
+  pendingTickets: number;
+}
 
-const recentRegistrations = [
-  { id: 'u1', name: 'Alex Johnson', date: '2025-08-04', type: 'Freelancer' },
-  { id: 'u2', name: 'Beta Corp', date: '2025-08-04', type: 'Client' },
-  { id: 'u3', name: 'Sam Lee', date: '2025-08-03', type: 'Freelancer' },
-];
+interface Registration {
+  id: string;
+  name: string;
+  date: string;
+  type: string;
+}
 
-const flaggedProjects = [
-  { id: 'p1', title: 'Urgent Data Entry', reason: 'Potential Spam' },
-  { id: 'p2', title: 'Social Media Manager Needed', reason: 'Unusual Activity' },
-];
+interface FlaggedProject {
+  id: string;
+  title: string;
+  reason: string;
+}
+
+interface AdminDashboardData {
+  stats: AdminStats;
+  recentRegistrations: Registration[];
+  flaggedProjects: FlaggedProject[];
+}
 
 const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
+  const [data, setData] = useState<AdminDashboardData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/admin/dashboard');
+        if (!response.ok) {
+          throw new Error('Failed to fetch admin dashboard data');
+        }
+        const result: AdminDashboardData = await response.json();
+        setData(result);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div className="AdminDashboard-status">Loading Admin Dashboard...</div>;
+  }
+
+  if (error) {
+    return <div className="AdminDashboard-status AdminDashboard-error">Error: {error}</div>;
+  }
+
+  if (!data) {
+    return <div className="AdminDashboard-status">No data available.</div>;
+  }
+
+  const { stats, recentRegistrations, flaggedProjects } = data;
+
   return (
     <div className={`AdminDashboard AdminDashboard--${theme}`}>
       <header className="AdminDashboard-header">
@@ -38,10 +83,10 @@ const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
       </header>
 
       <div className="AdminDashboard-widgets">
-        <DashboardWidget theme={theme} title="Total Users" value={adminStats.totalUsers.toLocaleString()} />
-        <DashboardWidget theme={theme} title="Active Projects" value={adminStats.activeProjects.toLocaleString()} />
-        <DashboardWidget theme={theme} title="Total Transactions" value={adminStats.totalTransactions.toLocaleString()} />
-        <DashboardWidget theme={theme} title="Pending Support Tickets" value={adminStats.pendingTickets.toLocaleString()} variant="warning" />
+        <DashboardWidget theme={theme} title="Total Users" value={stats.totalUsers.toLocaleString()} />
+        <DashboardWidget theme={theme} title="Active Projects" value={stats.activeProjects.toLocaleString()} />
+        <DashboardWidget theme={theme} title="Total Transactions" value={stats.totalTransactions.toLocaleString()} />
+        <DashboardWidget theme={theme} title="Pending Support Tickets" value={stats.pendingTickets.toLocaleString()} variant="warning" />
       </div>
 
       <div className="AdminDashboard-lists">

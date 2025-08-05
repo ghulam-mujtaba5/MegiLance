@@ -1,0 +1,20 @@
+.Home--light .Home-testimonials {
+  background-color: #f9fafb;
+}
+
+.Home--light .Home-testimonial-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.Home--light .Home-testimonial-quote {
+  color: #374151;
+}
+
+.Home--light .Home-author-name {
+  color: #1f2937;
+}
+
+.Home--light .Home-author-title {
+  color: #6b7280;
+}

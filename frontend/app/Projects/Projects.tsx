@@ -6,8 +6,7 @@ import React from 'react';
 import ProjectsHeader from './components/ProjectsHeader/ProjectsHeader';
 import ProjectsList from './components/ProjectsList/ProjectsList';
 
-// Data
-import { mockProjects } from './mock-data';
+
 
 // Styles
 import './Projects.common.css';
@@ -23,7 +22,7 @@ const Projects: React.FC = () => {
   return (
     <div className="Projects-container">
       <ProjectsHeader onAddProject={handleAddProject} />
-      <ProjectsList projects={mockProjects} />
+      <ProjectsList />
     </div>
   );
 };

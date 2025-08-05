@@ -12,6 +12,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   iconBefore?: React.ReactNode;
   iconAfter?: React.ReactNode;
   fullWidth?: boolean;
+  theme?: 'light' | 'dark';
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -24,12 +25,14 @@ const Button: React.FC<ButtonProps> = ({
   iconAfter,
   className = '',
   fullWidth = false,
+  theme,
   ...props
 }) => {
   const isDisabled = isLoading || disabled;
 
   const buttonClasses = [
     'Button',
+    theme ? `Button--${theme}` : '',
     `Button--${variant}`,
     `Button--${size}`,
     isDisabled ? 'Button--disabled' : '',

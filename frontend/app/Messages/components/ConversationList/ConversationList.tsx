@@ -1,22 +1,50 @@
 // @AI-HINT: This component renders the list of conversations in the sidebar. It manages the display of each conversation, highlights the active one, and handles user selection.
 
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Conversation } from '../../types';
 import './ConversationList.common.css';
 import './ConversationList.light.css';
 import './ConversationList.dark.css';
 
 interface ConversationListProps {
-  conversations: Conversation[];
   selectedConversationId: number | null;
   onSelectConversation: (id: number) => void;
+  refreshKey: number;
 }
 
 const ConversationList: React.FC<ConversationListProps> = ({ 
-  conversations, 
   selectedConversationId, 
-  onSelectConversation 
+  onSelectConversation, 
+  refreshKey 
 }) => {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/messages');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data: Conversation[] = await response.json();
+        setConversations(data);
+        if (data.length > 0 && selectedConversationId === null) {
+          onSelectConversation(data[0].id);
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, [onSelectConversation, selectedConversationId, refreshKey]);
   return (
     <aside className="ConversationList-sidebar">
       <div className="ConversationList-header">
@@ -24,7 +52,9 @@ const ConversationList: React.FC<ConversationListProps> = ({
         {/* Placeholder for a search input or filter actions */}
       </div>
       <div className="ConversationList-items">
-        {conversations.map(convo => (
+        {loading && <div className="ConversationList-loading">Loading...</div>}
+        {error && <div className="ConversationList-error">Error: {error}</div>}
+        {!loading && !error && conversations.map(convo => (
           <div 
             key={convo.id} 
             className={`ConversationList-item ${selectedConversationId === convo.id ? 'is-active' : ''}`}

@@ -84,7 +84,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
         className="ProfileMenu-trigger"
         onClick={toggleMenu}
         aria-haspopup="true"
-        aria-expanded={isOpen}
+        aria-expanded={`${isOpen}`}
         aria-label={`Open user menu for ${userName}`}
       >
         <UserAvatar theme={theme} name={userName} src={userImageUrl} size="medium" />
@@ -98,38 +98,31 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
           </div>
         </div>
         <ul className="ProfileMenu-items" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
-          {menuItems.map((item) => (
-            <li key={item.label} role="presentation">
-              {((): React.ReactNode => {
-                const commonProps = {
-                  className: 'ProfileMenu-item',
-                  role: 'menuitem',
-                  onClick: () => handleItemClick(item.onClick),
-                };
+          {menuItems.map((item) => {
+            const commonProps = {
+              className: 'ProfileMenu-item',
+              onClick: () => handleItemClick(item.onClick),
+            };
 
-                const content = (
-                  <>
-                    <span className="ProfileMenu-itemIcon">{item.icon}</span>
-                    <span className="ProfileMenu-itemLabel">{item.label}</span>
-                  </>
-                );
+            const content = (
+              <>
+                <span className="ProfileMenu-itemIcon">{item.icon}</span>
+                <span className="ProfileMenu-itemLabel">{item.label}</span>
+              </>
+            );
 
-                if (item.href) {
-                  return (
-                    <Link href={item.href} {...commonProps}>
-                      {content}
-                    </Link>
-                  );
-                }
-
-                return (
-                  <button type="button" {...commonProps}>
+            return (
+              <li key={item.label} role="menuitem" tabIndex={-1} {...commonProps}>
+                {item.href ? (
+                  <Link href={item.href} tabIndex={-1} style={{ textDecoration: 'none', color: 'inherit' }}>
                     {content}
-                  </button>
-                );
-              })()}
-            </li>
-          ))}
+                  </Link>
+                ) : (
+                  content
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

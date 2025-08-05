@@ -5,7 +5,7 @@ export type ProjectStatus = 'active' | 'completed' | 'pending' | 'on_hold' | 'ca
 
 export interface ProjectType {
   id: string;
-  title: string;
+  name: string;
   client: string;
   budget: number;
   status: ProjectStatus;

@@ -99,7 +99,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeh
         className="Dropdown-trigger"
         onClick={() => setIsOpen(!isOpen)}
         aria-haspopup="listbox"
-        aria-expanded={isOpen}
+        aria-expanded={`${isOpen}`}
         aria-controls={listId}
         aria-labelledby={`${labelId} ${triggerRef.current?.id}`}
       >
@@ -111,6 +111,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeh
           id={listId}
           className="Dropdown-options"
           role="listbox"
+          aria-labelledby={labelId}
           aria-activedescendant={focusedIndex >= 0 ? `${listId}-option-${focusedIndex}` : undefined}
         >
           {options.map((option, index) => (
@@ -121,7 +122,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeh
               onClick={() => handleSelect(option)}
               onMouseEnter={() => setFocusedIndex(index)}
               role="option"
-              aria-selected={selected?.value === option.value}
+              aria-selected={`${selected?.value === option.value}`}
             >
               {option.label}
             </li>

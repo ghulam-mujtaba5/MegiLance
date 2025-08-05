@@ -1,6 +1,6 @@
 // @AI-HINT: This component renders the form for updating user profile information. It's self-contained, managing its own state, and is wrapped by the SettingsSection component for consistent styling.
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SettingsSection from '../SettingsSection/SettingsSection';
 import Input from '../../../components/Input/Input'; // Assuming a shared Input component
 import Button from '../../../components/Button/Button'; // Assuming a shared Button component
@@ -8,16 +8,42 @@ import './ProfileSettings.common.css';
 import './ProfileSettings.light.css';
 import './ProfileSettings.dark.css';
 
+interface UserProfile {
+  fullName: string;
+  email: string;
+  bio: string;
+}
+
 const ProfileSettings: React.FC = () => {
-  const [profile, setProfile] = useState({
-    fullName: 'Alexia Christian',
-    email: 'alexia.c@megilance.com',
-    bio: 'Senior Full-Stack Engineer at MegiLance. Passionate about building scalable, user-centric web applications and mentoring junior developers.',
-  });
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/user');
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile data');
+        }
+        const data: UserProfile = await response.json();
+        setProfile(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
+    setProfile(prev => {
+      if (!prev) return null;
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleSaveChanges = (e: React.FormEvent) => {
@@ -26,6 +52,18 @@ const ProfileSettings: React.FC = () => {
     alert('Saving profile changes...');
     console.log('Saving profile:', profile);
   };
+
+  if (loading) {
+    return <SettingsSection title="Profile Information" description="Please wait while we load your profile."><div>Loading profile...</div></SettingsSection>;
+  }
+
+  if (error) {
+    return <SettingsSection title="Profile Information" description="There was an issue loading your data."><div>Error: {error}</div></SettingsSection>;
+  }
+
+  if (!profile) {
+    return <SettingsSection title="Profile Information" description="We couldn't find your profile data."><div>No profile data found.</div></SettingsSection>;
+  }
 
   return (
     <SettingsSection

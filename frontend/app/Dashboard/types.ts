@@ -1,6 +1,6 @@
 // @AI-HINT: This file defines the TypeScript types for the MegiLance dashboard components. Centralizing types ensures data consistency, type safety, and easier maintenance across the modular dashboard architecture, adhering to premium SaaS development standards.
 
-import { IconType } from 'react-icons';
+
 
 /**
  * Represents a single metric displayed on the dashboard.
@@ -10,7 +10,7 @@ export interface DashboardMetric {
   id: number | string;
   label: string;
   value: string;
-  icon: IconType;
+  icon: string;
   // Optional: for future trend indicators
   change?: string;
   changeType?: 'increase' | 'decrease';
@@ -38,7 +38,7 @@ export interface ActivityFeedItem {
   id: number | string;
   message: string;
   time: string;
-  icon: IconType;
+  icon: string;
   // Optional: for transaction-related activities
   amount?: string;
 }

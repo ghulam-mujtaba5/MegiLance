@@ -110,8 +110,8 @@
 }
 
 .ProjectCard-progress-fill {
-  width: var(--progress-width, 0%);
   height: 100%;
+  width: var(--progress-width, 0%);
   background-color: var(--color-brand-primary-500);
   border-radius: var(--border-radius-full);
   transition: width 0.5s ease-in-out;

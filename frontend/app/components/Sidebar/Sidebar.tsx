@@ -12,13 +12,13 @@ import './Sidebar.dark.css';
 
 export interface SidebarProps {
   children: ReactNode; // To hold SidebarNav
+  isCollapsed: boolean;
+  onToggle: (isCollapsed: boolean) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
+const Sidebar: React.FC<SidebarProps> = ({ children, isCollapsed, onToggle }) => {
   const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
+    onToggle(!isCollapsed);
   };
 
   return (
@@ -30,15 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         </Link>
       </div>
 
-      <div className="Sidebar-content">
-        {Children.map(children, (child) => {
-          if (isValidElement(child)) {
-            // @ts-ignore - Intentionally passing a prop the child component will use.
-            return cloneElement(child, { isCollapsed });
-          }
-          return child;
-        })}
-      </div>
+      <div className="Sidebar-content">{children}</div>
 
       <div className="Sidebar-footer">
         <button onClick={toggleCollapse} className="Sidebar-toggle" aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>

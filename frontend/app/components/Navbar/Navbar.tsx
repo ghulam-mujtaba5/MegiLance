@@ -1,11 +1,12 @@
 // @AI-HINT: This is the Navbar component entry point. All styles are per-component only. See Navbar.common.css, Navbar.light.css, and Navbar.dark.css for theming.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import ProfileMenu from '@/app/components/ProfileMenu/ProfileMenu';
 import type { ProfileMenuItem } from '@/app/components/ProfileMenu/ProfileMenu';
+
 import ThemeSwitcher from '@/app/components/ThemeSwitcher/ThemeSwitcher';
 import Input from '@/app/components/Input/Input';
 import { FaBars, FaTimes, FaSearch } from 'react-icons/fa';
@@ -20,16 +21,24 @@ export interface NavItem {
   href: string;
 }
 
+export interface User {
+  fullName: string;
+  email: string;
+  bio: string;
+  avatar: string;
+  notificationCount: number;
+}
+
 export interface NavbarProps {
   navItems: NavItem[];
   profileMenuItems: ProfileMenuItem[];
-  userName: string;
-  userEmail?: string;
+  user: User;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, userName, userEmail }) => {
+const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
+  
 
   const toggleMobileMenu = () => {
     const newMenuState = !isMobileMenuOpen;
@@ -69,8 +78,8 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, userName, u
             <ThemeSwitcher />
             <ProfileMenu
               theme={theme}
-              userName={userName}
-              userEmail={userEmail}
+              userName={user.fullName}
+              userEmail={user.email}
               menuItems={profileMenuItems}
             />
           </div>
@@ -79,7 +88,7 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, userName, u
               type="button"
               onClick={toggleMobileMenu}
               aria-label="Toggle menu"
-              aria-expanded={isMobileMenuOpen}
+              aria-expanded={`${isMobileMenuOpen}`}
               aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
@@ -88,7 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, userName, u
         </div>
       </div>
 
-      <div id="mobile-menu" className="Navbar-mobile-menu" aria-hidden={!isMobileMenuOpen}>
+      <div id="mobile-menu" className="Navbar-mobile-menu" aria-hidden={`${!isMobileMenuOpen}`}>
         <nav className="Navbar-mobile-nav" aria-label="Mobile navigation">
           {navItems.map((item) => (
             <Link key={item.label} href={item.href} className="Navbar-mobile-link" onClick={toggleMobileMenu}>

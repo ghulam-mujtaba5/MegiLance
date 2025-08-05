@@ -15,7 +15,6 @@ import DashboardRecentProjects from './components/DashboardRecentProjects/Dashbo
 import DashboardActivityFeed from './components/DashboardActivityFeed/DashboardActivityFeed';
 
 // Data and Types
-import { mockMetrics, mockRecentProjects, mockActivityFeed } from './mock-data';
 
 // Icons
 import {
@@ -28,12 +27,20 @@ import './dashboard.common.css';
 import './dashboard.light.css';
 import './dashboard.dark.css';
 
-interface DashboardProps {
-  userRole?: 'admin' | 'client' | 'freelancer';
+interface User {
+  fullName: string;
+  email: string;
+  bio: string;
+  avatar: string;
+  notificationCount: number;
 }
 
-// Mock user and top-level navigation data
-const user = { name: 'Alexia Christian', email: 'alexia.c@megilance.com', notificationCount: 4 };
+interface DashboardProps {
+  userRole?: 'admin' | 'client' | 'freelancer';
+  user: User;
+}
+
+
 
 const navItems: NavbarNavItem[] = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -85,31 +92,27 @@ const getSidebarNavItems = (role: string): SidebarNavItem[] => {
   ];
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ userRole = 'freelancer' }) => {
+const Dashboard: React.FC<DashboardProps> = ({ userRole = 'freelancer', user }) => {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = React.useState(false);
   const sidebarNavItems = getSidebarNavItems(userRole);
 
   return (
-    <div className={`Dashboard Dashboard--${userRole}`}>
-      <Sidebar>
+    <div className={`Dashboard Dashboard--${userRole} ${isSidebarCollapsed ? 'Dashboard--sidebar-collapsed' : ''}`}>
+      <Sidebar isCollapsed={isSidebarCollapsed} onToggle={setIsSidebarCollapsed}>
         <SidebarNav navItems={sidebarNavItems} />
       </Sidebar>
       <div className="Dashboard-main-content">
         <Navbar
-          user={user}
           navItems={navItems}
           profileMenuItems={profileMenuItems}
-          onSearch={(query) => alert(`Searching for: ${query}`)}
+          user={user}
         />
         <main className="Dashboard-content">
-          <DashboardHeader
-            userName={user.name}
-            userRole={userRole}
-            notificationCount={user.notificationCount}
-          />
-          <DashboardMetrics metrics={mockMetrics} />
+          <DashboardHeader userRole={userRole} user={user} />
+          <DashboardMetrics />
           <div className="Dashboard-main-grid">
-            <DashboardRecentProjects projects={mockRecentProjects} />
-            <DashboardActivityFeed activities={mockActivityFeed} />
+            <DashboardRecentProjects />
+            <DashboardActivityFeed />
           </div>
         </main>
       </div>

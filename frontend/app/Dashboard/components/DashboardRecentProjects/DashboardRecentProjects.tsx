@@ -1,14 +1,12 @@
 // @AI-HINT: This component displays a list of recent projects. It's designed to provide a quick, scannable overview of project status, progress, and deadlines, a key feature in premium project management dashboards.
 
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { RecentProject } from '../../types';
 import './DashboardRecentProjects.common.css';
 import './DashboardRecentProjects.light.css';
 import './DashboardRecentProjects.dark.css';
-
-interface DashboardRecentProjectsProps {
-  projects: RecentProject[];
-}
 
 const getStatusClass = (status: RecentProject['status']) => {
   switch (status) {
@@ -25,7 +23,38 @@ const getStatusClass = (status: RecentProject['status']) => {
   }
 };
 
-const DashboardRecentProjects: React.FC<DashboardRecentProjectsProps> = ({ projects }) => {
+const DashboardRecentProjects: React.FC = () => {
+  const [projects, setProjects] = useState<RecentProject[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('/api/dashboard');
+        if (!response.ok) {
+          throw new Error('Failed to fetch dashboard data');
+        }
+        const data = await response.json();
+        setProjects(data.recentProjects || []);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) {
+    return <div className="DashboardSection-loading">Loading projects...</div>;
+  }
+
+  if (error) {
+    return <div className="DashboardSection-error">Error: {error}</div>;
+  }
+
   return (
     <div className="DashboardSection">
       <div className="DashboardSection-header">
@@ -34,14 +63,17 @@ const DashboardRecentProjects: React.FC<DashboardRecentProjectsProps> = ({ proje
       </div>
       <div className="DashboardRecentProjects-list">
         {projects.map((project) => (
-          <div key={project.id} className={`ProjectCard ${getStatusClass(project.status)}`} style={{ '--progress-width': `${project.progress}%` } as React.CSSProperties}>
+          <div key={project.id} className={`ProjectCard ${getStatusClass(project.status)}`}>
             <div className="ProjectCard-header">
               <h3 className="ProjectCard-title">{project.title}</h3>
               <span className={`ProjectCard-status ${getStatusClass(project.status)}`}>{project.status}</span>
             </div>
             <div className="ProjectCard-client">{project.client}</div>
             <div className="ProjectCard-progress">
-              <div className="ProjectCard-progress-bar">
+              <div 
+                className="ProjectCard-progress-bar"
+                style={{ '--progress-width': `${project.progress}%` } as React.CSSProperties}
+              >
                 <div className="ProjectCard-progress-fill"></div>
               </div>
               <span className="ProjectCard-progress-label">{project.progress}%</span>

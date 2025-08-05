@@ -1,0 +1,19 @@
+.Home--dark .Home-how-it-works {
+  background-color: #1f2937;
+}
+
+.Home--dark .Home-column-title {
+  color: #f9fafb;
+}
+
+.Home--dark .Home-step-icon {
+  color: var(--primary-color);
+}
+
+.Home--dark .Home-step-title {
+  color: #f9fafb;
+}
+
+.Home--dark .Home-step-description {
+  color: #d1d5db;
+}

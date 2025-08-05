@@ -62,18 +62,16 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       <div 
         className={progressBarClasses}
         role="progressbar"
+        // eslint-disable-next-line jsx-a11y/aria-proptypes
         aria-valuenow={safeProgress}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={ariaLabel || (label ? undefined : `Progress: ${Math.round(safeProgress)}%`)}
         aria-labelledby={label ? `${progressId}-label` : undefined}
         aria-describedby={ariaDescribedBy}
-        style={{
-          '--progress-value': `${safeProgress}%`
-        } as React.CSSProperties}
       >
         <div className="ProgressBar-track">
-          <div className="ProgressBar-fill" />
+          <div className="ProgressBar-fill" style={{ '--progress-width': `${safeProgress}%` } as React.CSSProperties} />
         </div>
       </div>
     </div>

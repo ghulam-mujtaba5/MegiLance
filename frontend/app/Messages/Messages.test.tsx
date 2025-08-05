@@ -1,82 +1,75 @@
-// @AI-HINT: This file contains automated tests for the Messages page. It uses React Testing Library to simulate user interactions and verify that the component behaves as expected.
+// @AI-HINT: This file contains automated tests for the Messages page. It uses React Testing Library and Mock Service Worker (MSW) to simulate user interactions and verify that the component behaves as expected in a realistic, API-driven environment.
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Messages from './Messages';
+import { server } from '../../mocks/server';
+import { http, HttpResponse } from 'msw';
 
-// Mock the sub-components to isolate the Messages component logic
-jest.mock('./components/ConversationList/ConversationList', () => 
-  ({ conversations, selectedConversationId, onSelectConversation }: any) => (
-    <div data-testid="conversation-list">
-      {conversations.map((c: any) => (
-        <div key={c.id} onClick={() => onSelectConversation(c.id)} data-testid={`convo-${c.id}`}>
-          {c.contactName}
-        </div>
-      ))}
-    </div>
-));
+// The jest.setup.js file handles server.listen(), server.resetHandlers(), and server.close()
 
-jest.mock('./components/ChatWindow/ChatWindow', () => 
-  ({ conversation }: any) => (
-    <div data-testid="chat-window">
-      {conversation ? `Chat with ${conversation.contactName}` : 'No conversation selected'}
-    </div>
-));
-
-jest.mock('./components/MessageInput/MessageInput', () => 
-  ({ onSendMessage }: any) => (
-    <form data-testid="message-input" onSubmit={(e) => { e.preventDefault(); onSendMessage('Test message'); }}>
-      <input type="text" defaultValue="Test message" />
-      <button type="submit">Send</button>
-    </form>
-));
-
-describe('Messages Page', () => {
-  it('renders the main components correctly', () => {
+describe('Messages Page with MSW', () => {
+  test('fetches and displays the conversation list', async () => {
     render(<Messages />);
-    
-    expect(screen.getByTestId('conversation-list')).toBeInTheDocument();
-    expect(screen.getByTestId('chat-window')).toBeInTheDocument();
-    expect(screen.getByTestId('message-input')).toBeInTheDocument();
+
+    // Wait for the conversation list to be populated by MSW
+    expect(await screen.findByText('Alice Johnson')).toBeInTheDocument();
+    expect(screen.getByText('Bob Williams')).toBeInTheDocument();
   });
 
-  it('displays the first conversation by default', () => {
+  test('selects a conversation and displays its details', async () => {
     render(<Messages />);
 
-    // From mock-data.ts, the first conversation is with 'Alice Johnson'
-    expect(screen.getByText('Chat with Alice Johnson')).toBeInTheDocument();
+    // Wait for the list and click a conversation
+    const aliceConversation = await screen.findByText('Alice Johnson');
+    fireEvent.click(aliceConversation);
+
+    // Wait for the chat window to update with details from MSW
+    expect(await screen.findByText(/Hey, are we still on for lunch tomorrow?/i)).toBeInTheDocument();
+    expect(screen.getByText(/Yes, absolutely! Looking forward to it./i)).toBeInTheDocument();
   });
 
-  it('switches the active chat window when a different conversation is selected', () => {
+  test('sends a new message and updates the chat', async () => {
     render(<Messages />);
-    
-    // Initially, Alice is selected
-    expect(screen.getByText('Chat with Alice Johnson')).toBeInTheDocument();
 
-    // Click on the second conversation (Bob Williams)
-    const conversationTwo = screen.getByTestId('convo-2');
-    fireEvent.click(conversationTwo);
+    // 1. Select a conversation
+    const aliceConversation = await screen.findByText('Alice Johnson');
+    fireEvent.click(aliceConversation);
 
-    // Now, Bob should be selected
-    expect(screen.getByText('Chat with Bob Williams')).toBeInTheDocument();
-  });
+    // 2. Wait for initial messages to appear
+    await screen.findByText(/Yes, absolutely! Looking forward to it./i);
 
-  it('adds a new message to the selected conversation when sent', () => {
-    render(<Messages />);
-    
-    // Check initial state for Alice Johnson's chat
-    const chatWindow = screen.getByTestId('chat-window');
-    expect(chatWindow.textContent).not.toContain('Test message');
+    // 3. Define the updated conversation that the GET request should return after the POST
+    const updatedConversation = {
+      id: 1,
+      contactName: 'Alice Johnson',
+      lastMessage: 'A new test message!',
+      lastMessageTimestamp: '10:50 AM',
+      unreadCount: 0,
+      avatar: '/path/to/alice.png',
+      messages: [
+        { id: 101, text: 'Hey, are we still on for lunch tomorrow?', sender: 'contact', timestamp: '10:30 AM' },
+        { id: 102, text: 'Yes, absolutely! Looking forward to it.', sender: 'user', timestamp: '10:32 AM' },
+        { id: 103, text: 'A new test message!', sender: 'user', timestamp: '10:50 AM' },
+      ],
+    };
 
-    // Simulate sending a message
-    const sendButton = screen.getByRole('button', { name: 'Send' });
+    // 4. Override the GET handler for the next request to return the updated data
+    server.use(
+      http.get('/api/messages/1', () => {
+        return HttpResponse.json(updatedConversation);
+      })
+    );
+
+    // 5. Type and send the new message
+    const input = screen.getByPlaceholderText(/type a message/i);
+    const sendButton = screen.getByRole('button', { name: /send message/i });
+
+    fireEvent.change(input, { target: { value: 'A new test message!' } });
     fireEvent.click(sendButton);
 
-    // The ChatWindow mock doesn't show messages, but we can verify the state update logic
-    // by checking if the lastMessage property of the conversation was updated.
-    // A more advanced test would involve checking the props passed to the ChatWindow mock.
-    // For now, this confirms the handleSendMessage logic is triggered.
-    // This test is more of a placeholder for demonstrating the interaction.
+    // 6. Wait for the new message to appear in the document
+    expect(await screen.findByText('A new test message!')).toBeInTheDocument();
   });
 });

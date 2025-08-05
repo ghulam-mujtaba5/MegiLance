@@ -4,10 +4,26 @@
 import React from "react";
 import Link from 'next/link';
 import Button from '@/app/components/Button/Button';
-import { FaRocket, FaUsers, FaShieldAlt, FaChartLine, FaWallet, FaRobot } from 'react-icons/fa';
+import { FaRocket, FaUsers, FaShieldAlt } from 'react-icons/fa';
+import Features from './components/Features';
+import HowItWorks from './components/HowItWorks';
+import Testimonials from './components/Testimonials';
+import CTA from './components/CTA';
 import "./Home.common.css";
 import "./Home.light.css";
 import "./Home.dark.css";
+import "./components/Features.common.css";
+import "./components/Features.light.css";
+import "./components/Features.dark.css";
+import "./components/HowItWorks.common.css";
+import "./components/HowItWorks.light.css";
+import "./components/HowItWorks.dark.css";
+import "./components/Testimonials.common.css";
+import "./components/Testimonials.light.css";
+import "./components/Testimonials.dark.css";
+import "./components/CTA.common.css";
+import "./components/CTA.light.css";
+import "./components/CTA.dark.css";
 
 interface HomeProps {
   theme?: "light" | "dark";
@@ -59,131 +75,10 @@ const Home: React.FC<HomeProps> = ({ theme = "light" }) => {
         </div>
       </section>
 
-      {/* Quick Navigation Grid */}
-      <section className="Home-quick-nav">
-        <div className="Home-container">
-          <h2 className="Home-section-title">Explore MegiLance</h2>
-          <div className="Home-quick-nav-grid">
-            <Link href="/dashboard" className="Home-quick-nav-item">
-              <FaChartLine className="Home-quick-nav-icon" />
-              <span>Dashboard</span>
-            </Link>
-            <Link href="/projects" className="Home-quick-nav-item">
-              <FaUsers className="Home-quick-nav-icon" />
-              <span>Projects</span>
-            </Link>
-            <Link href="/freelancer/dashboard" className="Home-quick-nav-item">
-              <FaRocket className="Home-quick-nav-icon" />
-              <span>Freelancer Portal</span>
-            </Link>
-            <Link href="/client/dashboard" className="Home-quick-nav-item">
-              <FaUsers className="Home-quick-nav-icon" />
-              <span>Client Portal</span>
-            </Link>
-            <Link href="/ai/price-estimator" className="Home-quick-nav-item">
-              <FaRobot className="Home-quick-nav-icon" />
-              <span>AI Price Estimator</span>
-            </Link>
-            <Link href="/ai/chatbot" className="Home-quick-nav-item">
-              <FaRobot className="Home-quick-nav-icon" />
-              <span>AI Chatbot</span>
-            </Link>
-            <Link href="/payments" className="Home-quick-nav-item">
-              <FaWallet className="Home-quick-nav-icon" />
-              <span>Payments</span>
-            </Link>
-            <Link href="/messages" className="Home-quick-nav-item">
-              <FaUsers className="Home-quick-nav-icon" />
-              <span>Messages</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* All Pages Directory */}
-      <section className="Home-directory">
-        <div className="Home-container">
-          <h2 className="Home-section-title">All Available Pages</h2>
-          <div className="Home-directory-grid">
-            <div className="Home-directory-section">
-              <h3>Authentication</h3>
-              <ul>
-                <li><Link href="/Login">Login</Link></li>
-                <li><Link href="/Signup">Signup</Link></li>
-                <li><Link href="/forgot-password">Forgot Password</Link></li>
-                <li><Link href="/onboarding">Onboarding</Link></li>
-              </ul>
-            </div>
-            <div className="Home-directory-section">
-              <h3>Main Pages</h3>
-              <ul>
-                <li><Link href="/dashboard">Dashboard</Link></li>
-                <li><Link href="/projects">Projects</Link></li>
-                <li><Link href="/messages">Messages</Link></li>
-                <li><Link href="/payments">Payments</Link></li>
-                <li><Link href="/profile">Profile</Link></li>
-                <li><Link href="/settings">Settings</Link></li>
-              </ul>
-            </div>
-            <div className="Home-directory-section">
-              <h3>Freelancer</h3>
-              <ul>
-                <li><Link href="/freelancer/dashboard">Dashboard</Link></li>
-                <li><Link href="/freelancer/my-jobs">My Jobs</Link></li>
-                <li><Link href="/freelancer/projects">Projects</Link></li>
-                <li><Link href="/freelancer/portfolio">Portfolio</Link></li>
-                <li><Link href="/freelancer/analytics">Analytics</Link></li>
-                <li><Link href="/freelancer/wallet">Wallet</Link></li>
-                <li><Link href="/freelancer/reviews">Reviews</Link></li>
-                <li><Link href="/freelancer/settings">Settings</Link></li>
-              </ul>
-            </div>
-            <div className="Home-directory-section">
-              <h3>Client</h3>
-              <ul>
-                <li><Link href="/client/dashboard">Dashboard</Link></li>
-                <li><Link href="/client/post-job">Post Job</Link></li>
-                <li><Link href="/client/hire">Hire</Link></li>
-                <li><Link href="/client/projects">Projects</Link></li>
-                <li><Link href="/client/reviews">Reviews</Link></li>
-                <li><Link href="/client/wallet">Wallet</Link></li>
-                <li><Link href="/client/settings">Settings</Link></li>
-              </ul>
-            </div>
-            <div className="Home-directory-section">
-              <h3>AI Tools</h3>
-              <ul>
-                <li><Link href="/ai/chatbot">AI Chatbot</Link></li>
-                <li><Link href="/ai/price-estimator">Price Estimator</Link></li>
-                <li><Link href="/ai/fraud-check">Fraud Check</Link></li>
-              </ul>
-            </div>
-            <div className="Home-directory-section">
-              <h3>Admin</h3>
-              <ul>
-                <li><Link href="/admin/dashboard">Admin Dashboard</Link></li>
-                <li><Link href="/admin/users">Users</Link></li>
-                <li><Link href="/admin/projects">Projects</Link></li>
-                <li><Link href="/admin/payments">Payments</Link></li>
-                <li><Link href="/admin/ai-monitoring">AI Monitoring</Link></li>
-                <li><Link href="/admin/support">Support</Link></li>
-                <li><Link href="/admin/settings">Settings</Link></li>
-              </ul>
-            </div>
-            <div className="Home-directory-section">
-              <h3>Information</h3>
-              <ul>
-                <li><Link href="/about">About</Link></li>
-                <li><Link href="/how-it-works">How It Works</Link></li>
-                <li><Link href="/pricing">Pricing</Link></li>
-                <li><Link href="/blog">Blog</Link></li>
-                <li><Link href="/contact">Contact</Link></li>
-                <li><Link href="/faq">FAQ</Link></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Features />
+      <HowItWorks />
+      <Testimonials />
+      <CTA theme={theme} />
 
       {/* Footer */}
       <footer className="Home-footer">

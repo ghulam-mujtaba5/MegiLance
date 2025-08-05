@@ -14,6 +14,7 @@ export interface NavItem {
   href: string;
   label: string;
   icon: IconType;
+  active?: boolean;
 }
 
 export interface SidebarNavProps {

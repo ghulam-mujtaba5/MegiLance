@@ -1,0 +1,22 @@
+.Home-cta-section {
+  padding: 5rem 1rem;
+  text-align: center;
+}
+
+.Home-cta-content {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.Home-cta-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+
+.Home-cta-subtitle {
+  font-size: 1.125rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}

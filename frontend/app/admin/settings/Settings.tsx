@@ -1,7 +1,7 @@
 // @AI-HINT: This is the platform Settings page for admins. All styles are per-component only.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import './Settings.common.css';
@@ -12,40 +12,79 @@ interface SettingsProps {
   theme?: 'light' | 'dark';
 }
 
+interface SettingsData {
+  general: { platformName: string; supportEmail: string; enableRegistrations: boolean; };
+  fees: { freelancerServiceFee: number; clientProcessingFee: number; fixedProcessingFee: number; };
+  integrations: { stripeApiKey: string; googleAnalyticsId: string; };
+}
+
 type Tab = 'general' | 'fees' | 'integrations';
 
 const Settings: React.FC<SettingsProps> = ({ theme = 'light' }) => {
   const [activeTab, setActiveTab] = useState<Tab>('general');
+  const [settings, setSettings] = useState<SettingsData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/admin/settings');
+        if (!response.ok) {
+          throw new Error('Failed to fetch settings');
+        }
+        const data: SettingsData = await response.json();
+        setSettings(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   const renderContent = () => {
+    if (loading) {
+      return <div>Loading settings...</div>;
+    }
+    if (error) {
+      return <div>Error: {error}</div>;
+    }
+    if (!settings) {
+      return <div>No settings found.</div>;
+    }
+
     switch (activeTab) {
       case 'general':
         return (
           <div className="Settings-form">
-            <Input theme={theme} label="Platform Name" type="text" defaultValue="MegiLance" />
-            <Input theme={theme} label="Support Email" type="email" defaultValue="support@megilance.com" />
+            <Input label="Platform Name" type="text" defaultValue={settings.general.platformName} />
+            <Input label="Support Email" type="email" defaultValue={settings.general.supportEmail} />
             <label className="Checkbox-label">
-              <input type="checkbox" defaultChecked />
+              <input type="checkbox" defaultChecked={settings.general.enableRegistrations} />
               Enable new user registrations.
             </label>
-            <Button theme={theme} variant="primary">Save General Settings</Button>
+            <Button variant="primary">Save General Settings</Button>
           </div>
         );
       case 'fees':
         return (
           <div className="Settings-form">
-            <Input theme={theme} label="Freelancer Service Fee (%)" type="number" defaultValue="10" />
-            <Input theme={theme} label="Client Payment Processing Fee (%)" type="number" defaultValue="2.9" />
-            <Input theme={theme} label="Fixed Processing Fee (USD)" type="number" defaultValue="0.30" />
-            <Button theme={theme} variant="primary">Save Fee Structure</Button>
+            <Input label="Freelancer Service Fee (%)" type="number" defaultValue={settings.fees.freelancerServiceFee} />
+            <Input label="Client Payment Processing Fee (%)" type="number" defaultValue={settings.fees.clientProcessingFee} />
+            <Input label="Fixed Processing Fee (USD)" type="number" defaultValue={settings.fees.fixedProcessingFee} />
+            <Button variant="primary">Save Fee Structure</Button>
           </div>
         );
       case 'integrations':
         return (
           <div className="Settings-form">
-            <Input theme={theme} label="Stripe API Key" type="password" defaultValue="pk_test_1234567890"/>
-            <Input theme={theme} label="Google Analytics ID" type="text" defaultValue="UA-12345678-1" />
-            <Button theme={theme} variant="primary">Save Integrations</Button>
+            <Input label="Stripe API Key" type="password" defaultValue={settings.integrations.stripeApiKey}/>
+            <Input label="Google Analytics ID" type="text" defaultValue={settings.integrations.googleAnalyticsId} />
+            <Button variant="primary">Save Integrations</Button>
           </div>
         );
       default:

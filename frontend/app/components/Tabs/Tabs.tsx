@@ -32,13 +32,13 @@ const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ children, index }, 
   const { selectedIndex, setSelectedIndex, tabsId } = useTabs();
   const isSelected = selectedIndex === index;
   return (
-    // eslint-disable-next-line jsx-a11y/role-supports-aria-props -- False positive. 'aria-selected' is valid on 'tab'.
+        // eslint-disable-next-line jsx-a11y/role-supports-aria-props -- False positive. 'aria-selected' is valid on 'tab'.
     <button
       ref={ref}
       role="tab"
       id={`${tabsId}-tab-${index}`}
       aria-controls={`${tabsId}-panel-${index}`}
-      aria-selected={isSelected}
+      aria-selected={`${isSelected}`}
       tabIndex={isSelected ? 0 : -1}
       className={`Tabs-tab ${isSelected ? 'Tabs-tab--selected' : ''}`}
       onClick={() => setSelectedIndex(index!)}
@@ -67,9 +67,9 @@ const TabsList: FC<TabsListProps> = ({ children }) => {
   };
 
   return (
-    <div role="tablist" className="Tabs-list" onKeyDown={handleKeyDown}>
+    <div role="tablist" aria-orientation="horizontal" className="Tabs-list" onKeyDown={handleKeyDown}>
       {Children.map(children, (child, index) => {
-        if (isValidElement(child) && child.type === Tab) {
+        if (isValidElement(child) && (child.type === Tab || (child.type as any).displayName === 'Tab')) {
           // This is a safe cast because we are checking the type of the child.
           // The type error is a known issue with forwardRef and cloneElement in TypeScript.
           return cloneElement(child as React.ReactElement<TabProps & { ref: React.Ref<HTMLButtonElement> }>, {

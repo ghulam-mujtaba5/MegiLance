@@ -1,7 +1,7 @@
 // @AI-HINT: This is the User Management page for admins to view, search, and manage users. All styles are per-component only.
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
@@ -13,16 +13,48 @@ interface UsersProps {
   theme?: 'light' | 'dark';
 }
 
-// Mock data for users
-const mockUsers = [
-  { id: 'u1', name: 'Alex Johnson', email: 'alex.j@example.com', type: 'Freelancer', status: 'Active', joined: '2025-08-01' },
-  { id: 'u2', name: 'Beta Corp', email: 'contact@betacorp.com', type: 'Client', status: 'Active', joined: '2025-08-01' },
-  { id: 'u3', name: 'Sam Lee', email: 'sam.lee@example.com', type: 'Freelancer', status: 'Suspended', joined: '2025-07-28' },
-  { id: 'u4', name: 'Innovate Inc.', email: 'hello@innovate.com', type: 'Client', status: 'Active', joined: '2025-07-25' },
-  { id: 'u5', name: 'Maria Garcia', email: 'maria.g@example.com', type: 'Freelancer', status: 'Active', joined: '2025-07-22' },
-];
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    type: 'Freelancer' | 'Client';
+    status: 'Active' | 'Suspended';
+    joined: string;
+}
 
 const Users: React.FC<UsersProps> = ({ theme = 'light' }) => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/admin/users');
+        if (!response.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        const data: User[] = await response.json();
+        setUsers(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  if (loading) {
+    return <div className={`Users-status Users-status--${theme}`}>Loading users...</div>;
+  }
+
+  if (error) {
+    return <div className={`Users-status Users-status--error Users-status--${theme}`}>Error: {error}</div>;
+  }
+
   return (
     <div className={`Users Users--${theme}`}>
       <header className="Users-header">
@@ -45,7 +77,7 @@ const Users: React.FC<UsersProps> = ({ theme = 'light' }) => {
             </tr>
           </thead>
           <tbody>
-            {mockUsers.map(user => (
+            {users.map(user => (
               <tr key={user.id}>
                 <td>
                   <div className="User-info">
@@ -58,7 +90,7 @@ const Users: React.FC<UsersProps> = ({ theme = 'light' }) => {
                 </td>
                 <td>{user.type}</td>
                 <td>
-                  <span className={`status-badge status-badge--${user.status}`}>{user.status}</span>
+                  <span className={`status-badge status-badge--${user.status.toLowerCase()}`}>{user.status}</span>
                 </td>
                 <td>{user.joined}</td>
                 <td>

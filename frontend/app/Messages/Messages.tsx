@@ -2,10 +2,6 @@
 'use client';
 import React, { useState } from 'react';
 
-// Data and Types
-import { mockConversations } from './mock-data';
-import { Conversation, Message } from './types';
-
 // Modular Components
 import ConversationList from './components/ConversationList/ConversationList';
 import ChatWindow from './components/ChatWindow/ChatWindow';
@@ -17,46 +13,29 @@ import './Messages.light.css';
 import './Messages.dark.css';
 
 const Messages: React.FC = () => {
-  const [conversations, setConversations] = useState<Conversation[]>(mockConversations);
-  const [selectedConversationId, setSelectedConversationId] = useState<number | null>(conversations[0]?.id || null);
+  const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
+  const [refreshKey, setRefreshKey] = useState<number>(0);
 
-  const handleSendMessage = (messageText: string) => {
-    if (!selectedConversationId) return;
-
-    const newMessage: Message = {
-      id: Date.now(),
-      text: messageText,
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      sender: 'user',
-    };
-
-    const updatedConversations = conversations.map(convo => {
-      if (convo.id === selectedConversationId) {
-        return {
-          ...convo,
-          messages: [...convo.messages, newMessage],
-          lastMessage: messageText,
-          lastMessageTimestamp: newMessage.timestamp,
-        };
-      }
-      return convo;
-    });
-
-    setConversations(updatedConversations);
+  const handleMessageSent = () => {
+    setRefreshKey(prevKey => prevKey + 1);
   };
-
-  const selectedConversation = conversations.find(c => c.id === selectedConversationId) || null;
 
   return (
     <div className="Messages-container">
       <ConversationList 
-        conversations={conversations}
         selectedConversationId={selectedConversationId}
         onSelectConversation={setSelectedConversationId}
+        refreshKey={refreshKey}
       />
       <div className="Messages-chat-area">
-        <ChatWindow conversation={selectedConversation} />
-        <MessageInput onSendMessage={handleSendMessage} />
+        <ChatWindow 
+          conversationId={selectedConversationId} 
+          refreshKey={refreshKey} 
+        />
+        <MessageInput 
+          conversationId={selectedConversationId} 
+          onMessageSent={handleMessageSent} 
+        />
       </div>
     </div>
   );

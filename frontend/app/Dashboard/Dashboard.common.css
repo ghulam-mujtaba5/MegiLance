@@ -11,8 +11,9 @@
 
 .Dashboard {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: var(--size-sidebar-width) 1fr;
+  transition: grid-template-columns var(--transition-duration-normal) var(--transition-timing-function-ease);
   background: var(--color-brand-background-light);
   font-family: var(--font-family-body);
   font-size: var(--font-size-body);
@@ -56,8 +57,11 @@
 }
 
 /* Main content area - everything except sidebar */
+.Dashboard--sidebar-collapsed {
+  grid-template-columns: var(--size-sidebar-collapsed-width) 1fr;
+}
+
 .Dashboard-main-content {
-  flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;

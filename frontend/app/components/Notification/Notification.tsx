@@ -134,9 +134,9 @@ const Notification: React.FC<NotificationProps> = ({
         <div 
           className="Notification-progress" 
           style={{
-            animationDuration: `${duration}ms`,
-            animationPlayState: isPaused ? 'paused' : 'running'
-          }}
+            '--notification-duration': `${duration}ms`,
+            '--notification-play-state': isPaused ? 'paused' : 'running'
+          } as React.CSSProperties}
         />
       )}
     </div>
