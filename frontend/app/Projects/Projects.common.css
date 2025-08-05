@@ -1,22 +1,7 @@
-/* @AI-HINT: Shared styles for Projects page. Do not use or import any global or theme CSS. */
-.Projects {
-  padding: 2rem;
-}
+/* @AI-HINT: Shared styles for the root Projects page container. This file should only contain layout styles for the main page wrapper. All other styles are in their respective component-specific files. */
 
-.Projects-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.Projects-header h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-}
-
-.Projects-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+.Projects-container {
+  padding: var(--space-6) var(--space-8);
+  height: 100%;
+  width: 100%;
 }

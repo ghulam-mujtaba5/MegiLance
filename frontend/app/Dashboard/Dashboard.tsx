@@ -1,21 +1,39 @@
-// @AI-HINT: Enterprise-grade Dashboard component for MegiLance platform. Features comprehensive metrics, activity feeds, project management, and responsive design following brand guidelines. Uses per-component CSS architecture with theme support.
-// @AI-HINT: Enterprise-grade Dashboard component for MegiLance platform. Features comprehensive metrics, activity feeds, project management, and responsive design following brand guidelines. Uses per-component CSS architecture with theme support.
+// @AI-HINT: Premium SaaS Dashboard component for MegiLance platform. This is the main dashboard interface that serves three user roles (Admin, Client, Freelancer) with investor-grade UI quality. Features comprehensive metrics, activity feeds, project management, and responsive design following exact MegiLance brand guidelines. Uses per-component CSS architecture with .common.css, .light.css, .dark.css theming. Designed to match quality standards of Linear, Vercel, GitHub, and Upwork Pro.
+
 import React from 'react';
-import Navbar, { NavItem as NavbarNavItem } from '@/app/components/Navbar/Navbar';
-import { ProfileMenuItem } from '@/app/components/ProfileMenu/ProfileMenu';
+
+// Core Layout Components
 import Sidebar from '@/app/components/Sidebar/Sidebar';
 import SidebarNav, { NavItem as SidebarNavItem } from '@/app/components/Sidebar/SidebarNav';
-import { FaBell, FaCog, FaUser, FaSignOutAlt, FaTachometerAlt, FaBriefcase, FaComments, FaCreditCard, FaCogs, FaChartBar, FaClipboardCheck, FaUsers, FaFileSignature, FaSearch, FaUniversity, FaUserEdit } from 'react-icons/fa';
-import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
+import Navbar, { NavItem as NavbarNavItem } from '@/app/components/Navbar/Navbar';
+import { ProfileMenuItem } from '@/app/components/ProfileMenu/ProfileMenu';
+
+// Modular Dashboard Components
+import DashboardHeader from './components/DashboardHeader/DashboardHeader';
+import DashboardMetrics from './components/DashboardMetrics/DashboardMetrics';
+import DashboardRecentProjects from './components/DashboardRecentProjects/DashboardRecentProjects';
+import DashboardActivityFeed from './components/DashboardActivityFeed/DashboardActivityFeed';
+
+// Data and Types
+import { mockMetrics, mockRecentProjects, mockActivityFeed } from './mock-data';
+
+// Icons
+import {
+  FaTachometerAlt, FaBriefcase, FaComments, FaCreditCard, FaUsers, FaChartBar,
+  FaClipboardCheck, FaCogs, FaUserEdit, FaFileSignature, FaUniversity, FaUser, FaSignOutAlt
+} from 'react-icons/fa';
+
+// Styles
 import './dashboard.common.css';
 import './dashboard.light.css';
 import './dashboard.dark.css';
 
 interface DashboardProps {
-  theme?: 'light' | 'dark';
+  userRole?: 'admin' | 'client' | 'freelancer';
 }
 
-const user = { name: 'Alexia Christian', email: 'alexia.c@megilance.com' };
+// Mock user and top-level navigation data
+const user = { name: 'Alexia Christian', email: 'alexia.c@megilance.com', notificationCount: 4 };
 
 const navItems: NavbarNavItem[] = [
   { label: 'Dashboard', href: '/dashboard' },
@@ -26,114 +44,77 @@ const navItems: NavbarNavItem[] = [
 
 const profileMenuItems: ProfileMenuItem[] = [
   { label: 'My Profile', href: '/profile', icon: <FaUser /> },
-  { label: 'Settings', href: '/settings', icon: <FaCog /> },
+  { label: 'Settings', href: '/settings', icon: <FaCogs /> },
   { label: 'Logout', onClick: () => alert('Logging out...'), icon: <FaSignOutAlt /> },
 ];
 
-const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
-  const sidebarNavItems: SidebarNavItem[] = [
-    { href: '/dashboard', label: 'Dashboard', icon: FaTachometerAlt },
+// Role-based sidebar navigation logic
+const getSidebarNavItems = (role: string): SidebarNavItem[] => {
+  const baseItems: SidebarNavItem[] = [
+    { href: '/dashboard', label: 'Dashboard', icon: FaTachometerAlt, active: true },
     { href: '/projects', label: 'Projects', icon: FaBriefcase },
     { href: '/messages', label: 'Messages', icon: FaComments },
     { href: '/payments', label: 'Payments', icon: FaCreditCard },
+  ];
+
+  if (role === 'admin') {
+    return [
+      ...baseItems,
+      { href: '/admin/users', label: 'User Management', icon: FaUsers },
+      { href: '/admin/analytics', label: 'Analytics', icon: FaChartBar },
+      { href: '/admin/audit', label: 'Audit Logs', icon: FaClipboardCheck },
+      { href: '/settings', label: 'Settings', icon: FaCogs },
+    ];
+  }
+
+  if (role === 'client') {
+    return [
+      ...baseItems,
+      { href: '/client/hire', label: 'Hire Freelancers', icon: FaUserEdit },
+      { href: '/client/reviews', label: 'Reviews', icon: FaFileSignature },
+      { href: '/settings', label: 'Settings', icon: FaCogs },
+    ];
+  }
+
+  // Freelancer role
+  return [
+    ...baseItems,
+    { href: '/freelancer/portfolio', label: 'Portfolio', icon: FaUniversity },
+    { href: '/freelancer/proposals', label: 'Proposals', icon: FaFileSignature },
     { href: '/settings', label: 'Settings', icon: FaCogs },
   ];
+};
 
-  const recentProjects = [
-    { id: 1, title: 'E-commerce Platform Redesign', client: 'TechCorp Inc.', status: 'In Progress', progress: 75, deadline: '2025-08-15', budget: '$5,200' },
-    { id: 2, title: 'Mobile App Development', client: 'StartupXYZ', status: 'Review', progress: 90, deadline: '2025-08-10', budget: '$3,800' },
-    { id: 3, title: 'Brand Identity Package', client: 'Creative Agency', status: 'Completed', progress: 100, deadline: '2025-08-05', budget: '$2,100' },
-  ];
-
-  const recentActivity = [
-    { id: 1, message: 'Received payment from Innovate Inc.', time: '2h ago' },
-    { id: 2, message: 'Task "Deploy to Staging" completed', time: '5h ago' },
-    { id: 3, message: 'New project "Brand Redesign" created', time: '1d ago' },
-    { id: 4, message: '@jane.doe joined the AI Dashboard team', time: '2d ago' },
-  ];
-
-  const metrics = [
-    { id: 1, label: 'Active Projects', value: '12', icon: <FaBriefcase /> },
-    { id: 2, label: 'Pending Tasks', value: '8', icon: <FaClipboardCheck /> },
-    { id: 3, label: 'Team Members', value: '24', icon: <FaUsers /> },
-    { id: 4, label: 'Revenue', value: '$45.8K', icon: <FaChartBar /> },
-  ];
+const Dashboard: React.FC<DashboardProps> = ({ userRole = 'freelancer' }) => {
+  const sidebarNavItems = getSidebarNavItems(userRole);
 
   return (
-    <div className={`Dashboard Dashboard--${theme}`}>
-      <div className="Dashboard-container">
-        <Sidebar>
-          <SidebarNav navItems={sidebarNavItems} />
-        </Sidebar>
-        
-        <div className="Dashboard-main-content">
-          <Navbar
-            navItems={navItems}
-            profileMenuItems={profileMenuItems}
+    <div className={`Dashboard Dashboard--${userRole}`}>
+      <Sidebar>
+        <SidebarNav navItems={sidebarNavItems} />
+      </Sidebar>
+      <div className="Dashboard-main-content">
+        <Navbar
+          user={user}
+          navItems={navItems}
+          profileMenuItems={profileMenuItems}
+          onSearch={(query) => alert(`Searching for: ${query}`)}
+        />
+        <main className="Dashboard-content">
+          <DashboardHeader
             userName={user.name}
-            userEmail={user.email}
+            userRole={userRole}
+            notificationCount={user.notificationCount}
           />
-          <main className="Dashboard-main">
-            <header className="Dashboard-header">
-              <div className="Dashboard-header-content">
-                <div className="Dashboard-welcome">
-                  <h2 className="Dashboard-title">Welcome back, {user.name.split(' ')[0]}!</h2>
-                  <p className="Dashboard-subtitle">Here’s the latest on your projects.</p>
-                </div>
-                <div className="Dashboard-header-actions">
-                  <button className="Dashboard-notification-btn">
-                    <span className="Dashboard-notification-icon">🔔</span>
-                    <span className="Dashboard-notification-badge">3</span>
-                  </button>
-                </div>
-              </div>
-            </header>
-
-            <div className="Dashboard-content">
-              <div className="Dashboard-metrics-grid">
-                {metrics.map(metric => (
-                  <DashboardWidget key={metric.id} icon={metric.icon} title={metric.label} value={metric.value} />
-                ))}
-              </div>
-
-              <div className="Dashboard-main-grid">
-                <DashboardWidget title="Recent Projects" actionButton={{ label: 'View All', onClick: () => alert('Viewing all projects...') }}>
-                  <div className="Dashboard-projects-list">
-                    {recentProjects.map(project => (
-                      <div key={project.id} className="Dashboard-project-item">
-                        <div className="Dashboard-project-info">
-                          <h3 className="Dashboard-project-title">{project.title}</h3>
-                          <p className="Dashboard-project-client">{project.client}</p>
-                        </div>
-                        <div className="Dashboard-project-status">
-                          <span className={`status-badge status-${project.status.toLowerCase().replace(' ', '-')}`}>{project.status}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </DashboardWidget>
-
-                <DashboardWidget title="Recent Activity" actionButton={{ label: 'View All', onClick: () => alert('Viewing all activity...') }}>
-                  <div className="Dashboard-activity-list">
-                    {recentActivity.map(item => (
-                      <div key={item.id} className="Dashboard-activity-item">
-                        <div className="Dashboard-activity-content">
-                          <p className="Dashboard-activity-message">{item.message}</p>
-                          <span className="Dashboard-activity-time">{item.time}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </DashboardWidget>
-              </div>
-            </div>
-          </main>
-        </div>
+          <DashboardMetrics metrics={mockMetrics} />
+          <div className="Dashboard-main-grid">
+            <DashboardRecentProjects projects={mockRecentProjects} />
+            <DashboardActivityFeed activities={mockActivityFeed} />
+          </div>
+        </main>
       </div>
     </div>
   );
 };
 
 export default Dashboard;
-
-

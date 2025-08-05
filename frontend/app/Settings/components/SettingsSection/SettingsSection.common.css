@@ -1,0 +1,29 @@
+/* @AI-HINT: Common styles for the SettingsSection wrapper component. */
+
+.SettingsSection {
+  padding: var(--space-6) 0;
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.SettingsSection:last-of-type {
+  border-bottom: none;
+}
+
+.SettingsSection-header {
+  margin-bottom: var(--space-5);
+}
+
+.SettingsSection-title {
+  font-family: var(--font-family-headings);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.SettingsSection-description {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  max-width: 60ch; /* Improves readability */
+}

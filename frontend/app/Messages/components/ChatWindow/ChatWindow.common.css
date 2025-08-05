@@ -1,0 +1,103 @@
+/* @AI-HINT: Common styles for the ChatWindow component. */
+
+.ChatWindow-main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ChatWindow-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.ChatWindow-header-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.ChatWindow-header-name {
+  font-family: var(--font-family-headings);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.ChatWindow-header-status {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.ChatWindow-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Individual Chat Message Styling */
+.ChatMessage {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+}
+
+.ChatMessage-bubble {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--border-radius-xl);
+}
+
+.ChatMessage-text {
+  margin: 0;
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+}
+
+.ChatMessage-timestamp {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin-top: var(--space-1);
+}
+
+/* Message alignment */
+.ChatMessage--incoming {
+  align-items: flex-start;
+}
+
+.ChatMessage--outgoing {
+  align-items: flex-end;
+}
+
+.ChatMessage--outgoing .ChatMessage-timestamp {
+  text-align: right;
+}
+
+/* Placeholder for when no chat is selected */
+.ChatWindow-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+.ChatWindow-placeholder h2 {
+  font-family: var(--font-family-headings);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.ChatWindow-placeholder p {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}

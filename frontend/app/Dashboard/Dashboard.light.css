@@ -1,22 +1,64 @@
 /* @AI-HINT: Light theme styles for Dashboard following MegiLance brand guidelines. Professional, clean styling with proper contrast and accessibility. */
+/* Premium SaaS Dashboard Light Theme - Investor-grade styling */
+/* @AI-HINT: Light theme for MegiLance dashboard with premium colors, shadows, and micro-interactions matching Linear/Vercel quality standards */
 
-.Dashboard--light {
-  --dashboard-bg-primary: var(--color-brand-white);
+.Dashboard {
+  /* Premium light theme color palette */
+  --dashboard-bg-primary: var(--color-brand-background-light);
   --dashboard-bg-secondary: var(--color-brand-gray-50);
-  --dashboard-text-primary: var(--color-brand-gray-900);
-  --dashboard-text-secondary: var(--color-brand-gray-600);
-  --dashboard-text-title: var(--color-brand-gray-900);
+  --dashboard-text-primary: var(--color-brand-text-main);
+  --dashboard-text-secondary: var(--color-brand-text-secondary);
   --dashboard-border-color: var(--color-brand-gray-200);
-  --dashboard-border-color-hover: var(--color-brand-gray-300);
   --dashboard-card-bg: var(--color-brand-white);
-  --dashboard-card-bg-hover: var(--color-brand-gray-50);
-  --dashboard-icon-color: var(--color-brand-gray-500);
+  --dashboard-hover-bg: var(--color-brand-gray-50);
+  
+  /* Premium light theme specific styling */
+  background: linear-gradient(135deg, 
+    var(--color-brand-background-light) 0%, 
+    var(--color-brand-gray-50) 100%);
+  
+  /* Light theme shadows */
+  --dashboard-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --dashboard-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* Light theme borders */
+  --dashboard-border-light: var(--color-brand-gray-100);
+  --dashboard-border-medium: var(--color-brand-gray-200);
+  --dashboard-border-strong: var(--color-brand-gray-300);
+}
 
-  /* Status Badges */
-  --dashboard-status-inprogress-bg: var(--color-brand-primary-100);
-  --dashboard-status-inprogress-text: var(--color-brand-primary-800);
-  --dashboard-status-review-bg: var(--color-brand-warning-100);
-  --dashboard-status-review-text: var(--color-brand-warning-800);
-  --dashboard-status-completed-bg: var(--color-brand-success-100);
-  --dashboard-status-completed-text: var(--color-brand-success-800);
+/* Status Badges */
+.Dashboard .status-badge--completed {
+  background: linear-gradient(135deg, 
+    var(--color-brand-primary-50) 0%, 
+    var(--color-brand-primary-100) 100%);
+  color: var(--color-brand-primary-700);
+  border: 1px solid var(--color-brand-primary-200);
+  box-shadow: 0 1px 2px 0 rgba(69, 115, 223, 0.1);
+  
+  /* Premium badge styling */
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.Dashboard .status-badge--active {
+  background: linear-gradient(135deg, 
+    var(--color-brand-success-50) 0%, 
+    var(--color-brand-success-100) 100%);
+  color: var(--color-brand-success-700);
+  border: 1px solid var(--color-brand-success-200);
+  box-shadow: 0 1px 2px 0 rgba(39, 174, 96, 0.1);
+  
+  /* Premium badge styling */
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }

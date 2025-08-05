@@ -1,0 +1,67 @@
+/*
+@AI-HINT: Common styles for the DashboardActivityFeed component. Defines a clean, vertical layout for activity items, ensuring readability and a premium, uncluttered feel.
+*/
+
+.DashboardActivityFeed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.ActivityItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--dashboard-border-color);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.ActivityItem:last-child {
+  border-bottom: none;
+}
+
+.ActivityItem-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ActivityItem-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ActivityItem-message {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--dashboard-text-primary);
+}
+
+.ActivityItem-message strong {
+  font-weight: 600;
+  color: var(--dashboard-text-emphasis);
+}
+
+.ActivityItem-time {
+  font-size: var(--font-size-xs);
+  color: var(--dashboard-text-secondary);
+  margin-top: 4px;
+}
+
+.ActivityItem-amount {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-success);
+  white-space: nowrap;
+  margin-left: auto;
+  padding-left: 16px;
+  align-self: center;
+}

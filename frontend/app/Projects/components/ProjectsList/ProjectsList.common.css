@@ -1,0 +1,7 @@
+/* @AI-HINT: Common styles for the ProjectsList, defining the grid layout for the project cards. */
+
+.ProjectsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-6);
+}

@@ -1,0 +1,76 @@
+/* @AI-HINT: Common styles for the DashboardMetrics component. Defines a responsive grid for displaying KPIs and styles the individual metric cards for a premium, data-forward look. */
+
+.DashboardMetrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.DashboardMetricCard {
+  background: var(--dashboard-card-bg);
+  border: 1px solid var(--dashboard-border-color);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transition: all var(--transition-duration-normal) ease-in-out;
+  box-shadow: var(--dashboard-shadow-sm);
+}
+
+.DashboardMetricCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--dashboard-shadow-md);
+  border-color: var(--color-brand-primary-300);
+}
+
+.MetricCard-icon-wrapper {
+  flex-shrink: 0;
+  background: var(--color-brand-primary-100);
+  color: var(--color-brand-primary-500);
+  border-radius: var(--border-radius-lg);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.MetricCard-icon {
+  font-size: 24px;
+}
+
+.MetricCard-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.MetricCard-label {
+  font-size: var(--font-size-sm);
+  color: var(--dashboard-text-secondary);
+  margin-bottom: var(--spacing-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.MetricCard-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--dashboard-text-primary);
+  line-height: 1.1;
+}
+
+.MetricCard-change {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin-top: var(--spacing-xs);
+}
+
+.MetricCard-change--increase {
+  color: var(--color-brand-success-500);
+}
+
+.MetricCard-change--decrease {
+  color: var(--color-brand-danger-500);
+}

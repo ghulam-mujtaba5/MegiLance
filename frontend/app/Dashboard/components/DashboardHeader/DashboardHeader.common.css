@@ -1,0 +1,74 @@
+/* @AI-HINT: Common styles for the DashboardHeader component. This file contains the core layout, typography, and structural styles for the header, ensuring a consistent look and feel across different themes. */
+
+.DashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-6);
+  padding: var(--spacing-lg) 0;
+  border-bottom: 1px solid var(--dashboard-border-color);
+  margin-bottom: var(--spacing-xl);
+}
+
+.DashboardHeader-welcome {
+  flex: 1;
+}
+
+.DashboardHeader-title {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--dashboard-text-primary);
+  line-height: 1.2;
+  margin: 0 0 var(--spacing-1) 0;
+}
+
+.DashboardHeader-subtitle {
+  font-size: var(--font-size-lg);
+  margin: 0;
+  color: var(--dashboard-text-secondary);
+  font-weight: var(--font-weight-normal);
+}
+
+.DashboardHeader-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.DashboardHeader-notification-btn {
+  position: relative;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-full);
+  padding: var(--spacing-3);
+  cursor: pointer;
+  color: var(--dashboard-text-secondary);
+  transition: all var(--transition-duration-fast) ease-in-out;
+}
+
+.DashboardHeader-notification-btn:hover {
+  background-color: var(--dashboard-hover-bg);
+  color: var(--dashboard-text-primary);
+}
+
+.DashboardHeader-notification-icon {
+  font-size: var(--font-size-xl);
+}
+
+.DashboardHeader-notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--color-brand-danger-500);
+  color: var(--color-brand-white);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  height: 18px;
+  width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-full);
+  border: 2px solid var(--dashboard-bg-primary);
+}

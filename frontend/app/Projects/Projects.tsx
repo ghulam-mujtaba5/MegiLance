@@ -1,58 +1,29 @@
-// @AI-HINT: This is the Projects page root component. All styles are per-component only. See Projects.common.css, Projects.light.css, and Projects.dark.css for theming.
+// @AI-HINT: This is the root component for the Projects page. It assembles the modular sub-components like ProjectsHeader and ProjectsList to construct the full page view, following our per-component architecture.
+
 import React from 'react';
-import ProjectCard from '../components/ProjectCard/ProjectCard';
+
+// Modular Components
+import ProjectsHeader from './components/ProjectsHeader/ProjectsHeader';
+import ProjectsList from './components/ProjectsList/ProjectsList';
+
+// Data
+import { mockProjects } from './mock-data';
+
+// Styles
 import './Projects.common.css';
 import './Projects.light.css';
 import './Projects.dark.css';
 
-interface ProjectsProps {}
-
-const Projects: React.FC<ProjectsProps> = () => {
-  const mockProjects = [
-    {
-      title: 'E-commerce Platform Redesign',
-      client: 'Global Retail Inc.',
-      budget: '$25,000',
-      status: 'active' as const,
-    },
-    {
-      title: 'Mobile App Development',
-      client: 'Startup Hub',
-      budget: '$15,000',
-      status: 'completed' as const,
-    },
-    {
-      title: 'Marketing Website',
-      client: 'Creative Agency',
-      budget: '$8,000',
-      status: 'pending' as const,
-    },
-    {
-      title: 'Data Analytics Dashboard',
-      client: 'Tech Solutions LLC',
-      budget: '$18,000',
-      status: 'active' as const,
-    },
-  ];
+const Projects: React.FC = () => {
+  const handleAddProject = () => {
+    // Placeholder for add project functionality
+    alert('Opening form to add a new project...');
+  };
 
   return (
-    <div className={`Projects`}>
-      <div className="Projects-header">
-        <h1>My Projects</h1>
-        {/* Add Project Button will go here */}
-      </div>
-      <div className="Projects-list">
-        {mockProjects.map((project, index) => (
-          <ProjectCard
-            key={index}
-
-            title={project.title}
-            client={project.client}
-            budget={project.budget}
-            status={project.status}
-          />
-        ))}
-      </div>
+    <div className="Projects-container">
+      <ProjectsHeader onAddProject={handleAddProject} />
+      <ProjectsList projects={mockProjects} />
     </div>
   );
 };

@@ -1,24 +1,73 @@
-/* @AI-HINT: Dark theme styles for Dashboard following MegiLance brand guidelines. Professional dark mode with proper contrast, accessibility, and visual hierarchy. */
+/* Premium SaaS Dashboard Dark Theme - Sophisticated dark mode with enhanced depth */
+/* @AI-HINT: Dark theme for MegiLance dashboard with premium dark colors, enhanced shadows, and sophisticated styling matching high-end SaaS products like Linear, Vercel, GitHub dark modes */
 
 .Dashboard--dark {
-  --dashboard-bg-primary: var(--color-brand-gray-900);
-  --dashboard-bg-secondary: var(--color-brand-gray-800);
-  --dashboard-text-primary: var(--color-brand-gray-100);
+  /* Premium dark theme color palette */
+  --dashboard-bg-primary: var(--color-brand-background-dark);
+  --dashboard-bg-secondary: var(--color-brand-gray-900);
+  --dashboard-text-primary: var(--color-brand-white);
   --dashboard-text-secondary: var(--color-brand-gray-400);
-  --dashboard-text-title: var(--color-brand-white);
   --dashboard-border-color: var(--color-brand-gray-700);
-  --dashboard-border-color-hover: var(--color-brand-gray-600);
   --dashboard-card-bg: var(--color-brand-gray-800);
-  --dashboard-card-bg-hover: var(--color-brand-gray-700);
-  --dashboard-icon-color: var(--color-brand-gray-300);
-
-  /* Status Badges */
-  --dashboard-status-inprogress-bg: var(--color-brand-blue-900);
-  --dashboard-status-inprogress-text: var(--color-brand-blue-300);
-  --dashboard-status-review-bg: var(--color-brand-amber-900);
-  --dashboard-status-review-text: var(--color-brand-amber-300);
-  --dashboard-status-completed-bg: var(--color-brand-green-900);
-  --dashboard-status-completed-text: var(--color-brand-green-300);
+  --dashboard-hover-bg: var(--color-brand-gray-700);
+  
+  /* Premium dark theme specific styling */
+  background: linear-gradient(135deg, 
+    var(--color-brand-background-dark) 0%, 
+    var(--color-brand-gray-900) 100%);
+  
+  /* Enhanced dark theme shadows for depth */
+  --dashboard-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --dashboard-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  
+  /* Dark theme borders with subtle glow */
+  --dashboard-border-light: var(--color-brand-gray-800);
+  --dashboard-border-medium: var(--color-brand-gray-700);
+  --dashboard-border-strong: var(--color-brand-gray-600);
+  
+  /* Dark theme backdrop effect */
+  &::before {
+    background: linear-gradient(135deg, 
+      rgba(69, 115, 223, 0.05) 0%, 
+      rgba(255, 152, 0, 0.03) 50%, 
+      rgba(39, 174, 96, 0.05) 100%);
+  }
+  
+  /* Enhanced card styling for dark mode */
+  .Dashboard-section {
+    background: var(--color-brand-gray-800);
+    border-color: var(--color-brand-gray-700);
+    box-shadow: 
+      0 1px 3px 0 rgba(0, 0, 0, 0.3),
+      0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    
+    &:hover {
+      background: var(--color-brand-gray-750);
+      border-color: var(--color-brand-primary-600);
+      box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.4),
+        0 2px 4px -1px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(69, 115, 223, 0.2);
+    }
+  }
+  
+  /* Premium project cards for dark mode */
+  .Dashboard-project-card {
+    background: var(--color-brand-gray-800);
+    border-color: var(--color-brand-gray-700);
+    box-shadow: 
+      0 1px 3px 0 rgba(0, 0, 0, 0.3),
+      0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    
+    &:hover {
+      background: var(--color-brand-gray-750);
+      box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.4),
+        0 2px 4px -1px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(69, 115, 223, 0.3);
+    }
+  }
 }
 
 .Dashboard--dark .Dashboard-activity {

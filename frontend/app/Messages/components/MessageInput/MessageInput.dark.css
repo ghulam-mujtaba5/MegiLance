@@ -1,0 +1,10 @@
+/* @AI-HINT: Dark theme styles for the MessageInput component. */
+
+.MessageInput-input:focus {
+  border-color: var(--color-brand-primary-400);
+  box-shadow: 0 0 0 3px var(--color-brand-primary-900);
+}
+
+.MessageInput-button {
+    color: var(--color-gray-900);
+}

@@ -1,0 +1,10 @@
+/* @AI-HINT: Light theme styles for DashboardMetrics. Specific overrides for the light theme are placed here. */
+
+.DashboardMetricCard {
+  /* In light mode, we might want a slightly more subtle background for the icon */
+  --icon-bg: var(--color-brand-primary-50);
+}
+
+.MetricCard-icon-wrapper {
+  background-color: var(--icon-bg);
+}

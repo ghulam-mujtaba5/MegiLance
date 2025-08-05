@@ -1,0 +1,163 @@
+/* @AI-HINT: Common styles for the DashboardRecentProjects component. Defines the layout and styling for individual project cards, including progress bars and status indicators, to ensure a premium, at-a-glance view of project health. */
+
+.DashboardSection {
+  background: var(--dashboard-card-bg);
+  border: 1px solid var(--dashboard-border-color);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--dashboard-shadow-sm);
+  transition: all var(--transition-duration-normal) ease-in-out;
+}
+
+.DashboardSection:hover {
+    box-shadow: var(--dashboard-shadow-md);
+}
+
+.DashboardSection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--dashboard-border-color);
+}
+
+.DashboardSection-header h2 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--dashboard-text-primary);
+  margin: 0;
+}
+
+.DashboardSection-view-all {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand-primary-500);
+  text-decoration: none;
+  transition: color var(--transition-duration-fast) ease-in-out;
+}
+
+.DashboardSection-view-all:hover {
+  color: var(--color-brand-primary-600);
+  text-decoration: underline;
+}
+
+.DashboardRecentProjects-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.ProjectCard {
+  background: var(--dashboard-bg-primary);
+  border: 1px solid var(--dashboard-border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  transition: all var(--transition-duration-normal) ease-in-out;
+  border-left: 4px solid var(--dashboard-border-color);
+}
+
+.ProjectCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--dashboard-shadow-sm);
+  border-color: var(--color-brand-primary-300);
+}
+
+.ProjectCard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.ProjectCard-title {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--dashboard-text-primary);
+  margin: 0;
+}
+
+.ProjectCard-status {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ProjectCard-client {
+  font-size: var(--font-size-sm);
+  color: var(--dashboard-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.ProjectCard-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.ProjectCard-progress-bar {
+  flex-grow: 1;
+  height: 8px;
+  background-color: var(--dashboard-bg-secondary);
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+}
+
+.ProjectCard-progress-fill {
+  width: var(--progress-width, 0%);
+  height: 100%;
+  background-color: var(--color-brand-primary-500);
+  border-radius: var(--border-radius-full);
+  transition: width 0.5s ease-in-out;
+}
+
+.ProjectCard-progress-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--dashboard-text-secondary);
+}
+
+.ProjectCard-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--dashboard-text-secondary);
+}
+
+/* Status-specific styles */
+.ProjectCard.status--in-progress {
+  border-left-color: var(--color-brand-primary-500);
+}
+.ProjectCard.status--review {
+  border-left-color: var(--color-brand-warning-500);
+}
+.ProjectCard.status--completed {
+  border-left-color: var(--color-brand-success-500);
+}
+.ProjectCard.status--overdue {
+  border-left-color: var(--color-brand-danger-500);
+}
+
+.ProjectCard-status.status--in-progress {
+  color: var(--color-brand-primary-600);
+  background-color: var(--color-brand-primary-100);
+}
+.ProjectCard-status.status--review {
+  color: var(--color-brand-warning-600);
+  background-color: var(--color-brand-warning-100);
+}
+.ProjectCard-status.status--completed {
+  color: var(--color-brand-success-600);
+  background-color: var(--color-brand-success-100);
+}
+.ProjectCard-status.status--overdue {
+  color: var(--color-brand-danger-600);
+  background-color: var(--color-brand-danger-100);
+}

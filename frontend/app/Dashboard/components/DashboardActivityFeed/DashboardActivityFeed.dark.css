@@ -1,0 +1,33 @@
+/*
+@AI-HINT: Dark theme styles for the DashboardActivityFeed. This file adjusts the activity icon colors for optimal contrast and visual appeal in dark mode, ensuring a consistent, premium user experience.
+*/
+
+.ActivityItem-icon--new_project {
+  background-color: var(--color-brand-primary-900);
+  color: var(--color-brand-primary-200);
+}
+
+.ActivityItem-icon--new_client {
+  background-color: var(--color-brand-accent-900);
+  color: var(--color-brand-accent-200);
+}
+
+.ActivityItem-icon--project_milestone {
+  background-color: var(--color-brand-success-900);
+  color: var(--color-brand-success-200);
+}
+
+.ActivityItem-icon--new_message {
+  background-color: var(--color-brand-info-900);
+  color: var(--color-brand-info-200);
+}
+
+.ActivityItem-icon--payment_received {
+  background-color: var(--color-brand-success-900);
+  color: var(--color-brand-success-200);
+}
+
+.ActivityItem-icon--deadline_approaching {
+  background-color: var(--color-brand-warning-900);
+  color: var(--color-brand-warning-200);
+}

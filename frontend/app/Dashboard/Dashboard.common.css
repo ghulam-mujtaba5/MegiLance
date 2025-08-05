@@ -6,22 +6,53 @@
   box-sizing: border-box;
 }
 
-/* Dashboard container - main layout wrapper */
+/* Premium SaaS Dashboard - Investor-grade UI matching Linear/Vercel quality standards */
+/* @AI-HINT: This CSS creates a polished, premium dashboard experience with perfect visual hierarchy, micro-interactions, and brand-aligned styling for MegiLance's three-role system (Admin, Client, Freelancer) */
+
 .Dashboard {
-  display: flex;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-brand-background-light);
   font-family: var(--font-family-body);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  overflow: hidden;
-  background-color: var(--dashboard-bg-primary);
-  color: var(--dashboard-text-primary);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--color-brand-text-main);
+  position: relative;
+  overflow-x: hidden;
+  
+  /* Premium backdrop blur effect for modern SaaS feel */
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(69, 115, 223, 0.02) 0%, 
+      rgba(255, 152, 0, 0.01) 50%, 
+      rgba(39, 174, 96, 0.02) 100%);
+    pointer-events: none;
+    z-index: -1;
+  }
 }
 
 .Dashboard-container {
   display: flex;
-  width: 100%;
-  min-height: 100vh;
+  flex: 1;
+  height: calc(100vh - var(--navbar-height, 64px));
+  position: relative;
+  
+  /* Premium container with subtle depth */
+  background: var(--color-brand-background-light);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  box-shadow: 
+    0 -1px 0 0 var(--color-brand-gray-200),
+    0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  
+  /* Smooth transitions for premium feel */
+  transition: all var(--transition-duration-normal) var(--transition-timing-ease);
 }
 
 /* Main content area - everything except sidebar */
@@ -29,196 +60,57 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   overflow: hidden;
+  padding: var(--spacing-xl) var(--spacing-2xl);
+  gap: var(--spacing-xl);
+  
+  /* Premium main content area with perfect spacing */
+  background: var(--color-brand-background-light);
+  position: relative;
+  
+  /* Subtle grid pattern for premium SaaS feel */
+  background-image: 
+    radial-gradient(circle at 1px 1px, var(--color-brand-gray-100) 1px, transparent 0);
+  background-size: 24px 24px;
+  background-position: 0 0;
+  
+  /* Smooth scrolling for better UX */
+  scroll-behavior: smooth;
+  overflow-y: auto;
+  
+  /* Custom scrollbar for premium feel */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: var(--color-brand-gray-100);
+    border-radius: var(--border-radius-full);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-brand-gray-300);
+    border-radius: var(--border-radius-full);
+    transition: background var(--transition-duration-fast) var(--transition-timing-ease);
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-primary-500);
+  }
 }
 
 /* Main dashboard content */
-.Dashboard-main {
-  flex: 1;
-  padding: var(--spacing-8);
-  overflow-y: auto;
-  background-color: var(--dashboard-bg-secondary);
-}
-
-/* Dashboard header */
-.Dashboard-header {
-  margin-bottom: var(--spacing-8);
-}
-
-.Dashboard-header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--spacing-6);
-}
-
-.Dashboard-welcome {
-  flex: 1;
-}
-
-.Dashboard-title {
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  margin: 0 0 var(--spacing-2) 0;
-  color: var(--dashboard-text-title);
-  line-height: 1.2;
-}
-
-.Dashboard-subtitle {
-  font-size: var(--font-size-lg);
-  margin: 0;
-  color: var(--dashboard-text-secondary);
-  font-weight: var(--font-weight-normal);
-}
-
-.Dashboard-header-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-}
-
-.Dashboard-notification-btn {
-  position: relative;
-  background: var(--dashboard-card-bg);
-  border: 1px solid var(--dashboard-border-color);
-  border-radius: var(--border-radius-large);
-  padding: var(--spacing-3);
-  cursor: pointer;
-  transition: var(--transition-all-fast);
-  box-shadow: var(--shadow-sm);
-}
-
-.Dashboard-notification-btn:hover {
-  background: var(--dashboard-card-bg-hover);
-  border-color: var(--dashboard-border-color-hover);
-  box-shadow: var(--shadow-md);
-}
-
-.Dashboard-notification-icon {
-  font-size: var(--font-size-xl);
-  color: var(--dashboard-icon-color);
-}
-
-.Dashboard-notification-badge {
-  position: absolute;
-  top: calc(var(--spacing-1) * -1);
-  right: calc(var(--spacing-1) * -1);
-  background: var(--color-brand-danger-500);
-  color: var(--color-brand-white);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  padding: var(--spacing-1) var(--spacing-2);
-  border-radius: var(--border-radius-full);
-  min-width: var(--spacing-5);
-  text-align: center;
-  line-height: 1;
-}
-
-/* Dashboard content grid */
 .Dashboard-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8);
+  flex: 1;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  
+  /* Remove old styling - content now flows naturally in main-content */
 }
 
-.Dashboard-metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-6);
-  margin-bottom: var(--spacing-6);
-}
-
-.Dashboard-main-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-8);
-}
-
-/* Recent Projects & Activity Lists */
-.Dashboard-projects-list, .Dashboard-activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
-}
-
-.Dashboard-project-item, .Dashboard-activity-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-  padding: var(--spacing-4);
-  border-radius: var(--border-radius-large);
-  transition: var(--transition-all-fast);
-  border: 1px solid transparent;
-}
-
-.Dashboard-project-item:hover, .Dashboard-activity-item:hover {
-  background-color: var(--dashboard-card-bg-hover);
-  border-color: var(--dashboard-border-color);
-  box-shadow: var(--shadow-sm);
-}
-
-
-
-.Dashboard-project-info {
-  flex-grow: 1;
-}
-
-.Dashboard-project-title {
-  font-weight: var(--font-weight-semibold);
-  color: var(--dashboard-text-title);
-  margin: 0 0 var(--spacing-1) 0;
-  font-size: var(--font-size-base);
-}
-
-.Dashboard-project-client {
-  font-size: var(--font-size-sm);
-  color: var(--dashboard-text-secondary);
-  margin: 0;
-}
-
-.status-badge {
-  padding: var(--spacing-1) var(--spacing-3);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  border-radius: var(--border-radius-full);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.status-badge.status-in-progress {
-  background-color: var(--dashboard-status-inprogress-bg);
-  color: var(--dashboard-status-inprogress-text);
-}
-
-.status-badge.status-review {
-  background-color: var(--dashboard-status-review-bg);
-  color: var(--dashboard-status-review-text);
-}
-
-.status-badge.status-completed {
-  background-color: var(--dashboard-status-completed-bg);
-  color: var(--dashboard-status-completed-text);
-}
-
-.Dashboard-activity-content {
-  flex-grow: 1;
-}
-
-.Dashboard-activity-message {
-  font-weight: var(--font-weight-medium);
-  color: var(--dashboard-text-primary);
-  margin: 0;
-}
-
-.Dashboard-activity-time {
-  font-size: var(--font-size-xs);
-  color: var(--dashboard-text-secondary);
-}
 
 /* Responsive design */
 @media (max-width: 1200px) {

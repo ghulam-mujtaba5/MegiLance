@@ -1,0 +1,34 @@
+/*
+@AI-HINT: Light theme styles for the DashboardActivityFeed. This file defines the colors for the activity icons, ensuring they are vibrant and visually distinct against the light background, aligning with the app's premium aesthetic.
+*/
+
+.ActivityItem-icon--new_project {
+  background-color: var(--color-brand-primary-100);
+  color: var(--color-brand-primary-600);
+}
+
+.ActivityItem-icon--new_client {
+  background-color: var(--color-brand-accent-100);
+  color: var(--color-brand-accent-600);
+}
+
+.ActivityItem-icon--project_milestone {
+  background-color: var(--color-brand-success-100);
+  color: var(--color-brand-success-600);
+}
+
+.ActivityItem-icon--new_message {
+  background-color: var(--color-brand-info-100);
+  color: var(--color-brand-info-600);
+}
+
+.ActivityItem-icon--payment_received {
+  background-color: var(--color-brand-success-100);
+  color: var(--color-brand-success-600);
+}
+
+.ActivityItem-icon--deadline_approaching {
+  background-color: var(--color-brand-warning-100);
+  color: var(--color-brand-warning-600);
+}
+
