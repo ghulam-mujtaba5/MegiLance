@@ -4,9 +4,9 @@
 import React from 'react';
 import UserAvatar from '../components/UserAvatar/UserAvatar';
 import ProjectCard from '../components/ProjectCard/ProjectCard';
-import './Profile.common.css';
-import './Profile.light.css';
-import './Profile.dark.css';
+import commonStyles from './Profile.common.module.css';
+import lightStyles from './Profile.light.module.css';
+import darkStyles from './Profile.dark.module.css';
 
 interface ProfileProps {
   theme?: 'light' | 'dark';

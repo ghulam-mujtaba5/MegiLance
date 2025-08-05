@@ -4,13 +4,12 @@
 import React, { useState, useEffect } from 'react';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
-import './Projects.common.css';
-import './Projects.light.css';
-import './Projects.dark.css';
+import commonStyles from './Projects.common.module.css';
+import lightStyles from './Projects.light.module.css';
+import darkStyles from './Projects.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface ProjectsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Project Management page for admins to view, search, and manage platform projects. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 interface Project {
   id: string;
@@ -22,7 +21,9 @@ interface Project {
   flagged: boolean;
 }
 
-const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
+const Projects: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +61,7 @@ const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
       <header className="Projects-header">
         <h1>Project Management</h1>
         <div className="Projects-actions">
-          <Input theme={theme} type="search" placeholder="Search by title or user..." />
+          <Input type="search" placeholder="Search by title or user..." />
         </div>
       </header>
 
@@ -88,8 +89,8 @@ const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
                 </td>
                 <td>
                   <div className="Table-actions">
-                    <Button theme={theme} variant="outline" size="small">Details</Button>
-                    <Button theme={theme} variant="danger-outline" size="small">Remove</Button>
+                    <Button variant="primary" size="small">Details</Button>
+                    <Button variant="secondary" size="small">Remove</Button>
                   </div>
                 </td>
               </tr>

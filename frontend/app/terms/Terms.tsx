@@ -2,9 +2,9 @@
 'use client';
 
 import React from 'react';
-import '@/app/styles/LegalPage.common.css';
-import '@/app/styles/LegalPage.light.css';
-import '@/app/styles/LegalPage.dark.css';
+import commonStyles from '@/app/styles/LegalPage.common.module.css';
+import lightStyles from '@/app/styles/LegalPage.light.module.css';
+import darkStyles from '@/app/styles/LegalPage.dark.module.css';
 
 interface TermsProps {
   theme?: 'light' | 'dark';

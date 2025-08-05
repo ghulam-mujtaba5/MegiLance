@@ -5,9 +5,9 @@
 import React, { useState, useEffect } from 'react';
 import { FaBell } from 'react-icons/fa';
 
-import './DashboardHeader.common.css';
-import './DashboardHeader.light.css';
-import './DashboardHeader.dark.css';
+import commonStyles from './DashboardHeader.common.module.css';
+import lightStyles from './DashboardHeader.light.module.css';
+import darkStyles from './DashboardHeader.dark.module.css';
 
 interface User {
   fullName: string;
@@ -34,7 +34,12 @@ const getWelcomeMessage = (role: string) => {
   }
 };
 
+// @AI-HINT: This component renders the header for the main dashboard. It's designed to be a reusable and focused component, following premium SaaS development practices by separating concerns. It includes the welcome title, subtitle, and primary actions like notifications. Now fully theme-switchable.
+import { useTheme } from '@/app/contexts/ThemeContext';
+
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userRole, user }) => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   
   return (
     <div className="DashboardHeader">

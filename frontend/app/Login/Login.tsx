@@ -6,9 +6,12 @@ import Link from 'next/link';
 import { FaGoogle, FaGithub, FaBuilding, FaUser, FaUserTie, FaCog, FaEye, FaEyeSlash, FaShieldAlt } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import './Login.common.css';
-import './Login.light.css';
-import './Login.dark.css';
+import commonStyles from './Login.common.module.css';
+import lightStyles from './Login.light.module.css';
+import darkStyles from './Login.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
+
+// @AI-HINT: Premium SaaS Login component for MegiLance platform. Now fully theme-switchable using global theme context and per-component CSS modules.
 
 type UserRole = 'freelancer' | 'client' | 'admin';
 

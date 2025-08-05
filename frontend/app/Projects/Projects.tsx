@@ -9,9 +9,9 @@ import ProjectsList from './components/ProjectsList/ProjectsList';
 
 
 // Styles
-import './Projects.common.css';
-import './Projects.light.css';
-import './Projects.dark.css';
+import commonStyles from './Projects.common.module.css';
+import lightStyles from './Projects.light.module.css';
+import darkStyles from './Projects.dark.module.css';
 
 const Projects: React.FC = () => {
   const handleAddProject = () => {

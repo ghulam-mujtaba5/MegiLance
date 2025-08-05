@@ -4,9 +4,9 @@
 
 import React, { useState } from 'react';
 import { Send } from 'lucide-react';
-import './MessageInput.common.css';
-import './MessageInput.light.css';
-import './MessageInput.dark.css';
+import commonStyles from './MessageInput.common.module.css';
+import lightStyles from './MessageInput.light.module.css';
+import darkStyles from './MessageInput.dark.module.css';
 
 interface MessageInputProps {
   conversationId: number | null;

@@ -5,13 +5,12 @@ import React, { useState, useEffect } from 'react';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
-import './Users.common.css';
-import './Users.light.css';
-import './Users.dark.css';
+import commonStyles from './Users.common.module.css';
+import lightStyles from './Users.light.module.css';
+import darkStyles from './Users.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface UsersProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the User Management page for admins to view, search, and manage users. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 interface User {
     id: string;
@@ -22,7 +21,9 @@ interface User {
     joined: string;
 }
 
-const Users: React.FC<UsersProps> = ({ theme = 'light' }) => {
+const Users: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

@@ -16,15 +16,15 @@ import CTA from './components/CTA';
 import "./Home.common.css";
 import "./Home.light.css";
 import "./Home.dark.css";
-import "./components/Hero.common.css";
-import "./components/Hero.light.css";
-import "./components/Hero.dark.css";
-import "./components/Features.common.css";
-import "./components/Features.light.css";
-import "./components/Features.dark.css";
+import "./components/Hero.common.module.css";
+import "./components/Hero.light.module.css";
+import "./components/Hero.dark.module.css";
+import "./components/Features.common.module.css";
+import "./components/Features.light.module.css";
+import "./components/Features.dark.module.css";
 import "./components/AIShowcase.common.css";
-import "./components/AIShowcase.light.css";
-import "./components/AIShowcase.dark.css";
+import "./components/AIShowcase.light.module.css";
+import "./components/AIShowcase.dark.module.css";
 import "./components/BlockchainShowcase.common.css";
 import "./components/BlockchainShowcase.light.css";
 import "./components/BlockchainShowcase.dark.css";
@@ -67,28 +67,28 @@ const Home: React.FC = () => {
       </header>
       
       {/* Enhanced Hero Section with Animated Stats */}
-      <Hero theme={theme} />
+      <Hero />
 
       {/* Core Platform Features */}
-      <Features theme={theme} />
+      <Features />
       
       {/* AI-Powered Capabilities Showcase */}
-      <AIShowcase theme={theme} />
+      <AIShowcase />
       
       {/* Blockchain & Crypto Payment Features */}
-      <BlockchainShowcase theme={theme} />
+      <BlockchainShowcase />
       
       {/* How the Platform Works */}
-      <HowItWorks theme={theme} />
+      <HowItWorks />
       
       {/* Global Impact & Pakistani Focus */}
-      <GlobalImpact theme={theme} />
+      <GlobalImpact />
       
       {/* User Testimonials */}
-      <Testimonials theme={theme} />
+      <Testimonials />
       
       {/* Final Call-to-Action */}
-      <CTA theme={theme} />
+      <CTA />
 
       {/* Footer */}
       <footer className="Home-footer">

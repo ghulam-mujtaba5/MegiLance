@@ -1,6 +1,6 @@
 /* @AI-HINT: Light theme styles for Home following MegiLance brand guidelines. Professional, clean styling with proper contrast and accessibility. */
 
-.Home--light {
+body.light {
   --home-bg: #ffffff;
   --home-text-color: #111827;
   --home-section-bg: #f8fafc;
@@ -36,11 +36,11 @@
   --home-footer-link-hover: #f9fafb;
 }
 
-.Home--light {
+body.light {
   background: var(--home-bg);
   color: var(--home-text-color);
 }
 
-.Home--light .Home-header h1 {
+body.light .Home-header h1 {
   color: var(--home-heading-color);
 }

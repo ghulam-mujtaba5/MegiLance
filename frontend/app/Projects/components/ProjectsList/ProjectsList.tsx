@@ -4,9 +4,9 @@
 import React, { useState, useEffect } from 'react';
 import { ProjectType } from '../../types';
 import ProjectCard from '../../../components/ProjectCard/ProjectCard';
-import './ProjectsList.common.css';
-import './ProjectsList.light.css';
-import './ProjectsList.dark.css';
+import commonStyles from './ProjectsList.common.module.css';
+import lightStyles from './ProjectsList.light.module.css';
+import darkStyles from './ProjectsList.dark.module.css';
 
 const ProjectsList: React.FC = () => {
   const [projects, setProjects] = useState<ProjectType[]>([]);

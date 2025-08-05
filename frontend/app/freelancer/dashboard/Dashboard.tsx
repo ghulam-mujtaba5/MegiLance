@@ -5,15 +5,16 @@ import React from 'react';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
 import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
-import './Dashboard.common.css';
-import './Dashboard.light.css';
-import './Dashboard.dark.css';
+import commonStyles from './Dashboard.common.module.css';
+import lightStyles from './Dashboard.light.module.css';
+import darkStyles from './Dashboard.dark.module.css';
 
-interface DashboardProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Freelancer Dashboard root component. It serves as the main hub for freelancers. All styles are per-component only. Now fully theme-switchable using global theme context.
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
+const Dashboard: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   return (
     <div className={`Dashboard Dashboard--${theme}`}>
       <header className="Dashboard-header">
@@ -22,10 +23,10 @@ const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
       </header>
 
       <div className="Dashboard-widgets">
-        <DashboardWidget theme={theme} title="Active Projects" value="3" />
-        <DashboardWidget theme={theme} title="Pending Proposals" value="5" />
-        <DashboardWidget theme={theme} title="Wallet Balance" value="$1,234.56" />
-        <DashboardWidget theme={theme} title="Freelancer Rank" value="Top 10%" />
+        <DashboardWidget title="Active Projects" value="3" />
+        <DashboardWidget title="Pending Proposals" value="5" />
+        <DashboardWidget title="Wallet Balance" value="$1,234.56" />
+        <DashboardWidget title="Freelancer Rank" value="Top 10%" />
       </div>
 
       <div className="Dashboard-main-content">
@@ -33,7 +34,6 @@ const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
           <h2>Recent Job Postings</h2>
           <div className="Dashboard-project-list">
             <ProjectCard
-              theme={theme}
               title="AI Chatbot Integration"
               clientName="Innovate Inc."
               budget="$5,000"
@@ -41,7 +41,6 @@ const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
               tags={['React', 'AI', 'NLP']}
             />
             <ProjectCard
-              theme={theme}
               title="E-commerce Platform UI/UX"
               clientName="Shopify Plus Experts"
               budget="$8,000"
@@ -54,8 +53,8 @@ const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
         <section className="Dashboard-section">
           <h2>Recent Transactions</h2>
           <div className="Dashboard-transaction-list">
-            <TransactionRow theme={theme} type="payment" amount={500} date="2025-08-03" description="Milestone 1 for Project X" />
-            <TransactionRow theme={theme} type="withdrawal" amount={-200} date="2025-08-01" description="Withdrawal to bank" />
+            <TransactionRow amount="500" date="2025-08-03" description="Milestone 1 for Project X" />
+            <TransactionRow amount="-200" date="2025-08-01" description="Withdrawal to bank" />
           </div>
         </section>
       </div>

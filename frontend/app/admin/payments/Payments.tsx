@@ -3,13 +3,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Input from '@/app/components/Input/Input';
-import './Payments.common.css';
-import './Payments.light.css';
-import './Payments.dark.css';
+import commonStyles from './Payments.common.module.css';
+import lightStyles from './Payments.light.module.css';
+import darkStyles from './Payments.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface PaymentsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Payments Management page for admins to view all platform transactions. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 interface Payment {
   id: string;
@@ -21,7 +20,9 @@ interface Payment {
   status: string;
 }
 
-const Payments: React.FC<PaymentsProps> = ({ theme = 'light' }) => {
+const Payments: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

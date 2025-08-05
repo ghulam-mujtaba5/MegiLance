@@ -4,12 +4,16 @@
 
 import React from 'react';
 import { FaRobot, FaBrain, FaChartLine, FaShieldAlt, FaComments, FaDollarSign } from 'react-icons/fa';
-import './AIShowcase.common.css';
-import './AIShowcase.light.css';
-import './AIShowcase.dark.css';
+import commonStyles from './AIShowcase.common.module.css';
+import lightStyles from './AIShowcase.light.module.css';
+import darkStyles from './AIShowcase.dark.module.css';
 
-interface AIShowcaseProps { theme?: "light" | "dark"; }
-const AIShowcase: React.FC<AIShowcaseProps> = ({ theme = "light" }) => {
+// @AI-HINT: AI-powered features showcase section highlighting intelligent automation. Now fully theme-switchable using global theme context.
+import { useTheme } from '@/app/contexts/ThemeContext';
+
+const AIShowcase: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const aiFeatures = [
     {
       icon: FaBrain,

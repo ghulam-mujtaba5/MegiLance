@@ -1,6 +1,10 @@
+'use client';
 import React from 'react';
 import { FaRocket, FaShieldAlt, FaRobot, FaWallet } from 'react-icons/fa';
-import './Features.common.css';
+import { useTheme } from '../../contexts/ThemeContext';
+import commonStyles from './Features.common.module.css';
+import lightStyles from './Features.light.module.css';
+import darkStyles from './Features.dark.module.css';
 
 const features = [
   {
@@ -25,19 +29,20 @@ const features = [
   },
 ];
 
-interface FeaturesProps { theme?: "light" | "dark"; }
-const Features: React.FC<FeaturesProps> = ({ theme = "light" }) => {
+const Features: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   return (
-    <section className={`Home-features theme-${theme}`}>
-      <div className="Home-container">
-        <h2 className="Home-section-title">Why Choose MegiLance?</h2>
-        <p className="Home-section-subtitle">The platform designed for the future of freelancing.</p>
-        <div className="Home-features-grid">
+    <section className={`${commonStyles['Home-features']} ${themeStyles['Home-features']}`}>
+      <div className={commonStyles['Home-container']}>
+        <h2 className={commonStyles['Home-section-title']}>Why Choose MegiLance?</h2>
+        <p className={commonStyles['Home-section-subtitle']}>The platform designed for the future of freelancing.</p>
+        <div className={commonStyles['Home-features-grid']}>
           {features.map((feature, index) => (
-            <div key={index} className="Home-feature-card">
-              <div className="Home-feature-icon">{feature.icon}</div>
-              <h3 className="Home-feature-title">{feature.title}</h3>
-              <p className="Home-feature-description">{feature.description}</p>
+            <div key={index} className={`${commonStyles['Home-feature-card']} ${themeStyles['Home-feature-card']}`}>
+              <div className={`${commonStyles['Home-feature-icon']} ${themeStyles['Home-feature-icon']}`}>{feature.icon}</div>
+              <h3 className={`${commonStyles['Home-feature-title']} ${themeStyles['Home-feature-title']}`}>{feature.title}</h3>
+              <p className={`${commonStyles['Home-feature-description']} ${themeStyles['Home-feature-description']}`}>{feature.description}</p>
             </div>
           ))}
         </div>

@@ -4,15 +4,14 @@
 import React from 'react';
 
 import Button from '@/app/components/Button/Button';
-import './Projects.common.css';
-import './Projects.light.css';
-import './Projects.dark.css';
+import commonStyles from './Projects.common.module.css';
+import lightStyles from './Projects.light.module.css';
+import darkStyles from './Projects.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface ProjectsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the 'My Projects' page for clients to view all their job postings. All styles are per-component only. Now fully theme-switchable using global theme context.
 
-const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
+const Projects: React.FC = () => {
   // Mock data for client's projects
   const projects = [
     {
@@ -45,31 +44,30 @@ const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
     },
   ];
 
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <div className={`Projects Projects--${theme}`}>
-      <div className="Projects-container">
-        <header className="Projects-header">
+    <div className={`${commonStyles.projects} ${themeStyles.projects}`}>
+      <div className={commonStyles.container}>
+        <header className={commonStyles.header}>
           <h1>My Projects</h1>
           <p>View and manage all your job postings from one place.</p>
         </header>
 
-        <div className="Projects-grid">
+        <div className={commonStyles.grid}>
           {projects.map((project) => (
-            <div key={project.id} className={`ClientProjectCard ClientProjectCard--${theme}`}>
-              <h3 className="ClientProjectCard-title">{project.title}</h3>
-              <div className={`ClientProjectCard-status status--${project.status.replace(/\s+/g, '-')}`}>
-                {project.status}
+            <div key={project.id} className={`${commonStyles.clientProjectCard} ${themeStyles.clientProjectCard}`}>
+              <h3 className={commonStyles.clientProjectCardTitle}>{project.title}</h3>
+              <div className={`${commonStyles.clientProjectCardStatus} ${commonStyles[`status--${project.status.replace(/\s+/g, '-')}`]}`}>{project.status}</div>
+              <div className={commonStyles.clientProjectCardMeta}>
+                <span>{project.proposals} Proposals</span>
+                {project.hiredFreelancer && <span>Hired: {project.hiredFreelancer}</span>}
               </div>
-              <div className="ClientProjectCard-info">
-                <p><strong>Proposals:</strong> {project.proposals}</p>
-                {project.hiredFreelancer && <p><strong>Hired:</strong> {project.hiredFreelancer}</p>}
-              </div>
-              <div className="ClientProjectCard-actions">
-                <Button theme={theme} variant="primary" size="small">View Details</Button>
-                {project.status.includes('Proposals') && (
-                  <Button theme={theme} variant="outline" size="small">Review Proposals</Button>
-                )}
-              </div>
+              <Button variant="secondary" size="small">View Details</Button>
+              {project.status.includes('Proposals') && (
+                <Button variant="secondary" size="small">Review Proposals</Button>
+              )}
             </div>
           ))}
         </div>

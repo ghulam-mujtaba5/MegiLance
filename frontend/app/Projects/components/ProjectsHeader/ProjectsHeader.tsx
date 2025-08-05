@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { Plus } from 'lucide-react';
-import './ProjectsHeader.common.css';
-import './ProjectsHeader.light.css';
-import './ProjectsHeader.dark.css';
+import commonStyles from './ProjectsHeader.common.module.css';
+import lightStyles from './ProjectsHeader.light.module.css';
+import darkStyles from './ProjectsHeader.dark.module.css';
 
 interface ProjectsHeaderProps {
   onAddProject: () => void;

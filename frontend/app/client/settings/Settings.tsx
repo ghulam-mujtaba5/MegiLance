@@ -1,37 +1,41 @@
-// @AI-HINT: This is the Settings page for clients, featuring a tabbed interface. All styles are per-component only.
+// @AI-HINT: This is the Settings page for client account management. All styles are per-component only. Now fully theme-switchable using global theme context.
 'use client';
 
 import React, { useState } from 'react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import './Settings.common.css';
-import './Settings.light.css';
-import './Settings.dark.css';
+import commonStyles from './Settings.common.module.css';
+import lightStyles from './Settings.light.module.css';
+import darkStyles from './Settings.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
 interface SettingsProps {
-  theme?: 'light' | 'dark';
 }
 
 type Tab = 'account' | 'password' | 'notifications';
 
-const Settings: React.FC<SettingsProps> = ({ theme = 'light' }) => {
+const Settings: React.FC<SettingsProps> = () => {
+  const theme = useTheme();
   const [activeTab, setActiveTab] = useState<Tab>('account');
 
   const renderContent = () => {
     switch (activeTab) {
       case 'account':
         return (
-          <div className="Settings-form">
-            <Input theme={theme} label="Full Name" type="text" defaultValue="Emily Carter" />
-            <Input theme={theme} label="Email Address" type="email" defaultValue="emily.carter@example.com" />
-            <Input theme={theme} label="Company Name" type="text" defaultValue="Innovate Inc." />
-            <Button theme={theme} variant="primary">Save Changes</Button>
+          <div className={commonStyles['Settings-form']}>
+            <Input label="Full Name" type="text" defaultValue="Emily Carter" />
+            <Input label="Email Address" type="email" defaultValue="emily.carter@example.com" />
+            <Input label="Company Name" type="text" defaultValue="Innovate Inc." />
+            <Button variant="primary">Save Changes</Button>
           </div>
         );
       case 'password':
         return (
           <div className="Settings-form">
-            <Input theme={theme} label="Current Password" type="password" />
+            <Input label="Current Password" type="password" />
+            <Input label="New Password" type="password" />
+            <Input label="Confirm New Password" type="password" />
+            <Button variant="primary">Update Password</Button>
             <Input theme={theme} label="New Password" type="password" />
             <Input theme={theme} label="Confirm New Password" type="password" />
             <Button theme={theme} variant="primary">Update Password</Button>
@@ -52,7 +56,7 @@ const Settings: React.FC<SettingsProps> = ({ theme = 'light' }) => {
               <input type="checkbox" />
               Receive weekly platform newsletters.
             </label>
-            <Button theme={theme} variant="primary">Save Preferences</Button>
+            <Button variant="primary">Save Preferences</Button>
           </div>
         );
       default:

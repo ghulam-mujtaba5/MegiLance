@@ -6,7 +6,7 @@
 .Home-testimonials-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+
   gap: 2rem;
   margin-top: 3rem;
   text-align: left;

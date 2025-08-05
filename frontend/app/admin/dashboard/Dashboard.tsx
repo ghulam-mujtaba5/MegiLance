@@ -3,13 +3,12 @@
 
 import React, { useState, useEffect } from 'react';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
-import './Dashboard.common.css';
-import './Dashboard.light.css';
-import './Dashboard.dark.css';
+import commonStyles from './Dashboard.common.module.css';
+import lightStyles from './Dashboard.light.module.css';
+import darkStyles from './Dashboard.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface DashboardProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the main Admin Dashboard page, providing an overview of platform activity. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 interface AdminStats {
   totalUsers: number;
@@ -37,7 +36,9 @@ interface AdminDashboardData {
   flaggedProjects: FlaggedProject[];
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
+const Dashboard: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [data, setData] = useState<AdminDashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,20 +78,20 @@ const Dashboard: React.FC<DashboardProps> = ({ theme = 'light' }) => {
   const { stats, recentRegistrations, flaggedProjects } = data;
 
   return (
-    <div className={`AdminDashboard AdminDashboard--${theme}`}>
-      <header className="AdminDashboard-header">
+    <div className={`${commonStyles.adminDashboard} ${themeStyles.adminDashboard}`}>
+      <header className={commonStyles.header}>
         <h1>Admin Dashboard</h1>
       </header>
 
-      <div className="AdminDashboard-widgets">
-        <DashboardWidget theme={theme} title="Total Users" value={stats.totalUsers.toLocaleString()} />
-        <DashboardWidget theme={theme} title="Active Projects" value={stats.activeProjects.toLocaleString()} />
-        <DashboardWidget theme={theme} title="Total Transactions" value={stats.totalTransactions.toLocaleString()} />
-        <DashboardWidget theme={theme} title="Pending Support Tickets" value={stats.pendingTickets.toLocaleString()} variant="warning" />
+      <div className={commonStyles.widgets}>
+        <DashboardWidget title="Total Users" value={stats.totalUsers.toLocaleString()} />
+        <DashboardWidget title="Active Projects" value={stats.activeProjects.toLocaleString()} />
+        <DashboardWidget title="Total Transactions" value={stats.totalTransactions.toLocaleString()} />
+        <DashboardWidget title="Pending Support Tickets" value={stats.pendingTickets.toLocaleString()} />
       </div>
 
-      <div className="AdminDashboard-lists">
-        <div className={`List-card List-card--${theme}`}>
+      <div className={commonStyles.lists}>
+        <div className={`${commonStyles.listCard} ${themeStyles.listCard}`}>
           <h2>Recent Registrations</h2>
           <ul>
             {recentRegistrations.map(user => (

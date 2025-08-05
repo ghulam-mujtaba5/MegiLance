@@ -5,15 +5,14 @@ import React from 'react';
 import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
-import './Projects.common.css';
-import './Projects.light.css';
-import './Projects.dark.css';
+import commonStyles from './Projects.common.module.css';
+import lightStyles from './Projects.light.module.css';
+import darkStyles from './Projects.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface ProjectsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Freelancer Projects page. It allows freelancers to browse and search for jobs. All styles are per-component only. Now fully theme-switchable using global theme context.
 
-const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
+const Projects: React.FC = () => {
   // Mock data for project listings
   const projects = [
     {
@@ -46,22 +45,25 @@ const Projects: React.FC<ProjectsProps> = ({ theme = 'light' }) => {
     },
   ];
 
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <div className={`Projects Projects--${theme}`}>
-      <div className="Projects-container">
-        <header className="Projects-header">
+    <div className={`${commonStyles.projects} ${themeStyles.projects}`}>
+      <div className={commonStyles.container}>
+        <header className={commonStyles.header}>
           <h1>Find Your Next Project</h1>
           <p>Browse thousands of jobs and find the perfect match for your skills.</p>
         </header>
 
-        <div className="Projects-search-bar">
-          <Input theme={theme} type="text" placeholder="Search by keyword (e.g., 'React', 'Python')" />
-          <Button theme={theme} variant="primary">Search</Button>
+        <div className={commonStyles.searchBar}>
+          <Input type="text" placeholder="Search by keyword (e.g., 'React', 'Python')" />
+          <Button variant="primary">Search</Button>
         </div>
 
-        <div className="Projects-list">
-          {projects.map((project, index) => (
-            <ProjectCard key={index} theme={theme} {...project} />
+        <div className={commonStyles.list}>
+          {projects.map((project, idx) => (
+            <ProjectCard key={idx} {...project} />
           ))}
         </div>
 

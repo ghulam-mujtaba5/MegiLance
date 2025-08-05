@@ -4,15 +4,14 @@
 import React from 'react';
 import ProjectCard from '@/app/components/ProjectCard/ProjectCard'; // Re-using ProjectCard for consistency
 import ProgressBar from '@/app/components/ProgressBar/ProgressBar';
-import './MyJobs.common.css';
-import './MyJobs.light.css';
-import './MyJobs.dark.css';
+import commonStyles from './MyJobs.common.module.css';
+import lightStyles from './MyJobs.light.module.css';
+import darkStyles from './MyJobs.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface MyJobsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the 'My Jobs' page for freelancers to track active and completed projects. All styles are per-component only. Now fully theme-switchable using global theme context.
 
-const MyJobs: React.FC<MyJobsProps> = ({ theme = 'light' }) => {
+const MyJobs: React.FC = () => {
   // Mock data for active and completed jobs
   const activeJobs = [
     {
@@ -41,37 +40,52 @@ const MyJobs: React.FC<MyJobsProps> = ({ theme = 'light' }) => {
     },
   ];
 
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <div className={`MyJobs MyJobs--${theme}`}>
-      <div className="MyJobs-container">
-        <header className="MyJobs-header">
+    <div className={`${commonStyles.myJobs} ${themeStyles.myJobs}`}>
+      <div className={commonStyles.container}>
+        <header className={commonStyles.header}>
           <h1>My Jobs</h1>
           <p>Track the status of all your active and completed projects.</p>
         </header>
 
-        <section className="MyJobs-section">
+        <section className={commonStyles.section}>
           <h2>Active Jobs</h2>
-          <div className="MyJobs-list">
+          <div className={commonStyles.list}>
             {activeJobs.map((job, index) => (
-              <div key={index} className={`JobItem JobItem--${theme}`}>
-                <ProjectCard theme={theme} title={job.title} client={job.client} budget={job.budget} status={job.status === 'Completed' ? 'completed' : 'active'} />
-                <div className="JobItem-status">
+              <div key={index} className={commonStyles.jobItem}>
+                <ProjectCard
+                  title={job.title}
+                  clientName={job.client}
+                  budget={job.budget}
+                  postedTime={"In Progress"}
+                  tags={['Active']}
+                />
+                <div className={commonStyles.jobStatus}>
                   <span>{job.status}</span>
-                  <ProgressBar theme={theme} progress={job.progress} />
+                  <ProgressBar progress={job.progress} />
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="MyJobs-section">
+        <section className={commonStyles.section}>
           <h2>Completed Jobs</h2>
-          <div className="MyJobs-list">
+          <div className={commonStyles.list}>
             {completedJobs.map((job, index) => (
-              <div key={index} className={`JobItem JobItem--${theme}`}>
-                <ProjectCard theme={theme} title={job.title} client={job.client} budget={job.budget} status={job.status === 'Completed' ? 'completed' : 'active'} />
-                <div className="JobItem-status">
-                  <span>{job.status} on {job.completionDate}</span>
+              <div key={index} className={commonStyles.jobItem}>
+                <ProjectCard
+                  title={job.title}
+                  clientName={job.client}
+                  budget={job.budget}
+                  postedTime={`Completed on ${job.completionDate}`}
+                  tags={['Completed']}
+                />
+                <div className={commonStyles.jobStatus}>
+                  <span>Completed on {job.completionDate}</span>
                 </div>
               </div>
             ))}

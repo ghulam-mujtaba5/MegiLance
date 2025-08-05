@@ -1,25 +1,25 @@
-body.dark .Home-features {
+.Home-features {
   background-color: #111827;
 }
 
-.Home--dark .Home-feature-card {
+.Home-feature-card {
   background-color: #1f2937;
   border: 1px solid #374151;
 }
 
-.Home--dark .Home-feature-card:hover {
+.Home-feature-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
 }
 
-.Home--dark .Home-feature-icon {
+.Home-feature-icon {
   color: var(--primary-color);
 }
 
-.Home--dark .Home-feature-title {
+.Home-feature-title {
   color: #f9fafb;
 }
 
-.Home--dark .Home-feature-description {
+.Home-feature-description {
   color: #d1d5db;
 }

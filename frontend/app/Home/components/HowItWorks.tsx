@@ -1,7 +1,11 @@
 import React from 'react';
 import { FaUserPlus, FaClipboardList, FaHandshake, FaProjectDiagram, FaSearch, FaFileSignature } from 'react-icons/fa';
-import './HowItWorks.common.css';
+import commonStyles from './HowItWorks.common.module.css';
+import lightStyles from './HowItWorks.light.module.css';
+import darkStyles from './HowItWorks.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
+// @AI-HINT: How it works section. Now fully theme-switchable using global theme context.
 const freelancerSteps = [
   { icon: <FaUserPlus />, title: 'Create Your Profile', description: 'Sign up and create a professional profile to showcase your skills and experience.' },
   { icon: <FaSearch />, title: 'Find Projects', description: 'Browse a wide range of projects and submit proposals for the ones that fit your expertise.' },
@@ -14,8 +18,9 @@ const clientSteps = [
   { icon: <FaFileSignature />, title: 'Manage & Pay', description: 'Track project progress, communicate with your freelancer, and make secure payments upon completion.' },
 ];
 
-interface HowItWorksProps { theme?: "light" | "dark"; }
-const HowItWorks: React.FC<HowItWorksProps> = ({ theme = "light" }) => {
+const HowItWorks: React.FC = () => {
+  const { theme } = useTheme();
+
   return (
     <section className={`Home-how-it-works theme-${theme}`}>
       <div className="Home-container">

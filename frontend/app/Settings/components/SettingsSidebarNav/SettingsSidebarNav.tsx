@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { User, Shield, Sun, Moon } from 'lucide-react'; // Using lucide-react for icons
-import './SettingsSidebarNav.common.css';
-import './SettingsSidebarNav.light.css';
-import './SettingsSidebarNav.dark.css';
+import commonStyles from './SettingsSidebarNav.common.module.css';
+import lightStyles from './SettingsSidebarNav.light.module.css';
+import darkStyles from './SettingsSidebarNav.dark.module.css';
 
 export type SettingsSection = 'profile' | 'security' | 'appearance';
 

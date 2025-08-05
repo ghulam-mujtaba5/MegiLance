@@ -4,12 +4,16 @@
 
 import React from 'react';
 import { FaGlobe, FaFlag, FaUsers, FaChartLine, FaHeart, FaStar } from 'react-icons/fa';
-import './GlobalImpact.common.css';
-import './GlobalImpact.light.css';
-import './GlobalImpact.dark.css';
+import commonStyles from './GlobalImpact.common.module.css';
+import lightStyles from './GlobalImpact.light.module.css';
+import darkStyles from './GlobalImpact.dark.module.css';
 
-interface GlobalImpactProps { theme?: "light" | "dark"; }
-const GlobalImpact: React.FC<GlobalImpactProps> = ({ theme = "light" }) => {
+// @AI-HINT: Global impact section highlighting Pakistani talent and worldwide reach. Now fully theme-switchable using global theme context.
+import { useTheme } from '@/app/contexts/ThemeContext';
+
+const GlobalImpact: React.FC = () => {
+  const { theme } = useTheme();
+
   const impactStats = [
     {
       icon: FaUsers,

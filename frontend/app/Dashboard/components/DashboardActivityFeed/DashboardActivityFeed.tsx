@@ -5,9 +5,9 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityFeedItem } from '../../types';
 import { FaCreditCard, FaClipboardCheck, FaRocket, FaUserClock } from 'react-icons/fa';
-import './DashboardActivityFeed.common.css';
-import './DashboardActivityFeed.light.css';
-import './DashboardActivityFeed.dark.css';
+import commonStyles from './DashboardActivityFeed.common.module.css';
+import lightStyles from './DashboardActivityFeed.light.module.css';
+import darkStyles from './DashboardActivityFeed.dark.module.css';
 
 // Map string names from API to actual React icon components
 const iconMap: { [key: string]: React.ElementType } = {
@@ -17,7 +17,12 @@ const iconMap: { [key: string]: React.ElementType } = {
   FaUserClock,
 };
 
+// @AI-HINT: This component displays a feed of recent user and system activities. It's designed to be clear, scannable, and informative, enhancing user engagement and providing transparency, which are hallmarks of a premium SaaS experience. Now fully theme-switchable.
+import { useTheme } from '@/app/contexts/ThemeContext';
+
 const DashboardActivityFeed: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [activities, setActivities] = useState<ActivityFeedItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

@@ -4,9 +4,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Conversation } from '../../types';
-import './ConversationList.common.css';
-import './ConversationList.light.css';
-import './ConversationList.dark.css';
+import commonStyles from './ConversationList.common.module.css';
+import lightStyles from './ConversationList.light.module.css';
+import darkStyles from './ConversationList.dark.module.css';
 
 interface ConversationListProps {
   selectedConversationId: number | null;

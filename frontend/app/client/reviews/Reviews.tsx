@@ -4,13 +4,12 @@
 import React from 'react';
 
 import Button from '@/app/components/Button/Button';
-import './Reviews.common.css';
-import './Reviews.light.css';
-import './Reviews.dark.css';
+import commonStyles from './Reviews.common.module.css';
+import lightStyles from './Reviews.light.module.css';
+import darkStyles from './Reviews.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface ReviewsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Reviews page for clients to leave and view feedback. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 const StarRatingInput = () => {
   const [rating, setRating] = React.useState(0);
@@ -36,7 +35,9 @@ const StarRatingInput = () => {
   );
 };
 
-const Reviews: React.FC<ReviewsProps> = ({ theme = 'light' }) => {
+const Reviews: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   // Mock data for projects needing reviews
   const projectsToReview = [
     {
@@ -72,7 +73,7 @@ const Reviews: React.FC<ReviewsProps> = ({ theme = 'light' }) => {
                   placeholder={`Describe your experience... (e.g., communication, quality of work, deadlines)`}
                 ></textarea>
               </div>
-              <Button theme={theme} variant="primary" type="submit">Submit Review</Button>
+              <Button variant="primary" type="submit">Submit Review</Button>
             </form>
           </div>
         ))}

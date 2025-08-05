@@ -2,9 +2,11 @@
 'use client';
 
 import React from 'react';
-import './ProgressBar.common.css';
-import './ProgressBar.light.css';
-import './ProgressBar.dark.css';
+import commonStyles from './ProgressBar.common.module.css';
+import lightStyles from './ProgressBar.light.module.css';
+import darkStyles from './ProgressBar.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
+// @AI-HINT: This is a ProgressBar component, now fully theme-switchable using global theme context and per-component CSS modules.
 
 interface ProgressBarProps {
   progress: number; // A value from 0 to 100
@@ -34,35 +36,42 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   const progressId = React.useId();
   const safeProgress = Math.min(100, Math.max(0, progress || 0));
   
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   const progressBarClasses = [
-    'ProgressBar',
-    `ProgressBar--${size}`,
-    `ProgressBar--${variant}`,
-    striped && 'ProgressBar--striped',
-    animated && 'ProgressBar--animated',
+    commonStyles.progressBar,
+    themeStyles.progressBar,
+    commonStyles[`size-${size}`],
+    themeStyles[`size-${size}`],
+    commonStyles[`variant-${variant}`],
+    themeStyles[`variant-${variant}`],
+    striped && commonStyles.striped,
+    striped && themeStyles.striped,
+    animated && commonStyles.animated,
+    animated && themeStyles.animated,
     className
   ].filter(Boolean).join(' ');
 
   return (
-    <div className="ProgressBar-container">
+    <div className={`${commonStyles.container} ${themeStyles.container}`}>
       {(label || showPercentage) && (
-        <div className="ProgressBar-header">
+        <div className={`${commonStyles.header} ${themeStyles.header}`}>
           {label && (
-            <span className="ProgressBar-label" id={`${progressId}-label`}>
+            <span className={commonStyles.label} id={`${progressId}-label`}>
               {label}
             </span>
           )}
           {showPercentage && (
-            <span className="ProgressBar-percentage">
+            <span className={commonStyles.percentage}>
               {Math.round(safeProgress)}%
             </span>
           )}
         </div>
       )}
-      <div 
+      <div
         className={progressBarClasses}
         role="progressbar"
-        // eslint-disable-next-line jsx-a11y/aria-proptypes
         aria-valuenow={safeProgress}
         aria-valuemin={0}
         aria-valuemax={100}
@@ -70,8 +79,8 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         aria-labelledby={label ? `${progressId}-label` : undefined}
         aria-describedby={ariaDescribedBy}
       >
-        <div className="ProgressBar-track">
-          <div className="ProgressBar-fill" style={{ '--progress-width': `${safeProgress}%` } as React.CSSProperties} />
+        <div className={`${commonStyles.track} ${themeStyles.track}`}>
+          <div className={`${commonStyles.fill} ${themeStyles.fill}`} style={{ '--progress-width': `${safeProgress}%` } as React.CSSProperties} />
         </div>
       </div>
     </div>

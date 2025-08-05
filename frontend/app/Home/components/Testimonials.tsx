@@ -1,5 +1,10 @@
 import React from 'react';
-import './Testimonials.common.css';
+import commonStyles from './Testimonials.common.module.css';
+import lightStyles from './Testimonials.light.module.css';
+import darkStyles from './Testimonials.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
+
+// @AI-HINT: Testimonials section. Now fully theme-switchable using global theme context.
 
 const testimonials = [
   {

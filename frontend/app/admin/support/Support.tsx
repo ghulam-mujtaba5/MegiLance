@@ -3,13 +3,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Button from '@/app/components/Button/Button';
-import './Support.common.css';
-import './Support.light.css';
-import './Support.dark.css';
+import commonStyles from './Support.common.module.css';
+import lightStyles from './Support.light.module.css';
+import darkStyles from './Support.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface SupportProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Support Ticket Management page for admins. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 interface Ticket {
   id: string;
@@ -20,7 +19,9 @@ interface Ticket {
   lastUpdate: string;
 }
 
-const Support: React.FC<SupportProps> = ({ theme = 'light' }) => {
+const Support: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -82,7 +83,7 @@ const Support: React.FC<SupportProps> = ({ theme = 'light' }) => {
                   </td>
                   <td>{ticket.lastUpdate}</td>
                   <td>
-                    <Button variant="outline" size="small">View Ticket</Button>
+                    <Button variant="primary" size="small">View Ticket</Button>
                   </td>
                 </tr>
               ))}

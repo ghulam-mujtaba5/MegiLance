@@ -10,9 +10,9 @@ import SecuritySettings from './components/SecuritySettings/SecuritySettings';
 import AppearanceSettings from './components/AppearanceSettings/AppearanceSettings';
 
 // Styles
-import './Settings.common.css';
-import './Settings.light.css';
-import './Settings.dark.css';
+import commonStyles from './Settings.common.module.css';
+import lightStyles from './Settings.light.module.css';
+import darkStyles from './Settings.dark.module.css';
 
 const renderSection = (section: TSettingsSection) => {
   switch (section) {

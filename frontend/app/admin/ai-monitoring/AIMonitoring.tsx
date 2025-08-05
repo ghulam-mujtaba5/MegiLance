@@ -3,13 +3,12 @@
 
 import React, { useState, useEffect } from 'react';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
-import './AIMonitoring.common.css';
-import './AIMonitoring.light.css';
-import './AIMonitoring.dark.css';
+import commonStyles from './AIMonitoring.common.module.css';
+import lightStyles from './AIMonitoring.light.module.css';
+import darkStyles from './AIMonitoring.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface AIMonitoringProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the AI Monitoring page for admins to oversee the platform's AI systems. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 interface AIStats {
   rankModelAccuracy: string;
@@ -30,7 +29,9 @@ interface AIData {
   recentFraudAlerts: FraudAlert[];
 }
 
-const AIMonitoring: React.FC<AIMonitoringProps> = ({ theme = 'light' }) => {
+const AIMonitoring: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [data, setData] = useState<AIData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

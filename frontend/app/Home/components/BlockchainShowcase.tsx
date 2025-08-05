@@ -4,12 +4,16 @@
 
 import React from 'react';
 import { FaBitcoin, FaShieldAlt, FaLock, FaGlobe, FaExchangeAlt, FaChartLine } from 'react-icons/fa';
-import './BlockchainShowcase.common.css';
-import './BlockchainShowcase.light.css';
-import './BlockchainShowcase.dark.css';
+import commonStyles from './BlockchainShowcase.common.module.css';
+import lightStyles from './BlockchainShowcase.light.module.css';
+import darkStyles from './BlockchainShowcase.dark.module.css';
 
-interface BlockchainShowcaseProps { theme?: "light" | "dark"; }
-const BlockchainShowcase: React.FC<BlockchainShowcaseProps> = ({ theme = "light" }) => {
+// @AI-HINT: Blockchain and crypto payment features showcase section. Now fully theme-switchable using global theme context.
+import { useTheme } from '@/app/contexts/ThemeContext';
+
+const BlockchainShowcase: React.FC = () => {
+  const { theme } = useTheme();
+
   const blockchainFeatures = [
     {
       icon: FaBitcoin,

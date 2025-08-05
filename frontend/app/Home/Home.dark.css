@@ -1,6 +1,6 @@
 /* @AI-HINT: Dark theme styles for Home following MegiLance brand guidelines. Professional dark mode with proper contrast and accessibility. */
 
-.Home--dark {
+body.dark {
   --home-bg: #0f172a;
   --home-text-color: #f1f5f9;
   --home-section-bg: #1e293b;
@@ -36,11 +36,11 @@
   --home-footer-link-hover: #f1f5f9;
 }
 
-.Home--dark {
+body.dark {
   background: var(--home-bg);
   color: var(--home-text-color);
 }
 
-.Home--dark .Home-header h1 {
+body.dark .Home-header h1 {
   color: var(--home-heading-color);
 }

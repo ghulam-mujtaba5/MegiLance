@@ -6,15 +6,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Button from '@/app/components/Button/Button';
 import { FaRocket, FaPlay, FaShieldAlt, FaRobot, FaBitcoin, FaGlobe } from 'react-icons/fa';
-import './Hero.common.css';
-import './Hero.light.css';
-import './Hero.dark.css';
+import { useTheme } from '../../contexts/ThemeContext';
+import commonStyles from './Hero.common.module.css';
+import lightStyles from './Hero.light.module.css';
+import darkStyles from './Hero.dark.module.css';
 
-interface HeroProps {
-  theme?: "light" | "dark";
-}
-
-const Hero: React.FC<HeroProps> = ({ theme = "light" }) => {
+const Hero: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [animatedStats, setAnimatedStats] = useState({
     freelancers: 0,
     projects: 0,
@@ -55,53 +54,53 @@ const Hero: React.FC<HeroProps> = ({ theme = "light" }) => {
   }, []);
 
   return (
-    <section className="Hero">
-      <div className="Hero-container">
-        <div className="Hero-content">
+    <section className={`${commonStyles.Hero} ${themeStyles.Hero}`}>
+      <div className={commonStyles['Hero-container']}>
+        <div className={commonStyles['Hero-content']}>
           {/* Main Hero Content */}
-          <div className="Hero-main">
-            <div className="Hero-badge">
-              <FaRobot className="Hero-badge-icon" />
+          <div className={commonStyles['Hero-main']}>
+            <div className={`${commonStyles['Hero-badge']} ${themeStyles['Hero-badge']}`}>
+              <FaRobot className={`${commonStyles['Hero-badge-icon']} ${themeStyles['Hero-badge-icon']}`} />
               <span>AI-Powered • Blockchain-Secured • Pakistan's #1 Platform</span>
             </div>
             
-            <h1 className="Hero-title">
-              The Future of <span className="Hero-title-highlight">Freelancing</span> is Here
+            <h1 className={`${commonStyles['Hero-title']} ${themeStyles['Hero-title']}`}>
+              The Future of <span className={`${commonStyles['Hero-title-highlight']} ${themeStyles['Hero-title-highlight']}`}>Freelancing</span> is Here
             </h1>
             
-            <p className="Hero-subtitle">
+            <p className={`${commonStyles['Hero-subtitle']} ${themeStyles['Hero-subtitle']}`}>
               MegiLance revolutionizes freelance work with AI-powered job matching, 
               instant USDC payments, and blockchain-secured escrow. Built for Pakistani 
               talent, designed for global success.
             </p>
 
-            <div className="Hero-features-grid">
+            <div className={commonStyles['Hero-features-grid']}>
               <div className="Hero-feature">
-                <FaRobot className="Hero-feature-icon" />
+                <FaRobot className={`${commonStyles['Hero-feature-icon']} ${themeStyles['Hero-feature-icon']}`} />
                 <span>AI Smart Matching</span>
               </div>
               <div className="Hero-feature">
-                <FaBitcoin className="Hero-feature-icon" />
+                <FaBitcoin className={`${commonStyles['Hero-feature-icon']} ${themeStyles['Hero-feature-icon']}`} />
                 <span>Instant USDC Payments</span>
               </div>
               <div className="Hero-feature">
-                <FaShieldAlt className="Hero-feature-icon" />
+                <FaShieldAlt className={`${commonStyles['Hero-feature-icon']} ${themeStyles['Hero-feature-icon']}`} />
                 <span>Blockchain Escrow</span>
               </div>
               <div className="Hero-feature">
-                <FaGlobe className="Hero-feature-icon" />
+                <FaGlobe className={`${commonStyles['Hero-feature-icon']} ${themeStyles['Hero-feature-icon']}`} />
                 <span>Global Opportunities</span>
               </div>
             </div>
 
-            <div className="Hero-cta">
-              <Link href="/Signup" className="Hero-cta-link">
-                <Button theme={theme} variant="primary" size="large">
+            <div className={commonStyles['Hero-cta']}>
+              <Link href="/Signup" className={commonStyles['Hero-cta-link']}>
+                <Button variant="primary" size="large">
                   <FaRocket /> Start Earning Today
                 </Button>
               </Link>
-              <Link href="/demo" className="Hero-cta-link">
-                <Button theme={theme} variant="secondary" size="large">
+              <Link href="/watch-demo" className={`${commonStyles['Hero-cta-link']} ${commonStyles['Hero-cta-link--secondary']} ${themeStyles['Hero-cta-link--secondary']}`}>
+                <Button variant="secondary" size="large">
                   <FaPlay /> Watch Demo
                 </Button>
               </Link>
@@ -118,7 +117,7 @@ const Hero: React.FC<HeroProps> = ({ theme = "light" }) => {
           </div>
 
           {/* Animated Statistics */}
-          <div className="Hero-stats">
+          <div className={`${commonStyles['Hero-stats']} ${themeStyles['Hero-stats']}`}>
             <div className="Hero-stat">
               <div className="Hero-stat-number">{animatedStats.freelancers.toLocaleString()}+</div>
               <div className="Hero-stat-label">Active Freelancers</div>

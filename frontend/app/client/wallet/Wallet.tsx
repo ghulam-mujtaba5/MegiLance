@@ -4,15 +4,17 @@
 import React from 'react';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Button from '@/app/components/Button/Button';
-import './Wallet.common.css';
-import './Wallet.light.css';
-import './Wallet.dark.css';
+import commonStyles from './Wallet.common.module.css';
+import lightStyles from './Wallet.light.module.css';
+import darkStyles from './Wallet.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface WalletProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Wallet page for client payments and transactions. All styles are per-component only. Now fully theme-switchable using global theme context.
 
-const Wallet: React.FC<WalletProps> = ({ theme = 'light' }) => {
+import { useTheme } from '@/app/contexts/ThemeContext';
+
+const Wallet: React.FC = () => {
+  const { theme } = useTheme();
   // Mock data for client wallet
   const balance = 4200.00;
   const transactions = [
@@ -35,15 +37,15 @@ const Wallet: React.FC<WalletProps> = ({ theme = 'light' }) => {
             <div className={`Wallet-balance-card Wallet-balance-card--${theme}`}>
               <h2>Current Balance</h2>
               <p className="Wallet-balance-amount">${balance.toLocaleString()}</p>
-              <Button theme={theme} variant="primary">Add Funds</Button>
+              <Button variant="primary">Add Funds</Button>
             </div>
             <div className={`Payment-methods-card Payment-methods-card--${theme}`}>
               <h3>Payment Methods</h3>
               <div className="Payment-method">
                 <span>Visa **** 4242</span>
-                <Button theme={theme} variant="outline" size="small">Remove</Button>
+                <Button variant="secondary" size="small">Withdraw</Button>
               </div>
-              <Button theme={theme} variant="outline">Add New Method</Button>
+              <Button variant="secondary">Add New Method</Button>
             </div>
           </div>
 
@@ -56,7 +58,7 @@ const Wallet: React.FC<WalletProps> = ({ theme = 'light' }) => {
             </div>
             <div className="Transaction-list">
               {transactions.map((tx, index) => (
-                <TransactionRow key={index} theme={theme} {...tx} />
+                <TransactionRow key={index} amount={tx.amount.toString()} date={tx.date} description={tx.description} />
               ))}
             </div>
           </section>

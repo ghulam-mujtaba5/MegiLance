@@ -3,25 +3,35 @@
 
 import React from 'react';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
-import './Reviews.common.css';
-import './Reviews.light.css';
-import './Reviews.dark.css';
+import commonStyles from './Reviews.common.module.css';
+import lightStyles from './Reviews.light.module.css';
+import darkStyles from './Reviews.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface ReviewsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Reviews page for freelancers to see client feedback. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 const StarRating = ({ rating }: { rating: number }) => {
   return (
-    <div className="StarRating">
-      {[...Array(5)].map((_, index) => (
-        <span key={index} className={index < rating ? 'star-filled' : 'star-empty'}>★</span>
-      ))}
-    </div>
+    const { theme } = useTheme();
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return (
+      <div className={`${commonStyles.starRating} ${themeStyles.starRating}`}>
+        {[...Array(5)].map((_, index) => (
+          <span
+            key={index}
+            className={index < rating ? commonStyles.starFilled : commonStyles.starEmpty}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    );
   );
 };
 
-const Reviews: React.FC<ReviewsProps> = ({ theme = 'light' }) => {
+const Reviews: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   // Mock data for reviews
   const reviews = [
     {
@@ -50,14 +60,14 @@ const Reviews: React.FC<ReviewsProps> = ({ theme = 'light' }) => {
   const averageRating = (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1);
 
   return (
-    <div className={`Reviews Reviews--${theme}`}>
-      <div className="Reviews-container">
-        <header className="Reviews-header">
+    <div className={`${commonStyles.reviews} ${themeStyles.reviews}`}>
+      <div className={commonStyles.container}>
+        <header className={commonStyles.header}>
           <h1>My Reviews</h1>
           <p>See what clients are saying about your work.</p>
         </header>
 
-        <div className={`Reviews-summary-card Reviews-summary-card--${theme}`}>
+        <div className={`${commonStyles.summaryCard} ${themeStyles.summaryCard}`}>
           <h2>Overall Rating</h2>
           <div className="Summary-rating">
             <span className="Summary-rating-score">{averageRating}</span>

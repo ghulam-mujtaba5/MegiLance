@@ -4,27 +4,29 @@
 import React from 'react';
 import ProgressBar from '@/app/components/ProgressBar/ProgressBar';
 import RankGauge from '@/app/components/RankGauge/RankGauge';
-import './Rank.common.css';
-import './Rank.light.css';
-import './Rank.dark.css';
+import commonStyles from './Rank.common.module.css';
+import lightStyles from './Rank.light.module.css';
+import darkStyles from './Rank.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface RankProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the Freelancer Rank page, showcasing the AI-powered ranking system. All styles are per-component only. Now fully theme-switchable using global theme context.
 
-// A simple component to visualize a metric contributing to the rank
-const RankFactor: React.FC<{ theme: 'light' | 'dark'; label: string; score: number; description: string }> = ({ theme, label, score, description }) => (
-  <div className={`RankFactor RankFactor--${theme}`}>
-    <div className="RankFactor-header">
-      <span className="RankFactor-label">{label}</span>
-      <span className="RankFactor-score">{score}/100</span>
+const RankFactor: React.FC<{ label: string; score: number; description: string }> = ({ label, score, description }) => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  return (
+    <div className={`${commonStyles.rankFactor} ${themeStyles.rankFactor}`}>
+      <div className={commonStyles.header}>
+        <span className={commonStyles.label}>{label}</span>
+        <span className={commonStyles.score}>{score}/100</span>
+      </div>
+      <ProgressBar progress={score} />
+      <p className={commonStyles.description}>{description}</p>
     </div>
-    <ProgressBar theme={theme} progress={score} />
-    <p className="RankFactor-description">{description}</p>
-  </div>
-);
+  );
+};
 
-const Rank: React.FC<RankProps> = ({ theme = 'light' }) => {
+const Rank: React.FC = () => {
   // Mock data for rank
   const rankData = {
     overallRank: 'Top 10%',
@@ -37,25 +39,28 @@ const Rank: React.FC<RankProps> = ({ theme = 'light' }) => {
     ],
   };
 
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <div className={`Rank Rank--${theme}`}>
-      <div className="Rank-container">
-        <header className="Rank-header">
+    <div className={`${commonStyles.rank} ${themeStyles.rank}`}>
+      <div className={commonStyles.container}>
+        <header className={commonStyles.header}>
           <h1>My Freelancer Rank</h1>
           <p>Understand your AI-powered rank and how to improve it.</p>
         </header>
 
-        <div className={`Rank-display-card Rank-display-card--${theme}`}>
+        <div className={`${commonStyles.displayCard} ${themeStyles.displayCard}`}>
           <h2>Your Current Rank is</h2>
-          <p className="Rank-score-text">{rankData.overallRank}</p>
+          <p className={commonStyles.scoreText}>{rankData.overallRank}</p>
           <RankGauge score={rankData.rankScore} />
         </div>
 
-        <section className="Rank-factors">
+        <section className={commonStyles.factors}>
           <h2>How Your Rank is Calculated</h2>
-          <div className="Rank-factors-grid">
+          <div className={commonStyles.factorsGrid}>
             {rankData.factors.map((factor, index) => (
-              <RankFactor key={index} theme={theme} {...factor} />
+              <RankFactor key={index} {...factor} />
             ))}
           </div>
         </section>

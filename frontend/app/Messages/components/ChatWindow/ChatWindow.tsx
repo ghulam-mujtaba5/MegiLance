@@ -4,9 +4,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Conversation } from '../../types';
-import './ChatWindow.common.css';
-import './ChatWindow.light.css';
-import './ChatWindow.dark.css';
+import commonStyles from './ChatWindow.common.module.css';
+import lightStyles from './ChatWindow.light.module.css';
+import darkStyles from './ChatWindow.dark.module.css';
 
 interface ChatWindowProps {
   conversationId: number | null;

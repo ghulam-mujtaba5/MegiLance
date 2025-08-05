@@ -4,13 +4,12 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import './Settings.common.css';
-import './Settings.light.css';
-import './Settings.dark.css';
+import commonStyles from './Settings.common.module.css';
+import lightStyles from './Settings.light.module.css';
+import darkStyles from './Settings.dark.module.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
 
-interface SettingsProps {
-  theme?: 'light' | 'dark';
-}
+// @AI-HINT: This is the platform Settings page for admins. All styles are per-component only. Now fully theme-switchable using global theme context.
 
 interface SettingsData {
   general: { platformName: string; supportEmail: string; enableRegistrations: boolean; };
@@ -20,7 +19,9 @@ interface SettingsData {
 
 type Tab = 'general' | 'fees' | 'integrations';
 
-const Settings: React.FC<SettingsProps> = ({ theme = 'light' }) => {
+const Settings: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [activeTab, setActiveTab] = useState<Tab>('general');
   const [settings, setSettings] = useState<SettingsData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);

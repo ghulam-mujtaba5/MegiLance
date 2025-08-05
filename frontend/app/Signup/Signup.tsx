@@ -6,9 +6,9 @@ import { FaGoogle, FaGithub, FaBuilding } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
-import './Signup.common.css';
-import './Signup.light.css';
-import './Signup.dark.css';
+import commonStyles from './Signup.common.module.css';
+import lightStyles from './Signup.light.module.css';
+import darkStyles from './Signup.dark.module.css';
 
 interface SignupProps {
   theme?: 'light' | 'dark';

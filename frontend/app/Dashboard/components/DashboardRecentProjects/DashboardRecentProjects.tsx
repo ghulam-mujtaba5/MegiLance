@@ -4,9 +4,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { RecentProject } from '../../types';
-import './DashboardRecentProjects.common.css';
-import './DashboardRecentProjects.light.css';
-import './DashboardRecentProjects.dark.css';
+import commonStyles from './DashboardRecentProjects.common.module.css';
+import lightStyles from './DashboardRecentProjects.light.module.css';
+import darkStyles from './DashboardRecentProjects.dark.module.css';
 
 const getStatusClass = (status: RecentProject['status']) => {
   switch (status) {
@@ -23,7 +23,12 @@ const getStatusClass = (status: RecentProject['status']) => {
   }
 };
 
+// @AI-HINT: This component displays a list of recent projects. It's designed to provide a quick, scannable overview of project status, progress, and deadlines, a key feature in premium project management dashboards. Now fully theme-switchable.
+import { useTheme } from '@/app/contexts/ThemeContext';
+
 const DashboardRecentProjects: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const [projects, setProjects] = useState<RecentProject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
