@@ -1,0 +1,5 @@
+/* @AI-HINT: Defines the light theme styles for the DashboardLayout component. */
+
+.mainContent {
+  background-color: var(--background);
+}

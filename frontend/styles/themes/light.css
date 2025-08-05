@@ -1,4 +1,36 @@
-/* 🚫 WARNING: This file is intentionally unused. See style rules in component-level CSS only. */
+/* AI-HINT: This file defines the global color variables for the light theme.
+These variables are used across the application to ensure brand consistency and
+to facilitate easy theme switching. Adhering to this centralized theme file is
+crucial for maintaining a scalable and maintainable codebase. */
+:root {
+  /* Brand & Accent Colors */
+  --primary: #4573df;
+  --accent: #ff9800;
+
+  /* Semantic Colors */
+  --success: #27AE60;
+  --error: #e81123;
+  --warning: #F2C94C;
+
+  /* UI Surfaces & Backgrounds */
+  --background: #ffffff;
+  --surface: #f5f7fa; /* For cards, forms, light containers */
+  --surface-alt: #F4F6F8; /* A slightly different gray for variation */
+  --container-dark: #2c323a; /* For dark elements in light mode, e.g., modals */
+  --border: #e0e0e0; /* A light border color */
+
+  /* Text Colors */
+  --text-primary: #23272f;
+  --text-secondary: #333333;
+  --text-on-primary: #ffffff;
+  --text-on-accent: #ffffff;
+  --text-on-dark: #ffffff;
+
+  /* Extended Brand Palette (for specific use cases) */
+  --brand-indigo: #3C3C88;
+  --brand-electric-blue: #2F80ED;
+}
+
 
 /*
 ❌ DO NOT use this file (`themes/light.css`) for any styles.

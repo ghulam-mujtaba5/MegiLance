@@ -1,4 +1,9 @@
-/* 🚫 WARNING: This file is intentionally unused. See style rules in component-level CSS only. */
+/* AI-HINT: This file is the entry point for Tailwind CSS. The directives below inject Tailwind's base styles, component classes, and utility classes into the application. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 /* 
 ❌ DO NOT use this file (`global.css`) for any styles.

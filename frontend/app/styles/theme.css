@@ -1,4 +1,9 @@
-/* @AI-HINT: This file contains all global design tokens for the MegiLance brand, based on the Brand Playbook. All components should reference these variables. */
+/* @AI-HINT: This file acts as the central hub for importing all theme-related stylesheets.
+It ensures that our design tokens (like colors and typography) are loaded globally. */
+
+@import '../../styles/themes/light.css';
+@import '../../styles/themes/dark.css';
+
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap');
 

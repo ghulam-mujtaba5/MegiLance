@@ -1,50 +1,65 @@
-// @AI-HINT: This component renders the navigation items within the Sidebar. It supports icons, labels, and active states.
+// @AI-HINT: This component renders the navigation items within the Sidebar. It dynamically handles the collapsed state, showing full labels or just icons, and is styled using per-component CSS modules.
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { IconType } from 'react-icons';
+// AI-HINT: We will dynamically import the light/dark modules in a parent component based on theme context.
+import commonStyles from './SidebarNav.common.module.css';
 
-import './SidebarNav.common.css';
-import './SidebarNav.light.css';
-import './SidebarNav.dark.css';
-
+// Define the structure for a navigation item
 export interface NavItem {
   href: string;
   label: string;
-  icon: IconType;
-  active?: boolean;
+  icon: React.ElementType;
 }
 
+// Define the props for the SidebarNav component
 export interface SidebarNavProps {
+  isCollapsed: boolean;
   navItems: NavItem[];
+  // AI-HINT: theme styles are passed as props to allow dynamic theme switching.
+  lightStyles: { [key: string]: string };
+  darkStyles: { [key: string]: string };
+  currentTheme: 'light' | 'dark';
 }
 
-const SidebarNavItem: React.FC<{ item: NavItem; isCollapsed?: boolean }> = ({ item, isCollapsed }) => {
+const SidebarNav: React.FC<SidebarNavProps> = ({ 
+  isCollapsed, 
+  navItems, 
+  lightStyles, 
+  darkStyles, 
+  currentTheme 
+}) => {
   const pathname = usePathname();
-  const isActive = pathname === item.href;
+  const themeStyles = currentTheme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <li className="SidebarNavItem">
-      <Link href={item.href} className={`SidebarNavItem-link ${isActive ? 'SidebarNavItem-link-active' : ''}`}>
-        <item.icon className="SidebarNavItem-icon" />
-        <span className={`SidebarNavItem-label ${isCollapsed ? 'SidebarNavItem-label-collapsed' : ''}`}>{item.label}</span>
-      </Link>
-    </li>
-  );
-};
+    <nav className={commonStyles.sidebarNav}>
+      <ul className={commonStyles.navList}>
+        {navItems.map((item) => {
+          const isActive = pathname.startsWith(item.href);
+          const Icon = item.icon;
 
-const SidebarNav: React.FC<SidebarNavProps & { isCollapsed?: boolean }> = ({ navItems, isCollapsed }) => {
-  return (
-    <nav className="SidebarNav">
-      <ul className="SidebarNav-list">
-        {navItems.map((item) => (
-          <SidebarNavItem key={item.href} item={item} isCollapsed={isCollapsed} />
-        ))}
+          const linkClasses = `
+            ${commonStyles.navLink}
+            ${isActive ? themeStyles.navLinkActive : themeStyles.navLinkInactive}
+            ${isCollapsed ? commonStyles.navLinkCollapsed : ''}
+          `;
+
+          return (
+            <li key={item.href} className={commonStyles.navItem}>
+              <Link href={item.href} title={isCollapsed ? item.label : ''} className={linkClasses}>
+                <Icon className={commonStyles.navIcon} />
+                {!isCollapsed && <span className={commonStyles.navLabel}>{item.label}</span>}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
 };
 
 export default SidebarNav;
+

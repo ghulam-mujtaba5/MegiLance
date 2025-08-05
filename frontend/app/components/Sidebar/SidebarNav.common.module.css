@@ -1,0 +1,55 @@
+/* @AI-HINT: Defines the common, theme-agnostic styles for the SidebarNav component. */
+
+.sidebarNav {
+  padding: 0.5rem;
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* 4px */
+}
+
+.navItem {
+  margin: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem; /* 12px */
+  border-radius: 0.375rem; /* 6px */
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.navIcon {
+  flex-shrink: 0;
+  width: 1.25rem; /* 20px */
+  height: 1.25rem; /* 20px */
+  transition: transform 0.2s ease-in-out;
+}
+
+.navLabel {
+  margin-left: 0.75rem; /* 12px */
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Styles for when the sidebar is collapsed */
+.navLinkCollapsed .navLabel {
+  opacity: 0;
+  width: 0;
+  margin-left: 0;
+}
+
+.navLinkCollapsed {
+  justify-content: center;
+}

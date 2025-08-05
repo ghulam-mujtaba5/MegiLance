@@ -1,4 +1,36 @@
-/* 🚫 WARNING: This file is intentionally unused. See style rules in component-level CSS only. */
+/* AI-HINT: This file defines the global color variables for the dark theme.
+These variables are used across the application to ensure brand consistency and
+to facilitate easy theme switching. Adhering to this centralized theme file is
+crucial for maintaining a scalable and maintainable codebase. */
+[data-theme='dark'] {
+  /* Brand & Accent Colors (often remain the same for brand consistency) */
+  --primary: #4573df;
+  --accent: #ff9800;
+
+  /* Semantic Colors */
+  --success: #27AE60;
+  --error: #e81123;
+  --warning: #F2C94C;
+
+  /* UI Surfaces & Backgrounds */
+  --background: #1d2127;
+  --surface: #272b32; /* For cards, forms, etc. */
+  --surface-alt: #2c323a; /* A slightly different dark for variation */
+  --container-dark: #2c323a; /* This is already a dark color, so it's consistent */
+  --border: #3a414a; /* A subtle border for dark mode */
+
+  /* Text Colors */
+  --text-primary: #f5f7fa;
+  --text-secondary: #a9b1bd;
+  --text-on-primary: #ffffff;
+  --text-on-accent: #ffffff;
+  --text-on-dark: #f5f7fa;
+
+  /* Extended Brand Palette (remain the same) */
+  --brand-indigo: #3C3C88;
+  --brand-electric-blue: #2F80ED;
+}
+
 
 /*
 ❌ DO NOT use this file (`themes/dark.css`) for any styles.

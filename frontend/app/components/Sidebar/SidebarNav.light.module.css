@@ -1,0 +1,20 @@
+/* @AI-HINT: Defines the light theme styles for the SidebarNav component. */
+
+.navLinkInactive {
+  color: var(--text-secondary);
+}
+
+.navLinkInactive:hover {
+  background-color: var(--surface-alt);
+  color: var(--text-primary);
+}
+
+.navLinkActive {
+  background-color: var(--primary);
+  color: var(--text-on-primary);
+  box-shadow: 0 4px 12px -1px rgba(69, 115, 223, 0.3);
+}
+
+.navLinkActive:hover {
+  background-color: var(--primary-dark);
+}
