@@ -3,29 +3,32 @@
 
 import React from 'react';
 import Image from 'next/image';
-import './UserAvatar.common.css';
-import './UserAvatar.light.css';
-import './UserAvatar.dark.css';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
+import commonStyles from './UserAvatar.common.module.css';
+import lightStyles from './UserAvatar.light.module.css';
+import darkStyles from './UserAvatar.dark.module.css';
 
 export interface UserAvatarProps {
-  theme?: 'light' | 'dark';
   name: string; // Always required for initials fallback and alt text
   src?: string; // Optional image source
   size?: 'small' | 'medium' | 'large';
+  className?: string;
 }
 
 const UserAvatar: React.FC<UserAvatarProps> = ({
-  theme = 'light',
   name,
   src,
   size = 'medium',
+  className,
 }) => {
+  const { theme } = useTheme();
   const sizeMap = {
-    small: 32,
-    medium: 40,
-    large: 56,
+    small: { class: commonStyles.userAvatarSmall, size: 32 },
+    medium: { class: commonStyles.userAvatarMedium, size: 40 },
+    large: { class: commonStyles.userAvatarLarge, size: 56 },
   };
-  const imageSize = sizeMap[size];
+  const { class: sizeClass, size: imageSize } = sizeMap[size];
 
   const getInitials = (name: string) => {
     const names = name.split(' ');
@@ -35,15 +38,20 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     return name.substring(0, 2).toUpperCase();
   };
 
-  const className = `UserAvatar UserAvatar--${theme} UserAvatar--${size}`;
+  const avatarClasses = cn(
+    commonStyles.userAvatar,
+    theme === 'light' ? lightStyles.light : darkStyles.dark,
+    sizeClass,
+    className
+  );
 
   if (src) {
     return (
-      <div className={className}>
+      <div className={avatarClasses}>
         <Image
           src={src}
           alt={name}
-          className="UserAvatar-image"
+          className={commonStyles.userAvatarImage}
           width={imageSize}
           height={imageSize}
         />
@@ -52,7 +60,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   }
 
   return (
-    <div className={`${className} UserAvatar--initials`}>
+    <div className={avatarClasses}>
       <span>{getInitials(name)}</span>
     </div>
   );

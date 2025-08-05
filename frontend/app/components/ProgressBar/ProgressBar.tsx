@@ -1,12 +1,13 @@
-// @AI-HINT: This is a ProgressBar component, an atomic element used for displaying progress.
 'use client';
 
 import React from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import commonStyles from './ProgressBar.common.module.css';
 import lightStyles from './ProgressBar.light.module.css';
 import darkStyles from './ProgressBar.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
-// @AI-HINT: This is a ProgressBar component, now fully theme-switchable using global theme context and per-component CSS modules.
+
+// @AI-HINT: This component has been fully refactored to use theme-aware CSS modules and the `cn` utility for dynamic class composition.
 
 interface ProgressBarProps {
   progress: number; // A value from 0 to 100
@@ -21,8 +22,16 @@ interface ProgressBarProps {
   'aria-describedby'?: string;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ 
-  progress, 
+const sizeMap = {
+  xs: 'progressBarXs',
+  sm: 'progressBarSm',
+  md: 'progressBarMd',
+  lg: 'progressBarLg',
+  xl: 'progressBarXl',
+};
+
+const ProgressBar: React.FC<ProgressBarProps> = ({
+  progress,
   size = 'md',
   variant = 'default',
   label,
@@ -31,46 +40,42 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   striped = false,
   className = '',
   'aria-label': ariaLabel,
-  'aria-describedby': ariaDescribedBy
+  'aria-describedby': ariaDescribedBy,
 }) => {
   const progressId = React.useId();
   const safeProgress = Math.min(100, Math.max(0, progress || 0));
-  
+
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const styles = { ...commonStyles, ...themeStyles };
 
-  const progressBarClasses = [
-    commonStyles.progressBar,
-    themeStyles.progressBar,
-    commonStyles[`size-${size}`],
-    themeStyles[`size-${size}`],
-    commonStyles[`variant-${variant}`],
-    themeStyles[`variant-${variant}`],
-    striped && commonStyles.striped,
-    striped && themeStyles.striped,
-    animated && commonStyles.animated,
-    animated && themeStyles.animated,
-    className
-  ].filter(Boolean).join(' ');
+  const sizeClass = styles[sizeMap[size]];
 
   return (
-    <div className={`${commonStyles.container} ${themeStyles.container}`}>
+    <div className={cn(styles.progressBarContainer, className)}>
       {(label || showPercentage) && (
-        <div className={`${commonStyles.header} ${themeStyles.header}`}>
+        <div className={styles.progressBarHeader}>
           {label && (
-            <span className={commonStyles.label} id={`${progressId}-label`}>
+            <span className={styles.progressBarLabel} id={`${progressId}-label`}>
               {label}
             </span>
           )}
           {showPercentage && (
-            <span className={commonStyles.percentage}>
+            <span className={styles.progressBarPercentage}>
               {Math.round(safeProgress)}%
             </span>
           )}
         </div>
       )}
       <div
-        className={progressBarClasses}
+        className={cn(
+          styles.progressBar,
+          theme === 'dark' ? styles.progressBarDark : styles.progressBarLight,
+          sizeClass,
+          styles[variant],
+          striped && styles.progressBarStriped,
+          animated && styles.progressStripeAnimation
+        )}
         role="progressbar"
         aria-valuenow={safeProgress}
         aria-valuemin={0}
@@ -79,8 +84,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         aria-labelledby={label ? `${progressId}-label` : undefined}
         aria-describedby={ariaDescribedBy}
       >
-        <div className={`${commonStyles.track} ${themeStyles.track}`}>
-          <div className={`${commonStyles.fill} ${themeStyles.fill}`} style={{ '--progress-width': `${safeProgress}%` } as React.CSSProperties} />
+        <div className={styles.progressBarTrack}>
+          <div
+            className={styles.progressBarFill}
+            style={{ '--progress-width': `${safeProgress}%` } as React.CSSProperties}
+          />
         </div>
       </div>
     </div>

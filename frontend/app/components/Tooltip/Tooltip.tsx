@@ -3,9 +3,10 @@
 
 import React, { useState, useRef, cloneElement, useId } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
-import './Tooltip.common.css';
-import './Tooltip.light.css';
-import './Tooltip.dark.css';
+import { cn } from '@/lib/utils';
+import commonStyles from './Tooltip.common.module.css';
+import lightStyles from './Tooltip.light.module.css';
+import darkStyles from './Tooltip.dark.module.css';
 
 export interface TooltipProps {
   children: React.ReactElement;
@@ -20,6 +21,13 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text, position = 'top', del
   const [visible, setVisible] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const tooltipId = useId();
+
+  const positionMap = {
+    top: commonStyles.tooltipTop,
+    bottom: commonStyles.tooltipBottom,
+    left: commonStyles.tooltipLeft,
+    right: commonStyles.tooltipRight,
+  };
 
   const showTooltip = () => {
     if (timeoutRef.current) {
@@ -46,16 +54,20 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text, position = 'top', del
   };
 
   return (
-    <div className={`Tooltip-wrapper ${className}`}>
+    <div className={cn(commonStyles.tooltipWrapper, className)}>
       {cloneElement(children, triggerProps)}
       {visible && (
         <div
           id={tooltipId}
           role="tooltip"
-          className={`Tooltip Tooltip--${position}`}
+          className={cn(
+            commonStyles.tooltip,
+            theme === 'light' ? lightStyles.light : darkStyles.dark,
+            positionMap[position]
+          )}
         >
           {text}
-          <div className="Tooltip-arrow" data-popper-arrow />
+          <div className={commonStyles.tooltipArrow} data-popper-arrow />
         </div>
       )}
     </div>

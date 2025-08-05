@@ -1,20 +1,23 @@
-// @AI-HINT: This is the Wallet page for clients to manage funds and view transactions. All styles are per-component only.
 'use client';
 
 import React from 'react';
-import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
-import Button from '@/app/components/Button/Button';
+import { useTheme } from '@/contexts/ThemeContext';
 import commonStyles from './Wallet.common.module.css';
 import lightStyles from './Wallet.light.module.css';
 import darkStyles from './Wallet.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { Button } from '@/components/ui/button';
+import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 
-// @AI-HINT: This is the Wallet page for client payments and transactions. All styles are per-component only. Now fully theme-switchable using global theme context.
-
-import { useTheme } from '@/app/contexts/ThemeContext';
+// @AI-HINT: This is the Wallet page for clients. It has been fully refactored to use
+// theme-aware CSS modules with camelCase conventions and modern import paths.
 
 const Wallet: React.FC = () => {
   const { theme } = useTheme();
+  const styles = {
+    ...commonStyles,
+    ...(theme === 'dark' ? darkStyles : lightStyles),
+  };
+
   // Mock data for client wallet
   const balance = 4200.00;
   const transactions = [
@@ -25,38 +28,38 @@ const Wallet: React.FC = () => {
   ];
 
   return (
-    <div className={`Wallet Wallet--${theme}`}>
-      <div className="Wallet-container">
-        <header className="Wallet-header">
+    <div className={`${styles.wallet} ${theme === 'dark' ? styles.walletDark : styles.walletLight}`}>
+      <div className={styles.walletContainer}>
+        <header className={styles.walletHeader}>
           <h1>My Wallet</h1>
           <p>Manage your balance, payment methods, and view transaction history.</p>
         </header>
 
-        <div className="Wallet-main-layout">
-          <div className="Wallet-balance-section">
-            <div className={`Wallet-balance-card Wallet-balance-card--${theme}`}>
+        <div className={styles.walletMainLayout}>
+          <div className={styles.walletBalanceSection}>
+            <div className={styles.walletBalanceCard}>
               <h2>Current Balance</h2>
-              <p className="Wallet-balance-amount">${balance.toLocaleString()}</p>
-              <Button variant="primary">Add Funds</Button>
+              <p className={styles.walletBalanceAmount}>${balance.toLocaleString()}</p>
+              <Button>Add Funds</Button>
             </div>
-            <div className={`Payment-methods-card Payment-methods-card--${theme}`}>
+            <div className={styles.paymentMethodsCard}>
               <h3>Payment Methods</h3>
-              <div className="Payment-method">
+              <div className={styles.paymentMethod}>
                 <span>Visa **** 4242</span>
-                <Button variant="secondary" size="small">Withdraw</Button>
+                <Button variant="secondary" size="sm">Withdraw</Button>
               </div>
               <Button variant="secondary">Add New Method</Button>
             </div>
           </div>
 
-          <section className="Wallet-transactions">
+          <section className={styles.walletTransactions}>
             <h2>Transaction History</h2>
-            <div className={`Transaction-list-header Transaction-list-header--${theme}`}>
+            <div className={styles.transactionListHeader}>
               <span>Description</span>
               <span>Date</span>
               <span>Amount</span>
             </div>
-            <div className="Transaction-list">
+            <div className={styles.transactionList}>
               {transactions.map((tx, index) => (
                 <TransactionRow key={index} amount={tx.amount.toString()} date={tx.date} description={tx.description} />
               ))}

@@ -1,4 +1,34 @@
-/* Migrated from DashboardActivityFeed.dark.css to DashboardActivityFeed.dark.module.css */
-@import './DashboardActivityFeed.common.module.css';
+/* AI-HINT: Dark theme for the redesigned premium Activity Feed. */
 
-/* Place all DashboardActivityFeed.dark.css content here */
+.activityFeedCard {
+  background-color: #1f2937; /* Gray 800 */
+  border: 1px solid #374151; /* Gray 700 */
+}
+
+.cardTitle {
+  color: #f9fafb; /* Gray 50 */
+}
+
+.timeline {
+  background-color: #374151; /* Gray 700 */
+}
+
+.activityIconContainer {
+  background-color: #4b5563; /* Gray 600 */
+}
+
+.activityIcon {
+  color: #e5e7eb; /* Gray 200 */
+}
+
+.activityContent p {
+  color: #d1d5db; /* Gray 300 */
+}
+
+.activityContent .user {
+  color: #f9fafb; /* Gray 50 */
+}
+
+.activityTimestamp {
+  color: #9ca3af; /* Gray 400 */
+}

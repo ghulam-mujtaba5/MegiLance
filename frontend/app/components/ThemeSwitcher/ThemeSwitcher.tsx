@@ -4,6 +4,7 @@
 import React from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 import commonStyles from './ThemeSwitcher.common.module.css';
 import lightStyles from './ThemeSwitcher.light.module.css';
@@ -16,13 +17,14 @@ const ThemeSwitcher = () => {
   if (!theme) {
     return null;
   }
-  
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   return (
     <button
       onClick={toggleTheme}
-      className={`${commonStyles.themeToggle} ${themeStyles.themeToggle}`}
+      className={cn(
+        commonStyles.themeToggle,
+        theme === 'light' ? lightStyles.light : darkStyles.dark
+      )}
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
       aria-label="Toggle theme"
     >

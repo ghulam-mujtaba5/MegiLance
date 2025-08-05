@@ -4,6 +4,7 @@
 import React from 'react';
 import ProjectCard from '@/app/components/ProjectCard/ProjectCard'; // Re-using ProjectCard for consistency
 import ProgressBar from '@/app/components/ProgressBar/ProgressBar';
+import { cn } from '@/lib/utils';
 import commonStyles from './MyJobs.common.module.css';
 import lightStyles from './MyJobs.light.module.css';
 import darkStyles from './MyJobs.dark.module.css';
@@ -41,19 +42,19 @@ const MyJobs: React.FC = () => {
   ];
 
   const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={`${commonStyles.myJobs} ${themeStyles.myJobs}`}>
-      <div className={commonStyles.container}>
-        <header className={commonStyles.header}>
+    <div className={cn(commonStyles.myJobs, theme === 'light' ? lightStyles.light : darkStyles.dark)}>
+      {/* AI-HINT: The 'cn' utility is used here to merge the base component styles with the correct theme-specific styles (light or dark) based on the current theme context. */}
+      <div className={commonStyles.myJobsContainer}>
+        <header className={commonStyles.myJobsHeader}>
           <h1>My Jobs</h1>
           <p>Track the status of all your active and completed projects.</p>
         </header>
 
-        <section className={commonStyles.section}>
+        <section className={commonStyles.myJobsSection}>
           <h2>Active Jobs</h2>
-          <div className={commonStyles.list}>
+          <div className={commonStyles.myJobsList}>
             {activeJobs.map((job, index) => (
               <div key={index} className={commonStyles.jobItem}>
                 <ProjectCard
@@ -63,7 +64,7 @@ const MyJobs: React.FC = () => {
                   postedTime={"In Progress"}
                   tags={['Active']}
                 />
-                <div className={commonStyles.jobStatus}>
+                <div className={commonStyles.jobItemStatus}>
                   <span>{job.status}</span>
                   <ProgressBar progress={job.progress} />
                 </div>
@@ -72,9 +73,9 @@ const MyJobs: React.FC = () => {
           </div>
         </section>
 
-        <section className={commonStyles.section}>
+        <section className={commonStyles.myJobsSection}>
           <h2>Completed Jobs</h2>
-          <div className={commonStyles.list}>
+          <div className={commonStyles.myJobsList}>
             {completedJobs.map((job, index) => (
               <div key={index} className={commonStyles.jobItem}>
                 <ProjectCard
@@ -84,7 +85,7 @@ const MyJobs: React.FC = () => {
                   postedTime={`Completed on ${job.completionDate}`}
                   tags={['Completed']}
                 />
-                <div className={commonStyles.jobStatus}>
+                <div className={commonStyles.jobItemStatus}>
                   <span>Completed on {job.completionDate}</span>
                 </div>
               </div>

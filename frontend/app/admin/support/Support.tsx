@@ -1,95 +1,83 @@
-// @AI-HINT: This is the Support Ticket Management page for admins. All styles are per-component only.
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Button from '@/app/components/Button/Button';
+import React from 'react';
+import { useTheme } from '../../../contexts/ThemeContext';
 import commonStyles from './Support.common.module.css';
 import lightStyles from './Support.light.module.css';
 import darkStyles from './Support.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
 
-// @AI-HINT: This is the Support Ticket Management page for admins. All styles are per-component only. Now fully theme-switchable using global theme context.
+// @AI-HINT: This is the Admin Support Ticket Management page.
+// It has been fully refactored to use CSS modules and the global theme context.
 
-interface Ticket {
-  id: string;
-  subject: string;
-  user: string;
-  priority: 'High' | 'Medium' | 'Low';
-  status: 'Open' | 'In Progress' | 'Closed';
-  lastUpdate: string;
-}
+const supportTickets = [
+  { id: 'TKT-001', user: 'Alice Johnson', subject: 'Payment Issue', priority: 'High', status: 'Open', lastUpdate: '2024-08-04' },
+  { id: 'TKT-002', user: 'Bob Williams', subject: 'Project Dispute', priority: 'Medium', status: 'In-Progress', lastUpdate: '2024-08-03' },
+  { id: 'TKT-003', user: 'Charlie Brown', subject: 'Account Access', priority: 'Low', status: 'Closed', lastUpdate: '2024-08-01' },
+  { id: 'TKT-004', user: 'Diana Prince', subject: 'Feature Request', priority: 'Low', status: 'Closed', lastUpdate: '2024-07-30' },
+  { id: 'TKT-005', user: 'Ethan Hunt', subject: 'Bug Report: Profile Page', priority: 'High', status: 'Open', lastUpdate: '2024-08-05' },
+];
+
+type Ticket = typeof supportTickets[0];
 
 const Support: React.FC = () => {
   const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const styles = {
+    ...commonStyles,
+    ...(theme === 'dark' ? darkStyles : lightStyles),
+  };
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/support');
-        if (!response.ok) {
-          throw new Error('Failed to fetch support tickets');
-        }
-        const data = await response.json();
-        setTickets(data.tickets);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const getPriorityClass = (priority: string) => {
+    if (priority === 'High') return styles.priorityHigh;
+    if (priority === 'Medium') return styles.priorityMedium;
+    return styles.priorityLow;
+  };
 
-    fetchTickets();
-  }, []);
+  const getStatusClass = (status: string) => {
+    if (status === 'Open') return styles.statusOpen;
+    if (status === 'In-Progress') return styles.statusInProgress;
+    return styles.statusClosed;
+  };
 
   return (
-    <div className={`Support Support--${theme}`}>
-      <header className="Support-header">
+    <div className={`${styles.supportPage} ${theme === 'dark' ? styles.supportPageDark : styles.supportPageLight}`}>
+      <header className={styles.header}>
         <h1>Support Tickets</h1>
-        <p>View and manage all user support requests.</p>
+        <p>Manage and respond to user support requests.</p>
       </header>
 
-      <div className={`Support-table-container Support-table-container--${theme}`}>
-        {loading && <div className="Support-status">Loading tickets...</div>}
-        {error && <div className="Support-status Support-status--error">Error: {error}</div>}
-        {!loading && !error && (
-          <table className="Support-table">
-            <thead>
-              <tr>
-                <th>Ticket ID</th>
-                <th>Subject</th>
-                <th>User</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Last Update</th>
-                <th>Actions</th>
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>User</th>
+              <th>Subject</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Last Update</th>
+            </tr>
+          </thead>
+          <tbody>
+            {supportTickets.map((ticket: Ticket) => (
+              <tr key={ticket.id}>
+                <td>{ticket.id}</td>
+                <td>{ticket.user}</td>
+                <td>{ticket.subject}</td>
+                <td>
+                  <span className={`${styles.priorityBadge} ${getPriorityClass(ticket.priority)}`}>
+                    {ticket.priority}
+                  </span>
+                </td>
+                <td>
+                  <span className={`${styles.statusBadge} ${getStatusClass(ticket.status)}`}>
+                    {ticket.status}
+                  </span>
+                </td>
+                <td>{ticket.lastUpdate}</td>
               </tr>
-            </thead>
-            <tbody>
-              {tickets.map(ticket => (
-                <tr key={ticket.id}>
-                  <td>{ticket.id}</td>
-                  <td>{ticket.subject}</td>
-                  <td>{ticket.user}</td>
-                  <td>
-                    <span className={`priority-badge priority-badge--${ticket.priority}`}>{ticket.priority}</span>
-                  </td>
-                  <td>
-                    <span className={`status-badge status-badge--${ticket.status.replace(/\s+/g, '-')}`}>{ticket.status}</span>
-                  </td>
-                  <td>{ticket.lastUpdate}</td>
-                  <td>
-                    <Button variant="primary" size="small">View Ticket</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

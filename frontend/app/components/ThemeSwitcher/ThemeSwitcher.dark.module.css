@@ -1,10 +1,10 @@
 /* @AI-HINT: Dark theme styles for the ThemeSwitcher button. */
 
-.themeToggle {
-  background-color: var(--surface-alt);
-  color: var(--text-primary);
+.dark {
+  background-color: #1f2937; /* Gray 800 */
+  color: #f9fafb; /* Gray 50 */
 }
 
-.themeToggle:hover {
-  background-color: var(--surface);
+.dark:hover {
+  background-color: #374151; /* Gray 700 */
 }

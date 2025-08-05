@@ -1,4 +1,9 @@
-/* Migrated from DashboardHeader.light.css to DashboardHeader.light.module.css */
-@import './DashboardHeader.common.module.css';
+/* AI-HINT: Light theme for the redesigned premium Dashboard Header. */
 
-/* Place all DashboardHeader.light.css content here */
+.headerTitle h1 {
+  color: #1f2937; /* A strong, dark gray for text */
+}
+
+.headerTitle p {
+  color: #6b7280; /* A softer gray for subtitles */
+}

@@ -1,14 +1,11 @@
-// @AI-HINT: This is the Next.js route file for the Client 'My Projects' page. It delegates to the Projects component.
+// @AI-HINT: This is the Next.js route file for the Client 'My Projects' page. It delegates to the self-contained Projects component.
 'use client';
 
 import React from 'react';
 import Projects from './Projects';
-import { useTheme } from '@/app/contexts/ThemeContext';
 
 const ProjectsPage = () => {
-  const { theme } = useTheme();
-
-  return <Projects theme={theme} />;
+  return <Projects />;
 };
 
 export default ProjectsPage;

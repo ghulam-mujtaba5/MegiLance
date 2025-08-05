@@ -1,4 +1,83 @@
-/* Migrated from DashboardActivityFeed.common.css to DashboardActivityFeed.common.module.css */
+/* AI-HINT: Redesigned for a premium, investor-grade Activity Feed component. */
 
+.activityFeedCard {
+  border-radius: 12px;
+  padding: 2rem; /* 32px */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+  height: 100%;
+}
 
-/* Place all DashboardActivityFeed.common.css content here */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+}
+
+.activityList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* 24px */
+}
+
+/* Using a timeline-like structure */
+.activityItem {
+  display: flex;
+  gap: 1rem; /* 16px */
+  position: relative;
+  padding-left: 2rem; /* Space for the timeline line and icon */
+}
+
+.timeline {
+  position: absolute;
+  left: 10px; /* Aligns with the center of the icon */
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+
+.activityItem:last-child .timeline {
+  display: none; /* Hide line for the last item */
+}
+
+.activityIconContainer {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.activityIcon {
+  font-size: 0.875rem; /* 14px */
+}
+
+.activityContent p {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.875rem; /* 14px */
+}
+
+.activityContent .user {
+  font-weight: 600;
+}
+
+.activityTimestamp {
+  font-size: 0.75rem; /* 12px */
+  margin-top: 0.25rem;
+}

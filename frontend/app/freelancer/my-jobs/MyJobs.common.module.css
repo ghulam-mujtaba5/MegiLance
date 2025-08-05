@@ -1,0 +1,66 @@
+.myJobs {
+  padding: 2rem 3rem;
+}
+
+.myJobsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.myJobsHeader {
+  margin-bottom: 2.5rem;
+}
+
+.myJobsHeader h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+}
+
+.myJobsHeader p {
+  font-size: 1.125rem;
+}
+
+.myJobsSection {
+  margin-bottom: 3rem;
+}
+
+.myJobsSection h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.myJobsList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.jobItem {
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.jobItemStatus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.jobItemStatus span {
+  font-weight: 600;
+}
+
+.jobItemProgressBar {
+  flex-grow: 1;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.jobItemProgress {
+  height: 100%;
+  border-radius: 4px;
+  width: var(--job-progress-width, 0%);
+}

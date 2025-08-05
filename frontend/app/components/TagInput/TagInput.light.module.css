@@ -1,0 +1,23 @@
+/* @AI-HINT: Light theme styles for the TagInput component. */
+
+.light .tagInputLabel {
+  color: #374151;
+}
+
+.light .tagInputWrapper {
+  border-color: #d1d5db;
+  background-color: #ffffff;
+}
+
+.light .tagInputTag {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.light .tagInputRemoveBtn {
+  color: #4b5563;
+}
+
+.light .tagInputInput {
+  color: #111827;
+}

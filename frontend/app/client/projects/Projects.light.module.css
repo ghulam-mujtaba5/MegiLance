@@ -1,0 +1,17 @@
+.projectsLight {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.projectsLight .projectsHeader p {
+  color: #6b7280;
+}
+
+.projectsLight .clientProjectCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.projectsLight .clientProjectCardInfo {
+  color: #4b5563;
+}

@@ -1,0 +1,36 @@
+.progressBarLight {
+  background-color: #e5e7eb; /* Gray 200 */
+}
+
+.progressBarLight .progressBarLabel {
+  color: #374151; /* Gray 700 */
+}
+
+.progressBarLight .progressBarPercentage {
+  color: #111827; /* Gray 900 */
+}
+
+.progressBarLight:focus {
+  outline-color: #a5b4fc; /* Indigo 300 */
+}
+
+/* Color Variants */
+.default .progressBarFill {
+  background-color: #4f46e5; /* Indigo 600 */
+}
+
+.success .progressBarFill {
+  background-color: #16a34a; /* Green 600 */
+}
+
+.error .progressBarFill {
+  background-color: #dc2626; /* Red 600 */
+}
+
+.warning .progressBarFill {
+  background-color: #d97706; /* Amber 600 */
+}
+
+.info .progressBarFill {
+  background-color: #2563eb; /* Blue 600 */
+}

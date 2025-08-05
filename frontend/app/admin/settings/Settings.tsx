@@ -1,116 +1,75 @@
-// @AI-HINT: This is the platform Settings page for admins. All styles are per-component only.
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Button from '@/app/components/Button/Button';
-import Input from '@/app/components/Input/Input';
+import React from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 import commonStyles from './Settings.common.module.css';
 import lightStyles from './Settings.light.module.css';
 import darkStyles from './Settings.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-// @AI-HINT: This is the platform Settings page for admins. All styles are per-component only. Now fully theme-switchable using global theme context.
-
-interface SettingsData {
-  general: { platformName: string; supportEmail: string; enableRegistrations: boolean; };
-  fees: { freelancerServiceFee: number; clientProcessingFee: number; fixedProcessingFee: number; };
-  integrations: { stripeApiKey: string; googleAnalyticsId: string; };
-}
-
-type Tab = 'general' | 'fees' | 'integrations';
+// @AI-HINT: This is the Admin Settings page, providing controls for various platform settings.
+// It has been fully refactored to use CSS modules and the global theme context.
 
 const Settings: React.FC = () => {
   const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-  const [activeTab, setActiveTab] = useState<Tab>('general');
-  const [settings, setSettings] = useState<SettingsData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/settings');
-        if (!response.ok) {
-          throw new Error('Failed to fetch settings');
-        }
-        const data: SettingsData = await response.json();
-        setSettings(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
-
-  const renderContent = () => {
-    if (loading) {
-      return <div>Loading settings...</div>;
-    }
-    if (error) {
-      return <div>Error: {error}</div>;
-    }
-    if (!settings) {
-      return <div>No settings found.</div>;
-    }
-
-    switch (activeTab) {
-      case 'general':
-        return (
-          <div className="Settings-form">
-            <Input label="Platform Name" type="text" defaultValue={settings.general.platformName} />
-            <Input label="Support Email" type="email" defaultValue={settings.general.supportEmail} />
-            <label className="Checkbox-label">
-              <input type="checkbox" defaultChecked={settings.general.enableRegistrations} />
-              Enable new user registrations.
-            </label>
-            <Button variant="primary">Save General Settings</Button>
-          </div>
-        );
-      case 'fees':
-        return (
-          <div className="Settings-form">
-            <Input label="Freelancer Service Fee (%)" type="number" defaultValue={settings.fees.freelancerServiceFee} />
-            <Input label="Client Payment Processing Fee (%)" type="number" defaultValue={settings.fees.clientProcessingFee} />
-            <Input label="Fixed Processing Fee (USD)" type="number" defaultValue={settings.fees.fixedProcessingFee} />
-            <Button variant="primary">Save Fee Structure</Button>
-          </div>
-        );
-      case 'integrations':
-        return (
-          <div className="Settings-form">
-            <Input label="Stripe API Key" type="password" defaultValue={settings.integrations.stripeApiKey}/>
-            <Input label="Google Analytics ID" type="text" defaultValue={settings.integrations.googleAnalyticsId} />
-            <Button variant="primary">Save Integrations</Button>
-          </div>
-        );
-      default:
-        return null;
-    }
+  const styles = {
+    ...commonStyles,
+    ...(theme === 'dark' ? darkStyles : lightStyles),
   };
 
   return (
-    <div className={`Settings Settings--${theme}`}>
-      <div className="Settings-container">
-        <header className="Settings-header">
-          <h1>Platform Settings</h1>
-          <p>Configure global settings for the entire platform.</p>
-        </header>
+    <div className={`${styles.settingsPage} ${theme === 'dark' ? styles.settingsPageDark : styles.settingsPageLight}`}>
+      <header className={styles.header}>
+        <h1>Admin Settings</h1>
+        <p>Manage global platform configurations and preferences.</p>
+      </header>
 
-        <div className="Settings-layout">
-          <nav className="Settings-nav">
-            <button onClick={() => setActiveTab('general')} className={activeTab === 'general' ? 'active' : ''}>General</button>
-            <button onClick={() => setActiveTab('fees')} className={activeTab === 'fees' ? 'active' : ''}>Fees & Charges</button>
-            <button onClick={() => setActiveTab('integrations')} className={activeTab === 'integrations' ? 'active' : ''}>Integrations</button>
-          </nav>
-          <main className={`Settings-content Settings-content--${theme}`}>
-            {renderContent()}
-          </main>
-        </div>
+      <div className={styles.settingsGrid}>
+        {/* Profile Settings Section */}
+        <section className={styles.settingsSection}>
+          <h2 className={styles.sectionTitle}>Profile Information</h2>
+          <div className={styles.formRow}>
+            <label htmlFor="adminName">Admin Name</label>
+            <Input id="adminName" defaultValue="MegiLance Admin" />
+          </div>
+          <div className={styles.formRow}>
+            <label htmlFor="adminEmail">Contact Email</label>
+            <Input id="adminEmail" type="email" defaultValue="admin@megilance.com" />
+          </div>
+          <Button>Update Profile</Button>
+        </section>
+
+        {/* Security Settings Section */}
+        <section className={styles.settingsSection}>
+          <h2 className={styles.sectionTitle}>Security</h2>
+          <div className={styles.formRow}>
+            <label htmlFor="currentPassword">Current Password</label>
+            <Input id="currentPassword" type="password" />
+          </div>
+          <div className={styles.formRow}>
+            <label htmlFor="newPassword">New Password</label>
+            <Input id="newPassword" type="password" />
+          </div>
+          <div className={styles.securityFeature}>
+            <span>Two-Factor Authentication (2FA)</span>
+            <Button variant="outline">Enable 2FA</Button>
+          </div>
+          <Button>Update Security</Button>
+        </section>
+
+        {/* Notification Settings Section */}
+        <section className={styles.settingsSection}>
+          <h2 className={styles.sectionTitle}>Notifications</h2>
+          <div className={styles.notificationOption}>
+            <p>Receive email notifications for critical system alerts.</p>
+            <Input type="checkbox" className={styles.toggle} defaultChecked />
+          </div>
+          <div className={styles.notificationOption}>
+            <p>Send weekly summary reports to the admin email.</p>
+            <Input type="checkbox" className={styles.toggle} />
+          </div>
+        </section>
       </div>
     </div>
   );

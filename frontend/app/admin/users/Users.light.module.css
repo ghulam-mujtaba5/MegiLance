@@ -1,4 +1,25 @@
-/* Migrated from Users.light.css to Users.light.module.css */
-@import './Users.common.module.css';
+.usersPage {
+  background-color: #f9fafb;
+  color: #111827;
+}
 
-/* Place all Users.light.css content here */
+.tableContainer {
+  border: 1px solid #e5e7eb;
+}
+
+.table th {
+  background-color: #f9fafb;
+  color: #6b7280;
+}
+
+.table tbody tr {
+  border-top: 1px solid #e5e7eb;
+}
+
+.table tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+.userInfo span {
+  color: #6b7280;
+}

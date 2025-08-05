@@ -1,78 +1,69 @@
-// @AI-HINT: This is the main dashboard for clients to manage their projects and hiring. All styles are per-component only.
 'use client';
 
 import React from 'react';
-import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
-import Button from '@/app/components/Button/Button';
-import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
+import { useTheme } from '@/contexts/ThemeContext';
 import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
 import darkStyles from './Dashboard.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
 
-// @AI-HINT: This is the main dashboard for clients to manage their projects and hiring. All styles are per-component only. Now fully theme-switchable using global theme context.
+// @AI-HINT: This is the main dashboard for clients. It has been fully refactored to use
+// theme-aware CSS modules with camelCase conventions and modern import paths.
+
+const mockProjects = [
+  { id: 1, title: 'Develop AI-Powered Chatbot for E-commerce Site', budget: '$15,000', status: 'In Progress' },
+  { id: 2, title: 'Brand Identity and Logo Design for Tech Startup', budget: '$8,000', status: 'Awaiting Feedback' },
+  { id: 3, title: 'Full-Stack Development for SaaS Platform', budget: '$50,000', status: 'Completed' },
+];
+
+const getStatusClass = (status: string, styles: any) => {
+  switch (status) {
+    case 'In Progress':
+      return styles.statusInProgress;
+    case 'Awaiting Feedback':
+      return styles.statusAwaitingFeedback;
+    case 'Completed':
+      return styles.statusCompleted;
+    default:
+      return '';
+  }
+};
 
 const Dashboard: React.FC = () => {
-  // Mock data for the client dashboard
-  const stats = {
-    activeProjects: 3,
-    pendingHires: 2,
-    totalSpent: 25800,
+  const { theme } = useTheme();
+  const styles = {
+    ...commonStyles,
+    ...(theme === 'dark' ? darkStyles : lightStyles),
   };
 
-  const recentProjects = [
-    { id: '1', title: 'AI Chatbot Integration', status: 'In Progress', freelancer: 'John D.' },
-    { id: '2', title: 'Data Analytics Dashboard', status: 'Awaiting Feedback', freelancer: 'Jane S.' },
-    { id: '3', title: 'E-commerce Platform UI/UX', status: 'Completed', freelancer: 'Mike R.' },
-  ];
-
-  const recentTransactions = [
-    { type: 'payment', amount: -5000, date: '2025-08-01', description: 'Milestone Payment for AI Chatbot' },
-    { type: 'payment', amount: -8000, date: '2025-07-15', description: 'Final Payment for E-commerce UI/UX' },
-    { type: 'deposit', amount: 15000, date: '2025-07-10', description: 'Wallet Deposit' },
-  ];
-
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-
   return (
-    <div className={`${commonStyles.dashboard} ${themeStyles.dashboard}`}>
-      <div className={commonStyles.container}>
-        <header className={commonStyles.header}>
-          <h1>Client Dashboard</h1>
-          <Button variant="primary">Post a New Job</Button>
+    <div className={`${styles.dashboard} ${theme === 'dark' ? styles.dashboardDark : styles.dashboardLight}`}>
+      <div className={styles.dashboardContainer}>
+        <header className={styles.dashboardHeader}>
+          <h1 className={styles.headerTitle}>Client Dashboard</h1>
+          <Button>
+            <PlusCircle className="mr-2 h-4 w-4" /> Post a New Project
+          </Button>
         </header>
 
-        <div className={commonStyles.widgets}>
-          <DashboardWidget title="Active Projects" value={stats.activeProjects.toString()} />
-          <DashboardWidget title="Pending Hires" value={stats.pendingHires.toString()} />
-          <DashboardWidget title="Total Spent" value={`$${stats.totalSpent.toLocaleString()}`} />
-        </div>
-
-        <div className={commonStyles.mainContent}>
-          <section className={commonStyles.section}>
-            <h2>Recent Projects</h2>
-            <div className={commonStyles.projectList}>
-              {recentProjects.map(p => (
-                <div key={p.id} className={commonStyles.projectListItem}>
-                  <span>{p.title}</span>
-                  <span>{p.freelancer}</span>
-                  <span className={commonStyles.status}>{p.status}</span>
-                  <Button variant='secondary' size='small'>View Project</Button>
+        <main className={styles.dashboardMainContent}>
+          <section>
+            <h2 className={styles.sectionTitle}>Active Projects</h2>
+            <div className={styles.projectList}>
+              {mockProjects.map((project) => (
+                <div key={project.id} className={styles.projectListItem}>
+                  <span className={styles.projectTitle}>{project.title}</span>
+                  <span>{project.budget}</span>
+                  <span className={`${styles.status} ${getStatusClass(project.status, styles)}`}>
+                    {project.status}
+                  </span>
+                  <Button variant="outline" size="sm">Manage</Button>
                 </div>
               ))}
             </div>
           </section>
-
-          <section className={commonStyles.section}>
-            <h2>Recent Transactions</h2>
-            <div className={commonStyles.transactionList}>
-              {recentTransactions.map((tx, idx) => (
-                <TransactionRow key={idx} amount={tx.amount.toString()} date={tx.date} description={tx.description} type={tx.type} />
-              ))}
-            </div>
-          </section>
-        </div>
+        </main>
       </div>
     </div>
   );

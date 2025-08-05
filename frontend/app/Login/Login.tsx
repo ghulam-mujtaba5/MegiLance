@@ -6,10 +6,14 @@ import Link from 'next/link';
 import { FaGoogle, FaGithub, FaBuilding, FaUser, FaUserTie, FaCog, FaEye, FaEyeSlash, FaShieldAlt } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
+
+import { cn } from '@/lib/utils';
 import commonStyles from './Login.common.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
 import { useTheme } from '@/app/contexts/ThemeContext';
+
+
 
 // @AI-HINT: Premium SaaS Login component for MegiLance platform. Now fully theme-switchable using global theme context and per-component CSS modules.
 
@@ -18,6 +22,7 @@ type UserRole = 'freelancer' | 'client' | 'admin';
 interface LoginProps {}
 
 const Login: React.FC<LoginProps> = () => {
+  const { theme } = useTheme();
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [showPassword, setShowPassword] = useState(false);
@@ -139,26 +144,28 @@ const Login: React.FC<LoginProps> = () => {
   };
 
   return (
-    <div className="Login">
+    <div className={cn(commonStyles.login, theme === 'light' ? lightStyles.light : darkStyles.dark)}>
+      {/* AI-HINT: The 'cn' utility merges common styles with theme-specific (light/dark) styles. */}
       {/* Premium Brand Panel */}
-      <div className="Login-panel Login-panel--brand">
-        <div className="Login-brand-content">
-          <div className="Login-brand-header">
-            <FaBuilding className="Login-logo-icon" />
-            <h1 className="Login-brand-title">MegiLance</h1>
-            <p className="Login-brand-subtitle">Empowering Freelancers with AI and Secure USDC Payments</p>
+      <div className={cn(commonStyles.loginPanel, commonStyles.loginPanelBrand)}>
+          {/* AI-HINT: Combines base 'loginPanel' styles with the 'loginPanelBrand' variant. */}
+        <div className={commonStyles.loginBrandContent}>
+          <div className={commonStyles.loginBrandHeader}>
+            <FaBuilding className={commonStyles.loginLogoIcon} />
+            <h1 className={commonStyles.loginBrandTitle}>MegiLance</h1>
+            <p className={commonStyles.loginBrandSubtitle}>Empowering Freelancers with AI and Secure USDC Payments</p>
           </div>
-          <div className="Login-brand-features">
-            <div className="Login-feature">
-              <FaShieldAlt className="Login-feature-icon" />
+          <div className={commonStyles.loginBrandFeatures}>
+            <div className={commonStyles.loginFeature}>
+              <FaShieldAlt className={commonStyles.loginFeatureIcon} />
               <span>Secure Authentication</span>
             </div>
-            <div className="Login-feature">
-              <FaUser className="Login-feature-icon" />
+            <div className={commonStyles.loginFeature}>
+              <FaUser className={commonStyles.loginFeatureIcon} />
               <span>Multi-Role Access</span>
             </div>
-            <div className="Login-feature">
-              <FaBuilding className="Login-feature-icon" />
+            <div className={commonStyles.loginFeature}>
+              <FaBuilding className={commonStyles.loginFeatureIcon} />
               <span>Enterprise Ready</span>
             </div>
           </div>
@@ -166,31 +173,33 @@ const Login: React.FC<LoginProps> = () => {
       </div>
       
       {/* Premium Login Form Panel */}
-      <div className="Login-panel Login-panel--form">
-        <div className="Login-form-container">
+      <div className={cn(commonStyles.loginPanel, commonStyles.loginPanelForm)}>
+        <div className={commonStyles.loginFormContainer}>
+        
           
           {/* Premium Role Selection */}
-          <div className="Login-role-selection">
-            <h2 className="Login-form-title">Welcome Back</h2>
-            <p className="Login-form-subtitle">Select your role and sign in to continue</p>
+          <div className={commonStyles.loginRoleSelection}>
+            <h2 className={commonStyles.loginFormTitle}>Welcome Back</h2>
+            <p className={commonStyles.loginFormSubtitle}>Select your role and sign in to continue</p>
             
-            <div className="Login-roles">
+            <div className={commonStyles.loginRoles}>
               {Object.entries(roleConfig).map(([role, config]) => {
                 const IconComponent = config.icon;
                 return (
                   <button
                     key={role}
                     type="button"
-                    className={`Login-role-button ${
-                      selectedRole === role ? 'Login-role-button--active' : ''
-                    }`}
+                    className={cn(
+                      commonStyles.loginRoleButton,
+                      selectedRole === role && commonStyles.loginRoleButtonActive
+                    )}
                     onClick={() => setSelectedRole(role as UserRole)}
                     disabled={loading}
                   >
-                    <IconComponent className="Login-role-icon" />
-                    <div className="Login-role-content">
-                      <span className="Login-role-label">{config.label}</span>
-                      <span className="Login-role-description">{config.description}</span>
+                    <IconComponent className={commonStyles.loginRoleIcon} />
+                    <div className={commonStyles.loginRoleContent}>
+                      <span className={commonStyles.loginRoleLabel}>{config.label}</span>
+                      <span className={commonStyles.loginRoleDescription}>{config.description}</span>
                     </div>
                   </button>
                 );
@@ -199,37 +208,37 @@ const Login: React.FC<LoginProps> = () => {
           </div>
           
           {/* Premium Social Authentication */}
-          <div className="Login-social-section">
-            <div className="Login-social-buttons">
+          <div className={commonStyles.loginSocialSection}>
+            <div className={commonStyles.loginSocialButtons}>
               <button
                 type="button"
-                className="Login-social-button Login-social-button--google"
+                className={cn(commonStyles.loginSocialButton, commonStyles.loginSocialButtonGoogle)}
                 onClick={() => handleSocialLogin('google')}
                 disabled={loading}
               >
-                <FaGoogle className="Login-social-icon" />
+                <FaGoogle className={commonStyles.loginSocialIcon} />
                 <span>Continue with Google</span>
               </button>
               <button
                 type="button"
-                className="Login-social-button Login-social-button--github"
+                className={cn(commonStyles.loginSocialButton, commonStyles.loginSocialButtonGithub)}
                 onClick={() => handleSocialLogin('github')}
                 disabled={loading}
               >
-                <FaGithub className="Login-social-icon" />
+                <FaGithub className={commonStyles.loginSocialIcon} />
                 <span>Continue with GitHub</span>
               </button>
             </div>
             
-            <div className="Login-divider">
-              <span className="Login-divider-text">or continue with email</span>
+            <div className={commonStyles.loginDivider}>
+              <span className={commonStyles.loginDividerText}>or continue with email</span>
             </div>
           </div>
 
           {/* Premium Login Form */}
-          <form className="Login-form" onSubmit={handleSubmit} noValidate>
+          <form className={commonStyles.loginForm} onSubmit={handleSubmit} noValidate>
             {/* Premium Email Input */}
-            <div className="Login-input-group">
+            <div className={commonStyles.loginInputGroup}>
               <Input
                 label="Email Address"
                 type="email"
@@ -239,13 +248,13 @@ const Login: React.FC<LoginProps> = () => {
                 onChange={handleChange}
                 error={errors.email}
                 required
-                className="Login-input"
+                className={commonStyles.loginInput}
               />
             </div>
             
             {/* Premium Password Input with Show/Hide Toggle */}
-            <div className="Login-input-group">
-              <div className="Login-password-wrapper">
+            <div className={commonStyles.loginInputGroup}>
+              <div className={commonStyles.loginPasswordWrapper}>
                 <Input
                   label="Password"
                   type={showPassword ? 'text' : 'password'}
@@ -255,11 +264,11 @@ const Login: React.FC<LoginProps> = () => {
                   onChange={handleChange}
                   error={errors.password}
                   required
-                  className="Login-input"
+                  className={commonStyles.loginInput}
                 />
                 <button
                   type="button"
-                  className="Login-password-toggle"
+                  className={commonStyles.loginPasswordToggle}
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
@@ -268,18 +277,18 @@ const Login: React.FC<LoginProps> = () => {
               </div>
             </div>
             {/* Premium Form Options */}
-            <div className="Login-form-options">
-              <div className="Login-remember-group">
+            <div className={commonStyles.loginFormOptions}>
+              <div className={commonStyles.loginRememberGroup}>
                 <input
                   type="checkbox"
                   id="remember-me"
-                  className="Login-checkbox"
+                  className={commonStyles.loginCheckbox}
                 />
-                <label htmlFor="remember-me" className="Login-checkbox-label">
+                <label htmlFor="remember-me" className={commonStyles.loginCheckboxLabel}>
                   Remember me for 30 days
                 </label>
               </div>
-              <Link href="/forgot-password" className="Login-forgot-link">
+              <Link href="/forgot-password" className={commonStyles.loginForgotLink}>
                 Forgot password?
               </Link>
             </div>
@@ -290,17 +299,17 @@ const Login: React.FC<LoginProps> = () => {
               variant="primary" 
               fullWidth 
               isLoading={loading}
-              className="Login-submit-button"
+              className={commonStyles.loginSubmitButton}
             >
               {loading ? `Signing in as ${roleConfig[selectedRole].label}...` : `Sign in as ${roleConfig[selectedRole].label}`}
             </Button>
           </form>
           
           {/* Premium Sign Up Link */}
-          <div className="Login-signup-section">
-            <p className="Login-signup-text">
+          <div className={commonStyles.loginSignupSection}>
+            <p className={commonStyles.loginSignupText}>
               Don't have an account?
-              <Link href="/signup" className="Login-signup-link">
+              <Link href="/signup" className={commonStyles.loginSignupLink}>
                 Create your account
               </Link>
             </p>

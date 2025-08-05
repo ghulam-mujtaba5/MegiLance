@@ -1,76 +1,53 @@
-// @AI-HINT: This is the User Management page for admins to view, search, and manage users. All styles are per-component only.
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Input from '@/app/components/Input/Input';
-import Button from '@/app/components/Button/Button';
-import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
+import React from 'react';
+import { useTheme } from '../../../contexts/ThemeContext';
 import commonStyles from './Users.common.module.css';
 import lightStyles from './Users.light.module.css';
 import darkStyles from './Users.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-// @AI-HINT: This is the User Management page for admins to view, search, and manage users. All styles are per-component only. Now fully theme-switchable using global theme context.
+// @AI-HINT: This is the Admin User Management page.
+// It has been fully refactored to use CSS modules and the global theme context.
 
-interface User {
-    id: string;
-    name: string;
-    email: string;
-    type: 'Freelancer' | 'Client';
-    status: 'Active' | 'Suspended';
-    joined: string;
-}
+const users = [
+  { id: 'USR-001', name: 'John Doe', email: 'john.doe@example.com', role: 'Freelancer', status: 'Active', joined: '2023-01-15' },
+  { id: 'USR-002', name: 'Jane Smith', email: 'jane.smith@example.com', role: 'Client', status: 'Active', joined: '2023-02-20' },
+  { id: 'USR-003', name: 'Sam Wilson', email: 'sam.wilson@example.com', role: 'Freelancer', status: 'Suspended', joined: '2023-03-10' },
+  { id: 'USR-004', name: 'Alice Johnson', email: 'alice.j@example.com', role: 'Client', status: 'Active', joined: '2023-04-05' },
+  { id: 'USR-005', name: 'Robert Brown', email: 'robert.b@example.com', role: 'Freelancer', status: 'Active', joined: '2023-05-21' },
+];
+
+type User = typeof users[0];
 
 const Users: React.FC = () => {
   const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const styles = {
+    ...commonStyles,
+    ...(theme === 'dark' ? darkStyles : lightStyles),
+  };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/users');
-        if (!response.ok) {
-          throw new Error('Failed to fetch users');
-        }
-        const data: User[] = await response.json();
-        setUsers(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  if (loading) {
-    return <div className={`Users-status Users-status--${theme}`}>Loading users...</div>;
-  }
-
-  if (error) {
-    return <div className={`Users-status Users-status--error Users-status--${theme}`}>Error: {error}</div>;
-  }
+  const getStatusClass = (status: string) => {
+    return status === 'Active' ? styles.statusActive : styles.statusSuspended;
+  };
 
   return (
-    <div className={`Users Users--${theme}`}>
-      <header className="Users-header">
+    <div className={`${styles.usersPage} ${theme === 'dark' ? darkStyles.usersPage : lightStyles.usersPage}`}>
+      <header className={styles.header}>
         <h1>User Management</h1>
-        <div className="Users-actions">
-          <Input theme={theme} type="search" placeholder="Search by name or email..." />
-          <Button theme={theme} variant="primary">Add User</Button>
+        <div className={styles.actions}>
+          <Input placeholder="Search users..." className={styles.input} />
+          <Button>Add User</Button>
         </div>
       </header>
 
-      <div className={`Users-table-container Users-table-container--${theme}`}>
-        <table className="Users-table">
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
           <thead>
             <tr>
-              <th>User</th>
+              <th>User ID</th>
+              <th>Name</th>
               <th>Role</th>
               <th>Status</th>
               <th>Date Joined</th>
@@ -78,26 +55,26 @@ const Users: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
+            {users.map((user: User) => (
               <tr key={user.id}>
+                <td>{user.id}</td>
                 <td>
-                  <div className="User-info">
-                    <UserAvatar theme={theme} name={user.name} />
-                    <div>
-                      <strong>{user.name}</strong>
-                      <span>{user.email}</span>
-                    </div>
+                  <div className={styles.userInfo}>
+                    <strong>{user.name}</strong>
+                    <span>{user.email}</span>
                   </div>
                 </td>
-                <td>{user.type}</td>
+                <td>{user.role}</td>
                 <td>
-                  <span className={`status-badge status-badge--${user.status.toLowerCase()}`}>{user.status}</span>
+                  <span className={`${styles.statusBadge} ${getStatusClass(user.status)}`}>
+                    {user.status}
+                  </span>
                 </td>
                 <td>{user.joined}</td>
                 <td>
-                  <div className="Table-actions">
-                    <Button theme={theme} variant="outline" size="small">View</Button>
-                    <Button theme={theme} variant="danger-outline" size="small">Suspend</Button>
+                  <div className={styles.tableActions}>
+                    <Button variant="outline" size="sm">Edit</Button>
+                    <Button variant="destructive" size="sm">Delete</Button>
                   </div>
                 </td>
               </tr>

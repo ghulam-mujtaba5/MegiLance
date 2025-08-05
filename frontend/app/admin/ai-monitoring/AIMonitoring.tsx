@@ -1,98 +1,65 @@
-// @AI-HINT: This is the AI Monitoring page for admins to oversee the platform's AI systems. All styles are per-component only.
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
+import React from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 import commonStyles from './AIMonitoring.common.module.css';
 import lightStyles from './AIMonitoring.light.module.css';
 import darkStyles from './AIMonitoring.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
 
-// @AI-HINT: This is the AI Monitoring page for admins to oversee the platform's AI systems. All styles are per-component only. Now fully theme-switchable using global theme context.
+// @AI-HINT: This is the AI Monitoring page for admins to oversee the platform's AI systems.
+// It has been fully refactored to use CSS modules with camelCase conventions and the global theme context.
 
-interface AIStats {
-  rankModelAccuracy: string;
-  fraudDetections: number;
-  priceEstimations: number;
-  chatbotSessions: number;
-}
+// Mock data for AI system alerts
+const alerts = [
+  { id: 1, icon: '⚠️', message: 'High API latency detected for GPT-4 model.', timestamp: '2 minutes ago', severity: 'High' },
+  { id: 2, icon: '📈', message: 'Project matching accuracy increased by 3.2%.', timestamp: '1 hour ago', severity: 'Info' },
+  { id: 3, icon: '📉', message: 'Content moderation model confidence dropped below threshold.', timestamp: '3 hours ago', severity: 'Medium' },
+  { id: 4, icon: '💾', message: 'Vector DB memory usage at 85%.', timestamp: '5 hours ago', severity: 'Medium' },
+];
 
-interface FraudAlert {
-  id: string;
-  referenceId: string;
-  reason: string;
-  timestamp: string;
-}
-
-interface AIData {
-  aiStats: AIStats;
-  recentFraudAlerts: FraudAlert[];
-}
+// Mock data for metric widgets
+const metrics = [
+    { title: 'Model Accuracy', value: '98.7%', change: '+0.2%', isPositive: true },
+    { title: 'API Latency', value: '120ms', change: '-15ms', isPositive: true },
+    { title: 'Anomalies Detected', value: '12', change: '+3', isPositive: false },
+    { title: 'Active Models', value: '8', change: '±0', isPositive: true },
+];
 
 const AIMonitoring: React.FC = () => {
   const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-  const [data, setData] = useState<AIData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/ai-monitoring');
-        if (!response.ok) {
-          throw new Error('Failed to fetch AI monitoring data');
-        }
-        const result: AIData = await response.json();
-        setData(result);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <div className={`AIMonitoring-status AIMonitoring-status--${theme}`}>Loading AI monitoring data...</div>;
-  }
-
-  if (error) {
-    return <div className={`AIMonitoring-status AIMonitoring-status--error AIMonitoring-status--${theme}`}>Error: {error}</div>;
-  }
-
-  if (!data) {
-    return null; // Or some other placeholder
-  }
-
-  const { aiStats, recentFraudAlerts } = data;
+  const styles = {
+    ...commonStyles,
+    ...(theme === 'dark' ? darkStyles : lightStyles),
+  };
 
   return (
-    <div className={`AIMonitoring AIMonitoring--${theme}`}>
-      <header className="AIMonitoring-header">
+    <div className={`${styles.aiMonitoringPage} ${theme === 'dark' ? styles.aiMonitoringPageDark : styles.aiMonitoringPageLight}`}>
+      <header className={styles.header}>
         <h1>AI Systems Monitoring</h1>
-        <p>Oversee the performance and status of platform AI models.</p>
+        <p>Real-time overview of platform AI performance and health.</p>
       </header>
 
-      <div className="AIMonitoring-widgets">
-        <DashboardWidget title="Rank Model Accuracy" value={aiStats.rankModelAccuracy} />
-        <DashboardWidget title="Fraud Detections (24h)" value={aiStats.fraudDetections.toLocaleString()} />
-        <DashboardWidget title="Price Estimations (24h)" value={aiStats.priceEstimations.toLocaleString()} />
-        <DashboardWidget title="Chatbot Sessions (24h)" value={aiStats.chatbotSessions.toLocaleString()} />
+      <div className={styles.widgets}>
+        {metrics.map(metric => (
+            <div key={metric.title} className={styles.widgetCard}>
+                <h3 className={styles.widgetTitle}>{metric.title}</h3>
+                <p className={styles.widgetValue}>{metric.value}</p>
+                <span className={`${styles.widgetChange} ${metric.isPositive ? styles.positive : styles.negative}`}>
+                    {metric.change}
+                </span>
+            </div>
+        ))}
       </div>
 
-      <div className={`Alerts-list-card Alerts-list-card--${theme}`}>
-        <h2>Recent Fraud Alerts</h2>
-        <div className="Alerts-list">
-          {recentFraudAlerts.map(alert => (
-            <div key={alert.id} className={`Alert-item Alert-item--${theme}`}>
-              <div className="Alert-icon">⚠️</div>
-              <div className="Alert-details">
-                <p>{alert.reason}</p>
-                <small>Reference: {alert.referenceId} | Timestamp: {alert.timestamp}</small>
+      <div className={styles.alertsListCard}>
+        <h2>Recent AI Alerts</h2>
+        <div className={styles.alertsList}>
+          {alerts.map(alert => (
+            <div key={alert.id} className={styles.alertItem}>
+              <span className={styles.alertIcon}>{alert.icon}</span>
+              <div className={styles.alertDetails}>
+                <p>{alert.message}</p>
+                <small>{alert.timestamp}</small>
               </div>
             </div>
           ))}
