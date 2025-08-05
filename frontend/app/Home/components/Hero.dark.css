@@ -1,0 +1,28 @@
+/* @AI-HINT: Dark theme styles for Hero section */
+
+.Hero {
+  background: linear-gradient(135deg, #1a1d23 0%, #2c323a 100%);
+}
+
+.Hero-badge {
+  box-shadow: 0 4px 20px rgba(69, 115, 223, 0.3);
+}
+
+.Hero-feature {
+  background: rgba(44, 50, 58, 0.8);
+  border: 1px solid rgba(69, 115, 223, 0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.Hero-stats {
+  background: rgba(44, 50, 58, 0.9);
+  border: 1px solid rgba(69, 115, 223, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.Hero-trust-badge {
+  background: rgba(44, 50, 58, 0.8);
+  border: 1px solid rgba(69, 115, 223, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+}

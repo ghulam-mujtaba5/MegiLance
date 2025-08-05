@@ -1,11 +1,12 @@
-// @AI-HINT: This is the Next.js route file for the projects page. Uses proper lowercase routing.
+// @AI-HINT: This is the Next.js route file for the projects page.
+
 'use client';
 
+import PlaceholderPage from '@/app/components/PlaceholderPage/PlaceholderPage';
 import React from 'react';
-import Projects from '../Projects/Projects';
 
 const ProjectsPage = () => {
-  return <Projects />;
+  return <PlaceholderPage title="Projects" />;
 };
 
 export default ProjectsPage;

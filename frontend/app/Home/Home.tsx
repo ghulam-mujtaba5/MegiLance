@@ -1,23 +1,39 @@
-// @AI-HINT: This is the Home page root component. All styles are per-component only. See Home.common.css, Home.light.css, and Home.dark.css for theming.
+// @AI-HINT: This is the comprehensive Home page showcasing MegiLance's AI-powered freelancing platform with blockchain integration. Maximum scope implementation with premium sections.
 'use client';
 
 import React from "react";
 import Link from 'next/link';
 import Button from '@/app/components/Button/Button';
 import { FaRocket, FaUsers, FaShieldAlt } from 'react-icons/fa';
+import Hero from './components/Hero';
 import Features from './components/Features';
+import AIShowcase from './components/AIShowcase';
+import BlockchainShowcase from './components/BlockchainShowcase';
 import HowItWorks from './components/HowItWorks';
+import GlobalImpact from './components/GlobalImpact';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
 import "./Home.common.css";
 import "./Home.light.css";
 import "./Home.dark.css";
+import "./components/Hero.common.css";
+import "./components/Hero.light.css";
+import "./components/Hero.dark.css";
 import "./components/Features.common.css";
 import "./components/Features.light.css";
 import "./components/Features.dark.css";
+import "./components/AIShowcase.common.css";
+import "./components/AIShowcase.light.css";
+import "./components/AIShowcase.dark.css";
+import "./components/BlockchainShowcase.common.css";
+import "./components/BlockchainShowcase.light.css";
+import "./components/BlockchainShowcase.dark.css";
 import "./components/HowItWorks.common.css";
 import "./components/HowItWorks.light.css";
 import "./components/HowItWorks.dark.css";
+import "./components/GlobalImpact.common.css";
+import "./components/GlobalImpact.light.css";
+import "./components/GlobalImpact.dark.css";
 import "./components/Testimonials.common.css";
 import "./components/Testimonials.light.css";
 import "./components/Testimonials.dark.css";
@@ -51,33 +67,28 @@ const Home: React.FC<HomeProps> = ({ theme = "light" }) => {
         </nav>
       </header>
       
-      {/* Hero Section */}
-      <section className="Home-hero">
-        <div className="Home-hero-content">
-          <h1 className="Home-title">MegiLance</h1>
-          <p className="Home-tagline">Empowering Freelancers with AI and Secure USDC Payments</p>
-          <p className="Home-subtitle">
-            The future of freelancing is here. Connect with global clients, get paid instantly in crypto, 
-            and leverage AI tools to grow your business.
-          </p>
-          <div className="Home-cta">
-            <Link href="/Signup" className="Home-link">
-              <Button theme={theme} variant="primary" size="large">
-                <FaRocket /> Get Started Free
-              </Button>
-            </Link>
-            <Link href="/Login" className="Home-link">
-              <Button theme={theme} variant="secondary" size="large">
-                Sign In
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Enhanced Hero Section with Animated Stats */}
+      <Hero theme={theme} />
 
+      {/* Core Platform Features */}
       <Features />
+      
+      {/* AI-Powered Capabilities Showcase */}
+      <AIShowcase />
+      
+      {/* Blockchain & Crypto Payment Features */}
+      <BlockchainShowcase />
+      
+      {/* How the Platform Works */}
       <HowItWorks />
+      
+      {/* Global Impact & Pakistani Focus */}
+      <GlobalImpact />
+      
+      {/* User Testimonials */}
       <Testimonials />
+      
+      {/* Final Call-to-Action */}
       <CTA theme={theme} />
 
       {/* Footer */}

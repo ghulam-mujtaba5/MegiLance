@@ -1,11 +1,12 @@
-// @AI-HINT: This is the Next.js route file for the settings page. Uses proper lowercase routing.
+// @AI-HINT: This is the Next.js route file for the settings page.
+
 'use client';
 
+import PlaceholderPage from '@/app/components/PlaceholderPage/PlaceholderPage';
 import React from 'react';
-import Settings from '../Settings/Settings';
 
 const SettingsPage = () => {
-  return <Settings />;
+  return <PlaceholderPage title="Settings" />;
 };
 
 export default SettingsPage;

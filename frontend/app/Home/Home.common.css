@@ -1,6 +1,8 @@
 /* @AI-HINT: Shared styles for Home component. Modern, professional navigation and layout design following MegiLance brand guidelines. */
 
 .Home {
+  background: var(--color-brand-background-main);
+
   display: flex;
   flex-direction: column;
   min-height: 100vh;

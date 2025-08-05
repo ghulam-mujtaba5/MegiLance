@@ -1,11 +1,12 @@
-// @AI-HINT: This is the Next.js route file for the messages page. Uses proper lowercase routing.
+// @AI-HINT: This is the Next.js route file for the messages page.
+
 'use client';
 
+import PlaceholderPage from '@/app/components/PlaceholderPage/PlaceholderPage';
 import React from 'react';
-import Messages from '../Messages/Messages';
 
 const MessagesPage = () => {
-  return <Messages />;
+  return <PlaceholderPage title="Messages" />;
 };
 
 export default MessagesPage;

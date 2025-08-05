@@ -1,0 +1,36 @@
+/* @AI-HINT: Light theme styles for Global Impact section */
+
+.GlobalImpact {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.GlobalImpact-stat {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.GlobalImpact-stat:hover {
+  box-shadow: 0 20px 40px rgba(69, 115, 223, 0.15);
+}
+
+.GlobalImpact-mission {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+.GlobalImpact-world-map {
+  background-color: rgba(245, 247, 250, 0.5);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+}
+
+.GlobalImpact-story {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.GlobalImpact-story:hover {
+  box-shadow: 0 20px 40px rgba(69, 115, 223, 0.15);
+}

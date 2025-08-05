@@ -1,0 +1,16 @@
+/* @AI-HINT: Light theme styles for Blockchain Showcase section */
+
+.BlockchainShowcase {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.BlockchainShowcase-block {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.BlockchainShowcase-stats {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}

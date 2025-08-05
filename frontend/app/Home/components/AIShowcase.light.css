@@ -1,0 +1,26 @@
+/* @AI-HINT: Light theme styles for AI Showcase section */
+
+.AIShowcase {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.AIShowcase-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.AIShowcase-card:hover {
+  box-shadow: 0 20px 40px rgba(69, 115, 223, 0.15);
+}
+
+.AIShowcase-tech-stack {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+.AIShowcase-tech-logo {
+  background: rgba(245, 247, 250, 0.8);
+  border: 1px solid rgba(69, 115, 223, 0.1);
+}
