@@ -4,15 +4,16 @@
 
 import React from 'react';
 import { FaBitcoin, FaShieldAlt, FaLock, FaGlobe, FaExchangeAlt, FaChartLine } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+
 import commonStyles from './BlockchainShowcase.common.module.css';
 import lightStyles from './BlockchainShowcase.light.module.css';
 import darkStyles from './BlockchainShowcase.dark.module.css';
 
-// @AI-HINT: Blockchain and crypto payment features showcase section. Now fully theme-switchable using global theme context.
-import { useTheme } from '@/app/contexts/ThemeContext';
-
 const BlockchainShowcase: React.FC = () => {
   const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const blockchainFeatures = [
     {
@@ -54,89 +55,89 @@ const BlockchainShowcase: React.FC = () => {
   ];
 
   return (
-    <section className={`BlockchainShowcase theme-${theme}`}>
-      <div className="BlockchainShowcase-container">
-        <div className="BlockchainShowcase-header">
-          <div className="BlockchainShowcase-badge">
-            <FaBitcoin className="BlockchainShowcase-badge-icon" />
+    <section className={cn(commonStyles.blockchainShowcase, themeStyles.blockchainShowcase)}>
+      <div className={commonStyles.container}>
+        <div className={commonStyles.header}>
+          <div className={commonStyles.badge}>
+            <FaBitcoin className={commonStyles.badgeIcon} />
             <span>Blockchain-Powered Platform</span>
           </div>
-          <h2 className="BlockchainShowcase-title">
-            The Future of <span className="BlockchainShowcase-title-highlight">Secure Payments</span>
+          <h2 className={commonStyles.title}>
+            The Future of <span className={commonStyles.titleHighlight}>Secure Payments</span>
           </h2>
-          <p className="BlockchainShowcase-subtitle">
+          <p className={commonStyles.subtitle}>
             Experience the power of blockchain technology with instant USDC payments, smart contract escrow, 
             and transparent reputation systems. Built for the modern freelancer who demands security and speed.
           </p>
         </div>
 
-        <div className="BlockchainShowcase-content">
-          <div className="BlockchainShowcase-visual">
-            <div className="BlockchainShowcase-blockchain">
-              <div className="BlockchainShowcase-block BlockchainShowcase-block--genesis">
-                <div className="BlockchainShowcase-block-header">Genesis</div>
-                <div className="BlockchainShowcase-block-content">Platform Launch</div>
+        <div className={commonStyles.content}>
+          <div className={commonStyles.visual}>
+            <div className={commonStyles.blockchain}>
+              <div className={cn(commonStyles.block, commonStyles['block--genesis'])}>
+                <div className={commonStyles.blockHeader}>Genesis</div>
+                <div className={commonStyles.blockContent}>Platform Launch</div>
               </div>
-              <div className="BlockchainShowcase-connector"></div>
-              <div className="BlockchainShowcase-block BlockchainShowcase-block--transaction">
-                <div className="BlockchainShowcase-block-header">Block #1</div>
-                <div className="BlockchainShowcase-block-content">Project Created</div>
+              <div className={commonStyles.connector}></div>
+              <div className={cn(commonStyles.block, commonStyles['block--transaction'])}>
+                <div className={commonStyles.blockHeader}>Block #1</div>
+                <div className={commonStyles.blockContent}>Project Created</div>
               </div>
-              <div className="BlockchainShowcase-connector"></div>
-              <div className="BlockchainShowcase-block BlockchainShowcase-block--escrow">
-                <div className="BlockchainShowcase-block-header">Block #2</div>
-                <div className="BlockchainShowcase-block-content">Funds Escrowed</div>
+              <div className={commonStyles.connector}></div>
+              <div className={cn(commonStyles.block, commonStyles['block--escrow'])}>
+                <div className={commonStyles.blockHeader}>Block #2</div>
+                <div className={commonStyles.blockContent}>Funds Escrowed</div>
               </div>
-              <div className="BlockchainShowcase-connector"></div>
-              <div className="BlockchainShowcase-block BlockchainShowcase-block--completion">
-                <div className="BlockchainShowcase-block-header">Block #3</div>
-                <div className="BlockchainShowcase-block-content">Payment Released</div>
+              <div className={commonStyles.connector}></div>
+              <div className={cn(commonStyles.block, commonStyles['block--completion'])}>
+                <div className={commonStyles.blockHeader}>Block #3</div>
+                <div className={commonStyles.blockContent}>Payment Released</div>
               </div>
             </div>
           </div>
 
-          <div className="BlockchainShowcase-features">
+          <div className={commonStyles.features}>
             {blockchainFeatures.map((feature, index) => (
-              <div key={index} className="BlockchainShowcase-feature">
-                <div className="BlockchainShowcase-feature-icon">
+              <div key={index} className={commonStyles.feature}>
+                <div className={commonStyles.featureIcon}>
                   <feature.icon />
                 </div>
-                <div className="BlockchainShowcase-feature-content">
-                  <h3 className="BlockchainShowcase-feature-title">{feature.title}</h3>
-                  <p className="BlockchainShowcase-feature-description">{feature.description}</p>
-                  <div className="BlockchainShowcase-feature-benefit">{feature.benefit}</div>
+                <div className={commonStyles.featureContent}>
+                  <h3 className={commonStyles.featureTitle}>{feature.title}</h3>
+                  <p className={commonStyles.featureDescription}>{feature.description}</p>
+                  <div className={commonStyles.featureBenefit}>{feature.benefit}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="BlockchainShowcase-stats">
-          <div className="BlockchainShowcase-stat">
-            <div className="BlockchainShowcase-stat-number">$2.5M+</div>
-            <div className="BlockchainShowcase-stat-label">Processed in USDC</div>
+        <div className={commonStyles.stats}>
+          <div className={commonStyles.stat}>
+            <div className={commonStyles.statNumber}>$2.5M+</div>
+            <div className={commonStyles.statLabel}>Processed in USDC</div>
           </div>
-          <div className="BlockchainShowcase-stat">
-            <div className="BlockchainShowcase-stat-number">99.99%</div>
-            <div className="BlockchainShowcase-stat-label">Transaction Success Rate</div>
+          <div className={commonStyles.stat}>
+            <div className={commonStyles.statNumber}>99.99%</div>
+            <div className={commonStyles.statLabel}>Transaction Success Rate</div>
           </div>
-          <div className="BlockchainShowcase-stat">
-            <div className="BlockchainShowcase-stat-number">{"< 30s"}</div>
-            <div className="BlockchainShowcase-stat-label">Average Settlement Time</div>
+          <div className={commonStyles.stat}>
+            <div className={commonStyles.statNumber}>{"< 30s"}</div>
+            <div className={commonStyles.statLabel}>Average Settlement Time</div>
           </div>
-          <div className="BlockchainShowcase-stat">
-            <div className="BlockchainShowcase-stat-number">0.5%</div>
-            <div className="BlockchainShowcase-stat-label">Transaction Fee</div>
+          <div className={commonStyles.stat}>
+            <div className={commonStyles.statNumber}>0.5%</div>
+            <div className={commonStyles.statLabel}>Transaction Fee</div>
           </div>
         </div>
 
-        <div className="BlockchainShowcase-supported-chains">
-          <h3 className="BlockchainShowcase-chains-title">Supported Blockchain Networks</h3>
-          <div className="BlockchainShowcase-chains">
-            <div className="BlockchainShowcase-chain">Ethereum</div>
-            <div className="BlockchainShowcase-chain">Polygon</div>
-            <div className="BlockchainShowcase-chain">Arbitrum</div>
-            <div className="BlockchainShowcase-chain">Optimism</div>
+        <div className={commonStyles.supportedChains}>
+          <h3 className={commonStyles.chainsTitle}>Supported Blockchain Networks</h3>
+          <div className={commonStyles.chains}>
+            <div className={commonStyles.chain}>Ethereum</div>
+            <div className={commonStyles.chain}>Polygon</div>
+            <div className={commonStyles.chain}>Arbitrum</div>
+            <div className={commonStyles.chain}>Optimism</div>
           </div>
         </div>
       </div>

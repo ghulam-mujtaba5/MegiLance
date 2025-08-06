@@ -1,7 +1,8 @@
 'use client';
 import React from 'react';
 import { FaRocket, FaShieldAlt, FaRobot, FaWallet } from 'react-icons/fa';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import commonStyles from './Features.common.module.css';
 import lightStyles from './Features.light.module.css';
 import darkStyles from './Features.dark.module.css';
@@ -33,16 +34,16 @@ const Features: React.FC = () => {
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   return (
-    <section className={`${commonStyles['Home-features']} ${themeStyles['Home-features']}`}>
-      <div className={commonStyles['Home-container']}>
-        <h2 className={commonStyles['Home-section-title']}>Why Choose MegiLance?</h2>
-        <p className={commonStyles['Home-section-subtitle']}>The platform designed for the future of freelancing.</p>
-        <div className={commonStyles['Home-features-grid']}>
+    <section className={cn(commonStyles.homeFeatures, themeStyles.homeFeatures)}>
+      <div className={commonStyles.container}>
+        <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Why Choose MegiLance?</h2>
+        <p className={cn(commonStyles.sectionSubtitle, themeStyles.sectionSubtitle)}>The platform designed for the future of freelancing.</p>
+        <div className={commonStyles.homeFeaturesGrid}>
           {features.map((feature, index) => (
-            <div key={index} className={`${commonStyles['Home-feature-card']} ${themeStyles['Home-feature-card']}`}>
-              <div className={`${commonStyles['Home-feature-icon']} ${themeStyles['Home-feature-icon']}`}>{feature.icon}</div>
-              <h3 className={`${commonStyles['Home-feature-title']} ${themeStyles['Home-feature-title']}`}>{feature.title}</h3>
-              <p className={`${commonStyles['Home-feature-description']} ${themeStyles['Home-feature-description']}`}>{feature.description}</p>
+            <div key={index} className={cn(commonStyles.homeFeatureCard, themeStyles.homeFeatureCard)}>
+              <div className={cn(commonStyles.homeFeatureIcon, themeStyles.homeFeatureIcon)}>{feature.icon}</div>
+              <h3 className={cn(commonStyles.homeFeatureTitle, themeStyles.homeFeatureTitle)}>{feature.title}</h3>
+              <p className={cn(commonStyles.homeFeatureDescription, themeStyles.homeFeatureDescription)}>{feature.description}</p>
             </div>
           ))}
         </div>

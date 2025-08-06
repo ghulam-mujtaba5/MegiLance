@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useContext, createContext, useId } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './Accordion.common.module.css';
 import lightStyles from './Accordion.light.module.css';
@@ -14,7 +14,6 @@ interface AccordionContextType {
   openItems: string[];
   toggleItem: (id: string) => void;
   type: 'single' | 'multiple';
-  themeStyles: { [key: string]: string };
 }
 
 const AccordionContext = createContext<AccordionContextType | null>(null);
@@ -34,7 +33,9 @@ interface AccordionItemProps {
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, children }) => {
-  const { openItems, toggleItem, themeStyles } = useAccordion();
+  const { openItems, toggleItem } = useAccordion();
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
   const contentId = useId();
   const buttonId = useId();
 
@@ -48,10 +49,10 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, chil
           onClick={() => toggleItem(value)}
           aria-expanded={isOpen}
           aria-controls={contentId}
-          className={commonStyles.accordionTrigger}
+          className={cn(commonStyles.accordionTrigger, themeStyles.accordionTrigger)}
         >
           <span className={commonStyles.accordionTitle}>{title}</span>
-          <span className={cn(commonStyles.accordionIcon, isOpen && commonStyles.iconOpen)} aria-hidden="true" />
+          <span className={cn(commonStyles.accordionIcon, themeStyles.accordionIcon, isOpen && commonStyles.iconOpen)} aria-hidden="true" />
         </button>
       </h3>
       <div
@@ -60,7 +61,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, chil
         aria-labelledby={buttonId}
         className={cn(commonStyles.accordionContent, isOpen ? commonStyles.contentOpen : commonStyles.contentClosed)}
       >
-        <div className={commonStyles.accordionContentText}>{children}</div>
+        <div className={cn(commonStyles.accordionContentText, themeStyles.accordionContentText)}>{children}</div>
       </div>
     </div>
   );
@@ -86,9 +87,6 @@ const Accordion: React.FC<AccordionProps> = ({
     return [];
   });
 
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-
   const toggleItem = (id: string) => {
     if (type === 'single') {
       setOpenItems(openItems.includes(id) ? [] : [id]);
@@ -99,8 +97,11 @@ const Accordion: React.FC<AccordionProps> = ({
     }
   };
 
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <AccordionContext.Provider value={{ openItems, toggleItem, type, themeStyles }}>
+    <AccordionContext.Provider value={{ openItems, toggleItem, type }}>
       <div className={cn(commonStyles.accordionRoot, themeStyles.accordionRoot, className)}>
         {children}
       </div>

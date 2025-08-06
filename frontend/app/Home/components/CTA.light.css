@@ -1,8 +1,0 @@
-body.light .Home-cta-section {
-  background-color: var(--primary-color);
-}
-
-body.light .Home-cta-title,
-body.light .Home-cta-subtitle {
-  color: #ffffff;
-}

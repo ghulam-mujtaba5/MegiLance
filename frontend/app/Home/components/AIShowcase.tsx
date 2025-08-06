@@ -7,9 +7,9 @@ import { useTheme } from 'next-themes';
 import { FaRobot, FaBrain, FaChartLine, FaShieldAlt, FaComments, FaDollarSign } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './AIShowcase.module.scss';
-import lightStyles from './AIShowcase.light.module.scss';
-import darkStyles from './AIShowcase.dark.module.scss';
+import commonStyles from './AIShowcase.common.module.css';
+import lightStyles from './AIShowcase.light.module.css';
+import darkStyles from './AIShowcase.dark.module.css';
 
 const AIShowcase: React.FC = () => {
   const { theme } = useTheme();

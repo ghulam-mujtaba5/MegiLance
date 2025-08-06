@@ -12,12 +12,12 @@
   transition: var(--transition-all-fast);
 }
 
-.badgeSmall {
+.small {
   padding: var(--spacing-1) var(--spacing-2);
   font-size: var(--font-size-xs);
 }
 
-.badgeMedium {
+.medium {
   padding: var(--spacing-1) var(--spacing-3);
   font-size: var(--font-size-sm);
 }

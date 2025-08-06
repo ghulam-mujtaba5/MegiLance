@@ -1,0 +1,53 @@
+.howItWorks {
+  padding: 5rem 1rem;
+  text-align: center;
+}
+
+.howItWorksColumns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  margin-top: 3rem;
+}
+
+@media (min-width: 768px) {
+  .howItWorksColumns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.columnTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  text-align: left;
+}
+
+.stepCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.stepIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.stepTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.stepDescription {
+  font-size: 1rem;
+  line-height: 1.6;
+}

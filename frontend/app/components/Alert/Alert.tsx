@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { FiInfo, FiCheckCircle, FiAlertTriangle, FiXCircle, FiX } from 'react-icons/fi';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './Alert.common.module.css';
 import lightStyles from './Alert.light.module.css';

@@ -3,7 +3,8 @@ import { FaUserPlus, FaClipboardList, FaHandshake, FaProjectDiagram, FaSearch, F
 import commonStyles from './HowItWorks.common.module.css';
 import lightStyles from './HowItWorks.light.module.css';
 import darkStyles from './HowItWorks.dark.module.css';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 // @AI-HINT: How it works section. Now fully theme-switchable using global theme context.
 const freelancerSteps = [
@@ -20,35 +21,36 @@ const clientSteps = [
 
 const HowItWorks: React.FC = () => {
   const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <section className={`Home-how-it-works theme-${theme}`}>
+    <section className={cn(commonStyles.howItWorks, themeStyles.howItWorks)}>
       <div className="Home-container">
         <h2 className="Home-section-title">How It Works</h2>
-        <div className="Home-how-it-works-columns">
-          <div className="Home-how-it-works-column">
-            <h3 className="Home-column-title">For Freelancers</h3>
-            <div className="Home-steps">
+        <div className={commonStyles.howItWorksColumns}>
+          <div className={commonStyles.column}>
+            <h3 className={cn(commonStyles.columnTitle, themeStyles.columnTitle)}>For Freelancers</h3>
+            <div className={commonStyles.steps}>
               {freelancerSteps.map((step, index) => (
-                <div key={index} className="Home-step-card">
-                  <div className="Home-step-icon">{step.icon}</div>
-                  <div className="Home-step-content">
-                    <h4 className="Home-step-title">{step.title}</h4>
-                    <p className="Home-step-description">{step.description}</p>
+                <div key={index} className={cn(commonStyles.stepCard, themeStyles.stepCard)}>
+                  <div className={cn(commonStyles.stepIcon, themeStyles.stepIcon)}>{step.icon}</div>
+                  <div className={commonStyles.stepContent}>
+                    <h4 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>{step.title}</h4>
+                    <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>{step.description}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="Home-how-it-works-column">
-            <h3 className="Home-column-title">For Clients</h3>
-            <div className="Home-steps">
+          <div className={commonStyles.column}>
+            <h3 className={cn(commonStyles.columnTitle, themeStyles.columnTitle)}>For Clients</h3>
+            <div className={commonStyles.steps}>
               {clientSteps.map((step, index) => (
-                <div key={index} className="Home-step-card">
-                  <div className="Home-step-icon">{step.icon}</div>
-                  <div className="Home-step-content">
-                    <h4 className="Home-step-title">{step.title}</h4>
-                    <p className="Home-step-description">{step.description}</p>
+                <div key={index} className={cn(commonStyles.stepCard, themeStyles.stepCard)}>
+                  <div className={cn(commonStyles.stepIcon, themeStyles.stepIcon)}>{step.icon}</div>
+                  <div className={commonStyles.stepContent}>
+                    <h4 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>{step.title}</h4>
+                    <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>{step.description}</p>
                   </div>
                 </div>
               ))}

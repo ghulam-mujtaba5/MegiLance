@@ -1,9 +1,9 @@
-.Home-features {
+.homeFeatures {
   padding: 5rem 1rem;
   text-align: center;
 }
 
-.Home-features-grid {
+.homeFeaturesGrid {
   display: flex;
   flex-wrap: wrap;
 
@@ -11,24 +11,24 @@
   margin-top: 3rem;
 }
 
-.Home-feature-card {
+.homeFeatureCard {
   padding: 2rem;
   border-radius: 12px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.Home-feature-icon {
+.homeFeatureIcon {
   font-size: 3rem;
   margin-bottom: 1.5rem;
 }
 
-.Home-feature-title {
+.homeFeatureTitle {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
 }
 
-.Home-feature-description {
+.homeFeatureDescription {
   font-size: 1rem;
   line-height: 1.6;
 }

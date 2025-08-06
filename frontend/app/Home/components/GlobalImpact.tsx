@@ -4,15 +4,15 @@
 
 import React from 'react';
 import { FaGlobe, FaFlag, FaUsers, FaChartLine, FaHeart, FaStar } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import commonStyles from './GlobalImpact.common.module.css';
 import lightStyles from './GlobalImpact.light.module.css';
 import darkStyles from './GlobalImpact.dark.module.css';
 
-// @AI-HINT: Global impact section highlighting Pakistani talent and worldwide reach. Now fully theme-switchable using global theme context.
-import { useTheme } from '@/app/contexts/ThemeContext';
-
 const GlobalImpact: React.FC = () => {
   const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const impactStats = [
     {
@@ -66,98 +66,98 @@ const GlobalImpact: React.FC = () => {
   ];
 
   return (
-    <section className={`GlobalImpact theme-${theme}`}>
-      <div className="GlobalImpact-container">
-        <div className="GlobalImpact-header">
-          <div className="GlobalImpact-badge">
-            <FaFlag className="GlobalImpact-badge-icon" />
+    <section className={cn(commonStyles.globalImpact, themeStyles.globalImpact)}>
+      <div className={commonStyles.globalImpactContainer}>
+        <div className={commonStyles.globalImpactHeader}>
+          <div className={cn(commonStyles.badge, themeStyles.badge)}>
+            <FaFlag className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon)} />
             <span>Proudly Pakistani • Globally Connected</span>
           </div>
-          <h2 className="GlobalImpact-title">
-            Empowering <span className="GlobalImpact-title-highlight">Pakistani Talent</span> Worldwide
+          <h2 className={cn(commonStyles.title, themeStyles.title)}>
+            Empowering <span className={cn(commonStyles.titleHighlight, themeStyles.titleHighlight)}>Pakistani Talent</span> Worldwide
           </h2>
-          <p className="GlobalImpact-subtitle">
+          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
             MegiLance is more than a platform—it's a movement. We're breaking down barriers, 
             eliminating payment friction, and connecting Pakistan's incredible talent with 
             global opportunities. Join thousands who are already transforming their careers.
           </p>
         </div>
 
-        <div className="GlobalImpact-stats">
+        <div className={cn(commonStyles.stats, themeStyles.stats)}>
           {impactStats.map((stat, index) => (
-            <div key={index} className="GlobalImpact-stat">
-              <div className="GlobalImpact-stat-icon">
+            <div key={index} className={cn(commonStyles.stat, themeStyles.stat)}>
+              <div className={cn(commonStyles.statIcon, themeStyles.statIcon)}>
                 <stat.icon />
               </div>
-              <div className="GlobalImpact-stat-content">
-                <div className="GlobalImpact-stat-number">{stat.number}</div>
-                <div className="GlobalImpact-stat-label">{stat.label}</div>
-                <div className="GlobalImpact-stat-description">{stat.description}</div>
+              <div className={commonStyles.statContent}>
+                <div className={cn(commonStyles.statNumber, themeStyles.statNumber)}>{stat.number}</div>
+                <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>{stat.label}</div>
+                <div className={cn(commonStyles.statDescription, themeStyles.statDescription)}>{stat.description}</div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="GlobalImpact-mission">
-          <div className="GlobalImpact-mission-content">
-            <h3 className="GlobalImpact-mission-title">Our Mission</h3>
-            <p className="GlobalImpact-mission-text">
+        <div className={cn(commonStyles.mission, themeStyles.mission)}>
+          <div className={commonStyles.missionContent}>
+            <h3 className={cn(commonStyles.missionTitle, themeStyles.missionTitle)}>Our Mission</h3>
+            <p className={cn(commonStyles.missionText, themeStyles.missionText)}>
               To revolutionize freelance work in Pakistan and beyond using AI for automation 
               and stable crypto for secure, accessible payments. We believe every talented 
               individual deserves access to global opportunities, regardless of their location 
               or banking infrastructure.
             </p>
-            <div className="GlobalImpact-mission-features">
-              <div className="GlobalImpact-mission-feature">
-                <FaHeart className="GlobalImpact-mission-feature-icon" />
+            <div className={commonStyles.missionFeatures}>
+              <div className={cn(commonStyles.missionFeature, themeStyles.missionFeature)}>
+                <FaHeart className={cn(commonStyles.missionFeatureIcon, themeStyles.missionFeatureIcon)} />
                 <span>Built with Pakistani freelancers in mind</span>
               </div>
-              <div className="GlobalImpact-mission-feature">
-                <FaGlobe className="GlobalImpact-mission-feature-icon" />
+              <div className={cn(commonStyles.missionFeature, themeStyles.missionFeature)}>
+                <FaGlobe className={cn(commonStyles.missionFeatureIcon, themeStyles.missionFeatureIcon)} />
                 <span>Designed for global success</span>
               </div>
             </div>
           </div>
           
-          <div className="GlobalImpact-world-map">
-            <div className="GlobalImpact-map-container">
-              <div className="GlobalImpact-map-dot GlobalImpact-map-dot--pakistan">
-                <div className="GlobalImpact-map-pulse"></div>
-                <span className="GlobalImpact-map-label">Pakistan</span>
+          <div className={cn(commonStyles.worldMap, themeStyles.worldMap)}>
+            <div className={commonStyles.mapContainer}>
+              <div className={cn(commonStyles.mapDot, commonStyles.mapDotPakistan)}>
+                <div className={commonStyles.mapPulse}></div>
+                <span className={commonStyles.mapLabel}>Pakistan</span>
               </div>
-              <div className="GlobalImpact-map-dot GlobalImpact-map-dot--usa">
-                <div className="GlobalImpact-map-pulse"></div>
-                <span className="GlobalImpact-map-label">USA</span>
+              <div className={cn(commonStyles.mapDot, commonStyles.mapDotUsa)}>
+                <div className={commonStyles.mapPulse}></div>
+                <span className={commonStyles.mapLabel}>USA</span>
               </div>
-              <div className="GlobalImpact-map-dot GlobalImpact-map-dot--uk">
-                <div className="GlobalImpact-map-pulse"></div>
-                <span className="GlobalImpact-map-label">UK</span>
+              <div className={cn(commonStyles.mapDot, commonStyles.mapDotUk)}>
+                <div className={commonStyles.mapPulse}></div>
+                <span className={commonStyles.mapLabel}>UK</span>
               </div>
-              <div className="GlobalImpact-map-dot GlobalImpact-map-dot--australia">
-                <div className="GlobalImpact-map-pulse"></div>
-                <span className="GlobalImpact-map-label">Australia</span>
+              <div className={cn(commonStyles.mapDot, commonStyles.mapDotAustralia)}>
+                <div className={commonStyles.mapPulse}></div>
+                <span className={commonStyles.mapLabel}>Australia</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="GlobalImpact-success-stories">
-          <h3 className="GlobalImpact-stories-title">Success Stories from Pakistan</h3>
-          <div className="GlobalImpact-stories-grid">
+        <div className={commonStyles.successStories}>
+          <h3 className={cn(commonStyles.storiesTitle, themeStyles.storiesTitle)}>Success Stories from Pakistan</h3>
+          <div className={cn(commonStyles.storiesGrid, themeStyles.storiesGrid)}>
             {successStories.map((story, index) => (
-              <div key={index} className="GlobalImpact-story">
-                <div className="GlobalImpact-story-header">
-                  <div className="GlobalImpact-story-avatar">
+              <div key={index} className={cn(commonStyles.story, themeStyles.story)}>
+                <div className={commonStyles.storyHeader}>
+                  <div className={cn(commonStyles.storyAvatar, themeStyles.storyAvatar)}>
                     {story.name.split(' ').map(n => n[0]).join('')}
                   </div>
-                  <div className="GlobalImpact-story-info">
-                    <div className="GlobalImpact-story-name">{story.name}</div>
-                    <div className="GlobalImpact-story-role">{story.role}</div>
-                    <div className="GlobalImpact-story-location">{story.city}, Pakistan</div>
+                  <div className="story-info">
+                    <div className={cn(commonStyles.storyName, themeStyles.storyName)}>{story.name}</div>
+                    <div className={cn(commonStyles.storyRole, themeStyles.storyRole)}>{story.role}</div>
+                    <div className={cn(commonStyles.storyLocation, themeStyles.storyLocation)}>{story.city}, Pakistan</div>
                   </div>
                 </div>
-                <div className="GlobalImpact-story-achievement">{story.achievement}</div>
-                <blockquote className="GlobalImpact-story-quote">"{story.quote}"</blockquote>
+                <div className={cn(commonStyles.storyAchievement, themeStyles.storyAchievement)}>{story.achievement}</div>
+                <blockquote className={cn(commonStyles.storyQuote, themeStyles.storyQuote)}>"{story.quote}"</blockquote>
               </div>
             ))}
           </div>
