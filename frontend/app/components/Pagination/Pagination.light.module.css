@@ -1,12 +1,28 @@
 /* @AI-HINT: Light theme variables for the Pagination component. */
 .themeWrapper {
   --pagination-button-bg: var(--surface-primary);
-  --pagination-button-border: var(--border-secondary);
-  --pagination-button-text: var(--text-primary);
-  --pagination-button-bg-hover: var(--surface-hover);
-  --pagination-button-bg-disabled: var(--surface-disabled);
-  --pagination-button-text-disabled: var(--text-disabled);
-  --pagination-button-border-disabled: var(--border-secondary);
-  --pagination-info-text: var(--text-secondary);
-  --focus-ring: var(--brand-secondary-light);
+}
+
+.paginationButton {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #f9fafb;
+}
+
+.paginationButton:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+}
+
+.paginationButton:focus {
+  outline: 2px solid #4573df;
+}
+
+.paginationInfo {
+  color: #4b5563;
 }

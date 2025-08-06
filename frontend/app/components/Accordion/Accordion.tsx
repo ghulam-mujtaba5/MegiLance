@@ -14,6 +14,7 @@ interface AccordionContextType {
   openItems: string[];
   toggleItem: (id: string) => void;
   type: 'single' | 'multiple';
+  themeStyles: { [key: string]: string };
 }
 
 const AccordionContext = createContext<AccordionContextType | null>(null);
@@ -33,13 +34,11 @@ interface AccordionItemProps {
 }
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, children }) => {
-  const { openItems, toggleItem } = useAccordion();
-  const { theme } = useTheme();
+  const { openItems, toggleItem, themeStyles } = useAccordion();
   const contentId = useId();
   const buttonId = useId();
 
   const isOpen = openItems.includes(value);
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.accordionItem, themeStyles.accordionItem, isOpen && commonStyles.open)}>
@@ -101,7 +100,7 @@ const Accordion: React.FC<AccordionProps> = ({
   };
 
   return (
-    <AccordionContext.Provider value={{ openItems, toggleItem, type }}>
+    <AccordionContext.Provider value={{ openItems, toggleItem, type, themeStyles }}>
       <div className={cn(commonStyles.accordionRoot, themeStyles.accordionRoot, className)}>
         {children}
       </div>

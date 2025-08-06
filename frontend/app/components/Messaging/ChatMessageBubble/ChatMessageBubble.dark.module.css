@@ -1,17 +1,22 @@
+/* @AI-HINT: Defines the dark theme for chat bubbles using global CSS variables for brand and theme consistency. */
+
 .sender {
-  background-color: #3b82f6; /* blue-500 */
-  color: #ffffff;
+  background-color: var(--brand-primary);
 }
 
 .receiver {
-  background-color: #374151; /* gray-700 */
-  color: #f3f4f6; /* gray-100 */
+  background-color: var(--surface-accent);
 }
 
-.senderTimestamp {
-  color: #dbeafe;
+.senderTimestamp,
+.senderText {
+  color: var(--text-on-brand);
 }
 
 .receiverTimestamp {
-  color: #9ca3af;
+  color: var(--text-secondary);
+}
+
+.receiverText {
+  color: var(--text-primary);
 }

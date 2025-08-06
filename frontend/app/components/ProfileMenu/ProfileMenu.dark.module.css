@@ -1,12 +1,37 @@
 /* @AI-HINT: Dark theme variables for the ProfileMenu component. */
-.themeWrapper {
-  --menu-bg-color: var(--color-gray-800);
-  --menu-border-color: var(--color-gray-700);
-  --menu-divider-color: var(--color-gray-700);
-  --text-primary-color: var(--color-white);
-  --text-secondary-color: var(--color-gray-400);
-  --menu-item-text-color: var(--color-gray-300);
-  --menu-item-hover-bg-color: var(--color-gray-700);
-  --menu-item-hover-text-color: var(--color-white);
-  --focus-ring-color: var(--brand-primary-dark);
+.trigger:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.dropdown {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+  border-bottom: 1px solid #374151;
+}
+
+.userName {
+  color: #f9fafb;
+}
+
+.userEmail {
+  color: #9ca3af;
+}
+
+.item {
+  color: #d1d5db;
+}
+
+.item:hover,
+.item:focus-visible {
+  background-color: #374151;
+  color: #ffffff;
+}
+
+.itemIcon {
+  color: #9ca3af;
 }

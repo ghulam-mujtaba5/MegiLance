@@ -1,35 +1,52 @@
 /* @AI-HINT: Defines the dark theme styles for the main Sidebar component. */
 
 .sidebar {
-  background-color: var(--surface);
-  border-right: 1px solid var(--border);
+  background-color: #111827;
+  border-right: 1px solid #374151;
 }
 
+
+
 .logoText {
-  color: var(--text-primary);
+  color: #f9fafb;
 }
 
 .toggleButton {
-  color: var(--text-secondary);
+  color: #9ca3af;
 }
 
 .toggleButton:hover {
-  background-color: var(--surface-alt);
-  color: var(--text-primary);
+  background-color: #1f2937;
+  color: #f9fafb;
 }
 
 .sidebarFooter {
-  border-top-color: var(--border);
+  border-top-color: #374151;
 }
 
-.avatar {
-  border: 2px solid var(--border-light);
-}
+
 
 .userName {
-  color: var(--text-primary);
+  color: #f9fafb;
 }
 
 .userRole {
-  color: var(--text-secondary);
+  color: #9ca3af;
+}
+
+/* Scrollbar styles */
+@supports (scrollbar-width: thin) {
+  .sidebarNavContainer {
+    scrollbar-width: thin;
+    scrollbar-color: #4b5563 #1f2937;
+  }
+}
+
+.sidebarNavContainer::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.sidebarNavContainer::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-color: #1f2937;
 }

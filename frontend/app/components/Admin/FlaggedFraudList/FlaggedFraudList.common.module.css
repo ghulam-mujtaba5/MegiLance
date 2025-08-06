@@ -32,10 +32,7 @@
   letter-spacing: 0.5px;
 }
 
-.flaggedFraudList tbody tr {
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-}
+
 
 .flaggedFraudListActions {
   display: flex;

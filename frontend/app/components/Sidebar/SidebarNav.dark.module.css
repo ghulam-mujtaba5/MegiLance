@@ -1,20 +1,20 @@
 /* @AI-HINT: Defines the dark theme styles for the SidebarNav component. */
 
 .navLinkInactive {
-  color: var(--text-secondary);
+  color: #9ca3af; /* text-secondary */
 }
 
 .navLinkInactive:hover {
-  background-color: var(--surface-alt);
-  color: var(--text-primary);
+  background-color: #1f2937; /* surface-alt */
+  color: #f9fafb; /* text-primary */
 }
 
 .navLinkActive {
-  background-color: var(--primary-4573df);
-  color: var(--text-on-primary);
+  background-color: #4573df; /* primary-4573df */
+  color: #ffffff; /* text-on-primary */
   box-shadow: 0 4px 14px -1px rgba(69, 115, 223, 0.25);
 }
 
 .navLinkActive:hover {
-  background-color: var(--primary-light);
+  background-color: #60a5fa; /* primary-light */
 }

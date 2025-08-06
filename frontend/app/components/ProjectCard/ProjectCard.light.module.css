@@ -1,9 +1,21 @@
 /* @AI-HINT: Light theme variables for the ProjectCard component. */
-.themeWrapper {
-  --card-title-color: var(--text-primary);
-  --card-subtitle-color: var(--text-secondary);
-  --card-text-color: var(--text-secondary);
-  --card-highlight-color: var(--brand-primary);
-  --tag-bg-color: var(--surface-secondary);
-  --tag-text-color: var(--text-secondary);
+.title {
+  color: #1f2937; /* gray-800 */
+}
+
+.postedTime {
+  color: #6b7280; /* gray-500 */
+}
+
+.infoRow {
+  color: #4b5563; /* gray-600 */
+}
+
+.budget {
+  color: #4573df; /* brand-primary */
+}
+
+.tag {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #374151; /* gray-700 */
 }

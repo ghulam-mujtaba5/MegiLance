@@ -1,8 +1,9 @@
-// @AI-HINT: This component provides a queue for administrators to moderate job postings, allowing them to approve or reject submissions.
+// @AI-HINT: This component provides a fully theme-aware queue for admins to moderate job postings. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
 import React, { useState } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import commonStyles from './JobModerationQueue.common.module.css';
@@ -29,10 +30,7 @@ const JobModerationQueue: React.FC = () => {
   const { theme } = useTheme();
   const [jobs, setJobs] = useState(mockJobs);
 
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const handleModerate = (id: string, newStatus: 'Approved' | 'Rejected') => {
     setJobs(jobs.map(job => (job.id === id ? { ...job, status: newStatus } : job)));
@@ -41,10 +39,10 @@ const JobModerationQueue: React.FC = () => {
   const pendingJobs = jobs.filter(job => job.status === 'Pending');
 
   return (
-    <div className={styles.jobModerationQueueContainer}>
-      <h2 className={styles.jobModerationQueueTitle}>Job Moderation Queue</h2>
-      <div className={styles.jobModerationQueueTableWrapper}>
-        <table className={styles.jobModerationQueue}>
+    <div className={cn(commonStyles.jobModerationQueueContainer, themeStyles.jobModerationQueueContainer)}>
+      <h2 className={cn(commonStyles.jobModerationQueueTitle, themeStyles.jobModerationQueueTitle)}>Job Moderation Queue</h2>
+      <div className={cn(commonStyles.jobModerationQueueTableWrapper, themeStyles.jobModerationQueueTableWrapper)}>
+        <table className={cn(commonStyles.jobModerationQueue, themeStyles.jobModerationQueue)}>
           <thead>
             <tr>
               <th>Job Title</th>
@@ -67,7 +65,7 @@ const JobModerationQueue: React.FC = () => {
                     {job.riskLevel}
                   </Badge>
                 </td>
-                <td className={styles.jobModerationQueueActions}>
+                <td className={cn(commonStyles.jobModerationQueueActions, themeStyles.jobModerationQueueActions)}>
                   <Button variant="success" size="small" onClick={() => handleModerate(job.id, 'Approved')}>Approve</Button>
                   <Button variant="danger" size="small" onClick={() => handleModerate(job.id, 'Rejected')}>Reject</Button>
                 </td>
@@ -75,7 +73,7 @@ const JobModerationQueue: React.FC = () => {
             ))}
             {pendingJobs.length === 0 && (
               <tr>
-                <td colSpan={5} className={styles.jobModerationQueueEmpty}>The queue is empty.</td>
+                <td colSpan={5} className={cn(commonStyles.jobModerationQueueEmpty, themeStyles.jobModerationQueueEmpty)}>The queue is empty.</td>
               </tr>
             )}
           </tbody>

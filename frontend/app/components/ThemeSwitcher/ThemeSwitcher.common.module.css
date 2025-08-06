@@ -24,3 +24,7 @@
 .themeToggle:active {
   transform: scale(0.95);
 }
+
+.icon {
+  transition: color 0.3s ease;
+}

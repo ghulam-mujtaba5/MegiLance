@@ -1,4 +1,4 @@
-// @AI-HINT: This component displays a banner to prompt users to install the PWA. All styles are per-component only.
+// @AI-HINT: This component displays a theme-aware banner prompting users to install the PWA. It uses a modern, CSS-variable-driven approach for styling to ensure it perfectly matches the application's current theme.
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -9,7 +9,7 @@ import commonStyles from './InstallAppBanner.common.module.css';
 import lightStyles from './InstallAppBanner.light.module.css';
 import darkStyles from './InstallAppBanner.dark.module.css';
 
-// @AI-HINT: This component displays a banner to prompt users to install the PWA. It is fully theme-aware and uses CSS modules.
+
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: Array<string>;
@@ -53,7 +53,7 @@ const InstallAppBanner: React.FC = () => {
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.installAppBanner, themeStyles.themeWrapper)}>
+    <div className={cn(commonStyles.installAppBanner, themeStyles.installAppBanner)}>
       <div className={commonStyles.content}>
         <p className={commonStyles.text}>Get the full MegiLance experience. Install the app on your device.</p>
         <Button variant="primary" onClick={handleInstallClick}>Install App</Button>

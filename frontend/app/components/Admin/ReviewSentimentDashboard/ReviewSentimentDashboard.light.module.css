@@ -8,21 +8,17 @@
 
 .reviewSentimentDashboardCard {
   background-color: #ffffff;
-  border-color: #e2e8f0;
+  border: 1px solid #e2e8f0;
 }
 
 .cardTitle {
   color: #4a5568;
 }
 
+.cardMetricPositive {
+  color: #27AE60; /* MegiLance Success Green */
+}
+
 .cardDescription {
   color: #718096;
-}
-
-.barChartBarWrapper {
-  background-color: #e2e8f0;
-}
-
-.barChartLabel, .barChartPercentage {
-  color: #4a5568;
 }

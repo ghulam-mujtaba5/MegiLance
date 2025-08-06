@@ -68,12 +68,12 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => 
       )}
       role="banner"
     >
-      <div className={cn(commonStyles.navbarContainer, themeStyles.navbarContainer)}>
-        <div className={cn(commonStyles.navbarLeft, themeStyles.navbarLeft)}>
-          <Link href="/dashboard" aria-label="Go to dashboard" className={cn(commonStyles.navbarLogo, themeStyles.navbarLogo)}>
+      <div className={cn(commonStyles.navbarContainer)}>
+        <div className={cn(commonStyles.navbarLeft)}>
+          <Link href="/dashboard" aria-label="Go to dashboard" className={cn(commonStyles.navbarLogo)}>
             <MegiLanceLogo />
           </Link>
-          <nav className={cn(commonStyles.desktopNav, themeStyles.desktopNav)} aria-label="Main navigation">
+          <nav className={cn(commonStyles.desktopNav)} aria-label="Main navigation">
             {navItems.map((item) => (
               <Link key={item.label} href={item.href} className={cn(commonStyles.navLink, themeStyles.navLink)}>
                 {item.label}
@@ -82,15 +82,15 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => 
           </nav>
         </div>
 
-        <div className={cn(commonStyles.navbarCenter, themeStyles.navbarCenter)}>
-          <div className={cn(commonStyles.navbarSearch, themeStyles.navbarSearch, commonStyles.searchInput, themeStyles.searchInput)}>
+        <div className={cn(commonStyles.navbarCenter)}>
+          <div className={cn(commonStyles.navbarSearch, themeStyles.searchInput)}>
             <FaSearch className={cn(commonStyles.searchIcon, themeStyles.searchIcon)} />
-            <Input name="search" type="search" placeholder="Search..." />
+            <Input name="search" type="search" placeholder="Search..." className={commonStyles.searchInput} />
           </div>
         </div>
 
-        <div className={cn(commonStyles.navbarRight, themeStyles.navbarRight)}>
-          <div className={cn(commonStyles.navbarActions, themeStyles.navbarActions)}>
+        <div className={cn(commonStyles.navbarRight)}>
+          <div className={cn(commonStyles.navbarActions)}>
             <ThemeSwitcher />
             <ProfileMenu
               userName={user.fullName}
@@ -98,7 +98,7 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => 
               menuItems={profileMenuItems}
             />
           </div>
-          <div className={cn(commonStyles.mobileToggle, themeStyles.mobileToggle)}>
+          <div className={cn(commonStyles.mobileToggle)}>
             <button
               type="button"
               onClick={toggleMobileMenu}
@@ -115,10 +115,10 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => 
 
       <div
         id="mobile-menu"
-        className={cn(commonStyles.mobileMenu, themeStyles.mobileMenu)}
+        className={cn(commonStyles.mobileMenu, themeStyles.mobileMenu, isMobileMenuOpen ? commonStyles.mobileMenuOpen : '')}
         aria-hidden={!isMobileMenuOpen}
       >
-        <nav className={cn(commonStyles.mobileNav, themeStyles.mobileNav)} aria-label="Mobile navigation">
+        <nav className={cn(commonStyles.mobileNav)} aria-label="Mobile navigation">
           {navItems.map((item) => (
             <Link key={item.label} href={item.href} className={cn(commonStyles.mobileLink, themeStyles.mobileLink)} onClick={toggleMobileMenu}>
               {item.label}

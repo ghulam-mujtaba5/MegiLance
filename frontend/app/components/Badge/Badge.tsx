@@ -41,9 +41,9 @@ const Badge: React.FC<BadgeProps> = ({
         className
       )}
     >
-      {iconBefore && <span className={cn(commonStyles.badgeIcon, commonStyles.badgeIconBefore)}>{iconBefore}</span>}
+      {iconBefore && <span className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon, commonStyles.badgeIconBefore)}>{iconBefore}</span>}
       {children}
-      {iconAfter && <span className={cn(commonStyles.badgeIcon, commonStyles.badgeIconAfter)}>{iconAfter}</span>}
+      {iconAfter && <span className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon, commonStyles.badgeIconAfter)}>{iconAfter}</span>}
     </span>
   );
 };

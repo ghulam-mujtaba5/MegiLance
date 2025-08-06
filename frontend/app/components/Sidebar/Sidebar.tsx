@@ -50,7 +50,7 @@ const Sidebar = () => {
       )}
     >
       <header className={cn(commonStyles.sidebarHeader, themeStyles.sidebarHeader)}>
-        <div className={cn(commonStyles.logoContainer, themeStyles.logoContainer)}>
+        <div className={cn(commonStyles.logoContainer)}>
           <MegiLanceLogo className={commonStyles.logoIcon} />
           <span
             className={cn(
@@ -79,12 +79,11 @@ const Sidebar = () => {
       </div>
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>
-        <div className={cn(commonStyles.userInfo, themeStyles.userInfo)}>
+        <div className={cn(commonStyles.userInfo)}>
           <UserAvatar src="/mock-avatar.png" name="John Doe" size="large" />
           <div
             className={cn(
               commonStyles.userDetails,
-              themeStyles.userDetails,
               isCollapsed && commonStyles.userDetailsCollapsed
             )}
           >

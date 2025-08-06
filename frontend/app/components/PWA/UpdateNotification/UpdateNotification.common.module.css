@@ -1,4 +1,4 @@
-/* @AI-HINT: Common styles for the UpdateNotification component. Uses camelCase for CSS module compatibility. */
+/* @AI-HINT: Provides theme-agnostic structural styles for the UpdateNotification. All colors are defined via CSS variables in the light/dark modules, which are then applied here. */
 
 .updateNotification {
   position: fixed;

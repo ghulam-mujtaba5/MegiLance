@@ -34,6 +34,5 @@
 }
 
 .auditLog tbody tr {
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
+  /* border-bottom is handled by theme-specific styles */
 }

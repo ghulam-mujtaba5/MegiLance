@@ -1,4 +1,4 @@
-// @AI-HINT: This component provides a visual representation of a freelancer's rank. All styles are per-component only.
+// @AI-HINT: This component provides a fully theme-aware visual representation of a freelancer's rank, using per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
 import React from 'react';
@@ -38,12 +38,12 @@ const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({ ran
   } as React.CSSProperties;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.themeWrapper, className)}>
+    <div className={cn(commonStyles.container, themeStyles.container, className)}>
       <div className={commonStyles.header}>
-        <h3 className={commonStyles.rankName}>{rank} Tier</h3>
-        <p className={commonStyles.score}>Score: {score}</p>
+        <h3 className={cn(commonStyles.rankName, themeStyles.rankName)}>{rank} Tier</h3>
+        <p className={cn(commonStyles.score, themeStyles.score)}>Score: {score}</p>
       </div>
-      <div className={commonStyles.progressBarContainer}>
+      <div className={cn(commonStyles.progressBarContainer, themeStyles.progressBarContainer)}>
         <div className={commonStyles.progressBar} style={progressBarStyle}></div>
       </div>
     </div>

@@ -47,7 +47,8 @@ const Button: React.FC<ButtonProps> = ({
         themeStyles[variant],
         commonStyles[size],
         themeStyles[size],
-        { [commonStyles.fullWidth]: fullWidth, [themeStyles.fullWidth]: fullWidth },
+        fullWidth && commonStyles.fullWidth,
+        fullWidth && themeStyles.fullWidth,
         className
       )}
       disabled={isLoading || props.disabled}

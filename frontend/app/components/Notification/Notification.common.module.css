@@ -1,3 +1,5 @@
+/* @AI-HINT: Provides theme-agnostic structural styles, animations, and layout for the Notification component. All colors and theme-specific properties are defined via CSS variables in the light/dark modules. */
+
 @keyframes slideInRight {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }

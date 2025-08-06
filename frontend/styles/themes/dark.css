@@ -1,8 +1,6 @@
-/* AI-HINT: This file defines the global color variables for the dark theme.
-These variables are used across the application to ensure brand consistency and
-to facilitate easy theme switching. Adhering to this centralized theme file is
-crucial for maintaining a scalable and maintainable codebase. */
-[data-theme='dark'] {
+/* @AI-HINT: Defines the global color variables for the dark theme. These variables are scoped to the `.dark` class. When this class is applied to the `<html>` element by the `ThemeProvider`, these variables override the default light theme styles defined in `light.css`. */
+
+.dark {
   /* Brand & Accent Colors (often remain the same for brand consistency) */
   --primary-4573df: #4573df;
   --accent-ff9800: #ff9800;

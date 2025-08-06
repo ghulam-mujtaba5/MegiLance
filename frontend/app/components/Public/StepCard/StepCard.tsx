@@ -1,4 +1,4 @@
-// @AI-HINT: This component displays a single step in a process, used on the 'How It Works' page.
+// @AI-HINT: This component displays a single, theme-aware step in a process, such as on a 'How It Works' page. It uses global CSS variables for base styling with theme-specific overrides.
 'use client';
 
 import React from 'react';
@@ -8,7 +8,7 @@ import commonStyles from './StepCard.common.module.css';
 import lightStyles from './StepCard.light.module.css';
 import darkStyles from './StepCard.dark.module.css';
 
-// @AI-HINT: This component displays a single step in a process, used on the 'How It Works' page. It is fully theme-aware and uses CSS modules.
+
 
 export interface StepCardProps {
   stepNumber: number;
@@ -23,7 +23,7 @@ const StepCard: React.FC<StepCardProps> = ({ stepNumber, title, description, ico
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.stepCardContainer, themeStyles.themeWrapper, className)}>
+    <div className={cn(commonStyles.stepCardContainer, themeStyles.stepCardContainer, className)}>
       <div className={commonStyles.header}>
         <div className={commonStyles.iconWrapper}>
           {icon}

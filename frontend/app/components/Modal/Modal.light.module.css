@@ -1,11 +1,35 @@
-.themeWrapper {
-  --modal-overlay-bg: var(--overlay-light);
-  --modal-bg: var(--surface);
-  --modal-border: var(--border);
-  --modal-shadow: var(--shadow-modal-light);
-  --modal-title-text: var(--text-primary);
-  --modal-body-text: var(--text-secondary);
-  --modal-close-icon: var(--text-secondary);
-  --modal-close-icon-hover: var(--text-primary);
-  --modal-close-bg-hover: var(--surface-hover);
+.modalOverlay {
+  background-color: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.modalContent {
+  background-color: #ffffff;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.modalHeader {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modalTitle {
+  color: #111827;
+}
+
+.closeButton {
+  color: #6b7280;
+}
+
+.closeButton:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.modalBody {
+  color: #374151;
+}
+
+.modalFooter {
+  border-top: 1px solid #e5e7eb;
 }

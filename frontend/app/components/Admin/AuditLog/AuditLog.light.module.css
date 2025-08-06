@@ -17,7 +17,7 @@
 }
 
 .auditLog tbody tr {
-  border-bottom-color: #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .auditLog tbody tr:last-child {

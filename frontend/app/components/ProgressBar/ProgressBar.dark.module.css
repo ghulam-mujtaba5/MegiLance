@@ -10,7 +10,7 @@
 }
 
 .progressBarPercentage {
-  color: #e2e8f0; /* Gray 200 */
+  color: #f3f4f6; /* gray-100 */
 }
 
 /* The focus-within styles from the light theme apply here as well, no need to override unless a different focus is desired for dark mode. */
@@ -19,25 +19,38 @@
 
 /* Default uses the primary brand color */
 .default .progressBarFill {
-  background-color: #4573df; /* MegiLance Blue */
+  background-color: #60a5fa; /* brand-primary-light */
 }
 
 /* Success variant */
 .success .progressBarFill {
-  background-color: #27ae60; /* MegiLance Green */
+  background-color: #2ecc71; /* brand-success-dark */
 }
 
 /* Error variant */
 .error .progressBarFill {
-  background-color: #e81123; /* MegiLance Red */
+  background-color: #e74c3c; /* brand-error-dark */
 }
 
 /* Warning variant */
 .warning .progressBarFill {
-  background-color: #f2c94c; /* MegiLance Yellow */
+  background-color: #f1c40f; /* brand-warning-dark */
 }
 
 /* Info variant, often same as default */
 .info .progressBarFill {
-  background-color: #4573df; /* MegiLance Blue */
+  background-color: #3498db; /* brand-info-dark */
+}
+
+.progressBarStriped .progressBarFill {
+  background-image: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.15) 50%,
+    rgba(0, 0, 0, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
 }

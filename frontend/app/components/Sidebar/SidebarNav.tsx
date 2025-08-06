@@ -33,8 +33,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ isCollapsed, navItems }) => {
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <nav className={cn(commonStyles.sidebarNav, themeStyles.sidebarNav)}>
-      <ul className={cn(commonStyles.navList, themeStyles.navList)}>
+    <nav className={cn(commonStyles.sidebarNav)}>
+      <ul className={cn(commonStyles.navList)}>
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const Icon = item.icon;

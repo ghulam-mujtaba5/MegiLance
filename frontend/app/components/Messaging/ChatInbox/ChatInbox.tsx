@@ -1,4 +1,4 @@
-// @AI-HINT: This component displays a list of conversations, allowing the user to navigate between chats.
+// @AI-HINT: This component displays a theme-aware list of conversations. It's built with a clean separation of concerns: structural styles are in the common module, while all colors and theme-specific properties are handled by global CSS variables defined in the light and dark modules.
 'use client';
 
 import React, { useState } from 'react';
@@ -35,17 +35,18 @@ const ChatInbox: React.FC = () => {
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.themeWrapper)}>
-      <div className={commonStyles.header}>
-        <h2 className={commonStyles.title}>Inbox</h2>
+    <div className={cn(commonStyles.container, themeStyles.container)}>
+      <div className={cn(commonStyles.header, themeStyles.header)}>
+        <h2 className={cn(commonStyles.title, themeStyles.title)}>Inbox</h2>
       </div>
-      <div className={commonStyles.list}>
+      <div className={cn(commonStyles.list, themeStyles.list)}>
         {mockConversations.map(convo => (
           <div 
             key={convo.id} 
             className={cn(
               commonStyles.item, 
               themeStyles.item, 
+              activeConversation === convo.id && commonStyles.active,
               activeConversation === convo.id && themeStyles.active
             )}
             onClick={() => setActiveConversation(convo.id)}
@@ -54,13 +55,13 @@ const ChatInbox: React.FC = () => {
             aria-current={activeConversation === convo.id}
           >
             <UserAvatar src={convo.avatarUrl} name={convo.userName} size="medium" />
-            <div className={commonStyles.itemDetails}>
-              <div className={commonStyles.itemRow}>
-                <span className={commonStyles.userName}>{convo.userName}</span>
-                <span className={commonStyles.timestamp}>{convo.timestamp}</span>
+            <div className={cn(commonStyles.itemDetails, themeStyles.itemDetails)}>
+              <div className={cn(commonStyles.itemRow, themeStyles.itemRow)}>
+                <span className={cn(commonStyles.userName, themeStyles.userName)}>{convo.userName}</span>
+                <span className={cn(commonStyles.timestamp, themeStyles.timestamp)}>{convo.timestamp}</span>
               </div>
-              <div className={commonStyles.itemRow}>
-                <p className={commonStyles.lastMessage}>{convo.lastMessage}</p>
+              <div className={cn(commonStyles.itemRow, themeStyles.itemRow)}>
+                <p className={cn(commonStyles.lastMessage, themeStyles.lastMessage)}>{convo.lastMessage}</p>
                 {convo.unreadCount > 0 && (
                   <Badge variant="primary">{convo.unreadCount}</Badge>
                 )}

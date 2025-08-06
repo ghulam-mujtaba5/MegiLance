@@ -13,7 +13,7 @@
 .aiSettingsForm {
   padding: 1.5rem;
   border-radius: 6px;
-  border: 1px solid;
+  /* border is handled by theme-specific styles */
   max-width: 600px;
 }
 
@@ -48,7 +48,7 @@
   width: 100%;
   padding: 0.75rem;
   border-radius: 6px;
-  border: 1px solid;
+  /* border is handled by theme-specific styles */
 }
 
 .formActions {

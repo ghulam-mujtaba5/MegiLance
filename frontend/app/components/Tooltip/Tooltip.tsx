@@ -62,7 +62,7 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text, position = 'top', del
           role="tooltip"
           className={cn(
             commonStyles.tooltip,
-            theme === 'light' ? lightStyles.light : darkStyles.dark,
+            theme === 'light' ? lightStyles.tooltip : darkStyles.tooltip,
             positionMap[position]
           )}
         >

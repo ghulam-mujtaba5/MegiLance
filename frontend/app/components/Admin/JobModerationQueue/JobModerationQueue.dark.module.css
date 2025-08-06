@@ -17,7 +17,7 @@
 }
 
 .jobModerationQueue tbody tr {
-  border-bottom-color: #4a5568;
+  border-bottom: 1px solid #4a5568;
 }
 
 .jobModerationQueue tbody tr:last-child {

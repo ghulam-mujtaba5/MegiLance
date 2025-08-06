@@ -1,5 +1,16 @@
-.transactionRowLight {
+.transactionRow {
   background: #fff;
-  color: #23272f;
   border: 1px solid #e2e6ee;
+}
+
+.transactionRowDate {
+  color: #6b7280; /* Gray 500 */
+}
+
+.transactionRowDescription {
+  color: #111827; /* Gray 900 */
+}
+
+.transactionRowAmount {
+  color: #111827; /* Gray 900 */
 }

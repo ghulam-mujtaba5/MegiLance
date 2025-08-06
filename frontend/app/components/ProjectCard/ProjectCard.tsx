@@ -25,18 +25,18 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ title, clientName, budget, po
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <Card className={cn(commonStyles.projectCard, themeStyles.themeWrapper, className)}>
+    <Card className={cn(commonStyles.projectCard, className)}>
       <div className={commonStyles.header}>
-        <h3 className={commonStyles.title}>{title}</h3>
-        <span className={commonStyles.postedTime}>{postedTime}</span>
+        <h3 className={cn(commonStyles.title, themeStyles.title)}>{title}</h3>
+        <span className={cn(commonStyles.postedTime, themeStyles.postedTime)}>{postedTime}</span>
       </div>
-      <div className={commonStyles.infoRow}>
+      <div className={cn(commonStyles.infoRow, themeStyles.infoRow)}>
         <span className={commonStyles.client}>Client: {clientName}</span>
-        <span className={commonStyles.budget}>{budget}</span>
+        <span className={cn(commonStyles.budget, themeStyles.budget)}>{budget}</span>
       </div>
       <div className={commonStyles.tagsRow}>
         {tags.map((tag) => (
-          <span key={tag} className={commonStyles.tag}>{tag}</span>
+          <span key={tag} className={cn(commonStyles.tag, themeStyles.tag)}>{tag}</span>
         ))}
       </div>
       <Button variant="secondary" size="small" onClick={onView} className="w-full mt-2">View Details</Button>

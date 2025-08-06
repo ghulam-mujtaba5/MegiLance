@@ -1,8 +1,9 @@
-// @AI-HINT: This component provides a simple editor for administrators to update policy documents like Terms of Service.
+// @AI-HINT: This component provides a fully theme-aware editor for administrators to update policy documents. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import commonStyles from './AdminPolicyEditor.common.module.css';
 import lightStyles from './AdminPolicyEditor.light.module.css';
@@ -23,10 +24,7 @@ const AdminPolicyEditor: React.FC = () => {
   const [content, setContent] = useState('');
   const [isSaved, setIsSaved] = useState(false);
 
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
     setContent(mockPolicies[selectedPolicy]);
@@ -40,33 +38,33 @@ const AdminPolicyEditor: React.FC = () => {
   };
 
   return (
-    <div className={styles.policyEditorContainer}>
-      <h2 className={styles.policyEditorTitle}>Admin Policy Editor</h2>
-      <div className={styles.policyEditorEditor}>
-        <div className={styles.policyEditorControls}>
-            <label htmlFor="policy-select" className={styles.srOnly}>Select a policy to edit</label>
+    <div className={cn(commonStyles.policyEditorContainer, themeStyles.policyEditorContainer)}>
+      <h2 className={cn(commonStyles.policyEditorTitle, themeStyles.policyEditorTitle)}>Admin Policy Editor</h2>
+      <div className={cn(commonStyles.policyEditorEditor, themeStyles.policyEditorEditor)}>
+        <div className={cn(commonStyles.policyEditorControls, themeStyles.policyEditorControls)}>
+            <label htmlFor="policy-select" className={commonStyles.srOnly}>Select a policy to edit</label>
             <select
               id="policy-select"
               value={selectedPolicy}
               onChange={(e) => setSelectedPolicy(e.target.value as PolicyType)}
-              className={styles.policyEditorSelect}
+              className={cn(commonStyles.policyEditorSelect, themeStyles.policyEditorSelect)}
             >
               <option value="terms">Terms of Service</option>
               <option value="privacy">Privacy Policy</option>
               <option value="kyc">KYC Policy</option>
             </select>
           </div>
-        <label htmlFor="policy-content" className={styles.srOnly}>Policy content</label>
+        <label htmlFor="policy-content" className={commonStyles.srOnly}>Policy content</label>
         <textarea
           id="policy-content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={styles.policyEditorTextarea}
+          className={cn(commonStyles.policyEditorTextarea, themeStyles.policyEditorTextarea)}
           rows={20}
         />
-        <div className={styles.policyEditorActions}>
+        <div className={cn(commonStyles.policyEditorActions, themeStyles.policyEditorActions)}>
           <Button variant="primary" onClick={handleSave}>Save Policy</Button>
-          {isSaved && <span className={styles.saveConfirmation}>Policy saved!</span>}
+          {isSaved && <span className={cn(commonStyles.saveConfirmation, themeStyles.saveConfirmation)}>Policy saved!</span>}
         </div>
       </div>
     </div>

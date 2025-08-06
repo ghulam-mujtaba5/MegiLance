@@ -1,4 +1,5 @@
-.themeWrapper {
+/* @AI-HINT: Defines dark theme variables for the Notification component. These are applied to the .notification class. */
+.notification {
   --notification-title-color: var(--text-primary);
   --notification-message-color: var(--text-secondary);
   --notification-close-bg-hover: var(--surface-hover);

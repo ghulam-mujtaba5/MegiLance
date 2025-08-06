@@ -17,7 +17,7 @@
 }
 
 .flaggedFraudList tbody tr {
-  border-bottom-color: #fed7d7;
+  border-bottom: 1px solid #fed7d7;
 }
 
 .flaggedFraudList tbody tr:last-child {

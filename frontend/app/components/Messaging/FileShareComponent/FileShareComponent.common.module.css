@@ -1,24 +1,26 @@
+/* @AI-HINT: These are the theme-agnostic, structural styles for the file sharing component. All colors and theme-specific properties are in the light/dark modules. */
 .container {
-  padding: 1rem;
-  background-color: var(--file-share-bg);
+  padding: 0.75rem;
+  border-top-width: 1px;
+  border-top-style: solid;
 }
 
 .preview {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  border: 1px solid var(--file-share-preview-border-color);
-  background-color: var(--file-share-preview-bg);
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  border-style: solid;
 }
 
 .fileName {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--file-share-filename-color);
+  margin-right: 0.75rem;
 }
 
 .actions {

@@ -1,4 +1,4 @@
-// @AI-HINT: This component displays an animated typing indicator to show when a user is writing a message.
+// @AI-HINT: This component displays a theme-aware, animated typing indicator. It uses global CSS variables for all colors, ensuring it matches the application's current theme.
 'use client';
 
 import React from 'react';
@@ -15,10 +15,10 @@ const TypingIndicator: React.FC = () => {
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.themeWrapper)}>
-      <div className={commonStyles.dot}></div>
-      <div className={commonStyles.dot}></div>
-      <div className={commonStyles.dot}></div>
+    <div className={cn(commonStyles.container, themeStyles.container)}>
+      <div className={cn(commonStyles.dot, themeStyles.dot)}></div>
+      <div className={cn(commonStyles.dot, themeStyles.dot)}></div>
+      <div className={cn(commonStyles.dot, themeStyles.dot)}></div>
     </div>
   );
 };

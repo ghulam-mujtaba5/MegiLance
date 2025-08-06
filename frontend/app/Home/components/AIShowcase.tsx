@@ -3,17 +3,18 @@
 'use client';
 
 import React from 'react';
+import { useTheme } from 'next-themes';
 import { FaRobot, FaBrain, FaChartLine, FaShieldAlt, FaComments, FaDollarSign } from 'react-icons/fa';
-import commonStyles from './AIShowcase.common.module.css';
-import lightStyles from './AIShowcase.light.module.css';
-import darkStyles from './AIShowcase.dark.module.css';
+import { cn } from '@/lib/utils';
 
-// @AI-HINT: AI-powered features showcase section highlighting intelligent automation. Now fully theme-switchable using global theme context.
-import { useTheme } from '@/app/contexts/ThemeContext';
+import commonStyles from './AIShowcase.module.scss';
+import lightStyles from './AIShowcase.light.module.scss';
+import darkStyles from './AIShowcase.dark.module.scss';
 
 const AIShowcase: React.FC = () => {
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   const aiFeatures = [
     {
       icon: FaBrain,
@@ -54,49 +55,49 @@ const AIShowcase: React.FC = () => {
   ];
 
   return (
-    <section className={`AIShowcase theme-${theme}`}>
-      <div className="AIShowcase-container">
-        <div className="AIShowcase-header">
-          <div className="AIShowcase-badge">
-            <FaRobot className="AIShowcase-badge-icon" />
+    <section className={cn(commonStyles.aiShowcase, themeStyles.aiShowcase)}>
+      <div className={commonStyles.container}>
+        <div className={commonStyles.header}>
+          <div className={commonStyles.badge}>
+            <FaRobot className={commonStyles.badgeIcon} />
             <span>Powered by Advanced AI</span>
           </div>
-          <h2 className="AIShowcase-title">
-            Artificial Intelligence That <span className="AIShowcase-title-highlight">Works for You</span>
+          <h2 className={commonStyles.title}>
+            Artificial Intelligence That <span className={commonStyles.titleHighlight}>Works for You</span>
           </h2>
-          <p className="AIShowcase-subtitle">
-            Experience the future of freelancing with cutting-edge AI technology that automates the mundane 
-            and amplifies your potential. Our machine learning models are trained on millions of successful 
+          <p className={commonStyles.subtitle}>
+            Experience the future of freelancing with cutting-edge AI technology that automates the mundane
+            and amplifies your potential. Our machine learning models are trained on millions of successful
             freelance interactions.
           </p>
         </div>
 
-        <div className="AIShowcase-grid">
+        <div className={commonStyles.grid}>
           {aiFeatures.map((feature, index) => (
-            <div key={index} className="AIShowcase-card">
-              <div className="AIShowcase-card-header">
-                <div className="AIShowcase-card-icon">
+            <div key={index} className={commonStyles.card}>
+              <div className={commonStyles.cardHeader}>
+                <div className={commonStyles.cardIcon}>
                   <feature.icon />
                 </div>
-                <div className="AIShowcase-card-stats">{feature.stats}</div>
+                <div className={commonStyles.cardStats}>{feature.stats}</div>
               </div>
-              <h3 className="AIShowcase-card-title">{feature.title}</h3>
-              <p className="AIShowcase-card-description">{feature.description}</p>
-              <div className="AIShowcase-card-footer">
-                <div className="AIShowcase-card-glow"></div>
+              <h3 className={commonStyles.cardTitle}>{feature.title}</h3>
+              <p className={commonStyles.cardDescription}>{feature.description}</p>
+              <div className={commonStyles.cardFooter}>
+                <div className={commonStyles.cardGlow}></div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="AIShowcase-tech-stack">
-          <h3 className="AIShowcase-tech-title">Powered by Industry-Leading Technology</h3>
-          <div className="AIShowcase-tech-logos">
-            <div className="AIShowcase-tech-logo">TensorFlow</div>
-            <div className="AIShowcase-tech-logo">OpenAI GPT</div>
-            <div className="AIShowcase-tech-logo">PyTorch</div>
-            <div className="AIShowcase-tech-logo">Scikit-learn</div>
-            <div className="AIShowcase-tech-logo">Hugging Face</div>
+        <div className={commonStyles.techStack}>
+          <h3 className={commonStyles.techTitle}>Powered by Industry-Leading Technology</h3>
+          <div className={commonStyles.techLogos}>
+            <div className={commonStyles.techLogo}>TensorFlow</div>
+            <div className={commonStyles.techLogo}>OpenAI GPT</div>
+            <div className={commonStyles.techLogo}>PyTorch</div>
+            <div className={commonStyles.techLogo}>Scikit-learn</div>
+            <div className={commonStyles.techLogo}>Hugging Face</div>
           </div>
         </div>
       </div>

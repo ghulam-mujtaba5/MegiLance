@@ -27,10 +27,10 @@ const RankGauge: React.FC<RankGaugeProps> = ({ score, className }) => {
   } as React.CSSProperties;
 
   return (
-    <div className={cn(commonStyles.rankGauge, themeStyles.themeWrapper, className)}>
-      <div className={commonStyles.fill} style={gaugeStyle}></div>
-      <div className={commonStyles.cover}></div>
-      <span className={commonStyles.score}>{safeScore}</span>
+    <div className={cn(commonStyles.rankGauge, className)}>
+      <div className={cn(commonStyles.fill, themeStyles.fill)} style={gaugeStyle}></div>
+      <div className={cn(commonStyles.cover, themeStyles.cover)}></div>
+      <span className={cn(commonStyles.score, themeStyles.score)}>{safeScore}</span>
     </div>
   );
 };

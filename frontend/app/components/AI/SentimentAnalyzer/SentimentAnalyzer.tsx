@@ -1,4 +1,4 @@
-// @AI-HINT: This component analyzes text sentiment and displays it visually. All styles are per-component only.
+// @AI-HINT: This component provides a fully theme-aware visual display for text sentiment. It uses per-component CSS modules, the cn utility, and brand-aligned colors for robust, maintainable styling.
 'use client';
 
 import React from 'react';
@@ -14,32 +14,28 @@ interface SentimentAnalyzerProps {
   className?: string;
 }
 
-const getSentimentDetails = (score: number) => {
-  if (score > 0.2) {
-    return { label: 'Positive', bgColor: '#2ecc71', textColor: '#ffffff' }; // Emerald green
-  }
-  if (score < -0.2) {
-    return { label: 'Negative', bgColor: '#e74c3c', textColor: '#ffffff' }; // Alizarin red
-  }
-  return { label: 'Neutral', bgColor: '#95a5a6', textColor: '#ffffff' }; // Asbestos gray
-};
-
 const SentimentAnalyzer: React.FC<SentimentAnalyzerProps> = ({ score, className }) => {
   const { theme } = useTheme();
   if (!theme) return null;
 
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-  const { label, bgColor, textColor } = getSentimentDetails(score);
 
-  const indicatorStyle = {
-    '--indicator-bg-color': bgColor,
-    '--indicator-text-color': textColor,
-  } as React.CSSProperties;
+  const getSentimentDetails = (score: number) => {
+    if (score > 0.2) {
+      return { label: 'Positive', styleClass: themeStyles.positive };
+    }
+    if (score < -0.2) {
+      return { label: 'Negative', styleClass: themeStyles.negative };
+    }
+    return { label: 'Neutral', styleClass: themeStyles.neutral };
+  };
+
+  const { label, styleClass } = getSentimentDetails(score);
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.themeWrapper, className)}>
-      <span className={commonStyles.label}>Sentiment:</span>
-      <span className={commonStyles.indicator} style={indicatorStyle}>
+    <div className={cn(commonStyles.container, themeStyles.container, className)}>
+      <span className={cn(commonStyles.label, themeStyles.label)}>Sentiment:</span>
+      <span className={cn(commonStyles.indicator, styleClass)}>
         {label}
       </span>
     </div>

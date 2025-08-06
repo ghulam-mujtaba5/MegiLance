@@ -1,4 +1,4 @@
-// @AI-HINT: This component renders a single chat message bubble, styled differently for the sender and receiver.
+// @AI-HINT: This component renders a single, theme-aware chat message bubble. It uses global CSS variables for all colors, ensuring the sender and receiver bubbles are styled consistently with the application's theme.
 'use client';
 
 import React from 'react';
@@ -29,7 +29,7 @@ const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ text, timestamp, 
         commonStyles.bubble,
         isSender ? themeStyles.sender : themeStyles.receiver
       )}>
-        <p className={commonStyles.text}>{text}</p>
+        <p className={cn(commonStyles.text, isSender ? themeStyles.senderText : themeStyles.receiverText)}>{text}</p>
         <span className={cn(
           commonStyles.timestamp,
           isSender ? themeStyles.senderTimestamp : themeStyles.receiverTimestamp

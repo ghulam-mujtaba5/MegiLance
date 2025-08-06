@@ -1,4 +1,4 @@
-// @AI-HINT: This is the Notification component for displaying alerts and system messages. All styles are per-component only. See Notification.common.css, Notification.light.css, and Notification.dark.css for theming.
+// @AI-HINT: This Notification component is fully theme-aware, using a sophisticated system of CSS variables for styling. The base structure and animations are in the .common.module.css file, while all colors are defined in the .light.module.css and .dark.module.css files. This ensures a consistent, premium look that adapts perfectly to the selected theme.
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';

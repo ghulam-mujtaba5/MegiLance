@@ -1,4 +1,4 @@
-// @AI-HINT: This component provides a chat interface for interacting with an AI agent. All styles are per-component only.
+// @AI-HINT: This component provides a fully theme-aware chat interface for interacting with an AI agent. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
 import React, { useState } from 'react';
@@ -17,10 +17,7 @@ interface Message {
 
 const ChatbotAgent: React.FC = () => {
   const { theme } = useTheme();
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: 'Hello! How can I help you with your project today?', sender: 'bot' },
@@ -53,21 +50,26 @@ const ChatbotAgent: React.FC = () => {
   };
 
   return (
-    <div className={styles.chatbotAgent}>
-      <div className={styles.chatbotAgentMessages}>
+    <div className={cn(commonStyles.chatbotAgent, themeStyles.chatbotAgent)}>
+      <div className={cn(commonStyles.chatbotAgentMessages, themeStyles.chatbotAgentMessages)}>
         {messages.map(message => (
-          <div key={message.id} className={cn(styles.message, message.sender === 'bot' ? styles.messageBot : styles.messageUser)}>
+          <div key={message.id} className={cn(
+            commonStyles.message, 
+            message.sender === 'bot' 
+              ? themeStyles.messageBot 
+              : themeStyles.messageUser
+          )}>
             <p>{message.text}</p>
           </div>
         ))}
       </div>
-      <form className={styles.chatbotAgentInputForm} onSubmit={handleSendMessage}>
+      <form className={cn(commonStyles.chatbotAgentInputForm, themeStyles.chatbotAgentInputForm)} onSubmit={handleSendMessage}>
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Ask me anything..."
-          className={styles.chatbotAgentInput}
+          className={cn(commonStyles.chatbotAgentInput, themeStyles.chatbotAgentInput)}
         />
         <Button type="submit" variant="primary">Send</Button>
       </form>

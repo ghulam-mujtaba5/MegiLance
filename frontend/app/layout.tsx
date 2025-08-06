@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
-import './styles/theme.css';
 import './globals.css';
+import '../styles/themes/light.css';
+import '../styles/themes/dark.css';
+import './styles/theme.css';
 
 import { ThemeProvider } from './contexts/ThemeContext';
 import ThemeSwitcher from './components/ThemeSwitcher/ThemeSwitcher';

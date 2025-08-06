@@ -41,8 +41,10 @@ const Input: React.FC<InputProps> = ({
       className={cn(
         commonStyles.inputWrapper,
         themeStyles.inputWrapper,
-        { [commonStyles.inputWrapperError]: hasError, [themeStyles.inputWrapperError]: hasError },
-        { [commonStyles.inputWrapperDisabled]: props.disabled, [themeStyles.inputWrapperDisabled]: props.disabled },
+        hasError && commonStyles.inputWrapperError,
+        hasError && themeStyles.inputWrapperError,
+        props.disabled && commonStyles.inputWrapperDisabled,
+        props.disabled && themeStyles.inputWrapperDisabled,
         wrapperClassName
       )}
     >
@@ -54,8 +56,10 @@ const Input: React.FC<InputProps> = ({
           className={cn(
             commonStyles.inputField,
             themeStyles.inputField,
-            { [commonStyles.inputFieldWithIconBefore]: iconBefore, [themeStyles.inputFieldWithIconBefore]: iconBefore },
-            { [commonStyles.inputFieldWithIconAfter]: iconAfter, [themeStyles.inputFieldWithIconAfter]: iconAfter },
+            iconBefore && commonStyles.inputFieldWithIconBefore,
+            iconBefore && themeStyles.inputFieldWithIconBefore,
+            iconAfter && commonStyles.inputFieldWithIconAfter,
+            iconAfter && themeStyles.inputFieldWithIconAfter,
             className
           )}
           {...props}

@@ -1,4 +1,4 @@
-// @AI-HINT: This component provides a searchable and filterable table for managing users in the admin panel.
+// @AI-HINT: This component demonstrates a robust, theme-aware user management table. It leverages CSS variables for theming, ensuring that all colors, borders, and backgrounds are defined in per-theme modules for maximum maintainability and consistency.
 'use client';
 
 import React, { useState } from 'react';
@@ -33,19 +33,19 @@ const UserSearchTable: React.FC = () => {
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.themeWrapper)}>
-      <div className={commonStyles.header}>
-        <h2 className={commonStyles.title}>User Management</h2>
+    <div className={cn(commonStyles.container, themeStyles.container)}>
+      <div className={cn(commonStyles.header, themeStyles.header)}>
+        <h2 className={cn(commonStyles.title, themeStyles.title)}>User Management</h2>
         <input
           type="text"
           placeholder="Search by name or email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className={commonStyles.searchInput}
+          className={cn(commonStyles.searchInput, themeStyles.searchInput)}
         />
       </div>
-      <div className={commonStyles.tableWrapper}>
-        <table className={commonStyles.table}>
+      <div className={cn(commonStyles.tableWrapper, themeStyles.tableWrapper)}>
+        <table className={cn(commonStyles.table, themeStyles.table)}>
           <thead>
             <tr>
               <th>User ID</th>
@@ -64,7 +64,7 @@ const UserSearchTable: React.FC = () => {
                 <td>{user.email}</td>
                 <td><Badge variant={user.role === 'Admin' ? 'primary' : 'secondary'}>{user.role}</Badge></td>
                 <td><Badge variant={user.status === 'Active' ? 'success' : 'danger'}>{user.status}</Badge></td>
-                <td className={commonStyles.actions}>
+                <td className={cn(commonStyles.actions, themeStyles.actions)}>
                   <Button variant="secondary" size="small">View</Button>
                   <Button variant="primary" size="small">Edit</Button>
                 </td>

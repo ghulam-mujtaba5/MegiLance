@@ -1,6 +1,6 @@
-/* @AI-HINT: Light theme variables for the UpdateNotification component. */
+/* @AI-HINT: Defines light theme variables for the UpdateNotification. These are applied to the .updateNotification class. */
 
-.themeWrapper {
+.updateNotification {
   --notification-bg-color: var(--surface-info-subtle);
   --notification-border-color: var(--border-info);
   --notification-text-color: var(--text-info);

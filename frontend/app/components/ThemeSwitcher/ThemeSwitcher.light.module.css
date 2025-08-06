@@ -1,10 +1,13 @@
 /* @AI-HINT: Light theme styles for the ThemeSwitcher button. */
 
-.light {
+.themeToggle {
   background-color: white;
-  color: #111827; /* Gray 900 */
 }
 
-.light:hover {
+.themeToggle:hover {
   background-color: #f3f4f6; /* Gray 100 */
+}
+
+.icon {
+  color: #111827; /* Gray 900 */
 }

@@ -1,6 +1,20 @@
-.themeWrapper {
-  --loader-primary: #4f46e5; /* Indigo 600 */
-  --loader-secondary: #e5e7eb; /* Gray 200 */
-  --loader-text: #374151; /* Gray 700 */
-  --loader-overlay-bg: rgba(255, 255, 255, 0.8);
+.overlay {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.spinner {
+  border-color: #4573df;
+  border-right-color: transparent;
+}
+
+.dot {
+  background-color: #4573df;
+}
+
+.pulse {
+  background-color: #4573df;
+}
+
+.text {
+  color: #333;
 }

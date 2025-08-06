@@ -1,3 +1,4 @@
+/* @AI-HINT: These are the theme-agnostic, structural styles for a chat bubble. All colors and theme-specific properties are defined in the light/dark modules. */
 .container {
   display: flex;
   margin-bottom: 0.75rem;

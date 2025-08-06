@@ -1,8 +1,9 @@
-// @AI-HINT: This component displays a chronological audit log of significant actions taken within the application.
+// @AI-HINT: This component displays a fully theme-aware audit log of significant application actions. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
 import React from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import Badge from '@/app/components/Badge/Badge';
 import commonStyles from './AuditLog.common.module.css';
 import lightStyles from './AuditLog.light.module.css';
@@ -27,16 +28,13 @@ const mockLogs: LogEntry[] = [
 const AuditLog: React.FC = () => {
   const { theme } = useTheme();
 
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={styles.auditLogContainer}>
-      <h2 className={styles.auditLogTitle}>System Audit Log</h2>
-      <div className={styles.auditLogTableWrapper}>
-        <table className={styles.auditLog}>
+    <div className={cn(commonStyles.auditLogContainer, themeStyles.auditLogContainer)}>
+      <h2 className={cn(commonStyles.auditLogTitle, themeStyles.auditLogTitle)}>System Audit Log</h2>
+      <div className={cn(commonStyles.auditLogTableWrapper, themeStyles.auditLogTableWrapper)}>
+        <table className={cn(commonStyles.auditLog, themeStyles.auditLog)}>
           <thead>
             <tr>
               <th>Timestamp</th>

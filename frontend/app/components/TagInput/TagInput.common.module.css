@@ -14,7 +14,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem;
-  border: 1px solid;
+  /* Border is handled by theme-specific styles */
   border-radius: 6px;
 }
 

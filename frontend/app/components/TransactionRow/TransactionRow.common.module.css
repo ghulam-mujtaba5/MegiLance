@@ -10,7 +10,7 @@
 }
 .transactionRowDate {
   min-width: 90px;
-  color: #888;
+  /* Color is handled by theme-specific styles */
   font-size: 0.96em;
 }
 .transactionRowDescription {

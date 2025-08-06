@@ -1,8 +1,9 @@
-// @AI-HINT: This component displays a list of users or transactions flagged for fraudulent activity, enabling admin review.
+// @AI-HINT: This component displays a fully theme-aware list of items flagged for fraud. It uses per-component CSS modules and the cn utility for robust, maintainable styling, allowing admins to review and take action.
 'use client';
 
 import React, { useState } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import commonStyles from './FlaggedFraudList.common.module.css';
@@ -29,10 +30,7 @@ const FlaggedFraudList: React.FC = () => {
   const { theme } = useTheme();
   const [items, setItems] = useState(mockFlaggedItems);
 
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const handleAction = (id: string, newStatus: 'Resolved' | 'Dismissed') => {
     setItems(items.map(item => (item.id === id ? { ...item, status: newStatus } : item)));
@@ -41,10 +39,10 @@ const FlaggedFraudList: React.FC = () => {
   const pendingItems = items.filter(item => item.status === 'Pending Review');
 
   return (
-    <div className={styles.flaggedFraudListContainer}>
-      <h2 className={styles.flaggedFraudListTitle}>Flagged Fraud & Risk List</h2>
-      <div className={styles.flaggedFraudListTableWrapper}>
-        <table className={styles.flaggedFraudList}>
+    <div className={cn(commonStyles.flaggedFraudListContainer, themeStyles.flaggedFraudListContainer)}>
+      <h2 className={cn(commonStyles.flaggedFraudListTitle, themeStyles.flaggedFraudListTitle)}>Flagged Fraud & Risk List</h2>
+      <div className={cn(commonStyles.flaggedFraudListTableWrapper, themeStyles.flaggedFraudListTableWrapper)}>
+        <table className={cn(commonStyles.flaggedFraudList, themeStyles.flaggedFraudList)}>
           <thead>
             <tr>
               <th>Type</th>
@@ -61,7 +59,7 @@ const FlaggedFraudList: React.FC = () => {
                 <td>{item.identifier}</td>
                 <td>{item.reason}</td>
                 <td>{item.dateFlagged}</td>
-                <td className={styles.flaggedFraudListActions}>
+                <td className={cn(commonStyles.flaggedFraudListActions, themeStyles.flaggedFraudListActions)}>
                   <Button variant="success" size="small" onClick={() => handleAction(item.id, 'Resolved')}>Resolve</Button>
                   <Button variant="secondary" size="small" onClick={() => handleAction(item.id, 'Dismissed')}>Dismiss</Button>
                 </td>
@@ -69,7 +67,7 @@ const FlaggedFraudList: React.FC = () => {
             ))}
             {pendingItems.length === 0 && (
               <tr>
-                <td colSpan={5} className={styles.flaggedFraudListEmpty}>No items are currently pending review.</td>
+                <td colSpan={5} className={cn(commonStyles.flaggedFraudListEmpty, themeStyles.flaggedFraudListEmpty)}>No items are currently pending review.</td>
               </tr>
             )}
           </tbody>

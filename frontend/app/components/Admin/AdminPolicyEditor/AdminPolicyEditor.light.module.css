@@ -8,18 +8,18 @@
 
 .policyEditorEditor {
   background-color: #ffffff;
-  border-color: #e2e8f0;
+  border: 1px solid #e2e8f0;
 }
 
 .policyEditorSelect {
   background-color: #ffffff;
-  border-color: #cbd5e0;
+  border: 1px solid #cbd5e0;
   color: #2d3748;
 }
 
 .policyEditorTextarea {
   background-color: #fdfdfe;
-  border-color: #cbd5e0;
+  border: 1px solid #cbd5e0;
   color: #2d3748;
 }
 

@@ -1,4 +1,4 @@
-/* @AI-HINT: Defines the common, theme-agnostic styles for the main DashboardLayout component. */
+/* @AI-HINT: Defines the common, theme-agnostic styles for the main DashboardLayout component. It uses CSS variables for themeable properties like the scrollbar for maximum flexibility. */
 
 .dashboardLayout {
   display: grid;
@@ -24,12 +24,12 @@
 }
 
 .mainContent::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--scrollbar-thumb-color);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 .mainContent::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--scrollbar-thumb-hover-color);
 }

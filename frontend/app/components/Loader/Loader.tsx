@@ -28,34 +28,26 @@ const Loader: React.FC<LoaderProps> = ({
 
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
-  const loaderClasses = cn(
-    commonStyles.loader,
-    commonStyles[size],
-    commonStyles[variant],
-    themeStyles.themeWrapper,
-    className
-  );
-
   const loaderContent = (
     <div 
-      className={loaderClasses}
+      className={cn(commonStyles.loader, commonStyles[size], className)}
       role="status"
       aria-live="polite"
       aria-label={text || 'Loading'}
     >
-      <div className={commonStyles.spinnerContainer} aria-hidden="true">
+      <div className={cn(commonStyles.spinnerContainer, commonStyles[variant])} aria-hidden="true">
         {variant === 'dots' && (
           <>
-            <div className={commonStyles.dot}></div>
-            <div className={commonStyles.dot}></div>
-            <div className={commonStyles.dot}></div>
+            <div className={cn(commonStyles.dot, themeStyles.dot)}></div>
+            <div className={cn(commonStyles.dot, themeStyles.dot)}></div>
+            <div className={cn(commonStyles.dot, themeStyles.dot)}></div>
           </>
         )}
-        {variant === 'pulse' && <div />}
-        {variant === 'spinner' && <div />}
+        {variant === 'pulse' && <div className={cn(commonStyles.pulse, themeStyles.pulse)} />}
+        {variant === 'spinner' && <div className={cn(commonStyles.spinner, themeStyles.spinner)} />}
       </div>
       {text && (
-        <span className={commonStyles.text}>{text}</span>
+        <span className={cn(commonStyles.text, themeStyles.text)}>{text}</span>
       )}
       <span className="sr-only">{text || 'Loading, please wait...'}</span>
     </div>
@@ -63,7 +55,7 @@ const Loader: React.FC<LoaderProps> = ({
 
   if (overlay) {
     return (
-      <div className={cn(commonStyles.overlay, themeStyles.themeWrapper)}>
+      <div className={cn(commonStyles.overlay, themeStyles.overlay)}>
         {loaderContent}
       </div>
     );

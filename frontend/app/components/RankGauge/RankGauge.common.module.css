@@ -25,13 +25,11 @@
 .fill {
   transform-origin: center bottom;
   transition: transform 0.5s ease-in-out;
-  background-color: var(--fill-color);
   transform: rotate(var(--gauge-rotation, 0deg));
 }
 
 .cover {
   z-index: 1;
-  background-color: var(--cover-color);
 }
 
 .score {
@@ -40,5 +38,4 @@
   font-size: 2rem;
   font-weight: 800;
   margin-top: -1rem;
-  color: var(--score-color);
 }

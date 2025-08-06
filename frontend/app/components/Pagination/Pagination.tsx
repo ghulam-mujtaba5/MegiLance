@@ -37,7 +37,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
   };
 
   return (
-    <nav className={cn(commonStyles.pagination, themeStyles.pagination, className)} aria-label="Pagination">
+    <nav className={cn(commonStyles.pagination, className)} aria-label="Pagination">
       <button onClick={handlePrevious} disabled={currentPage === 1} className={cn(commonStyles.paginationButton, themeStyles.paginationButton)}>
         Previous
       </button>

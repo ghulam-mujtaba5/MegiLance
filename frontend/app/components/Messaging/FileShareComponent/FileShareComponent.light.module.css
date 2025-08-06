@@ -1,6 +1,15 @@
-.themeWrapper {
-  --file-share-bg: #f9fafb;
-  --file-share-preview-bg: #ffffff;
-  --file-share-preview-border-color: #e2e8f0;
-  --file-share-filename-color: #2d3748;
+/* @AI-HINT: Defines the light theme for the file sharing component using global CSS variables. */
+
+.container {
+  background-color: var(--surface);
+  border-color: var(--border);
+}
+
+.preview {
+  background-color: var(--surface-accent);
+  border-color: var(--border-light);
+}
+
+.fileName {
+  color: var(--text-primary);
 }

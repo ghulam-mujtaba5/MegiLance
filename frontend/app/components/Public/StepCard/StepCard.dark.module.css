@@ -1,10 +1,6 @@
-/* @AI-HINT: Dark theme variables for the StepCard component. */
+/* @AI-HINT: Defines dark theme styles for the StepCard. It provides theme-specific overrides while relying on global variables for the base look. */
 
-.themeWrapper {
-  --surface-secondary: var(--color-gray-800);
-  --border-subtle: var(--color-gray-700);
-  --text-primary: var(--color-gray-50);
-  --text-secondary: var(--color-gray-300);
+.stepCardContainer {
   --icon-color: var(--color-primary-light);
   --number-bg: var(--color-primary);
   --number-text: var(--color-white);

@@ -48,15 +48,15 @@ const Alert: React.FC<AlertProps> = ({
       )} 
       role="alert"
     >
-      <div className={commonStyles.alertIcon}>{ICONS[variant]}</div>
-      <div className={commonStyles.alertContent}>
-        <h3 className={commonStyles.alertTitle}>{title}</h3>
-        <div className={commonStyles.alertDescription}>{children}</div>
+      <div className={cn(commonStyles.alertIcon, themeStyles.alertIcon)}>{ICONS[variant]}</div>
+      <div className={cn(commonStyles.alertContent, themeStyles.alertContent)}>
+        <h3 className={cn(commonStyles.alertTitle, themeStyles.alertTitle)}>{title}</h3>
+        <div className={cn(commonStyles.alertDescription, themeStyles.alertDescription)}>{children}</div>
       </div>
       {onClose && (
         <button 
           onClick={onClose} 
-          className={commonStyles.alertCloseButton} 
+          className={cn(commonStyles.alertCloseButton, themeStyles.alertCloseButton)} 
           aria-label="Close alert"
         >
           <FiX />

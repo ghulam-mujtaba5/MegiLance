@@ -1,21 +1,21 @@
+/* @AI-HINT: These are the theme-agnostic, structural styles for the ChatInbox. All colors and theme-specific properties are defined in the light/dark modules. */
 .container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  border-right: 1px solid var(--inbox-border-color);
-  background-color: var(--inbox-bg);
+  border-right-width: 1px;
+  border-right-style: solid;
 }
 
 .header {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--inbox-border-color);
+  padding: 1rem;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
 }
 
 .title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  margin: 0;
-  color: var(--inbox-title-color);
 }
 
 .list {
@@ -26,20 +26,20 @@
 .item {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
+  padding: 1rem;
+  gap: 0.75rem;
   cursor: pointer;
-  border-bottom: 1px solid var(--inbox-border-color);
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
   transition: background-color 0.2s ease-in-out;
-}
-
-.item:last-child {
-  border-bottom: none;
 }
 
 .itemDetails {
   flex-grow: 1;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0; /* Prevents overflow */
 }
 
 .itemRow {
@@ -49,22 +49,20 @@
 }
 
 .userName {
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
-  color: var(--inbox-username-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .timestamp {
   font-size: 0.75rem;
-  white-space: nowrap;
-  color: var(--inbox-timestamp-color);
+  flex-shrink: 0;
 }
 
 .lastMessage {
-  margin: 0;
   font-size: 0.875rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--inbox-last-message-color);
 }

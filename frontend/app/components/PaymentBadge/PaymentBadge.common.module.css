@@ -1,4 +1,4 @@
-/* @AI-HINT: Common styles for the PaymentBadge component. Uses camelCase for CSS module compatibility. */
+/* @AI-HINT: Provides theme-agnostic structural styles for the PaymentBadge. All colors are defined via CSS variables in the light/dark modules, which are then applied to the status-specific classes below. */
 
 .paymentBadge {
   display: inline-block;

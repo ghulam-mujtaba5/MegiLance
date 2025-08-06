@@ -42,8 +42,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  if (!theme) return null;
-
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const toggleMenu = (event: React.MouseEvent) => {
@@ -82,7 +80,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
   );
 
   return (
-    <div className={cn(commonStyles.profileMenu, themeStyles.profileMenu, className)} ref={menuRef}>
+    <div className={cn(commonStyles.profileMenu, className)} ref={menuRef}>
       <button
         type="button"
         className={cn(commonStyles.trigger, themeStyles.trigger)}
@@ -96,12 +94,12 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
 
       <div className={cn(commonStyles.dropdown, themeStyles.dropdown, isOpen && commonStyles.dropdownOpen)}>
         <div className={cn(commonStyles.header, themeStyles.header)}>
-          <div className={cn(commonStyles.userDetails, themeStyles.userDetails)}>
+          <div className={cn(commonStyles.userDetails)}>
             <p className={cn(commonStyles.userName, themeStyles.userName)}>{userName}</p>
             {userEmail && <p className={cn(commonStyles.userEmail, themeStyles.userEmail)}>{userEmail}</p>}
           </div>
         </div>
-        <ul className={cn(commonStyles.items, themeStyles.items)} role="menu" aria-orientation="vertical">
+        <ul className={cn(commonStyles.items)} role="menu" aria-orientation="vertical">
           {menuItems.map((item) => (
             <li key={item.label} role="none">
               {item.href ? (
@@ -115,6 +113,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
                 </Link>
               ) : (
                 <button
+                  type="button"
                   role="menuitem"
                   className={cn(commonStyles.item, themeStyles.item)}
                   onClick={() => handleItemClick(item.onClick)}

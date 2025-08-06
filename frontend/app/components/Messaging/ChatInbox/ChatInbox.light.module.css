@@ -1,16 +1,35 @@
-.themeWrapper {
-  --inbox-bg: #f7fafc;
-  --inbox-border-color: #e2e8f0;
-  --inbox-title-color: #1a202c;
-  --inbox-username-color: #2d3748;
-  --inbox-timestamp-color: #718096;
-  --inbox-last-message-color: #4a5568;
+/* @AI-HINT: Defines the light theme for the ChatInbox. It uses global CSS variables for all colors, ensuring perfect consistency with the application's theme. */
+.container,
+.header,
+.item {
+  border-color: var(--border);
+}
+
+.container {
+  background-color: var(--surface);
+}
+
+.title,
+.userName {
+  color: var(--text-primary);
 }
 
 .item:hover {
-  background-color: #edf2f7;
+  background-color: var(--surface-hover);
 }
 
 .active {
-  background-color: #e2e8f0;
+  background-color: var(--surface-accent);
+}
+
+.timestamp,
+.lastMessage {
+  color: var(--text-secondary);
+}
+
+/* Ensure text in active item is still readable and has emphasis */
+.active .userName,
+.active .lastMessage,
+.active .timestamp {
+  color: var(--text-primary);
 }

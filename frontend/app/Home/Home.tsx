@@ -1,10 +1,11 @@
 // @AI-HINT: This is the comprehensive Home page showcasing MegiLance's AI-powered freelancing platform with blockchain integration. Maximum scope implementation with premium sections.
 'use client';
 
-import React from "react";
+import React from 'react';
 import Link from 'next/link';
-import Button from '@/app/components/Button/Button';
-import { FaRocket, FaUsers, FaShieldAlt } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+
 import Hero from './components/Hero';
 import Features from './components/Features';
 import AIShowcase from './components/AIShowcase';
@@ -13,88 +14,66 @@ import HowItWorks from './components/HowItWorks';
 import GlobalImpact from './components/GlobalImpact';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
-import "./Home.common.css";
-import "./Home.light.css";
-import "./Home.dark.css";
-import "./components/Hero.common.module.css";
-import "./components/Hero.light.module.css";
-import "./components/Hero.dark.module.css";
-import "./components/Features.common.module.css";
-import "./components/Features.light.module.css";
-import "./components/Features.dark.module.css";
-import "./components/AIShowcase.common.css";
-import "./components/AIShowcase.light.module.css";
-import "./components/AIShowcase.dark.module.css";
-import "./components/BlockchainShowcase.common.css";
-import "./components/BlockchainShowcase.light.css";
-import "./components/BlockchainShowcase.dark.css";
-import "./components/HowItWorks.common.css";
-import "./components/HowItWorks.light.css";
-import "./components/HowItWorks.dark.css";
-import "./components/GlobalImpact.common.css";
-import "./components/GlobalImpact.light.css";
-import "./components/GlobalImpact.dark.css";
-import "./components/Testimonials.common.css";
-import "./components/Testimonials.light.css";
-import "./components/Testimonials.dark.css";
-import "./components/CTA.common.css";
-import "./components/CTA.light.css";
-import "./components/CTA.dark.css";
 
-import { useTheme } from '@/app/contexts/ThemeContext';
+import commonStyles from './Home.module.scss';
+import lightStyles from './Home.light.module.scss';
+import darkStyles from './Home.dark.module.scss';
 
 const Home: React.FC = () => {
   const { theme } = useTheme();
+
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <div className={`Home theme-${theme}`}>
+    <div className={cn(commonStyles.homeContainer, themeStyles.home)}>
       {/* Navigation Header */}
-      <header className="Home-header">
-        <nav className="Home-nav">
-          <div className="Home-nav-brand">
-            <Link href="/" className="Home-brand-link">
-              <h1 className="Home-brand">MegiLance</h1>
+      <header className={commonStyles.header}>
+        <nav className={commonStyles.nav}>
+          <div className={commonStyles.brandLink}>
+            <Link href="/" className={commonStyles.brandLink}>
+              <h1 className={commonStyles.brand}>MegiLance</h1>
             </Link>
           </div>
-          <div className="Home-nav-links">
-            <Link href="/how-it-works" className="Home-nav-link">How It Works</Link>
-            <Link href="/pricing" className="Home-nav-link">Pricing</Link>
-            <Link href="/about" className="Home-nav-link">About</Link>
-            <Link href="/blog" className="Home-nav-link">Blog</Link>
-            <Link href="/contact" className="Home-nav-link">Contact</Link>
-            <Link href="/Login" className="Home-nav-link Home-nav-link--primary">Sign In</Link>
+          <div className={commonStyles.navLinks}>
+            <Link href="/how-it-works" className={commonStyles.navLink}>How It Works</Link>
+            <Link href="/pricing" className={commonStyles.navLink}>Pricing</Link>
+            <Link href="/about" className={commonStyles.navLink}>About</Link>
+            <Link href="/blog" className={commonStyles.navLink}>Blog</Link>
+            <Link href="/contact" className={commonStyles.navLink}>Contact</Link>
+            <Link href="/Login" className={cn(commonStyles.navLink, commonStyles.navLinkPrimary)}>Sign In</Link>
           </div>
         </nav>
       </header>
-      
+
       {/* Enhanced Hero Section with Animated Stats */}
       <Hero />
 
       {/* Core Platform Features */}
       <Features />
-      
+
       {/* AI-Powered Capabilities Showcase */}
       <AIShowcase />
-      
+
       {/* Blockchain & Crypto Payment Features */}
       <BlockchainShowcase />
-      
+
       {/* How the Platform Works */}
       <HowItWorks />
-      
+
       {/* Global Impact & Pakistani Focus */}
       <GlobalImpact />
-      
+
       {/* User Testimonials */}
       <Testimonials />
-      
+
       {/* Final Call-to-Action */}
       <CTA />
 
       {/* Footer */}
-      <footer className="Home-footer">
-        <div className="Home-container">
+      <footer className={commonStyles.footer}>
+        <div className={commonStyles.footerContainer}>
           <p>&copy; 2024 MegiLance. All rights reserved.</p>
-          <div className="Home-footer-links">
+          <div className={commonStyles.footerLinks}>
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms of Service</Link>
             <Link href="/security">Security</Link>
@@ -106,3 +85,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+

@@ -1,4 +1,4 @@
-/* @AI-HINT: Common styles for the StepCard component. Uses camelCase for CSS module compatibility. */
+/* @AI-HINT: Provides theme-agnostic structural styles for the StepCard. All base colors and styles are inherited from global CSS variables, ensuring it adapts to the current theme. */
 
 .stepCardContainer {
   text-align: center;

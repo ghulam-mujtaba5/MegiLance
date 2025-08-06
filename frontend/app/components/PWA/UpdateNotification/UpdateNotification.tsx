@@ -1,4 +1,4 @@
-// @AI-HINT: This component notifies the user when a new version of the PWA is available. All styles are per-component only.
+// @AI-HINT: This component displays a theme-aware notification when a PWA update is available. It uses a modern, CSS-variable-driven approach for styling to ensure it perfectly matches the application's current theme.
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -9,7 +9,7 @@ import commonStyles from './UpdateNotification.common.module.css';
 import lightStyles from './UpdateNotification.light.module.css';
 import darkStyles from './UpdateNotification.dark.module.css';
 
-// @AI-HINT: This component notifies the user when a new version of the PWA is available. It is fully theme-aware and uses CSS modules.
+
 
 const UpdateNotification: React.FC = () => {
   const { theme } = useTheme();
@@ -51,7 +51,7 @@ const UpdateNotification: React.FC = () => {
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.updateNotification, themeStyles.themeWrapper)}>
+    <div className={cn(commonStyles.updateNotification, themeStyles.updateNotification)}>
       <div className={commonStyles.content}>
         <p className={commonStyles.text}>A new version is available!</p>
         <Button variant="secondary" size="small" onClick={handleUpdate}>Refresh</Button>

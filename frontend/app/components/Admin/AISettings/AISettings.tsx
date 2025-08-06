@@ -1,8 +1,9 @@
-// @AI-HINT: This component provides a form for administrators to configure and fine-tune AI model parameters.
+// @AI-HINT: This component provides a fully theme-aware form for administrators to configure AI model parameters. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
 import React, { useState } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import commonStyles from './AISettings.common.module.css';
 import lightStyles from './AISettings.light.module.css';
@@ -25,10 +26,7 @@ const AISettings: React.FC = () => {
   const [settings, setSettings] = useState(initialSettings);
   const [isSaved, setIsSaved] = useState(false);
 
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -43,10 +41,10 @@ const AISettings: React.FC = () => {
   };
 
   return (
-    <div className={styles.aiSettingsContainer}>
-      <h2 className={styles.aiSettingsTitle}>AI & Machine Learning Settings</h2>
-      <div className={styles.aiSettingsForm}>
-        <div className={styles.formGroup}>
+    <div className={cn(commonStyles.aiSettingsContainer, themeStyles.aiSettingsContainer)}>
+      <h2 className={cn(commonStyles.aiSettingsTitle, themeStyles.aiSettingsTitle)}>AI & Machine Learning Settings</h2>
+      <div className={commonStyles.aiSettingsForm}>
+        <div className={commonStyles.formGroup}>
           <label htmlFor="fraudDetectionThreshold">Fraud Detection Sensitivity</label>
           <input
             type="range"
@@ -62,7 +60,7 @@ const AISettings: React.FC = () => {
           <small>Higher values will flag more activity as potentially fraudulent.</small>
         </div>
 
-        <div className={styles.formGroup}>
+        <div className={commonStyles.formGroup}>
           <label htmlFor="matchmakingRankWeight">Matchmaking Rank Weight</label>
           <input
             type="range"
@@ -78,23 +76,23 @@ const AISettings: React.FC = () => {
           <small>Determines the importance of freelancer rank in job matching.</small>
         </div>
 
-        <div className={styles.formGroup}>
+        <div className={commonStyles.formGroup}>
           <label htmlFor="sentimentAnalysisModel">Sentiment Analysis Model</label>
           <select
             id="sentimentAnalysisModel"
             name="sentimentAnalysisModel"
             value={settings.sentimentAnalysisModel}
             onChange={handleChange}
-            className={styles.aiSettingsSelect}>
+            className={cn(commonStyles.aiSettingsSelect, themeStyles.aiSettingsSelect)}>
             <option value="BERT-base">BERT (Higher Accuracy)</option>
             <option value="DistilBERT">DistilBERT (Faster Performance)</option>
           </select>
           <small>Select the model for analyzing review sentiment.</small>
         </div>
 
-        <div className={styles.formActions}>
+        <div className={cn(commonStyles.formActions, themeStyles.formActions)}>
           <Button variant="primary" onClick={handleSave}>Save Changes</Button>
-          {isSaved && <span className={styles.saveConfirmation}>Settings saved!</span>}
+          {isSaved && <span className={cn(commonStyles.saveConfirmation, themeStyles.saveConfirmation)}>Settings saved!</span>}
         </div>
       </div>
     </div>

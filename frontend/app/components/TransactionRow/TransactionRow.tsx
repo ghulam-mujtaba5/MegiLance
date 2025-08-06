@@ -1,10 +1,11 @@
 import React from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import commonStyles from './TransactionRow.common.module.css';
 import lightStyles from './TransactionRow.light.module.css';
 import darkStyles from './TransactionRow.dark.module.css';
 
-// @AI-HINT: This component has been fully refactored to use theme-aware CSS modules.
+// @AI-HINT: This component displays a single transaction row, styled according to the current theme.
 
 export interface TransactionRowProps {
   date: string;
@@ -14,16 +15,13 @@ export interface TransactionRowProps {
 
 const TransactionRow: React.FC<TransactionRowProps> = ({ date, description, amount }) => {
   const { theme } = useTheme();
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <div className={`${styles.transactionRow} ${theme === 'dark' ? styles.transactionRowDark : styles.transactionRowLight}`}>
-      <span className={styles.transactionRowDate}>{date}</span>
-      <span className={styles.transactionRowDescription}>{description}</span>
-      <span className={styles.transactionRowAmount}>{amount}</span>
+    <div className={cn(commonStyles.transactionRow, themeStyles.transactionRow)}>
+      <span className={cn(commonStyles.transactionRowDate, themeStyles.transactionRowDate)}>{date}</span>
+      <span className={cn(commonStyles.transactionRowDescription, themeStyles.transactionRowDescription)}>{description}</span>
+      <span className={cn(commonStyles.transactionRowAmount, themeStyles.transactionRowAmount)}>{amount}</span>
     </div>
   );
 };

@@ -1,7 +1,16 @@
-.themeWrapper {
-  --container-bg: #2c2c2c;
-  --container-border: #444444;
-  --text-primary: #f0f0f0;
-  --text-secondary: #cccccc;
-  --progress-bar-bg: #444444;
+.container {
+  background-color: #2c2c2c;
+  border: 1px solid #444444;
+}
+
+.rankName {
+  color: #f0f0f0;
+}
+
+.score {
+  color: #cccccc;
+}
+
+.progressBarContainer {
+  background-color: #444444;
 }

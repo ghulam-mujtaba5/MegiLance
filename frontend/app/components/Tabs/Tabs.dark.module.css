@@ -1,22 +1,22 @@
 /* @AI-HINT: Dark theme styles for the Tabs component. */
 
-.dark .tabsList {
-  border-color: #4b5563; /* Gray 600 */
+.tabsList {
+  border-bottom: 1px solid #4b5563; /* Gray 600 */
 }
 
-.dark .tabsTab {
+.tabsTab {
   color: #9ca3af; /* Gray 400 */
 }
 
-.dark .tabsTab:hover {
+.tabsTab:hover {
   color: #f9fafb; /* Gray 50 */
 }
 
-.dark .tabsTab[aria-selected='true'] {
+.tabsTabSelected {
   color: #818cf8; /* Indigo 400 */
   border-color: #818cf8; /* Indigo 400 */
 }
 
-.dark .tabsTab:focus-visible {
-  outline-color: #6366f1; /* Indigo 500 */
+.tabsTab:focus-visible {
+  outline: 2px solid #6366f1; /* Indigo 500 */
 }

@@ -1,4 +1,4 @@
-/* @AI-HINT: Styles for the reusable placeholder page component. Uses camelCase for CSS module compatibility. */
+/* @AI-HINT: Provides theme-agnostic structural styles for the PlaceholderPage. All colors are inherited directly from global CSS variables, ensuring it adapts to the current theme without specific overrides. */
 
 .placeholderPage {
   display: flex;

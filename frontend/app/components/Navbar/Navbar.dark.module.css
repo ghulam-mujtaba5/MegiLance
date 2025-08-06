@@ -1,13 +1,42 @@
-/* @AI-HINT: Dark theme for Navbar. */
+.navbar {
+  background-color: rgba(17, 24, 39, 0.8);
+  border-bottom: 1px solid #374151;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
 
-.themeWrapper {
-  --navbar-bg: var(--surface);
-  --navbar-border: var(--border);
-  --navbar-logo-text: var(--text-primary);
-  --navbar-link-text: var(--text-secondary);
-  --navbar-link-text-hover: var(--text-primary);
-  --navbar-link-bg-hover: var(--surface-hover);
-  --navbar-icon: var(--text-secondary);
-  --navbar-search-bg: var(--surface-alt);
-  --navbar-search-border: var(--border);
+.navLink {
+  color: #d1d5db;
+}
+
+.navLink:hover {
+  color: #ffffff;
+  background-color: #374151;
+}
+
+.searchIcon {
+  color: #9ca3af;
+}
+
+.searchInput :global(.input-field) {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.mobileToggleButton {
+  color: #d1d5db;
+}
+
+.mobileMenu {
+  background-color: #111827;
+}
+
+.mobileLink {
+  color: #d1d5db;
+}
+
+.mobileLink:hover {
+  color: #ffffff;
+  background-color: #374151;
 }

@@ -47,21 +47,18 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
 
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-  const styles = { ...commonStyles, ...themeStyles };
-
-  const sizeClass = styles[sizeMap[size]];
 
   return (
-    <div className={cn(styles.progressBarContainer, className)}>
+    <div className={cn(commonStyles.progressBarContainer, className)}>
       {(label || showPercentage) && (
-        <div className={styles.progressBarHeader}>
+        <div className={commonStyles.progressBarHeader}>
           {label && (
-            <span className={styles.progressBarLabel} id={`${progressId}-label`}>
+            <span className={cn(commonStyles.progressBarLabel, themeStyles.progressBarLabel)} id={`${progressId}-label`}>
               {label}
             </span>
           )}
           {showPercentage && (
-            <span className={styles.progressBarPercentage}>
+            <span className={cn(commonStyles.progressBarPercentage, themeStyles.progressBarPercentage)}>
               {Math.round(safeProgress)}%
             </span>
           )}
@@ -69,12 +66,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       )}
       <div
         className={cn(
-          styles.progressBar,
-          theme === 'dark' ? styles.progressBarDark : styles.progressBarLight,
-          sizeClass,
-          styles[variant],
-          striped && styles.progressBarStriped,
-          animated && styles.progressStripeAnimation
+          commonStyles.progressBar,
+          themeStyles.progressBar,
+          commonStyles[sizeMap[size]],
+          themeStyles[variant],
+          striped && themeStyles.progressBarStriped,
+          animated && commonStyles.progressStripeAnimation
         )}
         role="progressbar"
         aria-valuenow={safeProgress}
@@ -84,9 +81,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         aria-labelledby={label ? `${progressId}-label` : undefined}
         aria-describedby={ariaDescribedBy}
       >
-        <div className={styles.progressBarTrack}>
+        <div className={commonStyles.progressBarTrack}>
           <div
-            className={styles.progressBarFill}
+            className={cn(commonStyles.progressBarFill, themeStyles.progressBarFill)}
             style={{ '--progress-width': `${safeProgress}%` } as React.CSSProperties}
           />
         </div>

@@ -19,7 +19,7 @@
 .reviewSentimentDashboardCard {
   padding: 1.5rem;
   border-radius: 8px;
-  border: 1px solid;
+  /* border is handled by theme-specific styles */
 }
 
 .cardTitle {
@@ -34,59 +34,11 @@
   margin: 0;
 }
 
-.cardMetricPositive {
-  color: #28a745;
-}
+/* cardMetricPositive color is handled by theme-specific styles */
 
 .cardDescription {
   font-size: 0.875rem;
   margin: 0.25rem 0 0 0;
 }
 
-/* Bar Chart Styles */
-.barChart {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.barChartBarContainer {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.barChartLabel {
-  width: 80px;
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.barChartBarWrapper {
-  flex-grow: 1;
-  height: 20px;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.barChartBar {
-  height: 100%;
-  border-radius: 4px;
-}
-
-.barChartBarPositive {
-  background-color: #28a745;
-}
-
-.barChartBarNeutral {
-  background-color: #ffc107;
-}
-
-.barChartBarNegative {
-  background-color: #dc3545;
-}
-
-.barChartPercentage {
-  font-size: 0.875rem;
-  font-weight: 500;
-}
+/* BarChart styles are now self-contained within the BarChart component */

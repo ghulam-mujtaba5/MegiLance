@@ -1,4 +1,4 @@
-// @AI-HINT: This component displays a single item in a freelancer's portfolio, with edit/delete controls.
+// @AI-HINT: This component displays a single, theme-aware portfolio item card. It leverages CSS variables defined in per-theme modules and scoped to the component's container, ensuring a consistent and maintainable presentation.
 'use client';
 
 import React from 'react';
@@ -26,7 +26,7 @@ const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({ id, title, descri
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.themeWrapper)}>
+    <div className={cn(commonStyles.container, themeStyles.container)}>
       <div className={commonStyles.imageWrapper}>
         <Image src={imageUrl} alt={title} layout="fill" objectFit="cover" />
       </div>

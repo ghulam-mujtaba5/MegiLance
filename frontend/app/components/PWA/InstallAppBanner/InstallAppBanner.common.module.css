@@ -1,4 +1,4 @@
-/* @AI-HINT: Common styles for the InstallAppBanner component. Uses camelCase for CSS module compatibility. */
+/* @AI-HINT: Provides theme-agnostic structural styles for the InstallAppBanner. All colors are defined via CSS variables in the light/dark modules, which are then applied here. */
 
 .installAppBanner {
   position: fixed;

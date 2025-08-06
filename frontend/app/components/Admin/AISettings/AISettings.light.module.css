@@ -8,7 +8,7 @@
 
 .aiSettingsForm {
   background-color: #ffffff;
-  border-color: #e2e8f0;
+  border: 1px solid #e2e8f0;
 }
 
 .formGroup label {
@@ -21,7 +21,7 @@
 
 .aiSettingsSelect {
   background-color: #ffffff;
-  border-color: #cbd5e0;
+  border: 1px solid #cbd5e0;
   color: #2d3748;
 }
 

@@ -23,6 +23,8 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   className,
 }) => {
   const { theme } = useTheme();
+  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+
   const sizeMap = {
     small: { class: commonStyles.userAvatarSmall, size: 32 },
     medium: { class: commonStyles.userAvatarMedium, size: 40 },
@@ -40,7 +42,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
 
   const avatarClasses = cn(
     commonStyles.userAvatar,
-    theme === 'light' ? lightStyles.light : darkStyles.dark,
+    themeStyles.userAvatar,
     sizeClass,
     className
   );

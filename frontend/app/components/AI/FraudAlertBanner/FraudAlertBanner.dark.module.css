@@ -1,6 +1,6 @@
 .fraudAlertBanner {
   background-color: #3e341a;
-  border-color: #8d6e3a;
+  border: 1px solid #8d6e3a;
 }
 
 .fraudAlertBannerIcon {

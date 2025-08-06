@@ -1,6 +1,6 @@
-/* @AI-HINT: Light theme variables for the PaymentBadge component. */
+/* @AI-HINT: Defines light theme variables for the PaymentBadge. These are applied to the .paymentBadge class. */
 
-.themeWrapper {
+.paymentBadge {
   --badge-paid-bg: var(--surface-success-subtle);
   --badge-paid-text: var(--text-success);
   --badge-pending-bg: var(--surface-warning-subtle);

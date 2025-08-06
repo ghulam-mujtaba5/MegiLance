@@ -1,5 +1,23 @@
-.themeWrapper {
-  --container-bg: #2f3640;
-  --container-border: #576574;
-  --text-color: #c8d6e5;
+.container {
+  background-color: #2f3640;
+  border: 1px solid #576574;
+}
+
+.label {
+  color: #c8d6e5;
+}
+
+.positive {
+  background-color: #27AE60; /* Success Green */
+  color: #ffffff;
+}
+
+.negative {
+  background-color: #e81123; /* Error Red */
+  color: #ffffff;
+}
+
+.neutral {
+  background-color: #576574;
+  color: #f1f2f6;
 }

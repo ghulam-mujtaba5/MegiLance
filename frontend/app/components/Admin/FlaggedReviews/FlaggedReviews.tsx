@@ -1,8 +1,9 @@
-// @AI-HINT: This component allows admins to moderate user reviews that have been flagged as inappropriate or spam.
+// @AI-HINT: This component provides a fully theme-aware interface for admins to moderate flagged reviews. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
 import React, { useState } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import commonStyles from './FlaggedReviews.common.module.css';
@@ -30,10 +31,7 @@ const FlaggedReviews: React.FC = () => {
   const { theme } = useTheme();
   const [reviews, setReviews] = useState(mockFlaggedReviews);
 
-  const styles = {
-    ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const handleAction = (id: string, newStatus: 'Kept' | 'Removed') => {
     setReviews(reviews.map(review => (review.id === id ? { ...review, status: newStatus } : review)));
@@ -42,20 +40,20 @@ const FlaggedReviews: React.FC = () => {
   const pendingReviews = reviews.filter(review => review.status === 'Pending');
 
   return (
-    <div className={styles.flaggedReviewsContainer}>
-      <h2 className={styles.flaggedReviewsTitle}>Flagged Review Queue</h2>
-      <div className={styles.flaggedReviewsList}>
+    <div className={cn(commonStyles.flaggedReviewsContainer, themeStyles.flaggedReviewsContainer)}>
+      <h2 className={cn(commonStyles.flaggedReviewsTitle, themeStyles.flaggedReviewsTitle)}>Flagged Review Queue</h2>
+      <div className={cn(commonStyles.flaggedReviewsList, themeStyles.flaggedReviewsList)}>
         {pendingReviews.length > 0 ? pendingReviews.map(review => (
-          <div key={review.id} className={styles.flaggedReviewsItem}>
-            <div className={styles.flaggedReviewsItemHeader}>
+          <div key={review.id} className={cn(commonStyles.flaggedReviewsItem, themeStyles.flaggedReviewsItem)}>
+            <div className={cn(commonStyles.flaggedReviewsItemHeader, themeStyles.flaggedReviewsItemHeader)}>
               <div>
                 <strong>{review.reviewer}</strong> reviewed <strong>{review.reviewee}</strong>
-                <span className={styles.flaggedReviewsRating}>{' ★'.repeat(review.rating)}{' ☆'.repeat(5 - review.rating)}</span>
+                <span className={cn(commonStyles.flaggedReviewsRating, themeStyles.flaggedReviewsRating)}>{' ★'.repeat(review.rating)}{' ☆'.repeat(5 - review.rating)}</span>
               </div>
               <Badge variant="warning">{review.reason}</Badge>
             </div>
-            <p className={styles.flaggedReviewsContent}>&ldquo;{review.content}&rdquo;</p>
-            <div className={styles.flaggedReviewsActions}>
+            <p className={cn(commonStyles.flaggedReviewsContent, themeStyles.flaggedReviewsContent)}>&ldquo;{review.content}&rdquo;</p>
+            <div className={cn(commonStyles.flaggedReviewsActions, themeStyles.flaggedReviewsActions)}>
               <small>Flagged on: {review.dateFlagged}</small>
               <div>
                 <Button variant="secondary" size="small" onClick={() => handleAction(review.id, 'Kept')}>Keep Review</Button>
@@ -64,7 +62,7 @@ const FlaggedReviews: React.FC = () => {
             </div>
           </div>
         )) : (
-          <p className={styles.flaggedReviewsEmpty}>No reviews are currently pending moderation.</p>
+          <p className={cn(commonStyles.flaggedReviewsEmpty, themeStyles.flaggedReviewsEmpty)}>No reviews are currently pending moderation.</p>
         )}
       </div>
     </div>

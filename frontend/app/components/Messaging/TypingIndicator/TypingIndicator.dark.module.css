@@ -1,4 +1,9 @@
-.themeWrapper {
-  --typing-indicator-bg: #374151; /* gray-700 */
-  --typing-indicator-dot-color: #9ca3af; /* gray-400 */
+/* @AI-HINT: Defines the dark theme for the typing indicator using global CSS variables. */
+
+.container {
+  background-color: var(--surface-accent);
+}
+
+.dot {
+  background-color: var(--text-secondary);
 }

@@ -3,8 +3,7 @@
   border-radius: 8px;
   width: 100%;
   max-width: 400px;
-  background-color: var(--container-bg);
-  border: 1px solid var(--container-border);
+  /* background-color and border are handled by theme-specific styles */
 }
 
 .header {
@@ -18,14 +17,14 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
-  color: var(--text-primary);
+  /* color is handled by theme-specific styles */
 }
 
 .score {
   font-size: 1rem;
   font-weight: 500;
   margin: 0;
-  color: var(--text-secondary);
+  /* color is handled by theme-specific styles */
 }
 
 .progressBarContainer {
@@ -33,7 +32,7 @@
   height: 10px;
   border-radius: 5px;
   overflow: hidden;
-  background-color: var(--progress-bar-bg);
+  /* background-color is handled by theme-specific styles */
 }
 
 .progressBar {

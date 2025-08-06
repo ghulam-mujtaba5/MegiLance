@@ -1,32 +1,32 @@
 /* @AI-HINT: Light theme styles for the Table component. */
 
-.light {
+.tableContainer {
   border: 1px solid #e5e7eb;
 }
 
-.light .table caption {
+.caption {
   background-color: #f9fafb;
   color: #111827;
 }
 
-.light .tableThead {
+.tableThead {
   background-color: #f9fafb;
-  border-color: #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.light .tableTh {
+.tableTh {
   color: #6b7280;
 }
 
-.light .tableTbodyTr {
+.tableTbodyTr {
   background-color: #ffffff;
-  border-color: #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.light .tableTbodyTr:hover {
+.tableTbodyTr:hover {
   background-color: #f9fafb;
 }
 
-.light .tableTd {
+.tableTd {
   color: #374151;
 }

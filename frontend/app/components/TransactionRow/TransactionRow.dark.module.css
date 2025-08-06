@@ -1,5 +1,16 @@
-.transactionRowDark {
-  background: #23272f;
-  color: #fff;
-  border: 1px solid #2a2e38;
+.transactionRow {
+  background: #1f2937; /* Gray 800 */
+  border: 1px solid #374151; /* Gray 700 */
+}
+
+.transactionRowDate {
+  color: #9ca3af; /* Gray 400 */
+}
+
+.transactionRowDescription {
+  color: #f9fafb; /* Gray 50 */
+}
+
+.transactionRowAmount {
+  color: #f9fafb; /* Gray 50 */
 }

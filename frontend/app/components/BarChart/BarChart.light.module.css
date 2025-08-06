@@ -1,5 +1,15 @@
-.themeWrapper {
-  --bar-wrapper-bg: #eef2ff;
-  --bar-text-color: #4338ca;
-  --bar-color: #4573df;
+.barChart {
+  /* No specific light theme variables needed if BarChart uses passed-in colors */
+}
+
+.barChartLabel {
+  color: #4a5568;
+}
+
+.barChartBarWrapper {
+  background-color: #e2e8f0;
+}
+
+.barChartPercentage {
+  color: #1a202c;
 }

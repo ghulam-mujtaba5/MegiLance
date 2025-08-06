@@ -19,7 +19,7 @@
 .flaggedReviewsItem {
   padding: 1rem;
   border-radius: 6px;
-  border: 1px solid;
+  /* border is handled by theme-specific styles */
 }
 
 .flaggedReviewsItemHeader {

@@ -22,25 +22,38 @@
 
 /* Default uses the primary brand color */
 .default .progressBarFill {
-  background-color: #4573df; /* MegiLance Blue */
+  background-color: #4573df; /* brand-primary */
 }
 
 /* Success variant */
 .success .progressBarFill {
-  background-color: #27ae60; /* MegiLance Green */
+  background-color: #27ae60; /* brand-success */
 }
 
 /* Error variant */
 .error .progressBarFill {
-  background-color: #e81123; /* MegiLance Red */
+  background-color: #e81123; /* brand-error */
 }
 
 /* Warning variant */
 .warning .progressBarFill {
-  background-color: #f2c94c; /* MegiLance Yellow */
+  background-color: #f2c94c; /* brand-warning */
 }
 
 /* Info variant, often same as default */
 .info .progressBarFill {
-  background-color: #4573df; /* MegiLance Blue */
+  background-color: #2f80ed; /* brand-info */
+}
+
+.progressBarStriped .progressBarFill {
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
+  );
 }

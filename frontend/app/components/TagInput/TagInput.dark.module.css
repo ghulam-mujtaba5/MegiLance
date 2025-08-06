@@ -1,23 +1,23 @@
 /* @AI-HINT: Dark theme styles for the TagInput component. */
 
-.dark .tagInputLabel {
+.tagInputLabel {
   color: #d1d5db;
 }
 
-.dark .tagInputWrapper {
-  border-color: #4b5563;
+.tagInputWrapper {
+  border: 1px solid #4b5563;
   background-color: #374151;
 }
 
-.dark .tagInputTag {
+.tagInputTag {
   background-color: #4b5563;
   color: #f3f4f6;
 }
 
-.dark .tagInputRemoveBtn {
+.tagInputRemoveBtn {
   color: #d1d5db;
 }
 
-.dark .tagInputInput {
+.tagInputInput {
   color: #f3f4f6;
 }

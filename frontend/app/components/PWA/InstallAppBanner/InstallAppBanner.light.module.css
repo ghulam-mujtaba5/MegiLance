@@ -1,6 +1,6 @@
-/* @AI-HINT: Light theme variables for the InstallAppBanner component. */
+/* @AI-HINT: Defines light theme variables for the InstallAppBanner. These are applied to the .installAppBanner class. */
 
-.themeWrapper {
+.installAppBanner {
   --banner-bg-color: var(--surface-primary);
   --banner-border-color: var(--border-subtle);
   --banner-text-color: var(--text-primary);

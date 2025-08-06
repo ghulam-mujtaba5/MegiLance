@@ -1,4 +1,4 @@
-// @AI-HINT: This is the PaymentBadge component for displaying payment status (e.g., Paid, Pending) in lists and cards. All styles are per-component only. See PaymentBadge.common.css, PaymentBadge.light.css, and PaymentBadge.dark.css for theming.
+// @AI-HINT: This component displays a theme-aware status badge for payments. It uses a modern, CSS-variable-driven approach for styling to ensure it perfectly matches the application's current theme and the specific status (paid, pending, failed).
 import React from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
@@ -6,7 +6,7 @@ import commonStyles from './PaymentBadge.common.module.css';
 import lightStyles from './PaymentBadge.light.module.css';
 import darkStyles from './PaymentBadge.dark.module.css';
 
-// @AI-HINT: This is the PaymentBadge component for displaying payment status. It is fully theme-aware and uses CSS modules.
+
 
 export type PaymentStatus = 'paid' | 'pending' | 'failed';
 
@@ -30,7 +30,7 @@ const PaymentBadge: React.FC<PaymentBadgeProps> = ({ status, className }) => {
     <span
       className={cn(
         commonStyles.paymentBadge,
-        themeStyles.themeWrapper,
+        themeStyles.paymentBadge,
         statusClass,
         className
       )}
