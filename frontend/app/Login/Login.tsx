@@ -1,68 +1,89 @@
 // @AI-HINT: Premium SaaS Login component for MegiLance platform. This is the main authentication interface that handles three user roles (Admin, Client, Freelancer) with investor-grade UI quality. Features secure login, role selection, social authentication, and responsive design following exact MegiLance brand guidelines. Uses per-component CSS architecture with .common.css, .light.css, .dark.css theming. Designed to match quality standards of Linear, Vercel, GitHub, and Upwork Pro.
+// @AI-HINT: Premium SaaS Login component for MegiLance. Redesigned for investor-grade UI/UX quality, matching standards of Vercel, Linear, and Toptal. Features a modern two-panel layout, role-based dynamic content, and pixel-perfect implementation of the official brand playbook.
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaGoogle, FaGithub, FaBuilding, FaUser, FaShieldAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaGoogle, FaGithub, FaBuilding, FaUser, FaShieldAlt, FaEye, FaEyeSlash, FaLaptopCode, FaTasks, FaUserCog } from 'react-icons/fa';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-
-import { cn } from '@/lib/utils';
 import commonStyles from './Login.common.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
-import { useTheme } from 'next-themes';
 
-// @AI-HINT: Premium SaaS Login component for MegiLance platform. Now fully theme-switchable using global theme context and per-component CSS modules.
+
+
+
 
 type UserRole = 'freelancer' | 'client' | 'admin';
 
-interface LoginProps {}
+// @AI-HINT: Role-specific configuration. Defines icons, labels, and dynamic content for the branding panel. This approach makes the UI feel more tailored and intelligent.
+const roleConfig = {
+  freelancer: {
+    id: 'freelancer' as UserRole,
+    icon: FaUser,
+    label: 'Freelancer',
+    redirectPath: '/dashboard',
+    brandIcon: FaLaptopCode,
+    brandTitle: 'Build the Future',
+    brandText: 'Access exclusive projects, secure your payments with USDC, and collaborate with top-tier clients from around the world.',
+  },
+  client: {
+    id: 'client' as UserRole,
+    icon: FaBuilding,
+    label: 'Client',
+    redirectPath: '/client/dashboard',
+    brandIcon: FaTasks,
+    brandTitle: 'Assemble Your Dream Team',
+    brandText: 'Find, hire, and manage elite talent. Our AI-powered platform ensures you connect with the perfect freelancers for your projects.',
+  },
+  admin: {
+    id: 'admin' as UserRole,
+    icon: FaShieldAlt,
+    label: 'Admin',
+    redirectPath: '/admin/dashboard',
+    brandIcon: FaUserCog,
+    brandTitle: 'Oversee the Ecosystem',
+    brandText: 'Manage platform operations, ensure quality and security, and empower our community of freelancers and clients.',
+  },
+};
 
-const Login: React.FC<LoginProps> = () => {
+// @AI-HINT: A sub-component for the branding panel on the left. It dynamically updates its content based on the selected role, enhancing the premium feel of the login experience.
+const BrandingPanel: React.FC<{ selectedRole: UserRole; styles: any }> = ({ selectedRole, styles }) => {
+  const { brandIcon: BrandIcon, brandTitle, brandText } = roleConfig[selectedRole];
+  return (
+    <div className={styles.brandingPanel}>
+      <div className={styles.brandingContent}>
+        <div className={styles.brandingIconWrapper}>
+          <BrandIcon className={styles.brandingIcon} />
+        </div>
+        <h2 className={styles.brandingTitle}>{brandTitle}</h2>
+        <p className={styles.brandingText}>{brandText}</p>
+      </div>
+      <div className={styles.brandingFooter}>
+        <p>&copy; {new Date().getFullYear()} MegiLance. All rights reserved.</p>
+      </div>
+    </div>
+  );
+};
+
+// @AI-HINT: The main Login component, orchestrating the layout and state. It's structured for clarity, separating the branding panel from the login form.
+const Login: React.FC = () => {
   const { theme } = useTheme();
-
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({
-    email: '',
-    password: '',
-    general: '',
-  });
+  const [errors, setErrors] = useState({ email: '', password: '', general: '' });
 
-  // Premium role configuration for three-role system
-  const roleConfig = {
-    freelancer: {
-      id: 'freelancer' as UserRole,
-      icon: FaUser,
-      label: 'Freelancer',
-      redirectPath: '/dashboard'
-    },
-    client: {
-      id: 'client' as UserRole,
-      icon: FaBuilding,
-      label: 'Client',
-      redirectPath: '/client/dashboard'
-    },
-    admin: {
-      id: 'admin' as UserRole,
-      icon: FaShieldAlt,
-      label: 'Admin',
-      redirectPath: '/admin/dashboard'
-    }
-  };
+  const styles = theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles };
 
   const validate = () => {
     const newErrors = { email: '', password: '', general: '' };
     let isValid = true;
-
     if (!formData.email) {
       newErrors.email = 'Email is required.';
       isValid = false;
@@ -70,7 +91,6 @@ const Login: React.FC<LoginProps> = () => {
       newErrors.email = 'Email address is invalid.';
       isValid = false;
     }
-
     if (!formData.password) {
       newErrors.password = 'Password is required.';
       isValid = false;
@@ -78,34 +98,25 @@ const Login: React.FC<LoginProps> = () => {
       newErrors.password = 'Password must be at least 6 characters.';
       isValid = false;
     }
-
     setErrors(newErrors);
     return isValid;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
     setLoading(true);
     setErrors({ email: '', password: '', general: '' });
-
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log('Login successful:', { ...formData, role: selectedRole });
-      const redirectPath = roleConfig[selectedRole].redirectPath;
-      router.push(redirectPath);
+      router.push(roleConfig[selectedRole].redirectPath);
     } catch (error) {
-      setErrors({ 
-        email: '', 
-        password: '', 
-        general: 'Login failed. Please check your credentials and try again.' 
-      });
+      setErrors({ email: '', password: '', general: 'Login failed. Please check your credentials.' });
     } finally {
       setLoading(false);
     }
@@ -114,173 +125,104 @@ const Login: React.FC<LoginProps> = () => {
   const handleSocialLogin = async (provider: 'google' | 'github') => {
     setLoading(true);
     try {
-      // Simulate social authentication
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log(`${provider} login successful for role:`, selectedRole);
-      
-      const redirectPath = roleConfig[selectedRole].redirectPath;
-      router.push(redirectPath);
+      router.push(roleConfig[selectedRole].redirectPath);
     } catch (error) {
-      setErrors({ 
-        email: '', 
-        password: '', 
-        general: `${provider} login failed. Please try again.` 
-      });
+      setErrors({ email: '', password: '', general: `Sign in with ${provider} failed.` });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className={cn(commonStyles.login, theme === 'dark' ? darkStyles.dark : lightStyles.light)}>
-      {/* AI-HINT: The 'cn' utility merges common styles with theme-specific (light/dark) styles. */}
-      {/* Premium Brand Panel */}
-      <div className={cn(commonStyles.loginPanel, commonStyles.loginPanelBrand)}>
-          {/* AI-HINT: Combines base 'loginPanel' styles with the 'loginPanelBrand' variant. */}
-        <div className={commonStyles.loginBrandContent}>
-          <div className={commonStyles.loginBrandHeader}>
-            <FaBuilding className={commonStyles.loginLogoIcon} />
-            <h1 className={commonStyles.loginBrandTitle}>MegiLance</h1>
-            <p className={commonStyles.loginBrandSubtitle}>Empowering Freelancers with AI and Secure USDC Payments</p>
-          </div>
-          <div className={commonStyles.loginBrandFeatures}>
-        </div>
-        <blockquote className={commonStyles.loginBrandingQuote}>
-          “The best platform to connect with top-tier talent and find your next big opportunity.”
-          <footer className={commonStyles.loginBrandingQuoteAuthor}>
-            - Jane Doe, CEO of TechCorp
-          </footer>
-        </blockquote>
-        </div>
-      </div>
-
-      {/* Premium Form Section */}
-      <div className={commonStyles.loginFormContainer}>
-        <div className={commonStyles.loginFormWrapper}>
-          <div className={commonStyles.loginHeader}>
-            <h1 className={commonStyles.loginTitle}>Welcome Back</h1>
-            <p className={commonStyles.loginSubtitle}>Sign in to continue your journey with MegiLance.</p>
+    <div className={styles.loginPage}>
+      <BrandingPanel selectedRole={selectedRole} styles={styles} />
+      <div className={styles.formPanel}>
+        <div className={styles.formContainer}>
+          <div className={styles.formHeader}>
+            <h1 className={styles.formTitle}>Sign in to MegiLance</h1>
+            <p className={styles.formSubtitle}>Enter your details to access your account.</p>
           </div>
 
-          {/* Premium Role Selector */}
-          <div className={commonStyles.loginRoleSelector}>
+          <div className={styles.roleSelector}>
             {Object.values(roleConfig).map((role) => (
               <button
                 key={role.id}
                 type="button"
-                className={cn(
-                  commonStyles.loginRoleButton,
-                  { [commonStyles.active]: selectedRole === role.id }
-                )}
+                className={cn(styles.roleButton, { [styles.roleButtonSelected]: selectedRole === role.id })}
                 onClick={() => setSelectedRole(role.id)}
               >
-                <role.icon className={commonStyles.loginRoleIcon} />
+                <role.icon className={styles.roleIcon} />
                 <span>{role.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Premium Social Authentication */}
-          <div className={commonStyles.loginSocialAuth}>
-            <div className={commonStyles.loginSocialButtons}>
-              <button
-                type="button"
-                className={commonStyles.loginSocialButton}
-                onClick={() => handleSocialLogin('google')}
-                disabled={loading}
-              >
-                <FaGoogle className={commonStyles.loginSocialIcon} />
-                <span>Continue with Google</span>
-              </button>
-              <button
-                type="button"
-                className={commonStyles.loginSocialButton}
-                onClick={() => handleSocialLogin('github')}
-                disabled={loading}
-              >
-                <FaGithub className={commonStyles.loginSocialIcon} />
-                <span>Continue with GitHub</span>
-              </button>
-            </div>
-            
-            <div className={commonStyles.loginDivider}>
-              <span className={commonStyles.loginDividerText}>or continue with email</span>
-            </div>
+          <div className={styles.socialAuth}>
+            <Button variant="outline" fullWidth onClick={() => handleSocialLogin('google')} disabled={loading}>
+              <FaGoogle className="mr-2" /> Continue with Google
+            </Button>
+            <Button variant="outline" fullWidth onClick={() => handleSocialLogin('github')} disabled={loading}>
+              <FaGithub className="mr-2" /> Continue with GitHub
+            </Button>
           </div>
 
-          {/* Premium Login Form */}
-          <form className={commonStyles.loginForm} onSubmit={handleSubmit} noValidate>
-            {errors.general && <p className="error-message">{errors.general}</p>}
-            <div className={commonStyles.loginInputGroup}>
+          <div className={styles.divider}>
+            <span className={styles.dividerText}>OR</span>
+          </div>
+
+          <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
+            {errors.general && <p className={styles.generalError}>{errors.general}</p>}
+            <div className={styles.inputGroup}>
               <Input
-                label="Email Address"
-                type="email"
-                placeholder="Enter your email address"
+                id="email"
                 name="email"
+                type="email"
+                label="Email Address"
+                placeholder="your.email@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 error={errors.email}
-                required
+                disabled={loading}
               />
             </div>
-            
-            <div className={commonStyles.loginInputGroup}>
-              <div className={commonStyles.loginPasswordWrapper}>
+            <div className={styles.inputGroup}>
                 <Input
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  id="password"
                   name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  label="Password"
+                  placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
                   error={errors.password}
-                  required
+                  disabled={loading}
+                  iconAfter={
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
+                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    </button>
+                  }
                 />
-                <button
-                  type="button"
-                  className={commonStyles.loginPasswordToggle}
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
             </div>
 
-            <div className={commonStyles.loginFormOptions}>
-              <div className={commonStyles.loginRememberGroup}>
-                <input
-                  type="checkbox"
-                  id="remember-me"
-                  className={commonStyles.loginCheckbox}
-                />
-                <label htmlFor="remember-me" className={commonStyles.loginCheckboxLabel}>
-                  Remember me
-                </label>
+            <div className={styles.formOptions}>
+              <div className={styles.rememberMe}>
+                <input type="checkbox" id="remember" name="remember" className={styles.checkbox} />
+                <label htmlFor="remember">Remember me</label>
               </div>
-              <Link href="/forgot-password" className={commonStyles.loginForgotLink}>
-                Forgot password?
+              <Link href="/forgot-password" className={styles.forgotPasswordLink}>
+                Forgot Password?
               </Link>
             </div>
 
-            <Button 
-              type="submit" 
-              variant="primary" 
-              fullWidth 
-              isLoading={loading}
-              className={commonStyles.loginSubmitButton}
-            >
-              {loading ? `Signing in...` : `Sign in as ${roleConfig[selectedRole].label}`}
+            <Button type="submit" variant="primary" fullWidth isLoading={loading} className={styles.submitButton}>
+              {loading ? 'Signing In...' : `Sign In as ${roleConfig[selectedRole].label}`}
             </Button>
           </form>
-          
-          <div className={commonStyles.loginSignupSection}>
-            <p className={commonStyles.loginSignupText}>
-              Don't have an account?
-              <Link href="/signup" className={commonStyles.loginSignupLink}>
-                Create an account
-              </Link>
-            </p>
+
+          <div className={styles.signupPrompt}>
+            <p>Don't have an account? <Link href="/signup">Create one now</Link></p>
           </div>
         </div>
       </div>
