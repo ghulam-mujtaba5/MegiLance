@@ -7,15 +7,17 @@ import commonStyles from './Checkbox.common.module.css';
 import lightStyles from './Checkbox.light.module.css';
 import darkStyles from './Checkbox.dark.module.css';
 
-interface CheckboxProps {
+export interface CheckboxProps {
+  id?: string;
   name: string;
   checked: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   error?: string;
+  className?: string;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ name, checked, onChange, children, error }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ id, name, checked, onChange, children, error }) => {
   const { theme } = useTheme();
   
   if (!theme) {
@@ -28,6 +30,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ name, checked, onChange, children, 
     <div className={cn(commonStyles.checkboxWrapper, themeStyles.checkboxWrapper)}>
       <label className={cn(commonStyles.checkboxLabel, themeStyles.checkboxLabel)}>
         <input
+          id={id}
           type="checkbox"
           name={name}
           className={cn(commonStyles.checkboxInput, themeStyles.checkboxInput)}

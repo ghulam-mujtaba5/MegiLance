@@ -17,25 +17,25 @@ interface TabsContextProps {
   tabsId: string;
   themeStyles: Record<string, string>;
 }
-const TabsContext = createContext<TabsContextProps | null>(null);
-const useTabs = () => {
+export const TabsContext = createContext<TabsContextProps | null>(null);
+export const useTabs = () => {
   const context = useContext(TabsContext);
   if (!context) throw new Error('useTabs must be used within a <Tabs> component.');
   return context;
 };
 
 // 2. PROP TYPES
-interface TabProps { children: ReactNode; index?: number; }
+interface TabProps { children: ReactNode; index?: number; icon?: ReactNode; }
 interface TabPanelProps { children: ReactNode; index?: number; }
-interface TabsListProps { children: ReactNode; }
+interface TabsListProps { children: ReactNode; className?: string; }
 interface TabsPanelsProps { children: ReactNode; }
 
 // 3. SUB-COMPONENTS
-const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ children, index }, ref) => {
+const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ children, index, icon }, ref) => {
   const { selectedIndex, setSelectedIndex, tabsId, themeStyles } = useTabs();
   const isSelected = selectedIndex === index;
   return (
-        <button
+    <button
       ref={ref}
       role="tab"
       id={`${tabsId}-tab-${index}`}
@@ -45,13 +45,14 @@ const Tab = React.forwardRef<HTMLButtonElement, TabProps>(({ children, index }, 
       className={cn(commonStyles.tabsTab, themeStyles.tabsTab, isSelected && [commonStyles.tabsTabSelected, themeStyles.tabsTabSelected])}
       onClick={() => setSelectedIndex(index!)}
     >
-      {children}
+      {icon && <span className={commonStyles.tabIcon}>{icon}</span>}
+      <span className={commonStyles.tabLabel}>{children}</span>
     </button>
   );
 });
 Tab.displayName = 'Tab';
 
-const TabsList: FC<TabsListProps> = ({ children }) => {
+const TabsList: FC<TabsListProps> = ({ children, className }) => {
   const { selectedIndex, setSelectedIndex, themeStyles } = useTabs();
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   useEffect(() => { tabRefs.current[selectedIndex]?.focus(); }, [selectedIndex]);
@@ -68,19 +69,19 @@ const TabsList: FC<TabsListProps> = ({ children }) => {
     if (newIndex !== selectedIndex) { e.preventDefault(); setSelectedIndex(newIndex); }
   };
 
+  const clonedChildren = Children.map(children, (child, index) => {
+    if (isValidElement(child) && (child.type === Tab || (child.type as any).displayName === 'Tab')) {
+      return cloneElement(child as React.ReactElement<TabProps & { ref: React.Ref<HTMLButtonElement> }>, {
+        index,
+        ref: (el: HTMLButtonElement | null) => { tabRefs.current[index] = el; },
+      });
+    }
+    return child;
+  });
+
   return (
-    <div role="tablist" aria-orientation="horizontal" className={cn(commonStyles.tabsList, themeStyles.tabsList)} onKeyDown={handleKeyDown}>
-      {Children.map(children, (child, index) => {
-        if (isValidElement(child) && (child.type === Tab || (child.type as any).displayName === 'Tab')) {
-          // This is a safe cast because we are checking the type of the child.
-          // The type error is a known issue with forwardRef and cloneElement in TypeScript.
-          return cloneElement(child as React.ReactElement<TabProps & { ref: React.Ref<HTMLButtonElement> }>, {
-            index,
-            ref: (el: HTMLButtonElement | null) => { tabRefs.current[index] = el; },
-          });
-        }
-        return child;
-      })}
+    <div role="tablist" aria-orientation="horizontal" onKeyDown={handleKeyDown} className={cn(commonStyles.tabsList, themeStyles.tabsList, className)}>
+      {clonedChildren}
     </div>
   );
 };
@@ -126,8 +127,15 @@ interface TabsComposition {
   Panel: FC<TabPanelProps>;
 }
 
-const Tabs: FC<{ children: ReactNode; defaultIndex?: number; className?: string }> & TabsComposition = ({ children, defaultIndex = 0, className = '' }) => {
+const Tabs: FC<{ children: ReactNode; defaultIndex?: number; className?: string; onTabChange?: (index: number) => void; }> & TabsComposition = ({ children, defaultIndex = 0, className = '', onTabChange }) => {
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
+
+  const handleSetSelectedIndex = (index: number) => {
+    setSelectedIndex(index);
+    if (onTabChange) {
+      onTabChange(index);
+    }
+  };
   const tabsId = useId();
   const { theme } = useTheme();
 
@@ -136,7 +144,7 @@ const Tabs: FC<{ children: ReactNode; defaultIndex?: number; className?: string 
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <TabsContext.Provider value={{ selectedIndex, setSelectedIndex, tabsId, themeStyles }}>
+    <TabsContext.Provider value={{ selectedIndex, setSelectedIndex: handleSetSelectedIndex, tabsId, themeStyles }}>
       <div className={cn(
         commonStyles.tabs,
         themeStyles.tabs,

@@ -4,7 +4,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaGoogle, FaGithub, FaBuilding, FaUser, FaShieldAlt, FaEye, FaEyeSlash, FaLaptopCode, FaTasks, FaUserCog } from 'react-icons/fa';
+import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaUserShield } from 'react-icons/fa';
+import Tabs from '@/app/components/Tabs/Tabs';
+import Tab from '@/app/components/Tabs/Tab';
+import { FaEye, FaEyeSlash, FaLaptopCode, FaTasks, FaUserCog } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
@@ -13,17 +16,13 @@ import commonStyles from './Login.common.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
 
-
-
-
-
 type UserRole = 'freelancer' | 'client' | 'admin';
 
 // @AI-HINT: Role-specific configuration. Defines icons, labels, and dynamic content for the branding panel. This approach makes the UI feel more tailored and intelligent.
 const roleConfig = {
   freelancer: {
     id: 'freelancer' as UserRole,
-    icon: FaUser,
+    icon: FaUserTie,
     label: 'Freelancer',
     redirectPath: '/dashboard',
     brandIcon: FaLaptopCode,
@@ -32,7 +31,7 @@ const roleConfig = {
   },
   client: {
     id: 'client' as UserRole,
-    icon: FaBuilding,
+    icon: FaBriefcase,
     label: 'Client',
     redirectPath: '/client/dashboard',
     brandIcon: FaTasks,
@@ -41,7 +40,7 @@ const roleConfig = {
   },
   admin: {
     id: 'admin' as UserRole,
-    icon: FaShieldAlt,
+    icon: FaUserShield,
     label: 'Admin',
     redirectPath: '/admin/dashboard',
     brandIcon: FaUserCog,
@@ -145,19 +144,15 @@ const Login: React.FC = () => {
             <p className={styles.formSubtitle}>Enter your details to access your account.</p>
           </div>
 
-          <div className={styles.roleSelector}>
-            {Object.values(roleConfig).map((role) => (
-              <button
-                key={role.id}
-                type="button"
-                className={cn(styles.roleButton, { [styles.roleButtonSelected]: selectedRole === role.id })}
-                onClick={() => setSelectedRole(role.id)}
-              >
-                <role.icon className={styles.roleIcon} />
-                <span>{role.label}</span>
-              </button>
-            ))}
-          </div>
+          <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
+            <Tabs.List className={styles.roleSelector}>
+              {Object.entries(roleConfig).map(([role, { label, icon: Icon }]) => (
+                <Tabs.Tab key={role} icon={<Icon />}>
+                  {label}
+                </Tabs.Tab>
+              ))}
+            </Tabs.List>
+          </Tabs>
 
           <div className={styles.socialAuth}>
             <Button variant="outline" fullWidth onClick={() => handleSocialLogin('google')} disabled={loading}>

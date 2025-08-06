@@ -1,0 +1,21 @@
+.tab {
+  color: var(--text-secondary, #6b7280);
+}
+
+.tab:hover {
+  background-color: var(--background-secondary, #f9fafb);
+  color: var(--text-primary, #111827);
+}
+
+.tabSelected {
+  background-color: var(--background-primary, #ffffff);
+  color: var(--color-primary, #4573df);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 1px rgba(0, 0, 0, 0.05);
+}
+
+.tabDisabled {
+  color: var(--text-tertiary, #9ca3af);
+  cursor: not-allowed;
+  background-color: transparent;
+  box-shadow: none;
+}
