@@ -21,7 +21,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className="font-body">
                   <body className="bg-[var(--background)] text-[var(--text-primary)]">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={true}>
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="light" 
+          enableSystem={true}
+          disableTransitionOnChange={false}
+        >
           <ThemeSwitcher />
           {children}
           <InstallAppBanner />

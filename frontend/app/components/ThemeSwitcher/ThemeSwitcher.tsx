@@ -1,7 +1,7 @@
 // @AI-HINT: This component provides a UI control for switching between light and dark themes. It uses the global ThemeContext to access the current theme and the toggle function.
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -12,9 +12,14 @@ import darkStyles from './ThemeSwitcher.dark.module.css';
 
 const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // To avoid a flash of the wrong theme, we don't render until the theme is determined on the client.
-  if (!theme) {
+  // Prevent hydration mismatch by not rendering until mounted on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
     return null;
   }
 
