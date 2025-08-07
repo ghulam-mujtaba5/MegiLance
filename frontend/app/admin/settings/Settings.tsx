@@ -6,7 +6,7 @@ import commonStyles from './Settings.common.module.css';
 import lightStyles from './Settings.light.module.css';
 import darkStyles from './Settings.dark.module.css';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/ui/Input/input';
 import SettingsSection from './SettingsSection';
 
 // @AI-HINT: This is the Admin Settings page, providing controls for various platform settings.
@@ -58,7 +58,7 @@ const Settings: React.FC = () => {
   </div>
   <div className={styles.securityFeature}>
     <span>Two-Factor Authentication (2FA)</span>
-    <Button variant="outline">Enable 2FA</Button>
+    <Button variant="secondary">Enable 2FA</Button>
   </div>
   <Button>Update Security</Button>
 </SettingsSection>

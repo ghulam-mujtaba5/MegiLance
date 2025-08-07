@@ -9,27 +9,16 @@ import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import { FaShieldAlt } from 'react-icons/fa';
+import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
-import commonStyles from '../Login/Login.common.module.css';
-import lightStyles from '../Login/Login.light.module.css';
-import darkStyles from '../Login/Login.dark.module.css';
+import commonStyles from './ResetPassword.common.module.css';
+import lightStyles from './ResetPassword.light.module.css';
+import darkStyles from './ResetPassword.dark.module.css';
 
-// @AI-HINT: A static branding panel for consistency across auth pages.
-const BrandingPanel: React.FC<{ styles: any }> = ({ styles }) => {
-  return (
-    <div className={styles.brandingPanel}>
-      <div className={styles.brandingContent}>
-        <div className={styles.brandingIconWrapper}>
-          <FaShieldAlt className={styles.brandingIcon} />
-        </div>
-        <h2 className={styles.brandingTitle}>Strengthen Your Security</h2>
-        <p className={styles.brandingText}>Create a new, strong password to protect your account. Make sure it's at least 8 characters long.</p>
-      </div>
-      <div className={styles.brandingFooter}>
-        <p>&copy; {new Date().getFullYear()} MegiLance. All rights reserved.</p>
-      </div>
-    </div>
-  );
+const resetPasswordBranding = {
+  brandIcon: FaShieldAlt,
+  brandTitle: 'Strengthen Your Security',
+  brandText: 'Create a new, strong password to protect your account. Make sure it&apos;s at least 8 characters long.',
 };
 
 const ResetPassword: React.FC = () => {
@@ -88,7 +77,7 @@ const ResetPassword: React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
-      <BrandingPanel styles={styles} />
+      <AuthBrandingPanel roleConfig={resetPasswordBranding} />
       <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>

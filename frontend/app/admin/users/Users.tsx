@@ -6,7 +6,7 @@ import commonStyles from './Users.common.module.css';
 import lightStyles from './Users.light.module.css';
 import darkStyles from './Users.dark.module.css';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/ui/Input/input';
 
 // @AI-HINT: This is the Admin User Management page.
 // It has been fully refactored to use CSS modules and the global theme context.
@@ -73,7 +73,7 @@ const Users: React.FC = () => {
                 <td>{user.joined}</td>
                 <td>
                   <div className={styles.tableActions}>
-                    <Button variant="outline" size="sm">Edit</Button>
+                    <Button variant="secondary" size="sm">Edit</Button>
                     <Button variant="destructive" size="sm">Delete</Button>
                   </div>
                 </td>

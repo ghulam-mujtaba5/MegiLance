@@ -31,7 +31,7 @@ const GlobalImpact: React.FC = () => {
       icon: FaChartLine,
       number: "$269.8M",
       label: "Foreign Exchange Earned",
-      description: "Contributing to Pakistan's digital economy"
+      description: "Contributing to Pakistan&apos;s digital economy"
     },
     {
       icon: FaStar,
@@ -77,8 +77,8 @@ const GlobalImpact: React.FC = () => {
             Empowering <span className={cn(commonStyles.titleHighlight, themeStyles.titleHighlight)}>Pakistani Talent</span> Worldwide
           </h2>
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            MegiLance is more than a platform—it's a movement. We're breaking down barriers, 
-            eliminating payment friction, and connecting Pakistan's incredible talent with 
+            MegiLance is more than a platform—it&apos;s a movement. We&apos;re breaking down barriers, 
+            eliminating payment friction, and connecting Pakistan&apos;s incredible talent with 
             global opportunities. Join thousands who are already transforming their careers.
           </p>
         </div>

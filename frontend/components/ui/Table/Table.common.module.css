@@ -1,0 +1,49 @@
+/* @AI-HINT: Common styles for the Table component system. */
+/* This file defines the base structure, typography, padding, and alignment for all table elements, ensuring a consistent and professional look. */
+
+.tableWrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px; /* Consistent with other UI elements */
+}
+
+.table {
+  width: 100%;
+  caption-side: bottom;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+  font-family: var(--font-inter);
+  border-collapse: collapse;
+}
+
+.footer {
+  font-weight: 500;
+  /* Border and background in theme files */
+}
+
+.row {
+  transition: background-color 0.2s ease-in-out;
+  /* Border in theme files */
+}
+
+.head {
+  height: 3rem; /* 48px */
+  padding: 0 1rem; /* 16px */
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 600;
+  font-family: var(--font-poppins);
+  /* Text color in theme files */
+}
+
+.cell {
+  padding: 1rem; /* 16px */
+  vertical-align: middle;
+}
+
+.caption {
+  margin-top: 1rem; /* 16px */
+  font-size: 0.875rem; /* 14px */
+  /* Text color in theme files */
+}

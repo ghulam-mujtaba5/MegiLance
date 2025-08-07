@@ -82,12 +82,7 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => 
           </nav>
         </div>
 
-        <div className={cn(commonStyles.navbarCenter)}>
-          <div className={cn(commonStyles.navbarSearch, themeStyles.searchInput)}>
-            <FaSearch className={cn(commonStyles.searchIcon, themeStyles.searchIcon)} />
-            <Input name="search" type="search" placeholder="Search..." className={commonStyles.searchInput} />
-          </div>
-        </div>
+
 
         <div className={cn(commonStyles.navbarRight)}>
           <div className={cn(commonStyles.navbarActions)}>

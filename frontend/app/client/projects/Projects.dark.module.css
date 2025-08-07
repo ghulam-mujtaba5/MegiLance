@@ -1,38 +1,16 @@
-.projectsDark {
-  background-color: #111827;
-  color: #f9fafb;
+/* AI-HINT: Dark theme styles for the 'My Projects' page. Defines theme-specific colors for titles and the new table container. */
+.headerTitle {
+  color: #f9fafb; /* A light gray/white for high contrast on dark backgrounds */
 }
 
-.projectsDark .projectsHeader p {
-  color: #9ca3af;
+.headerSubtitle {
+  color: #9ca3af; /* A lighter gray for secondary text */
 }
 
-.projectsDark .clientProjectCard {
-  background-color: #1f2937;
-  border: 1px solid #374151;
+.tableContainer {
+  border-color: #374151; /* A medium-dark gray border, consistent with modern dark UIs */
 }
 
-.projectsDark .clientProjectCardInfo {
-  color: #d1d5db;
-}
-
-/* Dark theme status styles */
-.projectsDark .statusInProgress {
-  background-color: #1e40af;
-  color: #dbeafe;
-}
-
-.projectsDark .statusReviewingProposals {
-  background-color: #78350f;
-  color: #fde68a;
-}
-
-.projectsDark .statusCompleted {
-  background-color: #166534;
-  color: #dcfce7;
-}
-
-.projectsDark .statusOpenForProposals {
-    background-color: #065f46;
-    color: #a7f3d0;
+.projectTitleCell {
+  color: #f3f4f6; /* A very light gray for data emphasis */
 }

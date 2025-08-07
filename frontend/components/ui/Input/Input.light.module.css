@@ -1,0 +1,23 @@
+/* AI-HINT: This file contains light theme styles for the Input component. */
+
+.input {
+  background-color: #f5f7fa; /* Surface / Light Card */
+  color: #23272f; /* Main Text */
+  border-color: #e0e0e0; /* Light gray border */
+}
+
+.input::placeholder {
+  color: #6c757d; /* Muted text */
+}
+
+.input:focus-visible {
+  border-color: #4573df; /* Primary Blue */
+}
+
+.input[type="file"]::file-selector-button {
+  color: #4573df;
+}
+
+.input[type="file"]::file-selector-button:hover {
+  color: #3a65c9;
+}

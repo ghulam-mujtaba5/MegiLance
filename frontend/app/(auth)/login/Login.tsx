@@ -11,6 +11,8 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
+import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
+import Checkbox from '@/app/components/Checkbox/Checkbox';
 import commonStyles from './Login.common.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
@@ -48,24 +50,7 @@ const roleConfig = {
   },
 };
 
-// @AI-HINT: A sub-component for the branding panel on the left. It dynamically updates its content based on the selected role, enhancing the premium feel of the login experience.
-const BrandingPanel: React.FC<{ selectedRole: UserRole; styles: any }> = ({ selectedRole, styles }) => {
-  const { brandIcon: BrandIcon, brandTitle, brandText } = roleConfig[selectedRole];
-  return (
-    <div className={styles.brandingPanel}>
-      <div className={styles.brandingContent}>
-        <div className={styles.brandingIconWrapper}>
-          <BrandIcon className={styles.brandingIcon} />
-        </div>
-        <h2 className={styles.brandingTitle}>{brandTitle}</h2>
-        <p className={styles.brandingText}>{brandText}</p>
-      </div>
-      <div className={styles.brandingFooter}>
-        <p>&copy; {new Date().getFullYear()} MegiLance. All rights reserved.</p>
-      </div>
-    </div>
-  );
-};
+
 
 // @AI-HINT: The main Login component, orchestrating the layout and state. It's structured for clarity, separating the branding panel from the login form.
 const Login: React.FC = () => {
@@ -75,6 +60,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '', general: '' });
 
   const styles = theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles };
@@ -135,7 +121,7 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
-      <BrandingPanel selectedRole={selectedRole} styles={styles} />
+      <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
       <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>
@@ -201,10 +187,13 @@ const Login: React.FC = () => {
             </div>
 
             <div className={styles.formOptions}>
-              <div className={styles.rememberMe}>
-                <input type="checkbox" id="remember" name="remember" className={styles.checkbox} />
-                <label htmlFor="remember">Remember me</label>
-              </div>
+              <Checkbox
+                name="remember"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              >
+                Remember me
+              </Checkbox>
               <Link href="/forgot-password" className={styles.forgotPasswordLink}>
                 Forgot Password?
               </Link>
@@ -216,7 +205,7 @@ const Login: React.FC = () => {
           </form>
 
           <div className={styles.signupPrompt}>
-            <p>Don't have an account? <Link href="/signup">Create one now</Link></p>
+            <p>Don&apos;t have an account? <Link href="/signup">Create one now</Link></p>
           </div>
         </div>
       </div>

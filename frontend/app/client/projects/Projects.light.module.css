@@ -1,17 +1,16 @@
-.projectsLight {
-  background-color: #f9fafb;
-  color: #111827;
+/* AI-HINT: Light theme styles for the 'My Projects' page. Defines theme-specific colors for titles and the new table container. */
+.headerTitle {
+  color: #111827; /* A very dark gray for strong readability */
 }
 
-.projectsLight .projectsHeader p {
-  color: #6b7280;
+.headerSubtitle {
+  color: #4b5563; /* A medium gray for secondary text */
 }
 
-.projectsLight .clientProjectCard {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+.tableContainer {
+  border-color: #e5e7eb; /* A light gray border, standard for light UIs */
 }
 
-.projectsLight .clientProjectCardInfo {
-  color: #4b5563;
+.projectTitleCell {
+  color: #1f2937; /* A slightly softer dark gray for data emphasis */
 }

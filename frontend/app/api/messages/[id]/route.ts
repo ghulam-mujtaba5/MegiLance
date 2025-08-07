@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
-import { Conversation } from '@/app/Messages/types';
+import { Conversation, Message } from '@/app/Messages/components/types';
 
 // Define the path to the JSON database file
 const dbPath = path.join(process.cwd(), 'db', 'messages.json');
@@ -22,7 +22,7 @@ async function readDb(): Promise<Conversation[]> {
 }
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -57,7 +57,7 @@ async function writeDb(data: Conversation[]): Promise<void> {
 }
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {

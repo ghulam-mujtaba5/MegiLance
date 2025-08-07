@@ -9,27 +9,16 @@ import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import { FaKey } from 'react-icons/fa';
+import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
-import commonStyles from '../Login/Login.common.module.css';
-import lightStyles from '../Login/Login.light.module.css';
-import darkStyles from '../Login/Login.dark.module.css';
+import commonStyles from './ForgotPassword.common.module.css';
+import lightStyles from './ForgotPassword.light.module.css';
+import darkStyles from './ForgotPassword.dark.module.css';
 
-// @AI-HINT: A static branding panel for consistency across auth pages.
-const BrandingPanel: React.FC<{ styles: any }> = ({ styles }) => {
-  return (
-    <div className={styles.brandingPanel}>
-      <div className={styles.brandingContent}>
-        <div className={styles.brandingIconWrapper}>
-          <FaKey className={styles.brandingIcon} />
-        </div>
-        <h2 className={styles.brandingTitle}>Secure Your Account</h2>
-        <p className={styles.brandingText}>Enter your email to receive a secure link to reset your password and regain access to your account.</p>
-      </div>
-      <div className={styles.brandingFooter}>
-        <p>&copy; {new Date().getFullYear()} MegiLance. All rights reserved.</p>
-      </div>
-    </div>
-  );
+const forgotPasswordBranding = {
+  brandIcon: FaKey,
+  brandTitle: 'Secure Your Account',
+  brandText: 'Enter your email to receive a secure link to reset your password and regain access to your account.',
 };
 
 const ForgotPassword: React.FC = () => {
@@ -57,7 +46,7 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
-      <BrandingPanel styles={styles} />
+      <AuthBrandingPanel roleConfig={forgotPasswordBranding} />
       <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>
@@ -68,7 +57,7 @@ const ForgotPassword: React.FC = () => {
               </p>
             ) : (
               <p className={styles.formSubtitle}>
-                No problem. Enter your email and we'll send you a reset link.
+                No problem. Enter your email and we&apos;ll send you a reset link.
               </p>
             )}
           </div>

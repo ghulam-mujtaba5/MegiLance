@@ -69,7 +69,7 @@ const PortfolioPage: React.FC = () => {
           <div className={cn(styles.emptyState)}>
             <FiLayout size={48} />
             <h2 className={cn(styles.emptyTitle)}>Your Portfolio is Ready for a Masterpiece</h2>
-            <p className={cn(styles.emptyText)}>Click 'Add New Project' to upload your first item and start building your reputation.</p>
+            <p className={cn(styles.emptyText)}>Click &apos;Add New Project&apos; to upload your first item and start building your reputation.</p>
           </div>
         )}
       </main>

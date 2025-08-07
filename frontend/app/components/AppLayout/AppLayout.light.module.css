@@ -1,0 +1,7 @@
+.appLayout {
+  background-color: #f4f7fa; /* A light, neutral background */
+}
+
+.pageContent {
+  /* No specific background needed, will inherit from appLayout or be white by default */
+}

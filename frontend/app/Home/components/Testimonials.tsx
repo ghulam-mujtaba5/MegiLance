@@ -3,6 +3,7 @@ import commonStyles from './Testimonials.common.module.css';
 import lightStyles from './Testimonials.light.module.css';
 import darkStyles from './Testimonials.dark.module.css';
 import { useTheme } from 'next-themes';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 // @AI-HINT: Testimonials section. Now fully theme-switchable using global theme context.
@@ -41,7 +42,7 @@ const Testimonials: React.FC = () => {
             <div key={index} className={cn(commonStyles.testimonialCard, themeStyles.testimonialCard)}>
               <p className={cn(commonStyles.testimonialQuote, themeStyles.testimonialQuote)}>"{testimonial.quote}"</p>
               <div className={commonStyles.testimonialAuthor}>
-                <img src={testimonial.avatar} alt={testimonial.author} className={commonStyles.authorAvatar} />
+                <Image src={testimonial.avatar} alt={testimonial.author} className={commonStyles.authorAvatar} width={48} height={48} />
                 <div className={commonStyles.authorInfo}>
                   <p className={cn(commonStyles.authorName, themeStyles.authorName)}>{testimonial.author}</p>
                   <p className={cn(commonStyles.authorTitle, themeStyles.authorTitle)}>{testimonial.title}</p>

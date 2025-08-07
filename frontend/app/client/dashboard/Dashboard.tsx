@@ -35,9 +35,7 @@ const Dashboard: React.FC = () => {
   const styles = {
     ...commonStyles,
     ...(theme === 'dark' ? darkStyles : lightStyles),
-  };
-
-  return (
+  };  return (
     <div className={`${styles.dashboard} ${theme === 'dark' ? styles.dashboardDark : styles.dashboardLight}`}>
       <div className={styles.dashboardContainer}>
         <header className={styles.dashboardHeader}>
@@ -58,7 +56,7 @@ const Dashboard: React.FC = () => {
                   <span className={`${styles.status} ${getStatusClass(project.status, styles)}`}>
                     {project.status}
                   </span>
-                  <Button variant="outline" size="sm">Manage</Button>
+                  <Button variant="secondary" size="sm" className="h-8 border-dashed">Manage</Button>
                 </div>
               ))}
             </div>
