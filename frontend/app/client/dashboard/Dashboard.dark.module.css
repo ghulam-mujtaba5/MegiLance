@@ -9,16 +9,16 @@
 }
 
 .dashboardDark .statusInProgress {
-  background-color: #1e40af;
-  color: #dbeafe;
+  background-color: var(--brand-blue-dark-bg, #1e293b);
+  color: var(--brand-blue, #4573df);
 }
 
 .dashboardDark .statusAwaitingFeedback {
-  background-color: #713f12;
-  color: #fef08a;
+  background-color: var(--brand-yellow-dark-bg, #3d2c02);
+  color: var(--brand-yellow, #F2C94C);
 }
 
 .dashboardDark .statusCompleted {
-  background-color: #166534;
-  color: #dcfce7;
+  background-color: var(--brand-green-dark-bg, #1a2e22);
+  color: var(--brand-green, #27AE60);
 }

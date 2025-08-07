@@ -1,19 +1,23 @@
 // @AI-HINT: This is the 'Post a Job' page for clients to create new project listings. All styles are per-component only.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
 import TagInput from '@/app/components/TagInput/TagInput';
-import './PostJob.common.css';
-import './PostJob.light.css';
-import './PostJob.dark.css';
+import commonStyles from './PostJob.common.module.css';
+import lightStyles from './PostJob.light.module.css';
+import darkStyles from './PostJob.dark.module.css';
 
-interface PostJobProps {
-  theme?: 'light' | 'dark';
-}
 
-const PostJob: React.FC<PostJobProps> = ({ theme = 'light' }) => {
+const PostJob: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [skills, setSkills] = useState<string[]>([]);
@@ -27,27 +31,26 @@ const PostJob: React.FC<PostJobProps> = ({ theme = 'light' }) => {
   };
 
   return (
-    <div className={`PostJob PostJob--${theme}`}>
-      <div className="PostJob-container">
-        <header className="PostJob-header">
+    <div className={styles.postJobWrapper}>
+      <div className={styles.container}>
+        <header className={styles.header}>
           <h1>Post a New Job</h1>
           <p>Describe your project and find the perfect freelancer for the job.</p>
         </header>
 
-        <form className="PostJob-form" onSubmit={handleSubmit}>
+        <form className={styles.form} onSubmit={handleSubmit}>
           <Input
-            theme={theme}
             label="Project Title"
             type="text"
             placeholder="e.g., Build a responsive e-commerce website"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <div className="Input-group">
+          <div className={styles.inputGroup}>
             <label htmlFor="description">Project Description</label>
             <textarea
               id="description"
-              className={`Textarea Textarea--${theme}`}
+              className={styles.textarea}
               rows={8}
               placeholder="Provide a detailed description of the work, required skills, and expected deliverables..."
               value={description}
@@ -55,20 +58,19 @@ const PostJob: React.FC<PostJobProps> = ({ theme = 'light' }) => {
             ></textarea>
           </div>
           <TagInput label="Required Skills" tags={skills} setTags={setSkills} />
-          <div className="PostJob-form-row">
+          <div className={styles.formRow}>
             <Input
-              theme={theme}
               label="Budget (USDC)"
               type="number"
               placeholder="e.g., 5000"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
             />
-            <div className="Input-group">
+            <div className={styles.inputGroup}>
               <label htmlFor="job-type">Job Type</label>
               <select 
                 id="job-type" 
-                className={`Select Select--${theme}`}
+                className={styles.select}
                 value={jobType}
                 onChange={(e) => setJobType(e.target.value)}
               >
@@ -77,7 +79,7 @@ const PostJob: React.FC<PostJobProps> = ({ theme = 'light' }) => {
               </select>
             </div>
           </div>
-          <Button theme={theme} variant="primary" type="submit">
+          <Button variant="primary" type="submit">
             Post Job Listing
           </Button>
         </form>

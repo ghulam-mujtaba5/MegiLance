@@ -1,0 +1,13 @@
+.link {
+  color: var(--text-secondary-dark);
+}
+
+.link:hover {
+  background-color: var(--bg-tertiary-dark);
+  color: var(--text-primary-dark);
+}
+
+.link.active {
+  background-color: var(--bg-tertiary-dark);
+  color: var(--text-primary-dark);
+}

@@ -1,0 +1,10 @@
+.header { border-bottom-color: var(--border-dark); }
+.header h1 { color: var(--text-primary-dark); }
+.header p { color: var(--text-secondary-dark); }
+
+.card {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.cardTitle { color: var(--text-primary-dark); }

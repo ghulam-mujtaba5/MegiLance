@@ -1,0 +1,10 @@
+.header { border-bottom-color: var(--border-light); }
+.header h1 { color: var(--text-primary-light); }
+.header p { color: var(--text-secondary-light); }
+
+.card {
+  background-color: var(--bg-secondary-light);
+  border-color: var(--border-light);
+}
+
+.cardTitle { color: var(--text-primary-light); }

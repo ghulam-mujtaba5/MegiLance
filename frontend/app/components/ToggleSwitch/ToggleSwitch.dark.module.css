@@ -1,0 +1,21 @@
+.label { color: var(--text-primary-dark); }
+
+.slider {
+  background-color: var(--bg-tertiary-dark);
+}
+
+.slider:before {
+  background-color: var(--slate-400); /* A slightly off-white for dark mode */
+}
+
+.input:checked + .slider {
+  background-color: var(--brand-primary);
+}
+
+.input:checked + .slider:before {
+  background-color: white;
+}
+
+.input:focus + .slider {
+  box-shadow: 0 0 1px var(--brand-primary);
+}

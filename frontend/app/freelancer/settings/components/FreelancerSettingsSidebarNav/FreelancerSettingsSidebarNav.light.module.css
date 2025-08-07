@@ -1,0 +1,13 @@
+.link {
+  color: var(--text-secondary-light);
+}
+
+.link:hover {
+  background-color: var(--bg-tertiary-light);
+  color: var(--text-primary-light);
+}
+
+.link.active {
+  background-color: var(--bg-tertiary-light);
+  color: var(--text-primary-light);
+}

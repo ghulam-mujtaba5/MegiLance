@@ -1,0 +1,17 @@
+.label { color: var(--text-primary-light); }
+
+.slider {
+  background-color: var(--bg-tertiary-light);
+}
+
+.slider:before {
+  background-color: white;
+}
+
+.input:checked + .slider {
+  background-color: var(--brand-primary);
+}
+
+.input:focus + .slider {
+  box-shadow: 0 0 1px var(--brand-primary);
+}

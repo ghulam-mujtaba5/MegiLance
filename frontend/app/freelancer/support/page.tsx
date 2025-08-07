@@ -1,12 +1,17 @@
-// @AI-HINT: This page provides support resources for freelancers, including a contact form and an FAQ section.
+// @AI-HINT: This page provides support resources for freelancers, including a contact form and an FAQ section. It has been fully refactored for a premium, theme-aware design.
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+
 import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Textarea from '@/app/components/Textarea/Textarea';
 import Accordion, { AccordionItem } from '@/app/components/Accordion/Accordion';
-import './SupportPage.common.css';
-import './SupportPage.light.css';
-import './SupportPage.dark.css';
+import commonStyles from './SupportPage.common.module.css';
+import lightStyles from './SupportPage.light.module.css';
+import darkStyles from './SupportPage.dark.module.css';
 
 // @AI-HINT: Mock data for FAQ items.
 const faqItems = [
@@ -29,34 +34,43 @@ const faqItems = [
 ];
 
 const SupportPage: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   return (
-    <div className="SupportPage-container">
-      <header className="SupportPage-header">
-        <h1 className="SupportPage-title">Support Center</h1>
-        <p className="SupportPage-subtitle">We&apos;re here to help. Find answers or get in touch with our team.</p>
+    <div className={cn(styles.pageWrapper)}>
+      <header className={cn(styles.header)}>
+        <h1>Support Center</h1>
+        <p>We&apos;re here to help. Find answers or get in touch with our team.</p>
       </header>
 
-      <main className="SupportPage-main">
-        <div className="SupportPage-card">
-          <h2 className="SupportPage-card-title">Contact Support</h2>
-          <form className="SupportPage-form">
-            <div className="SupportPage-form-group">
-              <label htmlFor="subject">Subject</label>
-              <input type="text" id="subject" placeholder="e.g., Issue with a contract" className="SupportPage-input" />
-            </div>
-            <div className="SupportPage-form-group">
-              <label htmlFor="message">Message</label>
-              <textarea id="message" rows={6} placeholder="Describe your issue in detail..." className="SupportPage-textarea"></textarea>
-            </div>
-            <Button variant="primary" fullWidth>Submit Ticket</Button>
+      <main className={cn(styles.mainGrid)}>
+        <div className={cn(styles.card)}>
+          <h2 className={cn(styles.cardTitle)}>Contact Support</h2>
+          <form className={cn(styles.form)}>
+            <Input
+              id="subject"
+              label="Subject"
+              placeholder="e.g., Issue with a contract"
+            />
+            <Textarea
+              id="message"
+              label="Message"
+              placeholder="Describe your issue in detail..."
+              rows={6}
+            />
+            <Button variant="primary">Submit Ticket</Button>
           </form>
         </div>
 
-        <div className="SupportPage-card">
-          <h2 className="SupportPage-card-title">Frequently Asked Questions</h2>
+        <div className={cn(styles.card)}>
+          <h2 className={cn(styles.cardTitle)}>Frequently Asked Questions</h2>
           <Accordion>
             {faqItems.map((item, index) => (
-              <AccordionItem key={index} title={item.question}>
+              <AccordionItem key={index} value={`faq-${index}`} title={item.question}>
                 <p>{item.answer}</p>
               </AccordionItem>
             ))}
@@ -68,3 +82,4 @@ const SupportPage: React.FC = () => {
 };
 
 export default SupportPage;
+

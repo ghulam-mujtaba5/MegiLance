@@ -2,16 +2,14 @@
 
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
-import './Hire.common.css';
-import './Hire.light.css';
-import './Hire.dark.css';
+import commonStyles from './Hire.common.module.css';
+import lightStyles from './Hire.light.module.css';
+import darkStyles from './Hire.dark.module.css';
 
-interface HireProps {
-  theme?: 'light' | 'dark';
-}
 
 // Mock data for the hiring confirmation
 const hireDetails = {
@@ -25,53 +23,61 @@ const hireDetails = {
   },
 };
 
-const Hire: React.FC<HireProps> = ({ theme = 'light' }) => {
+const Hire: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   const totalEstimate = 65 * 80;
 
   return (
-    <div className={`Hire Hire--${theme}`}>
-      <div className="Hire-container">
-        <header className="Hire-header">
+    <div className={styles.hireWrapper}>
+      <div className={styles.container}>
+        <header className={styles.header}>
           <h1>Confirm and Hire</h1>
-          <p>You are about to hire <strong>{hireDetails.freelancerName}</strong> for the project: <strong>{hireDetails.projectName}</strong>.</p>
+          <p>
+            You are about to hire <strong>{hireDetails.freelancerName}</strong> for the project: <strong>{hireDetails.projectName}</strong>.
+          </p>
         </header>
 
-        <div className={`Hire-card Hire-card--${theme}`}>
-          <div className="Hire-freelancer-info">
-            <UserAvatar theme={theme} name={hireDetails.freelancerName} />
+        <div className={styles.card}>
+          <div className={styles.freelancerInfo}>
+            <UserAvatar name={hireDetails.freelancerName} />
             <h2>{hireDetails.freelancerName}</h2>
           </div>
 
-          <div className="Hire-terms">
+          <div className={styles.terms}>
             <h3>Terms of Agreement</h3>
-            <div className="Terms-grid">
-              <div className="Term-item">
+            <div className={styles.termsGrid}>
+              <div className={styles.termItem}>
                 <span>Rate</span>
                 <strong>{hireDetails.rate}</strong>
               </div>
-              <div className="Term-item">
+              <div className={styles.termItem}>
                 <span>Est. Hours</span>
                 <strong>{hireDetails.estimatedHours}</strong>
               </div>
-              <div className="Term-item">
+              <div className={styles.termItem}>
                 <span>Est. Total</span>
                 <strong>${totalEstimate.toLocaleString()}</strong>
               </div>
             </div>
           </div>
 
-          <div className="Hire-milestone">
+          <div className={styles.milestone}>
             <h3>First Milestone</h3>
             <p>To begin the project, you need to fund the first milestone. The funds will be held in escrow and released upon your approval of the work.</p>
-            <div className={`Milestone-details Milestone-details--${theme}`}>
+            <div className={styles.milestoneDetails}>
               <span>{hireDetails.firstMilestone.description}</span>
               <strong>${hireDetails.firstMilestone.amount.toLocaleString()}</strong>
             </div>
           </div>
 
-          <div className="Hire-actions">
-            <Button theme={theme} variant="primary" size="large">Fund Milestone & Hire {hireDetails.freelancerName}</Button>
-            <Button theme={theme} variant="outline">Cancel</Button>
+          <div className={styles.actions}>
+            <Button variant="primary" size="large">Fund Milestone & Hire {hireDetails.freelancerName}</Button>
+            <Button variant="outline">Cancel</Button>
           </div>
         </div>
       </div>
