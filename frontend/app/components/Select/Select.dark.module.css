@@ -1,0 +1,18 @@
+/* @AI-HINT: Dark theme styles for the reusable Select component. */
+.label {
+  color: var(--text-secondary-dark);
+}
+
+.select {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+  color: var(--text-primary-dark);
+}
+
+.select:focus {
+  background-color: var(--bg-tertiary-dark);
+}
+
+.chevron {
+  color: var(--text-tertiary-dark);
+}

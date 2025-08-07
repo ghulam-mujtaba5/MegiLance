@@ -1,8 +1,9 @@
 // @AI-HINT: This component displays a single, theme-aware portfolio item card. It leverages CSS variables defined in per-theme modules and scoped to the component's container, ensuring a consistent and maintainable presentation.
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 import Button from '@/app/components/Button/Button';
 import { cn } from '@/lib/utils';
@@ -20,22 +21,28 @@ export interface PortfolioItemCardProps {
 }
 
 const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({ id, title, description, imageUrl, projectUrl, onDelete }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   return (
-    <div className={commonStyles.container}>
-      <div className={commonStyles.imageWrapper}>
-        <Image src={imageUrl} alt={title} layout="fill" objectFit="cover" />
+    <div className={cn(styles.container)}>
+      <div className={styles.imageWrapper}>
+        <Image src={imageUrl} alt={title} layout="fill" objectFit="cover" className={styles.image} />
       </div>
-      <div className={commonStyles.content}>
-        <h3 className={commonStyles.title}>{title}</h3>
-        <p className={commonStyles.description}>{description}</p>
+      <div className={styles.content}>
+        <h3 className={styles.title}>{title}</h3>
+        <p className={styles.description}>{description}</p>
       </div>
-      <div className={commonStyles.footer}>
-        {projectUrl && 
+      <div className={styles.footer}>
+        {projectUrl ? (
           <a href={projectUrl} target="_blank" rel="noopener noreferrer">
             <Button variant="secondary">View Project</Button>
           </a>
-        }
-        <div className={commonStyles.actions}>
+        ) : <div />} 
+        <div className={styles.actions}>
           <Button variant="secondary" size="small">Edit</Button>
           <Button variant="danger" size="small" onClick={() => onDelete(id)}>Delete</Button>
         </div>

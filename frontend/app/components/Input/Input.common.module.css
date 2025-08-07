@@ -102,3 +102,7 @@
   cursor: not-allowed;
   opacity: var(--opacity-disabled);
 }
+
+.inputWrapperFullWidth {
+  width: 100%;
+}

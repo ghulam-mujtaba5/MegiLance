@@ -1,0 +1,28 @@
+.container {
+  background-color: var(--bg-primary-light);
+}
+
+.header {
+  border-bottom-color: var(--border-light);
+}
+
+.title {
+  color: var(--text-primary-light);
+}
+
+.subtitle {
+  color: var(--text-secondary-light);
+}
+
+.emptyState {
+  background-color: var(--bg-secondary-light);
+  border: 1px dashed var(--border-light);
+}
+
+.emptyTitle {
+  color: var(--text-primary-light);
+}
+
+.emptyText {
+  color: var(--text-secondary-light);
+}

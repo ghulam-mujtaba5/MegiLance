@@ -1,12 +1,15 @@
-// @AI-HINT: This page allows freelancers to manage their job alerts, including saved filters and AI recommendations.
+// @AI-HINT: This page allows freelancers to manage their job alerts. It's now fully theme-aware and uses our premium, reusable form components.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
-import './JobAlertsPage.common.css';
-import './JobAlertsPage.light.css';
-import './JobAlertsPage.dark.css';
+import Input from '@/app/components/Input/Input';
+import Select, { SelectOption } from '@/app/components/Select/Select';
+import commonStyles from './JobAlerts.common.module.css';
+import lightStyles from './JobAlerts.light.module.css';
+import darkStyles from './JobAlerts.dark.module.css';
 
 // @AI-HINT: Mock data for existing job alerts.
 const mockAlerts = [
@@ -33,49 +36,61 @@ const mockAlerts = [
   },
 ];
 
+const frequencyOptions: SelectOption[] = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+];
+
 const JobAlertsPage: React.FC = () => {
+  const { theme } = useTheme();
   const [alerts, setAlerts] = useState(mockAlerts);
+
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
   const handleDelete = (id: number) => {
     setAlerts(alerts.filter(alert => alert.id !== id));
   };
 
   return (
-    <div className="JobAlertsPage-container">
-      <header className="JobAlertsPage-header">
-        <h1 className="JobAlertsPage-title">Job Alerts</h1>
-        <p className="JobAlertsPage-subtitle">Never miss an opportunity. Get notified about jobs that match your skills.</p>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Job Alerts</h1>
+        <p className={styles.subtitle}>Never miss an opportunity. Get notified about jobs that match your skills.</p>
       </header>
 
-      <main className="JobAlertsPage-main">
-        <div className="JobAlertsPage-card">
-          <h2 className="JobAlertsPage-card-title">Create New Alert</h2>
-          {/* @AI-HINT: A form would go here in a full implementation */}
-          <form className="JobAlertsPage-form">
-            <label htmlFor="alert-keywords" className="visually-hidden">Keywords for job alert</label>
-            <input id="alert-keywords" type="text" placeholder="Keywords (e.g., 'rust, defi')" className="JobAlertsPage-input" />
-            <label htmlFor="alert-frequency" className="visually-hidden">Job alert frequency</label>
-            <select id="alert-frequency" className="JobAlertsPage-input">
-              <option>Daily</option>
-              <option>Weekly</option>
-            </select>
+      <main className={styles.mainContent}>
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>Create New Alert</h2>
+          <form className={styles.form}>
+            <Input
+              id="alert-keywords"
+              placeholder="Keywords (e.g., 'rust, defi')"
+              fullWidth
+            />
+            <Select
+              id="alert-frequency"
+              options={frequencyOptions}
+            />
             <Button variant="primary">Create Alert</Button>
           </form>
         </div>
 
-        <div className="JobAlertsPage-card">
-          <h2 className="JobAlertsPage-card-title">Your Alerts</h2>
-          <div className="JobAlertsPage-list">
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>Your Alerts</h2>
+          <div className={styles.list}>
             {alerts.map(alert => (
-              <div key={alert.id} className="JobAlertsPage-list-item">
-                <div className="JobAlertsPage-alert-info">
-                  <span className="JobAlertsPage-alert-name">{alert.name}</span>
-                  <span className="JobAlertsPage-alert-keywords">{alert.keywords}</span>
+              <div key={alert.id} className={styles.listItem}>
+                <div className={styles.alertInfo}>
+                  <span className={styles.alertName}>{alert.name}</span>
+                  <span className={styles.alertKeywords}>{alert.keywords}</span>
                 </div>
-                <div className="JobAlertsPage-alert-details">
+                <div className={styles.alertDetails}>
                   {alert.isAiPowered && <Badge variant="info">AI</Badge>}
-                  <span className="JobAlertsPage-alert-frequency">{alert.frequency}</span>
-                  <div className="JobAlertsPage-alert-actions">
+                  <span className={styles.alertFrequency}>{alert.frequency}</span>
+                  <div className={styles.alertActions}>
                     <Button variant="secondary" size="small">Edit</Button>
                     <Button variant="danger" size="small" onClick={() => handleDelete(alert.id)}>Delete</Button>
                   </div>

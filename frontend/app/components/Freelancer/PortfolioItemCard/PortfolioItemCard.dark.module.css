@@ -1,4 +1,22 @@
 .container {
-  --card-bg: var(--surface);
-  --card-border-color: var(--border);
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.container:hover {
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-md-dark);
+}
+
+.title {
+  color: var(--text-primary-dark);
+}
+
+.description {
+  color: var(--text-secondary-dark);
+}
+
+.footer {
+  background-color: var(--bg-tertiary-dark);
+  border-top-color: var(--border-dark);
 }

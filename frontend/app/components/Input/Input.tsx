@@ -16,6 +16,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   iconAfter?: React.ReactNode;
   error?: string | boolean;
   wrapperClassName?: string;
+  fullWidth?: boolean;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -25,6 +26,7 @@ const Input: React.FC<InputProps> = ({
   error,
   className = '',
   wrapperClassName = '',
+  fullWidth = false,
   ...props
 }) => {
   const id = useId();
@@ -46,7 +48,9 @@ const Input: React.FC<InputProps> = ({
         hasError && themeStyles.inputWrapperError,
         props.disabled && commonStyles.inputWrapperDisabled,
         props.disabled && themeStyles.inputWrapperDisabled,
-        wrapperClassName
+        wrapperClassName,
+        fullWidth && commonStyles.inputWrapperFullWidth,
+        fullWidth && themeStyles.inputWrapperFullWidth
       )}
     >
       {label && <label htmlFor={id} className={cn(commonStyles.inputLabel, themeStyles.inputLabel)}>{label}</label>}
