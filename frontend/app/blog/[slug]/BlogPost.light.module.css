@@ -1,0 +1,29 @@
+/* AI-HINT: Light theme styles for the individual blog post page. */
+
+.title {
+  color: var(--text-light-primary);
+}
+
+.meta {
+  color: var(--text-light-secondary);
+}
+
+.content {
+  color: var(--text-light-primary);
+}
+
+.content h2, .content h3, .content h4 {
+  color: var(--text-light-primary);
+}
+
+.content p {
+  color: var(--text-light-secondary);
+}
+
+.content a {
+  color: var(--primary);
+}
+
+.content a:hover {
+  color: var(--primary-dark);
+}

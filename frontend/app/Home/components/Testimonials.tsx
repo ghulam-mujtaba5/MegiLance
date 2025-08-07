@@ -1,14 +1,17 @@
-import React from 'react';
-import commonStyles from './Testimonials.common.module.css';
-import lightStyles from './Testimonials.light.module.css';
-import darkStyles from './Testimonials.dark.module.css';
+// @AI-HINT: Testimonials section with dynamic fade-in animations and improved semantics.
+'use client';
+
+import React, { useRef } from 'react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import commonStyles from './Testimonials.common.module.css';
+import lightStyles from './Testimonials.light.module.css';
+import darkStyles from './Testimonials.dark.module.css';
 
-// @AI-HINT: Testimonials section. Now fully theme-switchable using global theme context.
-
-const testimonials = [
+// --- Data (moved outside component for performance) ---
+const testimonialsData = [
   {
     quote: 'MegiLance has revolutionized the way I work. The AI tools are a game-changer, and the secure payment system gives me peace of mind.',
     author: 'Alexia C.',
@@ -29,6 +32,41 @@ const testimonials = [
   },
 ];
 
+// --- Subcomponent for a single testimonial card ---
+const TestimonialCard: React.FC<{ testimonial: typeof testimonialsData[0], themeStyles: any }> = ({ testimonial, themeStyles }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isVisible = useIntersectionObserver(ref, { threshold: 0.2 });
+
+  return (
+    <div 
+      ref={ref} 
+      className={cn(
+        commonStyles.testimonialCard,
+        themeStyles.testimonialCard,
+        isVisible ? commonStyles.isVisible : commonStyles.isNotVisible
+      )}
+    >
+      <blockquote className={cn(commonStyles.testimonialQuote, themeStyles.testimonialQuote)}>
+        {testimonial.quote}
+      </blockquote>
+      <div className={commonStyles.testimonialAuthor}>
+        <Image 
+          src={testimonial.avatar} 
+          alt={`Avatar of ${testimonial.author}`}
+          className={commonStyles.authorAvatar} 
+          width={48} 
+          height={48} 
+        />
+        <div className={commonStyles.authorInfo}>
+          <p className={cn(commonStyles.authorName, themeStyles.authorName)}>{testimonial.author}</p>
+          <p className={cn(commonStyles.authorTitle, themeStyles.authorTitle)}>{testimonial.title}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Main Testimonials Component ---
 const Testimonials: React.FC = () => {
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
@@ -38,17 +76,8 @@ const Testimonials: React.FC = () => {
       <div className={commonStyles.container}>
         <h2 className={commonStyles.sectionTitle}>Loved by Freelancers & Clients</h2>
         <div className={commonStyles.testimonialsGrid}>
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className={cn(commonStyles.testimonialCard, themeStyles.testimonialCard)}>
-              <p className={cn(commonStyles.testimonialQuote, themeStyles.testimonialQuote)}>&quot;{testimonial.quote}&quot;</p>
-              <div className={commonStyles.testimonialAuthor}>
-                <Image src={testimonial.avatar} alt={testimonial.author} className={commonStyles.authorAvatar} width={48} height={48} />
-                <div className={commonStyles.authorInfo}>
-                  <p className={cn(commonStyles.authorName, themeStyles.authorName)}>{testimonial.author}</p>
-                  <p className={cn(commonStyles.authorTitle, themeStyles.authorTitle)}>{testimonial.title}</p>
-                </div>
-              </div>
-            </div>
+          {testimonialsData.map((testimonial) => (
+            <TestimonialCard key={testimonial.author} testimonial={testimonial} themeStyles={themeStyles} />
           ))}
         </div>
       </div>

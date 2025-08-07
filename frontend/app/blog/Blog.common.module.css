@@ -1,0 +1,45 @@
+/* AI-HINT: Common styles for the main Blog page, including layout, header, and grid. */
+
+.container {
+  width: 100%;
+  max-width: var(--max-width-7xl);
+  margin: 0 auto;
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-12);
+}
+
+.title {
+  font-family: var(--font-family-headings);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-4);
+}
+
+.subtitle {
+  font-size: var(--font-size-xl);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-8);
+}
+
+/* Animation styles */
+.isNotVisible {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}

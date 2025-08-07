@@ -1,0 +1,43 @@
+/* @AI-HINT: Dark theme styles for the About page. */
+
+.aboutPage {
+  background-color: var(--background-dark);
+  color: var(--text-dark-primary);
+}
+
+.subtitle {
+  color: var(--text-dark-secondary);
+}
+
+.sectionTitle {
+  color: var(--text-dark-primary);
+}
+
+.missionText {
+  color: var(--text-dark-secondary);
+}
+
+.valueCard, .teamCard {
+  background-color: var(--surface-dark-secondary);
+  border: 1px solid var(--border-dark);
+}
+
+.valueCard:hover, .teamCard:hover {
+  border-color: var(--primary-translucent);
+}
+
+.valueIcon {
+  color: var(--primary);
+}
+
+.valueTitle, .teamName {
+  color: var(--text-dark-primary);
+}
+
+.valueDescription, .teamRole {
+  color: var(--text-dark-secondary);
+}
+
+.teamAvatar {
+  border: 3px solid var(--primary-dark);
+}

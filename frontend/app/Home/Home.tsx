@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
-import Header from '@/app/components/Header/Header';
+
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
@@ -29,8 +29,7 @@ const Home: React.FC = () => {
 
   return (
     <div className={cn(commonStyles.homePage, themeStyles.homePage)}>
-      <Header />
-      <main className={commonStyles.homeContainer}>
+
         {/* Enhanced Hero Section with Animated Stats */}
         <section className={commonStyles.homeSection}>
           <Hero />
@@ -63,7 +62,7 @@ const Home: React.FC = () => {
         <section>
           <CTA />
         </section>
-      </main>
+
     </div>
   );
 };

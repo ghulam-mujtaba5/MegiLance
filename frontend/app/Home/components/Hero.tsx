@@ -2,7 +2,8 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import useAnimatedCounter from '@/hooks/useAnimatedCounter';
 import Link from 'next/link';
 import Button from '@/app/components/Button/Button';
 import { FaRocket, FaPlay, FaShieldAlt, FaRobot, FaBitcoin, FaGlobe } from 'react-icons/fa';
@@ -15,44 +16,11 @@ import darkStyles from './Hero.dark.module.css';
 const Hero: React.FC = () => {
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-  const [animatedStats, setAnimatedStats] = useState({
-    freelancers: 0,
-    projects: 0,
-    payments: 0,
-    countries: 0
-  });
 
-  useEffect(() => {
-    const targetStats = {
-      freelancers: 50000,
-      projects: 125000,
-      payments: 2500000,
-      countries: 45
-    };
-
-    const duration = 2000; // 2 seconds
-    const steps = 60;
-    const stepDuration = duration / steps;
-
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      currentStep++;
-      const progress = currentStep / steps;
-      
-      setAnimatedStats({
-        freelancers: Math.floor(targetStats.freelancers * progress),
-        projects: Math.floor(targetStats.projects * progress),
-        payments: Math.floor(targetStats.payments * progress),
-        countries: Math.floor(targetStats.countries * progress)
-      });
-
-      if (currentStep >= steps) {
-        clearInterval(interval);
-      }
-    }, stepDuration);
-
-    return () => clearInterval(interval);
-  }, []);
+  const animatedFreelancers = useAnimatedCounter(50000);
+  const animatedProjects = useAnimatedCounter(125000);
+  const animatedPayments = useAnimatedCounter(2500000);
+  const animatedCountries = useAnimatedCounter(45);
 
   return (
     <section className={cn(commonStyles.hero, themeStyles.hero)}>
@@ -95,12 +63,12 @@ const Hero: React.FC = () => {
             </div>
 
             <div className={commonStyles.cta}>
-              <Link href="/Signup" className={commonStyles.ctaLink}>
+              <Link href="/signup" className={commonStyles.ctaLink}>
                 <Button variant="primary" size="large">
                   <FaRocket /> Start Earning Today
                 </Button>
               </Link>
-              <Link href="/watch-demo" className={cn(commonStyles.ctaLink, themeStyles.ctaLink)}>
+              <Link href="/how-it-works" className={cn(commonStyles.ctaLink, themeStyles.ctaLink)}>
                 <Button variant="secondary" size="large">
                   <FaPlay /> Watch Demo
                 </Button>
@@ -118,21 +86,21 @@ const Hero: React.FC = () => {
           </div>
 
           {/* Animated Statistics */}
-          <div className={cn(commonStyles.stats, themeStyles.stats)}>
+          <div className={cn(commonStyles.stats, themeStyles.stats)} aria-label="Platform Statistics">
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)}>{animatedStats.freelancers.toLocaleString()}+</div>
+              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedFreelancers.toLocaleString()} active freelancers`}>{animatedFreelancers.toLocaleString()}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Active Freelancers</div>
             </div>
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)}>{animatedStats.projects.toLocaleString()}+</div>
+              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedProjects.toLocaleString()} projects completed`}>{animatedProjects.toLocaleString()}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Projects Completed</div>
             </div>
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)}>${animatedStats.payments.toLocaleString()}+</div>
+              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`over $${animatedPayments.toLocaleString()} paid to freelancers`}>${animatedPayments.toLocaleString()}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Paid to Freelancers</div>
             </div>
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)}>{animatedStats.countries}+</div>
+              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedCountries} countries served`}>{animatedCountries}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Countries Served</div>
             </div>
           </div>

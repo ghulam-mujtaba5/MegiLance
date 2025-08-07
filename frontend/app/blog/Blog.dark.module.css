@@ -1,0 +1,9 @@
+/* AI-HINT: Dark theme styles for the Blog page. */
+
+.title {
+  color: var(--text-dark-primary);
+}
+
+.subtitle {
+  color: var(--text-dark-secondary);
+}

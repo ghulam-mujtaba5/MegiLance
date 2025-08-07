@@ -1,0 +1,20 @@
+.container {
+  background-color: var(--surface-dark-secondary);
+  border: 1px solid var(--border-dark);
+}
+
+.blogPostCardLink:hover .container {
+  border-color: var(--primary-translucent);
+}
+
+.title {
+  color: var(--text-dark-primary);
+}
+
+.excerpt {
+  color: var(--text-dark-secondary);
+}
+
+.meta {
+  color: var(--text-dark-tertiary);
+}

@@ -11,17 +11,27 @@ import commonStyles from './Button.common.module.css';
 import lightStyles from './Button.light.module.css';
 import darkStyles from './Button.dark.module.css';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// Define own props for the button, separating them from the underlying element's props.
+// This is the first step in creating a polymorphic component.
+type ButtonOwnProps<C extends React.ElementType> = {
+  as?: C;
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'outline';
   size?: 'small' | 'medium' | 'large';
   isLoading?: boolean;
   fullWidth?: boolean;
   icon?: React.ElementType;
   children: React.ReactNode;
-}
+  className?: string;
+};
 
-const Button: React.FC<ButtonProps> = ({
+// Combine our own props with the props of the component specified in `as`.
+// This creates the final, flexible props type.
+export type ButtonProps<C extends React.ElementType> = ButtonOwnProps<C> & 
+  Omit<React.ComponentPropsWithoutRef<C>, keyof ButtonOwnProps<C>>;
+
+const Button = <C extends React.ElementType = 'button'> ({
   children,
+  as,
   variant = 'primary',
   size = 'medium',
   isLoading = false,
@@ -29,8 +39,11 @@ const Button: React.FC<ButtonProps> = ({
   icon: Icon,
   className = '',
   ...props
-}) => {
+}: ButtonProps<C>) => {
   const { theme } = useTheme();
+
+  // The component to render will be what's passed to `as`, or a 'button' by default.
+  const Component = as || 'button';
 
   if (!theme) {
     return null; // Don't render until theme is resolved
@@ -39,7 +52,7 @@ const Button: React.FC<ButtonProps> = ({
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <button
+    <Component
       className={cn(
         commonStyles.button,
         themeStyles.button,
@@ -51,7 +64,7 @@ const Button: React.FC<ButtonProps> = ({
         fullWidth && themeStyles.fullWidth,
         className
       )}
-      disabled={isLoading || props.disabled}
+      disabled={isLoading || (props as React.ButtonHTMLAttributes<HTMLButtonElement>).disabled}
       {...props}
     >
       {isLoading ? (
@@ -62,7 +75,7 @@ const Button: React.FC<ButtonProps> = ({
           <span className={cn(commonStyles.buttonText, themeStyles.buttonText)}>{children}</span>
         </>
       )}
-    </button>
+    </Component>
   );
 };
 

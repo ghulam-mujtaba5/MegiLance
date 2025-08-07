@@ -37,10 +37,10 @@ For a sophisticated SaaS platform like MegiLance, a hybrid approach is most suit
 
 These pages are for marketing, information, and user acquisition. They do not require a user to be logged in.
 
--   `[~]` `/` - Home Page
--   `[ ]` `/about` - About Us Page
--   `[ ]` `/blog` - Blog Posts List
--   `[ ]` `/blog/[slug]` - Individual Blog Post
+-   `[x]` `/` - Home Page
+-   `[x]` `/about` - About Us Page
+-   `[x]` `/blog` - Blog Posts List
+-   `[x]` `/blog/[slug]` - Individual Blog Post
 -   `[ ]` `/contact` - Contact Us Page
 -   `[ ]` `/faq` - Frequently Asked Questions
 -   `[ ]` `/jobs` - Public Job Listings Page

@@ -38,22 +38,29 @@ export interface BlogPostCardProps {
    */
   date: string;
   /**
+   * The full HTML content of the blog post.
+   */
+  content?: string;
+  /**
    * Optional CSS class to apply to the component.
    */
   className?: string;
 }
 
 const BlogPostCard: React.FC<BlogPostCardProps> = ({ slug, title, excerpt, imageUrl, author, date, className }) => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
     <Link href={`/blog/${slug}`} className={cn(commonStyles.blogPostCardLink, className)}>
-      <div className={commonStyles.container}>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
         <div className={commonStyles.imageWrapper}>
           <Image src={imageUrl} alt={title} layout="fill" objectFit="cover" />
         </div>
         <div className={commonStyles.content}>
-          <h3 className={commonStyles.title}>{title}</h3>
-          <p className={commonStyles.excerpt}>{excerpt}</p>
-          <div className={commonStyles.meta}>
+          <h3 className={cn(commonStyles.title, themeStyles.title)}>{title}</h3>
+          <p className={cn(commonStyles.excerpt, themeStyles.excerpt)}>{excerpt}</p>
+          <div className={cn(commonStyles.meta, themeStyles.meta)}>
             <span className={commonStyles.author}>By {author}</span>
             <span className={commonStyles.date}>{date}</span>
           </div>

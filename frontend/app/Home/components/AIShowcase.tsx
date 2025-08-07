@@ -11,11 +11,7 @@ import commonStyles from './AIShowcase.common.module.css';
 import lightStyles from './AIShowcase.light.module.css';
 import darkStyles from './AIShowcase.dark.module.css';
 
-const AIShowcase: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-
-  const aiFeatures = [
+const aiFeatures = [
     {
       icon: FaBrain,
       title: "Smart Job Matching",
@@ -54,6 +50,10 @@ const AIShowcase: React.FC = () => {
     }
   ];
 
+const AIShowcase: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
   return (
     <section className={cn(commonStyles.aiShowcase, themeStyles.aiShowcase)}>
       <div className={commonStyles.container}>
@@ -73,10 +73,10 @@ const AIShowcase: React.FC = () => {
         </div>
 
         <div className={commonStyles.grid}>
-          {aiFeatures.map((feature, index) => (
-            <div key={index} className={commonStyles.card}>
+          {aiFeatures.map((feature) => (
+            <div key={feature.title} className={commonStyles.card}>
               <div className={commonStyles.cardHeader}>
-                <div className={commonStyles.cardIcon}>
+                <div className={commonStyles.cardIcon} aria-hidden="true">
                   <feature.icon />
                 </div>
                 <div className={commonStyles.cardStats}>{feature.stats}</div>

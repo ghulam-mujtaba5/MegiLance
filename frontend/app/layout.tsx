@@ -27,8 +27,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           enableSystem={true}
           disableTransitionOnChange={false}
         >
-          {children}
-            <ThemeToggleButton />
+          <Header />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+          <ThemeToggleButton />
           <InstallAppBanner />
           <UpdateNotification />
         </ThemeProvider>

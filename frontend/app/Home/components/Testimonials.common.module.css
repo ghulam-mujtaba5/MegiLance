@@ -42,6 +42,16 @@
   border-color: var(--primary-translucent);
 }
 
+.isNotVisible {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .testimonialQuote {
   font-size: var(--font-size-base);
   font-style: italic;

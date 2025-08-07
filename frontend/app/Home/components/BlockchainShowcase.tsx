@@ -2,7 +2,8 @@
 
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
+import useAnimatedCounter from '@/hooks/useAnimatedCounter';
 import { FaBitcoin, FaShieldAlt, FaLock, FaGlobe, FaExchangeAlt, FaChartLine } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -11,11 +12,7 @@ import commonStyles from './BlockchainShowcase.common.module.css';
 import lightStyles from './BlockchainShowcase.light.module.css';
 import darkStyles from './BlockchainShowcase.dark.module.css';
 
-const BlockchainShowcase: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
-
-  const blockchainFeatures = [
+const blockchainFeatures = [
     {
       icon: FaBitcoin,
       title: "USDC Payments",
@@ -53,6 +50,27 @@ const BlockchainShowcase: React.FC = () => {
       benefit: "Verifiable History"
     }
   ];
+
+const AnimatedStat: React.FC<{ rawValue: string; duration?: number }> = ({ rawValue, duration = 2000 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const match = rawValue.match(/([<$>]*)?\s*([\d.]+)\s*([M+%s]*)?/);
+  const prefix = match?.[1] || '';
+  const target = match ? parseFloat(match[2]) : 0;
+  const suffix = match?.[3] || '';
+  const decimals = (match?.[2].split('.')[1] || '').length;
+
+  const count = useAnimatedCounter(target, duration, decimals, ref);
+
+  return (
+    <div ref={ref} className={commonStyles.statNumber}>
+      {prefix}{count}{suffix}
+    </div>
+  );
+};
+
+const BlockchainShowcase: React.FC = () => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <section className={cn(commonStyles.blockchainShowcase, themeStyles.blockchainShowcase)}>
@@ -97,9 +115,9 @@ const BlockchainShowcase: React.FC = () => {
           </div>
 
           <div className={commonStyles.features}>
-            {blockchainFeatures.map((feature, index) => (
-              <div key={index} className={commonStyles.feature}>
-                <div className={commonStyles.featureIcon}>
+            {blockchainFeatures.map((feature) => (
+              <div key={feature.title} className={commonStyles.feature}>
+                <div className={commonStyles.featureIcon} aria-hidden="true">
                   <feature.icon />
                 </div>
                 <div className={commonStyles.featureContent}>
@@ -114,19 +132,19 @@ const BlockchainShowcase: React.FC = () => {
 
         <div className={commonStyles.stats}>
           <div className={commonStyles.stat}>
-            <div className={commonStyles.statNumber}>$2.5M+</div>
+            <AnimatedStat rawValue="$2.5M+" />
             <div className={commonStyles.statLabel}>Processed in USDC</div>
           </div>
           <div className={commonStyles.stat}>
-            <div className={commonStyles.statNumber}>99.99%</div>
+            <AnimatedStat rawValue="99.99%" />
             <div className={commonStyles.statLabel}>Transaction Success Rate</div>
           </div>
           <div className={commonStyles.stat}>
-            <div className={commonStyles.statNumber}>{"< 30s"}</div>
+            <AnimatedStat rawValue="<30s" />
             <div className={commonStyles.statLabel}>Average Settlement Time</div>
           </div>
           <div className={commonStyles.stat}>
-            <div className={commonStyles.statNumber}>0.5%</div>
+            <AnimatedStat rawValue="0.5%" />
             <div className={commonStyles.statLabel}>Transaction Fee</div>
           </div>
         </div>

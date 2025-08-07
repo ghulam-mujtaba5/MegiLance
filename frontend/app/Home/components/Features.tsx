@@ -39,9 +39,9 @@ const Features: React.FC = () => {
         <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Why Choose MegiLance?</h2>
         <p className={cn(commonStyles.sectionSubtitle, themeStyles.sectionSubtitle)}>The platform designed for the future of freelancing.</p>
         <div className={commonStyles.homeFeaturesGrid}>
-          {features.map((feature, index) => (
-            <div key={index} className={cn(commonStyles.homeFeatureCard, themeStyles.homeFeatureCard)}>
-              <div className={cn(commonStyles.homeFeatureIcon, themeStyles.homeFeatureIcon)}>{feature.icon}</div>
+          {features.map((feature) => (
+            <div key={feature.title} className={cn(commonStyles.homeFeatureCard, themeStyles.homeFeatureCard)}>
+              <div className={cn(commonStyles.homeFeatureIcon, themeStyles.homeFeatureIcon)} aria-hidden="true">{feature.icon}</div>
               <h3 className={cn(commonStyles.homeFeatureTitle, themeStyles.homeFeatureTitle)}>{feature.title}</h3>
               <p className={cn(commonStyles.homeFeatureDescription, themeStyles.homeFeatureDescription)}>{feature.description}</p>
             </div>

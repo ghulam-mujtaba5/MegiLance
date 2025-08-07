@@ -1,0 +1,127 @@
+/* @AI-HINT: Common styles for the About page, defining layout, typography, and base component styles. */
+
+.aboutPage {
+  padding-top: var(--spacing-12);
+  padding-bottom: var(--spacing-12);
+}
+
+.container {
+  max-width: var(--max-width-5xl);
+  margin: 0 auto;
+  padding: 0 var(--spacing-6);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-16);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn-up 0.8s ease-out forwards;
+}
+
+.title {
+  font-family: var(--font-family-headings);
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+  margin-bottom: var(--spacing-4);
+}
+
+.subtitle {
+  font-size: var(--font-size-xl);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.section {
+  margin-bottom: var(--spacing-16);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.section.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sectionTitle {
+  font-family: var(--font-family-headings);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-6);
+  text-align: center;
+}
+
+@keyframes fadeIn-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.missionText {
+  font-size: var(--font-size-lg);
+  line-height: 1.7;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.valuesGrid, .teamGrid {
+  display: grid;
+  gap: var(--spacing-8);
+}
+
+.valuesGrid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.teamGrid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  justify-items: center;
+}
+
+.valueCard, .teamCard {
+  padding: var(--spacing-6);
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.valueCard:hover, .teamCard:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+}
+
+.valueIcon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-4);
+}
+
+.valueTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-2);
+}
+
+.valueDescription {
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+.teamAvatar {
+  border-radius: 50%;
+  margin-bottom: var(--spacing-4);
+  object-fit: cover;
+}
+
+.teamName {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.teamRole {
+  font-size: var(--font-size-sm);
+}

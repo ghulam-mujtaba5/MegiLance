@@ -137,6 +137,13 @@
   display: flex;
   gap: var(--spacing-4);
   align-items: flex-start;
+  padding: var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  transition: background-color var(--transition-duration-fast) var(--transition-timing-function-ease);
+}
+
+.feature:hover {
+  background-color: var(--surface-hover);
 }
 
 .featureIcon {
@@ -228,18 +235,18 @@
 }
 
 .chain {
-  padding: var(--spacing-3) var(--spacing-6);
-  border-radius: var(--border-radius-lg);
-  font-weight: var(--font-weight-bold);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-medium);
+  background: var(--surface-alt);
   color: var(--text-secondary);
   transition: all var(--transition-duration-fast) var(--transition-timing-function-ease);
 }
 
 .chain:hover {
+  background-color: var(--primary);
+  color: var(--text-on-primary);
   transform: translateY(-2px);
-  color: var(--primary);
   border-color: var(--primary);
 }
 
