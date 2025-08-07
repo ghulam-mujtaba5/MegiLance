@@ -82,6 +82,42 @@
   color: var(--text-color-secondary);
 }
 
+/* Floating Theme Toggle Button */
+.themeToggleFloating {
+  position: fixed;
+  bottom: 2.2rem;
+  right: 2.2rem;
+  z-index: 9999;
+  pointer-events: none;
+}
+.themeToggleFloating .themeToggleBtn {
+  pointer-events: auto;
+  border: none;
+  background: var(--background-color, #fff);
+  cursor: pointer;
+  padding: 0.7rem;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(69,115,223,0.10), 0 1.5px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-color-primary);
+  font-size: 1.7rem;
+}
+.themeToggleFloating .themeToggleBtn:hover {
+  background: var(--primary-color, #4573df);
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(69,115,223,0.16);
+}
+
+/* Prevent horizontal scroll for Home only */
+.homeContainer {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+
 /* Responsive Styles */
 .mobileMenuButton {
   display: none; /* Hidden by default */

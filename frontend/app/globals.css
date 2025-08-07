@@ -1,3 +1,9 @@
+/* Prevent horizontal scroll globally */
+html, body, #__next {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* AI-HINT: This file is the entry point for Tailwind CSS. The directives below inject Tailwind's base styles, component classes, and utility classes into the application. */
 
 @tailwind base;

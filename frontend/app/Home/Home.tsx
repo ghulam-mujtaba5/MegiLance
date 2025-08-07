@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 import Hero from './components/Hero';
+import ThemeToggleButton from './components/ThemeToggleButton';
 import Features from './components/Features';
 import AIShowcase from './components/AIShowcase';
 import BlockchainShowcase from './components/BlockchainShowcase';
@@ -27,36 +28,55 @@ const Home: React.FC = () => {
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.homeContainer, themeStyles.home)}>
-
-
+  <div style={{ width: '100vw', overflowX: 'hidden' }}>
+    <ThemeToggleButton />
+    <header className={commonStyles.header}>
+      <nav className={commonStyles.nav}>
+        <Link href="/" className={commonStyles.brandLink}>
+          <span className={commonStyles.brand}>MegiLance</span>
+        </Link>
+        <div className={commonStyles.navLinks}>
+          {/* Other nav items here if needed */}
+          
+        </div>
+      </nav>
+    </header>
+    <main className={commonStyles.homeContainer}>
       {/* Enhanced Hero Section with Animated Stats */}
-      <Hero />
-
+      <section style={{ marginBottom: '3.5rem' }}>
+        <Hero />
+      </section>
       {/* Core Platform Features */}
-      <Features />
-
+      <section style={{ marginBottom: '3.5rem' }}>
+        <Features />
+      </section>
       {/* AI-Powered Capabilities Showcase */}
-      <AIShowcase />
-
+      <section style={{ marginBottom: '3.5rem' }}>
+        <AIShowcase />
+      </section>
       {/* Blockchain & Crypto Payment Features */}
-      <BlockchainShowcase />
-
+      <section style={{ marginBottom: '3.5rem' }}>
+        <BlockchainShowcase />
+      </section>
       {/* How the Platform Works */}
-      <HowItWorks />
-
+      <section style={{ marginBottom: '3.5rem' }}>
+        <HowItWorks />
+      </section>
       {/* Global Impact & Pakistani Focus */}
-      <GlobalImpact />
-
+      <section style={{ marginBottom: '3.5rem' }}>
+        <GlobalImpact />
+      </section>
       {/* User Testimonials */}
-      <Testimonials />
-
+      <section style={{ marginBottom: '3.5rem' }}>
+        <Testimonials />
+      </section>
       {/* Final Call-to-Action */}
-      <CTA />
-
-
-    </div>
-  );
+      <section>
+        <CTA />
+      </section>
+    </main>
+  </div>
+);
 };
 
 export default Home;
