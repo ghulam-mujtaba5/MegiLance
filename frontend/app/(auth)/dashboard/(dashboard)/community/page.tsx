@@ -1,6 +1,7 @@
 // @AI-HINT: This is the Community page, designed as a premium forum/social hub. It features a main discussion feed, sorting/filtering controls, and a sidebar with community stats and popular tags to encourage user interaction.
 
 import React from 'react';
+import Image from 'next/image';
 import { Plus, Search, ThumbsUp, MessageCircle, Eye, ChevronDown } from 'lucide-react';
 import styles from './Community.module.css';
 
@@ -12,7 +13,7 @@ const communityPosts = [
     authorAvatar: '/avatars/avatar-3.png',
     authorTitle: 'Marketing Guru',
     title: 'Best strategies for landing high-ticket clients in Q3?',
-    excerpt: 'I\'ve been focusing on cold outreach, but I\'m curious to hear what other channels are working for you all. SEO? Content marketing? Referrals?',
+    excerpt: 'I&apos;ve been focusing on cold outreach, but I&apos;m curious to hear what other channels are working for you all. SEO? Content marketing? Referrals?',
     tags: ['marketing', 'client-acquisition', 'strategy'],
     likes: 128,
     comments: 42,
@@ -25,7 +26,7 @@ const communityPosts = [
     authorAvatar: '/avatars/avatar-4.png',
     authorTitle: 'Full-Stack Developer',
     title: 'How do you handle scope creep without damaging client relationships?',
-    excerpt: 'Just had a project where the client kept adding \'small\' features. It really derailed the timeline. Looking for advice on setting boundaries politely but firmly.',
+    excerpt: 'Just had a project where the client kept adding &apos;small&apos; features. It really derailed the timeline. Looking for advice on setting boundaries politely but firmly.',
     tags: ['project-management', 'client-relations', 'freelancing'],
     likes: 97,
     comments: 61,
@@ -38,7 +39,7 @@ const communityPosts = [
     authorAvatar: '/avatars/avatar-5.png',
     authorTitle: 'UI/UX Designer',
     title: 'Showcase: My latest branding project for a SaaS startup.',
-    excerpt: 'Excited to share the final designs for \'InnovateAI\'. It was a challenging but rewarding project. Feedback is welcome!',
+    excerpt: 'Excited to share the final designs for &apos;InnovateAI&apos;. It was a challenging but rewarding project. Feedback is welcome!',
     tags: ['design', 'showcase', 'ui-ux', 'branding'],
     likes: 256,
     comments: 88,
@@ -84,7 +85,7 @@ const CommunityPage = () => {
           {communityPosts.map((post) => (
             <article key={post.id} className={styles.postCard}>
               <div className={styles.postAuthor}>
-                <img src={post.authorAvatar} alt={post.author} className={styles.authorAvatar} />
+                <Image src={post.authorAvatar} alt={post.author} className={styles.authorAvatar} width={40} height={40} />
                 <div>
                   <span className={styles.authorName}>{post.author}</span>
                   <span className={styles.authorTitle}>{post.authorTitle}</span>

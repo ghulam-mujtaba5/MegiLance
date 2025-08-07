@@ -1,6 +1,7 @@
 // @AI-HINT: This is the Messages page, designed with a three-column layout for a premium, real-time chat experience, similar to platforms like Slack or Discord.
 
 import React from 'react';
+import Image from 'next/image';
 import { User, Search, Paperclip, Send } from 'lucide-react';
 import styles from './Messages.module.css';
 
@@ -47,7 +48,7 @@ const MessagesPage = () => {
         <div className={styles.conversations}>
           {conversations.map((convo) => (
             <div key={convo.id} className={`${styles.convoItem} ${convo.id === 1 ? styles.active : ''}`}>
-              <img src={convo.avatar} alt={convo.name} className={styles.avatar} />
+              <Image src={convo.avatar} alt={convo.name} className={styles.avatar} width={40} height={40} />
               <div className={styles.convoDetails}>
                 <div className={styles.convoHeader}>
                   <span className={styles.convoName}>{convo.name}</span>
@@ -69,7 +70,7 @@ const MessagesPage = () => {
         </div>
         <div className={styles.messageArea}>
           {/* AI-HINT: Messages would be rendered here from a state object. */}
-          <div className={`${styles.message} ${styles.received}`}><p>Hey, I've pushed the latest wireframes to the Figma project. Let me know your thoughts!</p></div>
+          <div className={`${styles.message} ${styles.received}`}><p>Hey, I&apos;ve pushed the latest wireframes to the Figma project. Let me know your thoughts!</p></div>
           <div className={`${styles.message} ${styles.sent}`}><p>Awesome, thanks! Taking a look now.</p></div>
           <div className={`${styles.message} ${styles.received}`}><p>Perfect, I will review the new designs by EOD.</p></div>
         </div>
@@ -87,7 +88,7 @@ const MessagesPage = () => {
       {/* Column 3: Details Panel */}
       <div className={styles.detailsPanel}>
         <div className={styles.panelHeader}>
-          <img src="/avatars/avatar-1.png" alt="Alice Johnson" className={styles.panelAvatar} />
+          <Image src="/avatars/avatar-1.png" alt="Alice Johnson" className={styles.panelAvatar} width={80} height={80} />
           <h3>Alice Johnson</h3>
           <p>Online</p>
         </div>
