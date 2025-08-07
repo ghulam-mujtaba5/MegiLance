@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { FaTachometerAlt, FaUsers, FaBox, FaChartBar, FaCog } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaBox, FaChartBar, FaCog, FaCreditCard, FaLifeRing, FaRobot } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import MegiLanceLogo from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 
@@ -17,6 +17,9 @@ const adminNavItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: FaTachometerAlt },
   { href: '/admin/users', label: 'User Management', icon: FaUsers },
   { href: '/admin/projects', label: 'Projects', icon: FaBox },
+  { href: '/admin/payments', label: 'Payments', icon: FaCreditCard },
+  { href: '/admin/support', label: 'Support', icon: FaLifeRing },
+  { href: '/admin/ai-monitoring', label: 'AI Monitoring', icon: FaRobot },
   { href: '/admin/analytics', label: 'Analytics', icon: FaChartBar },
   { href: '/admin/settings', label: 'Settings', icon: FaCog },
 ];
