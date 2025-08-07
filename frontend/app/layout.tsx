@@ -6,6 +6,7 @@ import './styles/theme.css';
 
 import { ThemeProvider } from 'next-themes';
 import ThemeSwitcher from './components/ThemeSwitcher/ThemeSwitcher';
+import ThemeToggleButton from './components/ThemeToggleButton';
 import InstallAppBanner from './components/PWA/InstallAppBanner/InstallAppBanner';
 import UpdateNotification from './components/PWA/UpdateNotification/UpdateNotification';
 import Header from './components/Header/Header';
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           disableTransitionOnChange={false}
         >
           {children}
+            <ThemeToggleButton />
           <InstallAppBanner />
           <UpdateNotification />
         </ThemeProvider>
