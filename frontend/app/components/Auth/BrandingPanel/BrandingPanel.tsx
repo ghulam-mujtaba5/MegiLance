@@ -6,10 +6,10 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import type { IconType } from 'react-icons';
 
-// Import shared styles to ensure consistency
-import commonStyles from '@/app/(auth)/Login/Login.common.module.css';
-import lightStyles from '@/app/(auth)/Login/Login.light.module.css';
-import darkStyles from '@/app/(auth)/Login/Login.dark.module.css';
+// Import dedicated styles for the Branding Panel
+import commonStyles from './BrandingPanel.common.module.css';
+import lightStyles from './BrandingPanel.light.module.css';
+import darkStyles from './BrandingPanel.dark.module.css';
 
 export interface RoleConfig {
   brandIcon: IconType;
@@ -23,7 +23,10 @@ export interface AuthBrandingPanelProps {
 
 const AuthBrandingPanel: React.FC<AuthBrandingPanelProps> = ({ roleConfig }) => {
   const { theme } = useTheme();
-  const styles = theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles };
+  const styles = React.useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
   const { brandIcon: BrandIcon, brandTitle, brandText } = roleConfig;
 
   if (!theme) return null;

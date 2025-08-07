@@ -1,0 +1,8 @@
+/* @AI-HINT: Dark theme styles for the reusable Branding Panel component. */
+
+.brandingPanel {
+  --branding-panel-bg: #1a2035; /* Deep, professional navy */
+  --brand-icon-color: #ffffff;
+  --brand-title-color: #ffffff;
+  --brand-text-color: #a0aec0; /* Cool gray */
+}
