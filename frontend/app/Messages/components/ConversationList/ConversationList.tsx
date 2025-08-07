@@ -3,7 +3,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Conversation } from '../../types';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { Conversation } from './types';
 import commonStyles from './ConversationList.common.module.css';
 import lightStyles from './ConversationList.light.module.css';
 import darkStyles from './ConversationList.dark.module.css';
@@ -46,33 +48,33 @@ const ConversationList: React.FC<ConversationListProps> = ({
     fetchConversations();
   }, [onSelectConversation, selectedConversationId, refreshKey]);
   return (
-    <aside className="ConversationList-sidebar">
-      <div className="ConversationList-header">
+    <aside className={commonStyles.sidebar}>
+      <div className={commonStyles.header}>
         <h2>Conversations</h2>
         {/* Placeholder for a search input or filter actions */}
       </div>
-      <div className="ConversationList-items">
-        {loading && <div className="ConversationList-loading">Loading...</div>}
-        {error && <div className="ConversationList-error">Error: {error}</div>}
+      <div className={commonStyles.items}>
+        {loading && <div className={commonStyles.loading}>Loading...</div>}
+        {error && <div className={commonStyles.error}>Error: {error}</div>}
         {!loading && !error && conversations.map(convo => (
           <div 
             key={convo.id} 
-            className={`ConversationList-item ${selectedConversationId === convo.id ? 'is-active' : ''}`}
+            className={cn(commonStyles.item, { [commonStyles.active]: selectedConversationId === convo.id })}
             onClick={() => onSelectConversation(convo.id)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => e.key === 'Enter' && onSelectConversation(convo.id)}
           >
-            <img src={convo.contactAvatarUrl} alt={`${convo.contactName}'s avatar`} className="ConversationList-item-avatar" />
-            <div className="ConversationList-item-content">
-              <div className="ConversationList-item-header">
-                <span className="ConversationList-item-name">{convo.contactName}</span>
-                <span className="ConversationList-item-timestamp">{convo.lastMessageTimestamp}</span>
+            <Image src={convo.avatar} alt={`${convo.contactName}&apos;s avatar`} className={commonStyles.itemAvatar} width={40} height={40} />
+            <div className={commonStyles.itemContent}>
+              <div className={commonStyles.itemHeader}>
+                <span className={commonStyles.itemName}>{convo.contactName}</span>
+                <span className={commonStyles.itemTimestamp}>{convo.lastMessageTimestamp}</span>
               </div>
-              <p className="ConversationList-item-preview">{convo.lastMessage}</p>
+              <p className={commonStyles.itemPreview}>{convo.lastMessage}</p>
             </div>
-            {convo.unreadCount && convo.unreadCount > 0 && (
-                <div className="ConversationList-item-unread">{convo.unreadCount}</div>
+            {convo.unreadCount > 0 && (
+                <div className={commonStyles.itemUnread}>{convo.unreadCount}</div>
             )}
           </div>
         ))}

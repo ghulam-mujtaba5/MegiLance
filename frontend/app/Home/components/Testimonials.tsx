@@ -40,7 +40,7 @@ const Testimonials: React.FC = () => {
         <div className={commonStyles.testimonialsGrid}>
           {testimonials.map((testimonial, index) => (
             <div key={index} className={cn(commonStyles.testimonialCard, themeStyles.testimonialCard)}>
-              <p className={cn(commonStyles.testimonialQuote, themeStyles.testimonialQuote)}>"{testimonial.quote}"</p>
+              <p className={cn(commonStyles.testimonialQuote, themeStyles.testimonialQuote)}>&quot;{testimonial.quote}&quot;</p>
               <div className={commonStyles.testimonialAuthor}>
                 <Image src={testimonial.avatar} alt={testimonial.author} className={commonStyles.authorAvatar} width={48} height={48} />
                 <div className={commonStyles.authorInfo}>

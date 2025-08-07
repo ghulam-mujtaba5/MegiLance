@@ -62,7 +62,7 @@ const Hero: React.FC = () => {
           <div className={commonStyles.heroMain}>
             <div className={cn(commonStyles.badge, themeStyles.badge)}>
               <FaRobot className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon)} />
-              <span>AI-Powered • Blockchain-Secured • Pakistan's #1 Platform</span>
+              <span>AI-Powered • Blockchain-Secured • Pakistan&apos;s #1 Platform</span>
             </div>
             
             <h1 className={cn(commonStyles.title, themeStyles.title)}>

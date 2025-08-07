@@ -1,6 +1,7 @@
 // @AI-HINT: This is the Projects page, designed for comprehensive project management. It features filtering, searching, and a detailed list of project cards, each showing key information like status, budget, and team members.
 
 import React from 'react';
+import Image from 'next/image';
 import { Plus, Search, Filter, ChevronDown, MoreHorizontal } from 'lucide-react';
 import styles from './Projects.module.css';
 
@@ -115,7 +116,7 @@ const ProjectsPage = () => {
             <div className={styles.projectBudget}>${project.budget.toLocaleString()}</div>
             <div className={styles.projectTeam}>
               {project.team.map((avatar, index) => (
-                <img key={index} src={avatar} alt={`Team member ${index + 1}`} className={styles.teamAvatar} />
+                <Image key={index} src={avatar} alt={`Team member ${index + 1}`} className={styles.teamAvatar} width={32} height={32} />
               ))}
             </div>
             <div className={styles.projectDeadline}>{new Date(project.deadline).toLocaleDateString()}</div>

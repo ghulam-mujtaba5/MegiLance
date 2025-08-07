@@ -1,7 +1,7 @@
 // @AI-HINT: This Notification component is fully theme-aware, using a sophisticated system of CSS variables for styling. The base structure and animations are in the .common.module.css file, while all colors are defined in the .light.module.css and .dark.module.css files. This ensures a consistent, premium look that adapts perfectly to the selected theme.
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { FiCheckCircle, FiAlertCircle, FiInfo, FiX, FiAlertTriangle } from 'react-icons/fi';
 import { cn } from '@/lib/utils';
@@ -56,35 +56,35 @@ const Notification: React.FC<NotificationProps> = ({
   const IconComponent = iconMap[type];
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsVisible(false);
     setTimeout(() => {
       onClose?.();
     }, 300); // Wait for exit animation
-  };
+  }, [onClose]);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (duration > 0 && !persistent && onClose) {
       startTimeRef.current = Date.now();
       timeoutRef.current = setTimeout(() => {
         handleClose();
       }, remainingTimeRef.current);
     }
-  };
+  }, [duration, persistent, onClose, handleClose]);
 
-  const pauseTimer = () => {
+  const pauseTimer = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       const elapsed = Date.now() - startTimeRef.current;
       remainingTimeRef.current = Math.max(0, remainingTimeRef.current - elapsed);
     }
-  };
+  }, []);
 
-  const resumeTimer = () => {
+  const resumeTimer = useCallback(() => {
     if (remainingTimeRef.current > 0) {
       startTimer();
     }
-  };
+  }, [startTimer]);
 
   useEffect(() => {
     startTimer();
@@ -93,7 +93,7 @@ const Notification: React.FC<NotificationProps> = ({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [duration, persistent, onClose]);
+  }, [duration, persistent, onClose, startTimer]);
 
   useEffect(() => {
     if (isPaused) {
@@ -101,7 +101,7 @@ const Notification: React.FC<NotificationProps> = ({
     } else {
       resumeTimer();
     }
-  }, [isPaused]);
+  }, [isPaused, pauseTimer, resumeTimer]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape' && onClose) {

@@ -3,7 +3,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Conversation } from '../../types';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { Conversation } from './types';
 import commonStyles from './ChatWindow.common.module.css';
 import lightStyles from './ChatWindow.light.module.css';
 import darkStyles from './ChatWindow.dark.module.css';
@@ -57,8 +59,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, refreshKey }) =
 
   if (!conversationId) {
     return (
-      <div className="ChatWindow-placeholder">
-        <div className="ChatWindow-placeholder-content">
+      <div className={commonStyles.placeholder}>
+        <div className={commonStyles.placeholderContent}>
           <h2>Welcome to your Inbox</h2>
           <p>Select a conversation from the sidebar to start chatting.</p>
         </div>
@@ -67,17 +69,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, refreshKey }) =
   }
 
   if (loading) {
-    return <div className="ChatWindow-placeholder">Loading conversation...</div>;
+    return <div className={commonStyles.placeholder}>Loading conversation...</div>;
   }
 
   if (error) {
-    return <div className="ChatWindow-placeholder">Error: {error}</div>;
+    return <div className={commonStyles.placeholder}>Error: {error}</div>;
   }
 
   if (!conversation) {
     return (
-      <div className="ChatWindow-placeholder">
-        <div className="ChatWindow-placeholder-content">
+      <div className={commonStyles.placeholder}>
+        <div className={commonStyles.placeholderContent}>
           <h2>Welcome to your Inbox</h2>
           <p>Select a conversation from the sidebar to start chatting.</p>
         </div>
@@ -86,23 +88,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, refreshKey }) =
   }
 
   return (
-    <main className="ChatWindow-main">
-      <header className="ChatWindow-header">
-        <img src={conversation.contactAvatarUrl} alt={`${conversation.contactName}'s avatar`} className="ChatWindow-header-avatar" />
-        <div className="ChatWindow-header-info">
-          <h3 className="ChatWindow-header-name">{conversation.contactName}</h3>
+    <main className={commonStyles.main}>
+      <header className={commonStyles.header}>
+        <Image src={conversation.avatar} alt={`${conversation.contactName}&apos;s avatar`} className={commonStyles.headerAvatar} width={48} height={48} />
+        <div className={commonStyles.headerInfo}>
+          <h3 className={commonStyles.headerName}>{conversation.contactName}</h3>
           {/* Placeholder for online status */}
-          <p className="ChatWindow-header-status">Online</p> 
+          <p className={commonStyles.headerStatus}>Online</p> 
         </div>
         {/* Placeholder for actions like search, call, etc. */}
       </header>
-      <div className="ChatWindow-messages">
+      <div className={commonStyles.messages}>
         {conversation.messages.map(msg => (
-          <div key={msg.id} className={`ChatMessage ChatMessage--${msg.sender}`}>
-            <div className="ChatMessage-bubble">
-              <p className="ChatMessage-text">{msg.text}</p>
+          <div key={msg.id} className={cn(commonStyles.message, commonStyles[msg.sender === 'user' ? 'sent' : 'received'])}>
+            <div className={commonStyles.bubble}>
+              <p className={commonStyles.text}>{msg.text}</p>
             </div>
-            <span className="ChatMessage-timestamp">{msg.timestamp}</span>
+            <span className={commonStyles.timestamp}>{msg.timestamp}</span>
           </div>
         ))}
         <div ref={messagesEndRef} />

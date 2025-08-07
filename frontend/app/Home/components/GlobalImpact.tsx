@@ -157,7 +157,7 @@ const GlobalImpact: React.FC = () => {
                   </div>
                 </div>
                 <div className={cn(commonStyles.storyAchievement, themeStyles.storyAchievement)}>{story.achievement}</div>
-                <blockquote className={cn(commonStyles.storyQuote, themeStyles.storyQuote)}>"{story.quote}"</blockquote>
+                <blockquote className={cn(commonStyles.storyQuote, themeStyles.storyQuote)}>&quot;{story.quote}&quot;</blockquote>
               </div>
             ))}
           </div>

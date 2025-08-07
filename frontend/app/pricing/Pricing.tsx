@@ -64,11 +64,11 @@ const faqItems = [
   },
   {
     question: 'What are the benefits of the yearly plan?',
-    answer: 'By choosing the yearly plan, you get a significant discount, equivalent to two months free compared to the monthly subscription. It\'s the best value for clients planning to hire consistently.'
+    answer: 'By choosing the yearly plan, you get a significant discount, equivalent to two months free compared to the monthly subscription. It&apos;s the best value for clients planning to hire consistently.'
   },
   {
     question: 'How does the AI vetting process work?',
-    answer: 'Our proprietary AI analyzes a freelancer\'s portfolio, skills, past project success, and client feedback to provide a comprehensive vetting score. This helps you hire with confidence, knowing you\'re getting top talent.'
+    answer: 'Our proprietary AI analyzes a freelancer&apos;s portfolio, skills, past project success, and client feedback to provide a comprehensive vetting score. This helps you hire with confidence, knowing you&apos;re getting top talent.'
   },
   {
     question: 'What kind of payment methods are supported?',
@@ -165,7 +165,7 @@ const Pricing: React.FC = () => {
         <section className={styles.faq}>
           <div className={styles.faqHeader}>
             <h2>Frequently Asked Questions</h2>
-            <p>Have questions? We've got answers. If you can't find what you're looking for, feel free to contact us.</p>
+            <p>Have questions? We&apos;ve got answers. If you can&apos;t find what you&apos;re looking for, feel free to contact us.</p>
           </div>
           <div className={styles.faqList}>
             {faqItems.map((item, index) => (
