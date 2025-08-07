@@ -1,16 +1,21 @@
-// @AI-HINT: This is the Wallet page for freelancers to manage their earnings and transactions. All styles are per-component only.
+// @AI-HINT: This is the Wallet page for freelancers to manage their earnings and transactions. It is now fully theme-aware and features a premium, investor-grade design.
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Button from '@/app/components/Button/Button';
 import commonStyles from './Wallet.common.module.css';
 import lightStyles from './Wallet.light.module.css';
 import darkStyles from './Wallet.dark.module.css';
 
-// @AI-HINT: This is the Wallet page for freelancers to manage their earnings and transactions. All styles are per-component only. Now fully theme-switchable using global theme context.
-
 const Wallet: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   // Mock data for wallet
   const balance = 1234.56;
   const transactions = [
@@ -21,29 +26,22 @@ const Wallet: React.FC = () => {
   ];
 
   return (
-    <div className={commonStyles.wallet}>
-      <div className={commonStyles.container}>
-        <header className={commonStyles.header}>
-          <h1>My Wallet</h1>
-          <p>View your balance, transactions, and manage withdrawals.</p>
-        </header>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>My Wallet</h1>
+        <p className={styles.subtitle}>View your balance, transactions, and manage withdrawals.</p>
+      </header>
 
-        <div className={commonStyles.overview}>
-          <div className={commonStyles.balanceCard}>
-            <h2>Available Balance</h2>
-            <p className={commonStyles.balanceAmount}>${balance.toLocaleString()}</p>
-            <Button variant="primary">Withdraw Funds</Button>
-          </div>
+      <div className={styles.contentGrid}>
+        <div className={styles.balanceCard}>
+          <h2 className={styles.cardTitle}>Available Balance</h2>
+          <p className={styles.balanceAmount}>${balance.toLocaleString()}</p>
+          <Button variant="primary" size="large">Withdraw Funds</Button>
         </div>
 
-        <section className={commonStyles.transactions}>
-          <h2>Transaction History</h2>
-          <div className={commonStyles.transactionListHeader}>
-            <span>Description</span>
-            <span>Date</span>
-            <span>Amount</span>
-          </div>
-          <div className={commonStyles.transactionList}>
+        <section className={styles.transactionsCard}>
+          <h2 className={styles.cardTitle}>Transaction History</h2>
+          <div className={styles.transactionList}>
             {transactions.map((tx, index) => (
               <TransactionRow key={index} {...tx} />
             ))}

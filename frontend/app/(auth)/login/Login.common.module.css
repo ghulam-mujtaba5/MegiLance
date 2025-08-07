@@ -7,18 +7,18 @@
 
 .loginPage {
   display: flex;
-  min-height: 100vh;
   width: 100%;
+  min-height: 100vh; /* Ensure it fills the full screen height */
   font-family: 'Inter', sans-serif;
 }
 
 /* Left Panel: Branding */
 .brandingPanel {
-  width: 45%;
-  padding: 3rem 4rem;
+  width: 50%;
+  padding: 4rem;
   display: none; /* Hidden on mobile */
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center; /* Vertically center the content */
   position: relative;
   transition: background-color 0.3s ease;
 }
@@ -86,7 +86,8 @@
 
 @media (min-width: 1024px) {
   .formPanel {
-    width: 55%;
+    width: 50%;
+    padding: 4rem;
   }
 }
 

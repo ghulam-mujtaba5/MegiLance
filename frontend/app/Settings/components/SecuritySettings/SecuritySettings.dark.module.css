@@ -1,4 +1,6 @@
-/* Migrated from SecuritySettings.dark.css to SecuritySettings.dark.module.css */
-@import './SecuritySettings.common.module.css';
+/* @AI-HINT: Dark theme styles for the SecuritySettings form. */
 
-/* Place all SecuritySettings.dark.css content here */
+.footer {
+  border-top: 1px solid var(--border-dark);
+}
+

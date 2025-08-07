@@ -11,9 +11,8 @@ import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
 import Tabs from '@/app/components/Tabs/Tabs';
-import Tab from '@/app/components/Tabs/Tab';
 
-import styles from '../Login/Login.common.module.css'; // Re-use login styles for consistency
+import commonStyles from '../Login/Login.common.module.css'; // Re-use login styles for consistency
 import lightStyles from '../Login/Login.light.module.css';
 import darkStyles from '../Login/Login.dark.module.css';
 
@@ -34,6 +33,27 @@ const roleConfig = {
     brandTitle: 'Build Your Freelance Career',
     brandText: 'Showcase your skills, bid on exciting projects, and get paid securely for your expert work.',
   },
+};
+
+// @AI-HINT: A sub-component for the branding panel on the left. It dynamically updates its content based on the selected role, enhancing the premium feel of the signup experience.
+const BrandingPanel: React.FC<{ selectedRole: UserRole; styles: any; theme: string | undefined; }> = ({ selectedRole, styles, theme }) => {
+  const { icon: BrandIcon, brandTitle, brandText } = roleConfig[selectedRole];
+  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+
+  return (
+    <div className={cn(styles.brandingPanel, themeStyles.brandingPanel)}>
+      <div className={styles.brandingContent}>
+        <div className={styles.brandingIconWrapper}>
+          <BrandIcon className={styles.brandingIcon} />
+        </div>
+        <h2 className={styles.brandingTitle}>{brandTitle}</h2>
+        <p className={styles.brandingText}>{brandText}</p>
+      </div>
+      <div className={styles.brandingFooter}>
+        <p>&copy; {new Date().getFullYear()} MegiLance. All rights reserved.</p>
+      </div>
+    </div>
+  );
 };
 
 const Signup: React.FC = () => {
@@ -80,27 +100,19 @@ const Signup: React.FC = () => {
     }
   };
 
-  const currentBranding = roleConfig[selectedRole];
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
   return (
-    <div className={cn(styles.loginPage, themeStyles.loginPage)}>
-      <aside className={cn(styles.brandingPanel, themeStyles.brandingPanel)}>
-        <div className={styles.brandingContent}>
-          <div className={styles.brandingIconWrapper}>
-            <currentBranding.icon className={styles.brandingIcon} />
-          </div>
-          <h1 className={styles.brandingTitle}>{currentBranding.brandTitle}</h1>
-          <p className={styles.brandingText}>{currentBranding.brandText}</p>
-        </div>
-        <footer className={styles.brandingFooter}>MegiLance © 2024</footer>
-      </aside>
-
-      <main className={styles.formPanel}>
+    <div className={cn(styles.loginPage, theme === 'light' ? lightStyles.loginPage : darkStyles.loginPage)}>
+      <BrandingPanel selectedRole={selectedRole} styles={styles} theme={theme} />
+      <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>
-            <h2 className={styles.formTitle}>Create Your Account</h2>
-            <p className={styles.formSubtitle}>Let's get started on your journey.</p>
+            <h1 className={styles.formTitle}>Create Your Account</h1>
+            <p className={styles.formSubtitle}>Join the top-tier network of talent and clients.</p>
           </div>
 
           <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
@@ -114,8 +126,8 @@ const Signup: React.FC = () => {
           </Tabs>
 
           <div className={styles.socialAuth}>
-            <Button variant="outline" fullWidth onClick={() => {}} disabled={loading}><FaGoogle /><span>Sign up with Google</span></Button>
-            <Button variant="outline" fullWidth onClick={() => {}} disabled={loading}><FaGithub /><span>Sign up with GitHub</span></Button>
+            <Button variant="outline" fullWidth onClick={() => {}} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
+            <Button variant="outline" fullWidth onClick={() => {}} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
           </div>
 
           <div className={styles.divider}><span className={styles.dividerText}>OR</span></div>
@@ -155,24 +167,23 @@ const Signup: React.FC = () => {
             />
             
             <div className={cn(styles.rememberMe, 'mt-2')}>
-              <Checkbox id="terms" name="agreedToTerms" checked={formData.agreedToTerms} onChange={handleChange} error={errors.agreedToTerms} />
-              <label htmlFor="terms">
+              <Checkbox id="terms" name="agreedToTerms" checked={formData.agreedToTerms} onChange={handleChange} />
+              <label htmlFor="terms" className="ml-2">
                 I agree to the <Link href="/terms" className={styles.forgotPasswordLink}>Terms</Link> & <Link href="/privacy" className={styles.forgotPasswordLink}>Privacy Policy</Link>.
               </label>
             </div>
-            {errors.agreedToTerms && <p className={cn(styles.generalError, styles.generalErrorLeft)}>{errors.agreedToTerms}</p>}
+            {errors.agreedToTerms && <p className="text-red-500 text-sm mt-1">{errors.agreedToTerms}</p>}
 
-            <Button type="submit" variant="primary" fullWidth className={styles.submitButton} disabled={loading}>
+            <Button type="submit" variant="primary" fullWidth className={styles.submitButton} isLoading={loading} disabled={loading}>
               {loading ? 'Creating Account...' : `Create ${roleConfig[selectedRole].label} Account`}
             </Button>
           </form>
 
-          <p className={styles.signupPrompt}>
-            Already have an account?
-            <Link href="/Login">Log In</Link>
-          </p>
+          <div className={styles.signupPrompt}>
+            <p>Already have an account? <Link href="/login">Sign In</Link></p>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

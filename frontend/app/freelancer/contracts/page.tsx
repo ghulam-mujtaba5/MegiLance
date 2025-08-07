@@ -1,12 +1,12 @@
-// @AI-HINT: This page allows freelancers to view their smart contracts for ongoing and completed jobs.
+// @AI-HINT: This page allows freelancers to view their smart contracts for ongoing and completed jobs, now with a premium, theme-aware, and accessible table layout.
 'use client';
 
-import React from 'react';
-
+import React, { useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import Badge from '@/app/components/Badge/Badge';
-import './ContractsPage.common.css';
-import './ContractsPage.light.css';
-import './ContractsPage.dark.css';
+import commonStyles from './Contracts.common.module.css';
+import lightStyles from './Contracts.light.module.css';
+import darkStyles from './Contracts.dark.module.css';
 
 // @AI-HINT: Mock data for contracts.
 const mockContracts = [
@@ -54,35 +54,58 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 const ContractsPage: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   return (
-    <div className="ContractsPage-container">
-      <header className="ContractsPage-header">
-        <h1 className="ContractsPage-title">Your Contracts</h1>
-        <p className="ContractsPage-subtitle">View and manage all your smart contracts.</p>
+    <div className={styles.pageContainer}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Your Contracts</h1>
+        <p className={styles.subtitle}>View and manage all your smart contracts.</p>
       </header>
 
-      <main className="ContractsPage-main">
-        <div className={`ContractsPage-card ContractsPage-card--${theme}`}>
-          <div className="ContractsPage-table">
-            <div className="ContractsPage-table-header">
-              <span>Project</span>
-              <span>Client</span>
-              <span>Value</span>
-              <span>Status</span>
-              <span>Actions</span>
-            </div>
-            <div className="ContractsPage-table-body">
+      <main>
+        <div className={styles.tableContainer}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Client</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
               {mockContracts.map(contract => (
-                <div key={contract.id} className="ContractsPage-table-row">
-                  <span className="ContractsPage-project-title">{contract.projectTitle}</span>
-                  <span>{contract.clientName}</span>
-                  <span>{contract.value} USDC</span>
-                  <span><Badge theme={theme} variant={getStatusBadgeVariant(contract.status)}>{contract.status}</Badge></span>
-                  <a href={`https://etherscan.io/address/${contract.contractAddress}`} target="_blank" rel="noopener noreferrer" className={`ContractsPage-link ContractsPage-link--${theme}`}>View on Etherscan</a>
-                </div>
+                <tr key={contract.id}>
+                  <td>
+                    <span className={styles.projectTitle}>{contract.projectTitle}</span>
+                  </td>
+                  <td>{contract.clientName}</td>
+                  <td>
+                    <span className={styles.value}>{contract.value} USDC</span>
+                  </td>
+                  <td>
+                    <Badge variant={getStatusBadgeVariant(contract.status)}>{contract.status}</Badge>
+                  </td>
+                  <td>
+                    <a 
+                      href={`https://etherscan.io/address/${contract.contractAddress}`}
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className={styles.link}
+                    >
+                      View on Etherscan
+                    </a>
+                  </td>
+                </tr>
               ))}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
       </main>
     </div>

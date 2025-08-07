@@ -1,24 +1,28 @@
-.transactionRow {
-  display: flex;
+/* @AI-HINT: Common, theme-independent styles for the TransactionRow component. */
+.row {
+  display: grid;
+  grid-template-columns: 100px 1fr auto;
+  gap: var(--space-4);
   align-items: center;
-  gap: 1.5em;
-  padding: 0.7em 1em;
-  border-radius: 8px;
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 1rem;
-  margin-bottom: 0.5em;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--border-radius-md);
+  border: 1px solid;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  font-family: var(--font-inter);
 }
-.transactionRowDate {
-  min-width: 90px;
-  /* Color is handled by theme-specific styles */
-  font-size: 0.96em;
+
+.date {
+  font-size: var(--font-size-sm);
 }
-.transactionRowDescription {
-  flex: 1;
+
+.description {
+  font-size: var(--font-size-base);
   font-weight: 500;
 }
-.transactionRowAmount {
-  min-width: 90px;
+
+.amount {
+  font-family: var(--font-jetbrains-mono);
+  font-size: var(--font-size-base);
   font-weight: 600;
   text-align: right;
 }

@@ -1,0 +1,30 @@
+.sidebar {
+  background-color: #1f1f1f;
+  border-right: 1px solid #333;
+}
+
+.logo {
+  color: #ffffff;
+}
+
+.userName {
+  color: #e0e0e0;
+}
+
+.navItem {
+  color: #bdbdbd;
+}
+
+.navItem:hover {
+  background-color: #2c2c2c;
+  color: #4573df;
+}
+
+.logoutButton {
+  color: #bdbdbd;
+}
+
+.logoutButton:hover {
+  background-color: #2c2c2c;
+  color: #ff4d4d;
+}

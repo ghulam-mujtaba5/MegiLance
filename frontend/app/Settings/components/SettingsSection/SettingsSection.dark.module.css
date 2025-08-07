@@ -1,4 +1,13 @@
-/* Migrated from SettingsSection.dark.css to SettingsSection.dark.module.css */
-@import './SettingsSection.common.module.css';
+/* @AI-HINT: Dark theme styles for the SettingsSection. */
 
-/* Place all SettingsSection.dark.css content here */
+.section {
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.title {
+  color: var(--text-primary-dark);
+}
+
+.description {
+  color: var(--text-secondary-dark);
+}

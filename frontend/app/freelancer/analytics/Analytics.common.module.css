@@ -1,0 +1,77 @@
+/* @AI-HINT: Common, theme-independent styles for the refactored Analytics page. */
+.container {
+  padding: var(--space-6) 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.header {
+  padding: 0 var(--space-2);
+}
+
+.title {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-lg);
+  margin: var(--space-1) 0 0;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-5);
+}
+
+.kpiCard {
+  border: 1px solid;
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.kpiLabel {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+}
+
+.kpiValue {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+}
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+.chartCard {
+  border: 1px solid;
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-6);
+}
+
+.cardTitle {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-5) 0;
+}

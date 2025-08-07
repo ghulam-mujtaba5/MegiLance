@@ -1,25 +1,14 @@
-.dark {
-  background-color: #111827;
-  color: #f9fafb;
+/* @AI-HINT: Dark theme styles for the MyJobs page. */
+.title {
+  color: var(--text-primary-dark);
 }
 
-.dark .myJobsHeader p {
-  color: #9ca3af;
+.subtitle {
+  color: var(--text-secondary-dark);
 }
 
-.dark .jobItem {
-  background-color: #1f2937;
-  border: 1px solid #374151;
+.sectionTitle {
+  color: var(--text-primary-dark);
+  border-color: var(--border-dark);
 }
 
-.dark .jobItemStatus span {
-  color: #d1d5db;
-}
-
-.dark .jobItemProgressBar {
-  background-color: #4b5563;
-}
-
-.dark .jobItemProgress {
-  background-color: #818cf8;
-}

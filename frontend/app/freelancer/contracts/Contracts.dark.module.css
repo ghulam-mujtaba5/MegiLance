@@ -1,0 +1,38 @@
+/* @AI-HINT: Dark theme styles for the refactored Contracts page. */
+.title {
+  color: var(--text-primary-dark);
+}
+
+.subtitle {
+  color: var(--text-secondary-dark);
+}
+
+.tableContainer {
+  background-color: var(--bg-primary-dark);
+  border-color: var(--border-dark);
+}
+
+.table th {
+  color: var(--text-tertiary-dark);
+  background-color: var(--bg-secondary-dark);
+}
+
+.table td {
+  color: var(--text-secondary-dark);
+}
+
+.table tbody tr {
+  border-color: var(--border-dark);
+}
+
+.projectTitle {
+  color: var(--text-primary-dark);
+}
+
+.link {
+  color: var(--primary-dark);
+}
+
+.link:hover {
+  color: var(--primary-dark-hover);
+}

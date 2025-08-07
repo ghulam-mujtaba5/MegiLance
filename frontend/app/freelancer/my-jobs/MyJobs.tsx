@@ -1,96 +1,84 @@
-// @AI-HINT: This is the 'My Jobs' page for freelancers to track active and completed projects. All styles are per-component only.
+// @AI-HINT: This is the refactored 'My Jobs' page, featuring a premium two-column layout and the specialized JobStatusCard for a clean, professional presentation.
 'use client';
 
-import React from 'react';
-import ProjectCard from '@/app/components/ProjectCard/ProjectCard'; // Re-using ProjectCard for consistency
-import ProgressBar from '@/app/components/ProgressBar/ProgressBar';
-import { cn } from '@/lib/utils';
+import React, { useMemo } from 'react';
+import { useTheme } from 'next-themes';
+import JobStatusCard from './components/JobStatusCard/JobStatusCard';
 import commonStyles from './MyJobs.common.module.css';
 import lightStyles from './MyJobs.light.module.css';
 import darkStyles from './MyJobs.dark.module.css';
 
-// @AI-HINT: This is the 'My Jobs' page for freelancers to track active and completed projects. All styles are per-component only. Now fully theme-switchable using global theme context.
+const activeJobs = [
+  {
+    title: 'AI-Powered Content Generation Platform',
+    client: 'ContentAI Solutions',
+    status: 'Development',
+    progress: 65,
+  },
+  {
+    title: 'Real-Time IoT Data Visualization Dashboard',
+    client: 'Connected Devices Inc.',
+    status: 'Client Review',
+    progress: 90,
+  },
+  {
+    title: 'Mobile App for Financial Literacy',
+    client: 'FinEd Mobile',
+    status: 'UI/UX Design',
+    progress: 40,
+  },
+];
+
+const completedJobs = [
+  {
+    title: 'Corporate Website Redesign',
+    client: 'Global Synergy Corp',
+    status: 'Completed',
+    progress: 100,
+    completionDate: '2025-08-01',
+  },
+  {
+    title: 'Cloud Migration & Infrastructure Setup',
+    client: 'ScaleFast Startups',
+    status: 'Completed',
+    progress: 100,
+    completionDate: '2025-07-22',
+  },
+];
 
 const MyJobs: React.FC = () => {
-  // Mock data for active and completed jobs
-  const activeJobs = [
-    {
-      title: 'AI Chatbot Integration',
-      client: 'Innovate Inc.',
-      budget: '$5,000',
-      status: 'In Progress',
-      progress: 75,
-    },
-    {
-      title: 'Data Analytics Dashboard',
-      client: 'DataDriven Co.',
-      budget: '$12,000',
-      status: 'Awaiting Feedback',
-      progress: 90,
-    },
-  ];
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
-  const completedJobs = [
-    {
-      title: 'E-commerce Platform UI/UX',
-      client: 'Shopify Plus Experts',
-      budget: '$8,000',
-      status: 'Completed',
-      completionDate: '2025-07-15',
-    },
-  ];
-
-  
   return (
-    <div className={cn(commonStyles.myJobs, theme === 'light' ? lightStyles.light : darkStyles.dark)}>
-      {/* AI-HINT: The 'cn' utility is used here to merge the base component styles with the correct theme-specific styles (light or dark) based on the current theme context. */}
-      <div className={commonStyles.myJobsContainer}>
-        <header className={commonStyles.myJobsHeader}>
-          <h1>My Jobs</h1>
-          <p>Track the status of all your active and completed projects.</p>
-        </header>
+    <div className={styles.pageContainer}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>My Jobs</h1>
+        <p className={styles.subtitle}>
+          Track and manage all your active and completed projects from one place.
+        </p>
+      </header>
 
-        <section className={commonStyles.myJobsSection}>
-          <h2>Active Jobs</h2>
-          <div className={commonStyles.myJobsList}>
-            {activeJobs.map((job, index) => (
-              <div key={index} className={commonStyles.jobItem}>
-                <ProjectCard
-                  title={job.title}
-                  clientName={job.client}
-                  budget={job.budget}
-                  postedTime={"In Progress"}
-                  tags={['Active']}
-                />
-                <div className={commonStyles.jobItemStatus}>
-                  <span>{job.status}</span>
-                  <ProgressBar progress={job.progress} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Active Jobs</h2>
+        <div className={styles.jobGrid}>
+          {activeJobs.map((job, index) => (
+            <JobStatusCard key={`active-${index}`} {...job} />
+          ))}
+        </div>
+      </section>
 
-        <section className={commonStyles.myJobsSection}>
-          <h2>Completed Jobs</h2>
-          <div className={commonStyles.myJobsList}>
-            {completedJobs.map((job, index) => (
-              <div key={index} className={commonStyles.jobItem}>
-                <ProjectCard
-                  title={job.title}
-                  clientName={job.client}
-                  budget={job.budget}
-                  postedTime={`Completed on ${job.completionDate}`}
-                  tags={['Completed']}
-                />
-                <div className={commonStyles.jobItemStatus}>
-                  <span>Completed on {job.completionDate}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Completed Jobs</h2>
+        <div className={styles.jobGrid}>
+          {completedJobs.map((job, index) => (
+            <JobStatusCard key={`completed-${index}`} {...job} />
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

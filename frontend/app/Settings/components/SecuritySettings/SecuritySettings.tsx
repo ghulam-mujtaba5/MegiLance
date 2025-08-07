@@ -1,19 +1,33 @@
 // @AI-HINT: This component renders the form for updating user security settings, such as changing a password. It is self-contained and wrapped by the SettingsSection component for a consistent UI.
 
-import React, { useState } from 'react';
+// @AI-HINT: This component renders the form for updating user security settings, such as changing a password. It is self-contained and wrapped by the SettingsSection component for a consistent UI.
+
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+
 import SettingsSection from '../SettingsSection/SettingsSection';
 import Input from '../../../components/Input/Input';
 import Button from '../../../components/Button/Button';
-import './SecuritySettings.common.css';
-import './SecuritySettings.light.css';
-import './SecuritySettings.dark.css';
+
+import commonStyles from './SecuritySettings.common.module.css';
+import lightStyles from './SecuritySettings.light.module.css';
+import darkStyles from './SecuritySettings.dark.module.css';
 
 const SecuritySettings: React.FC = () => {
+  const { theme } = useTheme();
   const [passwords, setPasswords] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
+
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,33 +50,42 @@ const SecuritySettings: React.FC = () => {
       title="Password"
       description="Update your password regularly to help keep your account secure. We recommend a strong, unique password."
     >
-      <form className="SecuritySettings-form" onSubmit={handleSaveChanges}>
-        <Input
-          label="Current Password"
-          name="currentPassword"
-          type="password"
-          value={passwords.currentPassword}
-          onChange={handlePasswordChange}
-          autoComplete="current-password"
-        />
-        <Input
-          label="New Password"
-          name="newPassword"
-          type="password"
-          value={passwords.newPassword}
-          onChange={handlePasswordChange}
-          autoComplete="new-password"
-        />
-        <Input
-          label="Confirm New Password"
-          name="confirmPassword"
-          type="password"
-          value={passwords.confirmPassword}
-          onChange={handlePasswordChange}
-          autoComplete="new-password"
-        />
-        <div className="Form-actions">
-            <Button type="submit" variant="primary">Change Password</Button>
+      <form className={styles.form} onSubmit={handleSaveChanges}>
+        <div className={styles.fieldWrapper}>
+          <Input
+            label="Current Password"
+            name="currentPassword"
+            type="password"
+            value={passwords.currentPassword}
+            onChange={handlePasswordChange}
+            autoComplete="current-password"
+            required
+          />
+        </div>
+        <div className={styles.fieldWrapper}>
+          <Input
+            label="New Password"
+            name="newPassword"
+            type="password"
+            value={passwords.newPassword}
+            onChange={handlePasswordChange}
+            autoComplete="new-password"
+            required
+          />
+        </div>
+        <div className={styles.fieldWrapper}>
+          <Input
+            label="Confirm New Password"
+            name="confirmPassword"
+            type="password"
+            value={passwords.confirmPassword}
+            onChange={handlePasswordChange}
+            autoComplete="new-password"
+            required
+          />
+        </div>
+        <div className={styles.footer}>
+          <Button type="submit" variant="primary">Change Password</Button>
         </div>
       </form>
     </SettingsSection>

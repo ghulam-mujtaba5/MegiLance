@@ -2,11 +2,11 @@
 
 'use client';
 
-import PlaceholderPage from '@/app/components/PlaceholderPage/PlaceholderPage';
 import React from 'react';
+import Settings from './Settings';
 
 const SettingsPage = () => {
-  return <PlaceholderPage title="Settings" />;
+  return <Settings />;
 };
 
 export default SettingsPage;

@@ -1,0 +1,30 @@
+/* @AI-HINT: Light theme styles for the refactored Analytics page. */
+.title {
+  color: var(--text-primary-light);
+}
+
+.subtitle {
+  color: var(--text-secondary-light);
+}
+
+.kpiCard {
+  background-color: var(--bg-primary-light);
+  border-color: var(--border-light);
+}
+
+.kpiLabel {
+  color: var(--text-secondary-light);
+}
+
+.kpiValue {
+  color: var(--text-primary-light);
+}
+
+.chartCard {
+  background-color: var(--bg-primary-light);
+  border-color: var(--border-light);
+}
+
+.cardTitle {
+  color: var(--text-primary-light);
+}

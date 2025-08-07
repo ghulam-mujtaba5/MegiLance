@@ -1,4 +1,28 @@
-/* Migrated from AppearanceSettings.light.css to AppearanceSettings.light.module.css */
-@import './AppearanceSettings.common.module.css';
+/* @AI-HINT: Light theme styles for the AppearanceSettings component. */
 
-/* Place all AppearanceSettings.light.css content here */
+.button {
+  background-color: var(--bg-secondary-light);
+  border-color: var(--border-light);
+  color: var(--text-secondary-light);
+}
+
+.button:hover {
+  background-color: var(--bg-tertiary-light);
+  border-color: var(--border-light-hover);
+}
+
+.button.active {
+  background-color: var(--bg-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+.button.active svg {
+  color: var(--color-primary);
+}
+
+.button.active span {
+  color: var(--text-primary-light);
+}
+

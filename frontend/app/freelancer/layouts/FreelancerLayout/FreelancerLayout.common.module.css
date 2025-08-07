@@ -1,0 +1,21 @@
+/* @AI-HINT: Common, theme-independent styles for the FreelancerLayout component. */
+.layoutContainer {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  font-family: var(--font-inter);
+}
+
+.sidebar {
+  width: 280px;
+  padding: var(--space-6);
+  border-right: 1px solid;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainContent {
+  flex: 1;
+  padding: var(--space-6);
+  overflow-y: auto;
+}

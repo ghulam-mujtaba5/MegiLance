@@ -1,3 +1,22 @@
-/* AI-HINT: Dark theme styles for Freelancer Wallet page. Add dark theme-specific overrides here. */
+/* @AI-HINT: Dark theme styles for the refactored Wallet page. */
+.title {
+  color: var(--text-primary-dark);
+}
 
-.wallet {}
+.subtitle {
+  color: var(--text-secondary-dark);
+}
+
+.balanceCard,
+.transactionsCard {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.cardTitle {
+  color: var(--text-primary-dark);
+}
+
+.balanceAmount {
+  color: var(--text-primary-dark);
+}

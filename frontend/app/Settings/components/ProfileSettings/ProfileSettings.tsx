@@ -1,12 +1,20 @@
 // @AI-HINT: This component renders the form for updating user profile information. It's self-contained, managing its own state, and is wrapped by the SettingsSection component for consistent styling.
 
-import React, { useState, useEffect } from 'react';
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+
 import SettingsSection from '../SettingsSection/SettingsSection';
-import Input from '../../../components/Input/Input'; // Assuming a shared Input component
-import Button from '../../../components/Button/Button'; // Assuming a shared Button component
-import './ProfileSettings.common.css';
-import './ProfileSettings.light.css';
-import './ProfileSettings.dark.css';
+import Input from '../../../components/Input/Input';
+import Button from '../../../components/Button/Button';
+import Textarea from '../../../components/Textarea/Textarea'; // Import the new Textarea component
+import { mockUserProfile } from './mock-data';
+
+import commonStyles from './ProfileSettings.common.module.css';
+import lightStyles from './ProfileSettings.light.module.css';
+import darkStyles from './ProfileSettings.dark.module.css';
 
 interface UserProfile {
   fullName: string;
@@ -15,35 +23,17 @@ interface UserProfile {
 }
 
 const ProfileSettings: React.FC = () => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { theme } = useTheme();
+  const [profile, setProfile] = useState<UserProfile>(mockUserProfile);
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/user');
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile data');
-        }
-        const data: UserProfile = await response.json();
-        setProfile(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => {
-      if (!prev) return null;
-      return { ...prev, [name]: value };
-    });
+    setProfile(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSaveChanges = (e: React.FormEvent) => {
@@ -53,53 +43,48 @@ const ProfileSettings: React.FC = () => {
     console.log('Saving profile:', profile);
   };
 
-  if (loading) {
-    return <SettingsSection title="Profile Information" description="Please wait while we load your profile."><div>Loading profile...</div></SettingsSection>;
-  }
-
-  if (error) {
-    return <SettingsSection title="Profile Information" description="There was an issue loading your data."><div>Error: {error}</div></SettingsSection>;
-  }
-
-  if (!profile) {
-    return <SettingsSection title="Profile Information" description="We couldn't find your profile data."><div>No profile data found.</div></SettingsSection>;
-  }
-
   return (
     <SettingsSection
       title="Profile Information"
-      description="This information will be displayed on your public profile. Keep it up to date so others can get to know you better."
+      description="Update your personal details here. This information will be displayed on your public profile."
     >
-      <form className="ProfileSettings-form" onSubmit={handleSaveChanges}>
-        <Input
-          label="Full Name"
-          name="fullName"
-          value={profile.fullName}
-          onChange={handleProfileChange}
-          placeholder="Enter your full name"
-        />
-        <Input
-          label="Email Address"
-          name="email"
-          type="email"
-          value={profile.email}
-          onChange={handleProfileChange}
-          placeholder="Enter your email address"
-        />
-        <div className="Form-group">
-          <label htmlFor="bio" className="Form-label">Your Bio</label>
-          <textarea
+      <form className={styles.form} onSubmit={handleSaveChanges}>
+        <div className={styles.fieldWrapper}>
+          <Input
+            label="Full Name"
+            type="text"
+            id="fullName"
+            name="fullName"
+            value={profile.fullName}
+            onChange={handleProfileChange}
+            required
+          />
+        </div>
+        <div className={styles.fieldWrapper}>
+          <Input
+            label="Email Address"
+            type="email"
+            id="email"
+            name="email"
+            value={profile.email}
+            onChange={handleProfileChange}
+            required
+            disabled // Email is not changeable
+          />
+        </div>
+        <div className={styles.fieldWrapper}>
+          <Textarea
+            label="Bio"
             id="bio"
             name="bio"
-            className="Form-textarea"
             value={profile.bio}
             onChange={handleProfileChange}
             rows={5}
             placeholder="Tell us a little about yourself"
           />
         </div>
-        <div className="Form-actions">
-            <Button type="submit" variant="primary">Save Changes</Button>
+        <div className={styles.footer}>
+          <Button type="submit" variant="primary">Save Changes</Button>
         </div>
       </form>
     </SettingsSection>

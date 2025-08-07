@@ -1,4 +1,6 @@
-/* Migrated from ProfileSettings.dark.css to ProfileSettings.dark.module.css */
-@import './ProfileSettings.common.module.css';
+/* @AI-HINT: Dark theme styles for the ProfileSettings form. */
 
-/* Place all ProfileSettings.dark.css content here */
+.footer {
+  border-top: 1px solid var(--border-dark);
+}
+

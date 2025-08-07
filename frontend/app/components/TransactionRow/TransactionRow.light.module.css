@@ -1,16 +1,30 @@
-.transactionRow {
-  background: #fff;
-  border: 1px solid #e2e6ee;
+/* @AI-HINT: Light theme styles for the TransactionRow component. */
+.row {
+  background-color: var(--bg-secondary-light);
+  border-color: var(--border-light);
 }
 
-.transactionRowDate {
-  color: #6b7280; /* Gray 500 */
+.row:hover {
+  background-color: var(--bg-tertiary-light);
+  border-color: var(--border-light-hover);
 }
 
-.transactionRowDescription {
-  color: #111827; /* Gray 900 */
+.date {
+  color: var(--text-tertiary-light);
 }
 
-.transactionRowAmount {
-  color: #111827; /* Gray 900 */
+.description {
+  color: var(--text-primary-light);
+}
+
+.amount {
+  color: var(--text-secondary-light);
+}
+
+.positive {
+  color: var(--color-success) !important;
+}
+
+.negative {
+  color: var(--color-error) !important;
 }

@@ -1,25 +1,14 @@
-.light {
-  background-color: #f9fafb;
-  color: #111827;
+/* @AI-HINT: Light theme styles for the MyJobs page. */
+.title {
+  color: var(--text-primary-light);
 }
 
-.light .myJobsHeader p {
-  color: #6b7280;
+.subtitle {
+  color: var(--text-secondary-light);
 }
 
-.light .jobItem {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+.sectionTitle {
+  color: var(--text-primary-light);
+  border-color: var(--border-light);
 }
 
-.light .jobItemStatus span {
-  color: #4b5563;
-}
-
-.light .jobItemProgressBar {
-  background-color: #e5e7eb;
-}
-
-.light .jobItemProgress {
-  background-color: #4f46e5;
-}

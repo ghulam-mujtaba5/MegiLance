@@ -1,0 +1,69 @@
+/* @AI-HINT: Common, theme-independent styles for the refactored Contracts page. */
+.pageContainer {
+  padding: var(--space-6) 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.header {
+  padding: 0 var(--space-2);
+}
+
+.title {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-lg);
+  margin: var(--space-1) 0 0;
+}
+
+.tableContainer {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  border: 1px solid;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--space-4) var(--space-5);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+  border-top: 1px solid;
+}
+
+.projectTitle {
+  font-weight: 600;
+}
+
+.value {
+  font-family: var(--font-jetbrains-mono);
+  font-weight: 500;
+}
+
+.link {
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}

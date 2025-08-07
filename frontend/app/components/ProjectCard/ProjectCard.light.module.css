@@ -1,21 +1,22 @@
-/* @AI-HINT: Light theme variables for the ProjectCard component. */
+/* @AI-HINT: Light theme styles for the ProjectCard component, using CSS variables for consistency. */
 .title {
-  color: #1f2937; /* gray-800 */
+  color: var(--text-primary-light);
 }
 
 .postedTime {
-  color: #6b7280; /* gray-500 */
+  color: var(--text-tertiary-light);
 }
 
 .infoRow {
-  color: #4b5563; /* gray-600 */
+  color: var(--text-secondary-light);
 }
 
 .budget {
-  color: #4573df; /* brand-primary */
+  color: var(--color-primary);
 }
 
 .tag {
-  background-color: #f3f4f6; /* gray-100 */
-  color: #374151; /* gray-700 */
+  background-color: var(--bg-tertiary-light);
+  color: var(--text-secondary-light);
+  border: 1px solid var(--border-light);
 }

@@ -1,12 +1,14 @@
-// @AI-HINT: This page allows freelancers to withdraw their earnings to their crypto wallet.
+// @AI-HINT: This page allows freelancers to withdraw their earnings. It's now fully theme-aware and built with premium, reusable components.
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
-import './WithdrawPage.common.css';
-import './WithdrawPage.light.css';
-import './WithdrawPage.dark.css';
+import Input from '@/app/components/Input/Input';
+import commonStyles from './Withdraw.common.module.css';
+import lightStyles from './Withdraw.light.module.css';
+import darkStyles from './Withdraw.dark.module.css';
 
 // @AI-HINT: Mock data for withdrawal history and balance.
 const withdrawData = {
@@ -28,52 +30,64 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 const WithdrawPage: React.FC = () => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   return (
-    <div className="WithdrawPage-container">
-      <header className="WithdrawPage-header">
-        <h1 className="WithdrawPage-title">Withdraw Funds</h1>
-        <p className="WithdrawPage-subtitle">Transfer your earnings to your personal crypto wallet.</p>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Withdraw Funds</h1>
+        <p className={styles.subtitle}>Transfer your earnings to your personal crypto wallet.</p>
       </header>
 
-      <main className="WithdrawPage-main">
-        <div className="WithdrawPage-card">
-          <div className="WithdrawPage-balance-card">
-            <span className="WithdrawPage-balance-label">Available Balance</span>
-            <span className="WithdrawPage-balance-value">{withdrawData.availableBalance.toFixed(2)} USDC</span>
+      <main className={styles.mainContent}>
+        <div className={styles.card}>
+          <div className={styles.balanceInfo}>
+            <span className={styles.balanceLabel}>Available Balance</span>
+            <span className={styles.balanceValue}>{withdrawData.availableBalance.toFixed(2)} USDC</span>
           </div>
-          <form className="WithdrawPage-form">
-            <div className="WithdrawPage-form-group">
-              <label htmlFor="amount">Amount (USDC)</label>
-              <input type="number" id="amount" placeholder="0.00" className="WithdrawPage-input" />
-            </div>
-            <div className="WithdrawPage-form-group">
-              <label htmlFor="walletAddress">Wallet Address</label>
-              <input type="text" id="walletAddress" placeholder="0x..." className="WithdrawPage-input" />
-            </div>
-            <Button variant="primary" fullWidth>Request Withdrawal</Button>
+          <form className={styles.form}>
+            <Input
+              id="amount"
+              label="Amount (USDC)"
+              type="number"
+              placeholder="0.00"
+            />
+            <Input
+              id="walletAddress"
+              label="Wallet Address"
+              type="text"
+              placeholder="0x..."
+            />
+            <Button variant="primary" fullWidth size="large">Request Withdrawal</Button>
           </form>
         </div>
 
-        <div className="WithdrawPage-card">
-          <h2 className="WithdrawPage-card-title">Withdrawal History</h2>
-          <div className="WithdrawPage-history-table">
-            <div className="WithdrawPage-history-header">
-              <span>Date</span>
-              <span>Amount</span>
-              <span>Status</span>
-              <span>Address</span>
-            </div>
-            <div className="WithdrawPage-history-body">
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>Withdrawal History</h2>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody>
               {withdrawData.withdrawalHistory.map(tx => (
-                <div key={tx.id} className="WithdrawPage-history-row">
-                  <span>{tx.date}</span>
-                  <span>{tx.amount.toFixed(2)} USDC</span>
-                  <span><Badge variant={getStatusBadgeVariant(tx.status)}>{tx.status}</Badge></span>
-                  <span className="WithdrawPage-address">{tx.address}</span>
-                </div>
+                <tr key={tx.id}>
+                  <td>{tx.date}</td>
+                  <td>{tx.amount.toFixed(2)} USDC</td>
+                  <td><Badge variant={getStatusBadgeVariant(tx.status)}>{tx.status}</Badge></td>
+                  <td><span className={styles.address}>{tx.address}</span></td>
+                </tr>
               ))}
-            </div>
-          </div>
+            </tbody>
+          </table>
         </div>
       </main>
     </div>

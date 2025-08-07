@@ -1,0 +1,66 @@
+/* @AI-HINT: Common, theme-independent styles for the Freelancer Dashboard. */
+
+.container {
+  padding: var(--space-6) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.title {
+  font-size: var(--font-size-xxl);
+  font-weight: 600;
+  font-family: var(--font-poppins);
+}
+
+.subtitle {
+  font-size: var(--font-size-lg);
+  font-family: var(--font-inter);
+}
+
+.widgetsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-5);
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .mainContent {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  font-family: var(--font-poppins);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid;
+}
+
+.projectList,
+.transactionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}

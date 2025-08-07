@@ -1,0 +1,49 @@
+/* @AI-HINT: Dark theme styles for the JobStatusCard component. */
+.card {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md-dark);
+  border-color: var(--border-dark-hover);
+}
+
+.title {
+  color: var(--text-primary-dark);
+}
+
+.client {
+  color: var(--text-tertiary-dark);
+}
+
+.statusLabel {
+  color: var(--text-secondary-dark);
+}
+
+.activeStatus {
+  background-color: var(--color-warning-dark-transparent);
+  color: var(--color-warning-light);
+}
+
+.completedStatus {
+  background-color: var(--color-success-dark-transparent);
+  color: var(--color-success-light);
+}
+
+.progressBar {
+  background-color: var(--bg-tertiary-dark);
+}
+
+.progressFill {
+  background-color: var(--brand-primary);
+}
+
+.progressText {
+  color: var(--text-secondary-dark);
+}
+
+.completionDate {
+    color: var(--text-tertiary-dark);
+}

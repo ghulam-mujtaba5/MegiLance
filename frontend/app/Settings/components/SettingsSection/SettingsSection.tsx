@@ -1,9 +1,14 @@
 // @AI-HINT: This is a reusable wrapper component for each panel within the Settings page. It provides a consistent structure with a title, description, and content area, ensuring a uniform look and feel.
 
+'use client';
+
 import React from 'react';
-import './SettingsSection.common.css';
-import './SettingsSection.light.css';
-import './SettingsSection.dark.css';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+
+import commonStyles from './SettingsSection.common.module.css';
+import lightStyles from './SettingsSection.light.module.css';
+import darkStyles from './SettingsSection.dark.module.css';
 
 interface SettingsSectionProps {
   title: string;
@@ -12,13 +17,20 @@ interface SettingsSectionProps {
 }
 
 const SettingsSection: React.FC<SettingsSectionProps> = ({ title, description, children }) => {
+  const { theme } = useTheme();
+
+  const styles = React.useMemo(() => {
+    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
+
   return (
-    <section className="SettingsSection">
-      <div className="SettingsSection-header">
-        <h2 className="SettingsSection-title">{title}</h2>
-        <p className="SettingsSection-description">{description}</p>
+    <section className={cn(styles.section)}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>{title}</h2>
+        <p className={styles.description}>{description}</p>
       </div>
-      <div className="SettingsSection-content">
+      <div className={styles.content}>
         {children}
       </div>
     </section>

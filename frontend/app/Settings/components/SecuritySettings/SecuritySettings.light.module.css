@@ -1,4 +1,6 @@
-/* Migrated from SecuritySettings.light.css to SecuritySettings.light.module.css */
-@import './SecuritySettings.common.module.css';
+/* @AI-HINT: Light theme styles for the SecuritySettings form. */
 
-/* Place all SecuritySettings.light.css content here */
+.footer {
+  border-top: 1px solid var(--border-light);
+}
+

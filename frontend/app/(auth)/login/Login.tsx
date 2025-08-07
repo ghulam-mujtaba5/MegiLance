@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaUserShield } from 'react-icons/fa';
 import Tabs from '@/app/components/Tabs/Tabs';
-import Tab from '@/app/components/Tabs/Tab';
 import { FaEye, FaEyeSlash, FaLaptopCode, FaTasks, FaUserCog } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';

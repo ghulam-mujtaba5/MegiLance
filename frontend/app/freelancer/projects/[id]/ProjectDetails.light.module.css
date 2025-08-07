@@ -1,0 +1,39 @@
+/* @AI-HINT: Light theme styles for the ProjectDetails page. */
+.header {
+  border-color: var(--border-light);
+}
+
+.title {
+  color: var(--text-primary-light);
+}
+
+.tag {
+  background-color: var(--bg-secondary-light);
+  color: var(--text-secondary-light);
+  border-color: var(--border-light);
+}
+
+.sectionTitle {
+  color: var(--text-primary-light);
+}
+
+.description {
+  color: var(--text-secondary-light);
+}
+
+.sidebarCard {
+  background-color: var(--bg-secondary-light);
+  border-color: var(--border-light);
+}
+
+.clientName {
+  color: var(--text-primary-light);
+}
+
+.detailsLabel {
+  color: var(--text-tertiary-light);
+}
+
+.detailsValue {
+  color: var(--text-primary-light);
+}

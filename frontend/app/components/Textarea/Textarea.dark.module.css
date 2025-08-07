@@ -1,0 +1,34 @@
+/* @AI-HINT: Dark theme styles for the Textarea component. */
+
+.textareaLabel {
+  color: var(--text-secondary-dark);
+}
+
+.textareaField {
+  color: var(--text-primary-dark);
+  border-color: var(--border-dark);
+  background-color: var(--bg-primary-dark);
+}
+
+.textareaField:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
+}
+
+.textareaWrapperError .textareaField {
+  border-color: var(--color-error);
+}
+
+.textareaWrapperError .textareaField:focus {
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.25);
+}
+
+.textareaWrapperDisabled .textareaField {
+  background-color: var(--bg-secondary-dark);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.errorMessage {
+  color: var(--color-error);
+}

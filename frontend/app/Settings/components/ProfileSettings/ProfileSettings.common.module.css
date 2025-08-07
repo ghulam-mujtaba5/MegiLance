@@ -1,4 +1,20 @@
-/* Migrated from ProfileSettings.common.css to ProfileSettings.common.module.css */
-@import url('../../../Settings.common.module.css');
+/* @AI-HINT: Common styles for the ProfileSettings form. */
 
-/* Place all ProfileSettings.common.css content here */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.fieldWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-4);
+  margin-top: var(--space-4);
+}
+

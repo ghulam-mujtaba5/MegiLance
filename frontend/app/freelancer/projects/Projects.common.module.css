@@ -1,7 +1,44 @@
-/* AI-HINT: Common styles for Freelancer Projects page. Add shared layout, spacing, and typography rules here. */
+/* @AI-HINT: Common, theme-independent styles for the Projects page. */
 
-.projects {}
-.container {}
-.header {}
-.searchBar {}
-.list {}
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-md);
+  margin: 0;
+}
+
+.searchFilterBar {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid;
+}
+
+.searchInput {
+  flex-grow: 1;
+}
+
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-5);
+}

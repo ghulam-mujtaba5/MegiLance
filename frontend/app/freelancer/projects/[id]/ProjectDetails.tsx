@@ -1,68 +1,104 @@
-// @AI-HINT: This is the Project Details page component. It displays detailed information about a single project. All styles are per-component only.
+// @AI-HINT: This is the refactored Project Details page, featuring a premium two-column layout, detailed project information, and a client sidebar.
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTheme } from 'next-themes';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Button from '@/app/components/Button/Button';
-import './ProjectDetails.common.css';
-import './ProjectDetails.light.css';
-import './ProjectDetails.dark.css';
+import commonStyles from './ProjectDetails.common.module.css';
+import lightStyles from './ProjectDetails.light.module.css';
+import darkStyles from './ProjectDetails.dark.module.css';
 
 interface ProjectDetailsProps {
-  theme?: 'light' | 'dark';
   projectId: string;
 }
 
-const ProjectDetails: React.FC<ProjectDetailsProps> = ({ theme = 'light' /* projectId is available in props */ }) => {
-  // Mock data for a single project - in a real app, this would be fetched based on projectId
-  const project = {
-    title: 'AI Chatbot Integration',
-    clientName: 'Innovate Inc.',
-    clientAvatar: '',
-    budget: '$5,000',
-    postedTime: '2 hours ago',
-    tags: ['React', 'AI', 'NLP', 'Next.js'],
-    description: 'We are looking for an experienced developer to integrate a powerful, AI-driven chatbot into our existing Next.js application. The ideal candidate will have a strong background in Natural Language Processing (NLP) and experience with third-party chatbot APIs. Key responsibilities include designing the conversation flow, implementing the chatbot UI, and ensuring seamless integration with our backend services.',
-    proposals: 12,
-  };
+// Mock data - in a real app, this would be fetched based on projectId
+const project = {
+  title: 'AI-Powered Content Generation Platform',
+  clientName: 'ContentAI Solutions',
+  clientAvatar: '', // Placeholder for client avatar URL
+  budget: '$15,000 - $25,000',
+  postedTime: '4 hours ago',
+  tags: ['Next.js', 'TypeScript', 'AI', 'Prisma', 'Tailwind CSS'],
+  description: `We are seeking a highly skilled senior frontend developer to lead the development of our next-generation content generation platform. This is a key role in a well-funded startup, and you will have significant ownership over the product's direction.\n\n**Responsibilities:**\n- Architect and build the main user-facing application using Next.js and TypeScript.\n- Collaborate with our AI team to integrate a complex language model API.\n- Design and implement a robust, scalable, and performant UI.\n- Write clean, maintainable, and well-tested code.\n\n**Qualifications:**\n- 5+ years of experience with React and the JavaScript ecosystem.\n- Proven experience with TypeScript in a large-scale application.\n- Deep understanding of Next.js, including SSR, SSG, and API routes.\n- Experience with data fetching libraries like SWR or React Query.`,
+  proposals: 18,
+  clientLocation: 'San Francisco, CA',
+  clientRating: 4.9,
+  clientJobsPosted: 24,
+};
+
+const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
+  const { theme } = useTheme();
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
   return (
-    <div className={`ProjectDetails ProjectDetails--${theme}`}>
-      <div className="ProjectDetails-container">
-        <div className="ProjectDetails-main">
-          <header className="ProjectDetails-header">
-            <h1>{project.title}</h1>
-            <div className="ProjectDetails-tags">
-              {project.tags.map(tag => <span key={tag} className={`Tag Tag--${theme}`}>{tag}</span>)}
-            </div>
-          </header>
+    <div className={styles.pageContainer}>
+      <main className={styles.mainContent}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>{project.title}</h1>
+          <div className={styles.tagContainer}>
+            {project.tags.map(tag => (
+              <span key={tag} className={styles.tag}>{tag}</span>
+            ))}
+          </div>
+        </header>
 
-          <section className="ProjectDetails-section">
-            <h2>Project Description</h2>
-            <p>{project.description}</p>
-          </section>
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Project Description</h2>
+          <p className={styles.description}>{project.description}</p>
+        </section>
+      </main>
+
+      <aside className={styles.sidebar}>
+        <div className={styles.sidebarCard}>
+            <Button variant="primary" fullWidth>Submit a Proposal</Button>
+            {/* Future: Add a 'Save Job' button here */}
         </div>
 
-        <aside className="ProjectDetails-sidebar">
-          <div className={`Sidebar-card Sidebar-card--${theme}`}>
-            <h3>About the Client</h3>
-            <div className="Client-info">
-              <UserAvatar theme={theme} name={project.clientName} src={project.clientAvatar} />
-              <strong>{project.clientName}</strong>
-            </div>
-            <Button theme={theme} variant="primary" fullWidth>Submit a Proposal</Button>
+        <div className={styles.sidebarCard}>
+          <h3 className={styles.sectionTitle}>About the Client</h3>
+          <div className={styles.clientInfo}>
+            <UserAvatar name={project.clientName} src={project.clientAvatar} />
+            <span className={styles.clientName}>{project.clientName}</span>
           </div>
+           <ul className={styles.detailsList}>
+            <li className={styles.detailsItem}>
+                <span className={styles.detailsLabel}>Rating</span>
+                <span className={styles.detailsValue}>{project.clientRating} / 5</span>
+            </li>
+            <li className={styles.detailsItem}>
+                <span className={styles.detailsLabel}>Location</span>
+                <span className={styles.detailsValue}>{project.clientLocation}</span>
+            </li>
+            <li className={styles.detailsItem}>
+                <span className={styles.detailsLabel}>Jobs Posted</span>
+                <span className={styles.detailsValue}>{project.clientJobsPosted}</span>
+            </li>
+           </ul>
+        </div>
 
-          <div className={`Sidebar-card Sidebar-card--${theme}`}>
-            <h3>Project Details</h3>
-            <ul>
-              <li><strong>Budget:</strong> {project.budget}</li>
-              <li><strong>Posted:</strong> {project.postedTime}</li>
-              <li><strong>Proposals:</strong> {project.proposals}</li>
-            </ul>
-          </div>
-        </aside>
-      </div>
+        <div className={styles.sidebarCard}>
+          <h3 className={styles.sectionTitle}>Project Details</h3>
+          <ul className={styles.detailsList}>
+            <li className={styles.detailsItem}>
+              <span className={styles.detailsLabel}>Budget</span>
+              <span className={styles.detailsValue}>{project.budget}</span>
+            </li>
+            <li className={styles.detailsItem}>
+              <span className={styles.detailsLabel}>Posted</span>
+              <span className={styles.detailsValue}>{project.postedTime}</span>
+            </li>
+            <li className={styles.detailsItem}>
+              <span className={styles.detailsLabel}>Proposals</span>
+              <span className={styles.detailsValue}>{project.proposals}</span>
+            </li>
+          </ul>
+        </div>
+      </aside>
     </div>
   );
 };

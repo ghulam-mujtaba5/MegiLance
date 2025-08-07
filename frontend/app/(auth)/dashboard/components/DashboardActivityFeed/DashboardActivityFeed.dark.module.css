@@ -1,0 +1,40 @@
+/* AI-HINT: Premium dark theme for the Activity Feed. Uses high-contrast colors and a glowing timeline effect for a modern, readable UI. */
+
+.activityFeedCard {
+  background: var(--surface);
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-sm-dark);
+}
+
+.cardTitle {
+  color: var(--text-primary-dark);
+}
+
+.viewAllLink {
+  color: var(--primary-dark);
+}
+
+.viewAllLink:hover {
+  color: var(--primary-dark-hover);
+}
+
+.timeline {
+  background-color: var(--border-dark);
+}
+
+.activityIconContainer {
+  background-color: var(--surface-alt);
+  border: 2px solid var(--surface);
+}
+
+.activityIcon {
+  color: var(--primary-dark);
+}
+
+.activityContent p {
+  color: var(--text-primary-dark);
+}
+
+.activityTimestamp {
+  color: var(--text-secondary-dark);
+}

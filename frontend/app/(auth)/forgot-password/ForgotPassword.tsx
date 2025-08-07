@@ -8,11 +8,29 @@ import { cn } from '@/lib/utils';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
+import { FaKey } from 'react-icons/fa';
 
-import styles from '../Login/Login.common.module.css';
+import commonStyles from '../Login/Login.common.module.css';
 import lightStyles from '../Login/Login.light.module.css';
 import darkStyles from '../Login/Login.dark.module.css';
+
+// @AI-HINT: A static branding panel for consistency across auth pages.
+const BrandingPanel: React.FC<{ styles: any }> = ({ styles }) => {
+  return (
+    <div className={styles.brandingPanel}>
+      <div className={styles.brandingContent}>
+        <div className={styles.brandingIconWrapper}>
+          <FaKey className={styles.brandingIcon} />
+        </div>
+        <h2 className={styles.brandingTitle}>Secure Your Account</h2>
+        <p className={styles.brandingText}>Enter your email to receive a secure link to reset your password and regain access to your account.</p>
+      </div>
+      <div className={styles.brandingFooter}>
+        <p>&copy; {new Date().getFullYear()} MegiLance. All rights reserved.</p>
+      </div>
+    </div>
+  );
+};
 
 const ForgotPassword: React.FC = () => {
   const { theme } = useTheme();
@@ -32,52 +50,50 @@ const ForgotPassword: React.FC = () => {
     }, 1500);
   };
 
-  const currentThemeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const styles = React.useMemo(() => {
+    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
   return (
-    <div className={cn(styles.pageContainer, currentThemeStyles.pageContainer)}>
-      <div className={cn(styles.leftPanel, currentThemeStyles.leftPanel)}>
-        <div className={styles.logoContainer}>
-          <MegiLanceLogo />
-        </div>
-        <div className={styles.brandingContainer}>
-          <h1 className={styles.brandingTitle}>MegiLance</h1>
-          <p className={styles.brandingSubtitle}>Your Vision, Our Talent.</p>
-        </div>
-      </div>
-      <div className={cn(styles.rightPanel, currentThemeStyles.rightPanel)}>
+    <div className={styles.loginPage}>
+      <BrandingPanel styles={styles} />
+      <div className={styles.formPanel}>
         <div className={styles.formContainer}>
-          <h2 className={cn(styles.title, currentThemeStyles.title)}>Forgot Password?</h2>
-          {submitted ? (
-            <p className={cn(styles.subtitle, currentThemeStyles.subtitle)}>
-              If an account with that email exists, we&apos;ve sent instructions to reset your password.
-            </p>
-          ) : (
-            <p className={cn(styles.subtitle, currentThemeStyles.subtitle)}>
-              Enter your email and we&apos;ll send you a link to reset your password.
-            </p>
-          )}
+          <div className={styles.formHeader}>
+            <h1 className={styles.formTitle}>Forgot Password?</h1>
+            {submitted ? (
+              <p className={styles.formSubtitle}>
+                If an account with that email exists, we&apos;ve sent instructions to reset your password.
+              </p>
+            ) : (
+              <p className={styles.formSubtitle}>
+                No problem. Enter your email and we'll send you a reset link.
+              </p>
+            )}
+          </div>
 
           {!submitted && (
-            <form className={styles.form} onSubmit={handleSubmit} noValidate>
+            <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
               <Input
-                label="Email Address"
-                type="email"
-                placeholder="you@example.com"
+                id="email"
                 name="email"
+                type="email"
+                label="Email Address"
+                placeholder="your.email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
+                disabled={loading}
               />
-              <Button variant="primary" fullWidth type="submit" disabled={loading || !email}>
-                {loading ? 'Sending...' : 'Send Reset Link'}
+              <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading || !email} className={styles.submitButton}>
+                {loading ? 'Sending Link...' : 'Send Reset Link'}
               </Button>
             </form>
           )}
 
-          <p className={cn(styles.footerLink, currentThemeStyles.footerLink)}>
-            <Link href="/Login">Back to Login</Link>
-          </p>
+          <div className={styles.signupPrompt}>
+            <p>Remembered your password? <Link href="/login">Back to Sign In</Link></p>
+          </div>
         </div>
       </div>
     </div>

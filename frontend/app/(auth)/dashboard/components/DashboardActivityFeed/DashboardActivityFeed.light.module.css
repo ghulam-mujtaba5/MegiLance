@@ -1,0 +1,40 @@
+/* AI-HINT: Premium light theme for the Activity Feed. Features refined typography, clear visual hierarchy, and brand-aligned colors. */
+
+.activityFeedCard {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardTitle {
+  color: var(--text-primary);
+}
+
+.viewAllLink {
+  color: var(--primary);
+}
+
+.viewAllLink:hover {
+  color: var(--primary-light-hover);
+}
+
+.timeline {
+  background-color: var(--border-light);
+}
+
+.activityIconContainer {
+  background-color: var(--surface);
+  border: 2px solid var(--surface-alt);
+}
+
+.activityIcon {
+  color: var(--primary);
+}
+
+.activityContent p {
+  color: var(--text-primary);
+}
+
+.activityTimestamp {
+  color: var(--text-secondary);
+}

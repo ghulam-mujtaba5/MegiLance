@@ -1,32 +1,38 @@
-import React from 'react';
+// @AI-HINT: This is the refactored TransactionRow component, using premium, theme-aware styles and the useMemo hook for a polished and efficient implementation.
+import React, { useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './TransactionRow.common.module.css';
 import lightStyles from './TransactionRow.light.module.css';
 import darkStyles from './TransactionRow.dark.module.css';
 
-// @AI-HINT: This component displays a single transaction row, styled according to the current theme.
-
 export interface TransactionRowProps {
   date: string;
   description: string;
-  amount: string;
+  amount: string | number;
+  isPositive?: boolean;
 }
 
 const TransactionRow: React.FC<TransactionRowProps> = ({ date, description, amount }) => {
   const { theme } = useTheme();
 
-  if (!theme) {
-    return null;
-  }
+  const styles = useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const isPositive = typeof amount === 'number' ? amount >= 0 : !amount.startsWith('-');
+  const formattedAmount = typeof amount === 'number' 
+    ? `${amount >= 0 ? '+' : ''}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)}`
+    : `${!amount.startsWith('-') ? '+' : ''}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(parseFloat(amount))}`;
 
   return (
-    <div className={cn(commonStyles.transactionRow, themeStyles.transactionRow)}>
-      <span className={cn(commonStyles.transactionRowDate, themeStyles.transactionRowDate)}>{date}</span>
-      <span className={cn(commonStyles.transactionRowDescription, themeStyles.transactionRowDescription)}>{description}</span>
-      <span className={cn(commonStyles.transactionRowAmount, themeStyles.transactionRowAmount)}>{amount}</span>
+    <div className={styles.row}>
+      <span className={styles.date}>{date}</span>
+      <span className={styles.description}>{description}</span>
+      <span className={cn(styles.amount, isPositive ? styles.positive : styles.negative)}>
+        {formattedAmount}
+      </span>
     </div>
   );
 };

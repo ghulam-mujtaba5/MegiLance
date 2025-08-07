@@ -1,0 +1,58 @@
+/* AI-HINT: Premium dark theme for the Recent Projects table. Uses high-contrast colors, subtle hover effects, and vibrant status badges for excellent readability. */
+
+.recentProjectsCard {
+  background: var(--surface);
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-sm-dark);
+}
+
+.cardTitle {
+  color: var(--text-primary-dark);
+}
+
+.viewAllLink {
+  color: var(--primary-dark);
+}
+
+.viewAllLink:hover {
+  color: var(--primary-dark-hover);
+}
+
+.table th {
+  color: var(--text-secondary-dark);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.table td {
+  color: var(--text-primary-dark);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.table tr:hover td {
+  background-color: var(--surface-hover-dark);
+}
+
+/* Status Badge Colors */
+.statusInProgress {
+  background-color: #1e3a8a; /* Blue 900 */
+  color: #93c5fd; /* Blue 300 */
+}
+.statusInProgress .statusDot {
+  background-color: #60a5fa; /* Blue 400 */
+}
+
+.statusCompleted {
+  background-color: #14532d; /* Green 900 */
+  color: #86efac; /* Green 300 */
+}
+.statusCompleted .statusDot {
+  background-color: #4ade80; /* Green 400 */
+}
+
+.statusOnHold {
+  background-color: #78350f; /* Amber 900 */
+  color: #fde047; /* Yellow 300 */
+}
+.statusOnHold .statusDot {
+  background-color: #facc15; /* Yellow 400 */
+}

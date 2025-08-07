@@ -1,11 +1,67 @@
 /* AI-HINT: Common styles for Freelancer Wallet page. Add base styles for wallet, balance, transactions, and cards. */
 
-.wallet {}
-.container {}
-.header {}
-.overview {}
-.balanceCard {}
-.balanceAmount {}
-.transactions {}
-.transactionListHeader {}
-.transactionList {}
+/* @AI-HINT: Common, theme-independent styles for the refactored Wallet page. */
+.container {
+  padding: var(--space-6) 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.header {
+  padding: 0 var(--space-2);
+}
+
+.title {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-lg);
+  margin: var(--space-1) 0 0;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+.balanceCard,
+.transactionsCard {
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-6);
+  border: 1px solid;
+}
+
+.cardTitle {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin: 0 0 var(--space-4) 0;
+}
+
+.balanceCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.balanceAmount {
+  font-family: var(--font-jetbrains-mono);
+  font-size: 2.5rem; /* Custom size for emphasis */
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.transactionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

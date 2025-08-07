@@ -1,1 +1,19 @@
-.Dashboard {}
+/* @AI-HINT: Light theme styles for the Freelancer Dashboard. */
+
+.container {
+  background-color: var(--bg-primary-light);
+}
+
+.title {
+  color: var(--text-primary-light);
+}
+
+.subtitle {
+  color: var(--text-secondary-light);
+}
+
+.sectionTitle {
+  color: var(--text-primary-light);
+  border-bottom-color: var(--border-light);
+}
+

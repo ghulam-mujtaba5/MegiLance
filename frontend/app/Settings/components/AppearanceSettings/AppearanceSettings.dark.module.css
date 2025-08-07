@@ -1,4 +1,28 @@
-/* Migrated from AppearanceSettings.dark.css to AppearanceSettings.dark.module.css */
-@import './AppearanceSettings.common.module.css';
+/* @AI-HINT: Dark theme styles for the AppearanceSettings component. */
 
-/* Place all AppearanceSettings.dark.css content here */
+.button {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+  color: var(--text-secondary-dark);
+}
+
+.button:hover {
+  background-color: var(--bg-tertiary-dark);
+  border-color: var(--border-dark-hover);
+}
+
+.button.active {
+  background-color: var(--bg-primary-dark);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
+}
+
+.button.active svg {
+  color: var(--color-primary);
+}
+
+.button.active span {
+  color: var(--text-primary-dark);
+}
+

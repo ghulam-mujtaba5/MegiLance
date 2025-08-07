@@ -1,4 +1,6 @@
-/* Migrated from ProfileSettings.light.css to ProfileSettings.light.module.css */
-@import './ProfileSettings.common.module.css';
+/* @AI-HINT: Light theme styles for the ProfileSettings form. */
 
-/* Place all ProfileSettings.light.css content here */
+.footer {
+  border-top: 1px solid var(--border-light);
+}
+

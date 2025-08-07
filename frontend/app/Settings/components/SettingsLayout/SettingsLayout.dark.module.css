@@ -1,4 +1,5 @@
-/* Migrated from SettingsLayout.dark.css to SettingsLayout.dark.module.css */
-@import './SettingsLayout.common.module.css';
+/* @AI-HINT: Dark theme for the SettingsLayout. */
 
-/* Place all SettingsLayout.dark.css content here */
+.sidebar {
+  border-right: 1px solid var(--border-dark);
+}

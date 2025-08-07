@@ -1,4 +1,18 @@
-/* Migrated from SettingsLayout.common.css to SettingsLayout.common.module.css */
-@import url('../../../Settings.common.module.css');
+/* @AI-HINT: Common styles for the SettingsLayout, defining the two-column grid structure using CSS Modules. */
 
-/* Place all SettingsLayout.common.css content here */
+.settingsLayout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.sidebar {
+  padding-right: var(--space-6);
+}
+
+.content {
+  padding: 0 var(--space-4);
+}

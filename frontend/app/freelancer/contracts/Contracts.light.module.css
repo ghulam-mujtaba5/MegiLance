@@ -1,0 +1,38 @@
+/* @AI-HINT: Light theme styles for the refactored Contracts page. */
+.title {
+  color: var(--text-primary-light);
+}
+
+.subtitle {
+  color: var(--text-secondary-light);
+}
+
+.tableContainer {
+  background-color: var(--bg-primary-light);
+  border-color: var(--border-light);
+}
+
+.table th {
+  color: var(--text-tertiary-light);
+  background-color: var(--bg-secondary-light);
+}
+
+.table td {
+  color: var(--text-secondary-light);
+}
+
+.table tbody tr {
+  border-color: var(--border-light);
+}
+
+.projectTitle {
+  color: var(--text-primary-light);
+}
+
+.link {
+  color: var(--primary-light);
+}
+
+.link:hover {
+  color: var(--primary-light-hover);
+}

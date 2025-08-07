@@ -1,0 +1,30 @@
+/* @AI-HINT: Dark theme styles for the refactored Analytics page. */
+.title {
+  color: var(--text-primary-dark);
+}
+
+.subtitle {
+  color: var(--text-secondary-dark);
+}
+
+.kpiCard {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.kpiLabel {
+  color: var(--text-secondary-dark);
+}
+
+.kpiValue {
+  color: var(--text-primary-dark);
+}
+
+.chartCard {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.cardTitle {
+  color: var(--text-primary-dark);
+}

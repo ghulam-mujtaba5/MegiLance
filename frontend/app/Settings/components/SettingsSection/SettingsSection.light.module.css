@@ -1,4 +1,13 @@
-/* Migrated from SettingsSection.light.css to SettingsSection.light.module.css */
-@import './SettingsSection.common.module.css';
+/* @AI-HINT: Light theme styles for the SettingsSection. */
 
-/* Place all SettingsSection.light.css content here */
+.section {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.title {
+  color: var(--text-primary-light);
+}
+
+.description {
+  color: var(--text-secondary-light);
+}

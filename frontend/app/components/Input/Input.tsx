@@ -11,6 +11,7 @@ import darkStyles from './Input.dark.module.css';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
+  hideLabel?: boolean;
   iconBefore?: React.ReactNode;
   iconAfter?: React.ReactNode;
   error?: string | boolean;

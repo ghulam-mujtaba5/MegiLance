@@ -1,4 +1,21 @@
-/* Migrated from SecuritySettings.common.css to SecuritySettings.common.module.css */
-@import url('../../../Settings.common.module.css');
+/* @AI-HINT: Common styles for the SecuritySettings form. */
 
-/* Place all SecuritySettings.common.css content here */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 500px; /* Constrain width for better readability */
+}
+
+.fieldWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-4);
+  margin-top: var(--space-2);
+}
+

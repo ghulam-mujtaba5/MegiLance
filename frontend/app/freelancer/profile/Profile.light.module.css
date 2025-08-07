@@ -1,0 +1,26 @@
+/* @AI-HINT: Light theme styles for the refactored Profile page. */
+.header, .actions {
+  border-color: var(--border-light);
+}
+
+.name {
+  color: var(--text-primary-light);
+}
+
+.title {
+  color: var(--text-secondary-light);
+}
+
+.rank {
+  background-color: var(--accent-light-translucent);
+  color: var(--accent-light-deep);
+  border-color: var(--accent-light-translucent-heavy);
+}
+
+.sectionTitle {
+  color: var(--text-primary-light);
+}
+
+.skillsInfo {
+  color: var(--text-tertiary-light);
+}

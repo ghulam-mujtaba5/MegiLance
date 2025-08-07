@@ -1,66 +1,46 @@
-.myJobs {
-  padding: 2rem 3rem;
-}
-
-.myJobsContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.myJobsHeader {
-  margin-bottom: 2.5rem;
-}
-
-.myJobsHeader h1 {
-  font-size: 2.25rem;
-  font-weight: 800;
-}
-
-.myJobsHeader p {
-  font-size: 1.125rem;
-}
-
-.myJobsSection {
-  margin-bottom: 3rem;
-}
-
-.myJobsSection h2 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-}
-
-.myJobsList {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-.jobItem {
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.jobItemStatus {
+/* @AI-HINT: Common, theme-independent styles for the MyJobs page. */
+.pageContainer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 
-.jobItemStatus span {
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xxl);
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--font-size-md);
+  margin: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  font-family: var(--font-poppins);
+  font-size: var(--font-size-xl);
   font-weight: 600;
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid;
 }
 
-.jobItemProgressBar {
-  flex-grow: 1;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
+.jobGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--space-5);
 }
 
-.jobItemProgress {
-  height: 100%;
-  border-radius: 4px;
-  width: var(--job-progress-width, 0%);
-}

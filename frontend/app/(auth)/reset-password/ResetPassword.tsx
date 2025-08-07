@@ -8,11 +8,29 @@ import { cn } from '@/lib/utils';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
+import { FaShieldAlt } from 'react-icons/fa';
 
-import styles from '../Login/Login.common.module.css';
+import commonStyles from '../Login/Login.common.module.css';
 import lightStyles from '../Login/Login.light.module.css';
 import darkStyles from '../Login/Login.dark.module.css';
+
+// @AI-HINT: A static branding panel for consistency across auth pages.
+const BrandingPanel: React.FC<{ styles: any }> = ({ styles }) => {
+  return (
+    <div className={styles.brandingPanel}>
+      <div className={styles.brandingContent}>
+        <div className={styles.brandingIconWrapper}>
+          <FaShieldAlt className={styles.brandingIcon} />
+        </div>
+        <h2 className={styles.brandingTitle}>Strengthen Your Security</h2>
+        <p className={styles.brandingText}>Create a new, strong password to protect your account. Make sure it's at least 8 characters long.</p>
+      </div>
+      <div className={styles.brandingFooter}>
+        <p>&copy; {new Date().getFullYear()} MegiLance. All rights reserved.</p>
+      </div>
+    </div>
+  );
+};
 
 const ResetPassword: React.FC = () => {
   const { theme } = useTheme();
@@ -63,59 +81,60 @@ const ResetPassword: React.FC = () => {
     }
   };
 
-  const currentThemeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const styles = React.useMemo(() => {
+    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    return { ...commonStyles, ...themeStyles };
+  }, [theme]);
 
   return (
-    <div className={cn(styles.pageContainer, currentThemeStyles.pageContainer)}>
-      <div className={cn(styles.leftPanel, currentThemeStyles.leftPanel)}>
-        <div className={styles.logoContainer}>
-          <MegiLanceLogo />
-        </div>
-        <div className={styles.brandingContainer}>
-          <h1 className={styles.brandingTitle}>MegiLance</h1>
-          <p className={styles.brandingSubtitle}>Your Vision, Our Talent.</p>
-        </div>
-      </div>
-      <div className={cn(styles.rightPanel, currentThemeStyles.rightPanel)}>
+    <div className={styles.loginPage}>
+      <BrandingPanel styles={styles} />
+      <div className={styles.formPanel}>
         <div className={styles.formContainer}>
-          <h2 className={cn(styles.title, currentThemeStyles.title)}>Reset Your Password</h2>
-          {submitted ? (
-            <p className={cn(styles.subtitle, currentThemeStyles.subtitle)}>
-              Your password has been successfully reset.
-            </p>
-          ) : (
-            <p className={cn(styles.subtitle, currentThemeStyles.subtitle)}>Create a new, strong password.</p>
-          )}
+          <div className={styles.formHeader}>
+            <h1 className={styles.formTitle}>Set a New Password</h1>
+            {submitted ? (
+              <p className={styles.formSubtitle}>
+                Your password has been successfully reset.
+              </p>
+            ) : (
+              <p className={styles.formSubtitle}>Create a new, strong password for your account.</p>
+            )}
+          </div>
 
           {!submitted ? (
-            <form className={styles.form} onSubmit={handleSubmit} noValidate>
+            <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
               <Input
-                label="New Password"
-                type="password"
-                placeholder="••••••••"
+                id="password"
                 name="password"
+                type="password"
+                label="New Password"
+                placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
                 error={errors.password}
-                required
+                disabled={loading}
               />
               <Input
-                label="Confirm New Password"
-                type="password"
-                placeholder="••••••••"
+                id="confirmPassword"
                 name="confirmPassword"
+                type="password"
+                label="Confirm New Password"
+                placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 error={errors.confirmPassword}
-                required
+                disabled={loading}
               />
-              <Button variant="primary" fullWidth type="submit" disabled={loading}>
-                {loading ? 'Resetting...' : 'Reset Password'}
+              <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading} className={styles.submitButton}>
+                {loading ? 'Resetting Password...' : 'Set New Password'}
               </Button>
             </form>
           ) : (
-            <Link href="/Login" className={styles.fullWidthLink}>
-              <Button variant="primary" fullWidth>Back to Login</Button>
+            <Link href="/login">
+              <Button variant="primary" fullWidth className={styles.submitButton}>
+                Return to Sign In
+              </Button>
             </Link>
           )}
         </div>
