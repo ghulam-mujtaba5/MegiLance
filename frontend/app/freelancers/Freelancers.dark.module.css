@@ -1,0 +1,18 @@
+/* AI-HINT: Dark theme overrides for Freelancers page. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.subtitle { color: var(--text-secondary); }
+
+.input, .select { background: var(--surface-elev); border-color: var(--border); color: var(--text-primary); }
+.input::placeholder { color: var(--text-tertiary); }
+
+.card { background: var(--surface-elev); border: 1px solid var(--border); }
+.name { color: var(--text-primary); }
+.role { color: var(--text-secondary); }
+.meta { color: var(--text-secondary); }
+.skill { background: var(--surface); border-color: var(--border); color: var(--text-primary); }
+
+.button { background: var(--primary); color: var(--text-on-primary); }
+.button:hover { filter: brightness(1.06); }
+.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
+.buttonSecondary:hover { background: var(--surface); }

@@ -1,6 +1,6 @@
 # MegiLance Project Documentation
 
-**Last Updated:** 2025-08-07
+**Last Updated:** 2025-08-08
 
 ---
 
@@ -48,11 +48,11 @@ These pages are for marketing, information, and user acquisition. They do not re
 -   `[x]` `/legal/privacy` - Privacy Policy
 -   `[x]` `/legal/terms` - Terms of Service
 -   `[x]` `/security` - Security Information Page
--   `[ ]` `/support` - Support Page
--   `[ ]` `/teams` - Teams Page
--   `[ ]` `/testimonials` - Testimonials Page
--   `[ ]` `/clients` - Page for Showcasing Clients
--   `[ ]` `/freelancers` - Page for Browsing Freelancers
+-   `[x]` `/support` - Support Page
+-   `[x]` `/teams` - Teams Page
+-   `[x]` `/testimonials` - Testimonials Page
+-   `[x]` `/clients` - Page for Showcasing Clients
+-   `[x]` `/freelancers` - Page for Browsing Freelancers
 
 ### 3.2. User Authentication (Portal Entry Layout)
 
@@ -60,8 +60,8 @@ These pages manage the entry points into the core application.
 
 -   `[x]` `/login` - User Login (All Roles)
 -   `[x]` `/signup` - User Signup (All Roles)
--   `[ ]` `/forgot-password` - Forgot Password Form
--   `[ ]` `/reset-password` - Reset Password Form
+-   `[x]` `/forgot-password` - Forgot Password Form
+-   `[x]` `/reset-password` - Reset Password Form
 
 ### 3.3. Core Application (Portal Dashboard Layout)
 
@@ -71,17 +71,17 @@ This is the main, authenticated part of the application, divided into role-speci
 
 These pages are accessible to any logged-in user, regardless of their specific role.
 
--   `[ ]` `/dashboard` - Main Dashboard Overview
--   `[ ]` `/dashboard/analytics` - Analytics Screen
--   `[ ]` `/dashboard/community` - Community/Forum Screen
--   `[ ]` `/dashboard/projects` - User's Projects List
--   `[ ]` `/dashboard/wallet` - User Wallet/Finance Screen
--   `[ ]` `/audit-logs` - User's Account Audit Logs
+-   `[x]` `/dashboard` - Main Dashboard Overview
+-   `[x]` `/dashboard/analytics` - Analytics Screen
+-   `[x]` `/dashboard/community` - Community/Forum Screen
+-   `[x]` `/dashboard/projects` - User's Projects List
+-   `[x]` `/dashboard/wallet` - User Wallet/Finance Screen
+-   `[x]` `/audit-logs` - User's Account Audit Logs
 
 #### 3.3.2. Admin Portal
 
--   `[~]` `/admin/dashboard` - Admin Dashboard Overview
--   `[ ]` `/admin/users` - User Management
+-   `[x]` `/admin/dashboard` - Admin Dashboard Overview
+-   `[x]` `/admin/users` - User Management
 -   `[ ]` `/admin/projects` - Platform-wide Project Management
 -   `[ ]` `/admin/payments` - Platform-wide Payment Management
 -   `[ ]` `/admin/support` - Admin Support Interface
@@ -115,9 +115,9 @@ These pages are accessible to any logged-in user, regardless of their specific r
 
 These features are accessible within the portal layout for relevant roles.
 
--   `[ ]` `/messages` - User Messages/Inbox
--   `[ ]` `/notifications` - User Notifications
--   `[ ]` `/search` - In-App Search Results
--   `[ ]` `/help` - Help/Support Center
+-   `[x]` `/messages` - User Messages/Inbox
+-   `[x]` `/notifications` - User Notifications
+-   `[x]` `/search` - In-App Search Results
+-   `[x]` `/help` - Help/Support Center
 
 - `/audit-logs`: User's account audit logs

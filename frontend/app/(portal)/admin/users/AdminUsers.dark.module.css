@@ -1,0 +1,18 @@
+/* AI-HINT: Dark theme overrides for Admin Users page. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.subtitle { color: var(--text-secondary); }
+
+.input, .select { background: var(--surface-elev); border: 1px solid var(--border); color: var(--text-primary); }
+.button { background: var(--primary); color: white; border: 1px solid rgba(0,0,0,0.2); }
+.button.secondary { background: var(--surface-elev); color: var(--text-primary); border: 1px solid var(--border); }
+
+.table { background: var(--surface-elev); }
+.th { color: var(--text-secondary); border-bottom-color: var(--border); }
+.td { color: var(--text-primary); border-bottom-color: var(--border); }
+
+.bulkBar { background: var(--surface-elev); border: 1px solid var(--border); padding: 8px 12px; border-radius: var(--border-radius-md); }
+
+.modal { background: var(--surface-elev); border-color: var(--border); }
+.modalTitle { color: var(--text-primary); }
+.modalActions .button.secondary { background: var(--surface-elev); color: var(--text-primary); }

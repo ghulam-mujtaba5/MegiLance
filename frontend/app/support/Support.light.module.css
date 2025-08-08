@@ -1,0 +1,16 @@
+/* AI-HINT: Light theme overrides for Support page. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.subtitle { color: var(--text-secondary); }
+
+.card { background: var(--surface-elev); border: 1px solid var(--border); }
+.cardTitle { color: var(--text-primary); }
+.cardDesc { color: var(--text-secondary); }
+
+.link { color: var(--primary); }
+.link:hover { background: var(--primary-ghost); }
+
+.button { background: var(--primary); color: var(--text-on-primary); }
+.button:hover { filter: brightness(1.05); }
+.buttonSecondary { color: var(--text-primary); border-color: var(--border); }
+.buttonSecondary:hover { background: var(--surface); }

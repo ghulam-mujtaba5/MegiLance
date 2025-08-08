@@ -1,0 +1,18 @@
+/* AI-HINT: Light theme overrides for Notifications page. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.subtitle { color: var(--text-secondary); }
+
+.chip { background: var(--surface-elev); border: 1px solid var(--border); color: var(--text-primary); }
+.chip:hover { background: var(--surface); }
+
+.item { background: var(--surface-elev); border: 1px solid var(--border); }
+.itemTitle { color: var(--text-primary); }
+.itemBody { color: var(--text-secondary); }
+.meta { color: var(--text-tertiary); }
+.dot { background: var(--primary); }
+
+.button { background: var(--primary); color: var(--text-on-primary); }
+.button:hover { filter: brightness(1.05); }
+.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
+.buttonSecondary:hover { background: var(--surface); }

@@ -1,0 +1,19 @@
+/* AI-HINT: Light theme overrides for Portal Analytics page. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.subtitle { color: var(--text-secondary); }
+
+.select { background: var(--surface-elev); border: 1px solid var(--border); color: var(--text-primary); }
+
+.kpi { background: var(--surface-elev); border: 1px solid var(--border); }
+.kpiLabel { color: var(--text-secondary); }
+.kpiDelta { color: var(--success); }
+
+.card { background: var(--surface-elev); border: 1px solid var(--border); }
+.cardTitle { color: var(--text-primary); }
+
+.bar { background: color-mix(in oklab, var(--primary) 80%, white); }
+.point { background: var(--accent, #ff9800); }
+
+.th { color: var(--text-secondary); border-bottom-color: var(--border); }
+.td { color: var(--text-primary); border-bottom-color: var(--border); }

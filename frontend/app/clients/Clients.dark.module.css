@@ -1,0 +1,17 @@
+/* AI-HINT: Dark theme overrides for Clients page. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.subtitle { color: var(--text-secondary); }
+
+.chip { background: var(--surface-elev); border-color: var(--border); color: var(--text-primary); }
+.chip:hover { background: var(--surface); }
+
+.logoCard { background: var(--surface-elev); border: 1px solid var(--border); }
+.caseCard { background: var(--surface-elev); border: 1px solid var(--border); }
+.caseTitle { color: var(--text-primary); }
+.caseDesc { color: var(--text-secondary); }
+
+.button { background: var(--primary); color: var(--text-on-primary); }
+.button:hover { filter: brightness(1.06); }
+.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
+.buttonSecondary:hover { background: var(--surface); }

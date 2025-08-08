@@ -1,12 +1,12 @@
-// @AI-HINT: This is the Next.js route file for the clients page.
+// @AI-HINT: Next.js route for Clients page delegating to Clients component.
 
 'use client';
 
-import PlaceholderPage from '@/app/components/PlaceholderPage/PlaceholderPage';
 import React from 'react';
+import Clients from './Clients';
 
 const ClientsPage = () => {
-  return <PlaceholderPage title="Clients" />;
+  return <Clients />;
 };
 
 export default ClientsPage;

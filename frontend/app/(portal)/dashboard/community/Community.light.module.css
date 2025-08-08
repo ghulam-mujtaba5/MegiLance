@@ -1,0 +1,12 @@
+/* AI-HINT: Light theme overrides for Portal Community page. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.subtitle { color: var(--text-secondary); }
+
+.input, .select, .textarea { background: var(--surface-elev); border: 1px solid var(--border); color: var(--text-primary); }
+.button { background: var(--primary); color: white; border: 1px solid rgba(0,0,0,0.12); }
+.button.secondary { background: var(--surface-elev); color: var(--text-primary); border: 1px solid var(--border); }
+
+.card { background: var(--surface-elev); border: 1px solid var(--border); }
+.thread { background: var(--surface); border: 1px solid var(--border); }
+.tag { background: color-mix(in oklab, var(--primary) 10%, white); border: 1px solid var(--border); color: var(--text-primary); }

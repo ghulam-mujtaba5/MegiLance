@@ -1,0 +1,3 @@
+/* AI-HINT: Dark theme wrapper for Portal Dashboard. */
+
+.themeWrapper { background: var(--surface); color: var(--text-primary); }
