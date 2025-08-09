@@ -6,7 +6,7 @@ import { ProjectType } from './types';
 export const mockProjects: ProjectType[] = [
   {
     id: 'proj_001',
-    title: 'E-commerce Platform Redesign',
+    name: 'E-commerce Platform Redesign',
     client: 'Global Retail Inc.',
     budget: 25000,
     status: 'active',
@@ -15,7 +15,7 @@ export const mockProjects: ProjectType[] = [
   },
   {
     id: 'proj_002',
-    title: 'Mobile App Development for FinTech',
+    name: 'Mobile App Development for FinTech',
     client: 'Startup Hub Ventures',
     budget: 45000,
     status: 'completed',
@@ -24,7 +24,7 @@ export const mockProjects: ProjectType[] = [
   },
   {
     id: 'proj_003',
-    title: 'Corporate Branding & Marketing Website',
+    name: 'Corporate Branding & Marketing Website',
     client: 'Creative Solutions Agency',
     budget: 18000,
     status: 'pending',
@@ -33,7 +33,7 @@ export const mockProjects: ProjectType[] = [
   },
   {
     id: 'proj_004',
-    title: 'Data Analytics & Visualization Dashboard',
+    name: 'Data Analytics & Visualization Dashboard',
     client: 'Tech Solutions LLC',
     budget: 32000,
     status: 'active',
@@ -42,7 +42,7 @@ export const mockProjects: ProjectType[] = [
   },
   {
     id: 'proj_005',
-    title: 'AI-Powered Chatbot Integration',
+    name: 'AI-Powered Chatbot Integration',
     client: 'Innovate AI Corp.',
     budget: 55000,
     status: 'on_hold',
@@ -51,7 +51,7 @@ export const mockProjects: ProjectType[] = [
   },
     {
     id: 'proj_006',
-    title: 'Cloud Migration & Infrastructure Setup',
+    name: 'Cloud Migration & Infrastructure Setup',
     client: 'Secure Cloud Services',
     budget: 75000,
     status: 'cancelled',

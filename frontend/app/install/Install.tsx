@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import Button from '@/app/components/Button/Button';
+import { Button } from '@/components/ui/button';
 import './Install.common.css';
 import './Install.light.css';
 import './Install.dark.css';
@@ -41,7 +41,7 @@ const Install: React.FC<InstallProps> = ({ theme = 'light' }) => {
           </div>
         </div>
 
-        <Button theme={theme} variant="primary" onClick={handleInstallClick}>
+        <Button variant="primary" onClick={handleInstallClick}>
           Install App
         </Button>
       </div>

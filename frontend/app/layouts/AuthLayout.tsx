@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import './AuthLayout.common.css';
 import './AuthLayout.light.css';
 import './AuthLayout.dark.css';

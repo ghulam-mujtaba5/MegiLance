@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import Badge from '@/app/components/Badge/Badge';
 import Button from '@/app/components/Button/Button';
 import { cn } from '@/lib/utils';

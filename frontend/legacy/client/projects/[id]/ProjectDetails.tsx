@@ -43,7 +43,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ theme = 'light', projec
             <h1>{project.title}</h1>
             <span className={`status status--${project.status.replace(/\s+/g, '-')}`}>{project.status}</span>
           </div>
-          <Button theme={theme} variant="outline">Edit Job Post</Button>
+          <Button variant="outline">Edit Job Post</Button>
         </header>
 
         <div className="ProjectDetails-layout">
@@ -57,12 +57,12 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ theme = 'light', projec
               <section className="ProjectDetails-section">
                 <h2>Hired Freelancer</h2>
                 <div className={`FreelancerInfoCard FreelancerInfoCard--${theme}`}>
-                  <UserAvatar theme={theme} name={project.hiredFreelancer.name} />
+                  <UserAvatar name={project.hiredFreelancer.name} />
                   <div className="FreelancerInfo-details">
                     <strong>{project.hiredFreelancer.name}</strong>
                     <span>Rank: {project.hiredFreelancer.rank}</span>
                   </div>
-                  <Button theme={theme} variant="primary">Send Message</Button>
+                  <Button variant="primary">Send Message</Button>
                 </div>
               </section>
             )}
@@ -79,8 +79,8 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ theme = 'light', projec
                       </div>
                       <p>&quot;{p.coverLetterSnippet}&quot;</p>
                       <div className="ProposalCard-actions">
-                        <Button theme={theme} variant="outline" size="small">View Proposal</Button>
-                        <Button theme={theme} variant="primary" size="small">Hire</Button>
+                        <Button variant="outline" size="small">View Proposal</Button>
+                        <Button variant="primary" size="small">Hire</Button>
                       </div>
                     </div>
                   ))}

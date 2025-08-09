@@ -3,7 +3,7 @@
 
 import React from 'react';
 import BarChart from '@/app/components/BarChart/BarChart';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './ReviewSentimentDashboard.common.module.css';
 import lightStyles from './ReviewSentimentDashboard.light.module.css';

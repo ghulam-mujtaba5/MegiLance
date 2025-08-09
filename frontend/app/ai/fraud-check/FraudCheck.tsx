@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Button from '@/app/components/Button/Button';
+import { Button } from '@/components/ui/button';
 import './FraudCheck.common.css';
 import './FraudCheck.light.css';
 import './FraudCheck.dark.css';
@@ -64,7 +64,7 @@ const FraudCheck: React.FC<FraudCheckProps> = ({ theme = 'light' }) => {
             placeholder="Paste project description, message, or user bio here..."
             required
           />
-          <Button theme={theme} variant="primary" type="submit" disabled={isLoading}>
+          <Button variant="primary" type="submit" disabled={isLoading}>
             {isLoading ? 'Analyzing...' : 'Analyze Text'}
           </Button>
         </form>

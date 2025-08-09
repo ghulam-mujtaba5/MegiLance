@@ -3,12 +3,9 @@
 
 import React from 'react';
 import Security from '@/app/security/Security';
-import { useTheme } from '@/contexts/ThemeContext';
 
 const SecurityPage = () => {
-  const { theme } = useTheme();
-
-  return <Security theme={theme} />;
+  return <Security />;
 };
 
 export default SecurityPage;

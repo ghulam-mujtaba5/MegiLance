@@ -37,7 +37,7 @@ const Profile: React.FC<ProfileProps> = ({ theme = 'light' }) => {
   return (
     <div className={`Profile Profile--${theme}`}>
       <header className="Profile-header">
-        <UserAvatar theme={theme} name={mockUser.name} imageUrl={mockUser.avatarUrl} size="large" />
+        <UserAvatar name={mockUser.name} src={mockUser.avatarUrl} size="large" />
         <h1 className="Profile-name">{mockUser.name}</h1>
         <p className="Profile-bio">{mockUser.bio}</p>
       </header>
@@ -47,11 +47,12 @@ const Profile: React.FC<ProfileProps> = ({ theme = 'light' }) => {
           {mockProjects.map((project, index) => (
             <ProjectCard
               key={index}
-              theme={theme}
               title={project.title}
-              client={project.client}
+              clientName={project.client}
               budget={project.budget}
-              status={project.status}
+              postedTime={index === 0 ? 'Just now' : '2 days ago'}
+              tags={["Design", "Web"]}
+              onView={() => { /* TODO: navigate to project */ }}
             />
           ))}
         </div>

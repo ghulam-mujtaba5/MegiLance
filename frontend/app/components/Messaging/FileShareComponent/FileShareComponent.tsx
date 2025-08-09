@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import { cn } from '@/lib/utils';
 import commonStyles from './FileShareComponent.common.module.css';

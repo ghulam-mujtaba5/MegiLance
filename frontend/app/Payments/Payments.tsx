@@ -54,11 +54,9 @@ const Payments: React.FC<PaymentsProps> = ({ theme = 'light' }) => {
             {mockTransactions.map((transaction, index) => (
               <TransactionRow
                 key={index}
-                theme={theme}
                 date={transaction.date}
                 description={transaction.description}
                 amount={transaction.amount}
-                status={transaction.status}
               />
             ))}
           </div>

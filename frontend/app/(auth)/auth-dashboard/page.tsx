@@ -8,14 +8,39 @@ import { User } from './types';
 
 const DashboardPage = () => {
   // TODO: Get user role from authentication context or API
-  // For now, defaulting to admin role
-  const userRole = 'admin'; // This should come from auth context
+  // Initialize with null; we'll deduce from selected user
+  const [userRole, setUserRole] = useState<'admin' | 'client' | 'freelancer'>('admin');
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     // In a real app, this would be an API call.
-    // For now, we're loading a static JSON file.
-    setUser(userData);
+    // For now, load the static JSON (array) and map to the Dashboard User type
+    type RawUser = {
+      id: string;
+      name: string;
+      role: 'admin' | 'client' | 'freelancer';
+      email: string;
+      avatar: string;
+      status: string;
+      projects: number;
+      balance: number;
+    };
+
+    const rawUsers = userData as unknown as RawUser[];
+    const preferred = rawUsers.find(u => u.role === 'admin') ?? rawUsers[0];
+    if (preferred) {
+      const mapped: User = {
+        fullName: preferred.name,
+        email: preferred.email,
+        bio: '',
+        avatar: preferred.avatar,
+        notificationCount: 3,
+      };
+      setUser(mapped);
+      setUserRole(preferred.role);
+    } else {
+      setUser(null);
+    }
   }, []);
 
   if (!user) {

@@ -3,7 +3,7 @@
 
 import React, { useMemo } from 'react';
 import { useTheme } from 'next-themes';
-import AdminSidebarNav from '@/app/admin/components/AdminSidebarNav/AdminSidebarNav';
+import SidebarNav from '@/app/components/SidebarNav/SidebarNav';
 import commonStyles from './AdminLayout.common.module.css';
 import lightStyles from './AdminLayout.light.module.css';
 import darkStyles from './AdminLayout.dark.module.css';
@@ -23,7 +23,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   return (
     <div className={styles.layoutContainer}>
       <aside className={styles.sidebar}>
-        <AdminSidebarNav />
+        <SidebarNav userType="admin" />
       </aside>
       <main className={styles.mainContent}>
         {children}

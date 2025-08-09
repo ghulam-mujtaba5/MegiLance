@@ -2,9 +2,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import Button from '@/app/components/Button/Button';
+import { Button } from '@/components/ui/button';
 import commonStyles from './AISettings.common.module.css';
 import lightStyles from './AISettings.light.module.css';
 import darkStyles from './AISettings.dark.module.css';

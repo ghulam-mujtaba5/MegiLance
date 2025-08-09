@@ -3,7 +3,7 @@
 
 import React, { useMemo } from 'react';
 import { useTheme } from 'next-themes';
-import ClientSidebarNav from '@/app/client/components/ClientSidebarNav/ClientSidebarNav';
+import SidebarNav from '@/app/components/SidebarNav/SidebarNav';
 import commonStyles from './ClientLayout.common.module.css';
 import lightStyles from './ClientLayout.light.module.css';
 import darkStyles from './ClientLayout.dark.module.css';
@@ -23,7 +23,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   return (
     <div className={styles.layoutContainer}>
       <aside className={styles.sidebar}>
-        <ClientSidebarNav />
+        <SidebarNav userType="client" />
       </aside>
       <main className={styles.mainContent}>
         {children}

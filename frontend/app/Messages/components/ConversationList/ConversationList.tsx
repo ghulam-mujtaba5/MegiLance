@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Conversation } from './types';
+import { Conversation } from '../types';
 import commonStyles from './ConversationList.common.module.css';
 import lightStyles from './ConversationList.light.module.css';
 import darkStyles from './ConversationList.dark.module.css';

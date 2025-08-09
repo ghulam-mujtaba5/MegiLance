@@ -45,10 +45,11 @@ const ProjectsList: React.FC = () => {
       {projects.map((project) => (
         <ProjectCard
           key={project.id}
-          name={project.name}
-          client={project.client}
+          title={project.name}
+          clientName={project.client}
           budget={`$${project.budget.toLocaleString()}`}
-          status={project.status}
+          postedTime={'Recently updated'}
+          tags={[]}
         />
       ))}
     </div>

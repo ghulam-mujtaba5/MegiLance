@@ -8,9 +8,7 @@ import ChatWindow from './components/ChatWindow/ChatWindow';
 import MessageInput from './components/MessageInput/MessageInput';
 
 // Styles
-import './Messages.common.css';
-import './Messages.light.css';
-import './Messages.dark.css';
+// Global styles are imported at the route level (page.tsx) per Next.js App Router rules.
 
 const Messages: React.FC = () => {
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);

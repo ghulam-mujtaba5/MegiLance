@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './SentimentAnalyzer.common.module.css';
 import lightStyles from './SentimentAnalyzer.light.module.css';

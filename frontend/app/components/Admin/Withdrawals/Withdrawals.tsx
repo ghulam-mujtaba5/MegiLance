@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import commonStyles from './Withdrawals.common.module.css';

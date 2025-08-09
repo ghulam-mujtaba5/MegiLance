@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import Button from '@/app/components/Button/Button';
+import { Button } from '@/components/ui/button';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import './Chatbot.common.css';
 import './Chatbot.light.css';
@@ -56,7 +56,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ theme = 'light' }) => {
         <div className="Chatbot-messages">
           {messages.map(msg => (
             <div key={msg.id} className={`Message Message--${msg.sender} Message--${theme}`}>
-              {msg.sender === 'bot' && <UserAvatar theme={theme} name="AI Assistant" src="/ai-avatar.png" size="small" />}
+              {msg.sender === 'bot' && <UserAvatar name="AI Assistant" src="/ai-avatar.png" size="small" />}
               <div className="Message-bubble">{msg.text}</div>
             </div>
           ))}
@@ -70,7 +70,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ theme = 'light' }) => {
             value={input}
             onChange={e => setInput(e.target.value)}
           />
-          <Button theme={theme} variant="primary" type="submit">Send</Button>
+          <Button variant="primary" type="submit">Send</Button>
         </form>
       </div>
     </div>

@@ -1,4 +1,4 @@
 /* Migrated from ChatWindow.common.css to ChatWindow.common.module.css */
-@import url('../../../Messages.common.module.css');
+@import url('../../Messages.common.module.css');
 
 /* Place all ChatWindow.common.css content here */

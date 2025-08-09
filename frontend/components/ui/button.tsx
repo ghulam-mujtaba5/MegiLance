@@ -13,6 +13,8 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   variant?: 'primary' | 'secondary' | 'accent' | 'destructive' | 'ghost' | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   asChild?: boolean;
+  // Accept legacy prop silently (theme is handled globally)
+  theme?: 'light' | 'dark';
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

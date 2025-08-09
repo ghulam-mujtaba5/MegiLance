@@ -1,4 +1,4 @@
 /* Migrated from ConversationList.common.css to ConversationList.common.module.css */
-@import url('../../../Messages.common.module.css');
+@import url('../../Messages.common.module.css');
 
 /* Place all ConversationList.common.css content here */

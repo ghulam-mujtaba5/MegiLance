@@ -2,7 +2,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import useAnimatedCounter from '@/hooks/useAnimatedCounter';
 import Link from 'next/link';
 import Button from '@/app/components/Button/Button';
@@ -17,10 +17,15 @@ const Hero: React.FC = () => {
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
-  const animatedFreelancers = useAnimatedCounter(50000);
-  const animatedProjects = useAnimatedCounter(125000);
-  const animatedPayments = useAnimatedCounter(2500000);
-  const animatedCountries = useAnimatedCounter(45);
+  const freelancersRef = useRef<HTMLDivElement>(null);
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const paymentsRef = useRef<HTMLDivElement>(null);
+  const countriesRef = useRef<HTMLDivElement>(null);
+
+  const animatedFreelancers = useAnimatedCounter(50000, 2000, 0, freelancersRef);
+  const animatedProjects = useAnimatedCounter(125000, 2000, 0, projectsRef);
+  const animatedPayments = useAnimatedCounter(2500000, 2000, 0, paymentsRef);
+  const animatedCountries = useAnimatedCounter(45, 2000, 0, countriesRef);
 
   return (
     <section className={cn(commonStyles.hero, themeStyles.hero)}>
@@ -88,19 +93,19 @@ const Hero: React.FC = () => {
           {/* Animated Statistics */}
           <div className={cn(commonStyles.stats, themeStyles.stats)} aria-label="Platform Statistics">
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedFreelancers.toLocaleString()} active freelancers`}>{animatedFreelancers.toLocaleString()}+</div>
+              <div ref={freelancersRef} className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedFreelancers} active freelancers`}>{animatedFreelancers}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Active Freelancers</div>
             </div>
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedProjects.toLocaleString()} projects completed`}>{animatedProjects.toLocaleString()}+</div>
+              <div ref={projectsRef} className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedProjects} projects completed`}>{animatedProjects}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Projects Completed</div>
             </div>
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`over $${animatedPayments.toLocaleString()} paid to freelancers`}>${animatedPayments.toLocaleString()}+</div>
+              <div ref={paymentsRef} className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`over $${animatedPayments} paid to freelancers`}>${animatedPayments}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Paid to Freelancers</div>
             </div>
             <div className={cn(commonStyles.stat, themeStyles.stat)}>
-              <div className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedCountries} countries served`}>{animatedCountries}+</div>
+              <div ref={countriesRef} className={cn(commonStyles.statNumber, themeStyles.statNumber)} aria-label={`${animatedCountries} countries served`}>{animatedCountries}+</div>
               <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Countries Served</div>
             </div>
           </div>

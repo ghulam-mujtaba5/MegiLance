@@ -67,8 +67,15 @@ const TabsList: FC<TabsListProps> = ({ children, className }) => {
     <div role="tablist" aria-orientation="horizontal" onKeyDown={handleKeyDown} className={cn(commonStyles.tabsList, themeStyles.tabsList, className)}>
       {Children.map(children, (child, index) => {
         if (isValidElement(child) && child.type === Tab) {
-          const childWithRef = child as React.ReactElement<TabProps> & { ref: ForwardedRef<HTMLButtonElement> };
-          return cloneElement(childWithRef, { index, ref: (el: HTMLButtonElement | null) => { tabRefs.current[index] = el; if (typeof childWithRef.ref === 'function') { childWithRef.ref(el); } } });
+          const childWithRef = child as React.ReactElement<any>;
+          return cloneElement(childWithRef as any, {
+            index,
+            ref: (el: HTMLButtonElement | null) => {
+              tabRefs.current[index] = el;
+              const r: any = (childWithRef as any).ref;
+              if (typeof r === 'function') r(el);
+            },
+          } as any);
         }
         return child;
       })}

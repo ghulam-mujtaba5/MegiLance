@@ -3,7 +3,7 @@
 
 import React from 'react';
 import SidebarNav from '@/app/components/SidebarNav/SidebarNav';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import './DashboardLayout.common.css'; // Reusing dashboard layout styles
 import './DashboardLayout.light.css';
 import './DashboardLayout.dark.css';

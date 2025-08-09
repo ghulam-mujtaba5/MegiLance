@@ -27,7 +27,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ theme = 'light' }) => {
           <div className="Onboarding-step">
             <h2>Welcome to MegiLance!</h2>
             <p>The AI-powered platform for the future of work. Let&apos;s get your profile set up.</p>
-            <Button theme={theme} onClick={nextStep}>Get Started</Button>
+            <Button onClick={nextStep}>Get Started</Button>
           </div>
         );
       case 2:
@@ -35,7 +35,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ theme = 'light' }) => {
           <div className="Onboarding-step">
             <h2>How Our AI Works For You</h2>
             <p>Our AI helps you find the perfect projects by analyzing your skills and ranking your profile. A higher rank means more visibility to clients!</p>
-            <Button theme={theme} onClick={nextStep}>Next</Button>
+            <Button onClick={nextStep}>Next</Button>
           </div>
         );
       case 3:
@@ -44,7 +44,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ theme = 'light' }) => {
             <h2>Connect Your Wallet</h2>
             <p>Securely connect your crypto wallet to receive USDC payments directly. All transactions are handled via smart contracts for your security.</p>
             {/* Placeholder for a WalletConnectButton component */}
-            <Button theme={theme} onClick={finishOnboarding}>Connect Wallet & Finish</Button>
+            <Button onClick={finishOnboarding}>Connect Wallet & Finish</Button>
           </div>
         );
       default:

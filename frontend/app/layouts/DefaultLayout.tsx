@@ -4,7 +4,7 @@
 import React from 'react';
 import Header from '@/app/components/Header/Header';
 import Footer from '@/app/components/Footer/Footer';
-import { useTheme } from '@/app/contexts/ThemeContext';
+import { useTheme } from 'next-themes';
 import './DefaultLayout.common.css';
 import './DefaultLayout.light.css';
 import './DefaultLayout.dark.css';

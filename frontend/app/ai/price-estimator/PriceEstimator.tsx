@@ -2,8 +2,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import Button from '@/app/components/Button/Button';
-import Input from '@/app/components/Input/Input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/Input/input';
 import './PriceEstimator.common.css';
 import './PriceEstimator.light.css';
 import './PriceEstimator.dark.css';
@@ -32,12 +32,18 @@ const PriceEstimator: React.FC<PriceEstimatorProps> = ({ theme = 'light' }) => {
 
         <form className={`PriceEstimator-form Card--${theme}`} onSubmit={handleEstimation}>
           <div className="form-grid">
-            <Input theme={theme} label="Project Title" type="text" placeholder="e.g., E-commerce Website Redesign" required />
+            <div>
+              <label htmlFor="project-title" className={`Input-label Input-label--${theme}`}>Project Title</label>
+              <Input id="project-title" type="text" placeholder="e.g., E-commerce Website Redesign" required />
+            </div>
             <div className="full-span">
                 <label htmlFor="description" className={`Input-label Input-label--${theme}`}>Project Description</label>
                 <textarea id="description" className={`Textarea Textarea--${theme}`} rows={6} placeholder="Describe the project scope, key features, and deliverables..." required></textarea>
             </div>
-            <Input theme={theme} label="Industry" type="text" placeholder="e.g., SaaS, Retail, Healthcare" />
+            <div>
+              <label htmlFor="industry" className={`Input-label Input-label--${theme}`}>Industry</label>
+              <Input id="industry" type="text" placeholder="e.g., SaaS, Retail, Healthcare" />
+            </div>
             <div>
                 <label htmlFor="complexity" className={`Input-label Input-label--${theme}`}>Complexity</label>
                 <select id="complexity" className={`Select Select--${theme}`} required>
@@ -47,7 +53,7 @@ const PriceEstimator: React.FC<PriceEstimatorProps> = ({ theme = 'light' }) => {
                 </select>
             </div>
           </div>
-          <Button theme={theme} variant="primary" type="submit">Estimate Price</Button>
+          <Button variant="primary" type="submit">Estimate Price</Button>
         </form>
 
         {estimatedPrice && (
