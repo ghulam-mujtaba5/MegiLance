@@ -8,12 +8,16 @@
 .loginPage {
   display: grid;
   grid-template-columns: 1fr; /* Mobile: single column */
-  width: 100vw;
-  min-height: 100dvh; /* viewport height with mobile toolbar awareness */
+  grid-template-areas: 'form';
+  width: 100%;
+  min-height: 100svh; /* better small viewport unit support */
   font-family: 'Inter', sans-serif;
   align-items: stretch;
   overflow: hidden; /* prevents accidental overlap scroll bleed */
 }
+
+/* Slot that hosts the reusable BrandingPanel so page CSS can control layout */
+.brandingSlot { display: none; grid-area: brand; }
 
 /* Left Panel: Branding */
 .brandingPanel {
@@ -26,8 +30,15 @@
 }
 
 @media (min-width: 768px) {
-  .loginPage { grid-template-columns: 1fr 1fr; }
+  .loginPage { 
+    grid-template-columns: 5fr 7fr; /* slightly larger form column */
+    grid-template-areas: 'brand form';
+  }
+  .brandingSlot { display: block; }
   .brandingPanel { display: flex; }
+}
+@media (min-width: 1280px) {
+  .loginPage { grid-template-columns: 1fr 1fr; }
 }
 
 .brandingContent {
@@ -83,6 +94,7 @@
   padding: 2.5rem 1.25rem;
   background-color: var(--form-bg-color);
   height: 100%;
+  grid-area: form;
 }
 
 @media (min-width: 768px) {

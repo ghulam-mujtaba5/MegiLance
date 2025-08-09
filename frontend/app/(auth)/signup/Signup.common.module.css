@@ -8,12 +8,17 @@
 .loginPage {
   display: grid;
   grid-template-columns: 1fr; /* Mobile single column */
+  grid-template-areas:
+    'form';
   width: 100vw;
   min-height: 100dvh;
   font-family: 'Inter', sans-serif;
   align-items: stretch;
   overflow: hidden;
 }
+
+/* Slot that hosts the reusable BrandingPanel so page CSS can control layout */
+.brandingSlot { display: none; grid-area: brand; }
 
 /* Left Panel: Branding */
 .brandingPanel {
@@ -26,7 +31,11 @@
 }
 
 @media (min-width: 768px) {
-  .loginPage { grid-template-columns: 1fr 1fr; }
+  .loginPage { 
+    grid-template-columns: 1fr 1fr; 
+    grid-template-areas: 'brand form';
+  }
+  .brandingSlot { display: block; }
   .brandingPanel { display: flex; }
 }
 
@@ -83,6 +92,7 @@
   padding: 2.5rem 1.25rem;
   background-color: var(--form-bg-color);
   height: 100%;
+  grid-area: form;
 }
 
 @media (min-width: 768px) {

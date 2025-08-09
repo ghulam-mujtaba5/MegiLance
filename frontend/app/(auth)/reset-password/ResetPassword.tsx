@@ -77,7 +77,9 @@ const ResetPassword: React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
-      <AuthBrandingPanel roleConfig={resetPasswordBranding} />
+      <div className={styles.brandingSlot}>
+        <AuthBrandingPanel roleConfig={resetPasswordBranding} />
+      </div>
       <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>

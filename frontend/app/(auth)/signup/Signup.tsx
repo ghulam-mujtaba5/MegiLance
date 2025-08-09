@@ -84,12 +84,45 @@ const Signup: React.FC = () => {
 
   const styles = useMemo(() => {
     const themeStyles = theme === 'light' ? lightStyles : darkStyles;
-    return { ...commonStyles, ...themeStyles };
+    const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
+    return {
+      loginPage: merge('loginPage'),
+      brandingSlot: merge('brandingSlot'),
+      brandingPanel: merge('brandingPanel'),
+      brandingContent: merge('brandingContent'),
+      brandingIconWrapper: merge('brandingIconWrapper'),
+      brandingIcon: merge('brandingIcon'),
+      brandingTitle: merge('brandingTitle'),
+      brandingText: merge('brandingText'),
+      brandingFooter: merge('brandingFooter'),
+      formPanel: merge('formPanel'),
+      formContainer: merge('formContainer'),
+      formHeader: merge('formHeader'),
+      formTitle: merge('formTitle'),
+      formSubtitle: merge('formSubtitle'),
+      roleSelector: merge('roleSelector'),
+      roleButton: merge('roleButton'),
+      roleButtonSelected: merge('roleButtonSelected'),
+      roleIcon: merge('roleIcon'),
+      socialAuth: merge('socialAuth'),
+      divider: merge('divider'),
+      dividerText: merge('dividerText'),
+      loginForm: merge('loginForm'),
+      inputGroup: merge('inputGroup'),
+      passwordToggle: merge('passwordToggle'),
+      formOptions: merge('formOptions'),
+      forgotPasswordLink: merge('forgotPasswordLink'),
+      submitButton: merge('submitButton'),
+      signupPrompt: merge('signupPrompt'),
+      generalError: merge('generalError'),
+    } as const;
   }, [theme]);
 
   return (
     <div className={styles.loginPage}>
-      <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
+      <div className={styles.brandingSlot}>
+        <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
+      </div>
       <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>

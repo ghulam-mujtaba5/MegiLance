@@ -26,7 +26,15 @@ const AuthBrandingPanel: React.FC<AuthBrandingPanelProps> = ({ roleConfig }) => 
   const styles = React.useMemo(() => {
     const effectiveTheme = theme ?? 'light';
     const themeStyles = effectiveTheme === 'dark' ? darkStyles : lightStyles;
-    return { ...commonStyles, ...themeStyles };
+    return {
+      brandingPanel: cn(commonStyles.brandingPanel, themeStyles.brandingPanel),
+      brandingContent: cn(commonStyles.brandingContent, themeStyles.brandingContent),
+      brandingIconWrapper: cn(commonStyles.brandingIconWrapper, themeStyles.brandingIconWrapper),
+      brandingIcon: cn(commonStyles.brandingIcon, themeStyles.brandingIcon),
+      brandingTitle: cn(commonStyles.brandingTitle, themeStyles.brandingTitle),
+      brandingText: cn(commonStyles.brandingText, themeStyles.brandingText),
+      brandingFooter: cn(commonStyles.brandingFooter, themeStyles.brandingFooter),
+    } as const;
   }, [theme]);
   const { brandIcon: BrandIcon, brandTitle, brandText } = roleConfig;
 

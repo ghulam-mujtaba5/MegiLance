@@ -64,7 +64,41 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '', general: '' });
 
-  const styles = theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles };
+  const styles = React.useMemo(() => {
+    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
+    return {
+      loginPage: merge('loginPage'),
+      brandingSlot: merge('brandingSlot'),
+      brandingPanel: merge('brandingPanel'),
+      brandingContent: merge('brandingContent'),
+      brandingIconWrapper: merge('brandingIconWrapper'),
+      brandingIcon: merge('brandingIcon'),
+      brandingTitle: merge('brandingTitle'),
+      brandingText: merge('brandingText'),
+      brandingFooter: merge('brandingFooter'),
+      formPanel: merge('formPanel'),
+      formContainer: merge('formContainer'),
+      formHeader: merge('formHeader'),
+      formTitle: merge('formTitle'),
+      formSubtitle: merge('formSubtitle'),
+      roleSelector: merge('roleSelector'),
+      roleButton: merge('roleButton'),
+      roleButtonSelected: merge('roleButtonSelected'),
+      roleIcon: merge('roleIcon'),
+      socialAuth: merge('socialAuth'),
+      divider: merge('divider'),
+      dividerText: merge('dividerText'),
+      loginForm: merge('loginForm'),
+      inputGroup: merge('inputGroup'),
+      passwordToggle: merge('passwordToggle'),
+      formOptions: merge('formOptions'),
+      forgotPasswordLink: merge('forgotPasswordLink'),
+      submitButton: merge('submitButton'),
+      signupPrompt: merge('signupPrompt'),
+      generalError: merge('generalError'),
+    } as const;
+  }, [theme]);
 
   const validate = () => {
     const newErrors = { email: '', password: '', general: '' };
@@ -127,7 +161,9 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
-      <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
+      <div className={styles.brandingSlot}>
+        <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
+      </div>
       <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           {isPreviewMode() && (

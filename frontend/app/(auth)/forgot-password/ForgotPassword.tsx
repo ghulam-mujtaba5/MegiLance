@@ -41,12 +41,41 @@ const ForgotPassword: React.FC = () => {
 
   const styles = React.useMemo(() => {
     const themeStyles = theme === 'light' ? lightStyles : darkStyles;
-    return { ...commonStyles, ...themeStyles };
+    const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
+    return {
+      loginPage: merge('loginPage'),
+      brandingSlot: merge('brandingSlot'),
+      brandingPanel: merge('brandingPanel'),
+      brandingContent: merge('brandingContent'),
+      brandingIconWrapper: merge('brandingIconWrapper'),
+      brandingIcon: merge('brandingIcon'),
+      brandingTitle: merge('brandingTitle'),
+      brandingText: merge('brandingText'),
+      brandingFooter: merge('brandingFooter'),
+      formPanel: merge('formPanel'),
+      formContainer: merge('formContainer'),
+      formHeader: merge('formHeader'),
+      formTitle: merge('formTitle'),
+      formSubtitle: merge('formSubtitle'),
+      socialAuth: merge('socialAuth'),
+      divider: merge('divider'),
+      dividerText: merge('dividerText'),
+      loginForm: merge('loginForm'),
+      inputGroup: merge('inputGroup'),
+      passwordToggle: merge('passwordToggle'),
+      formOptions: merge('formOptions'),
+      forgotPasswordLink: merge('forgotPasswordLink'),
+      submitButton: merge('submitButton'),
+      signupPrompt: merge('signupPrompt'),
+      generalError: merge('generalError'),
+    } as const;
   }, [theme]);
 
   return (
     <div className={styles.loginPage}>
-      <AuthBrandingPanel roleConfig={forgotPasswordBranding} />
+      <div className={styles.brandingSlot}>
+        <AuthBrandingPanel roleConfig={forgotPasswordBranding} />
+      </div>
       <div className={styles.formPanel}>
         <div className={styles.formContainer}>
           <div className={styles.formHeader}>
