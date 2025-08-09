@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+import { isPreviewMode } from '@/app/utils/flags';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
@@ -40,6 +42,7 @@ const roleConfig = {
 
 const Signup: React.FC = () => {
   const { theme } = useTheme();
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -75,6 +78,16 @@ const Signup: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Dev preview bypass: allow proceeding with empty credentials
+    if (isPreviewMode()) {
+      setLoading(true);
+      console.log('Preview signup bypass:', { selectedRole, formData });
+      setTimeout(() => {
+        setLoading(false);
+        router.push(selectedRole === 'client' ? '/client/dashboard' : '/dashboard');
+      }, 300);
+      return;
+    }
     if (validate()) {
       setLoading(true);
       console.log('Creating account for:', selectedRole, formData);
