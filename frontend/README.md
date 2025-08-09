@@ -77,6 +77,22 @@ This pattern has been applied to all major components, creating a pixel-perfect,
 
 ---
 
+## 🔐 Auth Layout: Two-Panel Grid
+
+All authentication pages (`/login`, `/signup`, `/forgot-password`, `/reset-password`) use a robust, accessible two-panel grid with a left branding panel and right form panel.
+
+- Layout defined in each page's `*.common.module.css` using `grid-template-areas`:
+  - Mobile: `grid-template-areas: 'form'` (branding hidden)
+  - ≥768px: `grid-template-areas: 'brand form'` with columns `5fr 7fr`
+  - ≥1280px: columns `1fr 1fr`
+- The `AuthBrandingPanel` is wrapped by a local `.brandingSlot` div so the grid controls placement.
+- Avoid `width: 100vw`; use `width: 100%` and `min-height: 100svh` to prevent overflow issues.
+- Always merge classes from common + theme modules in components: `cn(common[key], theme[key])` so theme styles do not overwrite layout rules.
+
+Reference: `app/components/Auth/BrandingPanel/BrandingPanel.tsx` and `app/(auth)/*/*.tsx`.
+
+---
+
 ## 📂 Project Structure
 
 - **/app:** Contains all pages and layouts, following the Next.js App Router structure.

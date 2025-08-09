@@ -1,0 +1,9 @@
+/* @AI-HINT: Dark theme overrides for Pricing. */
+.root { color: #e5e7eb; }
+.subtitle { color: #9ca3af; }
+.card { background: #0e1627; border: 1px solid #1f2937; }
+.price { color: #e5e7eb; }
+.cta { background: #8ab0ff; color: #0b1220; }
+.cta:hover { background: #7aa1eb; }
+.note { color: #9ca3af; }
+.badge { background: #0e1a33; color: #8ab0ff; }

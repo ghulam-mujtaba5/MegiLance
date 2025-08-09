@@ -1,0 +1,8 @@
+/* @AI-HINT: Light theme styles for FAQ. */
+.root { color: #111827; }
+.subtitle { color: #4b5563; }
+.item { background: #ffffff; border-color: #e5e7eb; }
+.q { color: #111827; }
+.q:hover { background: #f8fafc; }
+.a { color: #374151; }
+.badge { background: #eef2ff; color: #3b82f6; }

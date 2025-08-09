@@ -1,12 +1,12 @@
-// @AI-HINT: This is the main layout for the authenticated application. It uses the AppLayout component to provide a consistent shell with a sidebar and navbar.
+// @AI-HINT: This is the public site layout wrapper. It uses PublicLayout to provide the shared Header/Footer and skip links for marketing pages.
 
 import React from 'react';
-import AppLayout from '../components/AppLayout/AppLayout';
+import PublicLayout from '../layouts/PublicLayout/PublicLayout';
 
 export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <AppLayout>
+    <PublicLayout>
       {children}
-    </AppLayout>
+    </PublicLayout>
   );
 }

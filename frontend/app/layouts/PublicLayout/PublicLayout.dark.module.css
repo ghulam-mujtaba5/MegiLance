@@ -1,0 +1,15 @@
+/* @AI-HINT: Dark theme styles for PublicLayout. Colors and surfaces for dark theme. */
+.root { background: #0b1220; color: #e5e7eb; }
+.skipLink { background: #111827; color: #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.header { background: rgba(17,24,39,0.7); border-bottom: 1px solid #1f2937; }
+.nav { color: #e5e7eb; }
+.navBrand { color: #e5e7eb; }
+.navLink { color: #cbd5e1; }
+.navLink:hover { color: #8ab0ff; }
+.navLinkActive { color: #8ab0ff; }
+.mobileToggle { color: #cbd5e1; }
+.mobileNav { background: rgba(17,24,39,0.9); border-bottom: 1px solid #1f2937; }
+.main { background: #0b1220; }
+.footer { background: #0e1627; color: #cbd5e1; border-top-color: #1f2937; }
+.footerMeta .navLink { color: #9ca3af; }
+.footerMeta .navLink:hover { color: #8ab0ff; }

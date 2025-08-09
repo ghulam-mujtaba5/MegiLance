@@ -1,0 +1,15 @@
+/* @AI-HINT: Light theme styles for PublicLayout. Colors and surfaces for bright theme. */
+.root { background: #ffffff; color: #111827; }
+.skipLink { background: #ffffff; color: #111827; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.header { background: rgba(255,255,255,0.8); border-bottom: 1px solid #e5e7eb; }
+.nav { color: #111827; }
+.navBrand { color: #111827; }
+.navLink { color: #1f2937; }
+.navLink:hover { color: #4573df; }
+.navLinkActive { color: #4573df; }
+.mobileToggle { color: #1f2937; }
+.mobileNav { background: rgba(255,255,255,0.96); border-bottom: 1px solid #e5e7eb; }
+.main { background: #ffffff; }
+.footer { background: #fafafa; color: #374151; }
+.footerMeta .navLink { color: #374151; }
+.footerMeta .navLink:hover { color: #4573df; }

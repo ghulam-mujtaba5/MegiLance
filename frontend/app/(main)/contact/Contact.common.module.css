@@ -1,0 +1,13 @@
+/* @AI-HINT: Common styles for Contact page: layout, form, animation. */
+.root { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+.header { text-align: center; margin-bottom: 1.5rem; }
+.subtitle { max-width: 720px; margin: 0.5rem auto 0; }
+.grid { display: grid; gap: 1rem; }
+.card { border-radius: var(--radius-lg); padding: 1rem; box-shadow: var(--shadow-sm); border: 1px solid transparent; }
+.label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+.input, .select, .textarea { width: 100%; padding: 0.6rem 0.7rem; border-radius: var(--radius-md); border: 1px solid; background: transparent; }
+.error { margin-top: 0.25rem; font-size: 0.9rem; }
+.submit { margin-top: 0.5rem; font-weight: 600; padding: 0.6rem 0.9rem; border-radius: var(--radius-md); border: none; cursor: pointer; }
+
+.fadeIn { opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; }
+.visible { opacity: 1; transform: none; }

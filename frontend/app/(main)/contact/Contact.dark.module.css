@@ -1,0 +1,9 @@
+/* @AI-HINT: Dark theme styles for Contact page. */
+.root { color: #e5e7eb; }
+.subtitle { color: #9ca3af; }
+.card { background: #0e1627; border-color: #1f2937; }
+.input, .select, .textarea { color: #e5e7eb; border-color: #1f2937; }
+.input:focus, .select:focus, .textarea:focus { outline: none; border-color: #8ab0ff; box-shadow: 0 0 0 3px rgba(138,176,255,0.2); }
+.error { color: #fca5a5; }
+.submit { background: #8ab0ff; color: #0b1220; }
+.submit:hover { background: #7aa1eb; }

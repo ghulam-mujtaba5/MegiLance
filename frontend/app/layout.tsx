@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import '../styles/themes/light.css';
 import '../styles/themes/dark.css';
+import '../styles/tokens.css';
 import './styles/theme.css';
 
 import { ThemeProvider } from 'next-themes';

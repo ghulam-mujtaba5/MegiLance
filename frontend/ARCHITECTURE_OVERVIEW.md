@@ -57,6 +57,13 @@ This document summarizes the current project structure, identifies duplication a
 - No cross-group page routing: only component reuse between route groups.
 - Global CSS imports only at route level (`page.tsx`), not inside components.
 - Per-component styling with `.common.module.css`, `.light.module.css`, `.dark.module.css`.
+ - Auth pages use a two-panel grid layout with `grid-template-areas`:
+   - Mobile: `'form'` only (branding hidden)
+   - ≥768px: `'brand form'` with columns `5fr 7fr`
+   - ≥1280px: `1fr 1fr`
+ - Wrap `AuthBrandingPanel` in a local `.brandingSlot` so the grid controls placement.
+ - Always merge classes from common + theme modules in components using `cn(common[key], theme[key])` to avoid overwriting layout rules.
+ - Prefer `width: 100%` and `min-height: 100svh` for pages; avoid `100vw` overflow issues.
 
 ## Consolidation and Fix Plan (Batch Execution)
 
