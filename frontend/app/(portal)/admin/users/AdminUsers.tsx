@@ -183,19 +183,49 @@ const AdminUsers: React.FC = () => {
                   <input type="checkbox" aria-label="Select all" checked={allSelected} onChange={toggleAll} />
                 </th>
                 <th scope="col" className={themed.th + ' ' + common.th} aria-sort={sortKey==='name' ? (sortDir==='asc'?'ascending':'descending') : undefined}>
-                  <button type="button" className={common.sortBtn} onClick={() => onSort('name')} aria-label="Sort by name">Name</button>
+                  <button type="button" className={common.sortBtn} onClick={() => onSort('name')} aria-label="Sort by name">
+                    Name{sortKey==='name' && (
+                      <span aria-hidden="true" className={common.sortIndicator}>
+                        {sortDir==='asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </button>
                 </th>
                 <th scope="col" className={themed.th + ' ' + common.th} aria-sort={sortKey==='email' ? (sortDir==='asc'?'ascending':'descending') : undefined}>
-                  <button type="button" className={common.sortBtn} onClick={() => onSort('email')} aria-label="Sort by email">Email</button>
+                  <button type="button" className={common.sortBtn} onClick={() => onSort('email')} aria-label="Sort by email">
+                    Email{sortKey==='email' && (
+                      <span aria-hidden="true" className={common.sortIndicator}>
+                        {sortDir==='asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </button>
                 </th>
                 <th scope="col" className={themed.th + ' ' + common.th} aria-sort={sortKey==='role' ? (sortDir==='asc'?'ascending':'descending') : undefined}>
-                  <button type="button" className={common.sortBtn} onClick={() => onSort('role')} aria-label="Sort by role">Role</button>
+                  <button type="button" className={common.sortBtn} onClick={() => onSort('role')} aria-label="Sort by role">
+                    Role{sortKey==='role' && (
+                      <span aria-hidden="true" className={common.sortIndicator}>
+                        {sortDir==='asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </button>
                 </th>
                 <th scope="col" className={themed.th + ' ' + common.th} aria-sort={sortKey==='status' ? (sortDir==='asc'?'ascending':'descending') : undefined}>
-                  <button type="button" className={common.sortBtn} onClick={() => onSort('status')} aria-label="Sort by status">Status</button>
+                  <button type="button" className={common.sortBtn} onClick={() => onSort('status')} aria-label="Sort by status">
+                    Status{sortKey==='status' && (
+                      <span aria-hidden="true" className={common.sortIndicator}>
+                        {sortDir==='asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </button>
                 </th>
                 <th scope="col" className={themed.th + ' ' + common.th} aria-sort={sortKey==='joined' ? (sortDir==='asc'?'ascending':'descending') : undefined}>
-                  <button type="button" className={common.sortBtn} onClick={() => onSort('joined')} aria-label="Sort by joined">Joined</button>
+                  <button type="button" className={common.sortBtn} onClick={() => onSort('joined')} aria-label="Sort by joined">
+                    Joined{sortKey==='joined' && (
+                      <span aria-hidden="true" className={common.sortIndicator}>
+                        {sortDir==='asc' ? '▲' : '▼'}
+                      </span>
+                    )}
+                  </button>
                 </th>
               </tr>
             </thead>

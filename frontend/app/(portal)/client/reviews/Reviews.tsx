@@ -59,6 +59,40 @@ const Reviews: React.FC = () => {
     );
   }, [rows, query, rating]);
 
+  // Sorting
+  type SortKey = 'project' | 'freelancer' | 'created' | 'rating';
+  const [sortKey, setSortKey] = useState<SortKey>('created');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const sorted = useMemo(() => {
+    const list = [...filtered];
+    list.sort((a, b) => {
+      let av: string | number = '';
+      let bv: string | number = '';
+      switch (sortKey) {
+        case 'project': av = a.project; bv = b.project; break;
+        case 'freelancer': av = a.freelancer; bv = b.freelancer; break;
+        case 'created': av = a.created; bv = b.created; break;
+        case 'rating': av = a.rating; bv = b.rating; break;
+      }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filtered, sortKey, sortDir]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const pageSafe = Math.min(Math.max(1, page), totalPages);
+  const paged = useMemo(() => {
+    const start = (pageSafe - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pageSafe, pageSize]);
+
+  React.useEffect(() => { setPage(1); }, [sortKey, sortDir, query, rating, pageSize]);
+
   const setStar = (value: number) => setNewRating(value);
 
   const canSubmit = newText.trim().length > 10 && newRating > 0;
@@ -83,6 +117,49 @@ const Reviews: React.FC = () => {
               <option>2</option>
               <option>1</option>
             </select>
+          </div>
+        </div>
+
+        <div className={cn(common.toolbar)}>
+          <div className={common.controls}>
+            <label className={common.srOnly} htmlFor="sort-key">Sort by</label>
+            <select id="sort-key" className={cn(common.select, themed.select)} value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)}>
+              <option value="created">Date</option>
+              <option value="rating">Rating</option>
+              <option value="project">Project</option>
+              <option value="freelancer">Freelancer</option>
+            </select>
+            <label className={common.srOnly} htmlFor="sort-dir">Sort direction</label>
+            <select id="sort-dir" className={cn(common.select, themed.select)} value={sortDir} onChange={(e) => setSortDir(e.target.value as 'asc'|'desc')}>
+              <option value="asc">Asc</option>
+              <option value="desc">Desc</option>
+            </select>
+            <label className={common.srOnly} htmlFor="page-size">Reviews per page</label>
+            <select id="page-size" className={cn(common.select, themed.select)} value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+          <div>
+            <button
+              type="button"
+              className={cn(common.button, themed.button)}
+              onClick={() => {
+                const header = ['ID','Project','Freelancer','Date','Rating','Text'];
+                const data = sorted.map(r => [r.id, r.project, r.freelancer, r.created, r.rating, r.text]);
+                const csv = [header, ...data]
+                  .map(row => row.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
+                  .join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `client_reviews_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >Export CSV</button>
           </div>
         </div>
 
@@ -111,7 +188,7 @@ const Reviews: React.FC = () => {
             </>
           )}
           {error && <div className={common.error}>Failed to load reviews.</div>}
-          {!loading && filtered.map(r => (
+          {!loading && paged.map(r => (
             <article key={r.id} className={cn(common.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>{r.project}</div>
               <div className={cn(common.meta, themed.meta)}>
@@ -124,10 +201,29 @@ const Reviews: React.FC = () => {
               <p>{r.text}</p>
             </article>
           ))}
-          {filtered.length === 0 && !loading && (
+          {sorted.length === 0 && !loading && (
             <div role="status" aria-live="polite">No reviews found.</div>
           )}
         </section>
+        {sorted.length > 0 && (
+          <div className={common.paginationBar} role="navigation" aria-label="Pagination">
+            <button
+              type="button"
+              className={cn(common.button, themed.button, 'secondary')}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={pageSafe === 1}
+              aria-label="Previous page"
+            >Prev</button>
+            <span className={common.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sorted.length} result(s)</span>
+            <button
+              type="button"
+              className={cn(common.button, themed.button)}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={pageSafe === totalPages}
+              aria-label="Next page"
+            >Next</button>
+          </div>
+        )}
 
         <section ref={editorRef} className={cn(common.editor, themed.editor, editorVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="new-title">
           <h2 id="new-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Add a Review</h2>

@@ -1,7 +1,7 @@
 // @AI-HINT: Client Wallet component. Theme-aware, accessible wallet with payment history and balance information.
 'use client';
 
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -49,16 +49,56 @@ const ClientWallet: React.FC = () => {
     };
   }, [payments]);
 
-  const recentTransactions = useMemo(() => {
+  type Txn = { id: string; amount: string; amountValue: number; date: string; description: string; status: string };
+  const transactions = useMemo<Txn[]>(() => {
     if (!Array.isArray(payments)) return [];
-    return payments.slice(0, 10).map((p, idx) => ({
-      id: String(p.id ?? idx),
-      amount: p.amount ?? '0',
-      date: p.date ?? '',
-      description: p.description ?? 'Unknown transaction',
-      status: p.status ?? 'Unknown',
-    }));
+    return payments.map((p, idx) => {
+      const amountStr = String(p.amount ?? '0');
+      const value = parseFloat(amountStr.replace(/[$,]/g, '') || '0');
+      return {
+        id: String(p.id ?? idx),
+        amount: amountStr,
+        amountValue: isFinite(value) ? value : 0,
+        date: p.date ?? '',
+        description: p.description ?? 'Unknown transaction',
+        status: p.status ?? 'Unknown',
+      };
+    });
   }, [payments]);
+
+  // Sorting
+  type SortKey = 'date' | 'amount' | 'description' | 'status';
+  const [sortKey, setSortKey] = useState<SortKey>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const sorted = useMemo(() => {
+    const list = [...transactions];
+    list.sort((a, b) => {
+      let av: string | number = '';
+      let bv: string | number = '';
+      switch (sortKey) {
+        case 'date': av = a.date; bv = b.date; break;
+        case 'amount': av = a.amountValue; bv = b.amountValue; break;
+        case 'description': av = a.description; bv = b.description; break;
+        case 'status': av = a.status; bv = b.status; break;
+      }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [transactions, sortKey, sortDir]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const pageSafe = Math.min(Math.max(1, page), totalPages);
+  const paged = useMemo(() => {
+    const start = (pageSafe - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pageSafe, pageSize]);
+
+  useEffect(() => { setPage(1); }, [sortKey, sortDir, pageSize]);
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -114,6 +154,48 @@ const ClientWallet: React.FC = () => {
         >
           <section className={common.section}>
             <h2 className={common.sectionTitle}>Recent Transactions</h2>
+            <div className={common.toolbar}>
+              <div className={common.controls}>
+                <label className={common.srOnly} htmlFor="sort-key">Sort by</label>
+                <select id="sort-key" className={cn(common.select)} value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)}>
+                  <option value="date">Date</option>
+                  <option value="amount">Amount</option>
+                  <option value="description">Description</option>
+                  <option value="status">Status</option>
+                </select>
+                <label className={common.srOnly} htmlFor="sort-dir">Sort direction</label>
+                <select id="sort-dir" className={cn(common.select)} value={sortDir} onChange={(e) => setSortDir(e.target.value as 'asc'|'desc')}>
+                  <option value="asc">Asc</option>
+                  <option value="desc">Desc</option>
+                </select>
+                <label className={common.srOnly} htmlFor="page-size">Rows per page</label>
+                <select id="page-size" className={cn(common.select)} value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+              <div>
+                <button
+                  type="button"
+                  className={cn(common.button)}
+                  onClick={() => {
+                    const header = ['ID','Date','Amount','Description','Status'];
+                    const data = sorted.map(t => [t.id, t.date, t.amount, t.description, t.status]);
+                    const csv = [header, ...data]
+                      .map(row => row.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
+                      .join('\n');
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `client_wallet_transactions_${new Date().toISOString().slice(0,10)}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                >Export CSV</button>
+              </div>
+            </div>
             <div className={common.transactionList}>
               {loading ? (
                 Array.from({ length: 6 }).map((_, i) => (
@@ -125,7 +207,7 @@ const ClientWallet: React.FC = () => {
                 ))
               ) : (
                 <>
-                  {recentTransactions.map(txn => (
+                  {paged.map(txn => (
                     <TransactionRow
                       key={txn.id}
                       amount={txn.amount}
@@ -133,12 +215,31 @@ const ClientWallet: React.FC = () => {
                       description={txn.description}
                     />
                   ))}
-                  {recentTransactions.length === 0 && (
+                  {sorted.length === 0 && (
                     <div className={common.emptyState}>No transactions found.</div>
                   )}
                 </>
               )}
             </div>
+            {sorted.length > 0 && (
+              <div className={common.paginationBar} role="navigation" aria-label="Pagination">
+                <button
+                  type="button"
+                  className={cn(common.button, 'secondary')}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={pageSafe === 1}
+                  aria-label="Previous page"
+                >Prev</button>
+                <span className={common.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sorted.length} result(s)</span>
+                <button
+                  type="button"
+                  className={cn(common.button)}
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={pageSafe === totalPages}
+                  aria-label="Next page"
+                >Next</button>
+              </div>
+            )}
           </section>
         </div>
       </div>

@@ -7,6 +7,12 @@
 .title { font-family: var(--font-family-headings); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: var(--font-weight-bold); }
 .subtitle { font-size: var(--font-size-sm); opacity: .9; }
 
+/* Progress */
+.progressBar { display: flex; align-items: center; gap: 8px; min-width: 180px; }
+.progressTrack { position: relative; flex: 1; height: 8px; border-radius: 999px; background: var(--card-border); overflow: hidden; }
+.progressFill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--primary); border-radius: inherit; transition: width .3s ease; }
+.progressText { font-size: 12px; opacity: .85; }
+
 .steps { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .step { padding: 6px 10px; border-radius: 999px; border: 1px solid transparent; font-size: 12px; }
 .stepActive { font-weight: var(--font-weight-semibold); }
@@ -16,6 +22,9 @@
 
 .input, .select, .textarea { padding: 10px 12px; border-radius: var(--border-radius-md); border: 1px solid transparent; }
 .textarea { min-height: 110px; resize: vertical; }
+.help { font-size: 12px; opacity: .85; margin-top: 6px; }
+.counters { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.count { font-size: 12px; opacity: .7; }
 .row { display: grid; gap: var(--spacing-3); grid-template-columns: 1fr 1fr; }
 @media (max-width: 700px) { .row { grid-template-columns: 1fr; } }
 

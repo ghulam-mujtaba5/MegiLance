@@ -34,11 +34,19 @@ export const footerNavItems = {
     { label: 'Careers', href: '/careers' },
     { label: 'Blog', href: '/blog' },
     { label: 'Press', href: '/press' },
+    { label: 'Testimonials', href: '/testimonials' },
+    { label: 'Teams', href: '/teams' },
+    { label: 'Referral', href: '/referral' },
+    { label: 'Analytics', href: '/analytics' },
+    { label: 'User Management', href: '/user-management' },
+    { label: 'Auth Dashboard', href: '/auth-dashboard' },
   ],
   services: [
     { label: 'For Freelancers', href: '/freelancers' },
     { label: 'For Clients', href: '/clients' },
-    { label: 'AI Tools', href: '/ai' },
+    { label: 'AI Tools', href: '/ai/chatbot' },
+    { label: 'Fraud Check', href: '/ai/fraud-check' },
+    { label: 'Price Estimator', href: '/ai/price-estimator' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Enterprise', href: '/enterprise' },
   ],
@@ -48,6 +56,13 @@ export const footerNavItems = {
     { label: 'FAQ', href: '/faq' },
     { label: 'Community', href: '/community' },
     { label: 'Status', href: '/status' },
+    { label: 'Forgot Password', href: '/forgot-password' },
+    { label: 'Reset Password', href: '/reset-password' },
+    { label: 'Support', href: '/support' },
+    { label: 'Install', href: '/install' },
+    { label: 'Onboarding', href: '/onboarding' },
+    { label: 'Search', href: '/search' },
+    { label: 'Wallet', href: '/wallet' },
   ],
   legal: [
     { label: 'Privacy Policy', href: '/privacy' },
@@ -60,10 +75,10 @@ export const footerNavItems = {
 // Dashboard navigation (general authenticated users)
 export const dashboardNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: 'FaTachometerAlt' },
-  { label: 'Projects', href: '/projects', icon: 'FaBriefcase' },
+  { label: 'Projects', href: '/Projects', icon: 'FaBriefcase' },
   { label: 'Messages', href: '/messages', icon: 'FaComments' },
-  { label: 'Payments', href: '/payments', icon: 'FaCreditCard' },
-  { label: 'Settings', href: '/settings', icon: 'FaCogs' },
+  { label: 'Payments', href: '/Payments', icon: 'FaCreditCard' },
+  { label: 'Settings', href: '/Settings', icon: 'FaCogs' },
 ];
 
 // Freelancer-specific navigation
@@ -101,6 +116,7 @@ export const adminNavItems: NavItem[] = [
   { label: 'Payments', href: '/admin/payments', icon: 'FaCreditCard' },
   { label: 'AI Monitoring', href: '/admin/ai-monitoring', icon: 'FaRobot' },
   { label: 'Support', href: '/admin/support', icon: 'FaLifeRing' },
+  { label: 'Audit Logs', href: '/audit-logs', icon: 'FaShieldAlt' },
   { label: 'Settings', href: '/admin/settings', icon: 'FaCogs' },
 ];
 
@@ -113,8 +129,9 @@ export const aiToolsNavItems: NavItem[] = [
 
 // Profile menu items (common across all user types)
 export const profileMenuItems: ProfileMenuItem[] = [
-  { label: 'My Profile', href: '/profile', icon: 'FaUser' },
-  { label: 'Settings', href: '/settings', icon: 'FaCogs' },
+  { label: 'My Profile', href: '/Profile', icon: 'FaUser' },
+  { label: 'Settings', href: '/Settings', icon: 'FaCogs' },
+  { label: 'Notifications', href: '/notifications', icon: 'FaBell' },
   { label: 'Logout', onClick: () => {
     // Handle logout logic
     if (typeof window !== 'undefined') {
@@ -128,7 +145,7 @@ export const profileMenuItems: ProfileMenuItem[] = [
 export const quickAccessLinks = {
   freelancer: [
     { label: 'Find Jobs', href: '/jobs' },
-    { label: 'My Proposals', href: '/freelancer/proposals' },
+    { label: 'My Proposals', href: '/freelancer/my-jobs' },
     { label: 'Earnings', href: '/freelancer/wallet' },
     { label: 'Messages', href: '/messages' },
   ],
@@ -140,9 +157,9 @@ export const quickAccessLinks = {
   ],
   admin: [
     { label: 'User Management', href: '/admin/users' },
-    { label: 'System Health', href: '/admin/monitoring' },
+    { label: 'System Health', href: '/admin/ai-monitoring' },
     { label: 'Support Queue', href: '/admin/support' },
-    { label: 'Analytics', href: '/admin/analytics' },
+    { label: 'Audit Logs', href: '/audit-logs' },
   ],
 };
 

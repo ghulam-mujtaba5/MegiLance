@@ -15,6 +15,10 @@ const Projects: React.FC = () => {
   const { theme } = useTheme();
   const { jobs, loading, error } = useFreelancerData();
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortKey, setSortKey] = useState<'title' | 'clientName' | 'budget' | 'postedTime'>('postedTime');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
 
   const styles = useMemo(() => {
     const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
@@ -41,6 +45,40 @@ const Projects: React.FC = () => {
       }));
   }, [jobs, searchQuery]);
 
+  const sortedProjects = useMemo(() => {
+    const list = [...filteredProjects];
+    list.sort((a, b) => {
+      const av = String(a[sortKey] ?? '').toLowerCase();
+      const bv = String(b[sortKey] ?? '').toLowerCase();
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filteredProjects, sortKey, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(sortedProjects.length / pageSize));
+  const pageSafe = Math.min(page, totalPages);
+  const pagedProjects = useMemo(() => {
+    const start = (pageSafe - 1) * pageSize;
+    return sortedProjects.slice(start, start + pageSize);
+  }, [sortedProjects, pageSafe, pageSize]);
+
+  const onExportCSV = () => {
+    const header = ['Title', 'Client', 'Budget', 'Posted'];
+    const rows = sortedProjects.map(p => [p.title, p.clientName, p.budget, p.postedTime]);
+    const csv = [header, ...rows]
+      .map(cols => cols.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'freelancer-projects.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className={styles.pageContainer}>
       <header className={styles.header}>
@@ -55,29 +93,82 @@ const Projects: React.FC = () => {
 
       <div className={styles.searchFilterBar}>
         <div className={styles.searchInput}>
-            <Input 
-              type="text" 
-              placeholder="Search by keyword, skill, or company..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <label htmlFor="proj-search" className={styles.srOnly}>Search projects</label>
+          <Input
+            id="proj-search"
+            type="text"
+            placeholder="Search by keyword, skill, or company..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+          />
         </div>
-        <Button variant="primary">Search</Button>
-        {/* Future: Add advanced filter button here */}
+        <div className={styles.toolbar} role="group" aria-label="Sorting and actions">
+          <label htmlFor="sort" className={styles.srOnly}>Sort by</label>
+          <select
+            id="sort"
+            className={styles.select}
+            value={`${sortKey}:${sortDir}`}
+            onChange={(e) => {
+              const [k, d] = e.target.value.split(':') as [typeof sortKey, typeof sortDir];
+              setSortKey(k);
+              setSortDir(d);
+              setPage(1);
+            }}
+            aria-label="Sort projects"
+          >
+            <option value="postedTime:desc">Newest</option>
+            <option value="postedTime:asc">Oldest</option>
+            <option value="title:asc">Title A–Z</option>
+            <option value="title:desc">Title Z–A</option>
+            <option value="clientName:asc">Client A–Z</option>
+            <option value="clientName:desc">Client Z–A</option>
+          </select>
+          <Button variant="secondary" onClick={onExportCSV} aria-label="Export current results to CSV">Export CSV</Button>
+          <label htmlFor="pageSize" className={styles.srOnly}>Results per page</label>
+          <select
+            id="pageSize"
+            className={styles.select}
+            value={pageSize}
+            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+            aria-label="Results per page"
+          >
+            {[12, 24, 48].map(sz => <option key={sz} value={sz}>{sz}/page</option>)}
+          </select>
+        </div>
       </div>
 
       <div className={styles.projectGrid}>
-        {filteredProjects.map((project) => (
+        {pagedProjects.map((project) => (
           <ProjectCard key={project.id} {...project} />
         ))}
-        {filteredProjects.length === 0 && !loading && (
+        {sortedProjects.length === 0 && !loading && (
           <div className={styles.emptyState}>
             {searchQuery ? 'No projects match your search.' : 'No projects available.'}
           </div>
         )}
       </div>
 
-      {/* Future: Add pagination controls here */}
+      {sortedProjects.length > 0 && (
+        <div className={styles.paginationBar} role="navigation" aria-label="Pagination">
+          <Button
+            variant="secondary"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            aria-label="Previous page"
+            disabled={pageSafe === 1}
+          >
+            Prev
+          </Button>
+          <span className={styles.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sortedProjects.length} result(s)</span>
+          <Button
+            variant="primary"
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            aria-label="Next page"
+            disabled={pageSafe === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

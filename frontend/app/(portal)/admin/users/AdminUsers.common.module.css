@@ -25,6 +25,7 @@
   padding: 2px 0; 
 }
 .sortBtn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+.sortIndicator { margin-left: 6px; font-size: .85em; opacity: .8; }
 
 .bulkBar { display: flex; gap: var(--spacing-2); align-items: center; }
 

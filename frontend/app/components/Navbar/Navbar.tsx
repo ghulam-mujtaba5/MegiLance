@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import ProfileMenu from '@/app/components/ProfileMenu/ProfileMenu';
 import type { ProfileMenuItem } from '@/app/components/ProfileMenu/ProfileMenu';
@@ -38,6 +39,7 @@ export interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme } = useTheme();
+  const pathname = usePathname();
 
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
@@ -74,11 +76,24 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => 
             <MegiLanceLogo />
           </Link>
           <nav className={cn(commonStyles.desktopNav)} aria-label="Main navigation">
-            {navItems.map((item) => (
-              <Link key={item.label} href={item.href} className={cn(commonStyles.navLink, themeStyles.navLink)}>
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname?.startsWith(item.href);
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  title={item.label}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={cn(
+                    commonStyles.navLink,
+                    themeStyles.navLink,
+                    isActive && cn(commonStyles.navLinkActive, themeStyles.navLinkActive)
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
 
@@ -114,11 +129,25 @@ const Navbar: React.FC<NavbarProps> = ({ navItems, profileMenuItems, user }) => 
         aria-hidden={!isMobileMenuOpen}
       >
         <nav className={cn(commonStyles.mobileNav)} aria-label="Mobile navigation">
-          {navItems.map((item) => (
-            <Link key={item.label} href={item.href} className={cn(commonStyles.mobileLink, themeStyles.mobileLink)} onClick={toggleMobileMenu}>
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const isActive = pathname?.startsWith(item.href);
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                title={item.label}
+                aria-current={isActive ? 'page' : undefined}
+                className={cn(
+                  commonStyles.mobileLink,
+                  themeStyles.mobileLink,
+                  isActive && cn(commonStyles.navLinkActive, themeStyles.navLinkActive)
+                )}
+                onClick={toggleMobileMenu}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </header>

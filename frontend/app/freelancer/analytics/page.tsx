@@ -1,7 +1,7 @@
 // @AI-HINT: This page displays performance analytics for the freelancer. It's now fully theme-aware and built with a premium, responsive grid layout.
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import LineChart from '@/app/components/DataViz/LineChart/LineChart';
 import { useFreelancerData } from '@/hooks/useFreelancer';
@@ -12,6 +12,7 @@ import darkStyles from './Analytics.dark.module.css';
 const AnalyticsPage: React.FC = () => {
   const { theme } = useTheme();
   const { analytics, loading, error } = useFreelancerData();
+  const [range, setRange] = useState<'7d' | '30d' | '90d'>('30d');
   
   const styles = useMemo(() => {
     const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
@@ -26,6 +27,14 @@ const AnalyticsPage: React.FC = () => {
     const completedProjects = analytics.completedProjects || 0;
     const hireRate = completedProjects > 0 ? ((completedProjects / (activeProjects + completedProjects)) * 100).toFixed(1) + '%' : '0%';
     
+    // Create synthetic time series based on selected range
+    const rangeLen = range === '7d' ? 7 : range === '30d' ? 12 : 12; // 12 points for 30/90 for chart simplicity
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const labels = range === '7d' ? Array.from({length: 7}, (_, i) => `D${i+1}`) : months.slice(0, rangeLen);
+    const viewsBase = analytics.profileViews || 1200;
+    const viewsSeries = labels.map((_, i) => Math.max(50, Math.round((viewsBase / rangeLen) * (0.6 + 0.8 * Math.sin(i/2 + 1)))));
+    const earningsSeries = labels.map((_, i) => Math.max(100, Math.round((totalEarned / rangeLen) * (0.5 + 0.9 * Math.cos(i/3 + 0.5)))));
+    
     return {
       kpis: {
         profileViews: analytics.profileViews || 0,
@@ -34,15 +43,35 @@ const AnalyticsPage: React.FC = () => {
         totalEarned,
       },
       viewsOverTime: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        data: [300, 450, 600, 550, 800, analytics.profileViews || 1256],
+        labels,
+        data: viewsSeries,
       },
       earningsOverTime: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        data: [500, 800, 1200, 2000, 3500, totalEarned],
+        labels,
+        data: earningsSeries,
       },
     };
-  }, [analytics]);
+  }, [analytics, range]);
+
+  const exportCSV = () => {
+    if (!analyticsData) return;
+    const header = ['Label','Views','Earnings'];
+    const rows = analyticsData.viewsOverTime.labels.map((label, idx) => [
+      label,
+      String(analyticsData.viewsOverTime.data[idx] ?? ''),
+      String(analyticsData.earningsOverTime.data[idx] ?? ''),
+    ]);
+    const csv = [header, ...rows]
+      .map(cols => cols.map(v => `"${String(v).replace(/"/g,'""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `analytics-${range}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className={styles.container}>
@@ -56,6 +85,22 @@ const AnalyticsPage: React.FC = () => {
 
       {analyticsData && (
         <main className={styles.mainContent}>
+          <div className={styles.toolbar} role="group" aria-label="Analytics filters and actions">
+            <label htmlFor="range" className={styles.srOnly}>Date range</label>
+            <select
+              id="range"
+              className={styles.select}
+              value={range}
+              onChange={(e) => setRange(e.target.value as typeof range)}
+              aria-label="Select date range"
+            >
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+            </select>
+            <button type="button" onClick={exportCSV} className={styles.button} aria-label="Export analytics CSV">Export CSV</button>
+            <span className={styles.toolbarInfo} role="status" aria-live="polite">Showing {range === '7d' ? '7' : range === '30d' ? '30' : '90'}-day trend</span>
+          </div>
           <div className={styles.kpiGrid}>
             <div className={styles.kpiCard}>
               <span className={styles.kpiLabel}>Profile Views</span>

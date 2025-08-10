@@ -54,6 +54,40 @@ const Projects: React.FC = () => {
     );
   }, [rows, query, status]);
 
+  // Sorting
+  type SortKey = 'title' | 'status' | 'budget' | 'updated';
+  const [sortKey, setSortKey] = useState<SortKey>('updated');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const sorted = useMemo(() => {
+    const list = [...filtered];
+    list.sort((a, b) => {
+      let av = '' as string;
+      let bv = '' as string;
+      switch (sortKey) {
+        case 'title': av = a.title; bv = b.title; break;
+        case 'status': av = a.status; bv = b.status; break;
+        case 'budget': av = a.budget; bv = b.budget; break;
+        case 'updated': av = a.updated || ''; bv = b.updated || ''; break;
+      }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filtered, sortKey, sortDir]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const pageSafe = Math.min(Math.max(1, page), totalPages);
+  const paged = useMemo(() => {
+    const start = (pageSafe - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pageSafe, pageSize]);
+
+  React.useEffect(() => { setPage(1); }, [sortKey, sortDir, query, status, pageSize]);
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
@@ -73,10 +107,53 @@ const Projects: React.FC = () => {
           </div>
         </div>
 
+        <div className={cn(common.toolbar)}>
+          <div className={common.controls}>
+            <label className={common.srOnly} htmlFor="sort-key">Sort by</label>
+            <select id="sort-key" className={cn(common.select, themed.select)} value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)}>
+              <option value="updated">Updated</option>
+              <option value="status">Status</option>
+              <option value="title">Title</option>
+              <option value="budget">Budget</option>
+            </select>
+            <label className={common.srOnly} htmlFor="sort-dir">Sort direction</label>
+            <select id="sort-dir" className={cn(common.select, themed.select)} value={sortDir} onChange={(e) => setSortDir(e.target.value as 'asc'|'desc')}>
+              <option value="asc">Asc</option>
+              <option value="desc">Desc</option>
+            </select>
+            <label className={common.srOnly} htmlFor="page-size">Cards per page</label>
+            <select id="page-size" className={cn(common.select, themed.select)} value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+              <option value={12}>12</option>
+              <option value={24}>24</option>
+              <option value={48}>48</option>
+            </select>
+          </div>
+          <div>
+            <button
+              type="button"
+              className={cn(common.button, themed.button, 'secondary')}
+              onClick={() => {
+                const header = ['ID','Title','Status','Budget','Updated'];
+                const data = sorted.map(p => [p.id, p.title, p.status, p.budget, p.updated]);
+                const csv = [header, ...data]
+                  .map(r => r.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
+                  .join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `client_projects_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >Export CSV</button>
+          </div>
+        </div>
+
         <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)} aria-label="Projects grid">
           {loading && <div className={common.skeletonRow} aria-busy="true" />}
           {error && <div className={common.error}>Failed to load projects.</div>}
-          {filtered.map(p => (
+          {paged.map(p => (
             <Link key={p.id} href={`/client/projects/${p.id}`} className={cn(common.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>{p.title}</div>
               <div className={cn(common.meta, themed.meta)}>
@@ -88,10 +165,29 @@ const Projects: React.FC = () => {
               </div>
             </Link>
           ))}
-          {filtered.length === 0 && !loading && (
+          {sorted.length === 0 && !loading && (
             <div role="status" aria-live="polite">No projects match your filters.</div>
           )}
         </section>
+        {sorted.length > 0 && (
+          <div className={common.paginationBar} role="navigation" aria-label="Pagination">
+            <button
+              type="button"
+              className={cn(common.button, themed.button, 'secondary')}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={pageSafe === 1}
+              aria-label="Previous page"
+            >Prev</button>
+            <span className={common.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sorted.length} result(s)</span>
+            <button
+              type="button"
+              className={cn(common.button, themed.button)}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={pageSafe === totalPages}
+              aria-label="Next page"
+            >Next</button>
+          </div>
+        )}
       </div>
     </main>
   );

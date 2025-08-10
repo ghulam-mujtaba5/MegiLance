@@ -16,6 +16,7 @@
 
 .listCard, .detailsCard { border: 1px solid transparent; border-radius: var(--border-radius-lg); padding: var(--spacing-4); display: grid; gap: var(--spacing-3); }
 .cardTitle { font-weight: var(--font-weight-semibold); }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-3); flex-wrap: wrap; }
 
 .list { display: grid; gap: 8px; }
 .item { display: grid; gap: 4px; padding: 10px 12px; border-radius: var(--border-radius-md); border: 1px solid transparent; cursor: pointer; }
@@ -32,3 +33,13 @@
 
 .isNotVisible { opacity: 0; transform: translateY(16px); }
 .isVisible { opacity: 1; transform: translateY(0); transition: opacity .6s ease-out, transform .6s ease-out; }
+
+/* Pagination */
+.paginationBar { 
+  display: flex; 
+  align-items: center; 
+  justify-content: flex-end; 
+  gap: var(--spacing-2); 
+  margin-top: 12px; 
+}
+.paginationInfo { opacity: .8; }

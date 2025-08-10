@@ -42,3 +42,64 @@
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: var(--space-5);
 }
+
+/* Accessibility helpers */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Toolbar and selects */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.select {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-color, currentColor);
+  padding: 8px 10px;
+  border-radius: var(--border-radius-md);
+  font: inherit;
+}
+
+/* Pagination */
+.paginationBar {
+  margin-top: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.paginationInfo {
+  font-size: var(--font-size-sm);
+  opacity: 0.85;
+}
+
+/* States */
+.emptyState {
+  grid-column: 1 / -1;
+  padding: var(--space-6);
+  text-align: center;
+  border: 1px dashed var(--border-color, currentColor);
+  border-radius: var(--border-radius-lg);
+}
+
+.loading {
+  padding: var(--space-4);
+}
+
+.error {
+  color: var(--color-error, #e81123);
+  padding: var(--space-4);
+}

@@ -5,8 +5,8 @@ const withPWA = withPWAInit({
   dest: 'public', // Service worker files will be generated in public/
   register: true, // Automatically register the service worker
   skipWaiting: true, // Install new service worker without waiting
-  // Temporarily disable PWA to debug prerender build error
-  disable: true,
+  // Controlled via env. Enable by setting NEXT_ENABLE_PWA=1
+  disable: process.env.NEXT_ENABLE_PWA !== '1',
 });
 
 /** @type {import('next').NextConfig} */

@@ -16,6 +16,9 @@
 .textarea { min-height: 100px; resize: vertical; }
 .button { cursor: pointer; font-weight: var(--font-weight-medium); }
 .help { font-size: 12px; opacity: .85; }
+.counters { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+.count { font-size: 12px; opacity: .7; }
+.status { min-width: 140px; font-size: 12px; opacity: .85; }
 
 .switch { display: inline-flex; align-items: center; gap: 10px; }
 .switchTrack { width: 44px; height: 24px; border-radius: 999px; display: inline-flex; align-items: center; padding: 2px; border: 1px solid transparent; }

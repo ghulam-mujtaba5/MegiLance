@@ -43,6 +43,10 @@
   transition: color 0.15s, background-color 0.15s;
 }
 
+.navLinkActive {
+  font-weight: 600;
+}
+
 .navbarCenter {
   display: flex;
   justify-content: center;
@@ -127,6 +131,10 @@
   padding: 12px;
   border-radius: 8px;
   transition: color 0.15s, background-color 0.15s;
+}
+
+.mobileLinkActive {
+  font-weight: 600;
 }
 
 .noScroll {

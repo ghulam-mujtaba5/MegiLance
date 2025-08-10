@@ -58,6 +58,46 @@ const Freelancers: React.FC = () => {
     );
   }, [rows, query, availability]);
 
+  // Sorting
+  type SortKey = 'name' | 'title' | 'rate' | 'location' | 'availability';
+  const [sortKey, setSortKey] = useState<SortKey>('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const parseRate = (r: string) => {
+    const m = r.replace(/[^0-9.]/g, '');
+    const n = parseFloat(m);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const sorted = useMemo(() => {
+    const list = [...filtered];
+    list.sort((a, b) => {
+      let av: string | number = '';
+      let bv: string | number = '';
+      switch (sortKey) {
+        case 'name': av = a.name; bv = b.name; break;
+        case 'title': av = a.title; bv = b.title; break;
+        case 'rate': av = parseRate(a.rate); bv = parseRate(b.rate); break;
+        case 'location': av = a.location; bv = b.location; break;
+        case 'availability': av = a.availability; bv = b.availability; break;
+      }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filtered, sortKey, sortDir]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const pageSafe = Math.min(Math.max(1, page), totalPages);
+  const paged = useMemo(() => {
+    const start = (pageSafe - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pageSafe, pageSize]);
+
+  React.useEffect(() => { setPage(1); }, [sortKey, sortDir, query, availability, pageSize]);
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
@@ -77,10 +117,54 @@ const Freelancers: React.FC = () => {
           </div>
         </div>
 
+        <div className={cn(common.toolbar)}>
+          <div className={common.controls}>
+            <label className={common.srOnly} htmlFor="sort-key">Sort by</label>
+            <select id="sort-key" className={cn(common.select, themed.select)} value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)}>
+              <option value="name">Name</option>
+              <option value="title">Title</option>
+              <option value="rate">Rate</option>
+              <option value="location">Location</option>
+              <option value="availability">Availability</option>
+            </select>
+            <label className={common.srOnly} htmlFor="sort-dir">Sort direction</label>
+            <select id="sort-dir" className={cn(common.select, themed.select)} value={sortDir} onChange={(e) => setSortDir(e.target.value as 'asc'|'desc')}>
+              <option value="asc">Asc</option>
+              <option value="desc">Desc</option>
+            </select>
+            <label className={common.srOnly} htmlFor="page-size">Cards per page</label>
+            <select id="page-size" className={cn(common.select, themed.select)} value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+              <option value={12}>12</option>
+              <option value={24}>24</option>
+              <option value={48}>48</option>
+            </select>
+          </div>
+          <div>
+            <button
+              type="button"
+              className={cn(common.button, themed.button, 'secondary')}
+              onClick={() => {
+                const header = ['ID','Name','Title','Rate','Location','Availability','Skills'];
+                const data = sorted.map(f => [f.id, f.name, f.title, f.rate, f.location, f.availability, f.skills.join(' | ')]);
+                const csv = [header, ...data]
+                  .map(r => r.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
+                  .join('\n');
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `client_freelancers_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >Export CSV</button>
+          </div>
+        </div>
+
         <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)} aria-label="Freelancers grid">
           {loading && <div className={common.skeletonRow} aria-busy="true" />}
           {error && <div className={common.error}>Failed to load freelancers.</div>}
-          {filtered.map(f => (
+          {paged.map(f => (
             <article key={f.id} className={cn(common.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>{f.name}</div>
               <div className={cn(common.meta, themed.meta)}>
@@ -103,10 +187,29 @@ const Freelancers: React.FC = () => {
               </div>
             </article>
           ))}
-          {filtered.length === 0 && !loading && (
+          {sorted.length === 0 && !loading && (
             <div role="status" aria-live="polite">No freelancers match your filters.</div>
           )}
         </section>
+        {sorted.length > 0 && (
+          <div className={common.paginationBar} role="navigation" aria-label="Pagination">
+            <button
+              type="button"
+              className={cn(common.button, themed.button, 'secondary')}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={pageSafe === 1}
+              aria-label="Previous page"
+            >Prev</button>
+            <span className={common.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sorted.length} result(s)</span>
+            <button
+              type="button"
+              className={cn(common.button, themed.button)}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={pageSafe === totalPages}
+              aria-label="Next page"
+            >Next</button>
+          </div>
+        )}
       </div>
     </main>
   );

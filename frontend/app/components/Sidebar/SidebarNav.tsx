@@ -48,7 +48,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({ isCollapsed, navItems }) => {
 
           return (
             <li key={item.href} className={cn(commonStyles.navItem, themeStyles.navItem)}>
-              <Link href={item.href} title={isCollapsed ? item.label : ''} className={linkClasses}>
+              <Link
+                href={item.href}
+                title={isCollapsed ? item.label : ''}
+                aria-current={isActive ? 'page' : undefined}
+                className={linkClasses}
+              >
                 <Icon className={cn(commonStyles.navIcon, themeStyles.navIcon)} />
                 {!isCollapsed && <span className={cn(commonStyles.navLabel, themeStyles.navLabel)}>{item.label}</span>}
               </Link>

@@ -38,6 +38,7 @@ const Hire: React.FC = () => {
   const sectionVisible = useIntersectionObserver(sectionRef, { threshold: 0.1 });
 
   const currentIndex = useMemo(() => STEPS.indexOf(step), [step]);
+  const progress = useMemo(() => Math.round(((currentIndex + 1) / STEPS.length) * 100), [currentIndex]);
 
   const canNext = useMemo(() => {
     switch (step) {
@@ -61,6 +62,40 @@ const Hire: React.FC = () => {
     if (currentIndex > 0) setStep(STEPS[currentIndex - 1]);
   };
 
+  // Draft persistence
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('client_hire_draft');
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.freelancerId) setFreelancerId(d.freelancerId);
+        if (d.title) setTitle(d.title);
+        if (d.description) setDescription(d.description);
+        if (d.rateType) setRateType(d.rateType);
+        if (d.rate) setRate(d.rate);
+        if (d.startDate) setStartDate(d.startDate);
+      }
+    } catch {}
+  }, []);
+
+  const saveDraft = () => {
+    const d = { freelancerId, title, description, rateType, rate, startDate };
+    try {
+      localStorage.setItem('client_hire_draft', JSON.stringify(d));
+      alert('Draft saved');
+    } catch {}
+  };
+
+  const resetForm = () => {
+    setFreelancerId('');
+    setTitle('');
+    setDescription('');
+    setRateType('Hourly');
+    setRate('');
+    setStartDate('');
+    setStep('Freelancer');
+  };
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
@@ -68,6 +103,12 @@ const Hire: React.FC = () => {
           <div>
             <h1 className={common.title}>Hire a Freelancer</h1>
             <p className={cn(common.subtitle, themed.subtitle)}>Complete the steps to send a hiring request.</p>
+          </div>
+          <div className={common.progressBar} role="progressbar" aria-label="Hire progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+            <div className={common.progressTrack}>
+              <div className={common.progressFill} style={{ width: `${progress}%` }} />
+            </div>
+            <span className={common.progressText}>{progress}%</span>
           </div>
           <nav className={common.steps} aria-label="Progress">
             {STEPS.map((s) => (
@@ -93,8 +134,10 @@ const Hire: React.FC = () => {
                 placeholder="Enter Freelancer ID or paste from profiles"
                 value={freelancerId}
                 onChange={(e) => setFreelancerId(e.target.value)}
+                aria-describedby="freelancer-help"
                 aria-invalid={!freelancerId || undefined}
               />
+              <div id="freelancer-help" className={common.help}>Paste from a profile or type the known ID.</div>
             </div>
           )}
 
@@ -108,8 +151,13 @@ const Hire: React.FC = () => {
                 placeholder="e.g., Build a mobile app MVP"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                aria-describedby="title-help title-count"
                 aria-invalid={!(title.trim().length > 2) || undefined}
               />
+              <div className={common.counters}>
+                <span id="title-help" className={common.help}>Add a clear, descriptive summary.</span>
+                <span id="title-count" className={common.count}>{title.trim().length} chars</span>
+              </div>
               <label htmlFor="desc" className={common.srOnly}>Description</label>
               <textarea
                 id="desc"
@@ -117,8 +165,13 @@ const Hire: React.FC = () => {
                 placeholder="Describe scope, deliverables, timelines, and constraints."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                aria-describedby="desc-help desc-count"
                 aria-invalid={!(description.trim().length > 10) || undefined}
               />
+              <div className={common.counters}>
+                <span id="desc-help" className={common.help}>Minimum 10 characters. Add milestones for clarity.</span>
+                <span id="desc-count" className={common.count}>{description.trim().length} chars</span>
+              </div>
             </div>
           )}
 
@@ -135,8 +188,17 @@ const Hire: React.FC = () => {
                 </div>
                 <div>
                   <label htmlFor="rate" className={common.srOnly}>Rate</label>
-                  <input id="rate" className={cn(common.input, themed.input)} placeholder={rateType === 'Hourly' ? '$/hr' : 'Total $'} value={rate} onChange={(e) => setRate(e.target.value)} aria-invalid={!(Number(rate) > 0) || undefined} />
-                  
+                  <input
+                    id="rate"
+                    className={cn(common.input, themed.input)}
+                    placeholder={rateType === 'Hourly' ? '$/hr' : 'Total $'}
+                    value={rate}
+                    onChange={(e) => setRate(e.target.value)}
+                    aria-describedby="rate-help"
+                    aria-invalid={!(Number(rate) > 0) || undefined}
+                    inputMode="decimal"
+                  />
+                  <div id="rate-help" className={common.help}>Enter a positive number. Example: 45 or 1500</div>
                 </div>
               </div>
               <div className={common.row}>
@@ -162,6 +224,8 @@ const Hire: React.FC = () => {
           )}
 
           <div className={common.actions}>
+            <button type="button" className={cn(common.button, themed.button)} onClick={saveDraft}>Save Draft</button>
+            <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={resetForm}>Reset</button>
             <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={goBack} disabled={currentIndex === 0} aria-disabled={currentIndex === 0 || undefined}>
               Back
             </button>

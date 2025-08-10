@@ -67,3 +67,88 @@
   text-decoration: none;
   transition: color 0.2s ease;
 }
+
+/* Accessibility helpers */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.input {
+  flex: 1;
+  min-width: 220px;
+  padding: 10px 12px;
+  border: 1px solid;
+  border-radius: var(--border-radius-md);
+  background: transparent;
+  font: inherit;
+}
+
+.select {
+  appearance: none;
+  background: transparent;
+  border: 1px solid;
+  padding: 10px 12px;
+  border-radius: var(--border-radius-md);
+  font: inherit;
+}
+
+.button {
+  padding: 10px 14px;
+  border: 1px solid;
+  border-radius: var(--border-radius-md);
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Sort buttons */
+.sortBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sortIndicator {
+  opacity: 0.8;
+}
+
+/* Empty state */
+.emptyState {
+  padding: var(--space-5);
+  text-align: center;
+}
+
+/* Pagination */
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.paginationInfo {
+  font-size: var(--font-size-sm);
+  opacity: 0.85;
+}

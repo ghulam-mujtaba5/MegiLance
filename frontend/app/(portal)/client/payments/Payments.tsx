@@ -63,6 +63,42 @@ const Payments: React.FC = () => {
 
   const fmt = (n: number) => `$${n.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
 
+  // Sorting
+  type SortKey = 'id' | 'date' | 'project' | 'freelancer' | 'amount' | 'status';
+  const [sortKey, setSortKey] = useState<SortKey>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const sorted = useMemo(() => {
+    const list = [...filtered];
+    list.sort((a, b) => {
+      let av: string | number = '';
+      let bv: string | number = '';
+      switch (sortKey) {
+        case 'id': av = a.id; bv = b.id; break;
+        case 'date': av = a.date; bv = b.date; break;
+        case 'project': av = a.project; bv = b.project; break;
+        case 'freelancer': av = a.freelancer; bv = b.freelancer; break;
+        case 'amount': av = a.amount; bv = b.amount; break;
+        case 'status': av = a.status; bv = b.status; break;
+      }
+      if (av < bv) return sortDir === 'asc' ? -1 : 1;
+      if (av > bv) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filtered, sortKey, sortDir]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const pageSafe = Math.min(Math.max(1, page), totalPages);
+  const paged = useMemo(() => {
+    const start = (pageSafe - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pageSafe, pageSize]);
+
+  React.useEffect(() => { setPage(1); }, [sortKey, sortDir, query, status, pageSize]);
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
@@ -78,7 +114,50 @@ const Payments: React.FC = () => {
             <select id="status" className={cn(common.select, themed.select)} value={status} onChange={(e) => setStatus(e.target.value as (typeof STATUSES)[number])}>
               {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
-            <button type="button" className={cn(common.button, themed.button)} onClick={() => alert('Export started')}>Export CSV</button>
+          </div>
+          <div className={cn(common.toolbar)}>
+            <div className={common.controls}>
+              <label className={common.srOnly} htmlFor="sort-key">Sort by</label>
+              <select id="sort-key" className={cn(common.select, themed.select)} value={sortKey} onChange={(e) => setSortKey(e.target.value as SortKey)}>
+                <option value="date">Date</option>
+                <option value="amount">Amount</option>
+                <option value="status">Status</option>
+                <option value="project">Project</option>
+                <option value="freelancer">Freelancer</option>
+                <option value="id">ID</option>
+              </select>
+              <label className={common.srOnly} htmlFor="sort-dir">Sort direction</label>
+              <select id="sort-dir" className={cn(common.select, themed.select)} value={sortDir} onChange={(e) => setSortDir(e.target.value as 'asc'|'desc')}>
+                <option value="asc">Asc</option>
+                <option value="desc">Desc</option>
+              </select>
+              <label className={common.srOnly} htmlFor="page-size">Rows per page</label>
+              <select id="page-size" className={cn(common.select, themed.select)} value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+            <div>
+              <button
+                type="button"
+                className={cn(common.button, themed.button)}
+                onClick={() => {
+                  const header = ['ID','Date','Project','Freelancer','Amount','Status'];
+                  const data = sorted.map(p => [p.id, p.date, p.project, p.freelancer, p.amount, p.status]);
+                  const csv = [header, ...data]
+                    .map(r => r.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
+                    .join('\n');
+                  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `client_payments_${new Date().toISOString().slice(0,10)}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+              >Export CSV</button>
+            </div>
           </div>
         </div>
 
@@ -112,7 +191,7 @@ const Payments: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map(p => (
+              {paged.map(p => (
                 <tr key={p.id} className={common.tr}>
                   <td className={common.td}>{p.id}</td>
                   <td className={common.td}>{p.date}</td>
@@ -126,10 +205,29 @@ const Payments: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && !loading && (
+          {sorted.length === 0 && !loading && (
             <div role="status" aria-live="polite" className={common.emptyState}>No transactions match your filters.</div>
           )}
         </div>
+        {sorted.length > 0 && (
+          <div className={common.paginationBar} role="navigation" aria-label="Pagination">
+            <button
+              type="button"
+              className={cn(common.button, themed.button, 'secondary')}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={pageSafe === 1}
+              aria-label="Previous page"
+            >Prev</button>
+            <span className={common.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sorted.length} result(s)</span>
+            <button
+              type="button"
+              className={cn(common.button, themed.button)}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={pageSafe === totalPages}
+              aria-label="Next page"
+            >Next</button>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -1,7 +1,7 @@
 // @AI-HINT: Client Settings management. Theme-aware, accessible sections with forms and toggles.
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -21,6 +21,7 @@ const Settings: React.FC = () => {
   const [twoFA, setTwoFA] = useState(false);
   const [notifyEmail, setNotifyEmail] = useState(true);
   const [notifyProduct, setNotifyProduct] = useState(false);
+  const [status, setStatus] = useState('');
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const profileRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +35,42 @@ const Settings: React.FC = () => {
   const notifVisible = useIntersectionObserver(notifRef, { threshold: 0.1 });
   const billingVisible = useIntersectionObserver(billingRef, { threshold: 0.1 });
 
+   // Draft persistence
+   useEffect(() => {
+     try {
+       const raw = localStorage.getItem('client_settings_draft');
+       if (raw) {
+         const d = JSON.parse(raw);
+         if (d.name) setName(d.name);
+         if (d.email) setEmail(d.email);
+         if (d.bio) setBio(d.bio);
+         if (typeof d.twoFA === 'boolean') setTwoFA(d.twoFA);
+         if (typeof d.notifyEmail === 'boolean') setNotifyEmail(d.notifyEmail);
+         if (typeof d.notifyProduct === 'boolean') setNotifyProduct(d.notifyProduct);
+       }
+     } catch {}
+   }, []);
+
+   const saveDraft = () => {
+     const d = { name, email, bio, twoFA, notifyEmail, notifyProduct };
+     try {
+       localStorage.setItem('client_settings_draft', JSON.stringify(d));
+       setStatus('Settings saved');
+       setTimeout(() => setStatus(''), 2000);
+     } catch {}
+   };
+
+   const resetDraft = () => {
+     setName('Acme Corp');
+     setEmail('owner@acme.co');
+     setBio('We hire top freelancers for product growth.');
+     setTwoFA(false);
+     setNotifyEmail(true);
+     setNotifyProduct(false);
+     setStatus('Changes reverted');
+     setTimeout(() => setStatus(''), 2000);
+   };
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
@@ -43,8 +80,9 @@ const Settings: React.FC = () => {
             <p className={cn(common.subtitle, themed.subtitle)}>Manage your account details, security, notifications, and billing.</p>
           </div>
           <div className={common.actions}>
-            <button className={cn(common.button, 'secondary', themed.button, 'secondary')} type="button" onClick={() => alert('Changes reverted')}>Discard</button>
-            <button className={cn(common.button, 'primary', themed.button, 'primary')} type="button" onClick={() => alert('Settings saved')}>Save Changes</button>
+            <div role="status" aria-live="polite" className={common.status}>{status}</div>
+            <button className={cn(common.button, 'secondary', themed.button, 'secondary')} type="button" onClick={resetDraft}>Discard</button>
+            <button className={cn(common.button, 'primary', themed.button, 'primary')} type="button" onClick={saveDraft}>Save Changes</button>
           </div>
         </div>
 
@@ -54,17 +92,24 @@ const Settings: React.FC = () => {
           <div className={common.row}>
             <div>
               <label htmlFor="name" className={cn(common.label, themed.label)}>Organization Name</label>
-              <input id="name" className={cn(common.input, themed.input)} value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!name.trim() || undefined} />
-              <div className={cn(common.help)}>Displayed on proposals and invoices.</div>
+              <input id="name" className={cn(common.input, themed.input)} value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!name.trim() || undefined} aria-describedby="name-help name-count" placeholder="e.g., Acme Corp" />
+              <div className={common.counters}>
+                <div id="name-help" className={cn(common.help)}>Displayed on proposals and invoices.</div>
+                <div id="name-count" className={common.count}>{name.trim().length} chars</div>
+              </div>
             </div>
             <div>
               <label htmlFor="email" className={cn(common.label, themed.label)}>Contact Email</label>
-              <input id="email" type="email" className={cn(common.input, themed.input)} value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || undefined} />
-              <div className={cn(common.help)}>We use this for notifications and billing receipts.</div>
+              <input id="email" type="email" className={cn(common.input, themed.input)} value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || undefined} aria-describedby="email-help" placeholder="name@company.com" />
+              <div id="email-help" className={cn(common.help)}>Used for notifications and billing receipts.</div>
             </div>
             <div>
               <label htmlFor="bio" className={cn(common.label, themed.label)}>About / Notes</label>
-              <textarea id="bio" className={cn(common.textarea, themed.textarea)} value={bio} onChange={(e) => setBio(e.target.value)} />
+              <textarea id="bio" className={cn(common.textarea, themed.textarea)} value={bio} onChange={(e) => setBio(e.target.value)} aria-describedby="bio-count" placeholder="Describe your team, goals, preferences…" />
+              <div className={common.counters}>
+                <div className={common.help}>Markdown supported in future.</div>
+                <div id="bio-count" className={common.count}>{bio.trim().length} chars</div>
+              </div>
             </div>
           </div>
         </section>
