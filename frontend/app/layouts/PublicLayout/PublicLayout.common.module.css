@@ -1,8 +1,7 @@
 /* @AI-HINT: Common (theme-agnostic) styles for PublicLayout. Layout grid, spacing, and structure only. */
 .root {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  min-height: 100svh;
+  display: block;
+  min-height: initial;
 }
 .skipLink {
   position: absolute;
@@ -51,6 +50,7 @@
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .main {
   padding: 2rem 1rem;
+  overflow: visible;
 }
 
 /* Max-width container for consistent rhythm */

@@ -24,12 +24,14 @@ const PublicLayout: React.FC<Props> = ({ children }) => {
     <div className={styles.root}>
       {/* @AI-HINT: Accessibility - Align global skip link target across the app. */}
       <a href="#main-content" className={styles.skipLink}>Skip to content</a>
-      <main id="main-content" role="main" className={styles.main}>
+      {/* @AI-HINT: PublicLayout - Marketing container only; AppChrome owns the sole <main id="main-content">. */}
+      <div className={styles.main} role="presentation">
         {/* @AI-HINT: Layout - Constrain content to a readable width for improved rhythm. */}
         <div className={commonStyles.container}>
           {children}
         </div>
-      </main>
+      </div>
+      {/* Footer is handled globally by AppChrome for consistency. */}
     </div>
   );
 };

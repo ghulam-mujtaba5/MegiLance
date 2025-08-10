@@ -4,6 +4,16 @@ html, body, #__next {
   overflow-x: hidden;
 }
 
+/* Reserve space for the scrollbar to avoid layout shift on first paint */
+html {
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Ensure the document uses the viewport scrolling, not nested containers */
+body {
+  overflow-y: auto;
+}
+
 /* AI-HINT: This file is the entry point for Tailwind CSS. The directives below inject Tailwind's base styles, component classes, and utility classes into the application. */
 
 @tailwind base;

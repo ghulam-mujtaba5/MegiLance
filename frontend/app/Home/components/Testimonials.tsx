@@ -1,7 +1,7 @@
 // @AI-HINT: Testimonials section with dynamic fade-in animations and improved semantics.
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -36,6 +36,7 @@ const testimonialsData = [
 const TestimonialCard: React.FC<{ testimonial: typeof testimonialsData[0], themeStyles: any }> = ({ testimonial, themeStyles }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isVisible = useIntersectionObserver(ref, { threshold: 0.2 });
+  const [avatarSrc, setAvatarSrc] = useState<string>(testimonial.avatar);
 
   return (
     <div 
@@ -51,11 +52,13 @@ const TestimonialCard: React.FC<{ testimonial: typeof testimonialsData[0], theme
       </blockquote>
       <div className={commonStyles.testimonialAuthor}>
         <Image 
-          src={testimonial.avatar} 
+          src={avatarSrc} 
           alt={`Avatar of ${testimonial.author}`}
           className={commonStyles.authorAvatar} 
           width={48} 
           height={48} 
+          sizes="48px"
+          onError={() => setAvatarSrc('/mock-avatar.png')}
         />
         <div className={commonStyles.authorInfo}>
           <p className={cn(commonStyles.authorName, themeStyles.authorName)}>{testimonial.author}</p>

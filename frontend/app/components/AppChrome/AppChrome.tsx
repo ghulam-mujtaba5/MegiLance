@@ -10,7 +10,7 @@ import InstallAppBanner from '@/app/components/PWA/InstallAppBanner/InstallAppBa
 import UpdateNotification from '@/app/components/PWA/UpdateNotification/UpdateNotification';
 
 function isChromeLessRoute(pathname: string | null | undefined) {
-  if (!pathname) return true; // default to hiding chrome pre-mount to avoid overlay on auth screens
+  if (!pathname) return false; // default to showing chrome to avoid SSR/CSR layout shift
   const clean = pathname.replace(/\/$/, '').toLowerCase(); // strip trailing slash + normalize case
   const chromeLessRoots = [
     // Auth
@@ -23,26 +23,14 @@ function isChromeLessRoute(pathname: string | null | undefined) {
 }
 
 // Using per-route-group/layout files for marketing pages; detect and skip chrome.
-function isMarketingRoute(pathname: string | null | undefined) {
-  if (!pathname) return false;
-  const clean = pathname.replace(/\/$/, '').toLowerCase();
-  const marketingRoots = new Set([
-    '/', '/about', '/blog', '/pricing', '/faq', '/contact',
-    '/clients', '/freelancers', '/terms', '/privacy', '/security', '/support',
-    '/how-it-works', '/testimonials', '/teams', '/referral', '/jobs', '/install'
-  ]);
-  return marketingRoots.has(clean);
-}
+// Marketing pages are handled by PublicLayout for container/spacing only.
 
 export default function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
   const hideChrome = isChromeLessRoute(pathname);
-  const marketing = isMarketingRoute(pathname);
 
-  // Until mounted, render a minimal shell. For auth, keep a consistent main wrapper.
-  if (!mounted || hideChrome) {
+  // For chrome-less routes (auth/portal shells), render a minimal shell.
+  if (hideChrome) {
     return (
       <main id="main-content" role="main" className="min-h-screen">
         {children}
@@ -50,11 +38,7 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // On marketing routes, do not render AppChrome header/footer because
-  // those routes already use PublicLayout via their own layout.tsx.
-  if (marketing) {
-    return <>{children}</>;
-  }
+  // Always render header/footer unless the route is chrome-less (auth/portal shells).
 
   return (
     <>

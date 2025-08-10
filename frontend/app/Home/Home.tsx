@@ -26,9 +26,10 @@ import darkStyles from './Home.dark.module.css';
 const Home: React.FC = () => {
   const { theme } = useTheme();
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  // @AI-HINT: Scrollbar hidden on Home by using the page wrapper as the scroll container (see CSS module).
 
   return (
-    <main id="main-content" role="main" className={cn(commonStyles.homePage, themeStyles.homePage)}>
+    <div className={cn(commonStyles.homePage, themeStyles.homePage)}>
 
         {/* Enhanced Hero Section with Animated Stats */}
         <section className={commonStyles.homeSection} aria-label="Hero">
@@ -63,7 +64,7 @@ const Home: React.FC = () => {
           <CTA />
         </section>
 
-    </main>
+    </div>
   );
 };
 
