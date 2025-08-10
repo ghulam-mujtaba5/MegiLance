@@ -1,10 +1,11 @@
 // @AI-HINT: This is the main AppLayout component that creates the shell for authenticated users, combining the Sidebar and Navbar for a cohesive application experience.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import Navbar from '../Navbar/Navbar';
 import { useTheme } from 'next-themes';
+import { usePathname } from 'next/navigation';
 import { User as UserIcon, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -12,12 +13,8 @@ import commonStyles from './AppLayout.common.module.css';
 import lightStyles from './AppLayout.light.module.css';
 import darkStyles from './AppLayout.dark.module.css';
 
-// Mock data for Navbar, providing a realistic user experience for demonstration.
-const profileMenuItems = [
-  { label: 'Your Profile', href: '/profile', icon: <UserIcon size={16} /> },
-  { label: 'Settings', href: '/settings', icon: <Settings size={16} /> },
-  { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
-];
+// @AI-HINT: Build profile menu links based on current area (client/freelancer/admin/general)
+// so that portal pages use the portal layout instead of the public website layout.
 
 const user = {
   fullName: 'John Doe',
@@ -30,6 +27,55 @@ const user = {
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { theme } = useTheme();
+  const pathname = usePathname();
+
+  const area: 'client' | 'freelancer' | 'admin' | 'general' = useMemo(() => {
+    if (!pathname) return 'general';
+    if (pathname.startsWith('/client')) return 'client';
+    if (pathname.startsWith('/freelancer')) return 'freelancer';
+    if (pathname.startsWith('/admin')) return 'admin';
+    return 'general';
+  }, [pathname]);
+
+  const profileMenuItems = useMemo(() => {
+    switch (area) {
+      case 'client':
+        return [
+          { label: 'Your Profile', href: '/client/profile', icon: <UserIcon size={16} /> },
+          { label: 'Settings', href: '/client/settings', icon: <Settings size={16} /> },
+          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
+        ];
+      case 'freelancer':
+        return [
+          { label: 'Your Profile', href: '/freelancer/profile', icon: <UserIcon size={16} /> },
+          { label: 'Settings', href: '/freelancer/settings', icon: <Settings size={16} /> },
+          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
+        ];
+      case 'admin':
+        return [
+          { label: 'Your Profile', href: '/admin/profile', icon: <UserIcon size={16} /> },
+          { label: 'Settings', href: '/admin/settings', icon: <Settings size={16} /> },
+          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
+        ];
+      default:
+        return [
+          { label: 'Your Profile', href: '/Profile', icon: <UserIcon size={16} /> },
+          { label: 'Settings', href: '/Settings', icon: <Settings size={16} /> },
+          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
+        ];
+    }
+  }, [area]);
+
+  // Remember the current portal area for cross-route redirects from public pages
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (area === 'client' || area === 'freelancer' || area === 'admin') {
+        window.localStorage.setItem('portal_area', area);
+      } else {
+        // do not overwrite when in general area
+      }
+    }
+  }, [area]);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
@@ -41,7 +87,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
-      <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
+      <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={area === 'general' ? undefined : area} />
       <div className={cn(commonStyles.mainContent)}>
         <Navbar navItems={[]} profileMenuItems={profileMenuItems} user={user} />
         <main className={cn(commonStyles.pageContent, themeStyles.pageContent)}>

@@ -53,21 +53,21 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             ];
           case 'client':
             return [
-              { href: '/dashboard', label: 'Dashboard', icon: null },
+              { href: '/client/dashboard', label: 'Dashboard', icon: null },
               { href: '/messages', label: 'Messages', icon: null },
               { href: '/client/projects', label: 'Projects', icon: null },
               { href: '/client/payments', label: 'Payments', icon: null },
               { href: '/help', label: 'Help', icon: null },
-              { href: '/settings', label: 'Settings', icon: null },
+              { href: '/client/settings', label: 'Settings', icon: null },
             ];
           case 'freelancer':
             return [
-              { href: '/dashboard', label: 'Dashboard', icon: null },
+              { href: '/freelancer/dashboard', label: 'Dashboard', icon: null },
               { href: '/messages', label: 'Messages', icon: null },
               { href: '/freelancer/projects', label: 'Projects', icon: null },
               { href: '/freelancer/wallet', label: 'Wallet', icon: null },
               { href: '/help', label: 'Help', icon: null },
-              { href: '/settings', label: 'Settings', icon: null },
+              { href: '/freelancer/settings', label: 'Settings', icon: null },
             ];
           default:
             return [];

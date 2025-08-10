@@ -9,6 +9,7 @@ import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import common from './Hire.common.module.css';
 import light from './Hire.light.module.css';
 import dark from './Hire.dark.module.css';
+import { loadHireDraft, saveHireDraft, submitHire, clearHireDraft } from '@/app/mocks/hires';
 
 const STEPS = ['Freelancer', 'Scope', 'Terms', 'Review'] as const;
 
@@ -62,28 +63,34 @@ const Hire: React.FC = () => {
     if (currentIndex > 0) setStep(STEPS[currentIndex - 1]);
   };
 
-  // Draft persistence
+  // Draft persistence via mock API
+  const [liveMessage, setLiveMessage] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('client_hire_draft');
-      if (raw) {
-        const d = JSON.parse(raw);
-        if (d.freelancerId) setFreelancerId(d.freelancerId);
-        if (d.title) setTitle(d.title);
-        if (d.description) setDescription(d.description);
-        if (d.rateType) setRateType(d.rateType);
-        if (d.rate) setRate(d.rate);
-        if (d.startDate) setStartDate(d.startDate);
-      }
-    } catch {}
+    const d = loadHireDraft();
+    if (d) {
+      if (d.freelancerId) setFreelancerId(d.freelancerId);
+      if (d.title) setTitle(d.title);
+      if (d.description) setDescription(d.description);
+      if (d.rateType) setRateType(d.rateType);
+      if (typeof d.rate === 'number' && !Number.isNaN(d.rate)) setRate(String(d.rate));
+      if (d.startDate) setStartDate(d.startDate);
+      setLiveMessage('Loaded your saved draft.');
+    }
   }, []);
 
   const saveDraft = () => {
-    const d = { freelancerId, title, description, rateType, rate, startDate };
-    try {
-      localStorage.setItem('client_hire_draft', JSON.stringify(d));
-      alert('Draft saved');
-    } catch {}
+    saveHireDraft({
+      freelancerId,
+      title,
+      description,
+      rateType,
+      rate: rate ? Number(rate) : null,
+      startDate,
+      status: 'draft',
+    });
+    setLiveMessage('Draft saved.');
   };
 
   const resetForm = () => {
@@ -94,6 +101,8 @@ const Hire: React.FC = () => {
     setRate('');
     setStartDate('');
     setStep('Freelancer');
+    clearHireDraft();
+    setLiveMessage('Draft cleared.');
   };
 
   return (
@@ -122,6 +131,12 @@ const Hire: React.FC = () => {
             ))}
           </nav>
         </header>
+
+        {liveMessage && (
+          <div role="status" aria-live="polite" aria-atomic="true" className={cn(common.subtitle, themed.subtitle)}>
+            {liveMessage}
+          </div>
+        )}
 
         <section ref={sectionRef} className={cn(common.section, themed.section, sectionVisible ? common.isVisible : common.isNotVisible)}>
           {step === 'Freelancer' && (
@@ -234,8 +249,33 @@ const Hire: React.FC = () => {
                 Continue
               </button>
             ) : (
-              <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={() => alert('Request sent!')}>
-                Send Request
+              <button
+                type="button"
+                className={cn(common.button, 'primary', themed.button)}
+                onClick={async () => {
+                  if (!canNext) return;
+                  setSubmitting(true);
+                  setLiveMessage('Sending hire request…');
+                  try {
+                    const res = await submitHire({
+                      freelancerId,
+                      title,
+                      description,
+                      rateType,
+                      rate: Number(rate),
+                      startDate,
+                    });
+                    setLiveMessage(`Success: ${res.message} (id: ${res.id})`);
+                    resetForm();
+                  } catch (e) {
+                    setLiveMessage('Error sending request. Please try again.');
+                  } finally {
+                    setSubmitting(false);
+                  }
+                }}
+                disabled={submitting}
+              >
+                {submitting ? 'Sending…' : 'Send Request'}
               </button>
             )}
           </div>

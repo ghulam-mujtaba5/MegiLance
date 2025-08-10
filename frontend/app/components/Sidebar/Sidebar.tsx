@@ -2,11 +2,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, LayoutDashboard, Briefcase, Wallet, BarChart2, MessageSquare, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import SidebarNav, { NavItem } from './SidebarNav';
+import SidebarNav from '../SidebarNav/SidebarNav';
 import { MegiLanceLogo } from '../MegiLanceLogo/MegiLanceLogo';
 import UserAvatar from '../UserAvatar/UserAvatar';
 
@@ -18,19 +18,12 @@ import darkStyles from './Sidebar.dark.module.css';
 interface SidebarProps {
   isCollapsed: boolean;
   toggleSidebar: () => void;
+  userType?: 'admin' | 'client' | 'freelancer';
 }
 
-// AI-HINT: Navigation items are defined as a data structure for easy management and role-based filtering in the future.
-const defaultNavItems: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/projects', label: 'Projects', icon: Briefcase },
-  { href: '/dashboard/wallet', label: 'Wallet', icon: Wallet },
-  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart2 },
-  { href: '/messages', label: 'Messages', icon: MessageSquare },
-  { href: '/dashboard/community', label: 'Community', icon: Users },
-];
+// AI-HINT: Role-aware navigation is provided by the shared SidebarNav component.
 
-const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType }) => {
   const { theme } = useTheme();
 
   if (!theme) return null;
@@ -68,10 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
       </header>
 
       <div className={cn(commonStyles.sidebarNavContainer, themeStyles.sidebarNavContainer)}>
-        <SidebarNav 
-          isCollapsed={isCollapsed} 
-          navItems={defaultNavItems}
-        />
+        <SidebarNav isCollapsed={isCollapsed} userType={userType} />
       </div>
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>

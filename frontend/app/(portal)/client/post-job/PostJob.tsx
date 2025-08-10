@@ -1,13 +1,14 @@
 // @AI-HINT: Client Post Job page. Theme-aware, accessible multi-section form with validation and entry animations.
 'use client';
 
-import React, { FormEvent, useMemo, useRef, useState } from 'react';
+import React, { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import common from './PostJob.common.module.css';
 import light from './PostJob.light.module.css';
 import dark from './PostJob.dark.module.css';
+import { loadDraft, saveDraft, submitJob, clearDraft } from '@/app/mocks/jobs';
 
 const CATEGORIES = ['Web Development', 'Mobile Apps', 'UI/UX Design', 'Data Science', 'AI/ML', 'DevOps'] as const;
 const BUDGET_TYPES = ['Fixed', 'Hourly'] as const;
@@ -32,6 +33,11 @@ const PostJob: React.FC = () => {
   const [skills, setSkills] = useState('React, TypeScript');
   const [timeline, setTimeline] = useState('2-4 weeks');
 
+  // Wizard state
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [submitting, setSubmitting] = useState(false);
+  const [liveMessage, setLiveMessage] = useState<string | null>(null);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const hasErrors = useMemo(() => Object.keys(errors).length > 0, [errors]);
 
@@ -45,12 +51,104 @@ const PostJob: React.FC = () => {
     return Object.keys(next).length === 0;
   };
 
-  const onSubmit = (e: FormEvent) => {
+  // Load existing draft on mount
+  useEffect(() => {
+    const d = loadDraft();
+    if (d) {
+      setTitle(d.title ?? '');
+      setCategory((d.category as any) ?? '');
+      setBudgetType((d.budgetType as any) ?? 'Fixed');
+      setBudget(d.budget != null ? String(d.budget) : '');
+      setDescription(d.description ?? '');
+      setSkills(d.skills?.join(', ') ?? '');
+      setTimeline(d.timeline ?? '');
+      setLiveMessage('Loaded your saved draft.');
+    }
+  }, []);
+
+  const persistDraft = () => {
+    saveDraft({
+      title,
+      category,
+      budgetType,
+      budget: budget ? Number(budget) : null,
+      description,
+      skills: skills
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean),
+      timeline,
+      status: 'draft',
+    });
+    setLiveMessage('Draft saved.');
+  };
+
+  const discardDraft = () => {
+    clearDraft();
+    setLiveMessage('Draft discarded.');
+  };
+
+  const nextStep = () => {
+    if (step === 1) {
+      // Partial validation for basics
+      const next: Record<string, string> = {};
+      if (!title.trim()) next.title = 'Title is required';
+      if (!category) next.category = 'Select a category';
+      setErrors(next);
+      if (Object.keys(next).length > 0) return;
+      persistDraft();
+      setStep(2);
+      return;
+    }
+    if (step === 2) {
+      if (!validate()) return;
+      persistDraft();
+      setStep(3);
+      return;
+    }
+  };
+
+  const prevStep = () => {
+    setStep((s) => (s === 3 ? 2 : 1));
+  };
+
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-    // No backend calls: mock submit
-    // eslint-disable-next-line no-alert
-    alert('Job posted (mock).');
+    if (!validate()) {
+      setStep(2);
+      return;
+    }
+    setSubmitting(true);
+    setLiveMessage('Submitting your job…');
+    try {
+      const result = await submitJob({
+        title,
+        category,
+        budgetType,
+        budget: Number(budget),
+        description,
+        skills: skills
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean),
+        timeline,
+      });
+      setLiveMessage(`Success: ${result.message} (id: ${result.id})`);
+      // Reset local state to fresh form
+      setTitle('');
+      setCategory('');
+      setBudgetType('Fixed');
+      setBudget('');
+      setDescription('');
+      setSkills('');
+      setTimeline('');
+      setErrors({});
+      setStep(1);
+    } catch (err) {
+      setLiveMessage('Error submitting job. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -64,6 +162,12 @@ const PostJob: React.FC = () => {
         </div>
 
         <form className={common.form} onSubmit={onSubmit} noValidate>
+          {/* Step indicator */}
+          <div className={common.progress} aria-live="polite">
+            Step {step} of 3
+          </div>
+
+          {step === 1 && (
           <section ref={jobRef} className={cn(common.section, themed.section, jobVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="job-basics">
             <h2 id="job-basics" className={cn(common.sectionTitle, themed.sectionTitle)}>Job Basics</h2>
             <div className={common.field}>
@@ -132,8 +236,17 @@ const PostJob: React.FC = () => {
                 <div className={cn(common.help, themed.help)}>Provide a rough timeframe.</div>
               </div>
             </div>
+            <div className={common.stickyBar}>
+              <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={persistDraft}>Save Draft</button>
+              <div>
+                <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={discardDraft}>Discard</button>
+                <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={nextStep}>Next</button>
+              </div>
+            </div>
           </section>
+          )}
 
+          {step === 2 && (
           <section ref={detailsRef} className={cn(common.section, themed.section, detailsVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="job-details">
             <h2 id="job-details" className={cn(common.sectionTitle, themed.sectionTitle)}>Details</h2>
             <div className={common.field}>
@@ -158,16 +271,45 @@ const PostJob: React.FC = () => {
               <input id="skills" className={cn(common.input, themed.input)} value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="Comma-separated skills (e.g., React, Tailwind)" />
               <div className={cn(common.help, themed.help)}>We’ll suggest top freelancers based on these skills.</div>
             </div>
+            <div className={common.stickyBar}>
+              <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={prevStep}>Back</button>
+              <div>
+                <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={persistDraft}>Save Draft</button>
+                <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={nextStep}>Preview</button>
+              </div>
+            </div>
           </section>
+          )}
 
-          <div className={common.stickyBar}>
-            <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={() => window.history.back()}>Cancel</button>
-            <button type="submit" className={cn(common.button, 'primary', themed.button)}>Post Job</button>
-          </div>
+          {step === 3 && (
+            <section className={cn(common.section, themed.section)} aria-labelledby="job-preview">
+              <h2 id="job-preview" className={cn(common.sectionTitle, themed.sectionTitle)}>Preview</h2>
+              <div className={common.card}>
+                <h3 className={common.cardTitle}>{title || 'Untitled job'}</h3>
+                <p className={common.meta}><strong>Category:</strong> {category || '—'}</p>
+                <p className={common.meta}><strong>Budget:</strong> {budgetType} {budget ? `$${budget}` : '—'}</p>
+                <p className={common.meta}><strong>Timeline:</strong> {timeline || '—'}</p>
+                <p className={common.meta}><strong>Skills:</strong> {skills || '—'}</p>
+                <p className={common.description}>{description || 'No description provided.'}</p>
+              </div>
+              <div className={common.stickyBar}>
+                <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={prevStep}>Back</button>
+                <div>
+                  <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={persistDraft}>Save Draft</button>
+                  <button type="submit" disabled={submitting} className={cn(common.button, 'primary', themed.button)}>{submitting ? 'Submitting…' : 'Submit Job'}</button>
+                </div>
+              </div>
+            </section>
+          )}
 
           {hasErrors && (
             <div role="status" aria-live="polite" className={common.error}>
               Please fix the highlighted fields.
+            </div>
+          )}
+          {liveMessage && (
+            <div role="status" aria-live="polite" className={common.help}>
+              {liveMessage}
             </div>
           )}
         </form>

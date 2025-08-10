@@ -26,7 +26,7 @@ const roleConfig = {
     id: 'freelancer' as UserRole,
     icon: FaUserTie,
     label: 'Freelancer',
-    redirectPath: '/dashboard',
+    redirectPath: '/freelancer/dashboard',
     brandIcon: FaLaptopCode,
     brandTitle: 'Build the Future',
     brandText: 'Access exclusive projects, secure your payments with USDC, and collaborate with top-tier clients from around the world.',
@@ -129,6 +129,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (isPreviewMode()) {
       // Preview mode: bypass validation and go straight to the role destination
+      try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
       router.push(roleConfig[selectedRole].redirectPath);
       return;
     }
@@ -138,6 +139,7 @@ const Login: React.FC = () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       console.log('Login successful:', { ...formData, role: selectedRole });
+      try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
       router.push(roleConfig[selectedRole].redirectPath);
     } catch (error) {
       setErrors({ email: '', password: '', general: 'Login failed. Please check your credentials.' });
@@ -151,6 +153,7 @@ const Login: React.FC = () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log(`${provider} login successful for role:`, selectedRole);
+      try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
       router.push(roleConfig[selectedRole].redirectPath);
     } catch (error) {
       setErrors({ email: '', password: '', general: `Sign in with ${provider} failed.` });
