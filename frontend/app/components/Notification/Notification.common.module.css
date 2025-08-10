@@ -127,10 +127,22 @@
   background-color: var(--notification-icon-color);
   animation-name: progressBar;
   animation-timing-function: linear;
-  animation-duration: var(--notification-duration);
-  animation-play-state: var(--notification-play-state);
+  /* Default duration, can be overridden by duration bucket classes */
+  animation-duration: 5000ms;
+  /* Play-state controlled via class */
+  animation-play-state: running;
   opacity: 0.7;
 }
+
+/* Duration buckets to avoid inline styles */
+.progress2s { animation-duration: 2000ms; }
+.progress3s { animation-duration: 3000ms; }
+.progress5s { animation-duration: 5000ms; }
+.progress8s { animation-duration: 8000ms; }
+.progress10s { animation-duration: 10000ms; }
+
+/* Paused state */
+.progressPaused { animation-play-state: paused; }
 
 /* Position variants */
 .positionTopRight { top: 1rem; right: 1rem; animation: slideInRight 0.3s ease-out; }

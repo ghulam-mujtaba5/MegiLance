@@ -56,6 +56,15 @@ const Notification: React.FC<NotificationProps> = ({
   const IconComponent = iconMap[type];
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
+  // Map duration to CSS duration buckets to avoid inline styles
+  const getDurationClass = (ms: number) => {
+    if (ms <= 2000) return commonStyles.progress2s;
+    if (ms <= 3000) return commonStyles.progress3s;
+    if (ms <= 5000) return commonStyles.progress5s;
+    if (ms <= 8000) return commonStyles.progress8s;
+    return commonStyles.progress10s;
+  };
+
   const handleClose = useCallback(() => {
     setIsVisible(false);
     setTimeout(() => {
@@ -152,12 +161,13 @@ const Notification: React.FC<NotificationProps> = ({
         )}
       </div>
       {duration > 0 && !persistent && (
-        <div 
-          className={cn(commonStyles.notificationProgress, themeStyles.notificationProgress)} 
-          style={{
-            '--notification-duration': `${duration}ms`,
-            '--notification-play-state': isPaused ? 'paused' : 'running'
-          } as React.CSSProperties}
+        <div
+          className={cn(
+            commonStyles.notificationProgress,
+            themeStyles.notificationProgress,
+            getDurationClass(duration),
+            isPaused && commonStyles.progressPaused
+          )}
         />
       )}
     </div>

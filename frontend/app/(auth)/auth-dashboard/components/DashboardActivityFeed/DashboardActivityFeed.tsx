@@ -32,7 +32,7 @@ const DashboardActivityFeed: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={styles.activityFeedCard} aria-busy="true" aria-live="polite">
+      <div className={styles.activityFeedCard} aria-busy={true} aria-live="polite">
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Activity Feed</h2>
           <span className={styles.skeletonText} />

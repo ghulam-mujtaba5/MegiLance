@@ -31,7 +31,7 @@ const DashboardRecentProjects: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={styles.recentProjectsCard} aria-busy="true" aria-live="polite">
+      <div className={styles.recentProjectsCard} aria-busy={true} aria-live="polite">
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Recent Projects</h2>
           <span className={styles.skeletonText} />
@@ -82,12 +82,12 @@ const DashboardRecentProjects: React.FC = () => {
                 </span>
               </td>
               <td>
-                <div className={styles.progressBar}>
-                  <div
-                    className={styles.progressFill}
-                    style={{ '--progress-width': `${project.progress}%` } as React.CSSProperties}
-                  ></div>
-                </div>
+                <progress
+                  className={styles.progress}
+                  value={project.progress}
+                  max={100}
+                  aria-label={`Progress ${project.progress}%`}
+                />
               </td>
               <td>{project.deadline}</td>
             </tr>

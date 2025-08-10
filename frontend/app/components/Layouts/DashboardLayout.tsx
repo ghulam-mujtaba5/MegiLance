@@ -29,13 +29,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
-  // Define sidebar width based on collapsed state for the CSS variable
-  const sidebarWidth = isCollapsed ? '80px' : '250px';
+  // Collapsed state is reflected via a CSS class to avoid inline styles
 
   return (
-    <div 
-      className={cn(commonStyles.dashboardLayout, themeStyles.dashboardLayout)}
-      style={{ '--sidebar-width': sidebarWidth } as React.CSSProperties}
+    <div
+      className={cn(
+        commonStyles.dashboardLayout,
+        themeStyles.dashboardLayout,
+        isCollapsed && commonStyles.collapsed
+      )}
     >
       <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
       <main className={cn(commonStyles.mainContent, themeStyles.mainContent)}>

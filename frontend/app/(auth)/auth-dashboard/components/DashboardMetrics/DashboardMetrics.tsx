@@ -31,11 +31,11 @@ const DashboardMetrics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={styles.metricsGrid} aria-busy="true" aria-live="polite">
+      <div className={styles.metricsGrid} aria-busy={true} aria-live="polite">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className={styles.metricCard}>
             <div className={styles.metricHeader}>
-              <div className={styles.metricIcon} style={{ opacity: 0.4 }} />
+              <div className={cn(styles.metricIcon, styles.metricIconMuted)} />
               <span className={styles.skeletonText} />
             </div>
             <div className={styles.skeletonValue} />

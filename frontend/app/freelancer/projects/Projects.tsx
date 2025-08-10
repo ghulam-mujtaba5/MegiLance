@@ -50,7 +50,7 @@ const Projects: React.FC = () => {
         </p>
       </header>
 
-      {loading && <div className={styles.loading} aria-busy="true">Loading projects...</div>}
+      {loading && <div className={styles.loading} aria-busy={true}>Loading projects...</div>}
       {error && <div className={styles.error}>Failed to load projects.</div>}
 
       <div className={styles.searchFilterBar}>

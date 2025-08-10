@@ -163,9 +163,7 @@ const DashboardPage = () => {
                 </div>
                 <div className={styles.projectStatus}>
                     <span>{project.status}</span>
-                    <div className={styles.progressBar}>
-                        <div style={{ width: `${project.progress}%` }}></div>
-                    </div>
+                    <progress className={styles.progress} value={project.progress} max={100} aria-label={`Progress ${project.progress}%`} />
                 </div>
               </div>
             ))}

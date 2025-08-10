@@ -32,12 +32,22 @@
   color: var(--color-success-dark);
 }
 
-.progressBar {
+.progress {
   background-color: var(--bg-tertiary-light);
 }
 
-.progressFill {
+.progress::-webkit-progress-bar {
+  background-color: var(--bg-tertiary-light);
+}
+
+.progress::-webkit-progress-value {
   background-color: var(--brand-primary);
+  transition: width 180ms cubic-bezier(.2,.6,.2,1);
+}
+
+.progress::-moz-progress-bar {
+  background-color: var(--brand-primary);
+  transition: width 180ms cubic-bezier(.2,.6,.2,1);
 }
 
 .progressText {

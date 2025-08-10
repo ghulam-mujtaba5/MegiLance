@@ -141,7 +141,7 @@ const Clients: React.FC = () => {
             {cases.map((c) => (
               <article key={c.title} className={common.caseCard} aria-labelledby={`case-${c.title}`}>
                 <div className={common.caseMedia}>
-                  <Image src={c.media} alt="" fill sizes="(max-width: 1100px) 100vw, 33vw" style={{ objectFit: 'cover' }} />
+                  <Image src={c.media} alt="" fill sizes="(max-width: 1100px) 100vw, 33vw" className={common.caseMediaImg} />
                 </div>
                 <div className={common.caseBody}>
                   <h3 id={`case-${c.title}`} className={common.caseTitle}>{c.title}</h3>

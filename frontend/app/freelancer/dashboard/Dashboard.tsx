@@ -50,7 +50,7 @@ const Dashboard: React.FC = () => {
         <p className={styles.subtitle}>Here&apos;s what&apos;s happening with your projects today.</p>
       </header>
 
-      {loading && <div className={styles.loading} aria-busy="true">Loading dashboard...</div>}
+      {loading && <div className={styles.loading} aria-busy={true}>Loading dashboard...</div>}
       {error && <div className={styles.error}>Failed to load dashboard data.</div>}
 
       <div className={styles.widgetsGrid}>

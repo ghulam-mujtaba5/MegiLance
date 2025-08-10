@@ -134,7 +134,7 @@ const Contact: React.FC = () => {
                     {errors.message}
                   </p>
                 )}
-                <Button variant="primary" fullWidth type="submit" disabled={loading} aria-busy={loading}>
+                <Button variant="primary" fullWidth type="submit" disabled={loading} aria-busy={loading || undefined}>
                   {loading ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>

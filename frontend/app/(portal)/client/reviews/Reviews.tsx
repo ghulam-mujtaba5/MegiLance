@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useClientData } from '@/hooks/useClient';
+import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import common from './Reviews.common.module.css';
 import light from './Reviews.light.module.css';
 import dark from './Reviews.dark.module.css';
@@ -85,10 +86,32 @@ const Reviews: React.FC = () => {
           </div>
         </div>
 
-        <section ref={listRef} className={cn(common.list, listVisible ? common.isVisible : common.isNotVisible)} aria-label="Reviews list">
-          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+        <section
+          ref={listRef}
+          className={cn(common.list, listVisible ? common.isVisible : common.isNotVisible)}
+          aria-label="Reviews list"
+          aria-busy={loading || undefined}
+        >
+          {loading && (
+            <>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <article key={i} className={cn(common.card)}>
+                  <div className={cn(common.cardTitle, themed.cardTitle)}>
+                    <Skeleton height={16} width={'50%'} />
+                  </div>
+                  <div className={cn(common.meta, themed.meta)}>
+                    <Skeleton height={12} width={120} />
+                    <Skeleton height={12} width={60} />
+                    <Skeleton height={12} width={90} />
+                  </div>
+                  <Skeleton height={12} width={'80%'} />
+                  <Skeleton height={12} width={'60%'} />
+                </article>
+              ))}
+            </>
+          )}
           {error && <div className={common.error}>Failed to load reviews.</div>}
-          {filtered.map(r => (
+          {!loading && filtered.map(r => (
             <article key={r.id} className={cn(common.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>{r.project}</div>
               <div className={cn(common.meta, themed.meta)}>
@@ -114,7 +137,7 @@ const Reviews: React.FC = () => {
                 key={n}
                 type="button"
                 className={common.starBtn}
-                aria-pressed={newRating === n ? 'true' : 'false'}
+                aria-pressed={newRating === n || undefined}
                 onClick={() => setStar(n)}
                 aria-label={`${n} star${n>1?'s':''}`}
               >
@@ -123,10 +146,10 @@ const Reviews: React.FC = () => {
             ))}
           </div>
           <label htmlFor="text" className={common.srOnly}>Review text</label>
-          <textarea id="text" className={cn(common.textarea, themed.textarea)} placeholder="Share your experience and outcomes…" value={newText} onChange={(e) => setNewText(e.target.value)} aria-invalid={!(newText.trim().length > 10) ? 'true' : 'false'} />
+          <textarea id="text" className={cn(common.textarea, themed.textarea)} placeholder="Share your experience and outcomes…" value={newText} onChange={(e) => setNewText(e.target.value)} aria-invalid={!(newText.trim().length > 10) || undefined} />
           <div className={common.controls}>
             <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={() => { setNewText(''); setNewRating(0); }}>Clear</button>
-            <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={() => alert('Review submitted')} disabled={!canSubmit} aria-disabled={!canSubmit ? 'true' : 'false'}>Submit Review</button>
+            <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={() => alert('Review submitted')} disabled={!canSubmit} aria-disabled={!canSubmit || undefined}>Submit Review</button>
           </div>
         </section>
       </div>

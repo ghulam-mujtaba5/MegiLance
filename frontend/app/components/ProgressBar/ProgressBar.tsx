@@ -73,20 +73,15 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
           striped && themeStyles.progressBarStriped,
           animated && commonStyles.progressStripeAnimation
         )}
-        role="progressbar"
-        aria-valuenow={safeProgress}
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-label={ariaLabel || (label ? undefined : `Progress: ${Math.round(safeProgress)}%`)}
-        aria-labelledby={label ? `${progressId}-label` : undefined}
-        aria-describedby={ariaDescribedBy}
       >
-        <div className={commonStyles.progressBarTrack}>
-          <div
-            className={cn(commonStyles.progressBarFill, themeStyles.progressBarFill)}
-            style={{ '--progress-width': `${safeProgress}%` } as React.CSSProperties}
-          />
-        </div>
+        <progress
+          className={commonStyles.progressElement}
+          value={safeProgress}
+          max={100}
+          aria-label={ariaLabel || (label ? undefined : `Progress: ${Math.round(safeProgress)}%`)}
+          aria-labelledby={label ? `${progressId}-label` : undefined}
+          aria-describedby={ariaDescribedBy}
+        />
       </div>
     </div>
   );

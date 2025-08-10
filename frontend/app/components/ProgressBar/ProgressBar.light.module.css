@@ -1,7 +1,11 @@
 /* AI-HINT: This file defines the light theme styles for the ProgressBar component. It uses brand-specific colors for a cohesive and premium look. */
 
-.progressBarLight .progressBarTrack {
+.progressBarLight .progressElement::-webkit-progress-bar {
   background-color: #f3f4f6; /* Softer Gray 100 */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.progressBarLight .progressElement {
+  background-color: #f3f4f6; /* Firefox track */
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
@@ -21,31 +25,27 @@
 /* --- Color Variants --- */
 
 /* Default uses the primary brand color */
-.default .progressBarFill {
-  background-color: #4573df; /* brand-primary */
-}
+.default .progressElement::-webkit-progress-value { background-color: #4573df; }
+.default .progressElement::-moz-progress-bar { background-color: #4573df; }
 
 /* Success variant */
-.success .progressBarFill {
-  background-color: #27ae60; /* brand-success */
-}
+.success .progressElement::-webkit-progress-value { background-color: #27ae60; }
+.success .progressElement::-moz-progress-bar { background-color: #27ae60; }
 
 /* Error variant */
-.error .progressBarFill {
-  background-color: #e81123; /* brand-error */
-}
+.error .progressElement::-webkit-progress-value { background-color: #e81123; }
+.error .progressElement::-moz-progress-bar { background-color: #e81123; }
 
 /* Warning variant */
-.warning .progressBarFill {
-  background-color: #f2c94c; /* brand-warning */
-}
+.warning .progressElement::-webkit-progress-value { background-color: #f2c94c; }
+.warning .progressElement::-moz-progress-bar { background-color: #f2c94c; }
 
 /* Info variant, often same as default */
-.info .progressBarFill {
-  background-color: #2f80ed; /* brand-info */
-}
+.info .progressElement::-webkit-progress-value { background-color: #2f80ed; }
+.info .progressElement::-moz-progress-bar { background-color: #2f80ed; }
 
-.progressBarStriped .progressBarFill {
+.progressBarStriped .progressElement::-webkit-progress-value,
+.progressBarStriped .progressElement::-moz-progress-bar {
   background-image: linear-gradient(
     45deg,
     rgba(255, 255, 255, 0.15) 25%,

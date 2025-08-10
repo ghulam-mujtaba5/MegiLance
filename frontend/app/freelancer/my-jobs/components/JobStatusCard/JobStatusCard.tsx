@@ -38,12 +38,12 @@ const JobStatusCard: React.FC<JobStatusCardProps> = ({ title, client, status, pr
         </div>
         {progress !== undefined && !isCompleted && (
           <div className={styles.progressWrapper}>
-            <div className={styles.progressBar}>
-              <div 
-                className={styles.progressFill} 
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+            <progress
+              className={styles.progress}
+              value={progress}
+              max={100}
+              aria-label={`Progress ${progress}%`}
+            />
             <span className={styles.progressText}>{progress}%</span>
           </div>
         )}

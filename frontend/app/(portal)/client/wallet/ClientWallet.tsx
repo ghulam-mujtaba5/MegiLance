@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useClientData } from '@/hooks/useClient';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
+import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import common from './ClientWallet.common.module.css';
 import light from './ClientWallet.light.module.css';
 import dark from './ClientWallet.dark.module.css';
@@ -69,40 +70,73 @@ const ClientWallet: React.FC = () => {
           </div>
         </div>
 
-        {loading && <div className={common.loading} aria-busy="true">Loading wallet data...</div>}
+        {loading && <div className={common.loading} aria-busy={true}>Loading wallet data...</div>}
         {error && <div className={common.error}>Failed to load wallet data.</div>}
 
-        <div ref={balanceRef} className={cn(common.balanceSection, balanceVisible ? common.isVisible : common.isNotVisible)}>
+        <div
+          ref={balanceRef}
+          className={cn(common.balanceSection, balanceVisible ? common.isVisible : common.isNotVisible)}
+          aria-busy={loading || undefined}
+        >
           <div className={common.balanceGrid}>
-            <div className={common.balanceCard}>
-              <h3 className={common.balanceTitle}>Total Spent</h3>
-              <p className={common.balanceAmount}>${walletStats.totalSpent.toLocaleString()}</p>
-            </div>
-            <div className={common.balanceCard}>
-              <h3 className={common.balanceTitle}>Pending Payments</h3>
-              <p className={common.balanceAmount}>${walletStats.pendingAmount.toLocaleString()}</p>
-            </div>
-            <div className={common.balanceCard}>
-              <h3 className={common.balanceTitle}>Completed Payments</h3>
-              <p className={common.balanceAmount}>{walletStats.completedPayments}</p>
-            </div>
+            {loading ? (
+              <>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className={common.balanceCard}>
+                    <Skeleton height={16} width={140} />
+                    <Skeleton height={28} width={120} />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <div className={common.balanceCard}>
+                  <h3 className={common.balanceTitle}>Total Spent</h3>
+                  <p className={common.balanceAmount}>${walletStats.totalSpent.toLocaleString()}</p>
+                </div>
+                <div className={common.balanceCard}>
+                  <h3 className={common.balanceTitle}>Pending Payments</h3>
+                  <p className={common.balanceAmount}>${walletStats.pendingAmount.toLocaleString()}</p>
+                </div>
+                <div className={common.balanceCard}>
+                  <h3 className={common.balanceTitle}>Completed Payments</h3>
+                  <p className={common.balanceAmount}>{walletStats.completedPayments}</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
-        <div ref={transactionsRef} className={cn(common.transactionsSection, transactionsVisible ? common.isVisible : common.isNotVisible)}>
+        <div
+          ref={transactionsRef}
+          className={cn(common.transactionsSection, transactionsVisible ? common.isVisible : common.isNotVisible)}
+          aria-busy={loading || undefined}
+        >
           <section className={common.section}>
             <h2 className={common.sectionTitle}>Recent Transactions</h2>
             <div className={common.transactionList}>
-              {recentTransactions.map(txn => (
-                <TransactionRow
-                  key={txn.id}
-                  amount={txn.amount}
-                  date={txn.date}
-                  description={txn.description}
-                />
-              ))}
-              {recentTransactions.length === 0 && !loading && (
-                <div className={common.emptyState}>No transactions found.</div>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className={common.rowSkeleton}>
+                    <Skeleton height={14} width={'30%'} />
+                    <Skeleton height={12} width={'20%'} />
+                    <Skeleton height={12} width={'40%'} />
+                  </div>
+                ))
+              ) : (
+                <>
+                  {recentTransactions.map(txn => (
+                    <TransactionRow
+                      key={txn.id}
+                      amount={txn.amount}
+                      date={txn.date}
+                      description={txn.description}
+                    />
+                  ))}
+                  {recentTransactions.length === 0 && (
+                    <div className={common.emptyState}>No transactions found.</div>
+                  )}
+                </>
               )}
             </div>
           </section>

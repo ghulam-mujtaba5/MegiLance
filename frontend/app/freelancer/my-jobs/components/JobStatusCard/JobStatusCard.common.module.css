@@ -55,18 +55,14 @@
   gap: var(--space-3);
 }
 
-.progressBar {
+/* Semantic progress element base */
+.progress {
   flex-grow: 1;
   height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
   border-radius: var(--border-radius-full);
   overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-
-  border-radius: var(--border-radius-full);
-  transition: width 0.3s ease-in-out;
 }
 
 .progressText {

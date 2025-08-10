@@ -47,20 +47,33 @@
   position: relative;
 }
 
-.progressBarTrack {
+/* Native progress element styling */
+.progressElement {
   width: 100%;
   height: 100%;
-  position: relative;
-  border-radius: inherit;
+  display: block;
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+}
+
+/* WebKit browsers */
+.progressElement::-webkit-progress-bar {
+  background-color: transparent; /* themed in light/dark files */
+  border-radius: 9999px;
   overflow: hidden;
 }
 
-.progressBarFill {
-  width: var(--progress-width, 0%);
-  height: 100%;
+.progressElement::-webkit-progress-value {
   transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  border-radius: inherit;
-  position: relative;
+  border-radius: 9999px;
+}
+
+/* Firefox */
+.progressElement::-moz-progress-bar {
+  transition: width 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  border-radius: 9999px;
 }
 
 /* Size variants */
@@ -85,11 +98,15 @@
 }
 
 /* Animated striped pattern */
-.progressStripeAnimation .progressBarFill {
+.progressStripeAnimation .progressElement::-webkit-progress-value {
+  animation: progressStripe 1s linear infinite;
+}
+.progressStripeAnimation .progressElement::-moz-progress-bar {
   animation: progressStripe 1s linear infinite;
 }
 
 /* Striped pattern */
-.progressBarStriped .progressBarFill {
+.progressBarStriped .progressElement::-webkit-progress-value,
+.progressBarStriped .progressElement::-moz-progress-bar {
   background-size: 1rem 1rem;
 }

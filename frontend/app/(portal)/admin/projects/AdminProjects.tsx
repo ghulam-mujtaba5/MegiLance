@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
+import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -21,13 +22,14 @@ interface ProjectRow {
 
 const STATUSES = ['All', 'Planned', 'In Progress', 'Blocked', 'Completed'] as const;
 
-const statusDotColor = (status: ProjectRow['status']) => {
+const statusDotClass = (status: ProjectRow['status']) => {
   switch (status) {
-    case 'Planned': return 'var(--warning)';
-    case 'In Progress': return 'var(--primary)';
-    case 'Blocked': return 'var(--error)';
-    case 'Completed': return 'var(--success)';
+    case 'Planned': return common.badgeDotPlanned;
+    case 'In Progress': return common.badgeDotInProgress;
+    case 'Blocked': return common.badgeDotBlocked;
+    case 'Completed': return common.badgeDotCompleted;
   }
+  return undefined;
 };
 
 const AdminProjects: React.FC = () => {
@@ -84,8 +86,7 @@ const AdminProjects: React.FC = () => {
           </div>
         </div>
 
-        <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
-          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+        <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)} aria-busy={loading || undefined}>
           {error && <div className={common.error}>Failed to load projects.</div>}
           <table className={cn(common.table, themed.table)}>
             <thead>
@@ -98,28 +99,43 @@ const AdminProjects: React.FC = () => {
                 <th scope="col" className={themed.th + ' ' + common.th} aria-label="Actions">Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {filtered.map(p => (
-                <tr key={p.id} className={common.row}>
-                  <td className={themed.td + ' ' + common.td}>{p.name}</td>
-                  <td className={themed.td + ' ' + common.td}>{p.client}</td>
-                  <td className={themed.td + ' ' + common.td}>{p.budget}</td>
-                  <td className={themed.td + ' ' + common.td}>
-                    <span className={cn(common.badge, themed.badge)}>
-                      <span className={common.badgeDot} style={{ background: statusDotColor(p.status) }} aria-hidden="true" />
-                      {p.status}
-                    </span>
-                  </td>
-                  <td className={themed.td + ' ' + common.td}>{p.updated}</td>
-                  <td className={themed.td + ' ' + common.td}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button type="button" className={cn(common.button, themed.button, 'secondary')}>Open</button>
-                      <button type="button" className={cn(common.button, themed.button)}>Assign</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            {loading ? (
+              <tbody>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={i} className={common.row}>
+                    <td className={themed.td + ' ' + common.td} colSpan={6}>
+                      <div className={common.skeletonRow}>
+                        <Skeleton height={14} width={'40%'} />
+                        <Skeleton height={12} width={'70%'} />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            ) : (
+              <tbody>
+                {filtered.map(p => (
+                  <tr key={p.id} className={common.row}>
+                    <td className={themed.td + ' ' + common.td}>{p.name}</td>
+                    <td className={themed.td + ' ' + common.td}>{p.client}</td>
+                    <td className={themed.td + ' ' + common.td}>{p.budget}</td>
+                    <td className={themed.td + ' ' + common.td}>
+                      <span className={cn(common.badge, themed.badge)}>
+                        <span className={cn(common.badgeDot, statusDotClass(p.status))} aria-hidden="true" />
+                        {p.status}
+                      </span>
+                    </td>
+                    <td className={themed.td + ' ' + common.td}>{p.updated}</td>
+                    <td className={themed.td + ' ' + common.td}>
+                      <div className={common.rowActions}>
+                        <button type="button" className={cn(common.button, themed.button, 'secondary')}>Open</button>
+                        <button type="button" className={cn(common.button, themed.button)}>Assign</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
           </table>
           {filtered.length === 0 && !loading && (
             <div className={cn(common.empty)} role="status" aria-live="polite">No projects match your filters.</div>

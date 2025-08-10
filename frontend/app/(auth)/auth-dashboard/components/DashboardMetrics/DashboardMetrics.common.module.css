@@ -30,6 +30,11 @@
   font-size: 1.25rem; /* 20px */
 }
 
+/* Utility for muted icon in skeleton/loading */
+.metricIconMuted {
+  opacity: 0.4;
+}
+
 .metricValue {
   font-family: 'Poppins', sans-serif;
   font-size: 2.5rem; /* 40px */

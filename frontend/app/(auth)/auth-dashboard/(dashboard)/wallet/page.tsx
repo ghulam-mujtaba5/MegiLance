@@ -206,7 +206,7 @@ const WalletPage = () => {
                   <Skeleton height={24} width={24} />
                   <div className={styles.methodDetails}>
                     <Skeleton height={14} width={220} />
-                    <div style={{ marginTop: 6 }}>
+                    <div className={styles.skeletonSpacerXs}>
                       <Skeleton height={12} width={120} />
                     </div>
                   </div>
@@ -294,7 +294,7 @@ const WalletPage = () => {
                     <Skeleton height={20} width={20} />
                     <div>
                       <Skeleton height={14} width={220} />
-                      <div style={{ marginTop: 6 }}>
+                      <div className={styles.skeletonSpacerXs}>
                         <Skeleton height={12} width={120} />
                       </div>
                     </div>

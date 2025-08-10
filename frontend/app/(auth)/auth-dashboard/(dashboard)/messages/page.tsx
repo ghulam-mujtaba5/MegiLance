@@ -98,10 +98,12 @@ const MessagesPage = () => {
                 <button
                   className={`${styles.filterButton} ${showUnread ? styles.filterButtonActive : ''}`}
                   onClick={() => setShowUnread(v => !v)}
+                  aria-pressed={showUnread || undefined}
                 >Unread</button>
                 <button
                   className={`${styles.filterButton} ${showStarred ? styles.filterButtonActive : ''}`}
                   onClick={() => setShowStarred(v => !v)}
+                  aria-pressed={showStarred || undefined}
                 >Starred</button>
               </div>
             </>
@@ -156,6 +158,7 @@ const MessagesPage = () => {
                       title={starred[convo.id] ? 'Unstar' : 'Star'}
                       onClick={(e) => { e.stopPropagation(); toggleStar(convo.id); }}
                       aria-label={starred[convo.id] ? 'Unstar conversation' : 'Star conversation'}
+                      aria-pressed={starred[convo.id] || undefined}
                     >
                       <Star size={16} color={starred[convo.id] ? 'var(--color-primary)' : 'var(--color-text-secondary)'} fill={starred[convo.id] ? 'var(--color-primary)' : 'none'} />
                     </button>
@@ -171,7 +174,7 @@ const MessagesPage = () => {
       </div>
 
       {/* Column 2: Chat Window */}
-      <div className={styles.chatWindow} aria-busy={loading ? 'true' : undefined}>
+      <div className={styles.chatWindow} aria-busy={loading || undefined}>
         {loading ? (
           <>
             <div className={styles.chatHeader}>
