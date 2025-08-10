@@ -8,10 +8,11 @@
   margin-bottom: 2rem;
 }
 
-.analyticsGrid {
+.metricsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .statValue {
@@ -32,6 +33,16 @@
 
 .mainChartContainer {
   grid-column: 1 / -1; /* Span full width */
+}
+
+.controlsSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .chartPlaceholder {

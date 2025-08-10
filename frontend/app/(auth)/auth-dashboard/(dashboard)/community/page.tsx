@@ -1,6 +1,6 @@
 // @AI-HINT: This is the Community page, designed as a premium forum/social hub. It features a main discussion feed, sorting/filtering controls, and a sidebar with community stats and popular tags to encourage user interaction.
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { Plus, Search, ThumbsUp, MessageCircle, Eye, ChevronDown } from 'lucide-react';
 import styles from './Community.module.css';
@@ -58,6 +58,34 @@ const communityStats = {
 const popularTags = ['freelancing', 'marketing', 'design', 'development', 'business', 'productivity'];
 
 const CommunityPage = () => {
+  const [query, setQuery] = useState('');
+  const [sortBy, setSortBy] = useState<'latest' | 'mostLiked' | 'mostCommented' | 'mostViewed'>('latest');
+  const [activeTag, setActiveTag] = useState<string>('');
+
+  const posts = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let items = communityPosts.filter(p => {
+      const matchesQuery = !q || p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q) || p.author.toLowerCase().includes(q);
+      const matchesTag = !activeTag || p.tags.includes(activeTag);
+      return matchesQuery && matchesTag;
+    });
+    switch (sortBy) {
+      case 'mostLiked':
+        items = [...items].sort((a,b) => b.likes - a.likes);
+        break;
+      case 'mostCommented':
+        items = [...items].sort((a,b) => b.comments - a.comments);
+        break;
+      case 'mostViewed':
+        items = [...items].sort((a,b) => b.views - a.views);
+        break;
+      default:
+        // latest: keep original order (mock assumes latest first)
+        break;
+    }
+    return items;
+  }, [query, sortBy, activeTag]);
+
   return (
     <div className={styles.communityContainer}>
       {/* Main Content */}
@@ -73,16 +101,37 @@ const CommunityPage = () => {
         <div className={styles.feedControls}>
           <div className={styles.searchBox}>
             <Search size={18} className={styles.searchIcon} />
-            <input type="text" placeholder="Search discussions..." />
+            <input
+              type="text"
+              placeholder="Search discussions..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search discussions"
+            />
           </div>
           <div className={styles.sortDropdown}>
-            <span>Sort by: Latest</span>
+            <select
+              className={styles.sortSelect}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              aria-label="Sort discussions"
+            >
+              <option value="latest">Latest</option>
+              <option value="mostLiked">Most Liked</option>
+              <option value="mostCommented">Most Commented</option>
+              <option value="mostViewed">Most Viewed</option>
+            </select>
             <ChevronDown size={16} />
           </div>
         </div>
 
         <div className={styles.postFeed}>
-          {communityPosts.map((post) => (
+          {posts.length === 0 ? (
+            <div className={styles.emptyState}>
+              <h4>No discussions found</h4>
+              <p>Try adjusting your search, sort, or tags.</p>
+            </div>
+          ) : posts.map((post) => (
             <article key={post.id} className={styles.postCard}>
               <div className={styles.postAuthor}>
                 <Image src={post.authorAvatar} alt={post.author} className={styles.authorAvatar} width={40} height={40} />
@@ -94,7 +143,19 @@ const CommunityPage = () => {
               <h2 className={styles.postTitle}>{post.title}</h2>
               <p className={styles.postExcerpt}>{post.excerpt}</p>
               <div className={styles.postTags}>
-                {post.tags.map(tag => <span key={tag} className={styles.tag}>#{tag}</span>)}
+                {post.tags.map(tag => (
+                  <span
+                    key={tag}
+                    className={`${styles.tag} ${activeTag === tag ? styles.tagActive : ''}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setActiveTag(activeTag === tag ? '' : tag)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTag(activeTag === tag ? '' : tag); } }}
+                    aria-label={activeTag === tag ? `Remove tag filter ${tag}` : `Filter by tag ${tag}`}
+                  >
+                    #{tag}
+                  </span>
+                ))}
               </div>
               <footer className={styles.postFooter}>
                 <div className={styles.postStats}>
@@ -123,7 +184,19 @@ const CommunityPage = () => {
         <div className={styles.sidebarWidget}>
           <h3>Popular Tags</h3>
           <div className={styles.popularTags}>
-            {popularTags.map(tag => <span key={tag} className={styles.tag}>#{tag}</span>)}
+            {popularTags.map(tag => (
+              <span
+                key={tag}
+                className={`${styles.tag} ${activeTag === tag ? styles.tagActive : ''}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => setActiveTag(activeTag === tag ? '' : tag)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTag(activeTag === tag ? '' : tag); } }}
+                aria-label={activeTag === tag ? `Remove tag filter ${tag}` : `Filter by tag ${tag}`}
+              >
+                #{tag}
+              </span>
+            ))}
           </div>
         </div>
       </aside>

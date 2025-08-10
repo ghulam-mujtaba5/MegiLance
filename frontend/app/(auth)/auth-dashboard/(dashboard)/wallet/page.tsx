@@ -2,7 +2,7 @@
 // It includes a balance summary, financial metrics, payment methods, and a detailed transaction history.
 // The component uses modular CSS for styling and lucide-react for icons, ensuring a clean and maintainable structure.
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { PlusCircle, Download, MoreVertical, CreditCard, Landmark, Search, Filter, Trash2, Edit } from 'lucide-react';
 import styles from './Wallet.module.css';
 
@@ -49,6 +49,62 @@ const getTransactionTypeIcon = (type: string) => {
 }
 
 const WalletPage = () => {
+  // Controls state
+  const [txQuery, setTxQuery] = useState('');
+  const [txType, setTxType] = useState<'All' | 'Deposit' | 'Withdrawal' | 'Expense' | 'Fee'>('All');
+  const [txStatus, setTxStatus] = useState<'All' | 'Completed' | 'Pending' | 'Failed'>('All');
+  const [txSort, setTxSort] = useState<'date' | 'amount' | 'status'>('date');
+  const [range, setRange] = useState<'7d' | '30d' | '90d' | '12m'>('30d');
+
+  // Derived transactions
+  const transactions = useMemo(() => {
+    const q = txQuery.trim().toLowerCase();
+    let list = walletData.transactions.filter(t => {
+      const matchesQuery = q.length === 0 ||
+        t.id.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        t.type.toLowerCase().includes(q);
+      const matchesType = txType === 'All' || t.type === txType;
+      const matchesStatus = txStatus === 'All' || t.status === txStatus;
+      return matchesQuery && matchesType && matchesStatus;
+    });
+    list = [...list].sort((a, b) => {
+      if (txSort === 'date') {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+      if (txSort === 'amount') {
+        return Math.abs(b.amount) - Math.abs(a.amount);
+      }
+      const order = ['Completed', 'Pending', 'Failed'] as const;
+      return order.indexOf(a.status as any) - order.indexOf(b.status as any);
+    });
+    return list;
+  }, [txQuery, txType, txStatus, txSort]);
+
+  // Sparkline data (mock, deterministic)
+  const spark = useMemo(() => {
+    const points = range === '7d' ? 7 : range === '30d' ? 30 : range === '90d' ? 90 : 12;
+    const width = 360;
+    const height = 56;
+    const pad = 6;
+    const seed = 42;
+    const vals: number[] = [];
+    for (let i = 0; i < points; i++) {
+      const v = Math.sin((i + seed) * 0.35) * 0.5 + 0.5;
+      const noise = ((i * 17) % 13) / 25;
+      vals.push(Math.max(0, Math.min(1, v * 0.7 + noise * 0.3)));
+    }
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    const xScale = (i: number) => pad + (i / (points - 1)) * (width - pad * 2);
+    const yScale = (v: number) => pad + (1 - (v - min) / (max - min || 1)) * (height - pad * 2);
+    const path = vals.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xScale(i)},${yScale(v)}`).join(' ');
+    const area = `M ${xScale(0)},${height - pad} ` +
+      vals.map((v, i) => `L ${xScale(i)},${yScale(v)}`).join(' ') +
+      ` L ${xScale(points - 1)},${height - pad} Z`;
+    return { width, height, pad, path, area };
+  }, [range]);
+
   return (
     <div className={styles.walletContainer}>
       <header className={styles.pageHeader}>
@@ -66,6 +122,24 @@ const WalletPage = () => {
             <MoreVertical size={20} className={styles.moreIcon} />
           </div>
           <p className={styles.balanceAmount}>${walletData.currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          <svg className={styles.sparkline} role="img" aria-label="Balance trend sparkline" width={spark.width} height={spark.height} viewBox={`0 0 ${spark.width} ${spark.height}`}
+            preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="walletSpark" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="rgba(69,115,223,0.35)" />
+                <stop offset="100%" stopColor="rgba(69,115,223,0.0)" />
+              </linearGradient>
+            </defs>
+            <path d={spark.area} fill="url(#walletSpark)" />
+            <path d={spark.path} fill="none" stroke="#4573df" strokeWidth="2" />
+          </svg>
+          <div className={styles.rangeControls}>
+            {(['7d','30d','90d','12m'] as const).map(r => (
+              <button key={r} className={`${styles.rangeButton} ${range === r ? styles.rangeButtonActive : ''}`} onClick={() => setRange(r)}>
+                {r}
+              </button>
+            ))}
+          </div>
           <div className={styles.balanceActions}>
             <button className={styles.addFundsButton}><PlusCircle size={18} /> Add Funds</button>
             <button className={styles.withdrawButton}><Download size={18} /> Withdraw</button>
@@ -104,12 +178,30 @@ const WalletPage = () => {
             <h3>Transaction History</h3>
             <div className={styles.searchBox}>
               <Search size={18} className={styles.searchIcon} />
-              <input type="text" placeholder="Search transactions..." />
+              <input
+                type="text"
+                placeholder="Search transactions..."
+                value={txQuery}
+                onChange={(e) => setTxQuery(e.target.value)}
+                aria-label="Search transactions"
+              />
             </div>
-            <button className={styles.filterButton}>
-              <Filter size={16} />
-              <span>Filter</span>
-            </button>
+            <select className={styles.select} value={txType} onChange={(e) => setTxType(e.target.value as any)} aria-label="Filter by type">
+              {['All','Deposit','Withdrawal','Expense','Fee'].map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+            <select className={styles.select} value={txStatus} onChange={(e) => setTxStatus(e.target.value as any)} aria-label="Filter by status">
+              {['All','Completed','Pending','Failed'].map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            <div className={styles.sortGroup} role="group" aria-label="Sort transactions">
+              <span>Sort:</span>
+              <button className={`${styles.sortButton} ${txSort === 'date' ? styles.sortButtonActive : ''}`} onClick={() => setTxSort('date')}>Date</button>
+              <button className={`${styles.sortButton} ${txSort === 'amount' ? styles.sortButtonActive : ''}`} onClick={() => setTxSort('amount')}>Amount</button>
+              <button className={`${styles.sortButton} ${txSort === 'status' ? styles.sortButtonActive : ''}`} onClick={() => setTxSort('status')}>Status</button>
+            </div>
           </div>
           <div className={styles.transactionHeader}>
             <span>DESCRIPTION</span>
@@ -118,7 +210,12 @@ const WalletPage = () => {
             <span className={styles.amountHeader}>AMOUNT</span>
           </div>
           <div>
-            {walletData.transactions.map(tx => (
+            {transactions.length === 0 ? (
+              <div className={styles.emptyState}>
+                <h4>No transactions found</h4>
+                <p>Try changing search, filters, or sort options.</p>
+              </div>
+            ) : transactions.map(tx => (
               <div key={tx.id} className={styles.transactionRow}>
                 <div className={styles.transactionDescription}>
                   {getTransactionTypeIcon(tx.type)}
@@ -132,7 +229,7 @@ const WalletPage = () => {
                 <span className={`${styles.transactionAmount} ${tx.amount > 0 ? styles.positiveAmount : styles.negativeAmount}`}>
                   {tx.amount > 0 ? '+' : ''}${Math.abs(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
-                 <button className={styles.methodAction} title="Transaction details"><MoreVertical size={16} /></button>
+                <button className={styles.methodAction} title="Transaction details"><MoreVertical size={16} /></button>
               </div>
             ))}
           </div>

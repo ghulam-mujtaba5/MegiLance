@@ -6,7 +6,13 @@
   margin: 0 auto;
 }
 
-.dashboardHeader {
+.dashboardSection {
+  margin-bottom: 2rem;
+}
+
+.dashboardSection:not(:last-child) {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 }
 
@@ -49,6 +55,15 @@
   border-color: var(--color-border-hover);
 }
 
+/* Focus-visible for a11y */
+.kpiCard:focus-visible,
+.projectCard:focus-visible,
+.taskItem:focus-visible,
+.viewAllLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .kpiIcon {
   width: 50px;
   height: 50px;
@@ -58,6 +73,11 @@
   justify-content: center;
   flex-shrink: 0;
 }
+
+.kpiIconPrimary { background-color: var(--color-primary); }
+.kpiIconSuccess { background-color: var(--color-success); }
+.kpiIconWarning { background-color: var(--color-warning-dark); }
+.kpiIconError { background-color: var(--color-error); }
 
 .kpiContent {
   display: flex;
@@ -115,6 +135,18 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.emptyState {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.emptyState h4 {
+  margin: 0 0 0.25rem 0;
+  font-family: var(--font-poppins);
+  color: var(--color-text-primary);
 }
 
 .projectCard {
@@ -192,13 +224,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
-  transition: background-color 0.2s ease;
+  background: var(--color-background-secondary);
+  transition: all 0.2s ease;
 }
 
 .taskItem:hover {
-    background-color: var(--color-background-secondary);
+  transform: translateY(-1px);
+  background: var(--color-background-hover);
+  border-color: var(--color-border-hover);
 }
 
 .taskInfo {

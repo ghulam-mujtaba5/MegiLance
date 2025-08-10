@@ -156,7 +156,12 @@ const ProjectsPage = () => {
           <span className={styles.headerItem}>Deadline</span>
           <span className={styles.headerItem}></span>
         </div>
-        {filtered.map(project => (
+        {filtered.length === 0 ? (
+          <div className={styles.emptyState}>
+            <h4>No projects found</h4>
+            <p>Try adjusting your search or filters.</p>
+          </div>
+        ) : filtered.map(project => (
           <div key={project.id} className={styles.projectRow}>
             <div className={styles.projectInfo}>
               <span className={styles.projectId}>{project.id}</span>

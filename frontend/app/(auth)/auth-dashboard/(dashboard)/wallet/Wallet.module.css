@@ -10,7 +10,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-6);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .pageHeader h1 {
@@ -85,6 +87,51 @@
   display: flex;
   gap: var(--space-4);
   margin-top: auto;
+}
+
+/* Range buttons beneath balance */
+.rangeControls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.rangeButton {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rangeButton:hover {
+  background-color: var(--color-background-hover);
+}
+
+.rangeButtonActive {
+  background-color: rgba(69, 115, 223, 0.1);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Focus-visible for interactive controls */
+.rangeButton:focus-visible,
+.addFundsButton:focus-visible,
+.withdrawButton:focus-visible,
+.select:focus-visible,
+.sortButton:focus-visible,
+.searchBox input:focus-visible,
+.filterButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Sparkline */
+.sparkline {
+  width: 100%;
+  height: 56px;
 }
 
 .addFundsButton, .withdrawButton {
@@ -241,6 +288,18 @@
   padding: var(--space-6);
 }
 
+.emptyState {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.emptyState h4 {
+  margin: 0 0 0.5rem 0;
+  font-family: var(--font-poppins);
+  color: var(--color-text-primary);
+}
+
 .transactionControls {
   display: flex;
   gap: var(--space-4);
@@ -287,6 +346,43 @@
 .filterButton:hover {
   background-color: var(--color-background-hover);
   border-color: var(--color-border-hover);
+}
+
+/* Select control used for filters */
+.select {
+  appearance: none;
+  background-color: var(--color-background-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  color: var(--color-text-primary);
+  font-family: var(--font-inter);
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text-secondary) 50%),
+    linear-gradient(135deg, var(--color-text-secondary) 50%, transparent 50%);
+  background-position: calc(100% - 16px) calc(1.05em), calc(100% - 11px) calc(1.05em);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.sortGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sortButton {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-background-tertiary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.sortButtonActive {
+  background: rgba(69, 115, 223, 0.1);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .transactionHeader {

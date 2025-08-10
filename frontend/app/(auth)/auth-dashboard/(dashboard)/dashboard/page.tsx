@@ -14,25 +14,25 @@ const kpiData = [
     title: 'Active Projects',
     value: '5',
     icon: Zap,
-    color: 'var(--color-primary)',
+    colorClass: 'kpiIconPrimary',
   },
   {
     title: 'Monthly Earnings',
     value: '$12,500',
     icon: DollarSign,
-    color: 'var(--color-success)',
+    colorClass: 'kpiIconSuccess',
   },
   {
     title: 'Unread Messages',
     value: '3',
     icon: MessageSquare,
-    color: 'var(--color-warning-dark)',
+    colorClass: 'kpiIconWarning',
   },
   {
     title: 'Pending Tasks',
     value: '8',
     icon: Clock,
-    color: 'var(--color-error)',
+    colorClass: 'kpiIconError',
   },
 ];
 
@@ -80,7 +80,7 @@ const DashboardPage = () => {
       <div className={styles.kpiGrid}>
         {kpiData.map((kpi, index) => (
           <div key={index} className={styles.kpiCard}>
-            <div className={styles.kpiIcon} style={{ backgroundColor: kpi.color }}>
+            <div className={`${styles.kpiIcon} ${styles[kpi.colorClass as keyof typeof styles]}`}>
               <kpi.icon size={24} color="white" />
             </div>
             <div className={styles.kpiContent}>
@@ -100,8 +100,20 @@ const DashboardPage = () => {
             </a>
           </div>
           <div className={styles.projectList}>
-            {recentProjects.map(project => (
-              <div key={project.id} className={styles.projectCard}>
+            {recentProjects.length === 0 ? (
+              <div className={styles.emptyState}>
+                <h4>No recent projects</h4>
+                <p>Projects you’re working on will appear here.</p>
+              </div>
+            ) : recentProjects.map(project => (
+              <div
+                key={project.id}
+                className={styles.projectCard}
+                tabIndex={0}
+                role="button"
+                aria-label={`Open ${project.title}`}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); /* navigate or open modal */ } }}
+              >
                 <div className={styles.projectInfo}>
                     <div className={styles.projectIcon}>
                         <project.icon size={22} />
@@ -127,7 +139,12 @@ const DashboardPage = () => {
             <h2>Upcoming Tasks</h2>
           </div>
           <div className={styles.taskList}>
-            {upcomingTasks.map(task => (
+            {upcomingTasks.length === 0 ? (
+              <div className={styles.emptyState}>
+                <h4>No upcoming tasks</h4>
+                <p>You’re all caught up. New tasks will appear here.</p>
+              </div>
+            ) : upcomingTasks.map(task => (
               <div key={task.id} className={styles.taskItem}>
                 <div className={styles.taskInfo}>
                   <CheckCircle size={18} className={styles.taskIcon} />

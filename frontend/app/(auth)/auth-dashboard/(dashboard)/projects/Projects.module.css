@@ -11,8 +11,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: 1.5rem;
 }
 
 .pageHeader h1 {
@@ -102,6 +102,15 @@
   color: var(--color-primary);
 }
 
+/* Accessibility focus states */
+.filterButton:focus-visible,
+.select:focus-visible,
+.searchBox input:focus-visible,
+.actionButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .select {
   appearance: none;
   background-color: var(--color-background-secondary);
@@ -138,6 +147,20 @@
   border-radius: var(--border-radius-large);
   overflow: hidden;
 }
+
+.emptyState {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.emptyState h4 {
+  margin: 0 0 0.5rem 0;
+  font-family: var(--font-poppins);
+  color: var(--color-text-primary);
+}
+
+.emptyState p { margin: 0; }
 
 .projectListHeader,
 .projectRow {

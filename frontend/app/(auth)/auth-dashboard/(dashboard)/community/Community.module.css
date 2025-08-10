@@ -19,8 +19,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: 1.5rem;
 }
 
 .pageHeader h1 {
@@ -47,6 +47,16 @@
 
 .newPostButton:hover {
   background-color: var(--color-primary-hover);
+}
+
+/* Focus-visible for a11y */
+.newPostButton:focus-visible,
+.searchBox input:focus-visible,
+.sortSelect:focus-visible,
+.tag:focus-visible,
+.postCard:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .feedControls {
@@ -80,15 +90,14 @@
   font-family: var(--font-inter);
 }
 
-.sortDropdown {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+.sortDropdown { display: flex; align-items: center; gap: 0.5rem; }
+
+.sortSelect {
+  padding: 0.6rem 0.9rem;
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
-  cursor: pointer;
-  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
 }
 
 .postFeed {
@@ -171,6 +180,12 @@
   color: var(--color-primary);
 }
 
+.tagActive {
+  background-color: rgba(69,115,223,0.12);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
 .postFooter {
   display: flex;
   justify-content: space-between;
@@ -239,6 +254,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.emptyState {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.emptyState h4 {
+  margin: 0 0 0.25rem 0;
+  font-family: var(--font-poppins);
+  color: var(--color-text-primary);
 }
 
 /* Responsive Design */
