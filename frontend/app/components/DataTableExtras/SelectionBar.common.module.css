@@ -1,0 +1,5 @@
+/* @AI-HINT: Common styles for SelectionBar */
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 10px; border: 1px solid transparent; }
+.info { font-weight: 600; }
+.actions { display: flex; gap: 8px; }
+.button { height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid transparent; font-weight: 500; }

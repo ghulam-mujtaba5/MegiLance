@@ -1,0 +1,4 @@
+/* @AI-HINT: Dark theme styles for ErrorBoundary fallback */
+.container { background: #1b1f2a; color: #e5e7eb; border: 1px solid #2a3142; }
+.title { color: #f9fafb; }
+.message { color: #9ca3af; }

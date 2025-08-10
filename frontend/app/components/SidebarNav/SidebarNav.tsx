@@ -8,6 +8,19 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import styles from './SidebarNav.common.module.css';
+import {
+  LayoutDashboard,
+  MessageSquare,
+  FolderGit2,
+  Wallet,
+  HelpCircle,
+  Settings as SettingsIcon,
+  Users,
+  CreditCard,
+  LineChart,
+  ShieldAlert,
+  Briefcase,
+} from 'lucide-react';
 
 // Define the structure for a navigation item
 export interface NavItem {
@@ -43,31 +56,31 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         switch (userType) {
           case 'admin':
             return [
-              { href: '/admin/dashboard', label: 'Dashboard', icon: null },
-              { href: '/admin/users', label: 'Users', icon: null },
-              { href: '/admin/projects', label: 'Projects', icon: null },
-              { href: '/admin/payments', label: 'Payments', icon: null },
-              { href: '/admin/support', label: 'Support', icon: null },
-              { href: '/admin/ai-monitoring', label: 'AI Monitoring', icon: null },
-              { href: '/admin/settings', label: 'Settings', icon: null },
+              { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+              { href: '/admin/users', label: 'Users', icon: <Users size={18} /> },
+              { href: '/admin/projects', label: 'Projects', icon: <FolderGit2 size={18} /> },
+              { href: '/admin/payments', label: 'Payments', icon: <CreditCard size={18} /> },
+              { href: '/admin/support', label: 'Support', icon: <ShieldAlert size={18} /> },
+              { href: '/admin/ai-monitoring', label: 'AI Monitoring', icon: <LineChart size={18} /> },
+              { href: '/admin/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
           case 'client':
             return [
-              { href: '/client/dashboard', label: 'Dashboard', icon: null },
-              { href: '/messages', label: 'Messages', icon: null },
-              { href: '/client/projects', label: 'Projects', icon: null },
-              { href: '/client/payments', label: 'Payments', icon: null },
-              { href: '/help', label: 'Help', icon: null },
-              { href: '/client/settings', label: 'Settings', icon: null },
+              { href: '/client/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+              { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
+              { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} /> },
+              { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} /> },
+              { href: '/help', label: 'Help', icon: <HelpCircle size={18} /> },
+              { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
           case 'freelancer':
             return [
-              { href: '/freelancer/dashboard', label: 'Dashboard', icon: null },
-              { href: '/messages', label: 'Messages', icon: null },
-              { href: '/freelancer/projects', label: 'Projects', icon: null },
-              { href: '/freelancer/wallet', label: 'Wallet', icon: null },
-              { href: '/help', label: 'Help', icon: null },
-              { href: '/freelancer/settings', label: 'Settings', icon: null },
+              { href: '/freelancer/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+              { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
+              { href: '/freelancer/projects', label: 'Projects', icon: <Briefcase size={18} /> },
+              { href: '/freelancer/wallet', label: 'Wallet', icon: <Wallet size={18} /> },
+              { href: '/help', label: 'Help', icon: <HelpCircle size={18} /> },
+              { href: '/freelancer/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
           default:
             return [];
@@ -90,21 +103,30 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       </div>
       <nav className={styles.sidebarNavNav}>
         <ul className={styles.sidebarNavList}>
-          {computedNavItems.map((item) => (
-            <li key={item.href} className={styles.sidebarNavItem}>
-              <Link
-                href={item.href}
-                className={cn(
-                  styles.sidebarNavLink,
-                  pathname === item.href && styles.sidebarNavLinkActive
-                )}
-                title={isCollapsed ? item.label : undefined}
-              >
-                <span className={styles.sidebarNavIcon}>{item.icon}</span>
-                {!isCollapsed && <span className={styles.sidebarNavLabel}>{item.label}</span>}
-              </Link>
-            </li>
-          ))}
+          {computedNavItems.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+            return (
+              <li key={item.href} className={styles.sidebarNavItem}>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    styles.sidebarNavLink,
+                    isActive && styles.sidebarNavLinkActive
+                  )}
+                  aria-current={isActive ? 'page' : undefined}
+                  title={isCollapsed ? item.label : undefined}
+                  data-testid={`sidebar-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                >
+                  <span className={styles.sidebarNavIcon} aria-hidden>
+                    {item.icon}
+                  </span>
+                  {!isCollapsed && (
+                    <span className={styles.sidebarNavLabel}>{item.label}</span>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <div className={styles.sidebarNavFooter}>

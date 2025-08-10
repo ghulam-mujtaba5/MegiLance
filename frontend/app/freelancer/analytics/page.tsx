@@ -80,7 +80,7 @@ const AnalyticsPage: React.FC = () => {
         <p className={styles.subtitle}>Track your performance and find new opportunities for growth.</p>
       </header>
 
-      {loading && <div className={styles.loading} aria-busy={loading || undefined}>Loading analytics...</div>}
+      {loading && <div className={styles.loading} aria-busy="true">Loading analytics...</div>}
       {error && <div className={styles.error}>Failed to load analytics data.</div>}
 
       {analyticsData && (

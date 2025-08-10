@@ -1,0 +1,18 @@
+/* @AI-HINT: Light theme styles for Proposals page. */
+
+.container { color: #0f172a; }
+.title { color: #0f172a; }
+.subtitle { color: #475569; }
+
+.input { background: #ffffff; border-color: #e2e8f0; color: #0f172a; }
+.select { background: #ffffff; border-color: #e2e8f0; color: #0f172a; }
+.button { background: #4573df; color: #ffffff; }
+.button:hover { filter: brightness(0.95); }
+
+.tableWrap { background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04); }
+.table thead th { background: #f8fafc; color: #0f172a; border-bottom: 1px solid #e2e8f0; }
+.table tbody tr + tr td { border-top: 1px solid #f1f5f9; }
+
+.emptyState { background: #f8fafc; color: #475569; }
+
+.status { background: #eef2ff; color: #3730a3; }

@@ -152,3 +152,27 @@
   font-size: var(--font-size-sm);
   opacity: 0.85;
 }
+
+/* DataTable Extras Row */
+.extrasRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-3);
+}
+
+/* Selection checkbox cell */
+.checkboxCell {
+  width: 44px;
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+/* Density modifiers */
+.table[data-density='compact'] th,
+.table[data-density='compact'] td {
+  padding: 8px 12px;
+}
+.table[data-density='compact'] .checkboxCell {
+  width: 36px;
+}

@@ -11,11 +11,13 @@ import darkStyles from './ToggleSwitch.dark.module.css';
 
 interface ToggleSwitchProps {
   label: string;
-  defaultChecked?: boolean;
   id: string;
+  defaultChecked?: boolean;
+  checked?: boolean;
+  onChange?: (val: boolean) => void;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, defaultChecked, id }) => {
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, id, defaultChecked, checked, onChange }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => {
     const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
@@ -32,7 +34,9 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ label, defaultChecked, id }
           type="checkbox"
           id={id}
           className={cn(styles.input)}
-          defaultChecked={defaultChecked}
+          {...(checked !== undefined
+            ? { checked, onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.checked), 'aria-checked': checked, role: 'switch' }
+            : { defaultChecked, onChange: (e: React.ChangeEvent<HTMLInputElement>) => onChange?.(e.target.checked) })}
         />
         <div className={cn(styles.slider)}></div>
       </div>

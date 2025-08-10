@@ -1,12 +1,14 @@
 // @AI-HINT: This is the refactored 'My Jobs' page, featuring a premium two-column layout and the specialized JobStatusCard for a clean, professional presentation.
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import JobStatusCard from './components/JobStatusCard/JobStatusCard';
 import commonStyles from './MyJobs.common.module.css';
 import lightStyles from './MyJobs.light.module.css';
 import darkStyles from './MyJobs.dark.module.css';
+import { usePersistedState } from '@/app/lib/hooks/usePersistedState';
+import { exportCSV } from '@/app/lib/csv';
 
 const activeJobs = [
   {
@@ -54,11 +56,12 @@ const MyJobs: React.FC = () => {
   }, [theme]);
 
   // Active section controls
-  const [qActive, setQActive] = useState('');
-  const [sortActiveKey, setSortActiveKey] = useState<'title' | 'client' | 'status' | 'progress'>('title');
-  const [sortActiveDir, setSortActiveDir] = useState<'asc' | 'desc'>('asc');
-  const [pageActive, setPageActive] = useState(1);
-  const [pageActiveSize, setPageActiveSize] = useState(6);
+  const [qActive, setQActive] = usePersistedState<string>('freelancer:my-jobs:active:q', '');
+  const [sortActiveKey, setSortActiveKey] = usePersistedState<'title' | 'client' | 'status' | 'progress'>('freelancer:my-jobs:active:sortKey', 'title');
+  const [sortActiveDir, setSortActiveDir] = usePersistedState<'asc' | 'desc'>('freelancer:my-jobs:active:sortDir', 'asc');
+  const [pageActive, setPageActive] = usePersistedState<number>('freelancer:my-jobs:active:page', 1);
+  const [pageActiveSize, setPageActiveSize] = usePersistedState<number>('freelancer:my-jobs:active:pageSize', 6);
+  const [loadingActive, setLoadingActive] = useState(false);
 
   const filteredActive = useMemo(() => {
     const q = qActive.trim().toLowerCase();
@@ -94,24 +97,16 @@ const MyJobs: React.FC = () => {
   const exportActiveCSV = () => {
     const header = ['Title', 'Client', 'Status', 'Progress'];
     const rows = sortedActive.map(j => [j.title, j.client, j.status, String(j.progress)]);
-    const csv = [header, ...rows]
-      .map(cols => cols.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'my-jobs-active.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    exportCSV(header, rows, 'my-jobs-active');
   };
 
   // Completed section controls
-  const [qCompleted, setQCompleted] = useState('');
-  const [sortCompletedKey, setSortCompletedKey] = useState<'title' | 'client' | 'completionDate'>('completionDate');
-  const [sortCompletedDir, setSortCompletedDir] = useState<'asc' | 'desc'>('desc');
-  const [pageCompleted, setPageCompleted] = useState(1);
-  const [pageCompletedSize, setPageCompletedSize] = useState(6);
+  const [qCompleted, setQCompleted] = usePersistedState<string>('freelancer:my-jobs:completed:q', '');
+  const [sortCompletedKey, setSortCompletedKey] = usePersistedState<'title' | 'client' | 'completionDate'>('freelancer:my-jobs:completed:sortKey', 'completionDate');
+  const [sortCompletedDir, setSortCompletedDir] = usePersistedState<'asc' | 'desc'>('freelancer:my-jobs:completed:sortDir', 'desc');
+  const [pageCompleted, setPageCompleted] = usePersistedState<number>('freelancer:my-jobs:completed:page', 1);
+  const [pageCompletedSize, setPageCompletedSize] = usePersistedState<number>('freelancer:my-jobs:completed:pageSize', 6);
+  const [loadingCompleted, setLoadingCompleted] = useState(false);
 
   const filteredCompleted = useMemo(() => {
     const q = qCompleted.trim().toLowerCase();
@@ -147,19 +142,22 @@ const MyJobs: React.FC = () => {
   }, [sortedCompleted, pageCompletedSafe, pageCompletedSize]);
 
   const exportCompletedCSV = () => {
-    const header = ['Title', 'Client', 'Completion Date'];
-    const rows = sortedCompleted.map(j => [j.title, j.client, j.completionDate as string]);
-    const csv = [header, ...rows]
-      .map(cols => cols.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'my-jobs-completed.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    const header = ['Title', 'Client', 'Completed On'];
+    const rows = sortedCompleted.map(j => [j.title, j.client, j.completionDate ?? '—']);
+    exportCSV(header, rows, 'my-jobs-completed');
   };
+
+  useEffect(() => {
+    setLoadingActive(true);
+    const t = setTimeout(() => setLoadingActive(false), 120);
+    return () => clearTimeout(t);
+  }, [qActive, sortActiveKey, sortActiveDir, pageActive, pageActiveSize]);
+
+  useEffect(() => {
+    setLoadingCompleted(true);
+    const t = setTimeout(() => setLoadingCompleted(false), 120);
+    return () => clearTimeout(t);
+  }, [qCompleted, sortCompletedKey, sortCompletedDir, pageCompleted, pageCompletedSize]);
 
   return (
     <div className={styles.pageContainer}>

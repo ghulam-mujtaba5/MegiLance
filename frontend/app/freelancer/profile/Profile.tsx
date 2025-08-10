@@ -1,7 +1,7 @@
 // @AI-HINT: This is the refactored Freelancer Profile page, featuring a premium layout, custom components, and full theme support.
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Button from '@/app/components/Button/Button';
@@ -24,6 +24,91 @@ const userProfile = {
 
 const Profile: React.FC = () => {
   const { theme } = useTheme();
+  const [name, setName] = useState(userProfile.name);
+  const [title, setTitle] = useState(userProfile.title);
+  const [bio, setBio] = useState(userProfile.bio);
+  const [skills, setSkills] = useState(userProfile.skills.join(', '));
+  const [portfolioUrl, setPortfolioUrl] = useState(userProfile.portfolioUrl);
+  const [hourlyRate, setHourlyRate] = useState<number | string>(userProfile.hourlyRate);
+  const [errors, setErrors] = useState<{ portfolioUrl?: string; hourlyRate?: string }>({});
+  const [status, setStatus] = useState<string>('');
+
+  // Draft load
+  useEffect(() => {
+    try {
+      const raw = typeof window !== 'undefined' ? window.localStorage.getItem('freelancer_profile_draft') : null;
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (draft.name) setName(draft.name);
+        if (draft.title) setTitle(draft.title);
+        if (typeof draft.bio === 'string') setBio(draft.bio);
+        if (typeof draft.skills === 'string') setSkills(draft.skills);
+        if (draft.portfolioUrl) setPortfolioUrl(draft.portfolioUrl);
+        if (draft.hourlyRate !== undefined) setHourlyRate(draft.hourlyRate);
+        setStatus('Loaded draft');
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const saveDraft = () => {
+    try {
+      const payload = { name, title, bio, skills, portfolioUrl, hourlyRate };
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('freelancer_profile_draft', JSON.stringify(payload));
+        setStatus('Draft saved');
+      }
+    } catch {
+      setStatus('Failed to save draft');
+    }
+  };
+
+  const resetForm = () => {
+    setName(userProfile.name);
+    setTitle(userProfile.title);
+    setBio(userProfile.bio);
+    setSkills(userProfile.skills.join(', '));
+    setPortfolioUrl(userProfile.portfolioUrl);
+    setHourlyRate(userProfile.hourlyRate);
+    setErrors({});
+    setStatus('Reset to defaults');
+  };
+
+  const validate = () => {
+    const next: typeof errors = {};
+    // URL validation
+    try {
+      if (portfolioUrl && String(portfolioUrl).trim().length > 0) {
+        // eslint-disable-next-line no-new
+        new URL(String(portfolioUrl));
+      }
+    } catch {
+      next.portfolioUrl = 'Please enter a valid URL';
+    }
+    // hourly rate
+    const rateNum = Number(hourlyRate);
+    if (Number.isNaN(rateNum) || rateNum <= 0) {
+      next.hourlyRate = 'Hourly rate must be a positive number';
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) {
+      setStatus('Please fix the highlighted fields');
+      return;
+    }
+    // Simulate save
+    setStatus('Profile saved');
+    // Clear draft after successful save
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('freelancer_profile_draft');
+    }
+  };
+
   const styles = useMemo(() => {
     const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
@@ -32,24 +117,44 @@ const Profile: React.FC = () => {
   return (
     <div className={styles.profileContainer}>
       <header className={styles.header}>
-        <UserAvatar name={userProfile.name} size="large" />
+        <UserAvatar name={name} size="large" />
         <div className={styles.headerInfo}>
-          <h1 className={styles.name}>{userProfile.name}</h1>
-          <p className={styles.title}>{userProfile.title}</p>
+          <h1 className={styles.name}>{name}</h1>
+          <p className={styles.title}>{title}</p>
           <span className={styles.rank}>Freelancer Rank: {userProfile.rank}</span>
         </div>
-        <Button variant="secondary">Edit Profile</Button>
+        <div className={styles.headerActions}>
+          <Button variant="secondary" type="button" onClick={saveDraft}>Save Draft</Button>
+        </div>
       </header>
 
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={onSubmit} noValidate>
+        {status && <div className={styles.status} role="status">{status}</div>}
+
+        <div className={styles.inlineSection}>
+          <Input
+            label="Full Name"
+            type="text"
+            defaultValue={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Input
+            label="Professional Title"
+            type="text"
+            defaultValue={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>About Me</h2>
           <Textarea
             id="bio-textarea"
-            defaultValue={userProfile.bio}
+            defaultValue={bio}
             rows={6}
             label="Profile Bio"
             hideLabel
+            onChange={(e) => setBio(e.target.value)}
           />
         </div>
 
@@ -58,8 +163,9 @@ const Profile: React.FC = () => {
           <Input
             label="Skills"
             type="text"
-            defaultValue={userProfile.skills.join(', ')}
+            defaultValue={skills}
             hideLabel
+            onChange={(e) => setSkills(e.target.value)}
           />
           <small className={styles.skillsInfo}>Separate skills with a comma.</small>
         </div>
@@ -68,17 +174,30 @@ const Profile: React.FC = () => {
           <Input
             label="Hourly Rate ($/hr)"
             type="number"
-            defaultValue={userProfile.hourlyRate}
+            defaultValue={hourlyRate}
+            aria-invalid={errors.hourlyRate ? 'true' : undefined}
+            aria-describedby={errors.hourlyRate ? 'hourlyRate-error' : undefined}
+            onChange={(e) => setHourlyRate(e.target.value)}
           />
           <Input
             label="Portfolio URL"
             type="text"
-            defaultValue={userProfile.portfolioUrl}
+            defaultValue={portfolioUrl}
+            aria-invalid={errors.portfolioUrl ? 'true' : undefined}
+            aria-describedby={errors.portfolioUrl ? 'portfolioUrl-error' : undefined}
+            onChange={(e) => setPortfolioUrl(e.target.value)}
           />
         </div>
 
+        {(errors.hourlyRate || errors.portfolioUrl) && (
+          <div className={styles.errors} role="alert">
+            {errors.hourlyRate && <p id="hourlyRate-error" className={styles.errorText}>{errors.hourlyRate}</p>}
+            {errors.portfolioUrl && <p id="portfolioUrl-error" className={styles.errorText}>{errors.portfolioUrl}</p>}
+          </div>
+        )}
+
         <div className={styles.actions}>
-          <Button variant="secondary" type="button">Cancel</Button>
+          <Button variant="secondary" type="button" onClick={resetForm}>Reset</Button>
           <Button variant="primary" type="submit">Save Changes</Button>
         </div>
       </form>

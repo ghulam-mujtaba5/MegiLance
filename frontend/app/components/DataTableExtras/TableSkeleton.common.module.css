@@ -1,0 +1,5 @@
+/* @AI-HINT: Common styles for TableSkeleton */
+.wrap { display: grid; gap: 8px; }
+.row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 8px; }
+.cell { height: 16px; border-radius: 6px; }
+.row[data-dense="1"] .cell { height: 12px; }
