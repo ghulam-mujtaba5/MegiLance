@@ -20,7 +20,7 @@ const NotFoundPage: React.FC = () => {
           <h1 className={common.title}>404</h1>
           <h2 className={common.subtitle}>Page Not Found</h2>
           <p className={common.description}>
-            The page you're looking for doesn't exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been moved.
           </p>
           <div className={common.actions}>
             <Link href="/" className={common.primaryButton}>

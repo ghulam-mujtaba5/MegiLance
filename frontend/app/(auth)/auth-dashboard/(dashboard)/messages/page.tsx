@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { User, Search, Paperclip, Send, Star } from 'lucide-react';
 import styles from './Messages.module.css';
+import Skeleton from '../../../../components/Animations/Skeleton/Skeleton';
 
 // AI-HINT: Mock data for the conversation list. In a real application, this would come from a real-time database or API.
 const conversations = [
@@ -35,6 +36,7 @@ const conversations = [
   },
 ];
 
+// AI-HINT: Integrate Skeletons for premium perceived performance while messages/conversations load.
 const MessagesPage = () => {
   const [activeId, setActiveId] = useState<number>(1);
   const [query, setQuery] = useState('');
@@ -43,6 +45,11 @@ const MessagesPage = () => {
   const [typing, setTyping] = useState(true);
   const [starred, setStarred] = useState<Record<number, boolean>>({ 1: true });
   const presence: Record<number, 'online' | 'offline'> = { 1: 'online', 2: 'offline', 3: 'online' };
+  const [loading, setLoading] = useState(true);
+  React.useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
 
   const filteredConversations = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -59,34 +66,66 @@ const MessagesPage = () => {
   const toggleStar = (id: number) => setStarred(prev => ({ ...prev, [id]: !prev[id] }));
 
   return (
-    <div className={styles.messagesContainer}>
+    <div className={styles.messagesContainer} aria-busy={loading || undefined}>
       {/* Column 1: Conversation List */}
-      <div className={styles.conversationList}>
+      <div className={styles.conversationList} aria-busy={loading || undefined}>
         <div className={styles.listHeader}>
           <h2>Messages</h2>
-          <div className={styles.searchBox}>
-            <Search size={18} className={styles.searchIcon} />
-            <input
-              type="text"
-              placeholder="Search messages..."
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              aria-label="Search conversations"
-            />
-          </div>
-          <div className={styles.filterBar}>
-            <button
-              className={`${styles.filterButton} ${showUnread ? styles.filterButtonActive : ''}`}
-              onClick={() => setShowUnread(v => !v)}
-            >Unread</button>
-            <button
-              className={`${styles.filterButton} ${showStarred ? styles.filterButtonActive : ''}`}
-              onClick={() => setShowStarred(v => !v)}
-            >Starred</button>
-          </div>
+          {loading ? (
+            <>
+              <div className={styles.searchBox}>
+                <Skeleton width={18} height={18} radius={6} inline theme="light" />
+                <Skeleton width={220} height={36} radius={8} theme="light" />
+              </div>
+              <div className={styles.filterBar}>
+                <Skeleton width={80} height={32} radius={8} inline theme="light" />
+                <Skeleton width={90} height={32} radius={8} inline theme="light" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className={styles.searchBox}>
+                <Search size={18} className={styles.searchIcon} />
+                <input
+                  type="text"
+                  placeholder="Search messages..."
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  aria-label="Search conversations"
+                />
+              </div>
+              <div className={styles.filterBar}>
+                <button
+                  className={`${styles.filterButton} ${showUnread ? styles.filterButtonActive : ''}`}
+                  onClick={() => setShowUnread(v => !v)}
+                >Unread</button>
+                <button
+                  className={`${styles.filterButton} ${showStarred ? styles.filterButtonActive : ''}`}
+                  onClick={() => setShowStarred(v => !v)}
+                >Starred</button>
+              </div>
+            </>
+          )}
         </div>
         <div className={styles.conversations}>
-          {filteredConversations.length === 0 ? (
+          {loading ? (
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className={styles.convoItem}>
+                <div className={styles.avatarWrap}>
+                  <Skeleton width={48} height={48} radius={999} theme="light" />
+                </div>
+                <div className={styles.convoDetails}>
+                  <div className={styles.convoHeader}>
+                    <Skeleton width={160} height={14} radius={6} theme="light" />
+                    <div className={styles.convoActions}>
+                      <Skeleton width={60} height={12} radius={6} inline theme="light" />
+                    </div>
+                  </div>
+                  <Skeleton width={220} height={12} radius={6} theme="light" />
+                </div>
+              </div>
+            ))
+          ) : filteredConversations.length === 0 ? (
             <div className={styles.emptyState}>
               <h4>No conversations found</h4>
               <p>Try adjusting search or filters.</p>
@@ -132,51 +171,96 @@ const MessagesPage = () => {
       </div>
 
       {/* Column 2: Chat Window */}
-      <div className={styles.chatWindow}>
-        <div className={styles.chatHeader}>
-          <h3>{activeConvo?.name}</h3>
-          <p>{presence[activeConvo.id] === 'online' ? 'Online' : 'Offline'}</p>
-        </div>
-        <div className={styles.messageArea}>
-          {/* AI-HINT: Messages would be rendered here from a state object. */}
-          <div className={`${styles.message} ${styles.received}`}><p>Hey, I&apos;ve pushed the latest wireframes to the Figma project. Let me know your thoughts!</p></div>
-          <div className={`${styles.message} ${styles.sent}`}><p>Awesome, thanks! Taking a look now.</p></div>
-          <div className={`${styles.message} ${styles.received}`}><p>Perfect, I will review the new designs by EOD.</p></div>
-          {typing && (
-            <div className={styles.typingIndicator} aria-live="polite">
-              <span className={styles.dot}></span>
-              <span className={styles.dot}></span>
-              <span className={styles.dot}></span>
+      <div className={styles.chatWindow} aria-busy={loading ? 'true' : undefined}>
+        {loading ? (
+          <>
+            <div className={styles.chatHeader}>
+              <Skeleton width={180} height={18} radius={8} theme="light" />
+              <Skeleton width={60} height={12} radius={6} theme="light" />
             </div>
-          )}
-        </div>
-        <div className={styles.chatInputArea}>
-          <button className={styles.iconButton} title="Attach file">
-            <Paperclip size={20} />
-          </button>
-          <input type="text" placeholder="Type a message..." className={styles.chatInput} />
-          <button className={`${styles.iconButton} ${styles.sendButton}`} title="Send message">
-            <Send size={20} />
-          </button>
-        </div>
+            <div className={styles.messageArea}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className={styles.message}>
+                  <Skeleton width={'60%'} height={18} radius={10} theme="light" />
+                </div>
+              ))}
+            </div>
+            <div className={styles.chatInputArea}>
+              <Skeleton width={36} height={36} radius={8} inline theme="light" />
+              <Skeleton width={'100%'} height={36} radius={8} theme="light" />
+              <Skeleton width={36} height={36} radius={8} inline theme="light" />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.chatHeader}>
+              <h3>{activeConvo?.name}</h3>
+              <p>{presence[activeConvo.id] === 'online' ? 'Online' : 'Offline'}</p>
+            </div>
+            <div className={styles.messageArea}>
+              {/* AI-HINT: Messages would be rendered here from a state object. */}
+              <div className={`${styles.message} ${styles.received}`}><p>Hey, I&apos;ve pushed the latest wireframes to the Figma project. Let me know your thoughts!</p></div>
+              <div className={`${styles.message} ${styles.sent}`}><p>Awesome, thanks! Taking a look now.</p></div>
+              <div className={`${styles.message} ${styles.received}`}><p>Perfect, I will review the new designs by EOD.</p></div>
+              {typing && (
+                <div className={styles.typingIndicator} aria-live="polite">
+                  <span className={styles.dot}></span>
+                  <span className={styles.dot}></span>
+                  <span className={styles.dot}></span>
+                </div>
+              )}
+            </div>
+            <div className={styles.chatInputArea}>
+              <button className={styles.iconButton} title="Attach file">
+                <Paperclip size={20} />
+              </button>
+              <input type="text" placeholder="Type a message..." className={styles.chatInput} />
+              <button className={`${styles.iconButton} ${styles.sendButton}`} title="Send message">
+                <Send size={20} />
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Column 3: Details Panel */}
-      <div className={styles.detailsPanel}>
-        <div className={styles.panelHeader}>
-          <Image src={activeConvo?.avatar || '/avatars/avatar-1.png'} alt={activeConvo?.name || 'User'} className={styles.panelAvatar} width={80} height={80} />
-          <h3>{activeConvo?.name}</h3>
-          <p>{presence[activeConvo.id] === 'online' ? 'Online' : 'Offline'}</p>
-        </div>
-        <div className={styles.panelSection}>
-          <h4><User size={16} /> About</h4>
-          <p>Lead UI/UX Designer at Innovate Inc. Passionate about creating intuitive and beautiful user experiences.</p>
-        </div>
-        <div className={styles.panelSection}>
-          <h4><Paperclip size={16} /> Shared Files</h4>
-          {/* AI-HINT: A list of shared files would be rendered here. */}
-          <p>No files shared yet.</p>
-        </div>
+      <div className={styles.detailsPanel} aria-busy={loading || undefined}>
+        {loading ? (
+          <>
+            <div className={styles.panelHeader}>
+              <Skeleton width={80} height={80} radius={999} theme="light" />
+              <Skeleton width={160} height={18} radius={8} theme="light" />
+              <Skeleton width={80} height={12} radius={6} theme="light" />
+            </div>
+            <div className={styles.panelSection}>
+              <Skeleton width={120} height={14} radius={6} theme="light" />
+              <Skeleton width={'100%'} height={12} radius={6} theme="light" />
+              <Skeleton width={'90%'} height={12} radius={6} theme="light" />
+            </div>
+            <div className={styles.panelSection}>
+              <Skeleton width={140} height={14} radius={6} theme="light" />
+              <Skeleton width={'100%'} height={12} radius={6} theme="light" />
+              <Skeleton width={'85%'} height={12} radius={6} theme="light" />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.panelHeader}>
+              <Image src={activeConvo?.avatar || '/avatars/avatar-1.png'} alt={activeConvo?.name || 'User'} className={styles.panelAvatar} width={80} height={80} />
+              <h3>{activeConvo?.name}</h3>
+              <p>{presence[activeConvo.id] === 'online' ? 'Online' : 'Offline'}</p>
+            </div>
+            <div className={styles.panelSection}>
+              <h4><User size={16} /> About</h4>
+              <p>Lead UI/UX Designer at Innovate Inc. Passionate about creating intuitive and beautiful user experiences.</p>
+            </div>
+            <div className={styles.panelSection}>
+              <h4><Paperclip size={16} /> Shared Files</h4>
+              {/* AI-HINT: A list of shared files would be rendered here. */}
+              <p>No files shared yet.</p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

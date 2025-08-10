@@ -70,7 +70,7 @@ const CookiesPage: React.FC = () => {
           <p className={common.content}>
             You can control and manage cookies through your browser settings. However, disabling 
             certain cookies may affect the functionality of our website. For more information about 
-            managing cookies, please visit your browser's help section.
+            managing cookies, please visit your browser&apos;s help section.
           </p>
         </section>
 

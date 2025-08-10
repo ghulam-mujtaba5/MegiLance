@@ -5,6 +5,7 @@
 import React from 'react';
 import { DollarSign, Zap, MessageSquare, Clock, ChevronRight, Briefcase, CheckCircle, Award } from 'lucide-react';
 import styles from './Dashboard.module.css';
+import Skeleton from '../../../../components/Animations/Skeleton/Skeleton';
 
 // AI-HINT: Mock data for the dashboard. In a real-world application, this data would be fetched from various API endpoints and aggregated here.
 const user = {
@@ -71,7 +72,14 @@ const upcomingTasks = [
     { id: 3, title: 'Client feedback call for Project Gamma', dueDate: 'Next Week' },
 ];
 
+// AI-HINT: Integrate premium Skeleton placeholders to represent loading states on real UI sections.
 const DashboardPage = () => {
+  const [loading, setLoading] = React.useState(true);
+  React.useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 900); // quick demo loading
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div className={styles.dashboardContainer}>
       <header className={styles.dashboardHeader}>
@@ -79,22 +87,32 @@ const DashboardPage = () => {
         <p>Here’s a snapshot of your freelance world today.</p>
       </header>
 
-      <div className={styles.kpiGrid}>
-        {kpiData.map((kpi, index) => (
-          <div key={index} className={styles.kpiCard}>
-            <div className={`${styles.kpiIcon} ${styles[kpi.colorClass as keyof typeof styles]}`}>
-              <kpi.icon size={24} color="white" />
-            </div>
-            <div className={styles.kpiContent}>
-              <span className={styles.kpiTitle}>{kpi.title}</span>
-              <span className={styles.kpiValue}>{kpi.value}</span>
-            </div>
-          </div>
-        ))}
+      <div className={styles.kpiGrid} aria-busy={loading || undefined}>
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className={styles.kpiCard}>
+                <Skeleton width={50} height={50} radius={999} inline theme="light" />
+                <div className={styles.kpiContent}>
+                  <Skeleton width={110} height={12} radius={6} lines={1} theme="light" />
+                  <Skeleton width={80} height={22} radius={8} lines={1} theme="light" />
+                </div>
+              </div>
+            ))
+          : kpiData.map((kpi, index) => (
+              <div key={index} className={styles.kpiCard}>
+                <div className={`${styles.kpiIcon} ${styles[kpi.colorClass as keyof typeof styles]}`}>
+                  <kpi.icon size={24} color="white" />
+                </div>
+                <div className={styles.kpiContent}>
+                  <span className={styles.kpiTitle}>{kpi.title}</span>
+                  <span className={styles.kpiValue}>{kpi.value}</span>
+                </div>
+              </div>
+            ))}
       </div>
 
       <div className={styles.mainGrid}>
-        <div className={styles.projectsSection}>
+        <div className={styles.projectsSection} aria-busy={loading || undefined}>
           <div className={styles.sectionHeader}>
             <h2>Recent Projects</h2>
             <a href="/projects" className={styles.viewAllLink}>
@@ -102,7 +120,25 @@ const DashboardPage = () => {
             </a>
           </div>
           <div className={styles.projectList}>
-            {recentProjects.length === 0 ? (
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className={styles.projectCard}>
+                  <div className={styles.projectInfo}>
+                    <Skeleton width={22} height={22} radius={6} inline theme="light" />
+                    <div>
+                      <Skeleton width={260} height={16} radius={8} theme="light" />
+                      <Skeleton width={160} height={12} radius={6} theme="light" />
+                    </div>
+                  </div>
+                  <div className={styles.projectStatus}>
+                    <Skeleton width={80} height={12} radius={6} theme="light" />
+                    <div className={styles.progressBar}>
+                      <Skeleton width={'100%'} height={6} radius={3} theme="light" />
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : recentProjects.length === 0 ? (
               <div className={styles.emptyState}>
                 <h4>No recent projects</h4>
                 <p>Projects you’re working on will appear here.</p>
@@ -136,12 +172,22 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        <div className={styles.tasksSection}>
+        <div className={styles.tasksSection} aria-busy={loading || undefined}>
           <div className={styles.sectionHeader}>
             <h2>Upcoming Tasks</h2>
           </div>
           <div className={styles.taskList}>
-            {upcomingTasks.length === 0 ? (
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className={styles.taskItem}>
+                  <div className={styles.taskInfo}>
+                    <Skeleton width={18} height={18} radius={6} inline theme="light" />
+                    <Skeleton width={280} height={14} radius={6} theme="light" />
+                  </div>
+                  <Skeleton width={90} height={20} radius={6} theme="light" />
+                </div>
+              ))
+            ) : upcomingTasks.length === 0 ? (
               <div className={styles.emptyState}>
                 <h4>No upcoming tasks</h4>
                 <p>You’re all caught up. New tasks will appear here.</p>

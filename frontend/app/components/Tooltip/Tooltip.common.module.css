@@ -19,6 +19,7 @@
   z-index: 110; /* Higher than dropdown */
   animation: fadeInScale 0.15s ease-out;
   pointer-events: none; /* Tooltip should not be interactive */
+  will-change: transform, opacity;
 }
 
 .tooltipArrow,
@@ -74,4 +75,9 @@
 }
 .tooltipRight .tooltipArrow {
   left: -4px;
+}
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .tooltip { animation: none !important; }
 }

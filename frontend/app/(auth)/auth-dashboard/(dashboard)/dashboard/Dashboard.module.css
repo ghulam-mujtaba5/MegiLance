@@ -1,9 +1,22 @@
+@keyframes dash-fade-in {
+  from { opacity: 0; transform: translateY(6px); filter: saturate(90%) contrast(95%); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .dashboardContainer { animation: none !important; }
+  .kpiCard:hover { transform: none; box-shadow: none; }
+  .projectCard:hover { transform: none; }
+  .taskItem:hover { transform: none; }
+}
 /* @AI-HINT: Styles for the main Dashboard page. This file creates a premium, data-rich 'command center' layout with a responsive grid, styled KPI cards, and distinct sections for projects and tasks. */
 
 .dashboardContainer {
   padding: 2rem;
   max-width: 1600px;
   margin: 0 auto;
+  animation: dash-fade-in 360ms cubic-bezier(.2,.6,.2,1);
 }
 
 .dashboardSection {
@@ -46,7 +59,8 @@
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  transition: all 0.2s ease-in-out;
+  transition: transform 180ms cubic-bezier(.2,.6,.2,1), box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease;
+  will-change: transform, box-shadow;
 }
 
 .kpiCard:hover {
@@ -157,7 +171,8 @@
   padding: 1rem 1.5rem;
   border-radius: var(--border-radius);
   border: 1px solid transparent;
-  transition: all 0.2s ease-in-out;
+  transition: transform 160ms cubic-bezier(.2,.6,.2,1), background-color 160ms ease, border-color 160ms ease;
+  will-change: transform;
 }
 
 .projectCard:hover {
@@ -228,7 +243,8 @@
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   background: var(--color-background-secondary);
-  transition: all 0.2s ease;
+  transition: transform 140ms cubic-bezier(.2,.6,.2,1), background-color 140ms ease, border-color 140ms ease;
+  will-change: transform;
 }
 
 .taskItem:hover {

@@ -6,6 +6,7 @@ import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { Plus, Search, Filter, ChevronDown, MoreHorizontal } from 'lucide-react';
 import styles from './Projects.module.css';
+import Skeleton from '../../../../components/Animations/Skeleton/Skeleton';
 
 // AI-HINT: Mock data for projects. In a real application, this would be fetched from an API, with filtering and pagination handled server-side.
 const projects = [
@@ -66,10 +67,16 @@ const getStatusClass = (status: string) => {
   }
 };
 
+// AI-HINT: Integrate Skeleton loaders to represent data-fetching states for a premium perceived performance.
 const ProjectsPage = () => {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<'All' | 'In Progress' | 'Completed' | 'On Hold' | 'Canceled'>('All');
   const [sortBy, setSortBy] = useState<'deadline' | 'budget' | 'status'>('deadline');
+  const [loading, setLoading] = useState(true);
+  React.useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -96,57 +103,77 @@ const ProjectsPage = () => {
   }, [query, status, sortBy]);
 
   return (
-    <div className={styles.projectsContainer}>
+    <div className={styles.projectsContainer} aria-busy={loading || undefined}>
       <div className={styles.pageHeader}>
         <h1>Projects</h1>
-        <button className={styles.newProjectButton}>
-          <Plus size={20} />
-          <span>Create Project</span>
-        </button>
+        {loading ? (
+          <Skeleton width={150} height={36} radius={8} theme="light" />
+        ) : (
+          <button className={styles.newProjectButton}>
+            <Plus size={20} />
+            <span>Create Project</span>
+          </button>
+        )}
       </div>
 
       <div className={styles.controlsBar}>
-        <div className={styles.searchBox}>
-          <Search size={18} className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Search projects..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search projects"
-          />
-        </div>
-        <div className={styles.filters}>
-          <button className={`${styles.filterButton} ${status !== 'All' ? styles.filterButtonActive : ''}`} aria-haspopup="listbox">
-            <Filter size={16} />
-            <span>Filter</span>
-          </button>
-          <select
-            className={`${styles.select}`}
-            value={status}
-            onChange={(e) => setStatus(e.target.value as any)}
-            aria-label="Filter by status"
-          >
-            {['All','In Progress','Completed','On Hold','Canceled'].map(s => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          <div className={styles.filterButton} role="group" aria-label="Sort by">
-            <span>Sort:</span>
-            <button
-              className={`${styles.filterButton} ${sortBy === 'deadline' ? styles.filterButtonActive : ''}`}
-              onClick={() => setSortBy('deadline')}
-            >Deadline</button>
-            <button
-              className={`${styles.filterButton} ${sortBy === 'budget' ? styles.filterButtonActive : ''}`}
-              onClick={() => setSortBy('budget')}
-            >Budget</button>
-            <button
-              className={`${styles.filterButton} ${sortBy === 'status' ? styles.filterButtonActive : ''}`}
-              onClick={() => setSortBy('status')}
-            >Status</button>
-          </div>
-        </div>
+        {loading ? (
+          <>
+            <div className={styles.searchBox}>
+              <Skeleton width={18} height={18} radius={6} inline theme="light" />
+              <Skeleton width={220} height={36} radius={8} theme="light" />
+            </div>
+            <div className={styles.filters}>
+              <Skeleton width={80} height={36} radius={8} inline theme="light" />
+              <Skeleton width={140} height={36} radius={8} inline theme="light" />
+              <Skeleton width={220} height={36} radius={8} inline theme="light" />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.searchBox}>
+              <Search size={18} className={styles.searchIcon} />
+              <input
+                type="text"
+                placeholder="Search projects..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Search projects"
+              />
+            </div>
+            <div className={styles.filters}>
+              <button className={`${styles.filterButton} ${status !== 'All' ? styles.filterButtonActive : ''}`} aria-haspopup="listbox">
+                <Filter size={16} />
+                <span>Filter</span>
+              </button>
+              <select
+                className={`${styles.select}`}
+                value={status}
+                onChange={(e) => setStatus(e.target.value as any)}
+                aria-label="Filter by status"
+              >
+                {['All','In Progress','Completed','On Hold','Canceled'].map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <div className={styles.filterButton} role="group" aria-label="Sort by">
+                <span>Sort:</span>
+                <button
+                  className={`${styles.filterButton} ${sortBy === 'deadline' ? styles.filterButtonActive : ''}`}
+                  onClick={() => setSortBy('deadline')}
+                >Deadline</button>
+                <button
+                  className={`${styles.filterButton} ${sortBy === 'budget' ? styles.filterButtonActive : ''}`}
+                  onClick={() => setSortBy('budget')}
+                >Budget</button>
+                <button
+                  className={`${styles.filterButton} ${sortBy === 'status' ? styles.filterButtonActive : ''}`}
+                  onClick={() => setSortBy('status')}
+                >Status</button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.projectList}>
@@ -158,7 +185,32 @@ const ProjectsPage = () => {
           <span className={styles.headerItem}>Deadline</span>
           <span className={styles.headerItem}></span>
         </div>
-        {filtered.length === 0 ? (
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className={styles.projectRow}>
+              <div className={styles.projectInfo}>
+                <Skeleton width={72} height={14} radius={6} theme="light" />
+                <Skeleton width={260} height={16} radius={8} theme="light" />
+                <Skeleton width={180} height={12} radius={6} theme="light" />
+              </div>
+              <div className={styles.projectStatus}>
+                <Skeleton width={96} height={24} radius={99} theme="light" />
+              </div>
+              <div className={styles.projectBudget}>
+                <Skeleton width={80} height={14} radius={6} theme="light" />
+              </div>
+              <div className={styles.projectTeam}>
+                <Skeleton width={96} height={32} radius={16} theme="light" />
+              </div>
+              <div className={styles.projectDeadline}>
+                <Skeleton width={120} height={14} radius={6} theme="light" />
+              </div>
+              <div className={styles.projectActions}>
+                <Skeleton width={32} height={32} radius={8} theme="light" />
+              </div>
+            </div>
+          ))
+        ) : filtered.length === 0 ? (
           <div className={styles.emptyState}>
             <h4>No projects found</h4>
             <p>Try adjusting your search or filters.</p>

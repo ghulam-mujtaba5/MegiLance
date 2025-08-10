@@ -2,10 +2,11 @@
 
 'use client'
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { Plus, Search, ThumbsUp, MessageCircle, Eye, ChevronDown } from 'lucide-react';
 import styles from './Community.module.css';
+import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 
 // AI-HINT: Mock data for community posts. In a real app, this would be fetched from a database via an API.
 const communityPosts = [
@@ -63,6 +64,13 @@ const CommunityPage = () => {
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState<'latest' | 'mostLiked' | 'mostCommented' | 'mostViewed'>('latest');
   const [activeTag, setActiveTag] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // AI-HINT: Demo loading to showcase Skeleton placeholders.
+    const t = setTimeout(() => setLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
 
   const posts = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -89,86 +97,135 @@ const CommunityPage = () => {
   }, [query, sortBy, activeTag]);
 
   return (
-    <div className={styles.communityContainer}>
+    <div className={styles.communityContainer} aria-busy={loading || undefined}>
       {/* Main Content */}
       <main className={styles.mainContent}>
         <div className={styles.pageHeader}>
-          <h1>Community Hub</h1>
-          <button className={styles.newPostButton}>
-            <Plus size={20} />
-            <span>Create Post</span>
-          </button>
+          {loading ? (
+            <div className={styles.pageHeader}>
+              <Skeleton height={28} width={'30%'} />
+              <Skeleton height={36} width={140} />
+            </div>
+          ) : (
+            <>
+              <h1>Community Hub</h1>
+              <button className={styles.newPostButton}>
+                <Plus size={20} />
+                <span>Create Post</span>
+              </button>
+            </>
+          )}
         </div>
 
         <div className={styles.feedControls}>
-          <div className={styles.searchBox}>
-            <Search size={18} className={styles.searchIcon} />
-            <input
-              type="text"
-              placeholder="Search discussions..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Search discussions"
-            />
-          </div>
-          <div className={styles.sortDropdown}>
-            <select
-              className={styles.sortSelect}
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              aria-label="Sort discussions"
-            >
-              <option value="latest">Latest</option>
-              <option value="mostLiked">Most Liked</option>
-              <option value="mostCommented">Most Commented</option>
-              <option value="mostViewed">Most Viewed</option>
-            </select>
-            <ChevronDown size={16} />
-          </div>
+          {loading ? (
+            <div className={styles.feedControls}>
+              <Skeleton height={40} width={'70%'} />
+              <Skeleton height={40} width={160} />
+            </div>
+          ) : (
+            <>
+              <div className={styles.searchBox}>
+                <Search size={18} className={styles.searchIcon} />
+                <input
+                  type="text"
+                  placeholder="Search discussions..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  aria-label="Search discussions"
+                />
+              </div>
+              <div className={styles.sortDropdown}>
+                <select
+                  className={styles.sortSelect}
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  aria-label="Sort discussions"
+                >
+                  <option value="latest">Latest</option>
+                  <option value="mostLiked">Most Liked</option>
+                  <option value="mostCommented">Most Commented</option>
+                  <option value="mostViewed">Most Viewed</option>
+                </select>
+                <ChevronDown size={16} />
+              </div>
+            </>
+          )}
         </div>
 
         <div className={styles.postFeed}>
-          {posts.length === 0 ? (
+          {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <article key={i} className={styles.postCard}>
+                <div className={styles.postAuthor}>
+                  <Skeleton width={40} height={40} radius={'50%'} />
+                  <div>
+                    <Skeleton height={14} width={140} />
+                    <div style={{ marginTop: 6 }}>
+                      <Skeleton height={12} width={120} />
+                    </div>
+                  </div>
+                </div>
+                <div style={{ marginTop: 8 }}>
+                  <Skeleton height={20} width={'70%'} />
+                </div>
+                <div style={{ marginTop: 8 }}>
+                  <Skeleton height={14} width={'95%'} />
+                </div>
+                <div className={styles.postTags}>
+                  <Skeleton height={24} width={80} />
+                  <Skeleton height={24} width={100} />
+                  <Skeleton height={24} width={90} />
+                </div>
+                <footer className={styles.postFooter}>
+                  <Skeleton height={16} width={200} />
+                  <Skeleton height={14} width={100} />
+                </footer>
+              </article>
+            ))
+          ) : posts.length === 0 ? (
             <div className={styles.emptyState}>
               <h4>No discussions found</h4>
               <p>Try adjusting your search, sort, or tags.</p>
             </div>
-          ) : posts.map((post) => (
-            <article key={post.id} className={styles.postCard}>
-              <div className={styles.postAuthor}>
-                <Image src={post.authorAvatar} alt={post.author} className={styles.authorAvatar} width={40} height={40} />
-                <div>
-                  <span className={styles.authorName}>{post.author}</span>
-                  <span className={styles.authorTitle}>{post.authorTitle}</span>
+          ) : (
+            posts.map((post) => (
+              <article key={post.id} className={styles.postCard}>
+                <div className={styles.postAuthor}>
+                  <Image src={post.authorAvatar} alt={post.author} className={styles.authorAvatar} width={40} height={40} />
+                  <div>
+                    <span className={styles.authorName}>{post.author}</span>
+                    <span className={styles.authorTitle}>{post.authorTitle}</span>
+                  </div>
                 </div>
-              </div>
-              <h2 className={styles.postTitle}>{post.title}</h2>
-              <p className={styles.postExcerpt}>{post.excerpt}</p>
-              <div className={styles.postTags}>
-                {post.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className={`${styles.tag} ${activeTag === tag ? styles.tagActive : ''}`}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setActiveTag(activeTag === tag ? '' : tag)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTag(activeTag === tag ? '' : tag); } }}
-                    aria-label={activeTag === tag ? `Remove tag filter ${tag}` : `Filter by tag ${tag}`}
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-              <footer className={styles.postFooter}>
-                <div className={styles.postStats}>
-                  <span title="Likes"><ThumbsUp size={16} /> {post.likes}</span>
-                  <span title="Comments"><MessageCircle size={16} /> {post.comments}</span>
-                  <span title="Views"><Eye size={16} /> {post.views}</span>
+                <h2 className={styles.postTitle}>{post.title}</h2>
+                <p className={styles.postExcerpt}>{post.excerpt}</p>
+                <div className={styles.postTags}>
+                  {post.tags.map(tag => (
+                    <span
+                      key={tag}
+                      className={`${styles.tag} ${activeTag === tag ? styles.tagActive : ''}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setActiveTag(activeTag === tag ? '' : tag)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTag(activeTag === tag ? '' : tag); } }}
+                      aria-label={activeTag === tag ? `Remove tag filter ${tag}` : `Filter by tag ${tag}`}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
                 </div>
-                <span className={styles.postTimestamp}>{post.timestamp}</span>
-              </footer>
-            </article>
-          ))}
+                <footer className={styles.postFooter}>
+                  <div className={styles.postStats}>
+                    <span title="Likes"><ThumbsUp size={16} /> {post.likes}</span>
+                    <span title="Comments"><MessageCircle size={16} /> {post.comments}</span>
+                    <span title="Views"><Eye size={16} /> {post.views}</span>
+                  </div>
+                  <span className={styles.postTimestamp}>{post.timestamp}</span>
+                </footer>
+              </article>
+            ))
+          )}
         </div>
       </main>
 
@@ -176,30 +233,61 @@ const CommunityPage = () => {
       <aside className={styles.sidebar}>
         <div className={`${styles.sidebarWidget} ${styles.statsWidget}`}>
           <h3>Community Stats</h3>
-          <div className={styles.statsGrid}>
-            <div><span>{communityStats.members}</span><span>Members</span></div>
-            <div><span>{communityStats.discussions}</span><span>Discussions</span></div>
-            <div><span>{communityStats.online}</span><span>Online</span></div>
-          </div>
+          {loading ? (
+            <div className={styles.statsGrid}>
+              <div>
+                <Skeleton height={18} width={60} />
+                <div style={{ marginTop: 6 }}>
+                  <Skeleton height={12} width={70} />
+                </div>
+              </div>
+              <div>
+                <Skeleton height={18} width={60} />
+                <div style={{ marginTop: 6 }}>
+                  <Skeleton height={12} width={90} />
+                </div>
+              </div>
+              <div>
+                <Skeleton height={18} width={60} />
+                <div style={{ marginTop: 6 }}>
+                  <Skeleton height={12} width={60} />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.statsGrid}>
+              <div><span>{communityStats.members}</span><span>Members</span></div>
+              <div><span>{communityStats.discussions}</span><span>Discussions</span></div>
+              <div><span>{communityStats.online}</span><span>Online</span></div>
+            </div>
+          )}
         </div>
 
         <div className={styles.sidebarWidget}>
           <h3>Popular Tags</h3>
-          <div className={styles.popularTags}>
-            {popularTags.map(tag => (
-              <span
-                key={tag}
-                className={`${styles.tag} ${activeTag === tag ? styles.tagActive : ''}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => setActiveTag(activeTag === tag ? '' : tag)}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTag(activeTag === tag ? '' : tag); } }}
-                aria-label={activeTag === tag ? `Remove tag filter ${tag}` : `Filter by tag ${tag}`}
-              >
-                #{tag}
-              </span>
-            ))}
-          </div>
+          {loading ? (
+            <div className={styles.popularTags}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} height={24} width={90} />
+              ))}
+            </div>
+          ) : (
+            <div className={styles.popularTags}>
+              {popularTags.map(tag => (
+                <span
+                  key={tag}
+                  className={`${styles.tag} ${activeTag === tag ? styles.tagActive : ''}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setActiveTag(activeTag === tag ? '' : tag)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveTag(activeTag === tag ? '' : tag); } }}
+                  aria-label={activeTag === tag ? `Remove tag filter ${tag}` : `Filter by tag ${tag}`}
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </aside>
     </div>

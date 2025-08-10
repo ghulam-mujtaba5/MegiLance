@@ -2,9 +2,10 @@
 
 'use client'
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Card from '@/app/components/Card/Card';
 import styles from './Analytics.module.css';
+import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 
 type RangeKey = '7d' | '30d' | '90d' | '12m';
 
@@ -18,6 +19,13 @@ const AnalyticsPage = () => {
   };
 
   const [range, setRange] = useState<RangeKey>('30d');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // AI-HINT: Demo loading to showcase Skeletons. Replace with real fetch.
+    const t = setTimeout(() => setLoading(false), 900);
+    return () => clearTimeout(t);
+  }, []);
 
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -49,34 +57,78 @@ const AnalyticsPage = () => {
     return series
       .map((d, i) => `${i === 0 ? 'M' : 'L'} ${xScale(d.x).toFixed(2)} ${yScale(d.y).toFixed(2)}`)
       .join(' ');
-  }, [series]);
+  }, [series, xScale, yScale]);
 
   const areaD = useMemo(() => {
     if (!series.length) return '';
     const top = series.map((d, i) => `${i === 0 ? 'M' : 'L'} ${xScale(d.x).toFixed(2)} ${yScale(d.y).toFixed(2)}`).join(' ');
     const bottom = `L ${xScale(series[series.length - 1].x).toFixed(2)} ${yScale(0).toFixed(2)} L ${xScale(series[0].x).toFixed(2)} ${yScale(0).toFixed(2)} Z`;
     return `${top} ${bottom}`;
-  }, [series]);
+  }, [series, xScale, yScale]);
 
   return (
-    <div>
+    <div aria-busy={loading || undefined}>
       <h1 className={styles.pageHeader}>Performance Analytics</h1>
       <div className={styles.analyticsGrid}>
         <Card title="Total Earnings">
-          <p className={styles.statValue}>{formatCurrency(analyticsData.totalEarnings)}</p>
-          <p className={styles.statLabel}>All time</p>
+          {loading ? (
+            <>
+              <Skeleton height={28} width={'60%'} />
+              <div style={{ marginTop: 8 }}>
+                <Skeleton height={14} width={'40%'} />
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={styles.statValue}>{formatCurrency(analyticsData.totalEarnings)}</p>
+              <p className={styles.statLabel}>All time</p>
+            </>
+          )}
         </Card>
         <Card title="Projects Completed">
-          <p className={styles.statValue}>{analyticsData.projectsCompleted}</p>
-          <p className={styles.statLabel}>All time</p>
+          {loading ? (
+            <>
+              <Skeleton height={28} width={'40%'} />
+              <div style={{ marginTop: 8 }}>
+                <Skeleton height={14} width={'30%'} />
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={styles.statValue}>{analyticsData.projectsCompleted}</p>
+              <p className={styles.statLabel}>All time</p>
+            </>
+          )}
         </Card>
         <Card title="Client Satisfaction">
-          <p className={styles.statValue}>{analyticsData.clientSatisfaction} / 5.0</p>
-          <p className={styles.statLabel}>Based on 18 reviews</p>
+          {loading ? (
+            <>
+              <Skeleton height={28} width={'50%'} />
+              <div style={{ marginTop: 8 }}>
+                <Skeleton height={14} width={'60%'} />
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={styles.statValue}>{analyticsData.clientSatisfaction} / 5.0</p>
+              <p className={styles.statLabel}>Based on 18 reviews</p>
+            </>
+          )}
         </Card>
         <Card title="Avg. Response Time">
-          <p className={styles.statValue}>{analyticsData.avgResponseTime}</p>
-          <p className={styles.statLabel}>Last 30 days</p>
+          {loading ? (
+            <>
+              <Skeleton height={28} width={'35%'} />
+              <div style={{ marginTop: 8 }}>
+                <Skeleton height={14} width={'50%'} />
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={styles.statValue}>{analyticsData.avgResponseTime}</p>
+              <p className={styles.statLabel}>Last 30 days</p>
+            </>
+          )}
         </Card>
 
         <div className={styles.mainChartContainer}>
@@ -115,29 +167,35 @@ const AnalyticsPage = () => {
               </div>
             </div>
             <div className={styles.chartSurface}>
-              <svg className={styles.svgRoot} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Earnings line chart">
-                {/* axes */}
-                <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="var(--color-border)" strokeWidth={1} />
-                <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="var(--color-border)" strokeWidth={1} />
-                {/* y-axis labels (0, mid, max) */}
-                {([0, 0.5, 1] as const).map((t, idx) => {
-                  const yVal = yMin + (yMax - yMin) * t;
-                  const y = yScale(yVal);
-                  return (
-                    <g key={idx}>
-                      <text x={8} y={y} className={styles.axisLabel}>{t === 1 ? formatCurrency(yMax) : t === 0.5 ? formatCurrency(Math.round((yMax - yMin) / 2)) : formatCurrency(0)}</text>
-                      <line x1={padding} x2={width - padding} y1={y} y2={y} stroke="var(--color-border)" strokeDasharray="2,4" />
-                    </g>
-                  );
-                })}
-                {/* area + line */}
-                <path d={areaD} className={styles.areaFill} />
-                <path d={lineD} className={styles.linePath} />
-                {/* dots */}
-                {series.map((d, i) => (
-                  <circle key={i} cx={xScale(d.x)} cy={yScale(d.y)} r={3} fill="var(--color-primary)" />
-                ))}
-              </svg>
+              {loading ? (
+                <div style={{ width: '100%' }}>
+                  <Skeleton height={220} width={'100%'} radius={12} />
+                </div>
+              ) : (
+                <svg className={styles.svgRoot} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Earnings line chart">
+                  {/* axes */}
+                  <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="var(--color-border)" strokeWidth={1} />
+                  <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="var(--color-border)" strokeWidth={1} />
+                  {/* y-axis labels (0, mid, max) */}
+                  {([0, 0.5, 1] as const).map((t, idx) => {
+                    const yVal = yMin + (yMax - yMin) * t;
+                    const y = yScale(yVal);
+                    return (
+                      <g key={idx}>
+                        <text x={8} y={y} className={styles.axisLabel}>{t === 1 ? formatCurrency(yMax) : t === 0.5 ? formatCurrency(Math.round((yMax - yMin) / 2)) : formatCurrency(0)}</text>
+                        <line x1={padding} x2={width - padding} y1={y} y2={y} stroke="var(--color-border)" strokeDasharray="2,4" />
+                      </g>
+                    );
+                  })}
+                  {/* area + line */}
+                  <path d={areaD} className={styles.areaFill} />
+                  <path d={lineD} className={styles.linePath} />
+                  {/* dots */}
+                  {series.map((d, i) => (
+                    <circle key={i} cx={xScale(d.x)} cy={yScale(d.y)} r={3} fill="var(--color-primary)" />
+                  ))}
+                </svg>
+              )}
             </div>
           </Card>
         </div>

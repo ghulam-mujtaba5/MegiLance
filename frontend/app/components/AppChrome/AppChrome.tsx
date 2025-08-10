@@ -8,6 +8,7 @@ import Footer from '@/app/components/Footer/Footer';
 import ThemeToggleButton from '@/app/components/ThemeToggleButton';
 import InstallAppBanner from '@/app/components/PWA/InstallAppBanner/InstallAppBanner';
 import UpdateNotification from '@/app/components/PWA/UpdateNotification/UpdateNotification';
+import PageTransition from '@/app/components/Transitions/PageTransition';
 
 function isChromeLessRoute(pathname: string | null | undefined) {
   if (!pathname) return false; // default to showing chrome to avoid SSR/CSR layout shift
@@ -33,7 +34,9 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
   if (hideChrome) {
     return (
       <main id="main-content" role="main" className="min-h-screen">
-        {children}
+        <PageTransition variant="fade">
+          {children}
+        </PageTransition>
       </main>
     );
   }
@@ -44,7 +47,9 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
     <>
       <Header />
       <main id="main-content" role="main" className="flex-grow">
-        {children}
+        <PageTransition variant="fade">
+          {children}
+        </PageTransition>
       </main>
       <Footer />
       <ThemeToggleButton />

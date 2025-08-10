@@ -19,7 +19,6 @@
   background: linear-gradient(180deg, color-mix(in oklab, var(--ml-surface, #0f162e) 82%, transparent), color-mix(in oklab, var(--ml-surface-2, #0b1226) 88%, transparent));
   /* Fallback border for older browsers */
   border: 1px solid #1e2a52;
-  border: 1px solid color-mix(in oklab, var(--ml-border, #1e2a52) 60%, transparent);
   box-shadow: 0 20px 60px color-mix(in oklab, var(--ml-shadow, #000) 60%, transparent), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
@@ -96,7 +95,6 @@
   background: color-mix(in oklab, var(--ml-track, #0d1530) 70%, transparent);
   /* Fallback border for older browsers */
   border: 1px solid #1e2a52;
-  border: 1px solid color-mix(in oklab, var(--ml-border, #1e2a52) 60%, transparent);
   overflow: hidden;
 }
 .progressFill {
@@ -130,7 +128,7 @@
   font-weight: 600;
   /* Fallback color for older browsers */
   color: #eaf1ff;
-  color: color-mix(in oklab, var(--ml-fg, #eaf1ff) 90%, transparent);
+  color: #eaf1ff; /* will be overridden in @supports */
 }
 .subtitle {
   margin: 4px 0 0;
@@ -138,7 +136,7 @@
   line-height: 1.4;
   /* Fallback color for older browsers */
   color: #a7b4d6;
-  color: color-mix(in oklab, var(--ml-fg-muted, #a7b4d6) 85%, transparent);
+  color: #a7b4d6; /* will be overridden in @supports */
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -165,6 +163,53 @@
   .ringInner {
     animation: none !important;
   }
+}
+
+/* Modern color overrides guarded by support check */
+@supports (color: color-mix(in oklab, white, black)) {
+  .backdrop {
+    background: color-mix(in oklab, var(--ml-bg, #0b1020) 75%, transparent);
+  }
+
+  .container {
+    background: linear-gradient(180deg,
+      color-mix(in oklab, var(--ml-surface, #0f162e) 82%, transparent),
+      color-mix(in oklab, var(--ml-surface-2, #0b1226) 88%, transparent)
+    );
+    border: 1px solid color-mix(in oklab, var(--ml-border, #1e2a52) 60%, transparent);
+    box-shadow: 0 20px 60px color-mix(in oklab, var(--ml-shadow, #000) 60%, transparent), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .ringOuter {
+    background: conic-gradient(from 0deg, var(--ml-blue, #4573df), color-mix(in oklab, var(--ml-orange, #ff9800) 40%, var(--ml-blue, #4573df)) 40%, transparent 60%, transparent 100%);
+    filter: drop-shadow(0 2px 12px color-mix(in oklab, var(--ml-blue, #4573df) 55%, transparent));
+  }
+
+  .ringInner {
+    background: radial-gradient(ellipse at 50% 45%, color-mix(in oklab, var(--ml-blue, #4573df) 18%, transparent), transparent 60%);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ml-blue, #4573df) 25%, transparent);
+  }
+
+  .spark {
+    background: radial-gradient(circle at 30% 30%, white 0%, var(--ml-orange, #ff9800) 35%, color-mix(in oklab, var(--ml-orange, #ff9800) 40%, transparent) 70%);
+    box-shadow: 0 0 18px 6px color-mix(in oklab, var(--ml-orange, #ff9800) 45%, transparent);
+  }
+
+  .progressBar {
+    background: color-mix(in oklab, var(--ml-track, #0d1530) 70%, transparent);
+    border: 1px solid color-mix(in oklab, var(--ml-border, #1e2a52) 60%, transparent);
+  }
+
+  .progressFill {
+    background: linear-gradient(90deg, color-mix(in oklab, var(--ml-blue, #4573df) 40%, transparent), var(--ml-blue, #4573df), color-mix(in oklab, var(--ml-orange, #ff9800) 40%, transparent));
+  }
+
+  .dots span {
+    background: color-mix(in oklab, var(--ml-blue, #4573df) 70%, transparent);
+  }
+
+  .title { color: color-mix(in oklab, var(--ml-fg, #eaf1ff) 90%, transparent); }
+  .subtitle { color: color-mix(in oklab, var(--ml-fg-muted, #a7b4d6) 85%, transparent); }
 }
 
 /* Responsive tweaks */

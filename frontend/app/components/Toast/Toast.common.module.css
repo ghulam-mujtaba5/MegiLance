@@ -20,10 +20,20 @@
   box-shadow: var(--shadow, 0 10px 20px rgba(0,0,0,0.12));
   transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
   max-width: min(560px, 92vw);
+  will-change: transform, box-shadow;
 }
 
 .enter { animation: toast-enter 240ms ease forwards; }
 .exit { animation: toast-exit 200ms ease forwards; }
+
+/* Hover/active micro-interactions */
+.toast:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.16), 0 10px 20px rgba(0,0,0,0.10);
+  transform: translateY(-1px);
+}
+.toast:active {
+  transform: translateY(0) scale(0.995);
+}
 
 .toastBody { flex: 1; min-width: 0; }
 .toastTitle {
@@ -52,6 +62,11 @@
   transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 
+.toastClose:hover {
+  background: rgba(69,115,223,0.12);
+}
+.toastClose:active { transform: scale(0.96); }
+
 /* Accessible rings */
 .toast:focus-within {
   /* Fallback */
@@ -74,8 +89,11 @@
   }
 }
 
-/* Variants handled by theme files but we define hooks here */
-.info {}
-.success {}
-.warning {}
-.danger {}
+/* Variant classes are applied by theme files; no common overrides needed here. */
+
+/* Reduced motion safety */
+@media (prefers-reduced-motion: reduce) {
+  .enter, .exit { animation: none !important; }
+  .toast:hover { transform: none; }
+  .toast:active { transform: none; }
+}

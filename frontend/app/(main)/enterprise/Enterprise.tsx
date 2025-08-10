@@ -35,7 +35,7 @@ const Enterprise: React.FC = () => {
             <div className={common.featureCard}>
               <h3 className={common.featureTitle}>Custom Workflows</h3>
               <p className={common.featureDescription}>
-                Tailored approval processes and workflows to match your organization's needs.
+                Tailored approval processes and workflows to match your organization&apos;s needs.
               </p>
             </div>
             <div className={common.featureCard}>
