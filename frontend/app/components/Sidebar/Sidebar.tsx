@@ -74,7 +74,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
             )}
           >
             <span className={cn(commonStyles.userName, themeStyles.userName)}>John Doe</span>
-            <span className={cn(commonStyles.userRole, themeStyles.userRole)}>Client</span>
+            <span className={cn(commonStyles.userRole, themeStyles.userRole)}>
+              {userType ? userType.charAt(0).toUpperCase() + userType.slice(1) : 'User'}
+            </span>
           </div>
         </div>
       </footer>

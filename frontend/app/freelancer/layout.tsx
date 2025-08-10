@@ -1,11 +1,11 @@
-// @AI-HINT: This layout file applies the custom FreelancerLayout to all pages within the /freelancer route group, providing a consistent sidebar and content structure.
+// @AI-HINT: This layout uses the shared AppLayout so freelancer portal matches client/admin shell (Sidebar + in-app Navbar, no public header/footer).
 import React from 'react';
-import FreelancerLayout from './layouts/FreelancerLayout/FreelancerLayout';
+import AppLayout from '../components/AppLayout/AppLayout';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  return <FreelancerLayout>{children}</FreelancerLayout>;
+  return <AppLayout>{children}</AppLayout>;
 }

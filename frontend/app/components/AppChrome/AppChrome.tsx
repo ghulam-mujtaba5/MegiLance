@@ -18,7 +18,7 @@ function isChromeLessRoute(pathname: string | null | undefined) {
     '/login', '/signup', '/forgot-password', '/reset-password',
     // Portal (client/freelancer/admin) app shell screens that have their own Navbar/Sidebar
     '/dashboard', '/messages', '/notifications', '/search', '/help', '/audit-logs',
-    '/client', '/admin'
+    '/client', '/freelancer', '/admin'
   ];
   return chromeLessRoots.some((r) => clean === r || clean.startsWith(r + '/'));
 }
