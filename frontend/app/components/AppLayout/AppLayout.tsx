@@ -23,7 +23,7 @@ const user = {
   fullName: 'John Doe',
   email: 'john.doe@megilance.com',
   bio: 'Investor & Entrepreneur',
-  avatar: '/mock-avatar.png',
+  avatar: '/mock-avatar.svg',
   notificationCount: 3,
 };
 

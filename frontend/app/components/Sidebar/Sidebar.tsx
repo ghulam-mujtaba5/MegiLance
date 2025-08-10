@@ -76,7 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar }) => {
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>
         <div className={cn(commonStyles.userInfo)}>
-          <UserAvatar src="/mock-avatar.png" name="John Doe" size="large" />
+          <UserAvatar src="/mock-avatar.svg" name="John Doe" size="large" />
           <div
             className={cn(
               commonStyles.userDetails,

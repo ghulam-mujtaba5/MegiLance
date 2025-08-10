@@ -58,7 +58,7 @@ const TestimonialCard: React.FC<{ testimonial: typeof testimonialsData[0], theme
           width={48} 
           height={48} 
           sizes="48px"
-          onError={() => setAvatarSrc('/mock-avatar.png')}
+          onError={() => setAvatarSrc('/mock-avatar.svg')}
         />
         <div className={commonStyles.authorInfo}>
           <p className={cn(commonStyles.authorName, themeStyles.authorName)}>{testimonial.author}</p>
