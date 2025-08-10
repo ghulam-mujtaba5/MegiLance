@@ -76,7 +76,7 @@ const ClientDashboard: React.FC = () => {
           </div>
         </div>
 
-        {loading && <div className={common.loading} aria-busy={true}>Loading dashboard...</div>}
+        {loading && <div className={common.loading} aria-busy={loading || undefined}>Loading dashboard...</div>}
         {error && <div className={common.error}>Failed to load dashboard data.</div>}
 
         <div

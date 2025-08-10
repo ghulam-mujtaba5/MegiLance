@@ -31,7 +31,7 @@ const DashboardMetrics: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={styles.metricsGrid} aria-busy={true} aria-live="polite">
+      <div className={styles.metricsGrid} aria-busy={loading || undefined} aria-live="polite">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className={styles.metricCard}>
             <div className={styles.metricHeader}>

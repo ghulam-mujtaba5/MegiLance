@@ -194,7 +194,7 @@ const Pricing: React.FC = () => {
                 onChange={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
                 aria-label="Toggle billing cycle"
                 role="switch"
-                aria-checked={!!(billingCycle === 'yearly')}
+                aria-checked={(billingCycle === 'yearly') || undefined}
               />
               <span className={cn(commonStyles.toggleSlider, themeStyles.toggleSlider)}></span>
             </label>

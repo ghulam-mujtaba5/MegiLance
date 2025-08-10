@@ -86,7 +86,7 @@ const Notifications: React.FC = () => {
                 key={c}
                 type="button"
                 className={common.chip}
-                aria-pressed={selected === c}
+                aria-pressed={(selected === c) || undefined}
                 onClick={() => setSelected(c)}
               >
                 {c}

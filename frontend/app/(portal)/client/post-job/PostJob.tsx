@@ -74,7 +74,7 @@ const PostJob: React.FC = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                aria-invalid={errors.title ? 'true' : 'false'}
+                aria-invalid={Boolean(errors.title) || undefined}
                 aria-describedby={errors.title ? 'error-title' : undefined}
                 placeholder="e.g., Build a Next.js marketing site"
               />
@@ -91,7 +91,7 @@ const PostJob: React.FC = () => {
                   value={category}
                   onChange={(e) => setCategory(e.target.value as any)}
                   required
-                  aria-invalid={errors.category ? 'true' : 'false'}
+                  aria-invalid={Boolean(errors.category) || undefined}
                   aria-describedby={errors.category ? 'error-category' : undefined}
                 >
                   <option value="">Select…</option>
@@ -118,7 +118,7 @@ const PostJob: React.FC = () => {
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   required
-                  aria-invalid={errors.budget ? 'true' : 'false'}
+                  aria-invalid={Boolean(errors.budget) || undefined}
                   aria-describedby={errors.budget ? 'error-budget' : undefined}
                   placeholder={budgetType === 'Fixed' ? 'e.g., 1500' : 'e.g., 45'}
                 />
@@ -145,7 +145,7 @@ const PostJob: React.FC = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
-                aria-invalid={errors.description ? 'true' : 'false'}
+                aria-invalid={Boolean(errors.description) || undefined}
                 aria-describedby={errors.description ? 'error-description' : undefined}
                 placeholder="Describe the scope, deliverables, and any constraints."
               />

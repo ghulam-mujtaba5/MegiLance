@@ -93,7 +93,7 @@ const AdminSupport: React.FC = () => {
         <section className={cn(common.layout)}>
           <div ref={listRef} className={cn(common.listCard, themed.listCard, listVisible ? common.isVisible : common.isNotVisible)} aria-label="Tickets list">
             <div className={cn(common.cardTitle)}>Tickets</div>
-            {loading && <div className={common.skeletonRow} aria-busy="true" />}
+            {loading && <div className={common.skeletonRow} aria-busy={loading || undefined} />}
             {error && <div className={common.error}>Failed to load tickets.</div>}
             <div className={common.list} role="listbox" aria-label="Tickets">
               {filtered.map(t => {

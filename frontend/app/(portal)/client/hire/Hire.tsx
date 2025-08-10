@@ -93,7 +93,7 @@ const Hire: React.FC = () => {
                 placeholder="Enter Freelancer ID or paste from profiles"
                 value={freelancerId}
                 onChange={(e) => setFreelancerId(e.target.value)}
-                aria-invalid={freelancerId ? 'false' : 'true'}
+                aria-invalid={!freelancerId || undefined}
               />
             </div>
           )}
@@ -108,7 +108,7 @@ const Hire: React.FC = () => {
                 placeholder="e.g., Build a mobile app MVP"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                aria-invalid={title.trim().length > 2 ? 'false' : 'true'}
+                aria-invalid={!(title.trim().length > 2) || undefined}
               />
               <label htmlFor="desc" className={common.srOnly}>Description</label>
               <textarea
@@ -117,7 +117,7 @@ const Hire: React.FC = () => {
                 placeholder="Describe scope, deliverables, timelines, and constraints."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                aria-invalid={description.trim().length > 10 ? 'false' : 'true'}
+                aria-invalid={!(description.trim().length > 10) || undefined}
               />
             </div>
           )}
@@ -135,13 +135,14 @@ const Hire: React.FC = () => {
                 </div>
                 <div>
                   <label htmlFor="rate" className={common.srOnly}>Rate</label>
-                  <input id="rate" className={cn(common.input, themed.input)} placeholder={rateType === 'Hourly' ? '$/hr' : 'Total $'} value={rate} onChange={(e) => setRate(e.target.value)} aria-invalid={Number(rate) > 0 ? 'false' : 'true'} />
+                  <input id="rate" className={cn(common.input, themed.input)} placeholder={rateType === 'Hourly' ? '$/hr' : 'Total $'} value={rate} onChange={(e) => setRate(e.target.value)} aria-invalid={!(Number(rate) > 0) || undefined} />
+                  
                 </div>
               </div>
               <div className={common.row}>
                 <div>
                   <label htmlFor="start" className={common.srOnly}>Start Date</label>
-                  <input id="start" className={cn(common.input, themed.input)} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} aria-invalid={startDate ? 'false' : 'true'} />
+                  <input id="start" className={cn(common.input, themed.input)} type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} aria-invalid={!startDate || undefined} />
                 </div>
                 <div aria-hidden="true" />
               </div>
@@ -161,11 +162,11 @@ const Hire: React.FC = () => {
           )}
 
           <div className={common.actions}>
-            <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={goBack} disabled={currentIndex === 0} aria-disabled={currentIndex === 0 ? 'true' : 'false'}>
+            <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={goBack} disabled={currentIndex === 0} aria-disabled={currentIndex === 0 || undefined}>
               Back
             </button>
             {step !== 'Review' ? (
-              <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={goNext} disabled={!canNext} aria-disabled={!canNext ? 'true' : 'false'}>
+              <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={goNext} disabled={!canNext} aria-disabled={!canNext || undefined}>
                 Continue
               </button>
             ) : (

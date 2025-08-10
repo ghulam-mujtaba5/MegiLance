@@ -31,7 +31,7 @@ const DashboardRecentProjects: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={styles.recentProjectsCard} aria-busy={true} aria-live="polite">
+      <div className={styles.recentProjectsCard} aria-busy={loading || undefined} aria-live="polite">
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Recent Projects</h2>
           <span className={styles.skeletonText} />

@@ -114,7 +114,7 @@ const AdminUsers: React.FC = () => {
         )}
 
         <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
-          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {loading && <div className={common.skeletonRow} aria-busy={loading || undefined} />}
           {error && <div className={common.error}>Failed to load users.</div>}
           <table className={cn(common.table, themed.table)}>
             <thead>

@@ -43,7 +43,7 @@ const Wallet: React.FC = () => {
         <p className={styles.subtitle}>View your balance, transactions, and manage withdrawals.</p>
       </header>
 
-      {loading && <div className={styles.loading} aria-busy={true}>Loading wallet...</div>}
+      {loading && <div className={styles.loading} aria-busy={loading || undefined}>Loading wallet...</div>}
       {error && <div className={styles.error}>Failed to load wallet data.</div>}
 
       <div className={styles.contentGrid}>

@@ -70,7 +70,7 @@ const ClientWallet: React.FC = () => {
           </div>
         </div>
 
-        {loading && <div className={common.loading} aria-busy={true}>Loading wallet data...</div>}
+        {loading && <div className={common.loading} aria-busy={loading || undefined}>Loading wallet data...</div>}
         {error && <div className={common.error}>Failed to load wallet data.</div>}
 
         <div

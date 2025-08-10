@@ -54,12 +54,12 @@ const Settings: React.FC = () => {
           <div className={common.row}>
             <div>
               <label htmlFor="name" className={cn(common.label, themed.label)}>Organization Name</label>
-              <input id="name" className={cn(common.input, themed.input)} value={name} onChange={(e) => setName(e.target.value)} aria-invalid={name.trim() ? 'false' : 'true'} />
+              <input id="name" className={cn(common.input, themed.input)} value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!name.trim() || undefined} />
               <div className={cn(common.help)}>Displayed on proposals and invoices.</div>
             </div>
             <div>
               <label htmlFor="email" className={cn(common.label, themed.label)}>Contact Email</label>
-              <input id="email" type="email" className={cn(common.input, themed.input)} value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'false' : 'true'} />
+              <input id="email" type="email" className={cn(common.input, themed.input)} value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || undefined} />
               <div className={cn(common.help)}>We use this for notifications and billing receipts.</div>
             </div>
             <div>
@@ -78,7 +78,7 @@ const Settings: React.FC = () => {
               <button
                 type="button"
                 role="switch"
-                aria-checked={twoFA ? 'true' : 'false'}
+                aria-checked={twoFA || undefined}
                 className={cn(common.switchTrack, twoFA && common.switchOn, themed.switchTrack, twoFA && themed.switchOn)}
                 onClick={() => setTwoFA((v) => !v)}
               >
@@ -97,7 +97,7 @@ const Settings: React.FC = () => {
           <h2 id="notif-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Notifications</h2>
           <div className={common.row}>
             <label className={cn(common.switch)}>
-              <input type="checkbox" className={common.srOnly} checked={notifyEmail} onChange={(e) => setNotifyEmail(e.target.checked)} aria-checked={notifyEmail ? 'true' : 'false'} />
+              <input type="checkbox" className={common.srOnly} checked={notifyEmail} onChange={(e) => setNotifyEmail(e.target.checked)} aria-checked={notifyEmail || undefined} />
               <span className={cn(common.switchTrack, themed.switchTrack, notifyEmail && common.switchOn, notifyEmail && themed.switchOn)} aria-hidden="true">
                 <span className={cn(common.switchThumb, themed.switchThumb)} />
               </span>
@@ -105,7 +105,7 @@ const Settings: React.FC = () => {
             </label>
 
             <label className={cn(common.switch)}>
-              <input type="checkbox" className={common.srOnly} checked={notifyProduct} onChange={(e) => setNotifyProduct(e.target.checked)} aria-checked={notifyProduct ? 'true' : 'false'} />
+              <input type="checkbox" className={common.srOnly} checked={notifyProduct} onChange={(e) => setNotifyProduct(e.target.checked)} aria-checked={notifyProduct || undefined} />
               <span className={cn(common.switchTrack, themed.switchTrack, notifyProduct && common.switchOn, notifyProduct && themed.switchOn)} aria-hidden="true">
                 <span className={cn(common.switchThumb, themed.switchThumb)} />
               </span>

@@ -106,7 +106,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ conversationId, onMessageSe
         value={text}
         onChange={(e) => setText(e.target.value)}
         autoComplete="off"
-        aria-invalid={text.trim().length === 0}
+        aria-invalid={(text.trim().length === 0) || undefined}
         disabled={!conversationId || isSending}
       />
       <button type="submit" className="MessageInput-button" aria-label="Send message" disabled={!conversationId || isSending}>
