@@ -6,7 +6,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { mockRecentProjects } from '../../mock-data';
+import { useDashboardData } from '@/hooks/useDashboardData';
 import { RecentProject } from '../../types';
 
 import commonStyles from './DashboardRecentProjects.common.module.css';
@@ -22,11 +22,35 @@ const statusStyles: Record<RecentProject['status'], string> = {
 
 const DashboardRecentProjects: React.FC = () => {
   const { theme } = useTheme();
+  const { data, loading, error } = useDashboardData();
 
   const styles = React.useMemo(() => {
     const themeStyles = theme === 'light' ? lightStyles : darkStyles;
-    return { ...commonStyles, ...themeStyles };
+    return { ...commonStyles, ...themeStyles } as { [k: string]: string };
   }, [theme]);
+
+  if (loading) {
+    return (
+      <div className={styles.recentProjectsCard} aria-busy="true" aria-live="polite">
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>Recent Projects</h2>
+          <span className={styles.skeletonText} />
+        </div>
+        <div className={styles.skeletonTable} />
+      </div>
+    );
+  }
+
+  if (error || !data?.recentProjects?.length) {
+    return (
+      <div className={styles.recentProjectsCard}>
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>Recent Projects</h2>
+        </div>
+        <div className={styles.emptyState}>No recent projects available.</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.recentProjectsCard}>
@@ -47,7 +71,7 @@ const DashboardRecentProjects: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {mockRecentProjects.map((project) => (
+          {data.recentProjects.map((project) => (
             <tr key={project.id}>
               <td>{project.title}</td>
               <td>{project.client}</td>

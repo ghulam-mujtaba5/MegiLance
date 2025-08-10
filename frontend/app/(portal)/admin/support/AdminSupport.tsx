@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminSupport.common.module.css';
 import light from './AdminSupport.light.module.css';
 import dark from './AdminSupport.dark.module.css';
@@ -20,24 +21,32 @@ interface Ticket {
   body: string;
 }
 
-const TICKETS: Ticket[] = [
-  { id: 's1', subject: 'Issue with payout delay', requester: 'Sofia Gomez', priority: 'High', status: 'Open', created: '2025-08-05', assignee: 'Alex Carter', body: 'Payment marked pending for more than 48 hours. Please review.' },
-  { id: 's2', subject: 'Bug: Uploading attachments', requester: 'Hannah Lee', priority: 'Medium', status: 'In Progress', created: '2025-08-03', assignee: 'Priya Patel', body: 'File uploads intermittently fail on Safari iOS.' },
-  { id: 's3', subject: 'Request invoice copy', requester: 'Diego Ramos', priority: 'Low', status: 'Resolved', created: '2025-07-30', assignee: 'Support Bot', body: 'Customer requires invoice PDF for July.' },
-  { id: 's4', subject: '2FA not receiving code', requester: 'Alex Carter', priority: 'High', status: 'Open', created: '2025-08-04', assignee: 'Support Bot', body: 'No 2FA SMS received. Email authentication works.' },
-];
-
 const STATUSES = ['All', 'Open', 'In Progress', 'Resolved'] as const;
 const PRIORITIES = ['All', 'Low', 'Medium', 'High'] as const;
 
 const AdminSupport: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { tickets, loading, error } = useAdminData();
+
+  const rows: Ticket[] = useMemo(() => {
+    if (!Array.isArray(tickets)) return [];
+    return (tickets as any[]).map((t, idx) => ({
+      id: String(t.id ?? idx),
+      subject: t.subject ?? '—',
+      requester: t.requester ?? '—',
+      priority: (t.priority as Ticket['priority']) ?? 'Low',
+      status: (t.status as Ticket['status']) ?? 'Open',
+      created: t.createdAt ?? t.created ?? '',
+      assignee: t.assignee ?? undefined,
+      body: t.body ?? t.message ?? '',
+    }));
+  }, [tickets]);
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
   const [priority, setPriority] = useState<(typeof PRIORITIES)[number]>('All');
-  const [selectedId, setSelectedId] = useState<string | null>(TICKETS[0]?.id ?? null);
+  const [selectedId, setSelectedId] = useState<string | null>(rows[0]?.id ?? null);
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -49,14 +58,14 @@ const AdminSupport: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return TICKETS.filter(t =>
+    return rows.filter(t =>
       (status === 'All' || t.status === status) &&
       (priority === 'All' || t.priority === priority) &&
       (!q || t.subject.toLowerCase().includes(q) || t.requester.toLowerCase().includes(q) || (t.assignee?.toLowerCase().includes(q) ?? false))
     );
-  }, [query, status, priority]);
+  }, [rows, query, status, priority]);
 
-  const selectedTicket = filtered.find(t => t.id === selectedId) || TICKETS.find(t => t.id === selectedId) || null;
+  const selectedTicket = filtered.find(t => t.id === selectedId) || rows.find(t => t.id === selectedId) || null;
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -84,6 +93,8 @@ const AdminSupport: React.FC = () => {
         <section className={cn(common.layout)}>
           <div ref={listRef} className={cn(common.listCard, themed.listCard, listVisible ? common.isVisible : common.isNotVisible)} aria-label="Tickets list">
             <div className={cn(common.cardTitle)}>Tickets</div>
+            {loading && <div className={common.skeletonRow} aria-busy="true" />}
+            {error && <div className={common.error}>Failed to load tickets.</div>}
             <div className={common.list} role="listbox" aria-label="Tickets">
               {filtered.map(t => {
                 const isSelected = selectedId === t.id;
@@ -91,7 +102,7 @@ const AdminSupport: React.FC = () => {
                   <div
                     key={t.id}
                     role="option"
-                    aria-selected={isSelected}
+                    aria-selected={isSelected ? 'true' : 'false'}
                     tabIndex={0}
                     className={cn(common.item)}
                     onClick={() => setSelectedId(t.id)}
@@ -117,7 +128,7 @@ const AdminSupport: React.FC = () => {
                 );
               })}
             </div>
-            {filtered.length === 0 && (
+            {filtered.length === 0 && !loading && (
               <div role="status" aria-live="polite">No tickets match your filters.</div>
             )}
           </div>

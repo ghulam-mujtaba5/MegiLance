@@ -36,7 +36,7 @@ The MegiLance frontend features a robust, fully implemented theme-switching capa
 
 ### Architecture
 
-- **`ThemeContext`**: A global context (`app/contexts/ThemeContext.tsx`) provides the current theme (`'light'` or `'dark'`) and a `toggleTheme` function to all components.
+- **`next-themes`**: The app uses `next-themes` via `ThemeProvider` in `app/layout.tsx`. Access theme with `useTheme()` from `next-themes` and call `setTheme('light'|'dark')` to toggle.
 - **Per-Component CSS Modules**: Every component has three dedicated stylesheets:
   - `Component.common.module.css`: Base styles that are theme-agnostic.
   - `Component.light.module.css`: Styles specific to the light theme.
@@ -50,7 +50,7 @@ When creating or refactoring a component, follow this pattern to ensure it is fu
 1.  **Import Dependencies**:
 
     ```typescript
-    import { useTheme } from '@/app/contexts/ThemeContext';
+    import { useTheme } from 'next-themes';
     import { cn } from '@/lib/utils';
     import commonStyles from './Component.common.module.css';
     import lightStyles from './Component.light.module.css';
@@ -60,9 +60,9 @@ When creating or refactoring a component, follow this pattern to ensure it is fu
 2.  **Access Theme and Styles**:
 
     ```typescript
-    const { theme } = useTheme();
-    if (!theme) return null; // Prevents UI flash before theme is resolved
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const { resolvedTheme } = useTheme();
+    if (!resolvedTheme) return null; // Prevents UI flash before theme is resolved
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     ```
 
 3.  **Apply Classes to Elements**:
@@ -87,7 +87,7 @@ All authentication pages (`/login`, `/signup`, `/forgot-password`, `/reset-passw
   - ≥1280px: columns `1fr 1fr`
 - The `AuthBrandingPanel` is wrapped by a local `.brandingSlot` div so the grid controls placement.
 - Avoid `width: 100vw`; use `width: 100%` and `min-height: 100svh` to prevent overflow issues.
-- Always merge classes from common + theme modules in components: `cn(common[key], theme[key])` so theme styles do not overwrite layout rules.
+- Always merge classes from common + theme modules in components: `cn(common[key], theme[key])` so theme styles do not overwrite layout rules. Use `useTheme` from `next-themes` for theme state.
 
 Reference: `app/components/Auth/BrandingPanel/BrandingPanel.tsx` and `app/(auth)/*/*.tsx`.
 

@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useClientData } from '@/hooks/useClient';
 import common from './Payments.common.module.css';
 import light from './Payments.light.module.css';
 import dark from './Payments.dark.module.css';
@@ -18,18 +19,24 @@ interface Payment {
   status: 'Paid' | 'Pending' | 'Failed';
 }
 
-const DATA: Payment[] = [
-  { id: 'pm-401', date: '2025-08-08', project: 'Marketing site build', freelancer: 'Alex Johnson', amount: 1200, status: 'Paid' },
-  { id: 'pm-402', date: '2025-08-03', project: 'Chat assistant pilot', freelancer: 'Wei Chen', amount: 950, status: 'Pending' },
-  { id: 'pm-403', date: '2025-07-29', project: 'Design system v2', freelancer: 'Priya Sharma', amount: 600, status: 'Paid' },
-  { id: 'pm-404', date: '2025-07-20', project: 'Billing integration', freelancer: 'Sara Kim', amount: 300, status: 'Failed' },
-];
-
 const STATUSES = ['All', 'Paid', 'Pending', 'Failed'] as const;
 
 const Payments: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { payments, loading, error } = useClientData();
+
+  const rows: Payment[] = useMemo(() => {
+    if (!Array.isArray(payments)) return [];
+    return (payments as any[]).map((p, idx) => ({
+      id: String(p.id ?? idx),
+      date: p.date ?? p.createdAt ?? '',
+      project: p.project ?? p.description ?? 'Unknown Project',
+      freelancer: p.freelancer ?? p.user ?? 'Unknown',
+      amount: Number(p.amount?.replace(/[$,]/g, '')) || 0,
+      status: (p.status as Payment['status']) ?? 'Pending',
+    }));
+  }, [payments]);
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
@@ -44,15 +51,15 @@ const Payments: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return DATA.filter(p =>
+    return rows.filter(p =>
       (status === 'All' || p.status === status) &&
       (!q || p.project.toLowerCase().includes(q) || p.freelancer.toLowerCase().includes(q) || p.id.toLowerCase().includes(q))
     );
-  }, [query, status]);
+  }, [rows, query, status]);
 
-  const kpiTotal = useMemo(() => DATA.reduce((s, p) => s + p.amount, 0), []);
-  const kpiPaid = useMemo(() => DATA.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0), []);
-  const kpiPending = useMemo(() => DATA.filter(p => p.status === 'Pending').reduce((s, p) => s + p.amount, 0), []);
+  const kpiTotal = useMemo(() => rows.reduce((s, p) => s + p.amount, 0), [rows]);
+  const kpiPaid = useMemo(() => rows.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0), [rows]);
+  const kpiPending = useMemo(() => rows.filter(p => p.status === 'Pending').reduce((s, p) => s + p.amount, 0), [rows]);
 
   const fmt = (n: number) => `$${n.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
 
@@ -91,6 +98,8 @@ const Payments: React.FC = () => {
         </div>
 
         <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load payments.</div>}
           <table className={cn(common.table)} role="table" aria-label="Payments table">
             <thead>
               <tr className={common.tr}>
@@ -117,7 +126,7 @@ const Payments: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div role="status" aria-live="polite" className={common.emptyState}>No transactions match your filters.</div>
           )}
         </div>

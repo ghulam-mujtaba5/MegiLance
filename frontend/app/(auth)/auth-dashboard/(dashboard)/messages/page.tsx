@@ -1,5 +1,7 @@
 // @AI-HINT: This is the Messages page, designed with a three-column layout for a premium, real-time chat experience, similar to platforms like Slack or Discord.
 
+'use client'
+
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { User, Search, Paperclip, Send, Star } from 'lucide-react';

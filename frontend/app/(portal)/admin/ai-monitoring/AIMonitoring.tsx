@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useAdminData } from '@/hooks/useAdmin';
 import common from './AIMonitoring.common.module.css';
 import light from './AIMonitoring.light.module.css';
 import dark from './AIMonitoring.dark.module.css';
@@ -12,25 +13,34 @@ import dark from './AIMonitoring.dark.module.css';
 interface KPI { id: string; label: string; value: string; }
 interface LogRow { id: string; ts: string; level: 'info' | 'warn' | 'error'; message: string; model: string; latencyMs: number; }
 
-const KPIS: KPI[] = [
-  { id: 'k1', label: 'Requests (24h)', value: '38,214' },
-  { id: 'k2', label: 'Avg Latency', value: '412ms' },
-  { id: 'k3', label: 'Errors', value: '0.34%' },
-  { id: 'k4', label: 'Cost (24h)', value: '$231.44' },
-];
-
-const LOGS: LogRow[] = [
-  { id: 'l1', ts: '2025-08-08 10:12:11', level: 'info', message: 'Completion OK', model: 'gpt-4o-mini', latencyMs: 380 },
-  { id: 'l2', ts: '2025-08-08 10:10:02', level: 'warn', message: 'Token cap nearing', model: 'gpt-4o-mini', latencyMs: 520 },
-  { id: 'l3', ts: '2025-08-08 10:05:44', level: 'error', message: 'Provider timeout', model: 'sonnet-3.5', latencyMs: 60000 },
-  { id: 'l4', ts: '2025-08-08 10:01:29', level: 'info', message: 'Embedding OK', model: 'text-embed', latencyMs: 120 },
-];
-
 const LEVELS = ['All', 'info', 'warn', 'error'] as const;
 
 const AIMonitoring: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { ai, loading, error } = useAdminData();
+
+  const kpis: KPI[] = useMemo(() => {
+    if (!ai?.aiStats) return [];
+    return [
+      { id: 'k1', label: 'Rank Model Accuracy', value: ai.aiStats.rankModelAccuracy ?? '0%' },
+      { id: 'k2', label: 'Fraud Detections', value: String(ai.aiStats.fraudDetections ?? 0) },
+      { id: 'k3', label: 'Price Estimations', value: String(ai.aiStats.priceEstimations ?? 0) },
+      { id: 'k4', label: 'Chatbot Sessions', value: String(ai.aiStats.chatbotSessions ?? 0) },
+    ];
+  }, [ai?.aiStats]);
+
+  const logs: LogRow[] = useMemo(() => {
+    if (!Array.isArray(ai?.recentFraudAlerts)) return [];
+    return (ai.recentFraudAlerts as any[]).map((l, idx) => ({
+      id: String(l.id ?? idx),
+      ts: l.timestamp ?? '',
+      level: 'warn' as LogRow['level'],
+      message: l.reason ?? '',
+      model: 'Fraud Detection',
+      latencyMs: 0,
+    }));
+  }, [ai?.recentFraudAlerts]);
 
   const [query, setQuery] = useState('');
   const [level, setLevel] = useState<(typeof LEVELS)[number]>('All');
@@ -45,11 +55,11 @@ const AIMonitoring: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return LOGS.filter(l =>
+    return logs.filter(l =>
       (level === 'All' || l.level === level) &&
       (!q || l.message.toLowerCase().includes(q) || l.model.toLowerCase().includes(q))
     );
-  }, [query, level]);
+  }, [logs, query, level]);
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -71,7 +81,9 @@ const AIMonitoring: React.FC = () => {
         </div>
 
         <section ref={kpiRef} className={cn(common.kpis, kpisVisible ? common.isVisible : common.isNotVisible)} aria-label="AI KPIs">
-          {KPIS.map(k => (
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load AI metrics.</div>}
+          {kpis.map(k => (
             <div key={k.id} className={cn(common.card)} tabIndex={0} aria-labelledby={`kpi-${k.id}-label`}>
               <div id={`kpi-${k.id}-label`} className={cn(common.cardTitle, themed.cardTitle)}>{k.label}</div>
               <div className={cn(common.metric, themed.metric)}>{k.value}</div>
@@ -103,6 +115,8 @@ const AIMonitoring: React.FC = () => {
 
         <section className={cn(common.panel, themed.panel)} aria-label="Recent logs">
           <div className={cn(common.cardTitle, themed.cardTitle)}>Recent Logs</div>
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load logs.</div>}
           <div className={cn(common.list)} role="list">
             {filtered.map(l => (
               <div key={l.id} role="listitem" className={cn(common.item)}>
@@ -111,7 +125,7 @@ const AIMonitoring: React.FC = () => {
               </div>
             ))}
           </div>
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div role="status" aria-live="polite">No logs match your filters.</div>
           )}
         </section>

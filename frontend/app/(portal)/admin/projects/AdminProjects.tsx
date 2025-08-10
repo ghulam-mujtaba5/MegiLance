@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminProjects.common.module.css';
 import light from './AdminProjects.light.module.css';
 import dark from './AdminProjects.dark.module.css';
@@ -17,13 +18,6 @@ interface ProjectRow {
   status: 'Planned' | 'In Progress' | 'Blocked' | 'Completed';
   updated: string;
 }
-
-const PROJECTS: ProjectRow[] = [
-  { id: 'p1', name: 'Mobile App Redesign', client: 'NovaTech', budget: '$45,000', status: 'In Progress', updated: '2025-08-03' },
-  { id: 'p2', name: 'AI Matching Engine', client: 'MegiLance', budget: '$120,000', status: 'Planned', updated: '2025-07-28' },
-  { id: 'p3', name: 'Website Revamp', client: 'BluePeak', budget: '$32,000', status: 'Blocked', updated: '2025-07-30' },
-  { id: 'p4', name: 'Payments Integration', client: 'Finora', budget: '$60,000', status: 'Completed', updated: '2025-07-12' },
-];
 
 const STATUSES = ['All', 'Planned', 'In Progress', 'Blocked', 'Completed'] as const;
 
@@ -39,6 +33,7 @@ const statusDotColor = (status: ProjectRow['status']) => {
 const AdminProjects: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { projects, loading, error } = useAdminData();
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
@@ -49,13 +44,25 @@ const AdminProjects: React.FC = () => {
   const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
   const tableVisible = useIntersectionObserver(tableRef, { threshold: 0.1 });
 
+  const rows: ProjectRow[] = useMemo(() => {
+    if (!Array.isArray(projects)) return [];
+    return (projects as any[]).map((p, idx) => ({
+      id: String(p.id ?? idx),
+      name: p.title ?? p.name,
+      client: p.client ?? '—',
+      budget: p.budget ?? '—',
+      status: (p.status as ProjectRow['status']) ?? 'In Progress',
+      updated: p.updatedAt ?? p.updated ?? '',
+    }));
+  }, [projects]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return PROJECTS.filter(p =>
+    return rows.filter(p =>
       (status === 'All' || p.status === status) &&
       (!q || p.name.toLowerCase().includes(q) || p.client.toLowerCase().includes(q))
     );
-  }, [query, status]);
+  }, [rows, query, status]);
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -78,6 +85,8 @@ const AdminProjects: React.FC = () => {
         </div>
 
         <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load projects.</div>}
           <table className={cn(common.table, themed.table)}>
             <thead>
               <tr>
@@ -112,7 +121,7 @@ const AdminProjects: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div className={cn(common.empty)} role="status" aria-live="polite">No projects match your filters.</div>
           )}
         </div>

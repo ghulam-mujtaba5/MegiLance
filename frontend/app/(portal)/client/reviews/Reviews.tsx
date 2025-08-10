@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useClientData } from '@/hooks/useClient';
 import common from './Reviews.common.module.css';
 import light from './Reviews.light.module.css';
 import dark from './Reviews.dark.module.css';
@@ -18,14 +19,22 @@ interface Review {
   text: string;
 }
 
-const MOCK_REVIEWS: Review[] = [
-  { id: 'r-301', project: 'Marketing site build', freelancer: 'Alex Johnson', created: '2025-08-07', rating: 5, text: 'Exceptional work quality and speed. Great communication.' },
-  { id: 'r-302', project: 'Design system v2', freelancer: 'Priya Sharma', created: '2025-07-30', rating: 4, text: 'Strong design direction and pixel-perfect delivery.' },
-];
-
 const Reviews: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { reviews, loading, error } = useClientData();
+
+  const rows: Review[] = useMemo(() => {
+    if (!Array.isArray(reviews)) return [];
+    return (reviews as any[]).map((r, idx) => ({
+      id: String(r.id ?? idx),
+      project: r.projectTitle ?? r.project ?? 'Unknown Project',
+      freelancer: r.freelancerName ?? r.freelancer ?? 'Unknown',
+      created: r.date ?? r.createdAt ?? r.created ?? '',
+      rating: Number(r.rating) || 0,
+      text: r.comment ?? r.text ?? '',
+    }));
+  }, [reviews]);
 
   const [query, setQuery] = useState('');
   const [rating, setRating] = useState<number | 'All'>('All');
@@ -43,11 +52,11 @@ const Reviews: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return MOCK_REVIEWS.filter(r =>
+    return rows.filter(r =>
       (rating === 'All' || r.rating === rating) &&
       (!q || r.project.toLowerCase().includes(q) || r.freelancer.toLowerCase().includes(q) || r.text.toLowerCase().includes(q))
     );
-  }, [query, rating]);
+  }, [rows, query, rating]);
 
   const setStar = (value: number) => setNewRating(value);
 
@@ -77,6 +86,8 @@ const Reviews: React.FC = () => {
         </div>
 
         <section ref={listRef} className={cn(common.list, listVisible ? common.isVisible : common.isNotVisible)} aria-label="Reviews list">
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load reviews.</div>}
           {filtered.map(r => (
             <article key={r.id} className={cn(common.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>{r.project}</div>
@@ -90,7 +101,7 @@ const Reviews: React.FC = () => {
               <p>{r.text}</p>
             </article>
           ))}
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div role="status" aria-live="polite">No reviews found.</div>
           )}
         </section>
@@ -103,7 +114,7 @@ const Reviews: React.FC = () => {
                 key={n}
                 type="button"
                 className={common.starBtn}
-                aria-pressed={newRating === n}
+                aria-pressed={newRating === n ? 'true' : 'false'}
                 onClick={() => setStar(n)}
                 aria-label={`${n} star${n>1?'s':''}`}
               >
@@ -112,10 +123,10 @@ const Reviews: React.FC = () => {
             ))}
           </div>
           <label htmlFor="text" className={common.srOnly}>Review text</label>
-          <textarea id="text" className={cn(common.textarea, themed.textarea)} placeholder="Share your experience and outcomes…" value={newText} onChange={(e) => setNewText(e.target.value)} aria-invalid={!(newText.trim().length > 10)} />
+          <textarea id="text" className={cn(common.textarea, themed.textarea)} placeholder="Share your experience and outcomes…" value={newText} onChange={(e) => setNewText(e.target.value)} aria-invalid={!(newText.trim().length > 10) ? 'true' : 'false'} />
           <div className={common.controls}>
             <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={() => { setNewText(''); setNewRating(0); }}>Clear</button>
-            <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={() => alert('Review submitted')} disabled={!canSubmit} aria-disabled={!canSubmit}>Submit Review</button>
+            <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={() => alert('Review submitted')} disabled={!canSubmit} aria-disabled={!canSubmit ? 'true' : 'false'}>Submit Review</button>
           </div>
         </section>
       </div>

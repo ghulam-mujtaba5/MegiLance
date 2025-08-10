@@ -2,6 +2,8 @@
 // It includes a balance summary, financial metrics, payment methods, and a detailed transaction history.
 // The component uses modular CSS for styling and lucide-react for icons, ensuring a clean and maintainable structure.
 
+'use client'
+
 import React, { useMemo, useState } from 'react';
 import { PlusCircle, Download, MoreVertical, CreditCard, Landmark, Search, Filter, Trash2, Edit } from 'lucide-react';
 import styles from './Wallet.module.css';

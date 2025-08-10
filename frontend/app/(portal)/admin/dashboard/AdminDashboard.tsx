@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminDashboard.common.module.css';
 import light from './AdminDashboard.light.module.css';
 import dark from './AdminDashboard.dark.module.css';
@@ -12,14 +13,14 @@ import dark from './AdminDashboard.dark.module.css';
 interface KPI { id: string; label: string; value: string; trend: string; }
 interface UserRow { id: string; name: string; email: string; role: 'Admin' | 'Client' | 'Freelancer'; status: 'Active' | 'Suspended'; joined: string; }
 
-const KPIS: KPI[] = [
+const FALLBACK_KPIS: KPI[] = [
   { id: 'k1', label: 'Active Users', value: '12,418', trend: '+3.2% WoW' },
   { id: 'k2', label: 'New Projects', value: '287', trend: '+5.1% WoW' },
   { id: 'k3', label: 'Revenue', value: '$142k', trend: '+7.8% MoM' },
   { id: 'k4', label: 'Churn', value: '1.2%', trend: '-0.2% MoM' },
 ];
 
-const USERS: UserRow[] = [
+const FALLBACK_USERS: UserRow[] = [
   { id: 'u1', name: 'Alex Carter', email: 'alex@megilance.com', role: 'Admin', status: 'Active', joined: '2024-11-01' },
   { id: 'u2', name: 'Hannah Lee', email: 'hannah@client.io', role: 'Client', status: 'Active', joined: '2025-02-18' },
   { id: 'u3', name: 'Sofia Gomez', email: 'sofia@freelance.dev', role: 'Freelancer', status: 'Active', joined: '2025-05-03' },
@@ -30,6 +31,7 @@ const AdminDashboard: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
 
+  const { users, kpis, loading, error } = useAdminData();
   const [role, setRole] = useState<'All' | 'Admin' | 'Client' | 'Freelancer'>('All');
 
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -40,9 +42,19 @@ const AdminDashboard: React.FC = () => {
   const kpisVisible = useIntersectionObserver(kpiRef, { threshold: 0.1 });
   const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
 
+  const effectiveKPIs: KPI[] = useMemo(() => {
+    if (!kpis || !Array.isArray(kpis) || kpis.length === 0) return FALLBACK_KPIS;
+    return kpis.map((k, idx) => ({ id: String(k.id ?? idx), label: k.label, value: k.value, trend: (k as any).trend ?? '' }));
+  }, [kpis]);
+
+  const effectiveUsers: UserRow[] = useMemo(() => {
+    const source = users ?? FALLBACK_USERS;
+    return source as UserRow[];
+  }, [users]);
+
   const filteredUsers = useMemo(() => {
-    return role === 'All' ? USERS : USERS.filter(u => u.role === role);
-  }, [role]);
+    return role === 'All' ? effectiveUsers : effectiveUsers.filter(u => u.role === role);
+  }, [effectiveUsers, role]);
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -63,11 +75,14 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <section ref={kpiRef} className={cn(common.kpis, kpisVisible ? common.isVisible : common.isNotVisible)} aria-label="Key performance indicators">
-          {KPIS.map(k => (
+          {loading && (
+            <div className={common.skeletonRow} aria-busy="true" />
+          )}
+          {!loading && effectiveKPIs.map(k => (
             <div key={k.id} className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby={`kpi-${k.id}-label`}>
               <div id={`kpi-${k.id}-label`} className={cn(common.cardTitle, themed.cardTitle)}>{k.label}</div>
               <div className={common.metric}>{k.value}</div>
-              <div className={common.trend}>{k.trend}</div>
+              {k.trend && <div className={common.trend}>{k.trend}</div>}
             </div>
           ))}
         </section>
@@ -75,6 +90,7 @@ const AdminDashboard: React.FC = () => {
         <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)}>
           <div className={cn(common.card, themed.card)} aria-label="Users table">
             <div className={cn(common.cardTitle, themed.cardTitle)}>Recent Users</div>
+            {error && <div className={common.error}>Failed to load users.</div>}
             <table className={common.table}>
               <thead>
                 <tr>

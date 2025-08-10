@@ -4,34 +4,45 @@
 import React, { useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import LineChart from '@/app/components/DataViz/LineChart/LineChart';
+import { useFreelancerData } from '@/hooks/useFreelancer';
 import commonStyles from './Analytics.common.module.css';
 import lightStyles from './Analytics.light.module.css';
 import darkStyles from './Analytics.dark.module.css';
 
-// @AI-HINT: Mock data for analytics.
-const analyticsData = {
-  kpis: {
-    profileViews: 1256,
-    applicationsSent: 48,
-    hireRate: '12.5%',
-    totalEarned: 5250.00,
-  },
-  viewsOverTime: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    data: [300, 450, 600, 550, 800, 1256],
-  },
-  earningsOverTime: {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    data: [500, 800, 1200, 2000, 3500, 5250],
-  },
-};
-
 const AnalyticsPage: React.FC = () => {
   const { theme } = useTheme();
+  const { analytics, loading, error } = useFreelancerData();
+  
   const styles = useMemo(() => {
     const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
   }, [theme]);
+
+  const analyticsData = useMemo(() => {
+    if (!analytics) return null;
+    
+    const totalEarned = parseFloat(analytics.totalEarnings?.replace(/[$,]/g, '') || '0');
+    const activeProjects = analytics.activeProjects || 0;
+    const completedProjects = analytics.completedProjects || 0;
+    const hireRate = completedProjects > 0 ? ((completedProjects / (activeProjects + completedProjects)) * 100).toFixed(1) + '%' : '0%';
+    
+    return {
+      kpis: {
+        profileViews: analytics.profileViews || 0,
+        applicationsSent: analytics.pendingProposals || 0,
+        hireRate,
+        totalEarned,
+      },
+      viewsOverTime: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        data: [300, 450, 600, 550, 800, analytics.profileViews || 1256],
+      },
+      earningsOverTime: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        data: [500, 800, 1200, 2000, 3500, totalEarned],
+      },
+    };
+  }, [analytics]);
 
   return (
     <div className={styles.container}>
@@ -40,38 +51,43 @@ const AnalyticsPage: React.FC = () => {
         <p className={styles.subtitle}>Track your performance and find new opportunities for growth.</p>
       </header>
 
-      <main className={styles.mainContent}>
-        <div className={styles.kpiGrid}>
-          <div className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>Profile Views</span>
-            <span className={styles.kpiValue}>{analyticsData.kpis.profileViews}</span>
-          </div>
-          <div className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>Applications Sent</span>
-            <span className={styles.kpiValue}>{analyticsData.kpis.applicationsSent}</span>
-          </div>
-          <div className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>Hire Rate</span>
-            <span className={styles.kpiValue}>{analyticsData.kpis.hireRate}</span>
-          </div>
-          <div className={styles.kpiCard}>
-            <span className={styles.kpiLabel}>Total Earned (USD)</span>
-            <span className={styles.kpiValue}>${analyticsData.kpis.totalEarned.toFixed(2)}</span>
-          </div>
-        </div>
+      {loading && <div className={styles.loading} aria-busy="true">Loading analytics...</div>}
+      {error && <div className={styles.error}>Failed to load analytics data.</div>}
 
-        <div className={styles.chartGrid}>
-          <div className={styles.chartCard}>
-            <h2 className={styles.cardTitle}>Profile Views Over Time</h2>
-            <LineChart data={analyticsData.viewsOverTime.data} labels={analyticsData.viewsOverTime.labels} />
+      {analyticsData && (
+        <main className={styles.mainContent}>
+          <div className={styles.kpiGrid}>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Profile Views</span>
+              <span className={styles.kpiValue}>{analyticsData.kpis.profileViews}</span>
+            </div>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Applications Sent</span>
+              <span className={styles.kpiValue}>{analyticsData.kpis.applicationsSent}</span>
+            </div>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Hire Rate</span>
+              <span className={styles.kpiValue}>{analyticsData.kpis.hireRate}</span>
+            </div>
+            <div className={styles.kpiCard}>
+              <span className={styles.kpiLabel}>Total Earned (USD)</span>
+              <span className={styles.kpiValue}>${analyticsData.kpis.totalEarned.toFixed(2)}</span>
+            </div>
           </div>
 
-          <div className={styles.chartCard}>
-            <h2 className={styles.cardTitle}>Earnings Over Time</h2>
-            <LineChart data={analyticsData.earningsOverTime.data} labels={analyticsData.earningsOverTime.labels} />
+          <div className={styles.chartGrid}>
+            <div className={styles.chartCard}>
+              <h2 className={styles.cardTitle}>Profile Views Over Time</h2>
+              <LineChart data={analyticsData.viewsOverTime.data} labels={analyticsData.viewsOverTime.labels} />
+            </div>
+
+            <div className={styles.chartCard}>
+              <h2 className={styles.cardTitle}>Earnings Over Time</h2>
+              <LineChart data={analyticsData.earningsOverTime.data} labels={analyticsData.earningsOverTime.labels} />
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      )}
     </div>
   );
 };

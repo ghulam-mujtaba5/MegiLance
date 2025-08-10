@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import '../styles/themes/light.css';
 import '../styles/themes/dark.css';
@@ -20,10 +20,6 @@ export const metadata: Metadata = {
   },
   authors: [{ name: 'MegiLance' }],
   applicationName: 'MegiLance',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b0f19' },
-  ],
   openGraph: {
     title: 'MegiLance - Next-Gen Freelance Platform',
     description: 'The Next-Generation Freelance Platform powered by AI and Blockchain.',
@@ -37,6 +33,13 @@ export const metadata: Metadata = {
     description: 'The Next-Generation Freelance Platform powered by AI and Blockchain.',
     creator: '@megilance',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b0f19' },
+  ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

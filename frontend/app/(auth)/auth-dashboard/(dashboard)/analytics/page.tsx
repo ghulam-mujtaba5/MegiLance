@@ -1,5 +1,7 @@
 // @AI-HINT: Premium Analytics page with interactive, dependency-free SVG charts and time-range controls.
 
+'use client'
+
 import React, { useMemo, useState } from 'react';
 import Card from '@/app/components/Card/Card';
 import styles from './Analytics.module.css';

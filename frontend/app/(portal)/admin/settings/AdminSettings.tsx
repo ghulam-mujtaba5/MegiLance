@@ -1,10 +1,11 @@
 // @AI-HINT: Admin Settings page. Theme-aware, accessible, animated sections, forms, toggles, and sticky save bar.
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminSettings.common.module.css';
 import light from './AdminSettings.light.module.css';
 import dark from './AdminSettings.dark.module.css';
@@ -12,6 +13,7 @@ import dark from './AdminSettings.dark.module.css';
 const AdminSettings: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { loading, error } = useAdminData();
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const generalRef = useRef<HTMLDivElement | null>(null);
@@ -45,6 +47,9 @@ const AdminSettings: React.FC = () => {
             <p className={cn(common.subtitle, themed.subtitle)}>Configure organization preferences, security policies, and notifications.</p>
           </div>
         </div>
+
+        {loading && <div className={common.skeletonRow} aria-busy="true" />}
+        {error && <div className={common.error}>Failed to load settings.</div>}
 
         <section
           ref={generalRef}

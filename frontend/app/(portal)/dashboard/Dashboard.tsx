@@ -5,6 +5,7 @@ import React, { useMemo, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useUser } from '@/hooks/useUser';
 
 // Reuse existing dashboard components and types
 import DashboardHeader from '@/app/(auth)/auth-dashboard/components/DashboardHeader/DashboardHeader';
@@ -23,16 +24,9 @@ import common from './Dashboard.common.module.css';
 import light from './Dashboard.light.module.css';
 import dark from './Dashboard.dark.module.css';
 
-const mockUser: User = {
-  fullName: 'Jordan Smith',
-  email: 'jordan@example.com',
-  bio: 'Product Manager focused on outcomes and velocity.',
-  avatar: '/images/avatars/avatar-1.png',
-  notificationCount: 3,
-};
-
 const Dashboard: React.FC = () => {
   const { theme } = useTheme();
+  const { user, loading: userLoading } = useUser();
   const themed = theme === 'dark' ? dark : light;
 
   const headerStyles = useMemo(() => {
@@ -48,11 +42,19 @@ const Dashboard: React.FC = () => {
   const metricsVisible = useIntersectionObserver(metricsRef, { threshold: 0.1 });
   const contentVisible = useIntersectionObserver(contentRef, { threshold: 0.1 });
 
+  const displayUser: User = {
+    fullName: user?.fullName ?? 'Guest User',
+    email: user?.email ?? 'guest@example.com',
+    bio: 'Welcome to your dashboard',
+    avatar: user?.avatar ?? '/images/avatars/avatar-1.png',
+    notificationCount: user?.notificationCount ?? 0,
+  };
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <DashboardHeader userRole="client" user={mockUser} styles={headerStyles} />
+          <DashboardHeader userRole="client" user={displayUser} styles={headerStyles} />
         </div>
         <div ref={metricsRef} className={cn(common.metrics, metricsVisible ? common.isVisible : common.isNotVisible)}>
           <DashboardMetrics />

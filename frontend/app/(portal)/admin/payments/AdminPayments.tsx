@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminPayments.common.module.css';
 import light from './AdminPayments.light.module.css';
 import dark from './AdminPayments.dark.module.css';
@@ -19,13 +20,6 @@ interface Txn {
   status: 'Completed' | 'Pending' | 'Failed';
 }
 
-const TXNS: Txn[] = [
-  { id: 't1', date: '2025-08-05', user: 'Hannah Lee', role: 'Client', amount: '$2,400.00', type: 'Deposit', status: 'Completed' },
-  { id: 't2', date: '2025-08-03', user: 'Sofia Gomez', role: 'Freelancer', amount: '$1,200.00', type: 'Payout', status: 'Pending' },
-  { id: 't3', date: '2025-07-31', user: 'Alex Carter', role: 'Client', amount: '$450.00', type: 'Refund', status: 'Completed' },
-  { id: 't4', date: '2025-07-29', user: 'Diego Ramos', role: 'Freelancer', amount: '$980.00', type: 'Payout', status: 'Failed' },
-];
-
 const TYPES = ['All', 'Payout', 'Deposit', 'Refund'] as const;
 const STATUSES = ['All', 'Completed', 'Pending', 'Failed'] as const;
 const ROLES = ['All', 'Client', 'Freelancer'] as const;
@@ -33,6 +27,20 @@ const ROLES = ['All', 'Client', 'Freelancer'] as const;
 const AdminPayments: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { payments, loading, error } = useAdminData();
+
+  const rows: Txn[] = useMemo(() => {
+    if (!Array.isArray(payments)) return [];
+    return (payments as any[]).map((t, idx) => ({
+      id: String(t.id ?? idx),
+      date: t.date ?? '',
+      user: t.user ?? t.description ?? '—',
+      role: (t.role as Txn['role']) ?? 'Client',
+      amount: t.amount ?? '$0.00',
+      type: (t.type as Txn['type']) ?? 'Deposit',
+      status: (t.status as Txn['status']) ?? 'Completed',
+    }));
+  }, [payments]);
 
   const [query, setQuery] = useState('');
   const [type, setType] = useState<(typeof TYPES)[number]>('All');
@@ -49,15 +57,14 @@ const AdminPayments: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return TXNS.filter(t =>
+    return rows.filter(t =>
       (type === 'All' || t.type === type) &&
       (status === 'All' || t.status === status) &&
       (role === 'All' || t.role === role) &&
       (!q || t.user.toLowerCase().includes(q) || t.amount.toLowerCase().includes(q))
     );
-  }, [query, type, status, role]);
+  }, [rows, query, type, status, role]);
 
-  // Simple derived metrics from filtered (mocked finance cards)
   const metrics = useMemo(() => {
     const total = filtered.reduce((acc, t) => acc + Number(t.amount.replace(/[$,]/g, '')), 0);
     const completed = filtered.filter(t => t.status === 'Completed').length;
@@ -112,6 +119,8 @@ const AdminPayments: React.FC = () => {
         </section>
 
         <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load transactions.</div>}
           <table className={cn(common.table, themed.table)}>
             <thead>
               <tr>
@@ -138,7 +147,7 @@ const AdminPayments: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div role="status" aria-live="polite" className={cn(common.card, themed.card)}>
               No transactions match your filters.
             </div>

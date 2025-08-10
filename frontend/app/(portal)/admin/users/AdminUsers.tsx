@@ -5,6 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminUsers.common.module.css';
 import light from './AdminUsers.light.module.css';
 import dark from './AdminUsers.dark.module.css';
@@ -18,14 +19,6 @@ interface UserRow {
   joined: string;
 }
 
-const USERS: UserRow[] = [
-  { id: 'u1', name: 'Alex Carter', email: 'alex@megilance.com', role: 'Admin', status: 'Active', joined: '2024-11-01' },
-  { id: 'u2', name: 'Hannah Lee', email: 'hannah@client.io', role: 'Client', status: 'Active', joined: '2025-02-18' },
-  { id: 'u3', name: 'Sofia Gomez', email: 'sofia@freelance.dev', role: 'Freelancer', status: 'Suspended', joined: '2025-05-03' },
-  { id: 'u4', name: 'Priya Patel', email: 'priya@client.io', role: 'Client', status: 'Active', joined: '2025-06-22' },
-  { id: 'u5', name: 'Diego Ramos', email: 'diego@freelance.dev', role: 'Freelancer', status: 'Active', joined: '2025-07-14' },
-];
-
 const ROLES = ['All', 'Admin', 'Client', 'Freelancer'] as const;
 const STATUSES = ['All', 'Active', 'Suspended'] as const;
 
@@ -33,12 +26,18 @@ const AdminUsers: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
 
+  const { users, loading, error } = useAdminData();
+
   const [query, setQuery] = useState('');
   const [role, setRole] = useState<(typeof ROLES)[number]>('All');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
-  const [rows, setRows] = useState<UserRow[]>(USERS);
+  const [rows, setRows] = useState<UserRow[]>([]);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
   const [modal, setModal] = useState<{ kind: 'suspend' | 'restore'; count: number } | null>(null);
+
+  React.useEffect(() => {
+    if (users) setRows(users as unknown as UserRow[]);
+  }, [users]);
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef<HTMLDivElement | null>(null);
@@ -115,6 +114,8 @@ const AdminUsers: React.FC = () => {
         )}
 
         <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load users.</div>}
           <table className={cn(common.table, themed.table)}>
             <thead>
               <tr>
@@ -148,7 +149,7 @@ const AdminUsers: React.FC = () => {
               ))}
             </tbody>
           </table>
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div role="status" aria-live="polite" className={cn(common.bulkBar, themed.bulkBar)}>
               No users match your filters.
             </div>

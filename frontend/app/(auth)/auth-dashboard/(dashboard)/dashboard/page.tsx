@@ -1,5 +1,7 @@
 // @AI-HINT: This is the main Dashboard page. It's designed as a command center, providing a high-level overview of key metrics, recent activities, and upcoming tasks to give the user immediate insight into their account status.
 
+'use client'
+
 import React from 'react';
 import { DollarSign, Zap, MessageSquare, Clock, ChevronRight, Briefcase, CheckCircle, Award } from 'lucide-react';
 import styles from './Dashboard.module.css';

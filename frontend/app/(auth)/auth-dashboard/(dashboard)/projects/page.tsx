@@ -1,5 +1,7 @@
 // @AI-HINT: Premium Projects page: interactive search, filtering, and sorting with responsive table layout.
 
+'use client'
+
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { Plus, Search, Filter, ChevronDown, MoreHorizontal } from 'lucide-react';

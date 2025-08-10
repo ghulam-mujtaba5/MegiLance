@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
 import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
+import { useFreelancerData } from '@/hooks/useFreelancer';
 
 import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
@@ -13,52 +14,86 @@ import darkStyles from './Dashboard.dark.module.css';
 
 const Dashboard: React.FC = () => {
   const { theme } = useTheme();
+  const { analytics, jobs, transactions, loading, error } = useFreelancerData();
 
   const styles = useMemo(() => {
     const themeStyles = theme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
   }, [theme]);
 
+  const recentJobs = useMemo(() => {
+    if (!Array.isArray(jobs)) return [];
+    return jobs.slice(0, 2).map((job, idx) => ({
+      id: String(job.id ?? idx),
+      title: job.title ?? 'Untitled Job',
+      clientName: job.clientName ?? 'Unknown Client',
+      budget: job.budget ?? '$0',
+      postedTime: job.postedTime ?? 'Unknown',
+      tags: Array.isArray(job.skills) ? job.skills : [],
+    }));
+  }, [jobs]);
+
+  const recentTransactions = useMemo(() => {
+    if (!Array.isArray(transactions)) return [];
+    return transactions.slice(0, 2).map((txn, idx) => ({
+      id: String(txn.id ?? idx),
+      amount: txn.amount ?? '0',
+      date: txn.date ?? '',
+      description: txn.description ?? 'Unknown transaction',
+    }));
+  }, [transactions]);
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>Welcome back, Freelancer!</h1>
-        <p className={styles.subtitle}>Here’s what’s happening with your projects today.</p>
+        <p className={styles.subtitle}>Here&apos;s what&apos;s happening with your projects today.</p>
       </header>
 
+      {loading && <div className={styles.loading} aria-busy="true">Loading dashboard...</div>}
+      {error && <div className={styles.error}>Failed to load dashboard data.</div>}
+
       <div className={styles.widgetsGrid}>
-        <DashboardWidget title="Active Projects" value="3" />
-        <DashboardWidget title="Pending Proposals" value="5" />
-        <DashboardWidget title="Wallet Balance" value="$1,234.56" />
-        <DashboardWidget title="Freelancer Rank" value="Top 10%" />
+        <DashboardWidget title="Active Projects" value={String(analytics?.activeProjects ?? 0)} />
+        <DashboardWidget title="Pending Proposals" value={String(analytics?.pendingProposals ?? 0)} />
+        <DashboardWidget title="Wallet Balance" value={analytics?.walletBalance ?? '$0.00'} />
+        <DashboardWidget title="Freelancer Rank" value={analytics?.rank ?? 'N/A'} />
       </div>
 
       <div className={styles.mainContent}>
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Recent Job Postings</h2>
           <div className={styles.projectList}>
-            <ProjectCard
-              title="AI Chatbot Integration"
-              clientName="Innovate Inc."
-              budget="$5,000"
-              postedTime="2 hours ago"
-              tags={['React', 'AI', 'NLP']}
-            />
-            <ProjectCard
-              title="E-commerce Platform UI/UX"
-              clientName="Shopify Plus Experts"
-              budget="$8,000"
-              postedTime="1 day ago"
-              tags={['UI/UX', 'Figma', 'Next.js']}
-            />
+            {recentJobs.map(job => (
+              <ProjectCard
+                key={job.id}
+                title={job.title}
+                clientName={job.clientName}
+                budget={job.budget}
+                postedTime={job.postedTime}
+                tags={job.tags}
+              />
+            ))}
+            {recentJobs.length === 0 && !loading && (
+              <div className={styles.emptyState}>No recent job postings found.</div>
+            )}
           </div>
         </section>
 
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Recent Transactions</h2>
           <div className={styles.transactionList}>
-            <TransactionRow amount="500" date="2025-08-03" description="Milestone 1 for Project X" />
-            <TransactionRow amount="-200" date="2025-08-01" description="Withdrawal to bank" />
+            {recentTransactions.map(txn => (
+              <TransactionRow
+                key={txn.id}
+                amount={txn.amount}
+                date={txn.date}
+                description={txn.description}
+              />
+            ))}
+            {recentTransactions.length === 0 && !loading && (
+              <div className={styles.emptyState}>No recent transactions found.</div>
+            )}
           </div>
         </section>
       </div>

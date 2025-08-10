@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useClientData } from '@/hooks/useClient';
 import common from './Projects.common.module.css';
 import light from './Projects.light.module.css';
 import dark from './Projects.dark.module.css';
@@ -18,20 +19,23 @@ interface Project {
   updated: string;
 }
 
-const PROJECTS: Project[] = [
-  { id: 'p-101', title: 'Marketing site build', status: 'In Progress', budget: '$4,500', updated: '2025-08-08' },
-  { id: 'p-102', title: 'iOS MVP', status: 'Open', budget: '$12,000', updated: '2025-08-06' },
-  { id: 'p-103', title: 'Design system v2', status: 'Completed', budget: '$2,800', updated: '2025-07-29' },
-  { id: 'p-104', title: 'Data pipeline POC', status: 'Open', budget: '$3,200', updated: '2025-08-01' },
-  { id: 'p-105', title: 'Chat assistant pilot', status: 'In Progress', budget: '$6,800', updated: '2025-08-03' },
-  { id: 'p-106', title: 'Billing integration', status: 'Completed', budget: '$1,900', updated: '2025-07-20' },
-];
-
 const STATUSES = ['All', 'Open', 'In Progress', 'Completed'] as const;
 
 const Projects: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { projects, loading, error } = useClientData();
+
+  const rows: Project[] = useMemo(() => {
+    if (!Array.isArray(projects)) return [];
+    return (projects as any[]).map((p, idx) => ({
+      id: String(p.id ?? idx),
+      title: p.title ?? p.name ?? 'Untitled Project',
+      status: (p.status as Project['status']) ?? 'Open',
+      budget: p.budget ?? '$0',
+      updated: p.updatedAt ?? p.updated ?? p.createdAt ?? '',
+    }));
+  }, [projects]);
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
@@ -44,11 +48,11 @@ const Projects: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return PROJECTS.filter(p =>
+    return rows.filter(p =>
       (status === 'All' || p.status === status) &&
       (!q || p.title.toLowerCase().includes(q) || p.id.toLowerCase().includes(q))
     );
-  }, [query, status]);
+  }, [rows, query, status]);
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -70,6 +74,8 @@ const Projects: React.FC = () => {
         </div>
 
         <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)} aria-label="Projects grid">
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load projects.</div>}
           {filtered.map(p => (
             <Link key={p.id} href={`/client/projects/${p.id}`} className={cn(common.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>{p.title}</div>
@@ -82,7 +88,7 @@ const Projects: React.FC = () => {
               </div>
             </Link>
           ))}
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div role="status" aria-live="polite">No projects match your filters.</div>
           )}
         </section>

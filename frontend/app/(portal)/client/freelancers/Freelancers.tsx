@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useClientData } from '@/hooks/useClient';
 import common from './Freelancers.common.module.css';
 import light from './Freelancers.light.module.css';
 import dark from './Freelancers.dark.module.css';
@@ -20,20 +21,25 @@ interface Freelancer {
   availability: 'Full-time' | 'Part-time' | 'Contract';
 }
 
-const FREELANCERS: Freelancer[] = [
-  { id: 'f-201', name: 'Alex Johnson', title: 'Senior Frontend Engineer', rate: '$85/hr', location: 'Remote (US)', skills: ['React', 'Next.js', 'TypeScript', 'CSS Modules'], availability: 'Contract' },
-  { id: 'f-202', name: 'Priya Sharma', title: 'Product Designer', rate: '$70/hr', location: 'Remote (EU)', skills: ['Figma', 'Design Systems', 'Prototyping'], availability: 'Part-time' },
-  { id: 'f-203', name: 'Wei Chen', title: 'ML Engineer', rate: '$120/hr', location: 'Remote (APAC)', skills: ['Python', 'LLMs', 'Vector DBs'], availability: 'Contract' },
-  { id: 'f-204', name: 'Sara Kim', title: 'Fullstack Engineer', rate: '$95/hr', location: 'Remote (US)', skills: ['Node.js', 'Next.js', 'Postgres'], availability: 'Full-time' },
-  { id: 'f-205', name: 'Diego López', title: 'iOS Developer', rate: '$110/hr', location: 'Remote (LATAM)', skills: ['Swift', 'SwiftUI', 'Combine'], availability: 'Contract' },
-  { id: 'f-206', name: 'Lina Müller', title: 'QA Automation', rate: '$65/hr', location: 'Remote (EU)', skills: ['Playwright', 'Cypress', 'Jest'], availability: 'Part-time' },
-];
-
 const AVAILABILITIES = ['All', 'Full-time', 'Part-time', 'Contract'] as const;
 
 const Freelancers: React.FC = () => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
+  const { freelancers, loading, error } = useClientData();
+
+  const rows: Freelancer[] = useMemo(() => {
+    if (!Array.isArray(freelancers)) return [];
+    return (freelancers as any[]).map((f, idx) => ({
+      id: String(f.id ?? idx),
+      name: f.name ?? 'Unknown',
+      title: f.title ?? f.role ?? 'Freelancer',
+      rate: f.hourlyRate ?? f.rate ?? '$0/hr',
+      location: f.location ?? 'Remote',
+      skills: Array.isArray(f.skills) ? f.skills : [],
+      availability: (f.availability as Freelancer['availability']) ?? 'Contract',
+    }));
+  }, [freelancers]);
 
   const [query, setQuery] = useState('');
   const [availability, setAvailability] = useState<(typeof AVAILABILITIES)[number]>('All');
@@ -46,11 +52,11 @@ const Freelancers: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return FREELANCERS.filter(f =>
+    return rows.filter(f =>
       (availability === 'All' || f.availability === availability) &&
       (!q || f.name.toLowerCase().includes(q) || f.title.toLowerCase().includes(q) || f.skills.join(' ').toLowerCase().includes(q))
     );
-  }, [query, availability]);
+  }, [rows, query, availability]);
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -72,6 +78,8 @@ const Freelancers: React.FC = () => {
         </div>
 
         <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)} aria-label="Freelancers grid">
+          {loading && <div className={common.skeletonRow} aria-busy="true" />}
+          {error && <div className={common.error}>Failed to load freelancers.</div>}
           {filtered.map(f => (
             <article key={f.id} className={cn(common.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>{f.name}</div>
@@ -95,7 +103,7 @@ const Freelancers: React.FC = () => {
               </div>
             </article>
           ))}
-          {filtered.length === 0 && (
+          {filtered.length === 0 && !loading && (
             <div role="status" aria-live="polite">No freelancers match your filters.</div>
           )}
         </section>

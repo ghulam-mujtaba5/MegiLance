@@ -1,5 +1,7 @@
 // @AI-HINT: This is the Community page, designed as a premium forum/social hub. It features a main discussion feed, sorting/filtering controls, and a sidebar with community stats and popular tags to encourage user interaction.
 
+'use client'
+
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import { Plus, Search, ThumbsUp, MessageCircle, Eye, ChevronDown } from 'lucide-react';

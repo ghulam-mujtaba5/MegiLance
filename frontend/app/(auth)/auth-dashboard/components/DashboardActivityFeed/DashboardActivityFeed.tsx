@@ -7,13 +7,13 @@ import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { FaDollarSign, FaBriefcase, FaTasks, FaUsers } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
-import { mockActivityFeed } from '../../mock-data';
+import { useDashboardData } from '@/hooks/useDashboardData';
 
 import commonStyles from './DashboardActivityFeed.common.module.css';
 import lightStyles from './DashboardActivityFeed.light.module.css';
 import darkStyles from './DashboardActivityFeed.dark.module.css';
 
-// Map string names from mock data to actual React icon components
+// Map string names from API data to actual React icon components
 const iconMap: { [key: string]: React.ElementType } = {
   FaDollarSign,
   FaBriefcase,
@@ -23,11 +23,49 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 const DashboardActivityFeed: React.FC = () => {
   const { theme } = useTheme();
+  const { data, loading, error } = useDashboardData();
 
   const styles = React.useMemo(() => {
     const themeStyles = theme === 'light' ? lightStyles : darkStyles;
-    return { ...commonStyles, ...themeStyles };
+    return { ...commonStyles, ...themeStyles } as { [k: string]: string };
   }, [theme]);
+
+  if (loading) {
+    return (
+      <div className={styles.activityFeedCard} aria-busy="true" aria-live="polite">
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>Activity Feed</h2>
+          <span className={styles.skeletonText} />
+        </div>
+        <ul className={styles.activityList}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <li key={i} className={styles.activityItem}>
+              <div className={styles.timeline}></div>
+              <div className={styles.activityIconContainer} />
+              <div className={styles.activityContent}>
+                <div className={styles.skeletonText} />
+                <div className={styles.skeletonText} />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  if (error || !data?.activityFeed?.length) {
+    return (
+      <div className={styles.activityFeedCard}>
+        <div className={styles.cardHeader}>
+          <h2 className={styles.cardTitle}>Activity Feed</h2>
+          <Link href="/activity" className={styles.viewAllLink}>
+            View All
+          </Link>
+        </div>
+        <div className={styles.emptyState}>No recent activity.</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.activityFeedCard}>
@@ -38,7 +76,7 @@ const DashboardActivityFeed: React.FC = () => {
         </Link>
       </div>
       <ul className={styles.activityList}>
-        {mockActivityFeed.map((activity) => {
+        {data.activityFeed.map((activity) => {
           const IconComponent = iconMap[activity.icon];
           return (
             <li key={activity.id} className={styles.activityItem}>
