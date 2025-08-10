@@ -1,0 +1,23 @@
+/* AI-HINT: Dark theme overrides for MegaLoader. Minimal deltas on top of common. */
+
+.theme .backdrop {
+  background: color-mix(in oklab, var(--ml-bg, #0b1020) 82%, transparent);
+}
+
+.theme .container {
+  background: linear-gradient(180deg, color-mix(in oklab, #0f162e 88%, transparent), color-mix(in oklab, #0b1226 92%, transparent));
+  /* Fallback border color for older browsers */
+  border-color: #1e2a52;
+  border-color: color-mix(in oklab, #1e2a52 70%, transparent);
+  box-shadow: 0 20px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.theme .title { color: #eaf1ff; color: color-mix(in oklab, #eaf1ff 92%, transparent); }
+.theme .subtitle { color: #a7b4d6; color: color-mix(in oklab, #a7b4d6 85%, transparent); }
+
+.theme .progressBar {
+  background: color-mix(in oklab, #0d1530 70%, transparent);
+  /* Fallback border color for older browsers */
+  border-color: #1e2a52;
+  border-color: color-mix(in oklab, #1e2a52 70%, transparent);
+}
