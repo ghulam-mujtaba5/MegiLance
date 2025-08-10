@@ -2,7 +2,7 @@
 
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Card from '@/app/components/Card/Card';
 import styles from './Analytics.module.css';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
@@ -49,8 +49,8 @@ const AnalyticsPage = () => {
   const xMax = series.length - 1 || 1;
   const yMax = series.reduce((m, d) => Math.max(m, d.y), 1);
   const yMin = 0;
-  const xScale = (x: number) => padding + (x / xMax) * (width - padding * 2);
-  const yScale = (y: number) => height - padding - ((y - yMin) / (yMax - yMin || 1)) * (height - padding * 2);
+  const xScale = useCallback((x: number) => padding + (x / xMax) * (width - padding * 2), [padding, xMax, width]);
+  const yScale = useCallback((y: number) => height - padding - ((y - yMin) / (yMax - yMin || 1)) * (height - padding * 2), [height, padding, yMin, yMax]);
 
   const lineD = useMemo(() => {
     if (!series.length) return '';

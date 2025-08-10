@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useAdminData } from '@/hooks/useAdmin';
+import Modal from '@/app/components/Modal/Modal';
 import common from './AdminSupport.common.module.css';
 import light from './AdminSupport.light.module.css';
 import dark from './AdminSupport.dark.module.css';
@@ -29,19 +30,23 @@ const AdminSupport: React.FC = () => {
   const themed = theme === 'dark' ? dark : light;
   const { tickets, loading, error } = useAdminData();
 
+  const [localTickets, setLocalTickets] = useState<Ticket[]>([]);
+
   const rows: Ticket[] = useMemo(() => {
-    if (!Array.isArray(tickets)) return [];
-    return (tickets as any[]).map((t, idx) => ({
-      id: String(t.id ?? idx),
-      subject: t.subject ?? '—',
-      requester: t.requester ?? '—',
-      priority: (t.priority as Ticket['priority']) ?? 'Low',
-      status: (t.status as Ticket['status']) ?? 'Open',
-      created: t.createdAt ?? t.created ?? '',
-      assignee: t.assignee ?? undefined,
-      body: t.body ?? t.message ?? '',
-    }));
-  }, [tickets]);
+    const base: Ticket[] = Array.isArray(tickets)
+      ? (tickets as any[]).map((t, idx) => ({
+          id: String(t.id ?? idx),
+          subject: t.subject ?? '—',
+          requester: t.requester ?? '—',
+          priority: (t.priority as Ticket['priority']) ?? 'Low',
+          status: (t.status as Ticket['status']) ?? 'Open',
+          created: t.createdAt ?? t.created ?? '',
+          assignee: t.assignee ?? undefined,
+          body: t.body ?? t.message ?? '',
+        }))
+      : [];
+    return [...base, ...localTickets];
+  }, [tickets, localTickets]);
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
@@ -67,6 +72,58 @@ const AdminSupport: React.FC = () => {
 
   const selectedTicket = filtered.find(t => t.id === selectedId) || rows.find(t => t.id === selectedId) || null;
 
+  // New Ticket modal state
+  const [isNewOpen, setIsNewOpen] = useState(false);
+  const [newSubject, setNewSubject] = useState('');
+  const [newRequester, setNewRequester] = useState('');
+  const [newPriority, setNewPriority] = useState<Ticket['priority']>('Low');
+  const [newBody, setNewBody] = useState('');
+
+  const resetNewForm = () => {
+    setNewSubject('');
+    setNewRequester('');
+    setNewPriority('Low');
+    setNewBody('');
+  };
+
+  const createTicket = () => {
+    if (!newSubject.trim() || !newRequester.trim() || !newBody.trim()) return;
+    const t: Ticket = {
+      id: `local-${Date.now()}`,
+      subject: newSubject.trim(),
+      requester: newRequester.trim(),
+      priority: newPriority,
+      status: 'Open',
+      created: new Date().toISOString(),
+      body: newBody.trim(),
+    };
+    setLocalTickets(prev => [t, ...prev]);
+    setSelectedId(t.id);
+    setIsNewOpen(false);
+    resetNewForm();
+  };
+
+  // Local-only actions for Assign/Resolve when applicable
+  const assignSelected = () => {
+    if (!selectedTicket) return;
+    if (!String(selectedTicket.id).startsWith('local-')) {
+      alert('Assign is a mock action for remote tickets.');
+      return;
+    }
+    const name = prompt('Assign to (name):', selectedTicket.assignee ?? '');
+    if (name === null) return;
+    setLocalTickets(prev => prev.map(t => (t.id === selectedTicket.id ? { ...t, assignee: name.trim() || undefined } : t)));
+  };
+
+  const resolveSelected = () => {
+    if (!selectedTicket) return;
+    if (!String(selectedTicket.id).startsWith('local-')) {
+      alert('Resolve is a mock action for remote tickets.');
+      return;
+    }
+    setLocalTickets(prev => prev.map(t => (t.id === selectedTicket.id ? { ...t, status: 'Resolved' } : t)));
+  };
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
@@ -86,7 +143,7 @@ const AdminSupport: React.FC = () => {
             <select id="priority" className={cn(common.select, themed.select)} value={priority} onChange={(e) => setPriority(e.target.value as (typeof PRIORITIES)[number])}>
               {PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
-            <button type="button" className={cn(common.button, themed.button)}>New Ticket</button>
+            <button type="button" className={cn(common.button, themed.button)} onClick={() => setIsNewOpen(true)}>New Ticket</button>
           </div>
         </div>
 
@@ -102,7 +159,7 @@ const AdminSupport: React.FC = () => {
                   <div
                     key={t.id}
                     role="option"
-                    aria-selected={isSelected ? 'true' : 'false'}
+                    aria-selected={isSelected || undefined}
                     tabIndex={0}
                     className={cn(common.item)}
                     onClick={() => setSelectedId(t.id)}
@@ -145,8 +202,8 @@ const AdminSupport: React.FC = () => {
                 <div className={common.kv}><div>Created</div><div>{selectedTicket.created}</div></div>
                 <div className={common.kv}><div>Message</div><div>{selectedTicket.body}</div></div>
                 <div className={common.actions}>
-                  <button type="button" className={cn(common.button, themed.button)}>Assign</button>
-                  <button type="button" className={cn(common.button, themed.button, 'secondary')}>Resolve</button>
+                  <button type="button" className={cn(common.button, themed.button)} onClick={assignSelected}>Assign</button>
+                  <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={resolveSelected}>Resolve</button>
                 </div>
               </div>
             ) : (
@@ -155,6 +212,34 @@ const AdminSupport: React.FC = () => {
           </div>
         </section>
       </div>
+      {isNewOpen && (
+        <Modal isOpen={isNewOpen} onClose={() => { setIsNewOpen(false); }} title="New Support Ticket">
+          <div className={common.field}>
+            <label htmlFor="new-subject" className={common.label}>Subject</label>
+            <input id="new-subject" className={cn(common.input, themed.input)} value={newSubject} onChange={(e) => setNewSubject(e.target.value)} placeholder="Brief issue summary" />
+          </div>
+          <div className={common.row}>
+            <div className={common.field}>
+              <label htmlFor="new-requester" className={common.label}>Requester</label>
+              <input id="new-requester" className={cn(common.input, themed.input)} value={newRequester} onChange={(e) => setNewRequester(e.target.value)} placeholder="Requester name or email" />
+            </div>
+            <div className={common.field}>
+              <label htmlFor="new-priority" className={common.label}>Priority</label>
+              <select id="new-priority" className={cn(common.select, themed.select)} value={newPriority} onChange={(e) => setNewPriority(e.target.value as Ticket['priority'])}>
+                {(['Low','Medium','High'] as const).map(p => (<option key={p} value={p}>{p}</option>))}
+              </select>
+            </div>
+          </div>
+          <div className={common.field}>
+            <label htmlFor="new-body" className={common.label}>Message</label>
+            <textarea id="new-body" className={cn(common.textarea, themed.textarea)} rows={5} value={newBody} onChange={(e) => setNewBody(e.target.value)} placeholder="Describe the issue in detail" />
+          </div>
+          <div className={common.modalActions}>
+            <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={() => { setIsNewOpen(false); }}>Cancel</button>
+            <button type="button" className={cn(common.button, themed.button)} onClick={createTicket} disabled={!newSubject.trim() || !newRequester.trim() || !newBody.trim()}>Create</button>
+          </div>
+        </Modal>
+      )}
     </main>
   );
 };
