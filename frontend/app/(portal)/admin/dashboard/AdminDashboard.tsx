@@ -14,6 +14,7 @@ import ReviewSentimentDashboard from '@/app/components/Admin/ReviewSentimentDash
 import JobModerationQueue from '@/app/components/Admin/JobModerationQueue/JobModerationQueue';
 import FlaggedReviews from '@/app/components/Admin/FlaggedReviews/FlaggedReviews';
 import FlaggedFraudList from '@/app/components/Admin/FlaggedFraudList/FlaggedFraudList';
+import FraudAlertBanner from '@/app/components/AI/FraudAlertBanner/FraudAlertBanner';
 
 interface KPI { id: string; label: string; value: string; trend: string; }
 interface UserRow { id: string; name: string; email: string; role: 'Admin' | 'Client' | 'Freelancer'; status: 'Active' | 'Suspended'; joined: string; }
@@ -63,6 +64,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
+      <FraudAlertBanner />
       <div className={common.container}>
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
           <div>
