@@ -1,4 +1,22 @@
-/* Migrated from CTA.light.css to CTA.light.module.css */
-@import './CTA.common.module.css';
+.container {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05), 0 4px 10px rgba(0,0,0,0.02);
+}
 
-/* Place all CTA.light.css content here */
+.shine {
+  background-image: radial-gradient(
+    circle at center,
+    hsla(221, 83%, 53%, 0.08),
+    transparent 40%
+  );
+  opacity: 0.8;
+}
+
+.title {
+  color: #111827;
+}
+
+.subtitle {
+  color: #4b5563;
+}

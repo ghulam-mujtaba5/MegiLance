@@ -1,43 +1,58 @@
-/* @AI-HINT: Dark theme styles for the About page. */
-
 .aboutPage {
-  background-color: var(--background-dark);
-  color: var(--text-dark-primary);
+  background-color: #0d1117;
+}
+
+.title {
+  color: #f0f6fc;
 }
 
 .subtitle {
-  color: var(--text-dark-secondary);
+  color: #8b949e;
 }
 
 .sectionTitle {
-  color: var(--text-dark-primary);
+  color: #f0f6fc;
 }
 
 .missionText {
-  color: var(--text-dark-secondary);
+  color: #c9d1d9;
 }
 
-.valueCard, .teamCard {
-  background-color: var(--surface-dark-secondary);
-  border: 1px solid var(--border-dark);
+.valueCard {
+  background-color: #161b22;
+  border-color: #30363d;
 }
 
-.valueCard:hover, .teamCard:hover {
-  border-color: var(--primary-translucent);
+.valueCard:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
 }
 
 .valueIcon {
-  color: var(--primary);
+  color: #58a6ff;
 }
 
-.valueTitle, .teamName {
-  color: var(--text-dark-primary);
+.valueTitle {
+  color: #f0f6fc;
 }
 
-.valueDescription, .teamRole {
-  color: var(--text-dark-secondary);
+.valueDescription {
+  color: #8b949e;
 }
 
 .teamAvatar {
-  border: 3px solid var(--primary-dark);
+  border-color: #161b22;
+  box-shadow: 0 0 0 2px #30363d;
+}
+
+.teamCard:hover .teamAvatar {
+  box-shadow: 0 0 0 3px #58a6ff;
+}
+
+.teamName {
+  color: #f0f6fc;
+}
+
+.teamRole {
+  color: #8b949e;
 }

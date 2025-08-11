@@ -1,13 +1,83 @@
-/* @AI-HINT: Common styles for Contact page: layout, form, animation. */
-.root { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
-.header { text-align: center; margin-bottom: 1.5rem; }
-.subtitle { max-width: 720px; margin: 0.5rem auto 0; }
-.grid { display: grid; gap: 1rem; }
-.card { border-radius: var(--radius-lg); padding: 1rem; box-shadow: var(--shadow-sm); border: 1px solid transparent; }
-.label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
-.input, .select, .textarea { width: 100%; padding: 0.6rem 0.7rem; border-radius: var(--radius-md); border: 1px solid; background: transparent; }
-.error { margin-top: 0.25rem; font-size: 0.9rem; }
-.submit { margin-top: 0.5rem; font-weight: 600; padding: 0.6rem 0.9rem; border-radius: var(--radius-md); border: none; cursor: pointer; }
+/* AI-HINT: Common, theme-agnostic styles for the Contact page. Defines layout, typography, and animations. */
 
-.fadeIn { opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; }
-.visible { opacity: 1; transform: none; }
+.page {
+  width: 100%;
+  padding: 4rem 1rem;
+  display: flex;
+  justify-content: center;
+  min-height: calc(100vh - 80px); /* Adjust based on header height */
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+}
+
+@media (min-width: 768px) {
+  .contentGrid {
+    grid-template-columns: 1fr 2fr;
+    gap: 4rem;
+  }
+}
+
+.infoPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.infoIcon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.infoText {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.formPanel {
+  padding: 2.5rem;
+  border-radius: 12px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}

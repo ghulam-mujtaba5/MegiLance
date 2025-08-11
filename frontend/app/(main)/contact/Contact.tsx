@@ -1,117 +1,179 @@
 // @AI-HINT: Premium Contact page: validated form, a11y, theme-aware styles, and animated entry.
 'use client';
 import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useTheme } from 'next-themes';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
+
+import Button from '@/app/components/Button/Button';
+import { Input } from '@/app/components/Input/Input';
+import { Select } from '@/app/components/Select/Select';
+import { Textarea } from '@/app/components/Textarea/Textarea';
+import { useToast } from '@/app/components/Toast/use-toast';
+
 import common from './Contact.common.module.css';
 import light from './Contact.light.module.css';
 import dark from './Contact.dark.module.css';
 
-function useInView<T extends HTMLElement>(opts: IntersectionObserverInit = { threshold: 0.15 }) {
-  const ref = React.useRef<T | null>(null);
-  const [visible, setVisible] = React.useState(false);
-  React.useEffect(() => {
-    if (!ref.current || typeof IntersectionObserver === 'undefined') return;
-    const ob = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setVisible(true);
-        ob.disconnect();
-      }
-    }, opts);
-    ob.observe(ref.current);
-    return () => ob.disconnect();
-  }, [opts]);
-  return { ref, visible } as const;
-}
+const contactSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  topic: z.enum(['support', 'sales', 'partnerships'], {
+    errorMap: () => ({ message: 'Please select a topic.' }),
+  }),
+  message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
+
+const contactInfo = [
+  { icon: Mail, text: 'support@megilance.com', href: 'mailto:support@megilance.com' },
+  { icon: Phone, text: '+1 (555) 123-4567', href: 'tel:+15551234567' },
+  { icon: MapPin, text: '123 Innovation Drive, Silicon Valley, CA', href: '#' },
+];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+    },
+  },
+};
 
 const Contact: React.FC = () => {
   const { theme } = useTheme();
-  const t = theme === 'dark' ? dark : light;
-  const styles = {
-    root: cn(common.root, t.root),
-    header: cn(common.header, t.header),
-    subtitle: cn(common.subtitle, t.subtitle),
-    grid: cn(common.grid, t.grid),
-    card: cn(common.card, t.card),
-    label: cn(common.label, t.label),
-    input: cn(common.input, t.input),
-    select: cn(common.select, t.select),
-    textarea: cn(common.textarea, t.textarea),
-    error: cn(common.error, t.error),
-    submit: cn(common.submit, t.submit),
-    fadeIn: cn(common.fadeIn, t.fadeIn),
-    visible: cn(common.visible, t.visible),
+  const { toast } = useToast();
+  const styles = React.useMemo(() => {
+    const themeStyles = theme === 'dark' ? dark : light;
+    return {
+      page: cn(common.page, themeStyles.page),
+      container: cn(common.container),
+      header: cn(common.header, themeStyles.header),
+      title: cn(common.title, themeStyles.title),
+      subtitle: cn(common.subtitle, themeStyles.subtitle),
+      contentGrid: cn(common.contentGrid),
+      infoPanel: cn(common.infoPanel, themeStyles.infoPanel),
+      infoItem: cn(common.infoItem, themeStyles.infoItem),
+      infoIcon: cn(common.infoIcon, themeStyles.infoIcon),
+      infoText: cn(common.infoText, themeStyles.infoText),
+      formPanel: cn(common.formPanel, themeStyles.formPanel),
+      form: cn(common.form),
+    };
+  }, [theme]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+  });
+
+  const onSubmit = async (data: ContactFormData) => {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log('Form submitted:', data);
+    toast({
+      title: 'Message Sent!',
+      description: "Thanks for reaching out. We'll get back to you shortly.",
+      variant: 'success',
+    });
+    reset();
   };
 
-  const { ref: headerRef, visible: headerVisible } = useInView<HTMLDivElement>();
-  const { ref: formRef, visible: formVisible } = useInView<HTMLDivElement>({ threshold: 0.2 });
-
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [sent, setSent] = React.useState<null | 'ok' | 'err'>(null);
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setSent(null);
-    const fd = new FormData(e.currentTarget);
-    const name = String(fd.get('name') || '').trim();
-    const email = String(fd.get('email') || '').trim();
-    const topic = String(fd.get('topic') || '').trim();
-    const message = String(fd.get('message') || '').trim();
-
-    const errs: Record<string, string> = {};
-    if (!name) errs.name = 'Please enter your name.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = 'Please enter a valid email address.';
-    if (!topic) errs.topic = 'Please select a topic.';
-    if (message.length < 10) errs.message = 'Message must be at least 10 characters.';
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
-
-    // Frontend-only stub. Hook to CRM or API in backend phase.
-    setTimeout(() => setSent('ok'), 400);
-    e.currentTarget.reset();
-  }
-
   return (
-    <section className={styles.root} aria-labelledby="contact-title">
-      <div ref={headerRef} className={cn(styles.header, styles.fadeIn, headerVisible && styles.visible)}>
-        <h1 id="contact-title">Contact Us</h1>
-        <p className={styles.subtitle}>We usually respond within one business day.</p>
-      </div>
-
-      <div ref={formRef} className={cn(styles.grid, styles.fadeIn, formVisible && styles.visible)}>
-        <form className={styles.card} aria-describedby="contact-note" noValidate onSubmit={handleSubmit}>
-          <div>
-            <label className={styles.label} htmlFor="name">Name</label>
-            <input className={styles.input} id="name" name="name" type="text" autoComplete="name" aria-invalid={!!errors.name} aria-describedby={errors.name ? 'error-name' : undefined} />
-            {errors.name && <div id="error-name" className={styles.error} role="alert">{errors.name}</div>}
-          </div>
-          <div>
-            <label className={styles.label} htmlFor="email">Email</label>
-            <input className={styles.input} id="email" name="email" type="email" autoComplete="email" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'error-email' : undefined} />
-            {errors.email && <div id="error-email" className={styles.error} role="alert">{errors.email}</div>}
-          </div>
-          <div>
-            <label className={styles.label} htmlFor="topic">Topic</label>
-            <select className={styles.select} id="topic" name="topic" defaultValue="" aria-invalid={!!errors.topic} aria-describedby={errors.topic ? 'error-topic' : undefined}>
-              <option value="" disabled>Choose a topic</option>
-              <option value="support">Support</option>
-              <option value="sales">Sales</option>
-              <option value="partnerships">Partnerships</option>
-            </select>
-            {errors.topic && <div id="error-topic" className={styles.error} role="alert">{errors.topic}</div>}
-          </div>
-          <div>
-            <label className={styles.label} htmlFor="message">Message</label>
-            <textarea className={styles.textarea} id="message" name="message" rows={5} aria-invalid={!!errors.message} aria-describedby={errors.message ? 'error-message' : undefined} />
-            {errors.message && <div id="error-message" className={styles.error} role="alert">{errors.message}</div>}
-          </div>
-          <button className={styles.submit} type="submit">Send</button>
-          <p id="contact-note" aria-live="polite">
-            {sent === 'ok' ? 'Thanks! Your message has been sent.' : sent === 'err' ? 'Something went wrong. Please try again.' : ''}
+    <div className={styles.page}>
+      <motion.div
+        className={styles.container}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.header className={styles.header} variants={itemVariants}>
+          <h1 className={styles.title}>Get in Touch</h1>
+          <p className={styles.subtitle}>
+            Have a question or a project in mind? We'd love to hear from you.
           </p>
-        </form>
-      </div>
-    </section>
+        </motion.header>
+
+        <div className={styles.contentGrid}>
+          <motion.div className={styles.infoPanel} variants={itemVariants}>
+            {contactInfo.map((item, index) => (
+              <a key={index} href={item.href} className={styles.infoItem}>
+                <item.icon className={styles.infoIcon} />
+                <span className={styles.infoText}>{item.text}</span>
+              </a>
+            ))}
+          </motion.div>
+
+          <motion.div className={styles.formPanel} variants={itemVariants}>
+            <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+              <Input
+                id="name"
+                label="Full Name"
+                placeholder="John Doe"
+                {...register('name')}
+                error={errors.name?.message}
+                disabled={isSubmitting}
+              />
+              <Input
+                id="email"
+                label="Email Address"
+                type="email"
+                placeholder="you@example.com"
+                {...register('email')}
+                error={errors.email?.message}
+                disabled={isSubmitting}
+              />
+              <Select
+                id="topic"
+                label="Topic"
+                {...register('topic')}
+                error={errors.topic?.message}
+                disabled={isSubmitting}
+                defaultValue=""
+              >
+                <option value="" disabled>Select a topic...</option>
+                <option value="support">General Support</option>
+                <option value="sales">Sales Inquiry</option>
+                <option value="partnerships">Partnerships</option>
+              </Select>
+              <Textarea
+                id="message"
+                label="Your Message"
+                placeholder="Tell us about your project or question..."
+                {...register('message')}
+                error={errors.message?.message}
+                disabled={isSubmitting}
+                rows={5}
+              />
+              <Button type="submit" isLoading={isSubmitting} iconBefore={<Send size={18} />}>
+                {isSubmitting ? 'Sending...' : 'Send Message'}
+              </Button>
+            </form>
+          </motion.div>
+        </div>
+      </motion.div>
+    </div>
   );
 };
 

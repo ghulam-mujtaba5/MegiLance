@@ -1,4 +1,11 @@
-/* Migrated from Testimonials.dark.css to Testimonials.dark.module.css */
-@import './Testimonials.common.module.css';
+.testimonials {
+  background-color: #0d1117;
+}
 
-/* Place all Testimonials.dark.css content here */
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}

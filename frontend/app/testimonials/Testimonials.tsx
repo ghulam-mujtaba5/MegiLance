@@ -3,9 +3,12 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
+import { Quote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { Button } from '@/app/components/Button/Button';
 import common from './Testimonials.common.module.css';
 import light from './Testimonials.light.module.css';
 import dark from './Testimonials.dark.module.css';
@@ -65,8 +68,8 @@ const testimonials = [
 ];
 
 const Testimonials: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [selected, setSelected] = useState<string>(ALL);
   const filtered = useMemo(
@@ -79,20 +82,20 @@ const Testimonials: React.FC = () => {
   const gridRef = useRef<HTMLDivElement | null>(null);
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const controlsVisible = useIntersectionObserver(controlsRef, { threshold: 0.1 });
-  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
-  const ctaVisible = useIntersectionObserver(ctaRef, { threshold: 0.1 });
+  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  const controlsVisible = useIntersectionObserver(controlsRef, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' });
+  const ctaVisible = useIntersectionObserver(ctaRef, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' });
 
   return (
-    <main id="main-content" role="main" aria-labelledby="testimonials-title" className={cn(common.page, themed.themeWrapper)}>
+    <main id="main-content" role="main" aria-labelledby="testimonials-title" className={cn(common.page, themed.page)}>
       <div className={common.container}>
         <header
-          ref={headerRef as any}
-          className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}
+          ref={headerRef}
+          className={cn(common.header, themed.header, headerVisible ? common.isVisible : common.isNotVisible)}
         >
-          <h1 id="testimonials-title" className={common.title}>What Our Users Say</h1>
-          <p className={common.subtitle}>Real stories from clients, freelancers, and enterprise partners.</p>
+          <h1 id="testimonials-title" className={cn(common.title, themed.title)}>What Our Users Say</h1>
+          <p className={cn(common.subtitle, themed.subtitle)}>Real stories from clients, freelancers, and enterprise partners.</p>
         </header>
 
         <div
@@ -105,8 +108,8 @@ const Testimonials: React.FC = () => {
             <button
               key={c}
               type="button"
-              className={common.chip}
-              aria-pressed={(selected === c) || undefined}
+              className={cn(common.chip, themed.chip)}
+              aria-pressed={selected === c || undefined}
               onClick={() => setSelected(c)}
             >
               {c}
@@ -119,23 +122,24 @@ const Testimonials: React.FC = () => {
             ref={gridRef}
             className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)}
           >
-            {filtered.map((t) => (
-              <figure key={t.name} className={common.card}>
-                <blockquote className={common.quote}>
-                  “{t.quote}”
-                </blockquote>
-                <figcaption className={common.person}>
+            {filtered.map((t, index) => (
+              <figure key={t.name} className={cn(common.card, themed.card)} style={{ transitionDelay: `${index * 100}ms` }}>
+                <div className={common.quoteWrapper}>
+                  <Quote className={cn(common.quoteIcon, themed.quoteIcon)} aria-hidden="true" />
+                  <blockquote className={cn(common.quote, themed.quote)}>“{t.quote}”</blockquote>
+                </div>
+                <figcaption className={cn(common.person, themed.person)}>
                   <Image
                     className={common.avatar}
                     src={t.avatar}
                     alt={`${t.name} avatar`}
-                    width={40}
-                    height={40}
+                    width={48}
+                    height={48}
                     loading="lazy"
                   />
-                  <div>
-                    <div className={common.name}>{t.name}</div>
-                    <div className={common.role}>{t.role}</div>
+                  <div className={common.personDetails}>
+                    <div className={cn(common.name, themed.name)}>{t.name}</div>
+                    <div className={cn(common.role, themed.role)}>{t.role}</div>
                   </div>
                 </figcaption>
               </figure>
@@ -143,10 +147,17 @@ const Testimonials: React.FC = () => {
           </div>
         </section>
 
-        <section className={common.section} aria-label="Call to action">
-          <div ref={ctaRef} className={cn(common.cta, ctaVisible ? common.isVisible : common.isNotVisible)}>
-            <a href="/clients" className={common.button} aria-label="See client success stories">See Client Success</a>
-            <a href="/jobs" className={cn(common.button, common.buttonSecondary)} aria-label="Browse jobs and projects">Start Building</a>
+        <section ref={ctaRef} className={cn(common.ctaSection, ctaVisible ? common.isVisible : common.isNotVisible)} aria-label="Call to action">
+          <div className={cn(common.cta, themed.cta)}>
+            <h2 className={cn(common.ctaTitle, themed.ctaTitle)}>Ready to build your masterpiece?</h2>
+            <div className={common.buttonGroup}>
+              <Link href="/signup/client" passHref legacyBehavior>
+                <Button as="a" size="lg" variant="primary">Join as a Client</Button>
+              </Link>
+              <Link href="/signup/freelancer" passHref legacyBehavior>
+                <Button as="a" size="lg" variant="secondary">Apply as Talent</Button>
+              </Link>
+            </div>
           </div>
         </section>
       </div>

@@ -1,13 +1,15 @@
-// @AI-HINT: This is the final Call-to-Action section, designed to be visually impactful with animations to drive user conversion.
+// @AI-HINT: A final, high-impact Call-to-Action section designed with premium styling and animations to maximize user conversion.
+
 'use client';
 
 import React, { useRef } from 'react';
 import Link from 'next/link';
-import Button from '@/app/components/Button/Button';
-import { FaRocket } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
+import { Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import Button from '@/app/components/Button/Button';
+
 import commonStyles from './CTA.common.module.css';
 import lightStyles from './CTA.light.module.css';
 import darkStyles from './CTA.dark.module.css';
@@ -19,20 +21,23 @@ const CTA: React.FC = () => {
   const isVisible = useIntersectionObserver(sectionRef, { threshold: 0.3 });
 
   return (
-    <section 
-      ref={sectionRef} 
+    <section
+      ref={sectionRef}
       className={cn(
-        commonStyles.homeCtaSection,
-        themeStyles.homeCtaSection,
+        commonStyles.ctaSection,
+        themeStyles.ctaSection,
         isVisible ? commonStyles.isVisible : commonStyles.isNotVisible
       )}
     >
-      <div className={commonStyles.homeCtaContent}>
-        <h2 className={cn(commonStyles.homeCtaTitle, themeStyles.homeCtaTitle)}>Ready to Join the Future of Freelancing?</h2>
-        <p className={cn(commonStyles.homeCtaSubtitle, themeStyles.homeCtaSubtitle)}>Sign up today and get access to AI-powered tools, global projects, and secure crypto payments.</p>
+      <div className={cn(commonStyles.container)}>
+        <h2 className={cn(commonStyles.title, themeStyles.title)}>Ready to Build the Future?</h2>
+        <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+          Join MegiLance today and unlock AI-powered tools, access global projects, and get paid instantly with crypto.
+        </p>
         <Link href="/signup" passHref>
-          <Button as="a" variant="primary" size="large">
-            <FaRocket aria-hidden="true" /> Get Started for Free
+          <Button as="a" variant="primary" size="large" className={commonStyles.ctaButton}>
+            Get Started Free
+            <Rocket className={commonStyles.buttonIcon} />
           </Button>
         </Link>
       </div>

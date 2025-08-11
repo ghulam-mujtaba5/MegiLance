@@ -1,60 +1,75 @@
-// @AI-HINT: AppChrome conditionally renders global chrome (Header/Footer, toggles, PWA banners) except on auth routes for a focused experience.
+// @AI-HINT: AppChrome is the top-level layout component. It intelligently renders the correct 'chrome' (header/footer) based on the route, distinguishing between public marketing pages and internal application portals.
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { usePathname } from 'next/navigation';
-import Header from '@/app/components/Header/Header';
-import Footer from '@/app/components/Footer/Footer';
+
+import PublicHeader from '@/app/components/Layout/PublicHeader/PublicHeader';
+import PublicFooter from '@/app/components/Layout/PublicFooter/PublicFooter';
 import ThemeToggleButton from '@/app/components/ThemeToggleButton';
 import InstallAppBanner from '@/app/components/PWA/InstallAppBanner/InstallAppBanner';
 import UpdateNotification from '@/app/components/PWA/UpdateNotification/UpdateNotification';
 import PageTransition from '@/app/components/Transitions/PageTransition';
 
-function isChromeLessRoute(pathname: string | null | undefined) {
-  if (!pathname) return false; // default to showing chrome to avoid SSR/CSR layout shift
-  const clean = pathname.replace(/\/$/, '').toLowerCase(); // strip trailing slash + normalize case
-  const chromeLessRoots = [
-    // Auth
-    '/login', '/signup', '/forgot-password', '/reset-password',
-    // Portal (client/freelancer/admin) app shell screens that have their own Navbar/Sidebar
-    '/dashboard', '/messages', '/notifications', '/search', '/help', '/audit-logs',
-    '/client', '/freelancer', '/admin'
-  ];
-  return chromeLessRoots.some((r) => clean === r || clean.startsWith(r + '/'));
-}
+/**
+ * Determines if a given route should have minimal chrome.
+ * This applies to authentication pages and the root of all authenticated portals,
+ * which manage their own internal layouts, sidebars, and headers.
+ * @param pathname The current URL pathname.
+ * @returns {boolean} True if the route should be chrome-less.
+ */
+function isPortalOrAuthRoute(pathname: string | null | undefined): boolean {
+  if (!pathname) return false; 
 
-// Using per-route-group/layout files for marketing pages; detect and skip chrome.
-// Marketing pages are handled by PublicLayout for container/spacing only.
+  const normalizedPath = pathname.toLowerCase().replace(/\/$/, '');
+
+  const portalOrAuthRoots = [
+    // Standalone auth pages
+    '/login',
+    '/signup',
+    '/forgot-password',
+    '/reset-password',
+    // Root of authenticated portals
+    '/admin',
+    '/client',
+    '/freelancer',
+  ];
+
+  return portalOrAuthRoots.some(root => normalizedPath === root || normalizedPath.startsWith(`${root}/`));
+}
 
 export default function AppChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideChrome = isChromeLessRoute(pathname);
+  const isMinimalChrome = isPortalOrAuthRoute(pathname);
 
-  // For chrome-less routes (auth/portal shells), render a minimal shell.
-  if (hideChrome) {
+  // For portal or auth routes, we render a minimal shell.
+  // The responsibility for layout (like sidebars and headers) is delegated to the specific portal's layout file.
+  if (isMinimalChrome) {
     return (
-      <main id="main-content" role="main" className="min-h-screen">
-        <PageTransition variant="fade">
-          {children}
-        </PageTransition>
-      </main>
+      <div className="min-h-screen flex flex-col">
+        <main id="main-content" role="main" className="flex-1">
+          <PageTransition variant="fade">
+            {children}
+          </PageTransition>
+        </main>
+      </div>
     );
   }
 
-  // Always render header/footer unless the route is chrome-less (auth/portal shells).
-
+  // For all other pages, we assume they are public-facing marketing pages
+  // and render the full public header and footer.
   return (
-    <>
-      <Header />
+    <div className="min-h-screen flex flex-col">
+      <PublicHeader />
       <main id="main-content" role="main" className="flex-grow">
         <PageTransition variant="fade">
           {children}
         </PageTransition>
       </main>
-      <Footer />
+      <PublicFooter />
       <ThemeToggleButton />
       <InstallAppBanner />
       <UpdateNotification />
-    </>
+    </div>
   );
 }

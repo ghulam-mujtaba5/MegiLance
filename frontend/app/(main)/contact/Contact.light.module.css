@@ -1,9 +1,36 @@
-/* @AI-HINT: Light theme styles for Contact page. */
-.root { color: #111827; }
-.subtitle { color: #4b5563; }
-.card { background: #ffffff; border-color: #e5e7eb; }
-.input, .select, .textarea { color: #111827; border-color: #e5e7eb; }
-.input:focus, .select:focus, .textarea:focus { outline: none; border-color: #4573df; box-shadow: 0 0 0 3px rgba(69,115,223,0.15); }
-.error { color: #e81123; }
-.submit { background: #4573df; color: white; }
-.submit:hover { background: #3b66c8; }
+/* AI-HINT: Light theme styles for the Contact page. */
+
+.page {
+  background-color: var(--color-gray-50);
+}
+
+.title {
+  color: var(--color-gray-900);
+}
+
+.subtitle {
+  color: var(--color-gray-600);
+}
+
+.infoPanel {
+  background-color: var(--color-gray-100);
+  border: 1px solid var(--color-gray-200);
+}
+
+.infoItem {
+  color: var(--color-gray-700);
+}
+
+.infoItem:hover {
+  color: var(--color-primary);
+}
+
+.infoIcon {
+  color: var(--color-primary);
+}
+
+.formPanel {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow-lg);
+}

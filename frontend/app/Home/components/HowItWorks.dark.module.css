@@ -1,4 +1,21 @@
-/* Migrated from HowItWorks.dark.css to HowItWorks.dark.module.css */
-@import './HowItWorks.common.module.css';
+/* @AI-HINT: Dark theme styles for the How It Works section. Defines the color palette for a premium, high-contrast, and brand-aligned dark mode appearance. */
 
-/* Place all HowItWorks.dark.css content here */
+.howItWorks {
+  background-color: #020617; /* cool-gray-950 */
+}
+
+.tagline {
+  color: #87a8f0; /* Lighter MegiLance Blue */
+}
+
+.title {
+  color: #f8fafc; /* cool-gray-50 */
+}
+
+.subtitle {
+  color: #94a3b8; /* cool-gray-400 */
+}
+
+.timeline::after {
+  background: #334155; /* cool-gray-700 */
+}

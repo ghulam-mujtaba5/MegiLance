@@ -1,25 +1,34 @@
-/* @AI-HINT: Light theme styles for Footer component following MegiLance brand guidelines. Professional light styling with proper contrast and accessibility. */
+/* @AI-HINT: Light theme styles for the main site Footer. Defines the color palette for a clean, professional, and brand-aligned light mode appearance. */
 
-.themeWrapper {
-  --footer-bg: #ffffff;
-  --footer-border-color: #e5e7eb;
-  --footer-text-color: #111827;
-  --footer-text-muted: #6b7280;
-  --footer-heading-color: #111827;
-  --footer-link-color: #4b5563;
-  --footer-link-color-hover: #2563eb;
-  --footer-icon-color: #6b7280;
-  --footer-focus-color: #2563eb;
-  
-  /* Social media links */
-  --footer-social-bg: #f9fafb;
-  --footer-social-border: #e5e7eb;
-  --footer-social-color: #6b7280;
-  --footer-social-bg-hover: #2563eb;
-  --footer-social-border-hover: #2563eb;
-  --footer-social-color-hover: #ffffff;
+.footer {
+  background-color: var(--color-background-primary, #ffffff);
+  border-top: 1px solid var(--color-border-subtle, #e5e7eb);
 }
 
-.socialLink:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+.tagline {
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.linksTitle {
+  color: var(--color-text-primary, #111827);
+}
+
+.linkItem {
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.linkItem:hover {
+  color: var(--color-brand-primary, #4573df);
+}
+
+.bottomBar {
+  border-top: 1px solid var(--color-border-subtle, #e5e7eb);
+}
+
+.copyright {
+  color: var(--color-text-tertiary, #6b7280);
+}
+
+.socialLink {
+  color: var(--color-text-secondary, #4b5563);
 }

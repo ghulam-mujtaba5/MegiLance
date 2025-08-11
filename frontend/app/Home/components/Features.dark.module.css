@@ -1,25 +1,17 @@
-.Home-features {
-  background-color: #111827;
+/* @AI-HINT: Dark theme styles for the Features section. Defines colors for a sleek, high-contrast, and modern look. */
+
+.featuresSection {
+  background-color: #0d1117;
 }
 
-.Home-feature-card {
-  background-color: #1f2937;
-  border: 1px solid #374151;
+.tagline {
+  color: var(--color-primary);
 }
 
-.Home-feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
-}
-
-.Home-feature-icon {
-  color: var(--primary-color);
-}
-
-.Home-feature-title {
+.title {
   color: #f9fafb;
 }
 
-.Home-feature-description {
-  color: #d1d5db;
+.subtitle {
+  color: #9ca3af;
 }

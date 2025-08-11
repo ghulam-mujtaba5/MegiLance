@@ -1,17 +1,111 @@
 /* @AI-HINT: Common styles for Pricing: layout, spacing, animation. */
-.root { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
-.header { text-align: center; margin-bottom: 2rem; }
-.subtitle { max-width: 680px; margin: 0.5rem auto 0; }
-.badge { display: inline-block; font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: var(--radius-md); }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-.card { border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: var(--shadow-sm); transition: transform .2s ease, box-shadow .2s ease; }
-.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-.price { font-size: 2rem; font-weight: 700; display: flex; align-items: baseline; gap: .25rem; margin: .5rem 0 1rem; }
-.list { display: grid; gap: .5rem; margin: 0 0 1rem; padding-left: 1rem; }
-.cta { display: inline-block; text-decoration: none; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: var(--radius-md); }
-.note { margin-top: 1rem; text-align: center; font-size: 0.9rem; }
+/* AI-HINT: Common styles for the main pricing page. Defines layout, typography, and structure for the header, billing toggle, and grid. */
 
-.fadeIn { opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; }
-.visible { opacity: 1; transform: none; }
+.root {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-@media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-family: var(--font-poppins);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  max-width: 550px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 64px;
+}
+
+.toggleLabel {
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggleSwitch {
+  width: 52px;
+  height: 28px;
+  border-radius: 999px;
+  padding: 4px;
+  display: flex;
+  cursor: pointer;
+  border: none;
+  box-sizing: border-box;
+}
+
+.toggleHandle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.discountBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  align-items: stretch; /* Ensure cards in a row stretch to the same height */
+}
+
+.note {
+  margin-top: 48px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+    max-width: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .root {
+    padding: 60px 16px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .toggleContainer {
+    margin-bottom: 48px;
+  }
+}

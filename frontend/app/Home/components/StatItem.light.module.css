@@ -1,0 +1,11 @@
+/* @AI-HINT: Light theme styles for the StatItem component. */
+
+.statItem {}
+
+.statValue {
+  color: var(--text-primary-light);
+}
+
+.statLabel {
+  color: var(--text-secondary-light);
+}

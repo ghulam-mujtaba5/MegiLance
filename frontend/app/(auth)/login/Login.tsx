@@ -87,6 +87,7 @@ const Login: React.FC = () => {
       roleButtonSelected: merge('roleButtonSelected'),
       roleIcon: merge('roleIcon'),
       socialAuth: merge('socialAuth'),
+      previewDashboards: merge('previewDashboards'),
       divider: merge('divider'),
       dividerText: merge('dividerText'),
       loginForm: merge('loginForm'),
@@ -190,16 +191,16 @@ const Login: React.FC = () => {
           </Tabs>
 
           <div className={styles.socialAuth}>
-            <Button variant="outline" fullWidth onClick={() => handleSocialLogin('google')} disabled={loading}>
+            <Button variant="secondary" onClick={() => handleSocialLogin('google')} disabled={loading}>
               <FaGoogle className="mr-2" /> Continue with Google
             </Button>
-            <Button variant="outline" fullWidth onClick={() => handleSocialLogin('github')} disabled={loading}>
+            <Button variant="secondary" onClick={() => handleSocialLogin('github')} disabled={loading}>
               <FaGithub className="mr-2" /> Continue with GitHub
             </Button>
           </div>
 
           {isPreviewMode() && (
-            <div className="mb-4 grid grid-cols-3 gap-2">
+            <div className={styles.previewDashboards}>
               <Button variant="secondary" onClick={() => router.push(roleConfig.freelancer.redirectPath)}>Freelancer Dashboard</Button>
               <Button variant="secondary" onClick={() => router.push(roleConfig.client.redirectPath)}>Client Dashboard</Button>
               <Button variant="secondary" onClick={() => router.push(roleConfig.admin.redirectPath)}>Admin Dashboard</Button>

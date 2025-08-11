@@ -22,8 +22,7 @@ const PublicLayout: React.FC<Props> = ({ children }) => {
 
   return (
     <div className={styles.root}>
-      {/* @AI-HINT: Accessibility - Align global skip link target across the app. */}
-      <a href="#main-content" className={styles.skipLink}>Skip to content</a>
+
       {/* @AI-HINT: PublicLayout - Marketing container only; AppChrome owns the sole <main id="main-content">. */}
       <div className={styles.main} role="presentation">
         {/* @AI-HINT: Layout - Constrain content to a readable width for improved rhythm. */}

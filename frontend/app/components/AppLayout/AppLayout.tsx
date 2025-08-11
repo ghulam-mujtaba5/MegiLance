@@ -3,9 +3,9 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
-import Navbar from '../Navbar/Navbar';
+
 import ErrorBoundary from '@/app/components/ErrorBoundary/ErrorBoundary';
-import SkipLink from '@/app/components/SkipLink/SkipLink';
+
 import { useTheme } from 'next-themes';
 import { usePathname } from 'next/navigation';
 import { User as UserIcon, Settings, LogOut } from 'lucide-react';
@@ -74,22 +74,6 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [area]);
 
-  // Build top navigation items from centralized config per area
-  const topNavItems = useMemo(() => {
-    const toNavbarItems = (items: { label: string; href: string }[]) =>
-      items.map(({ label, href }) => ({ label, href }));
-    switch (area) {
-      case 'client':
-        return toNavbarItems(clientNavItems.slice(0, 5));
-      case 'freelancer':
-        return toNavbarItems(freelancerNavItems.slice(0, 5));
-      case 'admin':
-        return toNavbarItems(adminNavItems.slice(0, 5));
-      default:
-        return toNavbarItems(dashboardNavItems);
-    }
-  }, [area]);
-
   // Remember the current portal area for cross-route redirects from public pages
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -113,8 +97,8 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
       <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={area === 'general' ? undefined : area} />
       <div className={cn(commonStyles.mainContent)}>
-        <SkipLink />
-        <Navbar navItems={topNavItems} profileMenuItems={profileMenuItems} user={user} />
+
+
         <ErrorBoundary>
           <main id="main-content" className={cn(commonStyles.pageContent, themeStyles.pageContent)}>
             {children}

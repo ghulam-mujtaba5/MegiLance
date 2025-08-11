@@ -1,0 +1,42 @@
+/* AI-HINT: Dark theme styles for the PricingCard component. Defines colors for the card background, border, text, and icons in dark mode. */
+
+
+
+.card {
+  background-color: var(--color-gray-850);
+  border-color: var(--color-gray-700);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-gray-600);
+}
+
+.popularBadge {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary-lighter);
+}
+
+.card.popular {
+  border-color: var(--color-primary);
+  background-color: var(--color-gray-800);
+  box-shadow: 0 0 40px rgba(69, 115, 223, 0.2);
+}
+
+.card.popular:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 50px rgba(69, 115, 223, 0.3);
+}
+
+.cardTier { color: var(--color-gray-100); }
+.cardDescription { color: var(--color-gray-400); }
+.priceAmount { color: var(--color-gray-100); }
+.pricePeriod { color: var(--color-gray-400); }
+
+.features {
+  border-color: var(--color-gray-700);
+}
+
+.featureItem { color: var(--color-gray-300); }
+.featureIcon { color: var(--color-primary-lighter); }

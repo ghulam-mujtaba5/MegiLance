@@ -1,0 +1,105 @@
+/* @AI-HINT: Common styles for the PublicFooter. Defines a modern, responsive grid layout, typography, and spacing for a premium, investor-grade design. */
+
+.footer {
+  width: 100%;
+}
+
+.container {
+  max-width: 80rem; /* 1280px */
+  margin: 0 auto;
+  padding: 5rem 1.5rem 2rem;
+}
+
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+}
+
+.brandColumn {
+  max-width: 280px;
+}
+
+.tagline {
+  margin-top: 1rem;
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.6;
+}
+
+.linksGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem;
+}
+
+.linksTitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+
+.linksList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem; /* 14px */
+}
+
+.linkItem {
+  font-size: 0.9375rem; /* 15px */
+  transition: color 0.2s ease-in-out;
+}
+
+.bottomBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid;
+}
+
+.copyright {
+  font-size: 0.875rem; /* 14px */
+  text-align: center;
+}
+
+.socialLinks {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.socialLink:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (min-width: 640px) {
+  .linksGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .bottomBar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mainContent {
+    grid-template-columns: 0.75fr 1.25fr;
+    gap: 5rem;
+  }
+}

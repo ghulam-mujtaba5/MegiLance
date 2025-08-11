@@ -1,0 +1,50 @@
+.statCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* 20px */
+  padding: 1.5rem; /* 24px */
+  border-radius: 1rem; /* 16px */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.iconWrapper {
+  width: 3.5rem; /* 56px */
+  height: 3.5rem; /* 56px */
+  border-radius: 0.75rem; /* 12px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon {
+  width: 1.75rem; /* 28px */
+  height: 1.75rem; /* 28px */
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* 8px */
+}
+
+.number {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
+}
+
+.label {
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.description {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.6;
+  opacity: 0.8;
+}

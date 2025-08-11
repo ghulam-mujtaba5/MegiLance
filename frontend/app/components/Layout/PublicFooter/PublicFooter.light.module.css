@@ -1,0 +1,37 @@
+/* @AI-HINT: Light theme styles for the PublicFooter. Defines a premium color palette for a clean, professional, and brand-aligned light mode appearance. */
+
+.footer {
+  background-color: var(--color-surface-alt, #f9fafb);
+}
+
+.tagline {
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.linksTitle {
+  color: var(--color-text-primary, #111827);
+}
+
+.linkItem {
+  color: var(--color-text-secondary, #4b5563);
+}
+
+.linkItem:hover {
+  color: var(--color-brand-primary, #4573df);
+}
+
+.bottomBar {
+  border-top-color: var(--color-border-subtle, #e5e7eb);
+}
+
+.copyright {
+  color: var(--color-text-tertiary, #6b7280);
+}
+
+.socialLink {
+  color: var(--color-text-tertiary, #6b7280);
+}
+
+.socialLink:hover {
+  color: var(--color-brand-primary, #4573df);
+}

@@ -1,0 +1,51 @@
+/* @AI-HINT: Dark theme styles for the AIShowcaseCard, defining colors for a sleek, modern look. */
+
+.card {
+  background: #111827;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+}
+
+.card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -4px rgba(0, 0, 0, 0.25);
+}
+
+.cardGlow {
+  background: radial-gradient(circle at 50% 0%, rgba(69, 115, 223, 0.15), transparent 70%);
+}
+
+.cardBorder {
+  border: 1px solid #374151;
+}
+
+.iconWrapper {
+  background-color: #1f2937;
+  color: #9ca3af;
+  border: 1px solid #374151;
+}
+
+.card:hover .iconWrapper {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.title {
+  color: #f9fafb;
+}
+
+.description {
+  color: #9ca3af;
+}
+
+.stats {
+  background-color: #1f2937;
+  color: #a5b4fc;
+}
+
+.learnMore {
+  background-color: #1f2937;
+  color: #9ca3af;
+}
+
+.learnMore:hover {
+  color: var(--color-brand-accent-light, #fbbf24);
+}

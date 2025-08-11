@@ -1,4 +1,94 @@
-/* Migrated from BlockchainShowcase.dark.css to BlockchainShowcase.dark.module.css */
-@import './BlockchainShowcase.common.module.css';
+.blockchainShowcase {
+  background-color: #0d1117;
+}
 
-/* Place all BlockchainShowcase.dark.css content here */
+.badge {
+  background-color: #161b22;
+  border-color: #30363d;
+  color: #8b949e;
+}
+
+.title {
+  color: #f0f6fc;
+}
+
+.titleHighlight {
+  background-image: linear-gradient(120deg, #58a6ff, #f1e05a);
+}
+
+.subtitle {
+  color: #8b949e;
+}
+
+.block {
+  background-color: #161b22;
+  border-color: #30363d;
+}
+
+.block:hover {
+  border-color: #8b949e;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.blockHeader {
+  color: #8b949e;
+}
+
+.blockContent {
+  color: #c9d1d9;
+}
+
+.connector {
+  background-color: #30363d;
+}
+
+.feature {
+  background-color: #161b22;
+  border-color: #30363d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feature:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-color: #8b949e;
+  background-color: #1f2937;
+}
+
+.featureIcon {
+  color: #58a6ff;
+}
+
+.featureTitle {
+  color: #f0f6fc;
+}
+
+.featureDescription {
+  color: #c9d1d9;
+}
+
+.featureBenefit {
+  background-color: #0e7490; /* cyan-700 */
+  color: #a5f3fc; /* cyan-200 */
+}
+
+.statNumber {
+  color: #58a6ff;
+}
+
+.statLabel {
+  color: #8b949e;
+}
+
+.chainsTitle {
+  color: #8b949e;
+}
+
+.chain {
+  color: #8b949e;
+  opacity: 0.7;
+}
+
+.chain:hover {
+  opacity: 1;
+  color: #f0f6fc;
+}

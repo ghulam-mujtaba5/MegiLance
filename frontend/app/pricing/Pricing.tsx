@@ -1,41 +1,37 @@
-// @AI-HINT: Pricing page component. Theme-aware (light/dark) via next-themes, modular CSS modules, animated via Intersection Observer, and fully accessible (ARIA-compliant FAQ and controls).
+/* AI-HINT: This is the main component for the public-facing pricing page. It orchestrates the layout, data, and state for the entire page, integrating reusable components like BillingToggle, PricingCard, and FaqItem to create a modern, theme-aware, and interactive user experience. */
+
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import Button from '@/app/components/Button/Button';
-import { FaCheckCircle, FaChevronDown, FaUser, FaBuilding, FaRocket } from 'react-icons/fa';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 
-import commonStyles from './Pricing.common.module.css';
+// Modular Components
+import { BillingToggle } from '@/components/pricing/BillingToggle/BillingToggle';
+import { PricingCard, PricingCardProps } from '@/components/pricing/PricingCard/PricingCard';
+import { FaqItem } from '@/components/pricing/FaqItem/FaqItem';
+
+// Page-specific Styles
+import styles from './Pricing.common.module.css';
 import lightStyles from './Pricing.light.module.css';
 import darkStyles from './Pricing.dark.module.css';
 
-
-
-
-// --- MOCK DATA --- //
-const pricingTiers = [
+// --- Data Definitions ---
+const pricingData: Omit<PricingCardProps, 'price' | 'pricePeriod' | 'ctaText' | 'ctaLink'>[] = [
   {
-    name: 'Freelancer',
-    icon: <FaUser />,
+    tier: 'Freelancer',
     description: 'For talented individuals ready to take on their next project.',
-    price: { monthly: 0, yearly: 0 },
     features: [
       'Create a professional profile',
       'Browse and apply for unlimited projects',
       'Receive secure crypto payments (USDC)',
       'Benefit from AI-powered profile ranking',
     ],
-    button: { text: 'Get Started for Free', href: '/signup', variant: 'secondary' as const },
   },
   {
-    name: 'Client',
-    icon: <FaBuilding />,
+    tier: 'Client',
     description: 'For businesses looking to hire top-tier, AI-vetted talent.',
-    price: { monthly: 49, yearly: 499 },
     features: [
       'Post unlimited job opportunities',
       'Access our pool of AI-vetted freelancers',
@@ -43,14 +39,11 @@ const pricingTiers = [
       'Utilize AI-analyzed performance reviews',
       'Dedicated account manager',
     ],
-    button: { text: 'Start Hiring', href: '/signup?plan=client', variant: 'primary' as const },
     isPopular: true,
   },
   {
-    name: 'Enterprise',
-    icon: <FaRocket />,
+    tier: 'Enterprise',
     description: 'Custom solutions for large-scale teams and agencies.',
-    price: 'Custom',
     features: [
       'All features from the Client plan',
       'Advanced team management tools',
@@ -58,22 +51,21 @@ const pricingTiers = [
       'API access & third-party integrations',
       'Priority, 24/7 dedicated support',
     ],
-    button: { text: 'Contact Sales', href: '/contact', variant: 'outline' as const },
   },
 ];
 
-const faqItems = [
+const faqData = [
   {
     question: 'Can I try MegiLance before committing?',
     answer: 'Absolutely! Our Freelancer plan is completely free and allows you to explore the platform, create a profile, and browse projects. For clients, we offer a 14-day money-back guarantee on your first month.'
   },
   {
     question: 'What are the benefits of the yearly plan?',
-    answer: 'By choosing the yearly plan, you get a significant discount, equivalent to two months free compared to the monthly subscription. It&apos;s the best value for clients planning to hire consistently.'
+    answer: 'By choosing the yearly plan, you get a significant discount, equivalent to two months free compared to the monthly subscription. It is the best value for clients planning to hire consistently.'
   },
   {
     question: 'How does the AI vetting process work?',
-    answer: 'Our proprietary AI analyzes a freelancer&apos;s portfolio, skills, past project success, and client feedback to provide a comprehensive vetting score. This helps you hire with confidence, knowing you&apos;re getting top talent.'
+    answer: 'Our proprietary AI analyzes a freelancer\'s portfolio, skills, past project success, and client feedback to provide a comprehensive vetting score. This helps you hire with confidence, knowing you are getting top talent.'
   },
   {
     question: 'What kind of payment methods are supported?',
@@ -81,216 +73,88 @@ const faqItems = [
   }
 ];
 
-// --- FAQ Item Sub-component --- //
-const FaqItem = ({
-  item,
-  isOpen,
-  onClick,
-  index,
-  themeStyles,
-}: {
-  item: { question: string; answer: string };
-  isOpen: boolean;
-  onClick: () => void;
-  index: number;
-  themeStyles: { [k: string]: string };
-}) => {
-  const contentId = `faq-panel-${index}`;
-  const buttonId = `faq-button-${index}`;
-  return (
-    <div className={cn(commonStyles.faqItem, themeStyles.faqItem)}>
-      <button
-        id={buttonId}
-        className={cn(commonStyles.faqQuestion, themeStyles.faqQuestion)}
-        onClick={onClick}
-        aria-expanded={isOpen}
-        aria-controls={contentId}
-      >
-        <span>{item.question}</span>
-        <FaChevronDown
-          aria-hidden="true"
-          className={cn(
-            commonStyles.faqChevron,
-            themeStyles.faqChevron,
-            { [commonStyles.faqChevronOpen]: isOpen }
-          )}
-        />
-      </button>
-      <div
-        id={contentId}
-        role="region"
-        aria-labelledby={buttonId}
-        className={cn(
-          commonStyles.faqAnswer,
-          themeStyles.faqAnswer,
-          { [commonStyles.faqAnswerOpen]: isOpen }
-        )}
-      >
-        <p className={themeStyles.faqAnswerP}>{item.answer}</p>
-      </div>
-    </div>
-  );
-};
-
-// Animated section wrapper
-const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
+// --- Animated Section Wrapper ---
+const AnimatedSection = ({ children }: { children: React.ReactNode }) => {
   const ref = React.useRef<HTMLDivElement>(null);
   const isVisible = useIntersectionObserver(ref, { threshold: 0.1 });
+
   return (
-    <div
-      ref={ref}
-      className={cn(
-        className,
-        commonStyles.isNotVisible,
-        { [commonStyles.isVisible]: isVisible }
-      )}
-    >
+    <div ref={ref} className={`${styles.isNotVisible} ${isVisible ? styles.isVisible : ''}`}>
       {children}
     </div>
   );
 };
 
-// --- Main Pricing Component --- //
-const Pricing: React.FC = () => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+// --- Main Pricing Page Component ---
+const PricingPage = () => {
   const { theme } = useTheme();
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
-  const handleFaqToggle = (index: number) => {
-    setOpenFaq(openFaq === index ? null : index);
+  const getTierProps = (tier: string): Pick<PricingCardProps, 'price' | 'pricePeriod' | 'ctaText' | 'ctaLink'> => {
+    const isMonthly = billingCycle === 'monthly';
+    switch (tier) {
+      case 'Freelancer':
+        return { price: '$0', pricePeriod: '', ctaText: 'Get Started for Free', ctaLink: '/signup' };
+      case 'Client':
+        return { price: isMonthly ? '$49' : '$499', pricePeriod: isMonthly ? '/mo' : '/yr', ctaText: 'Start Hiring', ctaLink: '/signup?plan=client' };
+      case 'Enterprise':
+        return { price: 'Custom', pricePeriod: '', ctaText: 'Contact Sales', ctaLink: '/contact' };
+      default:
+        return { price: '', pricePeriod: '', ctaText: '', ctaLink: '#' }; // Should not happen
+    }
   };
 
   return (
-    <main id="main-content" role="main" aria-labelledby="pricing-title" className={cn(commonStyles.pricingPage, themeStyles.root)}>
-      <div className={commonStyles.container}>
-        <AnimatedSection className={commonStyles.header}>
-          <header className={commonStyles.header}>
-            <span className={cn(commonStyles.headerEyebrow, themeStyles.headerEyebrow)}>Pricing Plans</span>
-            <h1 id="pricing-title" className={cn(themeStyles.headerTitle)}>Find the Perfect Plan for Your Needs</h1>
-            <p className={cn(commonStyles.headerDescription, themeStyles.headerDescription)}>
-              From individual freelancers to large enterprises, MegiLance offers a tailored solution to achieve your goals with the power of AI and secure payments.
+    <div className={`${styles.page} ${themeStyles.page}`}>
+      <div className={styles.container}>
+        <AnimatedSection>
+          <header className={styles.header}>
+            <h1 className={`${styles.title} ${themeStyles.title}`}>Find the perfect plan for your needs</h1>
+            <p className={`${styles.subtitle} ${themeStyles.subtitle}`}>
+              Whether you&apos;re a solo freelancer or a growing enterprise, MegiLance offers flexible pricing to help you succeed.
             </p>
           </header>
         </AnimatedSection>
 
-        <AnimatedSection className={commonStyles.toggleWrapper}>
-          <div className={commonStyles.toggleWrapper}>
-            <span
-              className={cn(
-                commonStyles.toggleLabel,
-                themeStyles.toggleLabel,
-                { [themeStyles.toggleLabelActive]: billingCycle === 'monthly' }
-              )}
-            >
-              Monthly
-            </span>
-            <label className={commonStyles.toggle} htmlFor="billing-toggle">
-              <input
-                type="checkbox"
-                id="billing-toggle"
-                className={cn(commonStyles.toggleCheckbox, themeStyles.toggleCheckbox)}
-                checked={billingCycle === 'yearly'}
-                onChange={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                aria-label="Toggle billing cycle"
-                role="switch"
-                aria-checked={(billingCycle === 'yearly') || undefined}
-              />
-              <span className={cn(commonStyles.toggleSlider, themeStyles.toggleSlider)}></span>
-            </label>
-            <span
-              className={cn(
-                commonStyles.toggleLabel,
-                themeStyles.toggleLabel,
-                { [themeStyles.toggleLabelActive]: billingCycle === 'yearly' }
-              )}
-            >
-              Yearly
-            </span>
-            <span className={cn(commonStyles.toggleDiscount, themeStyles.toggleDiscount)}>Save 20%</span>
+        <AnimatedSection>
+          <div className={styles.billingToggleWrapper}>
+            <BillingToggle billingCycle={billingCycle} setBillingCycle={setBillingCycle} />
           </div>
         </AnimatedSection>
 
         <AnimatedSection>
-          <div className={commonStyles.pricingGrid}>
-            {pricingTiers.map((tier) => (
-              <div
-                key={tier.name}
-                className={cn(
-                  commonStyles.pricingCard,
-                  themeStyles.pricingCard,
-                  { [commonStyles.popular]: tier.isPopular, [themeStyles.popular]: tier.isPopular }
-                )}
-              >
-                {tier.isPopular && (
-                  <div className={cn(commonStyles.popularBadge, themeStyles.popularBadge)}>Most Popular</div>
-                )}
-                <div className={commonStyles.cardHeader}>
-                  <div className={cn(commonStyles.cardIcon, themeStyles.cardIcon)}>{tier.icon}</div>
-                  <h2 className={cn(commonStyles.cardTier, themeStyles.cardTier)}>{tier.name}</h2>
-                </div>
-                <div className={commonStyles.priceSection}>
-                  {typeof tier.price === 'string' ? (
-                    <div className={cn(commonStyles.price, commonStyles.priceCustom, themeStyles.priceCustom)}>
-                      {tier.price}
-                    </div>
-                  ) : (
-                    <div className={commonStyles.price}>
-                      <span className={cn(commonStyles.priceAmount, themeStyles.priceAmount)}>
-                        ${billingCycle === 'monthly' ? tier.price.monthly : tier.price.yearly}
-                      </span>
-                      <span className={cn(commonStyles.pricePeriod, themeStyles.pricePeriod)}>
-                        /{billingCycle === 'monthly' ? 'mo' : 'yr'}
-                      </span>
-                    </div>
-                  )}
-                  <p className={cn(commonStyles.cardDescription, themeStyles.cardDescription)}>{tier.description}</p>
-                </div>
-                <ul className={commonStyles.features}>
-                  {tier.features.map((feature) => (
-                    <li key={feature} className={cn(commonStyles.featureItem, themeStyles.featureItem)}>
-                      <FaCheckCircle aria-hidden="true" className={cn(commonStyles.featureIcon, themeStyles.featureIcon)} />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className={commonStyles.cardCta}>
-                  <Link href={tier.button.href} passHref>
-                    <Button variant={tier.button.variant} fullWidth>
-                      {tier.button.text}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
+          <div className={styles.grid}>
+            {pricingData.map((tier) => (
+              <PricingCard
+                key={tier.tier}
+                {...tier}
+                {...getTierProps(tier.tier)}
+              />
             ))}
           </div>
         </AnimatedSection>
 
         <AnimatedSection>
-          <section className={commonStyles.faq} aria-labelledby="pricing-faq-heading">
-            <div className={commonStyles.faqHeader}>
-              <h2 id="pricing-faq-heading" className={cn(themeStyles.faqHeaderTitle)}>Frequently Asked Questions</h2>
-              <p className={cn(themeStyles.faqHeaderText)}>
+          <section className={styles.faqSection} aria-labelledby="faq-heading">
+            <header className={styles.faqHeader}>
+              <h2 id="faq-heading" className={`${styles.faqTitle} ${themeStyles.faqTitle}`}>Frequently Asked Questions</h2>
+              <p className={`${styles.faqSubtitle} ${themeStyles.faqSubtitle}`}>
                 Have questions? We&apos;ve got answers. If you can&apos;t find what you&apos;re looking for, feel free to contact us.
               </p>
-            </div>
-            <div className={cn(commonStyles.faqList, themeStyles.faqList)}>
-              {faqItems.map((item, index) => (
-                <FaqItem
-                  key={item.question}
-                  item={item}
-                  isOpen={openFaq === index}
-                  onClick={() => handleFaqToggle(index)}
-                  index={index}
-                  themeStyles={themeStyles}
-                />
+            </header>
+            <div className={`${styles.faqList} ${themeStyles.faqList}`}>
+              {faqData.map((faq, index) => (
+                <FaqItem key={index} question={faq.question}>
+                  <p>{faq.answer}</p>
+                </FaqItem>
               ))}
             </div>
           </section>
         </AnimatedSection>
       </div>
-    </main>
+    </div>
   );
 };
 
-export default Pricing;
+export default PricingPage;

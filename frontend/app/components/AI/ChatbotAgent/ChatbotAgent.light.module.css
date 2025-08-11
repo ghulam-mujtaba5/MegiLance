@@ -31,3 +31,8 @@
 .chatbotAgentInput::placeholder {
   color: #999999;
 }
+
+.toggleButton {
+  background-color: var(--primary-color, #4573df);
+  color: #ffffff;
+}

@@ -1,9 +1,38 @@
-/* @AI-HINT: Dark theme overrides for Pricing. */
-.root { color: #e5e7eb; }
-.subtitle { color: #9ca3af; }
-.card { background: #0e1627; border: 1px solid #1f2937; }
-.price { color: #e5e7eb; }
-.cta { background: #8ab0ff; color: #0b1220; }
-.cta:hover { background: #7aa1eb; }
-.note { color: #9ca3af; }
-.badge { background: #0e1a33; color: #8ab0ff; }
+/* AI-HINT: Dark theme styles for the main pricing page. Defines colors for text, the billing toggle, and badges in dark mode. */
+
+.title {
+  color: var(--color-gray-100);
+}
+
+.subtitle {
+  color: var(--color-gray-400);
+}
+
+.toggleLabel {
+  color: var(--color-gray-400);
+}
+
+.toggleLabel.activeLabel {
+  color: var(--color-primary-light);
+}
+
+.toggleSwitch {
+  background-color: var(--color-gray-700);
+}
+
+.toggleSwitch[aria-label*='annual'] {
+  justify-content: flex-end;
+}
+
+.toggleHandle {
+  background-color: var(--color-gray-900);
+}
+
+.discountBadge {
+  background-color: var(--color-success-darker);
+  color: var(--color-success-lightest);
+}
+
+.note {
+  color: var(--color-gray-500);
+}

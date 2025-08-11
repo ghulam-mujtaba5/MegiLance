@@ -1,121 +1,66 @@
+/* @AI-HINT: Common styles for the How It Works section. Defines the responsive grid layout, typography, and structure for a premium, modern design. */
+
 .howItWorks {
-  padding: var(--spacing-20) 0;
-  background: var(--surface-alt);
+  padding: 6rem 0;
+  position: relative;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 var(--spacing-6);
+  padding: 0 1.5rem;
+}
+
+.header {
   text-align: center;
+  margin-bottom: 5rem;
+  max-width: 750px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.sectionTitle {
-  font-family: var(--font-family-headings);
-  font-size: clamp(2.5rem, 5vw, 3rem);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-12);
+.tagline {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
 }
 
-.howItWorksColumns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-12);
-  text-align: left;
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2.25rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
 }
 
-.columnTitle {
-  font-family: var(--font-family-headings);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-8);
+.subtitle {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  opacity: 0.8;
+}
+
+.timeline {
   position: relative;
-  padding-bottom: var(--spacing-4);
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.columnTitle::after {
+/* The vertical timeline bar */
+.timeline::after {
   content: '';
   position: absolute;
+  width: 3px;
+  top: 0;
   bottom: 0;
-  left: 0;
-  width: 50px;
-  height: 4px;
-  background: var(--primary);
-  border-radius: var(--border-radius-sm);
+  left: 50%;
+  margin-left: -1.5px;
 }
 
-.steps {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8);
-}
-
-.stepCard {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-5);
-  padding: var(--spacing-6);
-  border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  transition: all var(--transition-duration-normal) ease;
-}
-
-.stepCard:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--primary);
-}
-
-.stepCard:hover .stepNumber {
-  background-color: var(--primary);
-  color: var(--text-on-primary);
-  border-color: var(--primary);
-}
-
-.stepNumber {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid var(--border-subtle);
-  color: var(--primary);
-  font-family: var(--font-family-headings);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-base);
-  flex-shrink: 0;
-  transition: all var(--transition-duration-normal) ease;
-}
-
-.stepIcon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
-  margin-top: 6px;
-  color: var(--primary);
-}
-
-.stepTitle {
-  font-family: var(--font-family-headings);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  margin-bottom: var(--spacing-2);
-}
-
-.stepDescription {
-  font-size: var(--font-size-base);
-  line-height: 1.6;
-  color: var(--text-secondary);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .howItWorksColumns {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-12);
-  }
-  .container {
-    padding: 0 var(--spacing-4);
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .timeline::after {
+    left: 35px;
   }
 }

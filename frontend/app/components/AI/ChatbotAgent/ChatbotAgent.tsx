@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
+import { MessageSquare, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import commonStyles from './ChatbotAgent.common.module.css';
 import lightStyles from './ChatbotAgent.light.module.css';
@@ -17,6 +18,7 @@ interface Message {
 
 const ChatbotAgent: React.FC = () => {
   const { theme } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   const [messages, setMessages] = useState<Message[]>([
@@ -50,29 +52,40 @@ const ChatbotAgent: React.FC = () => {
   };
 
   return (
-    <div className={cn(commonStyles.chatbotAgent, themeStyles.chatbotAgent)}>
-      <div className={cn(commonStyles.chatbotAgentMessages, themeStyles.chatbotAgentMessages)}>
-        {messages.map(message => (
-          <div key={message.id} className={cn(
-            commonStyles.message, 
-            message.sender === 'bot' 
-              ? themeStyles.messageBot 
-              : themeStyles.messageUser
-          )}>
-            <p>{message.text}</p>
+    <div className={commonStyles.chatbotContainer}>
+      {isOpen && (
+        <div className={cn(commonStyles.chatbotAgent, themeStyles.chatbotAgent)}>
+          <div className={cn(commonStyles.chatbotAgentMessages, themeStyles.chatbotAgentMessages)}>
+            {messages.map(message => (
+              <div key={message.id} className={cn(
+                commonStyles.message,
+                message.sender === 'bot'
+                  ? themeStyles.messageBot
+                  : themeStyles.messageUser
+              )}>
+                <p>{message.text}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <form className={cn(commonStyles.chatbotAgentInputForm, themeStyles.chatbotAgentInputForm)} onSubmit={handleSendMessage}>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Ask me anything..."
-          className={cn(commonStyles.chatbotAgentInput, themeStyles.chatbotAgentInput)}
-        />
-        <Button type="submit" variant="primary">Send</Button>
-      </form>
+          <form className={cn(commonStyles.chatbotAgentInputForm, themeStyles.chatbotAgentInputForm)} onSubmit={handleSendMessage}>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Ask me anything..."
+              className={cn(commonStyles.chatbotAgentInput, themeStyles.chatbotAgentInput)}
+            />
+            <Button type="submit" variant="primary">Send</Button>
+          </form>
+        </div>
+      )}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(commonStyles.toggleButton, themeStyles.toggleButton)}
+        aria-label={isOpen ? 'Close chat' : 'Open chat'}
+      >
+        {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
+      </button>
     </div>
   );
 };

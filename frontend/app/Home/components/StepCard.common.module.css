@@ -1,0 +1,124 @@
+/* @AI-HINT: Common styles for the StepCard. Defines the core layout, typography, and structure for a premium, modern step card. */
+
+.stepCard {
+  padding: 2rem;
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  margin-bottom: 3rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Position cards on alternating sides */
+.freelancer {
+  left: 0;
+  padding-right: 40px;
+}
+
+.client {
+  left: 50%;
+  padding-left: 40px;
+}
+
+/* Arrow pointing to the timeline */
+.stepCard::after {
+  content: ' ';
+  position: absolute;
+  top: 28px;
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+}
+
+.freelancer::after {
+  right: -12px;
+  border-left-width: 12px;
+  border-left-style: solid;
+}
+
+.client::after {
+  left: -12px;
+  border-right-width: 12px;
+  border-right-style: solid;
+}
+
+.content {
+  position: relative;
+}
+
+.iconWrapper {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.iconWrapper svg {
+  width: 24px;
+  height: 24px;
+}
+
+.title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.description {
+  font-size: 1rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+.stepNumber {
+  position: absolute;
+  top: -15px;
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1;
+  z-index: -1;
+  opacity: 0.05;
+  transition: color 0.3s ease;
+}
+
+.freelancer .stepNumber {
+  right: 0;
+}
+
+.client .stepNumber {
+  left: 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .stepCard, .client, .freelancer {
+    width: 100%;
+    left: 0;
+    padding-left: 55px;
+    padding-right: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .client::after, .freelancer::after {
+    left: -12px;
+    border-right-width: 12px;
+    border-right-style: solid;
+    border-left: none;
+  }
+
+  .stepNumber {
+    font-size: 3.5rem;
+  }
+
+  .client .stepNumber, .freelancer .stepNumber {
+    left: -15px;
+    right: auto;
+  }
+}

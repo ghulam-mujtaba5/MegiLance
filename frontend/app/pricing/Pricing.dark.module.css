@@ -1,137 +1,50 @@
-/* AI-HINT: Dark theme styles for Pricing page. Sets colors, borders, and themed variants. */
+/* AI-HINT: Dark theme styles for the Pricing page. Defines colors for text, backgrounds, borders, and interactive elements in dark mode. */
 
-.root {
-  background: var(--surface);
+/* --- Page & Header --- */
+.page { background-color: var(--color-gray-900); }
+.title { color: var(--color-gray-100); }
+.subtitle { color: var(--color-gray-400); }
+
+/* --- Pricing Cards --- */
+.card {
+  background-color: var(--color-gray-850);
+  border-color: var(--color-gray-700);
 }
 
-.headerEyebrow {
-  color: var(--primary);
-  background-color: var(--primary-translucent);
-}
-
-.header h1 {
-  color: var(--text-primary);
-}
-
-.headerDescription {
-  color: var(--text-secondary);
-}
-
-.toggleLabel {
-  color: var(--text-secondary);
-}
-
-.toggleLabelActive {
-  color: var(--text-primary);
-}
-
-.toggleSlider {
-  background-color: var(--surface-alt);
-  border: 1px solid var(--border);
-}
-
-.toggleSlider:before {
-  background-color: var(--text-secondary);
-}
-
-.toggleCheckbox:checked + .toggleSlider {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-.toggleCheckbox:checked + .toggleSlider:before {
-  background-color: #111827; /* dark knob contrast */
-}
-
-.toggleDiscount {
-  color: var(--success);
-  background-color: var(--success-translucent);
-}
-
-.pricingCard {
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-}
-
-.popular {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-lg);
-}
-
-.cardIcon {
-  color: var(--primary);
-}
-
-.cardTier {
-  color: var(--text-primary);
-}
-
-.priceCustom {
-  color: var(--text-primary);
-}
-
-.priceAmount {
-  color: var(--text-primary);
-}
-
-.pricePeriod {
-  color: var(--text-secondary);
-}
-
-.cardDescription {
-  color: var(--text-secondary);
-}
-
-.featureItem {
-  color: var(--text-secondary);
-}
-
-.featureIcon {
-  color: var(--success);
-}
-
-.faqHeader h2 {
-  color: var(--text-primary);
-}
-
-.faqHeader p {
-  color: var(--text-secondary);
-}
-
-.faqList {
-  border-top-color: var(--border);
-}
-
-.faqItem {
-  border-bottom-color: var(--border);
-}
-
-.faqChevron {
-  color: var(--text-secondary);
-}
-
-/* Additional theme hooks used by the component */
-.headerTitle {
-  color: var(--text-primary);
-}
-
-.faqHeaderTitle {
-  color: var(--text-primary);
-}
-
-.faqHeaderText {
-  color: var(--text-secondary);
-}
-
-.faqQuestion {
-  color: var(--text-primary);
-}
-
-.faqAnswerP {
-  color: var(--text-secondary);
+.card:hover {
+  box-shadow: 0 0 30px rgba(69, 115, 223, 0.1);
+  border-color: var(--color-gray-600);
 }
 
 .popularBadge {
-  background: var(--primary);
-  color: var(--text-on-primary);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary-lighter);
 }
+
+.card.popular {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 40px rgba(69, 115, 223, 0.2);
+}
+
+.cardIcon {
+  background-color: rgba(69, 115, 223, 0.1);
+  color: var(--color-primary-lighter);
+}
+
+.cardTier { color: var(--color-gray-100); }
+.priceAmount { color: var(--color-gray-100); }
+.pricePeriod { color: var(--color-gray-400); }
+.cardDescription { color: var(--color-gray-400); }
+
+.features {
+  border-color: var(--color-gray-700);
+}
+
+.featureItem { color: var(--color-gray-300); }
+.featureIcon { color: var(--color-primary-lighter); }
+
+/* --- FAQ Section --- */
+.faqTitle { color: var(--color-gray-100); }
+.faqSubtitle { color: var(--color-gray-400); }
+.faqList { border-color: var(--color-gray-700); }

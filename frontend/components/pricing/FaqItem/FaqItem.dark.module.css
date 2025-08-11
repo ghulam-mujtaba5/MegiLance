@@ -1,0 +1,21 @@
+/* AI-HINT: Dark theme styles for the FaqItem component. Defines colors for the question text, answer text, and border. */
+
+.item {
+  border-color: var(--color-gray-700);
+}
+
+.question {
+  color: var(--color-gray-200);
+}
+
+.question:hover {
+  color: var(--color-primary-lighter);
+}
+
+.chevron {
+  color: var(--color-gray-400);
+}
+
+.answerContent {
+  color: var(--color-gray-400);
+}

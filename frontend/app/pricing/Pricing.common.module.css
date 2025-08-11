@@ -1,285 +1,213 @@
-/* AI-HINT: Common styles for Pricing page. Premium SaaS layout, grid, toggles, FAQ, and animations. */
+/* AI-HINT: Common styles for the Pricing page. Defines layout, typography, and structure for header, billing toggle, pricing cards, and FAQ section. Theme-aware via light/dark modules. */
 
-.pricingPage {
-  padding: var(--spacing-16) 0;
+/* --- Page Layout & Header --- */
+.page {
+  padding: 100px 0;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--spacing-6);
+  padding: 0 24px;
 }
 
 .header {
   text-align: center;
-  margin-bottom: var(--spacing-12);
+  margin-bottom: 64px;
 }
 
-.headerEyebrow {
-  display: inline-block;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--border-radius-pill);
-  margin-bottom: var(--spacing-4);
-  text-transform: uppercase;
-}
-
-.header h1 {
-  font-family: var(--font-family-headings);
+.title {
+  font-family: var(--font-poppins);
   font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-  margin-bottom: var(--spacing-4);
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 24px;
 }
 
-.headerDescription {
-  font-size: var(--font-size-lg);
+.subtitle {
+  font-family: var(--font-inter);
+  font-size: 1.125rem;
   max-width: 65ch;
   margin: 0 auto;
 }
 
-/* Toggle */
-.toggleWrapper {
+/* --- Billing Toggle --- */
+.billingToggleWrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-12);
+  gap: 16px;
+  margin-bottom: 80px;
 }
 
-.toggleLabel {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
-  transition: color var(--transition-duration-normal);
-}
-
-.toggleLabelActive {
-  color: inherit; /* themed via label colors */
-}
-
-.toggle {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 28px;
-}
-
-.toggleCheckbox {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggleSlider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: var(--border-radius-pill);
-  transition: var(--transition-duration-normal);
-}
-
-.toggleSlider:before {
-  position: absolute;
-  content: '';
-  height: 20px;
-  width: 20px;
-  left: 3px;
-  bottom: 3px;
-  border-radius: 50%;
-  transition: var(--transition-duration-normal);
-}
-
-.toggleDiscount {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  padding: var(--spacing-1) var(--spacing-2);
-  border-radius: var(--border-radius-md);
-}
-
-/* Grid */
-.pricingGrid {
+/* --- Pricing Grid & Cards --- */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-8);
-  margin-bottom: var(--spacing-20);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  align-items: stretch;
+  margin-bottom: 120px;
 }
 
-.pricingCard {
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-8);
+.card {
+  border-radius: 16px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  transition: all var(--transition-duration-normal) ease;
-}
-
-.pricingCard:hover {
-  transform: translateY(-2px);
-}
-
-.popular {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid;
   position: relative;
-  transform: scale(1.03);
+}
+
+.card:hover {
+  transform: translateY(-8px);
 }
 
 .popularBadge {
   position: absolute;
-  top: -15px;
+  top: 0;
   left: 50%;
-  transform: translateX(-50%);
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: var(--border-radius-pill);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
+  transform: translate(-50%, -50%);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-family: var(--font-inter);
+  font-size: 0.8rem;
+  font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid;
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .cardIcon {
-  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardIcon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .cardTier {
-  font-family: var(--font-family-headings);
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-poppins);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .priceSection {
-  margin-bottom: var(--spacing-6);
+  margin-bottom: 24px;
 }
 
 .price {
   display: flex;
   align-items: baseline;
-  gap: var(--spacing-1);
-  margin-bottom: var(--spacing-2);
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .priceCustom {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
+  font-family: var(--font-poppins);
+  font-size: 1.75rem;
+  font-weight: 600;
+  padding: 20px 0;
 }
 
 .priceAmount {
-  font-family: var(--font-family-headings);
-  font-size: var(--font-size-4xl);
-  font-weight: var(--font-weight-bold);
+  font-family: var(--font-poppins);
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -2px;
 }
 
 .pricePeriod {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  font-family: var(--font-inter);
+  font-size: 1rem;
+  font-weight: 500;
+  padding-left: 4px;
 }
 
 .cardDescription {
-  font-size: var(--font-size-sm);
-  min-height: 60px;
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  min-height: 3.2em; /* approx 2 lines */
 }
 
 .features {
   list-style: none;
-  padding: 0;
-  margin: var(--spacing-6) 0;
+  padding: 24px 0;
+  margin: 0;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: 16px;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
 }
 
 .featureItem {
   display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-3);
-  font-size: var(--font-size-base);
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
 }
 
 .featureIcon {
-  margin-top: 4px;
-  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
 }
 
 .cardCta {
-  margin-top: auto;
+  margin-top: 32px;
 }
 
-/* FAQ */
-.faq {
+/* --- FAQ Section --- */
+.faqSection {
   max-width: 800px;
   margin: 0 auto;
 }
 
 .faqHeader {
   text-align: center;
-  margin-bottom: var(--spacing-8);
+  margin-bottom: 48px;
 }
 
-.faqHeader h2 {
-  font-family: var(--font-family-headings);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-3);
+.faqTitle {
+  font-family: var(--font-poppins);
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.faqSubtitle {
+  font-family: var(--font-inter);
+  font-size: 1.125rem;
+  max-width: 60ch;
+  margin: 0 auto;
 }
 
 .faqList {
-  border-top: 1px solid transparent; /* themed */
+  border-top: 1px solid;
 }
 
-.faqItem {
-  border-bottom: 1px solid transparent; /* themed */
-}
-
-.faqQuestion {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: var(--spacing-5) 0;
-  background: none;
-  border: none;
-  text-align: left;
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-}
-
-.faqChevron {
-  transition: transform var(--transition-duration-normal);
-}
-
-.faqChevronOpen {
-  transform: rotate(180deg);
-}
-
-.faqAnswer {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
-}
-
-.faqAnswerOpen {
-  max-height: 1000px; /* large */
-  transition: max-height 1s ease-in-out;
-}
-
-.faqAnswer p {
-  padding: var(--spacing-2) 0 var(--spacing-6) 0;
-  line-height: 1.7;
-}
-
-/* Animations */
+/* --- Animation --- */
 .isNotVisible {
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(20px);
 }
 
 .isVisible {
@@ -288,15 +216,19 @@
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
-/* Responsive */
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+  .grid {
+    grid-template-columns: 1fr;
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 @media (max-width: 768px) {
-  .container {
-    padding: 0 var(--spacing-4);
-  }
-  .pricingGrid {
-    gap: var(--spacing-6);
-  }
-  .popular {
-    transform: scale(1);
+  .billingToggleWrapper {
+    flex-direction: column;
+    gap: 24px;
   }
 }

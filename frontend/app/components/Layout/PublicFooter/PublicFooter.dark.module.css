@@ -1,0 +1,37 @@
+/* @AI-HINT: Dark theme styles for the PublicFooter. Defines a premium color palette for a high-contrast, professional, and brand-aligned dark mode appearance. */
+
+.footer {
+  background-color: var(--color-surface-dark, #0d1117);
+}
+
+.tagline {
+  color: var(--color-text-secondary-dark, #8b949e);
+}
+
+.linksTitle {
+  color: var(--color-text-primary-dark, #c9d1d9);
+}
+
+.linkItem {
+  color: var(--color-text-secondary-dark, #8b949e);
+}
+
+.linkItem:hover {
+  color: var(--color-brand-primary-dark, #58a6ff);
+}
+
+.bottomBar {
+  border-top-color: var(--color-border-subtle-dark, #30363d);
+}
+
+.copyright {
+  color: var(--color-text-tertiary-dark, #6e7681);
+}
+
+.socialLink {
+  color: var(--color-text-tertiary-dark, #6e7681);
+}
+
+.socialLink:hover {
+  color: var(--color-brand-primary-dark, #58a6ff);
+}

@@ -1,4 +1,21 @@
-/* Migrated from HowItWorks.light.css to HowItWorks.light.module.css */
-@import './HowItWorks.common.module.css';
+/* @AI-HINT: Light theme styles for the How It Works section. Defines the color palette for a clean, professional, and brand-aligned light mode appearance. */
 
-/* Place all HowItWorks.light.css content here */
+.howItWorks {
+  background-color: #f8fafc; /* cool-gray-50 */
+}
+
+.tagline {
+  color: #4573df; /* MegiLance Blue */
+}
+
+.title {
+  color: #1e293b; /* cool-gray-800 */
+}
+
+.subtitle {
+  color: #475569; /* cool-gray-600 */
+}
+
+.timeline::after {
+  background: #e2e8f0; /* cool-gray-200 */
+}

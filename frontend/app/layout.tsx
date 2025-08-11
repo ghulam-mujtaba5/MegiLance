@@ -47,10 +47,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="bg-[var(--background)] text-[var(--text-primary)]">
-        {/* @AI-HINT: Accessibility - Provide a skip link target (#main-content) in AppChrome and a skip link here. */}
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded">
-          Skip to main content
-        </a>
+
         <ThemeProvider 
           attribute="class" 
           defaultTheme="light" 

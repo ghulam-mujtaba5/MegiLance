@@ -1,140 +1,120 @@
-/* AI-HINT: Light theme styles for Pricing page. Sets colors, borders, and themed variants. */
-
 .root {
-  background: var(--surface);
-}
-
-.headerEyebrow {
-  color: var(--primary);
-  background-color: var(--primary-translucent);
+  background-color: #f9fafb;
 }
 
 .header h1 {
-  color: var(--text-primary);
+  color: #111827;
 }
 
 .headerDescription {
-  color: var(--text-secondary);
+  color: #4b5563;
 }
 
 .toggleLabel {
-  color: var(--text-secondary);
+  color: var(--color-gray-600);
 }
 
 .toggleLabelActive {
-  color: var(--text-primary);
+  color: var(--color-gray-900);
 }
 
 .toggleSlider {
-  background-color: var(--surface-alt);
-  border: 1px solid var(--border);
+  background-color: var(--color-gray-200);
 }
 
 .toggleSlider:before {
-  background-color: var(--text-secondary);
+  background-color: var(--color-white);
 }
 
 .toggleCheckbox:checked + .toggleSlider {
-  background-color: var(--primary);
-  border-color: var(--primary);
-}
-
-.toggleCheckbox:checked + .toggleSlider:before {
-  background-color: #ffffff;
+  background-color: var(--color-primary);
 }
 
 .toggleDiscount {
-  color: var(--success);
-  background-color: var(--success-translucent);
+  color: var(--color-green-500);
+  background-color: var(--color-green-100);
 }
 
 .pricingCard {
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
+  background-color: var(--color-white);
+  border-color: var(--color-gray-200);
+  box-shadow: var(--shadow-md);
+}
+
+.pricingCard:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-gray-300);
 }
 
 .popular {
-  border-color: var(--primary);
+  border-color: var(--color-primary);
   box-shadow: var(--shadow-lg);
 }
 
+.popularBadge {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
 .cardIcon {
-  color: var(--primary);
+  background-color: var(--color-primary-lightest);
+  color: var(--color-primary);
 }
 
 .cardTier {
-  color: var(--text-primary);
+  color: var(--color-gray-900);
 }
 
 .priceCustom {
-  color: var(--text-primary);
+  color: var(--color-gray-900);
 }
 
 .priceAmount {
-  color: var(--text-primary);
+  color: var(--color-gray-900);
 }
 
 .pricePeriod {
-  color: var(--text-secondary);
+  color: var(--color-gray-500);
 }
 
 .cardDescription {
-  color: var(--text-secondary);
+  color: var(--color-gray-600);
 }
 
 .featureItem {
-  color: var(--text-secondary);
+  color: var(--color-gray-700);
 }
 
 .featureIcon {
-  color: var(--success);
-}
-
-.faqHeader h2 {
-  color: var(--text-primary);
-}
-
-.faqHeader p {
-  color: var(--text-secondary);
-}
-
-.faqList {
-  border-top-color: var(--border);
-}
-
-.faqItem {
-  border-bottom-color: var(--border);
-}
-
-.faqChevron {
-  color: var(--text-secondary);
-}
-
-/* Additional theme hooks used by the component */
-.headerTitle {
-  color: var(--text-primary);
+  color: var(--color-primary);
 }
 
 .faqHeaderTitle {
-  color: var(--text-primary);
+  color: var(--color-gray-900);
 }
 
 .faqHeaderText {
-  color: var(--text-secondary);
+  color: var(--color-gray-600);
+}
+
+.faqList,
+.faqItem {
+  border-color: var(--color-gray-200);
 }
 
 .faqQuestion {
-  color: var(--text-primary);
+  color: var(--color-gray-900);
 }
 
-
-.faqAnswerP {
-  color: var(--text-secondary);
+.faqQuestion:hover {
+  color: var(--color-primary);
 }
 
-.popularBadge {
-  background: var(--primary);
-  color: var(--text-on-primary);
+.faqChevron {
+  color: var(--color-gray-500);
 }
 
-/* Removed empty rulesets to satisfy lints */
+.faqAnswer p {
+  color: var(--color-gray-600);
+}

@@ -1,25 +1,17 @@
-.Home-features {
+/* @AI-HINT: Light theme styles for the Features section. Defines colors for a bright, clean, and professional look. */
+
+.featuresSection {
   background-color: #f9fafb;
 }
 
-.Home-feature-card {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+.tagline {
+  color: var(--color-primary);
 }
 
-.Home-feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.title {
+  color: #111827;
 }
 
-.Home-feature-icon {
-  color: var(--primary-color);
-}
-
-.Home-feature-title {
-  color: #1f2937;
-}
-
-.Home-feature-description {
+.subtitle {
   color: #4b5563;
 }

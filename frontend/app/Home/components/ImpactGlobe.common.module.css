@@ -1,0 +1,16 @@
+.globeContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 500px; /* Ensure container has a size */
+}
+
+.globePlaceholder {
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background-color: rgba(128, 128, 128, 0.1);
+}

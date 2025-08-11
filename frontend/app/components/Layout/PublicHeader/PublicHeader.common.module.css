@@ -1,0 +1,57 @@
+/* @AI-HINT: Common styles for the PublicHeader. Defines the layout, spacing, and typography for the main public navigation. */
+
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 40;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--max-width-desktop);
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem; /* 12px 24px */
+  height: var(--header-height);
+}
+
+.logoContainer {
+  flex-shrink: 0;
+}
+
+.nav {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* 32px */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navLink {
+  font-size: 0.95rem; /* 15.2px */
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.actionsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 12px */
+}
+
+.signInButton {
+  font-weight: 500;
+}

@@ -1,0 +1,41 @@
+.storyCard {
+  background-color: #1e293b; /* cool-gray-800 */
+  border: 1px solid #334155; /* cool-gray-700 */
+}
+
+.storyCard:hover {
+  transform: translateY(-4px);
+  background-color: #293649;
+  border-color: #475569; /* cool-gray-600 */
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.quote {
+  color: #cbd5e1; /* cool-gray-300 */
+}
+
+.avatar {
+  border: 2px solid #1e293b; /* cool-gray-800 */
+  box-shadow: 0 0 0 2px #475569; /* cool-gray-600 */
+}
+
+.name {
+  color: #f1f5f9; /* cool-gray-100 */
+}
+
+.role {
+  color: #94a3b8; /* cool-gray-400 */
+}
+
+.location {
+  color: #94a3b8; /* cool-gray-400 */
+}
+
+.achievement {
+  background-color: #3a3221; /* Dark yellow */
+  color: #fde68a; /* yellow-200 */
+}
+
+.achievementIcon {
+  color: #facc15; /* yellow-400 */
+}

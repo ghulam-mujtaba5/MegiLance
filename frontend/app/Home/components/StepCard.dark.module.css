@@ -1,0 +1,57 @@
+/* @AI-HINT: Dark theme styles for StepCard. Defines colors for a sleek, modern look. */
+
+.stepCard {
+  background-color: #1e293b; /* cool-gray-800 */
+  border: 1px solid #334155; /* cool-gray-700 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.stepCard:hover {
+  transform: translateY(-5px);
+  background-color: #334155; /* cool-gray-700 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -4px rgba(0, 0, 0, 0.15);
+}
+
+.stepCard::after {
+  border-color: transparent;
+}
+
+.freelancer::after {
+  border-left-color: #334155; /* cool-gray-700 */
+}
+
+.client::after {
+  border-right-color: #334155; /* cool-gray-700 */
+}
+
+.stepCard:hover.freelancer::after {
+  border-left-color: #334155;
+}
+
+.stepCard:hover.client::after {
+  border-right-color: #334155;
+}
+
+.iconWrapper {
+  color: #ffffff;
+}
+
+.freelancer .iconWrapper {
+  background-color: #ff9800; /* Accent Orange */
+}
+
+.client .iconWrapper {
+  background-color: #4573df; /* MegiLance Blue */
+}
+
+.title {
+  color: #f1f5f9; /* cool-gray-100 */
+}
+
+.description {
+  color: #94a3b8; /* cool-gray-400 */
+}
+
+.stepNumber {
+  color: #475569; /* cool-gray-600 */
+}

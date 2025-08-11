@@ -1,0 +1,23 @@
+/* @AI-HINT: Dark theme styles for the PublicHeader. */
+
+.header {
+  background-color: rgba(11, 15, 25, 0.7);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.navLink {
+  color: var(--text-secondary-dark);
+}
+
+.navLink:hover {
+  color: var(--text-primary-dark);
+}
+
+.signInButton {
+  color: var(--text-secondary-dark);
+}
+
+.signInButton:hover {
+  background-color: var(--background-hover-dark);
+  color: var(--text-primary-dark);
+}

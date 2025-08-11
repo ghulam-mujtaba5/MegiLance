@@ -1,0 +1,32 @@
+.statCard {
+  background-color: #1e293b; /* cool-gray-800 */
+  border: 1px solid #334155; /* cool-gray-700 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  background-color: #293649;
+  border-color: #475569; /* cool-gray-600 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.iconWrapper {
+  background-color: #2b3f6c; /* Darker blue */
+}
+
+.icon {
+  color: #87a8f0; /* Lighter MegiLance Blue */
+}
+
+.number {
+  color: #f8fafc; /* cool-gray-50 */
+}
+
+.label {
+  color: #e2e8f0; /* cool-gray-200 */
+}
+
+.description {
+  color: #94a3b8; /* cool-gray-400 */
+}

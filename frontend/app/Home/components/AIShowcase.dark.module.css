@@ -1,27 +1,43 @@
-/* @AI-HINT: Dark theme styles for body.dark .Home-ai-showcase section */
+/* @AI-HINT: Dark theme styles for AIShowcase, defining colors for a sleek, high-contrast, modern look. */
 
-.AIShowcase {
-  background: linear-gradient(180deg, #1a1d23 0%, #2c323a 100%);
+.aiShowcase {
+  background-color: #0d1117;
 }
 
-.AIShowcase-card {
-  background: rgba(44, 50, 58, 0.9);
-  border: 1px solid rgba(69, 115, 223, 0.2);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+.backgroundGrid {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
-.AIShowcase-card:hover {
-  box-shadow: 0 20px 40px rgba(69, 115, 223, 0.3);
+.badge {
+  background-color: #1f2937;
+  color: #9ca3af;
+  border: 1px solid #374151;
 }
 
-.AIShowcase-tech-stack {
-  background: rgba(44, 50, 58, 0.9);
-  border: 1px solid rgba(69, 115, 223, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+.badgeIcon {
+    color: #a5b4fc;
 }
 
-.AIShowcase-tech-logo {
-  background: rgba(44, 50, 58, 0.8);
-  border: 1px solid rgba(69, 115, 223, 0.2);
-  color: rgba(255, 255, 255, 0.8);
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.techTitle {
+  color: #6b7280;
+}
+
+.techLogo {
+  color: #9ca3af;
+}
+
+.techLogo:hover {
+  color: #ffffff;
+}
+
+.techLogo span {
+    color: #9ca3af;
 }

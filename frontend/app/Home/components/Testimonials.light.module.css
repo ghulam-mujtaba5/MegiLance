@@ -1,4 +1,11 @@
-/* Migrated from Testimonials.light.css to Testimonials.light.module.css */
-@import './Testimonials.common.module.css';
+.testimonials {
+  background-color: #f9fafb;
+}
 
-/* Place all Testimonials.light.css content here */
+.title {
+  color: #111827;
+}
+
+.subtitle {
+  color: #4b5563;
+}
