@@ -12,6 +12,12 @@ const withPWA = withPWAInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Your Next.js config options can go here.
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'i.pravatar.cc' },
+      { protocol: 'https', hostname: 'unpkg.com' },
+    ],
+  },
 };
 
 module.exports = withPWA(nextConfig);

@@ -39,9 +39,10 @@ const ImpactGlobe: React.FC = () => {
 
   const getGlobeImageUrl = useCallback(() => {
     if (!isMounted) return '';
-    return theme === 'dark' 
-      ? '/assets/images/globe/dark-globe-texture.png' 
-      : '/assets/images/globe/light-globe-texture.png';
+    // Use reliable CDN textures from three-globe examples
+    return theme === 'dark'
+      ? 'https://unpkg.com/three-globe@2.34.7/example/img/earth-dark.jpg'
+      : 'https://unpkg.com/three-globe@2.34.7/example/img/earth-blue-marble.jpg';
   }, [isMounted, theme]);
 
   const getArcColor = useCallback((arc: any) => {
@@ -71,7 +72,7 @@ const ImpactGlobe: React.FC = () => {
       <Globe
         ref={globeRef}
         globeImageUrl={getGlobeImageUrl()}
-        bumpImageUrl="/assets/images/globe/globe-bump-map.png"
+        bumpImageUrl="https://unpkg.com/three-globe@2.34.7/example/img/earth-topology.png"
         backgroundColor="rgba(0,0,0,0)"
         arcsData={arcsData}
         arcColor={getArcColor}

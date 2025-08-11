@@ -116,10 +116,18 @@
 }
 
 .homeSection {
-  margin-bottom: 3.5rem;
+  margin-bottom: 4.5rem;
 }
 
 /* @AI-HINT: Scrollbar hidden only on Home by applying scrollbar-hide to the page wrapper (.homePage). */
+
+/* Unified section container for consistent layout rhythm */
+.sectionContainer {
+  max-width: 1200px;
+  padding-left: 24px;
+  padding-right: 24px;
+  margin: 0 auto;
+}
 
 /* Responsive Styles */
 .mobileMenuButton {
@@ -137,6 +145,8 @@
 }
 
 @media (max-width: 768px) {
+  .homeSection { margin-bottom: 3rem; }
+  .sectionContainer { padding-left: 16px; padding-right: 16px; }
   .navLinks {
     display: none; /* Hide links on mobile */
   }

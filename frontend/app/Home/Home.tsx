@@ -33,35 +33,51 @@ const Home: React.FC = () => {
 
         {/* Enhanced Hero Section with Animated Stats */}
         <section className={commonStyles.homeSection} aria-label="Hero">
-          <Hero />
+          <div className={commonStyles.sectionContainer}>
+            <Hero />
+          </div>
         </section>
         {/* Core Platform Features */}
         <section className={commonStyles.homeSection} aria-label="Core platform features">
-          <Features />
+          <div className={commonStyles.sectionContainer}>
+            <Features />
+          </div>
         </section>
         {/* AI-Powered Capabilities Showcase */}
         <section className={commonStyles.homeSection} aria-label="AI capabilities">
-          <AIShowcase />
+          <div className={commonStyles.sectionContainer}>
+            <AIShowcase />
+          </div>
         </section>
         {/* Blockchain & Crypto Payment Features */}
         <section className={commonStyles.homeSection} aria-label="Blockchain and crypto payments">
-          <BlockchainShowcase />
+          <div className={commonStyles.sectionContainer}>
+            <BlockchainShowcase />
+          </div>
         </section>
         {/* How the Platform Works */}
         <section className={commonStyles.homeSection} aria-label="How it works">
-          <HowItWorks />
+          <div className={commonStyles.sectionContainer}>
+            <HowItWorks />
+          </div>
         </section>
         {/* Global Impact & Pakistani Focus */}
         <section className={commonStyles.homeSection} aria-label="Global impact">
-          <GlobalImpact />
+          <div className={commonStyles.sectionContainer}>
+            <GlobalImpact />
+          </div>
         </section>
         {/* User Testimonials */}
         <section className={commonStyles.homeSection} aria-label="Testimonials">
-          <Testimonials />
+          <div className={commonStyles.sectionContainer}>
+            <Testimonials />
+          </div>
         </section>
         {/* Final Call-to-Action */}
         <section className={commonStyles.homeSection} aria-label="Call to action">
-          <CTA />
+          <div className={commonStyles.sectionContainer}>
+            <CTA />
+          </div>
         </section>
 
     </div>

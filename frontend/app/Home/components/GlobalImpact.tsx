@@ -35,7 +35,7 @@ const successStories = [
     city: "Karachi",
     achievement: "Earned $50K+ in First Year",
     quote: "MegiLance's AI matching connected me with high-value international clients I only dreamed of. The stablecoin payments are a game-changer.",
-    avatar: "/assets/images/avatars/woman1.jpg"
+    avatar: "https://i.pravatar.cc/150?img=47"
   },
   {
     name: "Muhammad Ali",
@@ -43,7 +43,7 @@ const successStories = [
     city: "Lahore",
     achievement: "Scaled a startup's MVP to 1M users",
     quote: "This platform handles all the overhead. I just focus on what I do best: writing clean, scalable code. It's freelancing, perfected.",
-    avatar: "/assets/images/avatars/man1.jpg"
+    avatar: "https://i.pravatar.cc/150?img=12"
   },
   {
     name: "Fatima Ahmed",
@@ -51,7 +51,7 @@ const successStories = [
     city: "Islamabad",
     achievement: "Top 1% Global Performer",
     quote: "The analytics are incredible. I've tripled my rates by understanding market demand and showcasing my value more effectively.",
-    avatar: "/assets/images/avatars/woman2.jpg"
+    avatar: "https://i.pravatar.cc/150?img=65"
   }
 ];
 

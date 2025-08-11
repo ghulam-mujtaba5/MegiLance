@@ -31,11 +31,11 @@ interface WithdrawalRequest {
 
 // Mock Data
 const mockWithdrawals: WithdrawalRequest[] = [
-  { id: 'wd_001', freelancerName: 'Alice Johnson', freelancerAvatarUrl: '/avatars/avatar-1.png', amount: 500, currency: 'USDC', destinationAddress: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', dateRequested: '2025-08-15', status: 'Pending' },
-  { id: 'wd_002', freelancerName: 'Charlie Brown', freelancerAvatarUrl: '/avatars/avatar-2.png', amount: 1250, currency: 'ETH', destinationAddress: '0x1e6f4f2b2c1b9b1e6f4f2b2c1b9b1e6f4f2b2c1b', dateRequested: '2025-08-14', status: 'Pending' },
-  { id: 'wd_003', freelancerName: 'Diana Prince', freelancerAvatarUrl: '/avatars/avatar-3.png', amount: 75, currency: 'USDC', destinationAddress: '0x9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b', dateRequested: '2025-08-12', status: 'Approved' },
-  { id: 'wd_004', freelancerName: 'Frank Wright', freelancerAvatarUrl: '/avatars/avatar-4.png', amount: 3500, currency: 'USDC', destinationAddress: '0x...', dateRequested: '2025-08-10', status: 'Rejected' },
-  { id: 'wd_005', freelancerName: 'Eve Adams', freelancerAvatarUrl: '/avatars/avatar-5.png', amount: 800, currency: 'ETH', destinationAddress: '0x...', dateRequested: '2025-08-16', status: 'Pending' },
+  { id: 'wd_001', freelancerName: 'Alice Johnson', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=alice', amount: 500, currency: 'USDC', destinationAddress: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', dateRequested: '2025-08-15', status: 'Pending' },
+  { id: 'wd_002', freelancerName: 'Charlie Brown', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=charlie', amount: 1250, currency: 'ETH', destinationAddress: '0x1e6f4f2b2c1b9b1e6f4f2b2c1b9b1e6f4f2b2c1b', dateRequested: '2025-08-14', status: 'Pending' },
+  { id: 'wd_003', freelancerName: 'Diana Prince', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=diana', amount: 75, currency: 'USDC', destinationAddress: '0x9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b', dateRequested: '2025-08-12', status: 'Approved' },
+  { id: 'wd_004', freelancerName: 'Frank Wright', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=frank', amount: 3500, currency: 'USDC', destinationAddress: '0x...', dateRequested: '2025-08-10', status: 'Rejected' },
+  { id: 'wd_005', freelancerName: 'Eve Adams', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=eve', amount: 800, currency: 'ETH', destinationAddress: '0x...', dateRequested: '2025-08-16', status: 'Pending' },
 ];
 
 const StatusBadge = ({ status }: { status: Status }) => {

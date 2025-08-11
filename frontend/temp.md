@@ -1,4 +1,8 @@
+## Next.js Routes Snapshot
 
+Updated: 2025-08-11T19:54:17+05:00
+
+```
 Route (app)                              Size     First Load JS  · Access Legend: [Public Navbar] [Footer Company] [Footer Services] [Footer Support] [Footer Legal] [Dashboard Navbar] [Dashboard Sidebar] [Freelancer Navbar] [Client Navbar] [Admin Navbar] [Profile Menu]
 ┌ ○ /                                    15.3 kB         141 kB   [Public Navbar]
 ├ ○ /_not-found                          153 B          90.3 kB
@@ -46,23 +50,15 @@ Route (app)                              Size     First Load JS  · Access Legen
 ├ ƒ /client/projects/[id]                2.26 kB         110 kB   [Client Navbar]
 ├ ○ /client/reviews                      5.66 kB         104 kB   [Client Navbar]
 ├ ○ /client/settings                     4.46 kB         102 kB   [Client Navbar]
-├ ○ /client/wallet                       5.43 kB         103 kB   [Client Navbar]
 ├ ○ /clients                             5.59 kB         109 kB   [Footer Services]
 ├ ○ /community                           1.44 kB         109 kB   [Footer Support]
 ├ ○ /contact                             3.43 kB         101 kB   [Public Navbar][Footer Support]
 ├ ○ /cookies                             3 kB            101 kB   [Footer Legal]
-├ ○ /dashboard                           1.59 kB         126 kB   [Dashboard Navbar]
-├ ○ /dashboard/analytics                 4.1 kB          102 kB   [Dashboard Sidebar]
-├ ○ /dashboard/community                 3.8 kB          102 kB   [Dashboard Sidebar]
-├ ○ /dashboard/projects                  3.75 kB         102 kB   [Dashboard Sidebar]
-├ ○ /dashboard/wallet                    3.98 kB         102 kB   [Dashboard Sidebar]
-├ ○ /enterprise                          153 B          90.3 kB   [Footer Services]
-├ ○ /faq                                 5.53 kB         103 kB   [Public Navbar][Footer Support]
-├ ○ /forgot-password                     1.83 kB         125 kB   [Footer Support]
-├ ○ /freelancer/analytics                3.49 kB        93.6 kB   [Freelancer Navbar]
-├ ○ /freelancer/contracts                3.59 kB         102 kB   [Freelancer Navbar]
-├ ○ /freelancer/dashboard                1.89 kB         104 kB   [Freelancer Navbar]
-├ ○ /freelancer/job-alerts               5.7 kB          104 kB   [Freelancer Navbar]
+├ ○ /dashboard                           3.21 kB         103 kB   [Dashboard Navbar][Dashboard Sidebar]
+├ ○ /docs                                1.09 kB         100 kB   [Footer Support]
+├ ○ /faq                                 1.68 kB         100 kB   [Footer Support]
+├ ○ /freelancer/dashboard                3.42 kB         107 kB   [Freelancer Navbar]
+├ ○ /freelancer/messages                 1.89 kB         105 kB   [Freelancer Navbar]
 ├ ○ /freelancer/my-jobs                  3.28 kB         101 kB   [Freelancer Navbar]
 ├ ○ /freelancer/portfolio                7.65 kB         111 kB   [Freelancer Navbar]
 ├ ○ /freelancer/profile                  1.9 kB          109 kB   [Freelancer Navbar]
@@ -112,3 +108,5 @@ Route (app)                              Size     First Load JS  · Access Legen
   ├ chunks/6997-447f43f0aa2b6154.js      34 kB
   ├ chunks/fd9d1056-f4c0ecfdbe042be1.js  53.6 kB
   └ other shared chunks (total)          2.5 kB
+```
+
