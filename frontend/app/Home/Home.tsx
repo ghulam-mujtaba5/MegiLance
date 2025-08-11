@@ -60,7 +60,7 @@ const Home: React.FC = () => {
           <Testimonials />
         </section>
         {/* Final Call-to-Action */}
-        <section aria-label="Call to action">
+        <section className={commonStyles.homeSection} aria-label="Call to action">
           <CTA />
         </section>
 

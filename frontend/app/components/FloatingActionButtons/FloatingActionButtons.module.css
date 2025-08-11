@@ -1,0 +1,12 @@
+.container {
+  position: fixed;
+  bottom: 1.5rem; /* 24px */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem; /* 16px */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.right { right: 1.5rem; }
+.left { left: 1.5rem; }

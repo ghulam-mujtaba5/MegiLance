@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState, useContext, createContext, useId } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './Accordion.common.module.css';
@@ -44,7 +45,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, chil
   return (
     <div className={cn(commonStyles.accordionItem, themeStyles.accordionItem, isOpen && commonStyles.open)}>
       <h3>
-        <button
+                <button
           id={buttonId}
           onClick={() => toggleItem(value)}
           aria-expanded={isOpen}
@@ -52,17 +53,34 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, chil
           className={cn(commonStyles.accordionTrigger, themeStyles.accordionTrigger)}
         >
           <span className={commonStyles.accordionTitle}>{title}</span>
-          <span className={cn(commonStyles.accordionIcon, themeStyles.accordionIcon, isOpen && commonStyles.iconOpen)} aria-hidden="true" />
+          <motion.span 
+            className={cn(commonStyles.accordionIcon, themeStyles.accordionIcon)}
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={{ duration: 0.2 }}
+            aria-hidden="true"
+          />
         </button>
       </h3>
-      <div
-        id={contentId}
-        role="region"
-        aria-labelledby={buttonId}
-        className={cn(commonStyles.accordionContent, isOpen ? commonStyles.contentOpen : commonStyles.contentClosed)}
-      >
-        <div className={cn(commonStyles.accordionContentText, themeStyles.accordionContentText)}>{children}</div>
-      </div>
+            <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            id={contentId}
+            role="region"
+            aria-labelledby={buttonId}
+            className={commonStyles.accordionContent}
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            variants={{
+              open: { opacity: 1, height: 'auto' },
+              collapsed: { opacity: 0, height: 0 },
+            }}
+            transition={{ duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] }}
+          >
+            <div className={cn(commonStyles.accordionContentText, themeStyles.accordionContentText)}>{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -83,10 +83,9 @@
 
 /* Floating Theme Toggle Button */
 .themeToggleFloating {
-  position: fixed;
-  bottom: 1.8rem;
-  right: 1.8rem;
-  z-index: 99999;
+  /* Positioned by shared FloatingActionButtons container */
+  position: static;
+  z-index: auto;
   pointer-events: none;
   display: flex;
   align-items: flex-end;
@@ -153,8 +152,8 @@
     background: var(--background-color);
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
+  }
   .mobileNavMenu.mobileNavMenuActive {
     display: flex; /* Show mobile menu when active */
   }
-}
 }

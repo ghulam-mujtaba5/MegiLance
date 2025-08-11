@@ -1,8 +1,4 @@
-/* @AI-HINT: Dark theme styles for AIShowcase, defining colors for a sleek, high-contrast, modern look. */
-
-.aiShowcase {
-  background-color: #0d1117;
-}
+/* @AI-HINT: Dark theme styles for AIShowcase, defining colors for a sleek, high-contrast, modern look. Section background is transparent. */
 
 .backgroundGrid {
     background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);

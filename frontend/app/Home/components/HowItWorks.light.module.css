@@ -1,8 +1,4 @@
-/* @AI-HINT: Light theme styles for the How It Works section. Defines the color palette for a clean, professional, and brand-aligned light mode appearance. */
-
-.howItWorks {
-  background-color: #f8fafc; /* cool-gray-50 */
-}
+/* @AI-HINT: Light theme styles for the How It Works section. Section background is transparent to use page background. */
 
 .tagline {
   color: #4573df; /* MegiLance Blue */

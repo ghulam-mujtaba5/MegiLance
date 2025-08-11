@@ -1,8 +1,4 @@
-/* @AI-HINT: Light theme styles for the Hero component. Defines colors, backgrounds, and a dynamic grid visual for a bright, clean, and professional appearance. */
-
-.heroContainer {
-  background-color: var(--color-surface, #ffffff);
-}
+/* @AI-HINT: Light theme styles for the Hero component. Colors and visuals only; section background is transparent to use page background. */
 
 .backgroundVisuals {
   background-image: radial-gradient(circle, var(--color-brand-primary-light-translucent, hsla(221, 83%, 53%, 0.08)) 0%, transparent 50%),

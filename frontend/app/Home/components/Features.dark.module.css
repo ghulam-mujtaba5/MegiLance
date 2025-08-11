@@ -1,8 +1,4 @@
-/* @AI-HINT: Dark theme styles for the Features section. Defines colors for a sleek, high-contrast, and modern look. */
-
-.featuresSection {
-  background-color: #0d1117;
-}
+/* @AI-HINT: Dark theme styles for the Features section. Colors only; section background is transparent to use page background. */
 
 .tagline {
   color: var(--color-primary);

@@ -7,6 +7,8 @@ import { usePathname } from 'next/navigation';
 import PublicHeader from '@/app/components/Layout/PublicHeader/PublicHeader';
 import PublicFooter from '@/app/components/Layout/PublicFooter/PublicFooter';
 import ThemeToggleButton from '@/app/components/ThemeToggleButton';
+import FloatingActionButtons from '@/app/components/FloatingActionButtons/FloatingActionButtons';
+import ChatbotAgent from '@/app/components/AI/ChatbotAgent/ChatbotAgent';
 import InstallAppBanner from '@/app/components/PWA/InstallAppBanner/InstallAppBanner';
 import UpdateNotification from '@/app/components/PWA/UpdateNotification/UpdateNotification';
 import PageTransition from '@/app/components/Transitions/PageTransition';
@@ -67,7 +69,14 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
         </PageTransition>
       </main>
       <PublicFooter />
-      <ThemeToggleButton />
+      {/* Right-side floating actions */}
+      <FloatingActionButtons position="right">
+        <ChatbotAgent />
+      </FloatingActionButtons>
+      {/* Left-side floating actions */}
+      <FloatingActionButtons position="left">
+        <ThemeToggleButton />
+      </FloatingActionButtons>
       <InstallAppBanner />
       <UpdateNotification />
     </div>

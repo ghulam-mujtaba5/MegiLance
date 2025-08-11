@@ -4,7 +4,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
@@ -62,40 +62,56 @@
   }
 }
 
-/* Sizes */
-.small {
-  padding: 0.5rem 0.75rem; /* 8px 12px */
+/* Sizes (aligned with Button.tsx: size-sm|md|lg|icon) */
+.size-sm {
+  height: 2.5rem; /* 40px */
+  padding: 0 0.875rem; /* 14px x 0 */
   font-size: 0.875rem; /* 14px */
 }
 
-.medium {
-  padding: 0.75rem 1.25rem; /* 12px 20px */
-  font-size: 0.875rem; /* 14px */
+.size-md {
+  height: 2.75rem; /* 44px */
+  padding: 0 1rem; /* 16px x 0 */
+  font-size: 0.925rem;
 }
 
-.large {
-  padding: 1rem 1.75rem; /* 16px 28px */
+.size-lg {
+  height: 3rem; /* 48px */
+  padding: 0 1.25rem; /* 20px x 0 */
   font-size: 1rem;
 }
 
-.icon {
-  height: 2.5rem; /* 40px */
-  width: 2.5rem; /* 40px */
-  padding: 0.5rem;
+.size-icon {
+  height: 2.75rem; /* 44px */
+  width: 2.75rem; /* 44px */
+  padding: 0;
 }
 
-.button.size-icon .buttonText {
-  display: none; /* Hide text for icon-only buttons */
+/* Backwards-compat for any legacy usages (duplicate rules; CSS Modules doesn't support @apply) */
+.small {
+  height: 2.5rem;
+  padding: 0 0.875rem;
+  font-size: 0.875rem;
+}
+.medium {
+  height: 2.75rem;
+  padding: 0 1rem;
+  font-size: 0.925rem;
+}
+.large {
+  height: 3rem;
+  padding: 0 1.25rem;
+  font-size: 1rem;
 }
 
 .iconBefore {
-  margin-right: var(--space-2);
+  margin-right: 0.5rem;
   display: flex;
   align-items: center;
 }
 
 .iconAfter {
-  margin-left: var(--space-2);
+  margin-left: 0.5rem;
   display: flex;
   align-items: center;
 }
@@ -110,9 +126,9 @@
   width: 100%;
 }
 
-.icon {
-  margin-right: 8px;
-}
+/* normalize inline svg/icon spacing when used directly */
+.button > svg:first-child { margin-right: 0.5rem; }
+.button > svg:last-child { margin-left: 0.5rem; }
 
 .loadingIcon {
   animation: spin 1s linear infinite;

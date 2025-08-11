@@ -1,8 +1,4 @@
-/* @AI-HINT: Light theme styles for the GlobalImpact section. */
-
-.globalImpact {
-  background: radial-gradient(circle at 10% 20%, #f0f4ff 0%, #ffffff 40%);
-}
+/* @AI-HINT: Light theme styles for the GlobalImpact section. Section background is transparent to use page-level background. */
 
 .badge {
   background-color: #eef2ff; /* indigo-100 */

@@ -3,26 +3,66 @@
 /* Primary Button */
 .primary {
   background-color: var(--primary);
-  color: var(--text-on-color);
+  /* Ensure text is always visible on brand background */
+  color: #ffffff;
   border-color: var(--primary);
 }
 
 .primary:hover:not(:disabled) {
   background-color: var(--primary-strong);
   border-color: var(--primary-strong);
+  color: #ffffff;
 }
 
 /* Secondary Button */
 .secondary {
-  background-color: var(--surface-alt);
+  /* premium glass/gradient surface for dark */
+  background: linear-gradient(180deg, rgba(22,27,34,0.75) 0%, rgba(13,17,23,0.75) 100%);
   color: var(--text-primary);
-  border-color: var(--border);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 1px 2px rgba(0,0,0,0.30);
+  -webkit-backdrop-filter: saturate(140%) blur(6px);
+  backdrop-filter: saturate(140%) blur(6px);
 }
 
 .secondary:hover:not(:disabled) {
-  background-color: var(--surface-alt-hover);
-  border-color: var(--border-strong);
+  background: linear-gradient(180deg, rgba(30,35,43,0.82) 0%, rgba(17,22,29,0.82) 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 6px 16px rgba(0,0,0,0.45);
 }
+
+.secondary:active:not(:disabled) {
+  background: linear-gradient(180deg, rgba(22,27,34,0.92) 0%, rgba(13,17,23,0.92) 100%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 2px 6px rgba(0,0,0,0.40);
+}
+
+/* Social Auth Button (neutral, brand-agnostic) */
+.social {
+  background: linear-gradient(180deg, rgba(34,40,48,0.78) 0%, rgba(22,27,34,0.74) 100%);
+  color: #e5e7eb;
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 1px 2px rgba(0,0,0,0.35);
+  -webkit-backdrop-filter: saturate(140%) blur(6px);
+  backdrop-filter: saturate(140%) blur(6px);
+  border-radius: 12px;
+}
+
+.social:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(42,49,58,0.84) 0%, rgba(26,32,39,0.82) 100%);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 8px 20px rgba(0,0,0,0.50);
+}
+
+.social:active:not(:disabled) {
+  background: linear-gradient(180deg, rgba(30,36,44,0.92) 0%, rgba(20,26,33,0.90) 100%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 2px 8px rgba(0,0,0,0.45);
+}
+
+/* Provider prop-based accents (preferred) */
+.provider-google { border-color: rgba(234,67,53,0.28); }
+.provider-google:hover:not(:disabled) { border-color: rgba(234,67,53,0.38); }
+.provider-github { border-color: rgba(255,255,255,0.16); }
+.provider-github:hover:not(:disabled) { border-color: rgba(255,255,255,0.24); }
 
 /* Success Button */
 .success {

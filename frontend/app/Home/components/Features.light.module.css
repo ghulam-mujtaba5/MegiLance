@@ -1,8 +1,4 @@
-/* @AI-HINT: Light theme styles for the Features section. Defines colors for a bright, clean, and professional look. */
-
-.featuresSection {
-  background-color: #f9fafb;
-}
+/* @AI-HINT: Light theme styles for the Features section. Colors only; section background is transparent to use page background. */
 
 .tagline {
   color: var(--color-primary);

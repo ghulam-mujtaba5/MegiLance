@@ -77,6 +77,26 @@ This pattern has been applied to all major components, creating a pixel-perfect,
 
 ---
 
+## 🖼️ Public Pages Visual System (Backgrounds & Hierarchy)
+
+To ensure consistent, premium visuals across homepage and public routes (`/`, `/about`, `/pricing`, `/contact`, `/faq`, etc.), follow these rules:
+
+1.  **Page-Level Backgrounds Only**
+    - Define the page background (gradients, textures, glows) in the page's theme modules, e.g. `Home.light.module.css` and `Home.dark.module.css` under a root class like `.homePage`.
+    - Keep section components transparent by default so they sit on the page background.
+
+2.  **Section Rhythm**
+    - Apply vertical rhythm on a shared section class (e.g. `.homeSection`) with `padding-top/bottom` only. Avoid per-section arbitrary margins.
+    - Headings hierarchy: H1 once per page (Hero), then H2 for sections, H3 for sub-blocks.
+
+3.  **No Global Overrides**
+    - Do not set backgrounds in global CSS. Do not define conflicting fixed backgrounds inside child sections.
+    - If a section needs a card/surface, use an inner container with tokens and keep the section’s outer background transparent.
+
+Example (Home): see `app/Home/Home.light.module.css` and `app/Home/Home.dark.module.css` for the page-wide gradient background and section rhythm.
+
+---
+
 ## 🔐 Auth Layout: Two-Panel Grid
 
 All authentication pages (`/login`, `/signup`, `/forgot-password`, `/reset-password`) use a robust, accessible two-panel grid with a left branding panel and right form panel.

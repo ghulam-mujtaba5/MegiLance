@@ -1,8 +1,4 @@
-/* @AI-HINT: Dark theme styles for the Hero component. Defines colors, backgrounds, and a dynamic grid visual for a sleek, high-contrast appearance. */
-
-.heroContainer {
-  background-color: var(--color-surface-dark, #0d1117);
-}
+/* @AI-HINT: Dark theme styles for the Hero component. Colors and visuals only; section background is transparent to use page background. */
 
 .backgroundVisuals {
   background-image: radial-gradient(circle, var(--color-brand-primary-dark-translucent, hsla(212, 100%, 67%, 0.1)) 0%, transparent 50%),

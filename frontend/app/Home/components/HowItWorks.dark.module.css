@@ -1,8 +1,4 @@
-/* @AI-HINT: Dark theme styles for the How It Works section. Defines the color palette for a premium, high-contrast, and brand-aligned dark mode appearance. */
-
-.howItWorks {
-  background-color: #020617; /* cool-gray-950 */
-}
+/* @AI-HINT: Dark theme styles for the How It Works section. Section background is transparent to use page background. */
 
 .tagline {
   color: #87a8f0; /* Lighter MegiLance Blue */

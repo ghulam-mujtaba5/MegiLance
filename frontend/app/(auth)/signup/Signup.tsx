@@ -154,8 +154,8 @@ const Signup: React.FC = () => {
           </Tabs>
 
           <div className={styles.socialAuth}>
-            <Button variant="secondary" onClick={() => {}} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
-            <Button variant="secondary" onClick={() => {}} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
+            <Button variant="social" provider="google" onClick={() => {}} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
+            <Button variant="social" provider="github" onClick={() => {}} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
           </div>
 
           <div className={styles.divider}><span className={styles.dividerText}>OR</span></div>

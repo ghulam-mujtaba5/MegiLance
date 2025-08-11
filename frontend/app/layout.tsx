@@ -58,7 +58,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <AppChrome>
               {children}
             </AppChrome>
-            <ChatbotAgent />
           </ToasterProvider>
         </ThemeProvider>
       </body>

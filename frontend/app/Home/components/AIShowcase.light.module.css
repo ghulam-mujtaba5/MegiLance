@@ -1,8 +1,4 @@
-/* @AI-HINT: Light theme styles for AIShowcase, defining colors for a bright, clean, and professional look. */
-
-.aiShowcase {
-  background-color: #f9fafb;
-}
+/* @AI-HINT: Light theme styles for AIShowcase, defining colors for a bright, clean, and professional look. Section background is transparent. */
 
 .backgroundGrid {
     background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);

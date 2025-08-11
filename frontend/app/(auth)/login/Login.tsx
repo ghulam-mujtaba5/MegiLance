@@ -191,10 +191,10 @@ const Login: React.FC = () => {
           </Tabs>
 
           <div className={styles.socialAuth}>
-            <Button variant="secondary" onClick={() => handleSocialLogin('google')} disabled={loading}>
+            <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}>
               <FaGoogle className="mr-2" /> Continue with Google
             </Button>
-            <Button variant="secondary" onClick={() => handleSocialLogin('github')} disabled={loading}>
+            <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}>
               <FaGithub className="mr-2" /> Continue with GitHub
             </Button>
           </div>

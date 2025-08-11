@@ -51,10 +51,6 @@
   transform: rotate(45deg);
 }
 
-.iconOpen {
-  transform: rotate(225deg);
-}
-
 /* Animated Content Panel */
 .accordionContent {
   display: grid;

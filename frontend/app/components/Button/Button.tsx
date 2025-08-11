@@ -14,10 +14,12 @@ import darkStyles from './Button.dark.module.css';
 // Base props for the button, independent of the element type
 export interface ButtonOwnProps<E extends React.ElementType = React.ElementType> {
   as?: E;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'link' | 'success' | 'warning';
-  size?: 'sm' | 'md' | 'lg' | 'icon';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'link' | 'success' | 'warning' | 'social';
+  // supports legacy size names for backwards-compat
+  size?: 'sm' | 'md' | 'lg' | 'icon' | 'small' | 'medium' | 'large';
   isLoading?: boolean;
   fullWidth?: boolean;
+  provider?: 'google' | 'github';
   iconBefore?: React.ReactNode;
   iconAfter?: React.ReactNode;
   children: React.ReactNode;
@@ -36,13 +38,18 @@ const Button = <C extends React.ElementType = 'button'>({
   fullWidth = false,
   iconBefore,
   iconAfter,
+  provider,
   className = '',
   ...props
 }: ButtonProps<C>) => {
   const { theme } = useTheme();
-  const Component = as || 'button';
+  const Component = (as || 'button') as React.ElementType;
 
   if (!theme) return null; // Or a loading skeleton
+
+  // normalize legacy size values
+  const normalizedSize: 'sm' | 'md' | 'lg' | 'icon' =
+    size === 'small' ? 'sm' : size === 'medium' ? 'md' : size === 'large' ? 'lg' : (size as 'sm' | 'md' | 'lg' | 'icon');
 
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
@@ -50,11 +57,17 @@ const Button = <C extends React.ElementType = 'button'>({
     <Component
       className={cn(
         commonStyles.button,
+        // Support both prefixed and non-prefixed variant and size class names
         commonStyles[`variant-${variant}`],
-        commonStyles[`size-${size}`],
+        (commonStyles as any)[variant],
+        commonStyles[`size-${normalizedSize}`],
+        // legacy, in case any stylesheet references .small/.medium/.large directly
+        (commonStyles as any)[size as string],
         themeStyles.button,
         themeStyles[`variant-${variant}`],
-        themeStyles[`size-${size}`],
+        (themeStyles as any)[variant],
+        themeStyles[`size-${normalizedSize}`],
+        provider && themeStyles[`provider-${provider}`],
         isLoading && commonStyles.loading,
         isLoading && themeStyles.loading,
         fullWidth && commonStyles.fullWidth,

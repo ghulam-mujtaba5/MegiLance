@@ -1,9 +1,7 @@
 /* AI-HINT: Premium floating theme toggle button styles, always at bottom right */
 .themeToggleFloating {
-  position: fixed;
-  bottom: 1.8rem;
-  right: 1.8rem;
-  z-index: 99999;
+  position: static; /* Positioned by FloatingActionButtons */
+  z-index: auto;
   pointer-events: none;
   display: flex;
   align-items: flex-end;
