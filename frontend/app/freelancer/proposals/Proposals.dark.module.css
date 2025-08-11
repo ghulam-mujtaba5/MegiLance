@@ -1,8 +1,23 @@
 /* @AI-HINT: Dark theme styles for Proposals page. */
 
-.container { color: #e5e7eb; }
-.title { color: #f9fafb; }
-.subtitle { color: #9ca3af; }
+/* @AI-HINT: Dark theme styles for the Proposals page. */
+
+.container {
+  background-color: var(--bg-primary-dark);
+}
+
+.title {
+  color: var(--text-primary-dark);
+}
+
+.subtitle {
+  color: var(--text-secondary-dark);
+}
+
+.toolbarContainer {
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid var(--border-dark);
+}
 
 .input { background: #0b1220; border-color: #1f2937; color: #e5e7eb; }
 .select { background: #0b1220; border-color: #1f2937; color: #e5e7eb; }
@@ -13,6 +28,21 @@
 .table thead th { background: #0f172a; color: #e5e7eb; border-bottom: 1px solid #1f2937; }
 .table tbody tr + tr td { border-top: 1px solid #111827; }
 
-.emptyState { background: #0f172a; color: #9ca3af; }
+.emptyState {
+  background-color: var(--bg-secondary-dark);
+  border: 1px dashed var(--border-dark);
+}
+
+.emptyTitle {
+  color: var(--text-primary-dark);
+}
+
+.emptyText {
+  color: var(--text-secondary-dark);
+}
+
+.modalText {
+    color: var(--text-secondary-dark);
+}
 
 .status { background: #1f2937; color: #c7d2fe; }

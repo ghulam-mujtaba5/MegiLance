@@ -1,17 +1,25 @@
-.chartContainer {
-  border-radius: var(--border-radius-lg);
-  padding: 1.5rem;
-  height: 100%;
-}
-
-.chartTitle {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+/* @AI-HINT: Common styles for the modernized SpendingChart. Defines layout for the chart wrapper and tooltip. */
+.chartWrapper {
+  width: 100%;
+  height: 250px; /* Fixed height for consistency inside the widget */
 }
 
 .customTooltip {
-  padding: 0.5rem 1rem;
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
+  padding: 8px 12px;
+  border-radius: 8px;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  font-size: 0.875rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tooltipLabel {
+  margin: 0;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tooltipValue {
+  margin: 0;
+  font-weight: 500;
 }

@@ -1,0 +1,36 @@
+/* @AI-HINT: Dark theme styles for the ProposalCard. */
+
+.card {
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-sm-dark);
+}
+
+.card:hover {
+  border-color: var(--brand-primary-dark-hover);
+  box-shadow: var(--shadow-md-dark);
+}
+
+.cardHeader, .cardFooter {
+    border-color: var(--border-dark);
+}
+
+.jobTitle {
+  color: var(--text-primary-dark);
+}
+
+.clientInfo {
+    color: var(--text-secondary-dark);
+}
+
+.icon {
+    color: var(--brand-primary);
+}
+
+.detailValue {
+    color: var(--text-primary-dark);
+}
+
+.detailLabel {
+    color: var(--text-tertiary-dark);
+}

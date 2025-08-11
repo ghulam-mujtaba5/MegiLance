@@ -1,0 +1,18 @@
+/* @AI-HINT: Light theme styles for the StatusFilter component. */
+
+.filterButton {
+  background-color: #ffffff;
+  border-color: var(--border-light);
+  color: var(--text-secondary-light);
+}
+
+.filterButton:hover {
+  border-color: var(--brand-primary-light-hover);
+  color: var(--brand-primary-light-hover);
+}
+
+.selected {
+  background-color: var(--brand-primary-light-active);
+  border-color: var(--brand-primary-light-active);
+  color: #ffffff;
+}

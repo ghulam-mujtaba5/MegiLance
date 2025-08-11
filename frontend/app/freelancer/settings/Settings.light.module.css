@@ -1,0 +1,29 @@
+/* @AI-HINT: Light theme styles for the Settings pages. */
+
+.formContainer {
+  background-color: var(--bg-primary-light);
+}
+
+.formHeader {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.formTitle {
+  color: var(--text-primary-light);
+}
+
+.formDescription {
+  color: var(--text-secondary-light);
+}
+
+.input {
+  /* Uses global light theme variables from Input component */
+}
+
+.inputHint {
+  color: var(--text-tertiary-light);
+}
+
+.formFooter {
+  border-top: 1px solid var(--border-light);
+}

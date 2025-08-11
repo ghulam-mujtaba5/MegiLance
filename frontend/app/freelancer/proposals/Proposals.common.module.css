@@ -2,8 +2,6 @@
 
 .container { display: grid; gap: 24px; }
 .header { display: grid; gap: 8px; }
-.title { font-weight: 600; font-size: 1.5rem; letter-spacing: -0.01em; }
-.subtitle { color: var(--muted-foreground); }
 
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }

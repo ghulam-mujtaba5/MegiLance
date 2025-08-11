@@ -1,66 +1,95 @@
-// @AI-HINT: This is the Account settings page for freelancers. It uses the reusable SettingsSection component for a consistent, premium layout.
+// @AI-HINT: This is the main Account Settings page for freelancers. It features a modern, clean form for updating profile information and is built to be theme-aware and responsive.
 'use client';
 
 import React, { useState } from 'react';
-import SettingsSection from '@/app/Settings/components/SettingsSection/SettingsSection';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import { useToaster } from '@/app/components/Toast/ToasterProvider';
+
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
+import { Label } from '@/app/components/Label/Label';
+
+import commonStyles from './Settings.common.module.css';
+import lightStyles from './Settings.light.module.css';
+import darkStyles from './Settings.dark.module.css';
 
 const AccountSettingsPage = () => {
-  const [fullName, setFullName] = useState('John Doe');
-  const [email] = useState('john.doe@example.com');
-  const [status, setStatus] = useState<string>('');
-  const [errors, setErrors] = useState<{ fullName?: string } >({});
+  const { theme } = useTheme();
+  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const toaster = useToaster();
 
-  const onSubmit = (e: React.FormEvent) => {
+  const [fullName, setFullName] = useState('Morgan Lee');
+  const [professionalTitle, setProfessionalTitle] = useState('Senior Frontend Developer');
+  const [email] = useState('morgan.lee@megilance.dev'); // Email is typically not editable
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const next: typeof errors = {};
-    if (!fullName.trim()) next.fullName = 'Full name is required';
-    setErrors(next);
-    if (Object.keys(next).length > 0) {
-      setStatus('Please fix the highlighted fields');
-      return;
-    }
-    setStatus('Account settings saved');
+    setIsSaving(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSaving(false);
+      toaster.success('Profile updated successfully!');
+    }, 1500);
   };
 
   return (
-    <SettingsSection
-      title="Account"
-      description="Update your account information."
-    >
-      <form onSubmit={onSubmit} noValidate>
-        {status && (
-          <div role="status" aria-live="polite" className="pb-4 text-sm text-muted-foreground">{status}</div>
-        )}
-        <div className="space-y-4">
+    <div className={cn(commonStyles.formContainer, styles.formContainer)}>
+      <header className={cn(commonStyles.formHeader, styles.formHeader)}>
+        <h2 className={cn(commonStyles.formTitle, styles.formTitle)}>Public Profile</h2>
+        <p className={cn(commonStyles.formDescription, styles.formDescription)}>
+          This information will be displayed on your public profile.
+        </p>
+      </header>
+
+      <form onSubmit={handleSubmit} className={commonStyles.form}>
+        <div className={commonStyles.inputGroup}>
+          <Label htmlFor="fullName">Full Name</Label>
           <Input
-            label="Full Name"
-            type="text"
             id="fullName"
-            defaultValue={fullName}
-            aria-invalid={errors.fullName ? 'true' : undefined}
-            aria-describedby={errors.fullName ? 'fullName-error' : undefined}
-            className="max-w-md"
+            type="text"
+            value={fullName}
             onChange={(e) => setFullName(e.target.value)}
+            placeholder="e.g., Alex Doe"
+            className={styles.input}
           />
-          {errors.fullName && (
-            <p id="fullName-error" className="text-sm text-red-600">{errors.fullName}</p>
-          )}
+        </div>
+
+        <div className={commonStyles.inputGroup}>
+          <Label htmlFor="professionalTitle">Professional Title</Label>
           <Input
-            label="Email Address"
-            type="email"
-            id="email"
-            defaultValue={email}
-            className="max-w-md"
-            disabled
+            id="professionalTitle"
+            type="text"
+            value={professionalTitle}
+            onChange={(e) => setProfessionalTitle(e.target.value)}
+            placeholder="e.g., Senior Product Designer"
+            className={styles.input}
           />
         </div>
-        <div className="pt-6">
-          <Button variant="primary" type="submit" title="Save account changes">Save Changes</Button>
+
+        <div className={commonStyles.inputGroup}>
+          <Label htmlFor="email">Email Address</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            disabled
+            className={styles.input}
+            aria-describedby="email-description"
+          />
+          <p id="email-description" className={cn(commonStyles.inputHint, styles.inputHint)}>
+            Your email address cannot be changed.
+          </p>
         </div>
+
+        <footer className={cn(commonStyles.formFooter, styles.formFooter)}>
+          <Button type="submit" disabled={isSaving}>
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </footer>
       </form>
-    </SettingsSection>
+    </div>
   );
 };
 

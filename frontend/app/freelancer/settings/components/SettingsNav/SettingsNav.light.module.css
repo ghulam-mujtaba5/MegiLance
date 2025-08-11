@@ -1,0 +1,20 @@
+/* @AI-HINT: Light theme styles for the SettingsNav component. */
+
+.navLink {
+  color: var(--text-secondary-light);
+}
+
+.navLink:hover {
+  background-color: var(--bg-tertiary-light);
+  color: var(--text-primary-light);
+}
+
+.active {
+  background-color: var(--brand-primary-light-active-faded);
+  color: var(--brand-primary-light-active);
+  font-weight: 600;
+}
+
+.active .navIcon {
+  color: var(--brand-primary-light-active);
+}

@@ -1,8 +1,21 @@
 /* @AI-HINT: Light theme styles for Proposals page. */
 
-.container { color: #0f172a; }
-.title { color: #0f172a; }
-.subtitle { color: #475569; }
+.container {
+  background-color: var(--bg-primary-light);
+}
+
+.title {
+  color: var(--text-primary-light);
+}
+
+.subtitle {
+  color: var(--text-secondary-light);
+}
+
+.toolbarContainer {
+  background-color: var(--bg-secondary-light);
+  border: 1px solid var(--border-light);
+}
 
 .input { background: #ffffff; border-color: #e2e8f0; color: #0f172a; }
 .select { background: #ffffff; border-color: #e2e8f0; color: #0f172a; }
@@ -11,8 +24,23 @@
 
 .tableWrap { background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04); }
 .table thead th { background: #f8fafc; color: #0f172a; border-bottom: 1px solid #e2e8f0; }
-.table tbody tr + tr td { border-top: 1px solid #f1f5f9; }
+td { border-top: 1px solid #f1f5f9; }
 
-.emptyState { background: #f8fafc; color: #475569; }
+.emptyState {
+  background-color: var(--bg-secondary-light);
+  border: 1px dashed var(--border-light);
+}
+
+.emptyTitle {
+  color: var(--text-primary-light);
+}
+
+.emptyText {
+  color: var(--text-secondary-light);
+}
+
+.modalText {
+    color: var(--text-secondary-light);
+}
 
 .status { background: #eef2ff; color: #3730a3; }

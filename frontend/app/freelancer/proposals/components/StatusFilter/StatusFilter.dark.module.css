@@ -1,0 +1,18 @@
+/* @AI-HINT: Dark theme styles for the StatusFilter component. */
+
+.filterButton {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+  color: var(--text-secondary-dark);
+}
+
+.filterButton:hover {
+  border-color: var(--brand-primary-dark-hover);
+  color: var(--brand-primary-dark-hover);
+}
+
+.selected {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #ffffff;
+}

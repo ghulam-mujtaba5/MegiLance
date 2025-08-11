@@ -1,0 +1,92 @@
+/* @AI-HINT: Common styles for the ProposalCard component. Defines the card's structure, layout, and responsive behavior. */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  padding: 1.25rem; /* 20px */
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid;
+}
+
+.jobTitle {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  font-family: var(--font-poppins);
+  line-height: 1.4;
+}
+
+.clientInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem; /* 14px */
+}
+
+.cardBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+}
+
+.icon {
+    margin-bottom: 0.25rem;
+}
+
+.detailValue {
+    font-size: 1.25rem; /* 20px */
+    font-weight: 600;
+}
+
+.detailLabel {
+    font-size: 0.8125rem; /* 13px */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid;
+}
+
+.statusBadge {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions > button {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

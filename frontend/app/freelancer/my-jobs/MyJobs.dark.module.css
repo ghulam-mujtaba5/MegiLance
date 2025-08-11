@@ -1,4 +1,8 @@
 /* @AI-HINT: Dark theme styles for the MyJobs page. */
+.container {
+  background-color: var(--bg-primary-dark);
+}
+
 .title {
   color: var(--text-primary-dark);
 }
@@ -6,9 +10,3 @@
 .subtitle {
   color: var(--text-secondary-dark);
 }
-
-.sectionTitle {
-  color: var(--text-primary-dark);
-  border-color: var(--border-dark);
-}
-

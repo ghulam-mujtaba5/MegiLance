@@ -1,0 +1,25 @@
+/* @AI-HINT: Common styles for the StatusFilter component. Defines the layout for the button group. */
+
+.filterGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.filterButton {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid;
+}
+
+.filterButton:hover {
+  transform: translateY(-2px);
+}
+
+.selected {
+  font-weight: 600;
+}

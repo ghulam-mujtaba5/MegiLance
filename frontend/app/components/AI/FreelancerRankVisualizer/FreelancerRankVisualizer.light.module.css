@@ -14,3 +14,20 @@
 .progressBarContainer {
   background-color: #e0e0e0;
 }
+
+/* @AI-HINT: Light theme styles for FreelancerRankVisualizer radial progress and text. */
+.radialBg {
+  stroke: #e2e8f0;
+}
+
+.scoreValue {
+  color: #1e293b;
+}
+
+.scoreLabel {
+  color: #475569;
+}
+
+.nextRankInfo {
+  color: #475569;
+}

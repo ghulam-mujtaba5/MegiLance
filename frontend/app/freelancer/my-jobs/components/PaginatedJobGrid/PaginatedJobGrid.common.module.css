@@ -1,0 +1,37 @@
+/* @AI-HINT: Common styles for the PaginatedJobGrid component. Defines layout, typography, and states for the grid container and its elements. */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* 20px */
+  padding: 1.5rem; /* 24px */
+  border-radius: 0.75rem; /* 12px */
+}
+
+.sectionTitle {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  font-family: var(--font-poppins);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid;
+}
+
+.jobGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem; /* 24px */
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  border-radius: 0.5rem; /* 8px */
+  font-size: 1rem; /* 16px */
+  font-weight: 500;
+}
+
+.extrasRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}

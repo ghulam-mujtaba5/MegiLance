@@ -22,14 +22,26 @@
   color: var(--text-secondary-light);
 }
 
-.activeStatus {
-  background-color: var(--color-warning-light-transparent);
-  color: var(--color-warning-dark);
+.statusValue {
+  color: var(--text-primary-light);
 }
 
-.completedStatus {
-  background-color: var(--color-success-light-transparent);
-  color: var(--color-success-dark);
+.statusValue.completed {
+  background-color: #f0fdf4; /* green-50 */
+  color: #15803d; /* green-700 */
+}
+
+.statusValue.active {
+  background-color: #fffbeb; /* amber-50 */
+  color: #b45309; /* amber-700 */
+}
+
+.progressBarWrapper {
+  background-color: var(--bg-secondary-light);
+}
+
+.progressBar {
+  background-color: var(--color-primary-megilance);
 }
 
 .progress {

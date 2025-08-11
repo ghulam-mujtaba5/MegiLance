@@ -1,4 +1,8 @@
 /* @AI-HINT: Light theme styles for the MyJobs page. */
+.container {
+  background-color: var(--bg-primary-light);
+}
+
 .title {
   color: var(--text-primary-light);
 }
@@ -6,9 +10,3 @@
 .subtitle {
   color: var(--text-secondary-light);
 }
-
-.sectionTitle {
-  color: var(--text-primary-light);
-  border-color: var(--border-light);
-}
-

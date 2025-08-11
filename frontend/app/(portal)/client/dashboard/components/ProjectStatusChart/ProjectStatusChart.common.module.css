@@ -1,17 +1,42 @@
-.chartContainer {
-  border-radius: var(--border-radius-lg);
-  padding: 1.5rem;
-  height: 100%;
-}
-
-.chartTitle {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+/* @AI-HINT: Common styles for the modernized ProjectStatusChart. Defines layout for the chart, tooltip, and custom legend. */
+.chartWrapper {
+  width: 100%;
+  height: 250px; /* Fixed height for consistency inside the widget */
 }
 
 .customTooltip {
-  padding: 0.5rem 1rem;
-  border-radius: var(--border-radius-md);
-  font-size: var(--font-size-sm);
+  padding: 8px 12px;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.tooltipLabel {
+  margin: 0;
+}
+
+.legendList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.legendIcon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
 }

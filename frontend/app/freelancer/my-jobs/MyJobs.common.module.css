@@ -5,43 +5,44 @@
   gap: var(--space-6);
 }
 
-.header {
+/* @AI-HINT: Common styles for the modernized MyJobs page. Defines the main container, header, and the two-column grid layout for the active and completed job sections. */
+.container {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2rem;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: left;
 }
 
 .title {
-  font-family: var(--font-poppins);
-  font-size: var(--font-size-xxl);
+  font-size: 2rem; /* 32px */
   font-weight: 700;
-  margin: 0;
+  font-family: var(--font-poppins);
+  letter-spacing: -0.025em;
 }
 
 .subtitle {
-  font-size: var(--font-size-md);
-  margin: 0;
+  font-size: 1.125rem; /* 18px */
+  margin-top: 0.25rem;
 }
 
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.sectionTitle {
-  font-family: var(--font-poppins);
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  margin: 0;
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid;
-}
-
-.jobGrid {
+.gridsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--space-5);
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+/* On larger screens, display side-by-side */
+@media (min-width: 1280px) {
+  .gridsContainer {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
 }
 
 /* Toolbar and controls */

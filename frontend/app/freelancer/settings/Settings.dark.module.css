@@ -1,0 +1,29 @@
+/* @AI-HINT: Dark theme styles for the Settings pages. */
+
+.formContainer {
+  background-color: var(--bg-primary-dark);
+}
+
+.formHeader {
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.formTitle {
+  color: var(--text-primary-dark);
+}
+
+.formDescription {
+  color: var(--text-secondary-dark);
+}
+
+.input {
+  /* Uses global dark theme variables from Input component */
+}
+
+.inputHint {
+  color: var(--text-tertiary-dark);
+}
+
+.formFooter {
+  border-top: 1px solid var(--border-dark);
+}
