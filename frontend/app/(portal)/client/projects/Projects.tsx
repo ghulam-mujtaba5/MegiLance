@@ -54,7 +54,8 @@ const Projects: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [sortKey, setSortKey] = useState('updatedAt');
+  // Strongly type the sort key to the allowed fields
+  const [sortKey, setSortKey] = useState<'updatedAt' | 'title' | 'budget' | 'progress'>('updatedAt');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(9);
 
@@ -66,10 +67,22 @@ const Projects: React.FC = () => {
 
   const sortedProjects = useMemo(() => {
     return [...filteredProjects].sort((a, b) => {
-      const key = sortKey as keyof ProjectCardProps;
-      if (a[key] < b[key]) return 1;
-      if (a[key] > b[key]) return -1;
-      return 0;
+      // Sort descending by selected key
+      switch (sortKey) {
+        case 'budget':
+        case 'progress': {
+          const av = a[sortKey] as number;
+          const bv = b[sortKey] as number;
+          return bv - av;
+        }
+        case 'title':
+        case 'updatedAt':
+        default: {
+          const av = String(a[sortKey] ?? '');
+          const bv = String(b[sortKey] ?? '');
+          return bv.localeCompare(av);
+        }
+      }
     });
   }, [filteredProjects, sortKey]);
 
@@ -105,7 +118,12 @@ const Projects: React.FC = () => {
         />
         <div className={common.filters}>
           <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
-          <Select id="sort-key" options={SORT_OPTIONS} value={sortKey} onChange={(e) => setSortKey(e.target.value)} />
+          <Select
+            id="sort-key"
+            options={SORT_OPTIONS}
+            value={sortKey}
+            onChange={(e) => setSortKey(e.target.value as 'updatedAt' | 'title' | 'budget' | 'progress')}
+          />
         </div>
       </div>
 

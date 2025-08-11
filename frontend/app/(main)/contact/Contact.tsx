@@ -5,14 +5,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useTheme } from 'next-themes';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
 import Button from '@/app/components/Button/Button';
-import { Input } from '@/app/components/Input/Input';
-import { Select } from '@/app/components/Select/Select';
-import { Textarea } from '@/app/components/Textarea/Textarea';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Textarea from '@/app/components/Textarea/Textarea';
 import { useToast } from '@/app/components/Toast/use-toast';
 
 import common from './Contact.common.module.css';
@@ -22,9 +22,7 @@ import dark from './Contact.dark.module.css';
 const contactSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email address.' }),
-  topic: z.enum(['support', 'sales', 'partnerships'], {
-    errorMap: () => ({ message: 'Please select a topic.' }),
-  }),
+  topic: z.enum(['support', 'sales', 'partnerships']),
   message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
@@ -44,7 +42,7 @@ const containerVariants = {
       staggerChildren: 0.1,
     },
   },
-};
+} satisfies Variants;
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -56,7 +54,7 @@ const itemVariants = {
       stiffness: 100,
     },
   },
-};
+} satisfies Variants;
 
 const Contact: React.FC = () => {
   const { theme } = useTheme();
@@ -111,7 +109,7 @@ const Contact: React.FC = () => {
         <motion.header className={styles.header} variants={itemVariants}>
           <h1 className={styles.title}>Get in Touch</h1>
           <p className={styles.subtitle}>
-            Have a question or a project in mind? We'd love to hear from you.
+            Have a question or a project in mind? We&apos;d love to hear from you.
           </p>
         </motion.header>
 
@@ -148,15 +146,15 @@ const Contact: React.FC = () => {
                 id="topic"
                 label="Topic"
                 {...register('topic')}
-                error={errors.topic?.message}
                 disabled={isSubmitting}
                 defaultValue=""
-              >
-                <option value="" disabled>Select a topic...</option>
-                <option value="support">General Support</option>
-                <option value="sales">Sales Inquiry</option>
-                <option value="partnerships">Partnerships</option>
-              </Select>
+                options={[
+                  { value: '', label: 'Select a topic...' },
+                  { value: 'support', label: 'General Support' },
+                  { value: 'sales', label: 'Sales Inquiry' },
+                  { value: 'partnerships', label: 'Partnerships' },
+                ]}
+              />
               <Textarea
                 id="message"
                 label="Your Message"

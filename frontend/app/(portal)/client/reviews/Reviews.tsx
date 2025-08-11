@@ -7,12 +7,12 @@ import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useClientData } from '@/hooks/useClient';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
-import Input from '@/app/components/Forms/Input';
-import Select from '@/app/components/Forms/Select';
-import Button from '@/app/components/Forms/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Button from '@/app/components/Button/Button';
 import StarRating from '@/app/components/StarRating/StarRating';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
-import Textarea from '@/app/components/Forms/Textarea';
+import Textarea from '@/app/components/Textarea/Textarea';
 import common from './Reviews.common.module.css';
 import light from './Reviews.light.module.css';
 import dark from './Reviews.dark.module.css';
@@ -142,7 +142,7 @@ const Reviews: React.FC = () => {
               {paged.map(r => (
                 <article key={r.id} className={cn(common.card, themed.card)}>
                   <header className={common.cardHeader}>
-                    <UserAvatar src={r.avatarUrl} alt={r.freelancer} size={40} />
+                    <UserAvatar src={r.avatarUrl} name={r.freelancer} size={40} />
                     <div className={common.headerText}>
                       <h3 className={common.freelancerName}>{r.freelancer}</h3>
                       <p className={common.projectName}>{r.project}</p>
@@ -188,15 +188,26 @@ const Reviews: React.FC = () => {
         <section ref={editorRef} className={cn(common.editor, themed.editor, editorVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="new-title">
           <h2 id="new-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Leave a Review</h2>
           <div className={common.editorForm}>
-            <StarRating rating={newRating} onRatingChange={setStar} isEditable={true} />
+            <div className={common.ratingSelector}>
+              <span className={common.ratingLabel}>Your rating:</span>
+              {[1,2,3,4,5].map(n => (
+                <button
+                  key={n}
+                  type="button"
+                  className={cn(common.ratingStarButton, n <= newRating ? common.ratingStarActive : common.ratingStarInactive)}
+                  onClick={() => setStar(n)}
+                  aria-label={`Set rating to ${n} star${n>1?'s':''}`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
             <Textarea 
               id="review-text"
               placeholder="Share your experience and the outcomes of the project..."
               value={newText}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setNewText(e.target.value)}
-              minChars={10}
-              maxChars={1000}
-              helpText="Describe the quality, communication, and overall satisfaction."
+              helpText="Describe the quality, communication, and overall satisfaction. Minimum 10 characters."
             />
             <div className={common.editorActions}>
               <Button variant="secondary" onClick={() => { setNewText(''); setNewRating(0); }} title="Clear review form">Clear</Button>

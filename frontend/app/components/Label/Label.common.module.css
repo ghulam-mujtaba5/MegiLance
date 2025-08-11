@@ -1,0 +1,11 @@
+/* AI-HINT: Common styles for Label component */
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.required {
+  margin-left: 4px;
+}

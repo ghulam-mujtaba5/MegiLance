@@ -1,7 +1,7 @@
 // @AI-HINT: Generic saved views hook for data/table pages. Stores named views in localStorage per storageKey.
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface SavedView<T = any> {
   name: string;
@@ -18,7 +18,7 @@ interface UseSavedViews<T> {
 }
 
 export function useSavedViews<T = any>(storageKey: string): UseSavedViews<T> {
-  const read = (): SavedView<T>[] => {
+  const read = useCallback((): SavedView<T>[] => {
     try {
       const raw = typeof window !== 'undefined' ? localStorage.getItem(storageKey) : null;
       if (!raw) return [];
@@ -27,7 +27,7 @@ export function useSavedViews<T = any>(storageKey: string): UseSavedViews<T> {
     } catch {
       return [];
     }
-  };
+  }, [storageKey]);
 
   const [views, setViews] = useState<SavedView<T>[]>(read);
 
@@ -38,7 +38,7 @@ export function useSavedViews<T = any>(storageKey: string): UseSavedViews<T> {
     };
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
-  }, [storageKey]);
+  }, [storageKey, read]);
 
   const write = (items: SavedView<T>[]) => {
     localStorage.setItem(storageKey, JSON.stringify(items));

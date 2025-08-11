@@ -66,8 +66,6 @@ const StepBudget: React.FC<StepBudgetProps> = ({ data, updateData, errors }) => 
           value={data.timeline}
           onChange={(e) => updateData({ timeline: e.target.value })}
           options={TIMELINE_OPTIONS.map(t => ({ value: t, label: t }))}
-          placeholder="Select a timeline"
-          error={errors.timeline}
           required
         />
       </div>

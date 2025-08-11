@@ -16,6 +16,9 @@ export interface DashboardWidgetProps {
   onClick?: () => void;
   children?: React.ReactNode;
   className?: string;
+  loading?: boolean;
+  iconColor?: string;
+  style?: React.CSSProperties;
 }
 
 const DashboardWidget: React.FC<DashboardWidgetProps> = ({ 
@@ -26,6 +29,9 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
   onClick,
   children,
   className,
+  loading,
+  iconColor,
+  style,
 }) => {
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
@@ -45,6 +51,21 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
+  // Simple skeleton when loading
+  if (loading) {
+    return (
+      <div className={cn(common.widget, themed.widget, common.loading, className)} aria-busy>
+        <div className={common.header}>
+          <div className={cn(common.iconWrapper, themed.iconWrapper)} />
+          <div className={common.titleSkeleton} />
+        </div>
+        <div className={common.body}>
+          <div className={common.valueSkeleton} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <motion.div
       variants={motionVariants}
@@ -55,9 +76,10 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
       onClick={onClick}
       onKeyDown={handleKeyDown}
       title={isClickable ? `View details for ${title}` : undefined}
+      style={style}
     >
       <div className={common.header}>
-        <div className={cn(common.iconWrapper, themed.iconWrapper)}>
+        <div className={cn(common.iconWrapper, themed.iconWrapper)} style={iconColor ? { color: iconColor } : undefined}>
           {Icon && <Icon size={20} />}
         </div>
         <h3 id={titleId} className={cn(common.title, themed.title)}>{title}</h3>

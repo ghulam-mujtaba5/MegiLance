@@ -30,7 +30,7 @@ const AccountSettingsPage = () => {
     // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
-      toaster.success('Profile updated successfully!');
+      toaster.notify({ title: 'Saved', description: 'Profile updated successfully!', variant: 'success' });
     }, 1500);
   };
 

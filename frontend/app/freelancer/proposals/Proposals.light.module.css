@@ -24,7 +24,7 @@
 
 .tableWrap { background: #ffffff; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04); }
 .table thead th { background: #f8fafc; color: #0f172a; border-bottom: 1px solid #e2e8f0; }
-td { border-top: 1px solid #f1f5f9; }
+.table td { border-top: 1px solid #f1f5f9; }
 
 .emptyState {
   background-color: var(--bg-secondary-light);

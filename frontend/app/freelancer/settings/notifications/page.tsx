@@ -40,7 +40,7 @@ const NotificationSettingsPage = () => {
     // Simulate API call
     setTimeout(() => {
       setIsSaving(false);
-      toaster.success('Notification settings saved!');
+      toaster.notify({ title: 'Saved', description: 'Notification settings saved!', variant: 'success' });
       // Here you would persist the `settings` object
     }, 1500);
   };

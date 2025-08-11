@@ -99,15 +99,15 @@ const ProposalsPage: React.FC = () => {
 
   const confirmWithdraw = () => {
     if (pendingWithdrawId) {
-      toaster.success('Proposal successfully withdrawn.');
+      toaster.notify({ title: 'Success', description: 'Proposal successfully withdrawn.', variant: 'success' });
       setWithdrawOpen(false);
       setPendingWithdrawId(null);
       // In a real app, you would re-fetch or mutate data here.
     }
   };
 
-  const handleView = (id: string) => toaster.info(`Viewing proposal ${id}`);
-  const handleEdit = (id: string) => toaster.info(`Editing proposal ${id}`);
+  const handleView = (id: string) => toaster.notify({ description: `Viewing proposal ${id}`, variant: 'info' });
+  const handleEdit = (id: string) => toaster.notify({ description: `Editing proposal ${id}`, variant: 'info' });
 
   return (
     <div className={cn(commonStyles.container, styles.container)}>
@@ -142,7 +142,7 @@ const ProposalsPage: React.FC = () => {
 
       {loading ? (
         <div className={cn(commonStyles.grid, styles.grid)}>
-            <TableSkeleton variant="cards" count={pageSize} />
+            <TableSkeleton rows={pageSize} cols={1} useCards />
         </div>
       ) : sorted.length > 0 ? (
         <div className={cn(commonStyles.grid, styles.grid)}>

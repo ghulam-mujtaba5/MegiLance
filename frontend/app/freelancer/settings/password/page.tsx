@@ -29,11 +29,11 @@ const PasswordSettingsPage = () => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      toaster.error('New passwords do not match.');
+      toaster.notify({ title: 'Password mismatch', description: 'New passwords do not match.', variant: 'danger' });
       return;
     }
     if (newPassword.length < 8) {
-      toaster.error('Password must be at least 8 characters long.');
+      toaster.notify({ title: 'Weak password', description: 'Password must be at least 8 characters long.', variant: 'warning' });
       return;
     }
 
@@ -44,7 +44,7 @@ const PasswordSettingsPage = () => {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      toaster.success('Password updated successfully!');
+      toaster.notify({ title: 'Updated', description: 'Password updated successfully!', variant: 'success' });
     }, 1500);
   };
 

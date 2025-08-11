@@ -2,13 +2,14 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+// Link not used; navigate via router on button click
 import { cn } from '@/lib/utils';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import StarRating from '@/app/components/StarRating/StarRating';
 import Badge from '@/app/components/Badge/Badge';
-import Button from '@/app/components/Forms/Button/Button';
+import Button from '@/app/components/Button/Button';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { Briefcase, MapPin, DollarSign } from 'lucide-react';
 
 import common from './FreelancerCard.common.module.css';
@@ -33,6 +34,7 @@ interface FreelancerCardProps {
 
 const FreelancerCard: React.FC<FreelancerCardProps> = ({ freelancer }) => {
   const { theme } = useTheme();
+  const router = useRouter();
   const themed = theme === 'dark' ? dark : light;
 
   return (
@@ -76,11 +78,19 @@ const FreelancerCard: React.FC<FreelancerCardProps> = ({ freelancer }) => {
       </div>
 
       <div className={common.cardFooter}>
-        <Button variant="outline" asChild>
-          <Link href={`/freelancers/${freelancer.id}`}>View Profile</Link>
+        <Button
+          variant="secondary"
+          onClick={() => router.push(`/freelancers/${freelancer.id}`)}
+          title="View freelancer profile"
+        >
+          View Profile
         </Button>
-        <Button variant="primary" asChild>
-          <Link href={`/client/hire?freelancer=${freelancer.id}`}>Hire Now</Link>
+        <Button
+          variant="primary"
+          onClick={() => router.push(`/client/hire?freelancer=${freelancer.id}`)}
+          title="Hire this freelancer"
+        >
+          Hire Now
         </Button>
       </div>
     </article>

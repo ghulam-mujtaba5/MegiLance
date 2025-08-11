@@ -95,6 +95,20 @@ const Signup: React.FC = () => {
     }
   };
 
+  // @AI-HINT: Social signup click handler. In preview mode, this simulates the auth flow and redirects to the appropriate dashboard. Replace with real provider logic when backend is ready.
+  const handleSocialLogin = (provider: 'google' | 'github') => {
+    if (isPreviewMode()) {
+      setLoading(true);
+      console.log(`Preview social signup via ${provider} as ${selectedRole}`);
+      setTimeout(() => {
+        setLoading(false);
+        router.push(selectedRole === 'client' ? '/client/dashboard' : '/dashboard');
+      }, 300);
+      return;
+    }
+    console.log('Social signup clicked:', provider, 'role:', selectedRole);
+  };
+
   const styles = useMemo(() => {
     const themeStyles = theme === 'light' ? lightStyles : darkStyles;
     const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
@@ -154,8 +168,8 @@ const Signup: React.FC = () => {
           </Tabs>
 
           <div className={styles.socialAuth}>
-            <Button variant="social" provider="google" onClick={() => {}} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
-            <Button variant="social" provider="github" onClick={() => {}} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
+            <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
+            <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
           </div>
 
           <div className={styles.divider}><span className={styles.dividerText}>OR</span></div>

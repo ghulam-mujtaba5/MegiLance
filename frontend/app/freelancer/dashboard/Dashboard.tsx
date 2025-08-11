@@ -21,14 +21,20 @@ const Dashboard: React.FC = () => {
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
 
   const renderJobItem = (job: any) => (
-    <ProjectCard
-      key={job.id}
-      title={job.title ?? 'Untitled Job'}
-      clientName={job.clientName ?? 'Unknown Client'}
-      budget={job.budget ?? '$0'}
-      postedTime={job.postedTime ?? 'Unknown'}
-      tags={Array.isArray(job.skills) ? job.skills : []}
-    />
+      <ProjectCard
+        key={job.id}
+        id={job.id ?? 'unknown'}
+        title={job.title ?? 'Untitled Job'}
+        status={job.status ?? 'Pending'}
+        progress={job.progress ?? 0}
+        budget={typeof job.budget === 'number' ? job.budget : 0}
+        paid={job.paid ?? 0}
+        freelancers={job.freelancers ?? []}
+        updatedAt={job.updatedAt ?? ''}
+        clientName={job.clientName ?? 'Unknown Client'}
+        postedTime={job.postedTime ?? 'Unknown'}
+        tags={Array.isArray(job.skills) ? job.skills : []}
+      />
   );
 
   const renderTransactionItem = (txn: any) => (

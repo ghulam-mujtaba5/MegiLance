@@ -30,7 +30,7 @@ const WidgetSkeleton: React.FC = () => {
   return (
     <div className={cn(common.widgetSkeleton, themed.widgetSkeleton)}>
       <div className={common.skeletonHeader}>
-        <Skeleton circle height={36} width={36} />
+        <Skeleton height={36} width={36} radius={18} />
         <Skeleton height={16} width={'60%'} />
       </div>
       <Skeleton height={36} width={'40%'} />

@@ -3,7 +3,7 @@
 
 import React from 'react';
 import UserAvatar from '../components/UserAvatar/UserAvatar';
-import ProjectCard from '../components/ProjectCard/ProjectCard';
+import ProjectCard, { ProjectCardProps } from '../components/ProjectCard/ProjectCard';
 import commonStyles from './Profile.common.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
@@ -19,18 +19,32 @@ const Profile: React.FC<ProfileProps> = ({ theme = 'light' }) => {
     avatarUrl: '', // Placeholder
   };
 
-  const mockProjects = [
+  const mockProjects: ProjectCardProps[] = [
     {
+      id: '1',
       title: 'E-commerce Platform Redesign',
-      client: 'Global Retail Inc.',
-      budget: '$25,000',
-      status: 'active' as const,
+      status: 'In Progress',
+      progress: 50,
+      budget: 25000,
+      paid: 10000,
+      freelancers: [],
+      updatedAt: 'Just now',
+      clientName: 'Global Retail Inc.',
+      postedTime: 'Just now',
+      tags: ['Design', 'Web'],
     },
     {
+      id: '2',
       title: 'Data Analytics Dashboard',
-      client: 'Tech Solutions LLC',
-      budget: '$18,000',
-      status: 'active' as const,
+      status: 'In Progress',
+      progress: 30,
+      budget: 18000,
+      paid: 5000,
+      freelancers: [],
+      updatedAt: '2 days ago',
+      clientName: 'Tech Solutions LLC',
+      postedTime: '2 days ago',
+      tags: ['Design', 'Web'],
     },
   ];
 
@@ -44,15 +58,10 @@ const Profile: React.FC<ProfileProps> = ({ theme = 'light' }) => {
       <main className="Profile-content">
         <h2>Active Projects</h2>
         <div className="Profile-projects-list">
-          {mockProjects.map((project, index) => (
+          {mockProjects.map((project) => (
             <ProjectCard
-              key={index}
-              title={project.title}
-              clientName={project.client}
-              budget={project.budget}
-              postedTime={index === 0 ? 'Just now' : '2 days ago'}
-              tags={["Design", "Web"]}
-              onView={() => { /* TODO: navigate to project */ }}
+              key={project.id}
+              {...project}
             />
           ))}
         </div>

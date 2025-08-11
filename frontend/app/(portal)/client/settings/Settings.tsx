@@ -140,7 +140,7 @@ const Settings: React.FC = () => {
                         <h4>Frequently Asked Questions</h4>
                         <p>Find answers to common questions in our <a href="/help" className={styles.link}>Help Center</a>.</p>
                         <h4>Contact Us</h4>
-                        <p>Can't find what you're looking for? <a href="/contact" className={styles.link}>Contact our support team</a> directly.</p>
+                        <p>Can&apos;t find what you&apos;re looking for? <a href="/contact" className={styles.link}>Contact our support team</a> directly.</p>
                         <Button iconBefore={<LifeBuoy size={16} />} className={styles.supportButton}>Open Support Ticket</Button>
                     </div>
                 </SettingsSection>

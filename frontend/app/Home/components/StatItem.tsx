@@ -20,10 +20,10 @@ interface StatItemProps {
 const StatItem: React.FC<StatItemProps> = ({ value, label, prefix = '', suffix = '' }) => {
   const { theme } = useTheme();
   const styles = theme === 'dark' ? darkStyles : lightStyles;
-  const ref = useRef<HTMLSpanElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const animatedValue = useAnimatedCounter(value, 2000, 0, ref);
 
-  const formattedValue = new Intl.NumberFormat('en-US').format(animatedValue);
+  const formattedValue = new Intl.NumberFormat('en-US').format(Number(animatedValue));
 
   return (
     <div className={cn(commonStyles.statItem, styles.statItem)} ref={ref}>

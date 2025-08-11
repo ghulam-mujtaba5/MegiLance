@@ -11,13 +11,14 @@ interface TableSkeletonProps {
   rows?: number;
   cols: number;
   dense?: boolean;
+  useCards?: boolean;
 }
 
-const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 6, cols, dense }) => {
+const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 6, cols, dense, useCards }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => (theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [theme]);
   return (
-    <div className={styles.wrap} aria-hidden="true">
+    <div className={styles.wrap} aria-hidden="true" data-cards={useCards ? '1' : '0'}>
       {[...Array(rows)].map((_, r) => (
         <div key={r} className={styles.row} data-dense={dense ? '1' : '0'}>
           {[...Array(cols)].map((__, c) => (<div key={c} className={styles.cell} />))}

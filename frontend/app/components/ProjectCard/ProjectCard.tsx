@@ -29,6 +29,10 @@ export interface ProjectCardProps {
   paid: number;
   freelancers: Freelancer[];
   updatedAt: string;
+  // Optional props passed in some dashboards/lists
+  clientName?: string;
+  postedTime?: string;
+  tags?: string[];
 }
 
 const statusVariantMap: Record<ProjectCardProps['status'], NonNullable<BadgeProps['variant']>> = {

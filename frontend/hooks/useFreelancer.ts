@@ -16,10 +16,15 @@ export type FreelancerJob = {
   id: string; 
   title: string; 
   clientName: string; 
-  budget: string; 
+  budget: number; 
   postedTime: string;
   skills: string[];
   status: 'Open' | 'Applied' | 'Hired';
+  // Optional fields used in UI mappings
+  progress?: number;
+  paid?: number;
+  freelancers?: { id: string; name: string; avatarUrl?: string }[];
+  updatedAt?: string;
 };
 
 export type FreelancerTransaction = { 
@@ -35,7 +40,7 @@ export type FreelancerAnalytics = {
   activeProjects: number;
   pendingProposals: number;
   walletBalance: string;
-  rank: string;
+  rank: 'Bronze' | 'Silver' | 'Gold' | 'Platinum' | 'Diamond' | 'N/A';
   totalEarnings: string;
   completedProjects: number;
   profileViews?: number;

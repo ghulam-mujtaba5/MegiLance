@@ -61,7 +61,7 @@ const AISettings: React.FC = () => {
       <header className={commonStyles.cardHeader}>
         <h2 className={cn(commonStyles.cardTitle, themeStyles.cardTitle)}>AI & Machine Learning Settings</h2>
         <p className={cn(commonStyles.cardDescription, themeStyles.cardDescription)}>
-          Tune the underlying models that power MegiLance's intelligent features.
+          Tune the underlying models that power MegiLance&apos;s intelligent features.
         </p>
       </header>
 

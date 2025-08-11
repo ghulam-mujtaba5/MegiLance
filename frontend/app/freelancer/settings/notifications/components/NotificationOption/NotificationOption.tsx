@@ -34,7 +34,7 @@ const NotificationOption: React.FC<NotificationOptionProps> = ({ id, title, desc
         </p>
       </div>
       <div className={commonStyles.toggleContainer}>
-        <ToggleSwitch id={id} checked={checked} onChange={onChange} />
+        <ToggleSwitch id={id} label={title} checked={checked} onChange={onChange} />
       </div>
     </div>
   );

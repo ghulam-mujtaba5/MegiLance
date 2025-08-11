@@ -65,8 +65,7 @@ const Freelancers: React.FC = () => {
   }, [rows, query, availability]);
 
   // Sorting
-  type SortKey = 'name' | 'title' | 'rate' | 'location' | 'availability';
-  const [sortKey, setSortKey] = useState<SortKey>('name');
+  // Using the single SortKey definition above which includes 'rating'
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const parseRate = (r: string) => {
     const m = r.replace(/[^0-9.]/g, '');
@@ -84,6 +83,7 @@ const Freelancers: React.FC = () => {
         case 'rate': av = parseRate(a.rate); bv = parseRate(b.rate); break;
         case 'location': av = a.location; bv = b.location; break;
         case 'availability': av = a.availability; bv = b.availability; break;
+        case 'rating': av = a.rating ?? 0; bv = b.rating ?? 0; break;
       }
       if (av < bv) return sortDir === 'asc' ? -1 : 1;
       if (av > bv) return sortDir === 'asc' ? 1 : -1;
@@ -179,7 +179,7 @@ const Freelancers: React.FC = () => {
             [...Array(12)].map((_, i) => (
               <div key={i} className={common.skeletonCard}>
                 <div className={common.skeletonHeader}>
-                  <Skeleton height={64} width={64} shape="circle" />
+                  <Skeleton height={64} width={64} radius={999} />
                   <div className={common.skeletonHeaderText}>
                     <Skeleton height={24} width="70%" />
                     <Skeleton height={18} width="50%" />

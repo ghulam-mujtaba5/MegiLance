@@ -46,7 +46,7 @@ const Features: React.FC = () => {
           <span className={cn(commonStyles.tagline, themeStyles.tagline)}>Why MegiLance?</span>
           <h2 className={cn(commonStyles.title, themeStyles.title)}>A Smarter Way to Work</h2>
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            We've built a next-generation freelance ecosystem with tools and security you can trust.
+            We&apos;ve built a next-generation freelance ecosystem with tools and security you can trust.
           </p>
         </div>
         <div className={cn(commonStyles.grid)}>

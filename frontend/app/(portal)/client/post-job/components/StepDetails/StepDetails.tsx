@@ -55,8 +55,6 @@ const StepDetails: React.FC<StepDetailsProps> = ({ data, updateData, errors }) =
           value={data.category}
           onChange={(e) => updateData({ category: e.target.value as any })}
           options={CATEGORIES.map(c => ({ value: c, label: c }))}
-          placeholder="Select a category"
-          error={errors.category}
           required
         />
       </div>

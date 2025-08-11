@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { ArrowRight, PlayCircle, Zap, ShieldCheck, Bot, Globe } from 'lucide-react';
@@ -32,18 +33,22 @@ const Hero: React.FC = () => {
         </h1>
 
         <p className={cn(commonStyles.subheading, styles.subheading)}>
-          MegiLance combines AI-powered matching with blockchain-secured payments to connect the world's top talent with innovative projects. Your future of work starts here.
+          MegiLance combines AI-powered matching with blockchain-secured payments to connect the world&apos;s top talent with innovative projects. Your future of work starts here.
         </p>
 
         <div className={commonStyles.ctaButtons}>
-          <Button href="/signup" variant="primary" size="large">
-            Get Started Free
-            <ArrowRight size={18} />
-          </Button>
-          <Button href="/contact" variant="secondary" size="large">
-            <PlayCircle size={18} />
-            Contact Sales
-          </Button>
+          <Link href="/signup" passHref legacyBehavior>
+            <Button as="a" variant="primary" size="large">
+              Get Started Free
+              <ArrowRight size={18} />
+            </Button>
+          </Link>
+          <Link href="/contact" passHref legacyBehavior>
+            <Button as="a" variant="secondary" size="large">
+              <PlayCircle size={18} />
+              Contact Sales
+            </Button>
+          </Link>
         </div>
 
         <div className={commonStyles.featuresList}>

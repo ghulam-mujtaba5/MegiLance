@@ -101,7 +101,9 @@ const ClientDashboard: React.FC = () => {
       id: String(p.id ?? idx),
       title: p.title ?? 'Untitled Project',
       clientName: p.client ?? 'Unknown Client',
-      budget: p.budget ?? '$0',
+      budget: typeof p.budget === 'number'
+        ? p.budget
+        : parseFloat(String(p.budget ?? '0').replace(/[$,]/g, '')) || 0,
       postedTime: p.updatedAt ?? p.updated ?? 'Unknown',
       tags: Array.isArray(p.skills) ? p.skills : [],
     }));
@@ -158,9 +160,15 @@ const ClientDashboard: React.FC = () => {
                   {recentProjects.map(project => (
                     <ProjectCard
                       key={project.id}
+                      id={project.id}
                       title={project.title}
-                      clientName={project.clientName}
+                      status={('In Progress')}
+                      progress={0}
                       budget={project.budget}
+                      paid={0}
+                      freelancers={[]}
+                      updatedAt={project.postedTime}
+                      clientName={project.clientName}
                       postedTime={project.postedTime}
                       tags={project.tags}
                     />

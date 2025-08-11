@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/app/components/Badge/Badge';
+import Badge from '@/app/components/Badge/Badge';
 import Button from '@/app/components/Button/Button';
 import { Eye, Edit3, Trash2, DollarSign, Calendar, Briefcase } from 'lucide-react';
 
@@ -66,7 +66,7 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, onView, onEdit, o
       <div className={cn(commonStyles.cardFooter, styles.cardFooter)}>
         <Badge variant={statusVariantMap[status]} className={commonStyles.statusBadge}>{status}</Badge>
         <div className={cn(commonStyles.actions, styles.actions)}>
-          <Button variant="outline" size="sm" onClick={() => onView(id)} aria-label={`View proposal for ${jobTitle}`}>
+          <Button variant="ghost" size="sm" onClick={() => onView(id)} aria-label={`View proposal for ${jobTitle}`}>
             <Eye size={16} />
           </Button>
           <Button variant="secondary" size="sm" onClick={() => onEdit(id)} aria-label={`Edit proposal for ${jobTitle}`}>

@@ -38,8 +38,19 @@ const Projects: React.FC = () => {
       .map((job, idx) => ({
         id: String(job.id ?? idx),
         title: job.title ?? 'Untitled Project',
+        // Map freelancer job statuses to ProjectCard's allowed statuses
+        status: ((): 'In Progress' | 'Completed' | 'Pending' | 'Cancelled' => {
+          const s = (job.status ?? 'Pending');
+          if (s === 'Hired') return 'In Progress';
+          // 'Open' and 'Applied' are considered pending for display
+          return 'Pending';
+        })(),
+        progress: job.progress ?? 0,
+        budget: typeof job.budget === 'number' ? job.budget : 0,
+        paid: job.paid ?? 0,
+        freelancers: job.freelancers ?? [],
+        updatedAt: job.updatedAt ?? '',
         clientName: job.clientName ?? 'Unknown Client',
-        budget: job.budget ?? '$0',
         postedTime: job.postedTime ?? 'Unknown',
         tags: Array.isArray(job.skills) ? job.skills : [],
       }));

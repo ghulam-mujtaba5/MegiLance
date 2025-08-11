@@ -11,4 +11,8 @@ export interface ProjectType {
   status: ProjectStatus;
   deadline?: string; // ISO date string
   progress?: number; // Percentage 0-100
+  // Optional UI augmentation fields used when mapping to ProjectCard
+  paid?: number;
+  freelancers?: { id: string; name: string; avatarUrl?: string }[];
+  updatedAt?: string;
 }

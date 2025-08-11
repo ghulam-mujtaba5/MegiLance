@@ -36,14 +36,13 @@ const CustomTooltip: React.FC<any> = ({ active, payload }) => {
   return null;
 };
 
-const renderLegend = (props: any) => {
+const LegendContent: React.FC<any> = (props) => {
   const { payload } = props;
   const { theme } = useTheme();
   const themed = theme === 'dark' ? dark : light;
-
   return (
     <ul className={cn(common.legendList, themed.legendList)}>
-      {payload.map((entry: any, index: number) => (
+      {payload?.map((entry: any, index: number) => (
         <li key={`item-${index}`} className={common.legendItem}>
           <span className={common.legendIcon} style={{ backgroundColor: entry.color }} />
           <span className={themed.legendText}>{entry.value}</span>
@@ -75,7 +74,7 @@ const ProjectStatusChart: React.FC<ProjectStatusChartProps> = ({ data }) => {
               ))}
             </Pie>
             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
-            <Legend content={renderLegend} verticalAlign="middle" align="right" layout="vertical" />
+            <Legend content={<LegendContent />} verticalAlign="middle" align="right" layout="vertical" />
           </PieChart>
         </ResponsiveContainer>
       </div>

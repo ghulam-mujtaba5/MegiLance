@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { Proposal } from './ProposalCard';
+import { Proposal } from '../ProposalCard/ProposalCard';
 
 import commonStyles from './StatusFilter.common.module.css';
 import lightStyles from './StatusFilter.light.module.css';

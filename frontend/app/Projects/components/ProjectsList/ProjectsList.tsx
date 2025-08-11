@@ -59,9 +59,28 @@ const ProjectsList: React.FC = () => {
       {projects.map((project) => (
         <ProjectCard
           key={project.id}
+          id={project.id}
           title={project.name}
+          status={((): 'In Progress' | 'Completed' | 'Pending' | 'Cancelled' => {
+            switch (project.status) {
+              case 'active':
+                return 'In Progress';
+              case 'completed':
+                return 'Completed';
+              case 'cancelled':
+                return 'Cancelled';
+              case 'pending':
+              case 'on_hold':
+              default:
+                return 'Pending';
+            }
+          })()}
+          progress={project.progress ?? 0}
+          budget={typeof project.budget === 'number' ? project.budget : 0}
+          paid={project.paid ?? 0}
+          freelancers={project.freelancers ?? []}
+          updatedAt={project.updatedAt ?? 'Recently updated'}
           clientName={project.client}
-          budget={`$${project.budget.toLocaleString()}`}
           postedTime={'Recently updated'}
           tags={[]}
         />

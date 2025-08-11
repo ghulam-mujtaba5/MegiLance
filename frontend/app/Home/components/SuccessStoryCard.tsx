@@ -3,6 +3,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { MapPin, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -38,7 +39,13 @@ const SuccessStoryCard: React.FC<SuccessStoryCardProps> = ({ story }) => {
           {story.quote}
         </blockquote>
         <div className={commonStyles.authorInfo}>
-          <img src={story.avatar} alt={`${story.name}'s avatar`} className={cn(commonStyles.avatar, themeStyles.avatar)} />
+          <Image
+            src={story.avatar}
+            alt={`${story.name}'s avatar`}
+            width={40}
+            height={40}
+            className={cn(commonStyles.avatar, themeStyles.avatar)}
+          />
           <div className={commonStyles.authorDetails}>
             <p className={cn(commonStyles.name, themeStyles.name)}>{story.name}</p>
             <p className={cn(commonStyles.role, themeStyles.role)}>{story.role}</p>

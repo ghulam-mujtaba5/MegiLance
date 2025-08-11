@@ -14,7 +14,7 @@ import darkStyles from './Button.dark.module.css';
 // Base props for the button, independent of the element type
 export interface ButtonOwnProps<E extends React.ElementType = React.ElementType> {
   as?: E;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'link' | 'success' | 'warning' | 'social';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'link' | 'success' | 'warning' | 'social' | 'outline';
   // supports legacy size names for backwards-compat
   size?: 'sm' | 'md' | 'lg' | 'icon' | 'small' | 'medium' | 'large';
   isLoading?: boolean;

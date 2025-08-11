@@ -8,7 +8,7 @@ import { useTheme } from 'next-themes';
 import { Quote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import { Button } from '@/app/components/Button/Button';
+import Button from '@/app/components/Button/Button';
 import common from './Testimonials.common.module.css';
 import light from './Testimonials.light.module.css';
 import dark from './Testimonials.dark.module.css';

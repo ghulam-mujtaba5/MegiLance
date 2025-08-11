@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Github, Twitter, Linkedin } from 'lucide-react';
 
-import Logo from '@/app/components/Logo/Logo';
+import MegiLanceLogo from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 
 import commonStyles from './Footer.common.module.css';
 import lightStyles from './Footer.light.module.css';
@@ -55,7 +55,7 @@ const Footer = () => {
         <div className={commonStyles.mainContent}>
           <div className={commonStyles.brandColumn}>
             <Link href="/" aria-label="MegiLance Home">
-              <Logo />
+              <MegiLanceLogo />
             </Link>
             <p className={cn(commonStyles.tagline, styles.tagline)}>
               The Future of Freelance, Today.

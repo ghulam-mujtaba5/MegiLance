@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 
-import { PostJobData, PostJobErrors } from './PostJob.types';
+import { PostJobData, PostJobErrors, type Category } from './PostJob.types';
 import { loadDraft, saveDraft, submitJob, clearDraft } from '@/app/mocks/jobs';
 
 import Button from '@/app/components/Button/Button';
@@ -45,7 +45,22 @@ const PostJob: React.FC = () => {
   useEffect(() => {
     const draft = loadDraft();
     if (draft) {
-      setData(prev => ({ ...prev, ...draft }));
+      // Normalize persisted draft into PostJobData shape
+      const CATEGORY_VALUES: readonly Category[] = ['Web Development', 'Mobile Apps', 'UI/UX Design', 'Data Science', 'AI/ML', 'DevOps'] as const;
+      const isCategory = (v: unknown): v is Category => (CATEGORY_VALUES as readonly string[]).includes(String(v));
+
+      setData(prev => {
+        const safe: Partial<PostJobData> = {
+          title: draft.title ?? '',
+          category: isCategory(draft.category) ? (draft.category as Category) : '',
+          description: draft.description ?? '',
+          skills: Array.isArray(draft.skills) ? draft.skills : [],
+          budgetType: draft.budgetType ?? 'Fixed',
+          budgetAmount: draft.budget ?? null,
+          timeline: draft.timeline || '1-2 weeks',
+        };
+        return { ...prev, ...safe } as PostJobData;
+      });
     }
   }, []);
 
@@ -110,7 +125,16 @@ const PostJob: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      await submitJob(data);
+      // Map PostJobData to CreateJobInput for mock API
+      await submitJob({
+        title: data.title,
+        category: data.category || '',
+        budgetType: data.budgetType,
+        budget: Number(data.budgetAmount ?? 0),
+        description: data.description,
+        skills: data.skills,
+        timeline: data.timeline,
+      });
       setSubmissionState('success');
       clearDraft();
     } catch (err) {
