@@ -89,7 +89,7 @@ const AdminTopbar: React.FC<AdminTopbarProps> = ({ title, subtitle, breadcrumbs,
         >
           •••
         </button>
-        <div className={cn(common.menu, !menuOpen && common.hidden)} role="menu" aria-label="Actions">
+        <div className={cn(common.menu, !menuOpen && common.hidden)} role="region" aria-label="Actions">
           {right}
         </div>
       </div>
