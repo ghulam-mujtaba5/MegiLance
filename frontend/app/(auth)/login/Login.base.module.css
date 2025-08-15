@@ -1,0 +1,31 @@
+/* Base, theme-agnostic styles for Login page */
+.loginPage { --ml-stub: 0; }
+.brandingSlot { --ml-stub: 0; }
+.brandingPanel { --ml-stub: 0; }
+.brandingContent { --ml-stub: 0; }
+.brandingIconWrapper { --ml-stub: 0; }
+.brandingIcon { --ml-stub: 0; }
+.brandingTitle { --ml-stub: 0; }
+.brandingText { --ml-stub: 0; }
+.brandingFooter { --ml-stub: 0; }
+.formPanel { --ml-stub: 0; }
+.formContainer { --ml-stub: 0; }
+.formHeader { --ml-stub: 0; }
+.formTitle { --ml-stub: 0; }
+.formSubtitle { --ml-stub: 0; }
+.roleSelector { --ml-stub: 0; }
+.roleButton { --ml-stub: 0; }
+.roleButtonSelected { --ml-stub: 0; }
+.roleIcon { --ml-stub: 0; }
+socialAuth, .socialAuth { --ml-stub: 0; }
+.previewDashboards { --ml-stub: 0; }
+.divider { --ml-stub: 0; }
+.dividerText { --ml-stub: 0; }
+.loginForm { --ml-stub: 0; }
+.inputGroup { --ml-stub: 0; }
+.passwordToggle { --ml-stub: 0; }
+.formOptions { --ml-stub: 0; }
+.forgotPasswordLink { --ml-stub: 0; }
+.submitButton { --ml-stub: 0; }
+.signupPrompt { --ml-stub: 0; }
+.generalError { --ml-stub: 0; }

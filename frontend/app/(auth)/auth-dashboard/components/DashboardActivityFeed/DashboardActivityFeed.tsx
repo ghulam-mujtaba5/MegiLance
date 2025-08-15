@@ -9,7 +9,7 @@ import { FaDollarSign, FaBriefcase, FaTasks, FaUsers } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import { useDashboardData } from '@/hooks/useDashboardData';
 
-import commonStyles from './DashboardActivityFeed.common.module.css';
+import commonStyles from './DashboardActivityFeed.base.module.css';
 import lightStyles from './DashboardActivityFeed.light.module.css';
 import darkStyles from './DashboardActivityFeed.dark.module.css';
 

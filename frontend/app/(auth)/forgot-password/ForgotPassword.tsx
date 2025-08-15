@@ -11,7 +11,7 @@ import Input from '@/app/components/Input/Input';
 import { FaKey } from 'react-icons/fa';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
-import commonStyles from './ForgotPassword.common.module.css';
+import commonStyles from './ForgotPassword.base.module.css';
 import lightStyles from './ForgotPassword.light.module.css';
 import darkStyles from './ForgotPassword.dark.module.css';
 

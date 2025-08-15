@@ -5,7 +5,7 @@ import React, { useMemo, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './Privacy.common.module.css';
+import common from './Privacy.base.module.css';
 import light from './Privacy.light.module.css';
 import dark from './Privacy.dark.module.css';
 

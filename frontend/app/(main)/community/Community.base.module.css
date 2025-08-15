@@ -1,0 +1,18 @@
+/* Base styles for Community */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.section { --ml-stub: 0; }
+.sectionTitle { --ml-stub: 0; }
+.communityGrid { --ml-stub: 0; }
+.communityCard { --ml-stub: 0; }
+.communityTitle { --ml-stub: 0; }
+.communityDescription { --ml-stub: 0; }
+.communityButton { --ml-stub: 0; }
+.socialGrid { --ml-stub: 0; }
+.socialCard { --ml-stub: 0; }
+.socialTitle { --ml-stub: 0; }
+.socialDescription { --ml-stub: 0; }
+.socialButton { --ml-stub: 0; }

@@ -1,0 +1,6 @@
+/* Base, theme-agnostic styles for (auth) Dashboard components */
+.header {}
+.metrics {}
+.contentGrid { display: grid; gap: 1rem; }
+.recentProjects {}
+.activityFeed {}

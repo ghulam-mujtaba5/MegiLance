@@ -1,0 +1,16 @@
+/* Base, theme-agnostic styles for ChatWindow */
+.placeholder {}
+.placeholderContent {}
+.main {}
+.header {}
+.headerAvatar {}
+.headerInfo {}
+.headerName {}
+.headerStatus {}
+.messages {}
+.message {}
+.sent {}
+.received {}
+.bubble {}
+.text {}
+.timestamp {}

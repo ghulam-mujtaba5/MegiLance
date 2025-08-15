@@ -6,7 +6,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './SettingsSection.common.module.css';
+import commonStyles from './SettingsSection.base.module.css';
 import lightStyles from './SettingsSection.light.module.css';
 import darkStyles from './SettingsSection.dark.module.css';
 

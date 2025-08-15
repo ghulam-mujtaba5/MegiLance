@@ -6,7 +6,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './SettingsLayout.common.module.css';
+import commonStyles from './SettingsLayout.base.module.css';
 import lightStyles from './SettingsLayout.light.module.css';
 import darkStyles from './SettingsLayout.dark.module.css';
 

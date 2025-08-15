@@ -7,7 +7,7 @@ import ProjectCard from '../../../components/ProjectCard/ProjectCard';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import { mockProjects } from '../../mock-data';
-import commonStyles from './ProjectsList.common.module.css';
+import commonStyles from './ProjectsList.base.module.css';
 import lightStyles from './ProjectsList.light.module.css';
 import darkStyles from './ProjectsList.dark.module.css';
 

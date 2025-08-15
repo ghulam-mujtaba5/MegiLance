@@ -5,7 +5,7 @@
 import React, { useRef, useState } from 'react';
 import { Send, Paperclip } from 'lucide-react';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import commonStyles from './MessageInput.common.module.css';
+import commonStyles from './MessageInput.base.module.css';
 import lightStyles from './MessageInput.light.module.css';
 import darkStyles from './MessageInput.dark.module.css';
 

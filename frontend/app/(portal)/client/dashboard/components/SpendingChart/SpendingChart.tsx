@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
 import { DollarSign } from 'lucide-react';
 
-import common from './SpendingChart.common.module.css';
+import common from './SpendingChart.base.module.css';
 import light from './SpendingChart.light.module.css';
 import dark from './SpendingChart.dark.module.css';
 

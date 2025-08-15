@@ -1,0 +1,10 @@
+/* Base styles for Portal Messages */
+.container { --ml-stub: 0; }
+.leftPane { --ml-stub: 0; }
+.rightPane { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.conversationArea { --ml-stub: 0; }
+.footer { --ml-stub: 0; }
+.input { --ml-stub: 0; }
+.sendButton { --ml-stub: 0; }

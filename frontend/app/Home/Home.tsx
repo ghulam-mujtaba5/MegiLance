@@ -19,7 +19,7 @@ import GlobalImpact from './components/GlobalImpact';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
 
-import commonStyles from './Home.common.module.css';
+import commonStyles from './Home.base.module.css';
 import lightStyles from './Home.light.module.css';
 import darkStyles from './Home.dark.module.css';
 

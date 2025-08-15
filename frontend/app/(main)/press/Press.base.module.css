@@ -1,0 +1,18 @@
+/* Base styles for Press */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.badge { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.section { --ml-stub: 0; }
+.sectionTitle { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.cardTitle { --ml-stub: 0; }
+.button { --ml-stub: 0; }
+.primary { --ml-stub: 0; }
+.secondary { --ml-stub: 0; }
+.link { --ml-stub: 0; }

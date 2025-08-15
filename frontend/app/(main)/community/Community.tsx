@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import common from './Community.common.module.css';
+import common from './Community.base.module.css';
 import light from './Community.light.module.css';
 import dark from './Community.dark.module.css';
 

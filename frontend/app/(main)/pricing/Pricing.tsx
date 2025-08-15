@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PricingCard } from '@/components/pricing/PricingCard/PricingCard';
-import commonStyles from './Pricing.common.module.css';
+import baseStyles from './Pricing.base.module.css';
 import lightStyles from './Pricing.light.module.css';
 import darkStyles from './Pricing.dark.module.css';
 
@@ -77,7 +77,7 @@ const Pricing: React.FC = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annually'>('monthly');
   const { theme } = useTheme();
   const styles = {
-    ...commonStyles,
+    ...baseStyles,
     ...(theme === 'dark' ? darkStyles : lightStyles),
   };
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Plus } from 'lucide-react';
-import commonStyles from './ProjectsHeader.common.module.css';
+import commonStyles from './ProjectsHeader.base.module.css';
 import lightStyles from './ProjectsHeader.light.module.css';
 import darkStyles from './ProjectsHeader.dark.module.css';
 

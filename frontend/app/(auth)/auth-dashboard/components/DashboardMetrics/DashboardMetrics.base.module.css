@@ -1,0 +1,14 @@
+/* Base styles for DashboardMetrics */
+.metricsGrid {}
+.metricCard {}
+.metricHeader {}
+.metricIcon {}
+.metricIconMuted {}
+.skeletonText {}
+.skeletonValue {}
+.errorState {}
+.metricValue {}
+.metricChange {}
+.positiveChange {}
+.negativeChange {}
+.changeIcon {}

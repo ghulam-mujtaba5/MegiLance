@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 import TestimonialCard from './TestimonialCard';
 import type { Testimonial } from './TestimonialCard';
-import commonStyles from './Testimonials.common.module.css';
+import commonStyles from './Testimonials.base.module.css';
 import lightStyles from './Testimonials.light.module.css';
 import darkStyles from './Testimonials.dark.module.css';
 

@@ -1,0 +1,7 @@
+/* Base, theme-agnostic styles for Testimonials */
+.testimonials {}
+.container {}
+.header {}
+.title {}
+.subtitle {}
+.testimonialsGrid { display: grid; gap: 1rem; }

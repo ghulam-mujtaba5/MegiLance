@@ -1,0 +1,10 @@
+/* Base, theme-agnostic styles for Features */
+.featuresSection {}
+.container {}
+.header {}
+.tagline {}
+.title {}
+.subtitle {}
+.grid { display: grid; gap: 1rem; }
+.heroCardWrapper {}
+.secondaryGrid { display: grid; gap: 1rem; }

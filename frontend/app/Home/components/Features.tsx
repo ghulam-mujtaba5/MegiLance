@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Cpu, ShieldCheck, Globe, Wallet } from 'lucide-react';
 
 import FeatureCard from './FeatureCard';
-import commonStyles from './Features.common.module.css';
+import commonStyles from './Features.base.module.css';
 import lightStyles from './Features.light.module.css';
 import darkStyles from './Features.dark.module.css';
 

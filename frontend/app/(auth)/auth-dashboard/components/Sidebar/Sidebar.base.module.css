@@ -1,0 +1,12 @@
+/* Base styles for Sidebar */
+.sidebar { --ml-stub: 0; }
+.sidebarHeader { --ml-stub: 0; }
+.logo { --ml-stub: 0; }
+.userProfile { --ml-stub: 0; }
+.avatar { --ml-stub: 0; }
+.userName { --ml-stub: 0; }
+.navigation { --ml-stub: 0; }
+.navItem { --ml-stub: 0; }
+.navIcon { --ml-stub: 0; }
+.sidebarFooter { --ml-stub: 0; }
+.logoutButton { --ml-stub: 0; }

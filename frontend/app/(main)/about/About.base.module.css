@@ -1,0 +1,21 @@
+/* Base, theme-agnostic styles for About page */
+.root { --ml-stub: 0; }
+.hero { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.cardTitle { --ml-stub: 0; }
+.cardBody { --ml-stub: 0; }
+.sectionHeader { --ml-stub: 0; }
+.sectionTitle { --ml-stub: 0; }
+.sectionNote { --ml-stub: 0; }
+.valuesGrid { --ml-stub: 0; }
+.valueItem { --ml-stub: 0; }
+.valueTitle { --ml-stub: 0; }
+.valueDesc { --ml-stub: 0; }
+.timeline { --ml-stub: 0; }
+.milestone { --ml-stub: 0; }
+.milestoneTitle { --ml-stub: 0; }
+.cta { --ml-stub: 0; }
+.ctaBtn { --ml-stub: 0; }

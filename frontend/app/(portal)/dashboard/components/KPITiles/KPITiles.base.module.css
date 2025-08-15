@@ -1,0 +1,6 @@
+/* Base styles for KPI Tiles */
+.grid { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.value { --ml-stub: 0; }
+.delta { --ml-stub: 0; }

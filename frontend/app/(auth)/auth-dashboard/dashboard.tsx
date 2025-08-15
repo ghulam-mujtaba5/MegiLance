@@ -10,7 +10,7 @@ import DashboardRecentProjects from './components/DashboardRecentProjects/Dashbo
 import DashboardActivityFeed from './components/DashboardActivityFeed/DashboardActivityFeed';
 import DashboardLayout from './components/DashboardLayout/DashboardLayout'; // Import the new layout
 import { cn } from '@/lib/utils';
-import commonStyles from './dashboard.common.module.css';
+import commonStyles from './dashboard.base.module.css';
 import lightStyles from './dashboard.light.module.css';
 import darkStyles from './dashboard.dark.module.css';
 

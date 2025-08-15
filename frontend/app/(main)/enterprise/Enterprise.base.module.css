@@ -1,0 +1,20 @@
+/* Base styles for Enterprise */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.section { --ml-stub: 0; }
+.sectionTitle { --ml-stub: 0; }
+.featuresGrid { --ml-stub: 0; }
+.featureCard { --ml-stub: 0; }
+.featureTitle { --ml-stub: 0; }
+.featureDescription { --ml-stub: 0; }
+.plansGrid { --ml-stub: 0; }
+.planCard { --ml-stub: 0; }
+.planTitle { --ml-stub: 0; }
+.planPrice { --ml-stub: 0; }
+.planFeatures { --ml-stub: 0; }
+.planButton { --ml-stub: 0; }
+.contactText { --ml-stub: 0; }
+.contactButton { --ml-stub: 0; }

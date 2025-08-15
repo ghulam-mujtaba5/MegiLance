@@ -1,0 +1,8 @@
+/* Base (theme-agnostic) styles for Profile */
+.container { display: grid; gap: 1rem; }
+.header { display: grid; place-items: center; gap: 0.5rem; text-align: center; }
+.name { font-weight: 700; line-height: 1.2; }
+.bio { max-width: 60ch; margin-inline: auto; }
+.content { display: grid; gap: 1rem; }
+.sectionTitle { font-weight: 600; }
+.projectsList { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }

@@ -13,7 +13,7 @@ import Select from '@/app/components/Select/Select';
 import Button from '@/app/components/Button/Button';
 import { Search, Download } from 'lucide-react';
 
-import common from './Freelancers.common.module.css';
+import common from './Freelancers.base.module.css';
 import light from './Freelancers.light.module.css';
 import dark from './Freelancers.dark.module.css';
 

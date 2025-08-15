@@ -15,7 +15,7 @@ import Checkbox from '@/app/components/Checkbox/Checkbox';
 import Tabs from '@/app/components/Tabs/Tabs';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
-import commonStyles from './Signup.common.module.css';
+import commonStyles from './Signup.base.module.css';
 import lightStyles from './Signup.light.module.css';
 import darkStyles from './Signup.dark.module.css';
 

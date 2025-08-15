@@ -1,0 +1,4 @@
+/* Base styles for ProfileSettings */
+.form { display: grid; gap: 1rem; }
+.fieldWrapper {}
+.footer { display: flex; justify-content: flex-end; }

@@ -9,7 +9,7 @@ import { FaSignOutAlt, FaTachometerAlt, FaBriefcase, FaUsers } from 'react-icons
 import { User } from '../../types';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './Sidebar.common.module.css';
+import commonStyles from './Sidebar.base.module.css';
 import lightStyles from './Sidebar.light.module.css';
 import darkStyles from './Sidebar.dark.module.css';
 

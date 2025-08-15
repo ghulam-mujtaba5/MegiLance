@@ -12,7 +12,7 @@ import Button from '../../../components/Button/Button';
 import Textarea from '../../../components/Textarea/Textarea'; // Import the new Textarea component
 import { mockUserProfile } from './mock-data';
 
-import commonStyles from './ProfileSettings.common.module.css';
+import commonStyles from './ProfileSettings.base.module.css';
 import lightStyles from './ProfileSettings.light.module.css';
 import darkStyles from './ProfileSettings.dark.module.css';
 

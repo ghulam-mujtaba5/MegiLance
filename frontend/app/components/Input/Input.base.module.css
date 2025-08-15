@@ -1,0 +1,15 @@
+/* Base, theme-agnostic styles for Input component. */
+.inputWrapper {}
+.inputWrapperError {}
+.inputWrapperDisabled {}
+.inputWrapperFullWidth { width: 100%; }
+.inputLabel { font-weight: 500; }
+.inputContainer { position: relative; display: flex; align-items: center; }
+.inputIcon { display: inline-flex; align-items: center; color: inherit; }
+.inputIconBefore { margin-right: 0.5rem; }
+.inputIconAfter { margin-left: 0.5rem; }
+.inputField { flex: 1 1 auto; }
+.inputFieldWithIconBefore { padding-left: 2rem; }
+.inputFieldWithIconAfter { padding-right: 2rem; }
+.errorMessage { font-size: 0.85rem; }
+.helpText { font-size: 0.85rem; }

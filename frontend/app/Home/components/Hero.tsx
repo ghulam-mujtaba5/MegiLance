@@ -10,7 +10,7 @@ import { ArrowRight, PlayCircle, Zap, ShieldCheck, Bot, Globe } from 'lucide-rea
 import Button from '@/app/components/Button/Button';
 import StatItem from './StatItem'; // Assuming StatItem will be created
 
-import commonStyles from './Hero.common.module.css';
+import commonStyles from './Hero.base.module.css';
 import lightStyles from './Hero.light.module.css';
 import darkStyles from './Hero.dark.module.css';
 

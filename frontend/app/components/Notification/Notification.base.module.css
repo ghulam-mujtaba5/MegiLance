@@ -1,0 +1,32 @@
+/* Base, theme-agnostic styles for Notification component. */
+.notification {}
+.notificationContent { display: flex; align-items: start; gap: 0.5rem; }
+.notificationIcon { display: inline-flex; margin-top: 2px; }
+.notificationBody { display: grid; gap: 0.25rem; }
+.notificationTitle { font-weight: 600; }
+.notificationMessage {}
+.notificationClose { display: inline-flex; align-items: center; justify-content: center; }
+.notificationProgress { height: 2px; }
+.hidden { opacity: 0; pointer-events: none; }
+
+/* Types bucket classes referenced in TSX */
+.success {}
+.error {}
+.warning {}
+.info {}
+
+/* Position buckets referenced in TSX */
+.positionTopRight {}
+.positionTopLeft {}
+.positionBottomRight {}
+.positionBottomLeft {}
+.positionTopCenter {}
+.positionBottomCenter {}
+
+/* Duration buckets referenced in TSX */
+.progress2s {}
+.progress3s {}
+.progress5s {}
+.progress8s {}
+.progress10s {}
+.progressPaused {}

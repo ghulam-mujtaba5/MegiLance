@@ -1,4 +1,0 @@
-/* @AI-HINT: Common styles for ErrorBoundary fallback. Keep layout tokens here; theme colors in light/dark. */
-.container { padding: 16px; border-radius: 12px; }
-.title { font-weight: 600; margin-bottom: 8px; }
-.message { font-size: 0.95rem; }

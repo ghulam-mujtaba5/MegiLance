@@ -1,0 +1,16 @@
+/* Base, theme-agnostic styles for ConversationList */
+.sidebar {}
+.header {}
+.items {}
+.loading {}
+.error {}
+.emptyCta {}
+.item {}
+.active {}
+.itemAvatar {}
+.itemContent {}
+.itemHeader {}
+.itemName {}
+.itemTimestamp {}
+.itemPreview {}
+.itemUnread {}

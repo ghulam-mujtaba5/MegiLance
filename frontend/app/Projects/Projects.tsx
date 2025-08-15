@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import commonStyles from './Projects.common.module.css';
+import commonStyles from './Projects.base.module.css';
 
 // Modular Components
 import ProjectsHeader from './components/ProjectsHeader/ProjectsHeader';

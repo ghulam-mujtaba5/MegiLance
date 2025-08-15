@@ -1,0 +1,12 @@
+/* Base, theme-agnostic styles for (portal) Dashboard page */
+.page {}
+.container { display: grid; gap: 1rem; }
+.header {}
+.metrics {}
+.contentGrid { display: grid; gap: 1rem; }
+.revenueChart {}
+.recentProjects {}
+.activityFeed {}
+.isVisible {}
+.isNotVisible {}
+.themeWrapper {}

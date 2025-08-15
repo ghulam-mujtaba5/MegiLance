@@ -8,7 +8,7 @@ import { FaBriefcase, FaTasks, FaUsers, FaChartBar, FaArrowUp, FaArrowDown } fro
 import { cn } from '@/lib/utils';
 import { useDashboardData } from '@/hooks/useDashboardData';
 
-import commonStyles from './DashboardMetrics.common.module.css';
+import commonStyles from './DashboardMetrics.base.module.css';
 import lightStyles from './DashboardMetrics.light.module.css';
 import darkStyles from './DashboardMetrics.dark.module.css';
 

@@ -1,0 +1,17 @@
+/* Base, theme-agnostic styles for Legal Privacy page */
+.page { --ml-stub: 0; }
+.themeWrapper { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.meta { --ml-stub: 0; }
+.layout { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.toc { --ml-stub: 0; }
+.tocTitle { --ml-stub: 0; }
+.tocList { --ml-stub: 0; }
+.tocLink { --ml-stub: 0; }
+.content { --ml-stub: 0; }
+.section { --ml-stub: 0; }

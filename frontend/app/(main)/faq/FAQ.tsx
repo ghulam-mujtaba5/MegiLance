@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Accordion, { AccordionItem } from '@/app/components/Accordion/Accordion';
-import common from './FAQ.common.module.css';
+import common from './FAQ.base.module.css';
 import light from './FAQ.light.module.css';
 import dark from './FAQ.dark.module.css';
 

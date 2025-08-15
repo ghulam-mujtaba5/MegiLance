@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
 import { Briefcase } from 'lucide-react';
 
-import common from './ProjectStatusChart.common.module.css';
+import common from './ProjectStatusChart.base.module.css';
 import light from './ProjectStatusChart.light.module.css';
 import dark from './ProjectStatusChart.dark.module.css';
 

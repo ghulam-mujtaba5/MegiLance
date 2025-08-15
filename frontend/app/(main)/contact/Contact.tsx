@@ -15,7 +15,7 @@ import Select from '@/app/components/Select/Select';
 import Textarea from '@/app/components/Textarea/Textarea';
 import { useToast } from '@/app/components/Toast/use-toast';
 
-import common from './Contact.common.module.css';
+import common from './Contact.base.module.css';
 import light from './Contact.light.module.css';
 import dark from './Contact.dark.module.css';
 

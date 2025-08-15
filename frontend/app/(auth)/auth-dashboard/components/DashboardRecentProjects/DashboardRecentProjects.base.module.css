@@ -1,0 +1,20 @@
+/* Base styles for DashboardRecentProjects */
+.recentProjectsCard {}
+.cardHeader {}
+.cardTitle {}
+.skeletonText {}
+.skeletonTable {}
+.emptyState {}
+.viewAllLink {}
+.table {}
+.statusBadge {}
+.statusDot {}
+.inProgress {}
+.review {}
+.completed {}
+.overdue {}
+.inProgressDot {}
+.reviewDot {}
+.completedDot {}
+.overdueDot {}
+.progress {}

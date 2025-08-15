@@ -1,0 +1,6 @@
+/* Base styles for SettingsSection */
+.section { display: grid; gap: 1rem; }
+.header { display: grid; gap: 0.25rem; }
+.title { font-weight: 600; }
+.description { --ml-stub: 0; }
+.content { display: grid; gap: 1rem; }

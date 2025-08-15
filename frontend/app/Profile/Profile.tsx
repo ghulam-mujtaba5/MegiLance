@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import UserAvatar from '../components/UserAvatar/UserAvatar';
 import ProjectCard, { ProjectCardProps } from '../components/ProjectCard/ProjectCard';
-import commonStyles from './Profile.common.module.css';
+import commonStyles from './Profile.base.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
 

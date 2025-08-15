@@ -6,7 +6,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Conversation } from '../types';
-import commonStyles from './ChatWindow.common.module.css';
+import commonStyles from './ChatWindow.base.module.css';
 import lightStyles from './ChatWindow.light.module.css';
 import darkStyles from './ChatWindow.dark.module.css';
 

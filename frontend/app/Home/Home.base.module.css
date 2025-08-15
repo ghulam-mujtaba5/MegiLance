@@ -1,0 +1,4 @@
+/* Base, theme-agnostic styles for Home page */
+.homePage { --ml-stub: 0; }
+.homeSection { --ml-stub: 0; }
+.sectionContainer { --ml-stub: 0; }

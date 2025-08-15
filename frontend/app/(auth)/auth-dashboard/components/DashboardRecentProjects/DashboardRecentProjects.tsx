@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { RecentProject } from '../../types';
 
-import commonStyles from './DashboardRecentProjects.common.module.css';
+import commonStyles from './DashboardRecentProjects.base.module.css';
 import lightStyles from './DashboardRecentProjects.light.module.css';
 import darkStyles from './DashboardRecentProjects.dark.module.css';
 

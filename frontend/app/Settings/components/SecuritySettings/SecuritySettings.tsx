@@ -12,7 +12,7 @@ import SettingsSection from '../SettingsSection/SettingsSection';
 import Input from '../../../components/Input/Input';
 import Button from '../../../components/Button/Button';
 
-import commonStyles from './SecuritySettings.common.module.css';
+import commonStyles from './SecuritySettings.base.module.css';
 import lightStyles from './SecuritySettings.light.module.css';
 import darkStyles from './SecuritySettings.dark.module.css';
 

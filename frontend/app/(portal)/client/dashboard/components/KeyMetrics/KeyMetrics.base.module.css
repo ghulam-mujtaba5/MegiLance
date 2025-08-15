@@ -1,0 +1,25 @@
+/* Base (theme-agnostic) styles for KeyMetrics */
+
+.widgetsGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .widgetsGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.widgetSkeleton {
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.skeletonHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}

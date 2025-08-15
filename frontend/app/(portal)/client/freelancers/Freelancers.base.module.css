@@ -1,0 +1,19 @@
+/* Base styles for Client Freelancers */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.controlsSection { --ml-stub: 0; }
+.filters { --ml-stub: 0; }
+.searchInput { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.skeletonCard { --ml-stub: 0; }
+.skeletonHeader { --ml-stub: 0; }
+.skeletonHeaderText { --ml-stub: 0; }
+.error { --ml-stub: 0; }
+.emptyState { --ml-stub: 0; }
+.paginationBar { --ml-stub: 0; }
+.paginationInfo { --ml-stub: 0; }

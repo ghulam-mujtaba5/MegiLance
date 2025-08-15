@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import common from './About.common.module.css';
+import common from './About.base.module.css';
 import light from './About.light.module.css';
 import dark from './About.dark.module.css';
 

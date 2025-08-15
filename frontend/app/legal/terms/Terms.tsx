@@ -5,7 +5,7 @@ import React, { useMemo, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './Terms.common.module.css';
+import common from './Terms.base.module.css';
 import light from './Terms.light.module.css';
 import dark from './Terms.dark.module.css';
 

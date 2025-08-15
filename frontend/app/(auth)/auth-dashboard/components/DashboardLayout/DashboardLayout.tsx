@@ -9,7 +9,7 @@ import { User } from '../../types';
 
 import Sidebar from '../Sidebar/Sidebar';
 
-import commonStyles from './DashboardLayout.common.module.css';
+import commonStyles from './DashboardLayout.base.module.css';
 import lightStyles from './DashboardLayout.light.module.css';
 import darkStyles from './DashboardLayout.dark.module.css';
 

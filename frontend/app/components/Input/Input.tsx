@@ -5,7 +5,7 @@
 import React, { useId } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import commonStyles from './Input.common.module.css';
+import commonStyles from './Input.base.module.css';
 import lightStyles from './Input.light.module.css';
 import darkStyles from './Input.dark.module.css';
 

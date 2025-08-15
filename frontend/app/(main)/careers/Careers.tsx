@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './Careers.common.module.css';
+import common from './Careers.base.module.css';
 import light from './Careers.light.module.css';
 import dark from './Careers.dark.module.css';
 

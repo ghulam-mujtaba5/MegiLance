@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import SettingsSection from '../SettingsSection/SettingsSection';
 import { Sun, Moon } from 'lucide-react';
 
-import commonStyles from './AppearanceSettings.common.module.css';
+import commonStyles from './AppearanceSettings.base.module.css';
 import lightStyles from './AppearanceSettings.light.module.css';
 import darkStyles from './AppearanceSettings.dark.module.css';
 

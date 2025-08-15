@@ -1,0 +1,12 @@
+/* Base, theme-agnostic styles for Hero */
+.heroContainer { --ml-stub: 0; }
+.backgroundGlow { --ml-stub: 0; }
+.contentWrapper { --ml-stub: 0; }
+.promoBadge { --ml-stub: 0; }
+.promoBadgeHighlight { --ml-stub: 0; }
+.mainHeading { --ml-stub: 0; }
+.subheading { --ml-stub: 0; }
+.ctaButtons { --ml-stub: 0; }
+.featuresList { --ml-stub: 0; }
+.featureItem { --ml-stub: 0; }
+.statsGrid { --ml-stub: 0; }

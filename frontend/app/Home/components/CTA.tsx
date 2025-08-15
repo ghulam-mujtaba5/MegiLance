@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import Button from '@/app/components/Button/Button';
 
-import commonStyles from './CTA.common.module.css';
+import commonStyles from './CTA.base.module.css';
 import lightStyles from './CTA.light.module.css';
 import darkStyles from './CTA.dark.module.css';
 

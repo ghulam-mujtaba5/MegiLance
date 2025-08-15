@@ -11,7 +11,7 @@ import Input from '@/app/components/Input/Input';
 import { FaShieldAlt } from 'react-icons/fa';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
-import commonStyles from './ResetPassword.common.module.css';
+import commonStyles from './ResetPassword.base.module.css';
 import lightStyles from './ResetPassword.light.module.css';
 import darkStyles from './ResetPassword.dark.module.css';
 

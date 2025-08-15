@@ -1,0 +1,10 @@
+/* Base styles for Calendar */
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.btn { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.week { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.cell { --ml-stub: 0; }
+.day { --ml-stub: 0; }
+.meta { --ml-stub: 0; }

@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import commonStyles from '@/app/styles/LegalPage.common.module.css';
+import commonStyles from '@/app/styles/LegalPage.base.module.css';
 import lightStyles from '@/app/styles/LegalPage.light.module.css';
 import darkStyles from '@/app/styles/LegalPage.dark.module.css';
 

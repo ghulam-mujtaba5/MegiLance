@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './Press.common.module.css';
+import common from './Press.base.module.css';
 import light from './Press.light.module.css';
 import dark from './Press.dark.module.css';
 

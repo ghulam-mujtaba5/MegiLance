@@ -15,12 +15,12 @@ import DashboardActivityFeed from '@/app/(auth)/auth-dashboard/components/Dashbo
 import type { User } from '@/app/(auth)/auth-dashboard/types';
 
 // Use (auth) dashboard style tokens for the header component which expects a merged styles object
-import authCommon from '@/app/(auth)/auth-dashboard/dashboard.common.module.css';
+import authCommon from '@/app/(auth)/auth-dashboard/dashboard.base.module.css';
 import authLight from '@/app/(auth)/auth-dashboard/dashboard.light.module.css';
 import authDark from '@/app/(auth)/auth-dashboard/dashboard.dark.module.css';
 
 // Page-level styles for layout
-import common from './Dashboard.common.module.css';
+import common from './Dashboard.base.module.css';
 import light from './Dashboard.light.module.css';
 import dark from './Dashboard.dark.module.css';
 import RevenueChart from './components/RevenueChart';

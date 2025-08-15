@@ -13,7 +13,7 @@ import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
-import commonStyles from './Login.common.module.css';
+import commonStyles from './Login.base.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
 import { isPreviewMode } from '@/app/utils/flags';

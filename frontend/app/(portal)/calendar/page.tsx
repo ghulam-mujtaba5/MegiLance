@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import common from './Calendar.common.module.css';
+import common from './Calendar.base.module.css';
 import light from './Calendar.light.module.css';
 import dark from './Calendar.dark.module.css';
 

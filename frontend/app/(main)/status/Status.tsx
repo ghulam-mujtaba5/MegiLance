@@ -4,7 +4,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import common from './Status.common.module.css';
+import common from './Status.base.module.css';
 import light from './Status.light.module.css';
 import dark from './Status.dark.module.css';
 

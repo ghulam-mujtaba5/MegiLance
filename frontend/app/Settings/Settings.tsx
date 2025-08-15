@@ -10,7 +10,7 @@ import SecuritySettings from './components/SecuritySettings/SecuritySettings';
 import AppearanceSettings from './components/AppearanceSettings/AppearanceSettings';
 
 // Styles
-import commonStyles from './Settings.common.module.css';
+import commonStyles from './Settings.base.module.css';
 import lightStyles from './Settings.light.module.css';
 import darkStyles from './Settings.dark.module.css';
 

@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { User, Shield, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './SettingsSidebarNav.common.module.css';
+import commonStyles from './SettingsSidebarNav.base.module.css';
 import lightStyles from './SettingsSidebarNav.light.module.css';
 import darkStyles from './SettingsSidebarNav.dark.module.css';
 

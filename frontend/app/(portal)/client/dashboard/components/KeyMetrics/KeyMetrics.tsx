@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import DashboardWidget, { DashboardWidgetProps } from '@/app/components/DashboardWidget/DashboardWidget';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 
-import common from './KeyMetrics.common.module.css';
+import common from './KeyMetrics.base.module.css';
 import light from './KeyMetrics.light.module.css';
 import dark from './KeyMetrics.dark.module.css';
 

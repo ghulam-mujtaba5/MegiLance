@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Conversation } from '../types';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import commonStyles from './ConversationList.common.module.css';
+import commonStyles from './ConversationList.base.module.css';
 import lightStyles from './ConversationList.light.module.css';
 import darkStyles from './ConversationList.dark.module.css';
 

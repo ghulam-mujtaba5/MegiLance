@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import common from './Enterprise.common.module.css';
+import common from './Enterprise.base.module.css';
 import light from './Enterprise.light.module.css';
 import dark from './Enterprise.dark.module.css';
 

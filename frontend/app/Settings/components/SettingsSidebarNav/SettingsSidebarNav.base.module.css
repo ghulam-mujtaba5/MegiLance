@@ -1,0 +1,8 @@
+/* Base styles for SettingsSidebarNav */
+.nav {}
+.title { font-weight: 600; }
+.list { display: grid; gap: 0.5rem; }
+.itemButton {}
+.active {}
+.itemIcon {}
+.itemLabel {}

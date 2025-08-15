@@ -5,7 +5,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { FiCheckCircle, FiAlertCircle, FiInfo, FiX, FiAlertTriangle } from 'react-icons/fi';
 import { cn } from '@/lib/utils';
-import commonStyles from './Notification.common.module.css';
+import commonStyles from './Notification.base.module.css';
 import lightStyles from './Notification.light.module.css';
 import darkStyles from './Notification.dark.module.css';
 

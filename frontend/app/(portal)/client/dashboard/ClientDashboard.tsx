@@ -13,7 +13,7 @@ import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import ProjectStatusChart from './components/ProjectStatusChart/ProjectStatusChart';
 import SpendingChart from './components/SpendingChart/SpendingChart';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
-import common from './ClientDashboard.common.module.css';
+import common from './ClientDashboard.base.module.css';
 import light from './ClientDashboard.light.module.css';
 import dark from './ClientDashboard.dark.module.css';
 
