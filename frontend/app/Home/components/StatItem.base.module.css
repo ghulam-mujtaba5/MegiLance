@@ -1,0 +1,4 @@
+/* Base styles for StatItem */
+.statItem { --ml-stub: 0; }
+.statValue { --ml-stub: 0; }
+.statLabel { --ml-stub: 0; }

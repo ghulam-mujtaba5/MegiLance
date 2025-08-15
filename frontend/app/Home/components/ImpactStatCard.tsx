@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useAnimatedCounter from '@/hooks/useAnimatedCounter'; // Assuming this hook exists and works
 
-import commonStyles from './ImpactStatCard.common.module.css';
+import commonStyles from './ImpactStatCard.base.module.css';
 import lightStyles from './ImpactStatCard.light.module.css';
 import darkStyles from './ImpactStatCard.dark.module.css';
 

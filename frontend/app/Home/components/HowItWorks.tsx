@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 
 import StepCard from './StepCard';
 import type { StepCardProps } from './StepCard';
-import commonStyles from './HowItWorks.common.module.css';
+import commonStyles from './HowItWorks.base.module.css';
 import lightStyles from './HowItWorks.light.module.css';
 import darkStyles from './HowItWorks.dark.module.css';
 

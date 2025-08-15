@@ -8,7 +8,7 @@ import { BrainCircuit, TrendingUp, ShieldCheck, MessageCircle, BarChart, Cpu, Za
 import { cn } from '@/lib/utils';
 
 import AIShowcaseCard from './AIShowcaseCard';
-import commonStyles from './AIShowcase.common.module.css';
+import commonStyles from './AIShowcase.base.module.css';
 import lightStyles from './AIShowcase.light.module.css';
 import darkStyles from './AIShowcase.dark.module.css';
 

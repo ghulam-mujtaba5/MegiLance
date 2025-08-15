@@ -13,7 +13,7 @@ import Select from '@/app/components/Select/Select';
 import Button from '@/app/components/Button/Button';
 import ToggleSwitch from '@/app/components/ToggleSwitch/ToggleSwitch';
 
-import common from './Settings.common.module.css';
+import common from './Settings.base.module.css';
 import light from './Settings.light.module.css';
 import dark from './Settings.dark.module.css';
 

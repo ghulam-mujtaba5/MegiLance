@@ -5,7 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './Analytics.common.module.css';
+import common from './Analytics.base.module.css';
 import light from './Analytics.light.module.css';
 import dark from './Analytics.dark.module.css';
 import DensityToggle, { type Density } from '@/app/components/DataTableExtras/DensityToggle';

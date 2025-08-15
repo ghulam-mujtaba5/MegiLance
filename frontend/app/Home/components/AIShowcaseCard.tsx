@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './AIShowcaseCard.common.module.css';
+import commonStyles from './AIShowcaseCard.base.module.css';
 import lightStyles from './AIShowcaseCard.light.module.css';
 import darkStyles from './AIShowcaseCard.dark.module.css';
 

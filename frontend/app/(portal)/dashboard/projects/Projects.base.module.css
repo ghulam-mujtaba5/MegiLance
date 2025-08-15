@@ -1,0 +1,22 @@
+/* Base styles for Dashboard Projects */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.controls { --ml-stub: 0; }
+.srOnly { --ml-stub: 0; }
+.input { --ml-stub: 0; }
+.select { --ml-stub: 0; }
+.button { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.cardTitle { --ml-stub: 0; }
+.meta { --ml-stub: 0; }
+.progressWrap { --ml-stub: 0; }
+.progressBar { --ml-stub: 0; }
+.chips { --ml-stub: 0; }
+.chip { --ml-stub: 0; }
+.actions { --ml-stub: 0; }

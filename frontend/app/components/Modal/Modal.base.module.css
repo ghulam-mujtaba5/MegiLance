@@ -1,0 +1,11 @@
+/* Base styles for Modal */
+.modalOverlay { --ml-stub: 0; }
+.modalContent { --ml-stub: 0; }
+.modalHeader { --ml-stub: 0; }
+.modalTitle { --ml-stub: 0; }
+.closeButton { --ml-stub: 0; }
+.modalBody { --ml-stub: 0; }
+.modalFooter { --ml-stub: 0; }
+.sizeSmall { --ml-stub: 0; }
+.sizeMedium { --ml-stub: 0; }
+.sizeLarge { --ml-stub: 0; }

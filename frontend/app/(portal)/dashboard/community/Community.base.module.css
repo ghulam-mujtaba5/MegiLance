@@ -1,0 +1,26 @@
+/* Base styles for Dashboard Community */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.controls { --ml-stub: 0; }
+.srOnly { --ml-stub: 0; }
+.input { --ml-stub: 0; }
+.select { --ml-stub: 0; }
+.layout { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.cardTitle { --ml-stub: 0; }
+.threadList { --ml-stub: 0; }
+.thread { --ml-stub: 0; }
+.threadTitle { --ml-stub: 0; }
+.threadMeta { --ml-stub: 0; }
+.threadTags { --ml-stub: 0; }
+.tag { --ml-stub: 0; }
+.composer { --ml-stub: 0; }
+.textarea { --ml-stub: 0; }
+.actions { --ml-stub: 0; }
+.button { --ml-stub: 0; }
+.label { --ml-stub: 0; }

@@ -9,7 +9,7 @@ import { Github, Twitter, Linkedin } from 'lucide-react';
 
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 
-import commonStyles from './PublicFooter.common.module.css';
+import commonStyles from './PublicFooter.base.module.css';
 import lightStyles from './PublicFooter.light.module.css';
 import darkStyles from './PublicFooter.dark.module.css';
 

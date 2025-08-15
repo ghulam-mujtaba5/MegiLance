@@ -8,7 +8,7 @@ import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useClientData } from '@/hooks/useClient';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
-import common from './ClientWallet.common.module.css';
+import common from './ClientWallet.base.module.css';
 import light from './ClientWallet.light.module.css';
 import dark from './ClientWallet.dark.module.css';
 

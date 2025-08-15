@@ -8,7 +8,7 @@ import { useTheme } from 'next-themes';
 import { MapPin, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './SuccessStoryCard.common.module.css';
+import commonStyles from './SuccessStoryCard.base.module.css';
 import lightStyles from './SuccessStoryCard.light.module.css';
 import darkStyles from './SuccessStoryCard.dark.module.css';
 

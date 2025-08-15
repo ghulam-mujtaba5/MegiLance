@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-import common from './DashboardWidget.common.module.css';
+import common from './DashboardWidget.base.module.css';
 import light from './DashboardWidget.light.module.css';
 import dark from './DashboardWidget.dark.module.css';
 

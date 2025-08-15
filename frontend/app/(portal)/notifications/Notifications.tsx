@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import common from './Notifications.common.module.css';
+import common from './Notifications.base.module.css';
 import light from './Notifications.light.module.css';
 import dark from './Notifications.dark.module.css';
 

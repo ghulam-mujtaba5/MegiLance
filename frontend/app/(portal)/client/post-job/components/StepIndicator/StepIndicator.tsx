@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-import common from './StepIndicator.common.module.css';
+import common from './StepIndicator.base.module.css';
 import light from './StepIndicator.light.module.css';
 import dark from './StepIndicator.dark.module.css';
 

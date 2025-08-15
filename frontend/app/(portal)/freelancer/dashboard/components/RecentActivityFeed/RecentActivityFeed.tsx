@@ -5,7 +5,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './RecentActivityFeed.common.module.css';
+import commonStyles from './RecentActivityFeed.base.module.css';
 import lightStyles from './RecentActivityFeed.light.module.css';
 import darkStyles from './RecentActivityFeed.dark.module.css';
 

@@ -1,0 +1,17 @@
+/* Base styles for NotificationBell */
+.root { --ml-stub: 0; }
+.button { --ml-stub: 0; }
+.bell { --ml-stub: 0; }
+.badge { --ml-stub: 0; }
+.srOnly { --ml-stub: 0; }
+.panel { --ml-stub: 0; }
+.panelHeader { --ml-stub: 0; }
+.list { --ml-stub: 0; }
+.empty { --ml-stub: 0; }
+.item { --ml-stub: 0; }
+.itemUnread { --ml-stub: 0; }
+.itemLink { --ml-stub: 0; }
+.itemBody { --ml-stub: 0; }
+.itemTitle { --ml-stub: 0; }
+.itemDesc { --ml-stub: 0; }
+.itemTime { --ml-stub: 0; }

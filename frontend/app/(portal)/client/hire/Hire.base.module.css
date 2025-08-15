@@ -1,0 +1,12 @@
+/* Base styles for Hire flow */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.stepIndicatorContainer { --ml-stub: 0; }
+.form { --ml-stub: 0; }
+.liveRegion { --ml-stub: 0; }
+.actions { --ml-stub: 0; }
+.leftActions { --ml-stub: 0; }
+.rightActions { --ml-stub: 0; }

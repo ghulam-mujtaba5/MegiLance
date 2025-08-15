@@ -1,0 +1,21 @@
+/* Base styles for Notifications page */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.filters { --ml-stub: 0; }
+.chip { --ml-stub: 0; }
+.actionsBar { --ml-stub: 0; }
+.button { --ml-stub: 0; }
+.buttonSecondary { --ml-stub: 0; }
+.srOnly { --ml-stub: 0; }
+.list { --ml-stub: 0; }
+.item { --ml-stub: 0; }
+.itemHeader { --ml-stub: 0; }
+.dot { --ml-stub: 0; }
+.itemTitle { --ml-stub: 0; }
+.meta { --ml-stub: 0; }
+.itemBody { --ml-stub: 0; }
+.actions { --ml-stub: 0; }

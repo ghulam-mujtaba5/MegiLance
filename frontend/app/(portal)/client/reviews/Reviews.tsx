@@ -13,7 +13,7 @@ import Button from '@/app/components/Button/Button';
 import StarRating from '@/app/components/StarRating/StarRating';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Textarea from '@/app/components/Textarea/Textarea';
-import common from './Reviews.common.module.css';
+import common from './Reviews.base.module.css';
 import light from './Reviews.light.module.css';
 import dark from './Reviews.dark.module.css';
 

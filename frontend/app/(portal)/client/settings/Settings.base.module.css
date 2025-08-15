@@ -1,0 +1,19 @@
+/* Base styles for Client Settings */
+.page { --ml-stub: 0; }
+.theme { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.nav { --ml-stub: 0; }
+.navButton { --ml-stub: 0; }
+.navButtonActive { --ml-stub: 0; }
+.navIcon { --ml-stub: 0; }
+.content { --ml-stub: 0; }
+.formGrid { --ml-stub: 0; }
+.fullSpan { --ml-stub: 0; }
+.actionRow { --ml-stub: 0; }
+.actionDescription { --ml-stub: 0; }
+.supportContent { --ml-stub: 0; }
+.link { --ml-stub: 0; }
+.supportButton { --ml-stub: 0; }

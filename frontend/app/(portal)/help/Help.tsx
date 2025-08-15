@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './Help.common.module.css';
+import common from './Help.base.module.css';
 import light from './Help.light.module.css';
 import dark from './Help.dark.module.css';
 

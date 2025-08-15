@@ -1,0 +1,9 @@
+/* Base styles for StepCard */
+.stepCard { --ml-stub: 0; }
+.content { --ml-stub: 0; }
+.iconWrapper { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.description { --ml-stub: 0; }
+.stepNumber { --ml-stub: 0; }
+.client { --ml-stub: 0; }
+.freelancer { --ml-stub: 0; }

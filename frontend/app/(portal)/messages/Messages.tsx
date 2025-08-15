@@ -8,7 +8,7 @@ import ChatInbox from '@/app/components/Messaging/ChatInbox/ChatInbox';
 import ChatMessageBubble from '@/app/components/Messaging/ChatMessageBubble/ChatMessageBubble';
 import TypingIndicator from '@/app/components/Messaging/TypingIndicator/TypingIndicator';
 
-import commonStyles from './Messages.common.module.css';
+import commonStyles from './Messages.base.module.css';
 import lightStyles from './Messages.light.module.css';
 import darkStyles from './Messages.dark.module.css';
 

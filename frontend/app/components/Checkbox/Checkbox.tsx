@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import commonStyles from './Checkbox.common.module.css';
+import commonStyles from './Checkbox.base.module.css';
 import lightStyles from './Checkbox.light.module.css';
 import darkStyles from './Checkbox.dark.module.css';
 

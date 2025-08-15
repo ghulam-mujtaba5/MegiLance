@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
 import FreelancerRankVisualizer from '@/app/components/AI/FreelancerRankVisualizer/FreelancerRankVisualizer';
 
-import commonStyles from './KeyMetricsGrid.common.module.css';
+import commonStyles from './KeyMetricsGrid.base.module.css';
 import lightStyles from './KeyMetricsGrid.light.module.css';
 import darkStyles from './KeyMetricsGrid.dark.module.css';
 

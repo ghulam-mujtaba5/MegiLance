@@ -8,7 +8,7 @@ import { FaBitcoin, FaShieldAlt, FaLock, FaGlobe, FaExchangeAlt, FaChartLine } f
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './BlockchainShowcase.common.module.css';
+import commonStyles from './BlockchainShowcase.base.module.css';
 import lightStyles from './BlockchainShowcase.light.module.css';
 import darkStyles from './BlockchainShowcase.dark.module.css';
 

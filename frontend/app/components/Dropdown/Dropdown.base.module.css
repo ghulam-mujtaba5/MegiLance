@@ -1,0 +1,9 @@
+/* Base styles for Dropdown */
+.dropdown { --ml-stub: 0; }
+.trigger { --ml-stub: 0; }
+.label { --ml-stub: 0; }
+.caret { --ml-stub: 0; }
+.caretOpen { --ml-stub: 0; }
+.options { --ml-stub: 0; }
+.option { --ml-stub: 0; }
+.optionFocused { --ml-stub: 0; }

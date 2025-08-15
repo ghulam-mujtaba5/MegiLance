@@ -1,0 +1,7 @@
+/* Base styles for Checkbox */
+.checkboxWrapper { --ml-stub: 0; }
+.checkboxLabel { --ml-stub: 0; }
+.checkboxInput { --ml-stub: 0; }
+.checkboxCustom { --ml-stub: 0; }
+.checkboxText { --ml-stub: 0; }
+.checkboxError { --ml-stub: 0; }

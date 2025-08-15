@@ -5,7 +5,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './EmptyState.common.module.css';
+import commonStyles from './EmptyState.base.module.css';
 import lightStyles from './EmptyState.light.module.css';
 import darkStyles from './EmptyState.dark.module.css';
 

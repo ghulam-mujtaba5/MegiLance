@@ -9,7 +9,7 @@ import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import { PostJobData, PostJobErrors } from '../../PostJob.types';
 
-import common from './StepDetails.common.module.css';
+import common from './StepDetails.base.module.css';
 import light from './StepDetails.light.module.css';
 import dark from './StepDetails.dark.module.css';
 

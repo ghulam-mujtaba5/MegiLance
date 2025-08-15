@@ -1,0 +1,17 @@
+/* Base styles for FreelancerCard */
+.card { --ml-stub: 0; }
+.cardHeader { --ml-stub: 0; }
+.headerText { --ml-stub: 0; }
+.name { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.ratingContainer { --ml-stub: 0; }
+.ratingValue { --ml-stub: 0; }
+.cardBody { --ml-stub: 0; }
+.infoGrid { --ml-stub: 0; }
+.infoItem { --ml-stub: 0; }
+.infoIcon { --ml-stub: 0; }
+.infoText { --ml-stub: 0; }
+.skillsSection { --ml-stub: 0; }
+.skillsTitle { --ml-stub: 0; }
+.skillsGrid { --ml-stub: 0; }
+.cardFooter { --ml-stub: 0; }

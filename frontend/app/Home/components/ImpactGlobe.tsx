@@ -8,7 +8,7 @@ import Globe, { GlobeMethods } from 'react-globe.gl';
 import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './ImpactGlobe.common.module.css';
+import commonStyles from './ImpactGlobe.base.module.css';
 import lightStyles from './ImpactGlobe.light.module.css';
 import darkStyles from './ImpactGlobe.dark.module.css';
 

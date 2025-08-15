@@ -6,7 +6,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './Card.common.module.css';
+import commonStyles from './Card.base.module.css';
 import lightStyles from './Card.light.module.css';
 import darkStyles from './Card.dark.module.css';
 

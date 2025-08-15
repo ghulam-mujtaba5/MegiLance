@@ -4,7 +4,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import common from './NotificationBell.common.module.css';
+import common from './NotificationBell.base.module.css';
 import light from './NotificationBell.light.module.css';
 import dark from './NotificationBell.dark.module.css';
 

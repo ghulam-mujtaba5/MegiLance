@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 
 import ImpactStatCard from './ImpactStatCard';
 import SuccessStoryCard from './SuccessStoryCard';
-import commonStyles from './GlobalImpact.common.module.css';
+import commonStyles from './GlobalImpact.base.module.css';
 import lightStyles from './GlobalImpact.light.module.css';
 import darkStyles from './GlobalImpact.dark.module.css';
 

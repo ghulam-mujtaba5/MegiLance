@@ -5,7 +5,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import common from './StepReview.common.module.css';
+import common from './StepReview.base.module.css';
 import light from './StepReview.light.module.css';
 import dark from './StepReview.dark.module.css';
 

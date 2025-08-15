@@ -1,0 +1,14 @@
+/* Base styles for Badge */
+.badge { --ml-stub: 0; }
+.badgeIcon { --ml-stub: 0; }
+.badgeIconBefore { --ml-stub: 0; }
+.badgeIconAfter { --ml-stub: 0; }
+.default { --ml-stub: 0; }
+.primary { --ml-stub: 0; }
+.secondary { --ml-stub: 0; }
+.success { --ml-stub: 0; }
+.warning { --ml-stub: 0; }
+.danger { --ml-stub: 0; }
+.info { --ml-stub: 0; }
+.small { --ml-stub: 0; }
+.medium { --ml-stub: 0; }

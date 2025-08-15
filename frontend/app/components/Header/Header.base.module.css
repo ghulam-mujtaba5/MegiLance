@@ -1,0 +1,11 @@
+/* Base styles for Header */
+.header { --ml-stub: 0; }
+.nav { --ml-stub: 0; }
+.brandLink { --ml-stub: 0; }
+.brandName { --ml-stub: 0; }
+.navLinks { --ml-stub: 0; }
+.navLink { --ml-stub: 0; }
+.signIn { --ml-stub: 0; }
+.mobileMenuButton { --ml-stub: 0; }
+.mobileNavMenu { --ml-stub: 0; }
+.mobileNavMenuActive { --ml-stub: 0; }

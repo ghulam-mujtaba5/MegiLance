@@ -1,0 +1,19 @@
+/* Base styles for Help page */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.cardTitle { --ml-stub: 0; }
+.cardDesc { --ml-stub: 0; }
+.section { --ml-stub: 0; }
+.sectionTitle { --ml-stub: 0; }
+.list { --ml-stub: 0; }
+.item { --ml-stub: 0; }
+.cta { --ml-stub: 0; }
+.button { --ml-stub: 0; }
+.buttonSecondary { --ml-stub: 0; }

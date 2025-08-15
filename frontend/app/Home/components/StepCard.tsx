@@ -6,7 +6,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './StepCard.common.module.css';
+import commonStyles from './StepCard.base.module.css';
 import lightStyles from './StepCard.light.module.css';
 import darkStyles from './StepCard.dark.module.css';
 

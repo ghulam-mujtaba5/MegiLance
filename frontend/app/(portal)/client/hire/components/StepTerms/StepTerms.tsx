@@ -8,7 +8,7 @@ import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import { Calendar, DollarSign } from 'lucide-react';
 
-import common from './StepTerms.common.module.css';
+import common from './StepTerms.base.module.css';
 import light from './StepTerms.light.module.css';
 import dark from './StepTerms.dark.module.css';
 

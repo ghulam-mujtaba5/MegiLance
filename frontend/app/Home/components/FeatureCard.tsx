@@ -4,7 +4,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './FeatureCard.common.module.css';
+import commonStyles from './FeatureCard.base.module.css';
 import lightStyles from './FeatureCard.light.module.css';
 import darkStyles from './FeatureCard.dark.module.css';
 

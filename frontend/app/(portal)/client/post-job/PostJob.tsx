@@ -16,8 +16,8 @@ import StepDetails from './components/StepDetails/StepDetails';
 import StepScope from './components/StepScope/StepScope';
 import StepBudget from './components/StepBudget/StepBudget';
 import StepReview from './components/StepReview/StepReview';
-
-import common from './PostJob.common.module.css';
+ 
+import common from './PostJob.base.module.css';
 import light from './PostJob.light.module.css';
 import dark from './PostJob.dark.module.css';
 

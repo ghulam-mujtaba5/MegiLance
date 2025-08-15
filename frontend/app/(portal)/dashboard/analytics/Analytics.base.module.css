@@ -1,0 +1,24 @@
+/* Base styles for Dashboard Analytics */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.controls { --ml-stub: 0; }
+.srOnly { --ml-stub: 0; }
+.select { --ml-stub: 0; }
+.button { --ml-stub: 0; }
+.kpis { --ml-stub: 0; }
+.kpi { --ml-stub: 0; }
+.kpiLabel { --ml-stub: 0; }
+.kpiValue { --ml-stub: 0; }
+.kpiDelta { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.cardTitle { --ml-stub: 0; }
+.bar { --ml-stub: 0; }
+.point { --ml-stub: 0; }
+.table { --ml-stub: 0; }
+.th { --ml-stub: 0; }
+.td { --ml-stub: 0; }

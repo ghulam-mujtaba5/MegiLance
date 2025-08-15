@@ -7,7 +7,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 
-import commonStyles from './ActionMenu.common.module.css';
+import commonStyles from './ActionMenu.base.module.css';
 import lightStyles from './ActionMenu.light.module.css';
 import darkStyles from './ActionMenu.dark.module.css';
 

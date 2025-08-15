@@ -1,0 +1,6 @@
+/* Base styles for EmptyState */
+.wrapper { --ml-stub: 0; }
+.iconWrap { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.description { --ml-stub: 0; }
+.action { --ml-stub: 0; }

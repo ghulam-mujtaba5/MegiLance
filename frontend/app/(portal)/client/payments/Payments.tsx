@@ -19,7 +19,7 @@ import Pagination from '@/app/components/Pagination/Pagination';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import Trend from '@/app/components/Trend/Trend';
 
-import common from './Payments.common.module.css';
+import common from './Payments.base.module.css';
 import light from './Payments.light.module.css';
 import dark from './Payments.dark.module.css';
 

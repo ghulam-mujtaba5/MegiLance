@@ -1,0 +1,12 @@
+/* Base styles for AIShowcaseCard */
+.card { --ml-stub: 0; }
+.cardGlow { --ml-stub: 0; }
+.cardBorder { --ml-stub: 0; }
+.cardContent { --ml-stub: 0; }
+.iconWrapper { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.description { --ml-stub: 0; }
+.footer { --ml-stub: 0; }
+.stats { --ml-stub: 0; }
+.learnMore { --ml-stub: 0; }
+.arrowIcon { --ml-stub: 0; }

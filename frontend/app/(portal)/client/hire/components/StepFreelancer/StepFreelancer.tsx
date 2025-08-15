@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import Input from '@/app/components/Input/Input';
 import { UserSearch } from 'lucide-react';
 
-import common from './StepFreelancer.common.module.css';
+import common from './StepFreelancer.base.module.css';
 import light from './StepFreelancer.light.module.css';
 import dark from './StepFreelancer.dark.module.css';
 

@@ -15,7 +15,7 @@ import StepScope from './components/StepScope/StepScope';
 import StepTerms from './components/StepTerms/StepTerms';
 import StepReview from './components/StepReview/StepReview';
 
-import common from './Hire.common.module.css';
+import common from './Hire.base.module.css';
 import light from './Hire.light.module.css';
 import dark from './Hire.dark.module.css';
 

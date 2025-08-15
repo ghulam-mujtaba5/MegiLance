@@ -1,0 +1,15 @@
+/* Base styles for StepReview */
+.container { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.card_title { --ml-stub: 0; }
+.grid { --ml-stub: 0; }
+.grid_item { --ml-stub: 0; }
+.item_label { --ml-stub: 0; }
+.item_value { --ml-stub: 0; }
+.section_divider { --ml-stub: 0; }
+.section { --ml-stub: 0; }
+.section_title { --ml-stub: 0; }
+.description { --ml-stub: 0; }
+.skills_container { --ml-stub: 0; }

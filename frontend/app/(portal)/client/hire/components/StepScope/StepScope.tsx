@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import Input from '@/app/components/Input/Input';
 import { FileText } from 'lucide-react';
 
-import common from './StepScope.common.module.css';
+import common from './StepScope.base.module.css';
 import light from './StepScope.light.module.css';
 import dark from './StepScope.dark.module.css';
 

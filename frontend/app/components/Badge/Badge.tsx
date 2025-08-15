@@ -5,7 +5,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
-import commonStyles from './Badge.common.module.css';
+import commonStyles from './Badge.base.module.css';
 import lightStyles from './Badge.light.module.css';
 import darkStyles from './Badge.dark.module.css';
 

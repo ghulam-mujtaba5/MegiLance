@@ -1,0 +1,9 @@
+/* Base styles for Accordion */
+.accordionRoot { --ml-stub: 0; }
+.accordionItem { --ml-stub: 0; }
+.open { --ml-stub: 0; }
+.accordionTrigger { --ml-stub: 0; }
+.accordionTitle { --ml-stub: 0; }
+.accordionIcon { --ml-stub: 0; }
+.accordionContent { --ml-stub: 0; }
+.accordionContentText { --ml-stub: 0; }

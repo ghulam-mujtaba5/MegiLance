@@ -1,0 +1,13 @@
+/* Base styles for DashboardWidget */
+.widget { --ml-stub: 0; }
+.loading { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.iconWrapper { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.titleSkeleton { --ml-stub: 0; }
+.body { --ml-stub: 0; }
+.value { --ml-stub: 0; }
+.valueSkeleton { --ml-stub: 0; }
+.content { --ml-stub: 0; }
+.footer { --ml-stub: 0; }
+.clickable { --ml-stub: 0; }

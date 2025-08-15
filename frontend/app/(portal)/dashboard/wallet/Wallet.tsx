@@ -5,7 +5,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './Wallet.common.module.css';
+import common from './Wallet.base.module.css';
 import light from './Wallet.light.module.css';
 import dark from './Wallet.dark.module.css';
 import DensityToggle, { type Density } from '@/app/components/DataTableExtras/DensityToggle';

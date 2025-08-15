@@ -12,7 +12,7 @@ import Select from '@/app/components/Select/Select';
 import Button from '@/app/components/Button/Button';
 import Pagination from '@/app/components/Pagination/Pagination';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
-import common from './Projects.common.module.css';
+import common from './Projects.base.module.css';
 import light from './Projects.light.module.css';
 import dark from './Projects.dark.module.css';
 

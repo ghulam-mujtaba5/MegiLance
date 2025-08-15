@@ -1,0 +1,13 @@
+/* Base styles for SuccessStoryCard */
+.storyCard { --ml-stub: 0; }
+.cardContent { --ml-stub: 0; }
+.quote { --ml-stub: 0; }
+.quoteMark { --ml-stub: 0; }
+.authorInfo { --ml-stub: 0; }
+.avatar { --ml-stub: 0; }
+.authorDetails { --ml-stub: 0; }
+.name { --ml-stub: 0; }
+.role { --ml-stub: 0; }
+.location { --ml-stub: 0; }
+.achievement { --ml-stub: 0; }
+.achievementIcon { --ml-stub: 0; }

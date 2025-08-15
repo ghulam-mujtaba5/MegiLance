@@ -10,7 +10,7 @@ import Select from '@/app/components/Select/Select';
 import RadioGroup from '@/app/components/RadioGroup/RadioGroup';
 import { PostJobData, PostJobErrors, BudgetType } from '../../PostJob.types';
 
-import common from './StepBudget.common.module.css';
+import common from './StepBudget.base.module.css';
 import light from './StepBudget.light.module.css';
 import dark from './StepBudget.dark.module.css';
 

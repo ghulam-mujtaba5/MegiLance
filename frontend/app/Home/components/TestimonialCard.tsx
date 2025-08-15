@@ -10,7 +10,7 @@ import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import StarRating from '@/app/components/StarRating/StarRating';
 
-import commonStyles from './TestimonialCard.common.module.css';
+import commonStyles from './TestimonialCard.base.module.css';
 import lightStyles from './TestimonialCard.light.module.css';
 import darkStyles from './TestimonialCard.dark.module.css';
 

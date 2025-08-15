@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { PostJobData } from '../../PostJob.types';
 import Badge from '@/app/components/Badge/Badge';
 
-import common from './StepReview.common.module.css';
+import common from './StepReview.base.module.css';
 import light from './StepReview.light.module.css';
 import dark from './StepReview.dark.module.css';
 

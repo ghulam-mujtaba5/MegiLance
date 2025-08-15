@@ -9,7 +9,7 @@ import Textarea from '@/app/components/Textarea/Textarea';
 import TagsInput from '@/app/components/TagsInput/TagsInput';
 import { PostJobData, PostJobErrors } from '../../PostJob.types';
 
-import common from './StepScope.common.module.css';
+import common from './StepScope.base.module.css';
 import light from './StepScope.light.module.css';
 import dark from './StepScope.dark.module.css';
 

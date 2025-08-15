@@ -7,7 +7,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import common from './ProjectDetail.common.module.css';
+import common from './ProjectDetail.base.module.css';
 import light from './ProjectDetail.light.module.css';
 import dark from './ProjectDetail.dark.module.css';
 

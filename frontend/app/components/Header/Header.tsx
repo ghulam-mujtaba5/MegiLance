@@ -8,7 +8,7 @@ import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 
-import commonStyles from './Header.common.module.css';
+import commonStyles from './Header.base.module.css';
 import lightStyles from './Header.light.module.css';
 import darkStyles from './Header.dark.module.css';
 

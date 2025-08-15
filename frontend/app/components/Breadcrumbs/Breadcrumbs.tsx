@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { breadcrumbConfig } from '@/app/config/navigation';
-import common from './Breadcrumbs.common.module.css';
+import common from './Breadcrumbs.base.module.css';
 import light from './Breadcrumbs.light.module.css';
 import dark from './Breadcrumbs.dark.module.css';
 

@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useAnimatedCounter from '@/hooks/useAnimatedCounter';
 
-import commonStyles from './StatItem.common.module.css';
+import commonStyles from './StatItem.base.module.css';
 import lightStyles from './StatItem.light.module.css';
 import darkStyles from './StatItem.dark.module.css';
 

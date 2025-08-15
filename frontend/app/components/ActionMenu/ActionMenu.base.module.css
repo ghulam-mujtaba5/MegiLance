@@ -1,0 +1,7 @@
+/* Base styles for ActionMenu */
+.menuContainer { --ml-stub: 0; }
+.menu { --ml-stub: 0; }
+.separator { --ml-stub: 0; }
+.menuItem { --ml-stub: 0; }
+.itemIcon { --ml-stub: 0; }
+.itemLabel { --ml-stub: 0; }

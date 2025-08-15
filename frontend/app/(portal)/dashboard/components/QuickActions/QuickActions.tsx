@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import common from './QuickActions.common.module.css';
+import common from './QuickActions.base.module.css';
 import light from './QuickActions.light.module.css';
 import dark from './QuickActions.dark.module.css';
 

@@ -1,0 +1,12 @@
+/* Base styles for StepIndicator */
+.nav { --ml-stub: 0; }
+.list { --ml-stub: 0; }
+.step { --ml-stub: 0; }
+.current { --ml-stub: 0; }
+.completed { --ml-stub: 0; }
+.stepLink { --ml-stub: 0; }
+.indicator { --ml-stub: 0; }
+.checkIcon { --ml-stub: 0; }
+.stepNumber { --ml-stub: 0; }
+.stepName { --ml-stub: 0; }
+.separator { --ml-stub: 0; }

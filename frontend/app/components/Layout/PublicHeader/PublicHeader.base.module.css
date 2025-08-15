@@ -1,0 +1,18 @@
+/* Base styles for PublicHeader */
+.header { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.logoContainer { --ml-stub: 0; }
+.nav { --ml-stub: 0; }
+.navList { --ml-stub: 0; }
+.navLink { --ml-stub: 0; }
+.navLinkActive { --ml-stub: 0; }
+.actionsContainer { --ml-stub: 0; }
+.signInButton { --ml-stub: 0; }
+.mobileToggle { --ml-stub: 0; }
+.srOnly { --ml-stub: 0; }
+.mobileMenu { --ml-stub: 0; }
+.mobileMenuOpen { --ml-stub: 0; }
+.mobileNavList { --ml-stub: 0; }
+.mobileNavLink { --ml-stub: 0; }
+.mobileActions { --ml-stub: 0; }
+.mobileThemeSwitcherSpacer { --ml-stub: 0; }

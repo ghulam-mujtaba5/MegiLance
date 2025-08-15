@@ -12,7 +12,7 @@ import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { Briefcase, MapPin, DollarSign } from 'lucide-react';
 
-import common from './FreelancerCard.common.module.css';
+import common from './FreelancerCard.base.module.css';
 import light from './FreelancerCard.light.module.css';
 import dark from './FreelancerCard.dark.module.css';
 

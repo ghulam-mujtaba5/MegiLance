@@ -1,7 +1,7 @@
 // @AI-HINT: This is the Payments page root component. All styles are per-component only. See Payments.common.css, Payments.light.css, and Payments.dark.css for theming.
 import React from 'react';
 import TransactionRow from '../components/TransactionRow/TransactionRow';
-import commonStyles from './Payments.common.module.css';
+import commonStyles from './Payments.base.module.css';
 import lightStyles from './Payments.light.module.css';
 import darkStyles from './Payments.dark.module.css';
 

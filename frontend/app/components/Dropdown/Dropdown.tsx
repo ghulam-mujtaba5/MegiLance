@@ -5,7 +5,7 @@ import React, { useState, useRef, useEffect, useId, useCallback } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import commonStyles from './Dropdown.common.module.css';
+import commonStyles from './Dropdown.base.module.css';
 import lightStyles from './Dropdown.light.module.css';
 import darkStyles from './Dropdown.dark.module.css';
 

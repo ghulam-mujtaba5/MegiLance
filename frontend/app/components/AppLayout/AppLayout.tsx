@@ -18,7 +18,7 @@ import {
   adminNavItems,
 } from '@/app/config/navigation';
 
-import commonStyles from './AppLayout.common.module.css';
+import commonStyles from './AppLayout.base.module.css';
 import lightStyles from './AppLayout.light.module.css';
 import darkStyles from './AppLayout.dark.module.css';
 import adminStyles from './AppLayout.admin.module.css';

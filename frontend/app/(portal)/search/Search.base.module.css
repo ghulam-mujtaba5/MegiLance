@@ -1,0 +1,16 @@
+/* Base styles for Search page */
+.page { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.controls { --ml-stub: 0; }
+.srOnly { --ml-stub: 0; }
+.input { --ml-stub: 0; }
+.select { --ml-stub: 0; }
+.results { --ml-stub: 0; }
+.card { --ml-stub: 0; }
+.cardTitle { --ml-stub: 0; }
+.cardMeta { --ml-stub: 0; }

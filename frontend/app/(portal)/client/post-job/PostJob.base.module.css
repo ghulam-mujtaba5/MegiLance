@@ -1,0 +1,17 @@
+/* Base styles for PostJob */
+.main { --ml-stub: 0; }
+.container { --ml-stub: 0; }
+.header { --ml-stub: 0; }
+.title { --ml-stub: 0; }
+.subtitle { --ml-stub: 0; }
+.step_indicator_container { --ml-stub: 0; }
+.content_container { --ml-stub: 0; }
+.footer { --ml-stub: 0; }
+.hidden { --ml-stub: 0; }
+.centered_container { --ml-stub: 0; }
+.result_card { --ml-stub: 0; }
+.result_icon { --ml-stub: 0; }
+.success_icon { --ml-stub: 0; }
+.error_icon { --ml-stub: 0; }
+.result_title { --ml-stub: 0; }
+.result_message { --ml-stub: 0; }

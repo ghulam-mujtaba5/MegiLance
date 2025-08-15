@@ -5,7 +5,7 @@
 import React from 'react';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import styles from './Payments.common.module.css';
+import styles from './Payments.base.module.css';
 
 const PaymentsPage: React.FC = () => {
   const { notify } = useToaster();

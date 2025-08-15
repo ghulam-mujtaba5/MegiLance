@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import common from './Search.common.module.css';
+import common from './Search.base.module.css';
 import light from './Search.light.module.css';
 import dark from './Search.dark.module.css';
 

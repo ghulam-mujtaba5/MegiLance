@@ -1,0 +1,6 @@
+/* Base styles for Breadcrumbs */
+.wrap { --ml-stub: 0; }
+.nav { --ml-stub: 0; }
+.visuallyHidden { --ml-stub: 0; }
+.crumb { --ml-stub: 0; }
+.sep { --ml-stub: 0; }

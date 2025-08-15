@@ -1,0 +1,11 @@
+/* Base styles for TestimonialCard */
+.testimonialCard { --ml-stub: 0; }
+.isVisible { --ml-stub: 0; }
+.isNotVisible { --ml-stub: 0; }
+.cardHeader { --ml-stub: 0; }
+.quoteIcon { --ml-stub: 0; }
+.quote { --ml-stub: 0; }
+.authorInfo { --ml-stub: 0; }
+.authorDetails { --ml-stub: 0; }
+.authorName { --ml-stub: 0; }
+.authorTitle { --ml-stub: 0; }

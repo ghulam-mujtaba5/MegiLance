@@ -1,0 +1,13 @@
+/* Base styles for PostJob StepIndicator */
+.nav { --ml-stub: 0; }
+.list { --ml-stub: 0; }
+.step { --ml-stub: 0; }
+.indicator { --ml-stub: 0; }
+.completed { --ml-stub: 0; }
+.active { --ml-stub: 0; }
+.icon { --ml-stub: 0; }
+.stepNumber { --ml-stub: 0; }
+.stepName { --ml-stub: 0; }
+.stepNameActive { --ml-stub: 0; }
+.progressBarContainer { --ml-stub: 0; }
+.progressBar { --ml-stub: 0; }

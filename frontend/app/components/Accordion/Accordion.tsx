@@ -5,7 +5,7 @@ import React, { useState, useContext, createContext, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import commonStyles from './Accordion.common.module.css';
+import commonStyles from './Accordion.base.module.css';
 import lightStyles from './Accordion.light.module.css';
 import darkStyles from './Accordion.dark.module.css';
 

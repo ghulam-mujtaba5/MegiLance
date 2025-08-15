@@ -20,7 +20,7 @@ import {
   Cell,
 } from 'recharts';
 import { cn } from '@/lib/utils';
-import common from './Reports.common.module.css';
+import common from './Reports.base.module.css';
 import light from './Reports.light.module.css';
 import dark from './Reports.dark.module.css';
 

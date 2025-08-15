@@ -12,7 +12,7 @@ import Button from '@/app/components/Button/Button';
 import ThemeSwitcher from '@/app/components/ThemeSwitcher/ThemeSwitcher';
 import NotificationBell from '@/app/components/NotificationBell/NotificationBell';
 
-import commonStyles from './PublicHeader.common.module.css';
+import commonStyles from './PublicHeader.base.module.css';
 import lightStyles from './PublicHeader.light.module.css';
 import darkStyles from './PublicHeader.dark.module.css';
 

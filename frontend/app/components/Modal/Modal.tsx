@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { IoClose } from 'react-icons/io5';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import commonStyles from './Modal.common.module.css';
+import commonStyles from './Modal.base.module.css';
 import lightStyles from './Modal.light.module.css';
 import darkStyles from './Modal.dark.module.css';
 
