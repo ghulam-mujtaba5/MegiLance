@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import common from './KPITiles.common.module.css';
+import common from './KPITiles.base.module.css';
 import light from './KPITiles.light.module.css';
 import dark from './KPITiles.dark.module.css';
 
