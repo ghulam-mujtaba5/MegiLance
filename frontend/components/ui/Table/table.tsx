@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 // The CSS module imports are now relative to the new file location.
-import commonStyles from './Table.common.module.css';
+import baseStyles from './Table.base.module.css';
 import lightStyles from './Table.light.module.css';
 import darkStyles from './Table.dark.module.css';
 
@@ -16,10 +16,10 @@ const Table = React.forwardRef<
   const styles = theme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.tableWrapper, styles.tableWrapper)}>
+    <div className={cn(baseStyles.tableWrapper, styles.tableWrapper)}>
       <table
         ref={ref}
-        className={cn(commonStyles.table, className)}
+        className={cn(baseStyles.table, className)}
         {...props}
       />
     </div>
@@ -66,7 +66,7 @@ const TableFooter = React.forwardRef<
   return (
     <tfoot
       ref={ref}
-      className={cn(commonStyles.footer, styles.footer, className)}
+      className={cn(baseStyles.footer, styles.footer, className)}
       {...props}
     />
   );
@@ -83,7 +83,7 @@ const TableRow = React.forwardRef<
   return (
     <tr
       ref={ref}
-      className={cn(commonStyles.row, styles.row, className)}
+      className={cn(baseStyles.row, styles.row, className)}
       {...props}
     />
   );
@@ -100,7 +100,7 @@ const TableHead = React.forwardRef<
   return (
     <th
       ref={ref}
-      className={cn(commonStyles.head, styles.head, className)}
+      className={cn(baseStyles.head, styles.head, className)}
       {...props}
     />
   );
@@ -117,7 +117,7 @@ const TableCell = React.forwardRef<
   return (
     <td
       ref={ref}
-      className={cn(commonStyles.cell, styles.cell, className)}
+      className={cn(baseStyles.cell, styles.cell, className)}
       {...props}
     />
   );
@@ -134,7 +134,7 @@ const TableCaption = React.forwardRef<
   return (
     <caption
       ref={ref}
-      className={cn(commonStyles.caption, styles.caption, className)}
+      className={cn(baseStyles.caption, styles.caption, className)}
       {...props}
     />
   );

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import common from './Input.common.module.css';
+import { useTheme } from 'next-themes';
+import base from './Input.base.module.css';
 import light from './Input.light.module.css';
 import dark from './Input.dark.module.css';
 
@@ -11,23 +12,18 @@ import dark from './Input.dark.module.css';
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
-    return (
-      <input
-        type={type}
-        className={cn(
-          common.input,
-          `theme-light:${light.input}`,
-          `theme-dark:${dark.input}`,
-          className
-        )}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
+const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, ...props }, ref) => {
+  const { theme } = useTheme();
+  const themeStyles = theme === 'dark' ? dark : light;
+  return (
+    <input
+      type={type}
+      className={cn(base.input, themeStyles.input, className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 Input.displayName = 'Input';
 
 export { Input };

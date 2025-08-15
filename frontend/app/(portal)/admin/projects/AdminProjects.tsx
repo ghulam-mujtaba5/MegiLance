@@ -98,7 +98,11 @@ const AdminProjects: React.FC = () => {
   const showAll = () => setVisibleKeys(allColumns.map(c => c.key));
   const hideAll = () => setVisibleKeys([]);
   const isVisible = (key: keyof ProjectRow) => visibleKeys.includes(key);
-  const visibleColumns = useMemo(() => columns.filter(c => isVisible(c.key as keyof ProjectRow)), [columns, visibleKeys]);
+  // Include isVisible in deps per react-hooks/exhaustive-deps
+  const visibleColumns = useMemo(
+    () => columns.filter(c => isVisible(c.key as keyof ProjectRow)),
+    [columns, visibleKeys, isVisible]
+  );
 
   return (
     <main className={cn(baseStyles.page, themeStyles.themeWrapper)}>

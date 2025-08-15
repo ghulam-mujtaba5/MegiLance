@@ -34,6 +34,7 @@ const PublicHeader = () => {
   // Focus management and Escape handling for mobile menu
   React.useEffect(() => {
     const menuEl = mobileMenuRef.current;
+    const toggleEl = mobileToggleRef.current;
     if (!menuEl) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -77,7 +78,7 @@ const PublicHeader = () => {
       document.removeEventListener('keydown', handleKeyDown);
       // Return focus to the toggle when menu closes
       if (!menuOpen) {
-        mobileToggleRef.current?.focus();
+        toggleEl?.focus();
       }
     };
   }, [menuOpen]);

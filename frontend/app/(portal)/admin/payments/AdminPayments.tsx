@@ -110,6 +110,12 @@ const AdminPayments: React.FC = () => {
     };
   }, [tableState.allRows]);
 
+  // Compute visible columns outside of JSX and include all dependencies
+  const visibleColumns = useMemo(
+    () => columns.filter(c => isVisible(c.key as keyof Txn)),
+    [columns, visibleKeys, isVisible]
+  );
+
   return (
     <main className={cn(baseStyles.page, themeStyles.themeWrapper)}>
       <div className={baseStyles.container}>
@@ -212,7 +218,7 @@ const AdminPayments: React.FC = () => {
           </div>
           {/* Shared DataTable */}
           <Table<Txn>
-            columns={useMemo(() => columns.filter(c => isVisible(c.key as keyof Txn)), [columns, visibleKeys])}
+            columns={visibleColumns}
             state={tableState}
             className={cn(baseStyles.table, themeStyles.table)}
           />

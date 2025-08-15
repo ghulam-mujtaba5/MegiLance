@@ -8,7 +8,9 @@ import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { adminNavItems, clientNavItems, freelancerNavItems, NavItem as ConfigNavItem } from '@/app/config/navigation';
-import styles from './SidebarNav.common.module.css';
+import baseStyles from './SidebarNav.base.module.css';
+import lightStyles from './SidebarNav.light.module.css';
+import darkStyles from './SidebarNav.dark.module.css';
 import {
   LayoutDashboard,
   MessageSquare,
@@ -78,6 +80,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   const pathname = usePathname();
   const { theme } = useTheme(); // Use hook for theme
 
+  // Theme styles selector (avoid conditional hooks)
+  const themeStyles = useMemo(() => (theme === 'dark' ? darkStyles : lightStyles), [theme]);
+
   const computedNavItems: NavItem[] = useMemo(() => {
     let sourceItems: ConfigNavItem[] = [];
     switch (userType) {
@@ -101,40 +106,42 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   }, [userType]);
 
   const sidebarClasses = cn(
-    styles.sidebarNav,
-    `theme-${theme}`, // Apply global theme class for CSS variables
-    isCollapsed && styles.sidebarNavCollapsed,
+    baseStyles.sidebarNav,
+    themeStyles.sidebarNav,
+    `theme-${theme}`,
+    isCollapsed && cn(baseStyles.sidebarNavCollapsed, themeStyles.sidebarNavCollapsed),
     className
   );
 
   return (
     <aside className={sidebarClasses}>
-      <div className={styles.sidebarNavHeader}>
-        <div className={styles.sidebarNavLogo}>
+      <div className={cn(baseStyles.sidebarNavHeader, themeStyles.sidebarNavHeader)}>
+        <div className={cn(baseStyles.sidebarNavLogo, themeStyles.sidebarNavLogo)}>
           {isCollapsed ? 'M' : 'MegiLance'}
         </div>
       </div>
-      <nav className={styles.sidebarNavNav}>
-        <ul className={styles.sidebarNavList}>
+      <nav className={cn(baseStyles.sidebarNavNav, themeStyles.sidebarNavNav)}>
+        <ul className={cn(baseStyles.sidebarNavList, themeStyles.sidebarNavList)}>
           {computedNavItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
             return (
-              <li key={item.href} className={styles.sidebarNavItem}>
+              <li key={item.href} className={cn(baseStyles.sidebarNavItem, themeStyles.sidebarNavItem)}>
                 <Link
                   href={item.href}
                   className={cn(
-                    styles.sidebarNavLink,
-                    isActive && styles.sidebarNavLinkActive
+                    baseStyles.sidebarNavLink,
+                    themeStyles.sidebarNavLink,
+                    isActive && cn(baseStyles.sidebarNavLinkActive, themeStyles.sidebarNavLinkActive)
                   )}
                   aria-current={isActive ? 'page' : undefined}
                   title={item.label}
                   data-testid={`sidebar-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                 >
-                  <span className={styles.sidebarNavIcon} aria-hidden>
+                  <span className={cn(baseStyles.sidebarNavIcon, themeStyles.sidebarNavIcon)} aria-hidden>
                     {item.icon}
                   </span>
                   {!isCollapsed && (
-                    <span className={styles.sidebarNavLabel}>{item.label}</span>
+                    <span className={cn(baseStyles.sidebarNavLabel, themeStyles.sidebarNavLabel)}>{item.label}</span>
                   )}
                 </Link>
               </li>
@@ -142,7 +149,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
           })}
         </ul>
       </nav>
-      <div className={styles.sidebarNavFooter}>
+      <div className={cn(baseStyles.sidebarNavFooter, themeStyles.sidebarNavFooter)}>
         {/* Placeholder for future UserAvatar or ProfileMenu component */}
       </div>
     </aside>

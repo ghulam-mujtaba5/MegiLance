@@ -1,0 +1,44 @@
+/* Base, theme-agnostic styles for the Table component system (extracted from Table.common.module.css) */
+
+.tableWrapper {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.table {
+  width: 100%;
+  caption-side: bottom;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-family: var(--font-inter);
+  border-collapse: collapse;
+}
+
+.footer {
+  font-weight: 500;
+}
+
+.row {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.head {
+  height: 3rem;
+  padding: 0 1rem;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 600;
+  font-family: var(--font-poppins);
+}
+
+.cell {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.caption {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}

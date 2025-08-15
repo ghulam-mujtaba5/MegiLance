@@ -1,0 +1,15 @@
+/* Dark theme overrides for SidebarNav */
+
+.sidebarNav { --sidebar-theme: dark; }
+.sidebarNavCollapsed { --sidebar-theme-collapsed: dark; }
+.sidebarNavHeader { --sidebar-theme-header: dark; }
+.sidebarNavLogo { --sidebar-theme-logo: dark; }
+.sidebarNavNav { --sidebar-theme-nav: dark; }
+.sidebarNavList { --sidebar-theme-list: dark; }
+.sidebarNavItem { --sidebar-theme-item: dark; }
+.sidebarNavLink { --sidebar-theme-link: dark; }
+.sidebarNavLink:hover { --sidebar-theme-link-hover: dark; }
+.sidebarNavLinkActive { --sidebar-theme-link-active: dark; }
+.sidebarNavIcon { --sidebar-theme-icon: dark; }
+.sidebarNavLabel { --sidebar-theme-label: dark; }
+.sidebarNavFooter { --sidebar-theme-footer: dark; }

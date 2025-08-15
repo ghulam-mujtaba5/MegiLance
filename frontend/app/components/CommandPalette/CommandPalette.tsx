@@ -70,7 +70,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ items }) => {
         </div>
         <ul className={common.list} role="listbox" aria-label="Commands">
           {filtered.map((it) => (
-            <li key={it.id} className={cn(common.item, styles.item)} role="option">
+            <li key={it.id} className={cn(common.item, styles.item)} role="option" aria-selected={false}>
               <button
                 type="button"
                 className={cn(common.itemBtn, styles.itemBtn)}
@@ -85,7 +85,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ items }) => {
             </li>
           ))}
           {filtered.length === 0 && (
-            <li className={common.empty} role="option" aria-disabled="true">No commands</li>
+            <li className={common.empty} role="option" aria-disabled="true" aria-selected={false}>No commands</li>
           )}
         </ul>
       </div>

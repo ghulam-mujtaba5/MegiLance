@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
-import commonStyles from './Button.common.module.css';
+import baseStyles from './Button.base.module.css';
 import lightStyles from './Button.light.module.css';
 import darkStyles from './Button.dark.module.css';
 
@@ -56,32 +56,32 @@ const Button = <C extends React.ElementType = 'button'>({
   return (
     <Component
       className={cn(
-        commonStyles.button,
+        baseStyles.button,
         // Support both prefixed and non-prefixed variant and size class names
-        commonStyles[`variant-${variant}`],
-        (commonStyles as any)[variant],
-        commonStyles[`size-${normalizedSize}`],
+        baseStyles[`variant-${variant}`],
+        (baseStyles as any)[variant],
+        baseStyles[`size-${normalizedSize}`],
         // legacy, in case any stylesheet references .small/.medium/.large directly
-        (commonStyles as any)[size as string],
+        (baseStyles as any)[size as string],
         themeStyles.button,
         themeStyles[`variant-${variant}`],
         (themeStyles as any)[variant],
         themeStyles[`size-${normalizedSize}`],
         provider && themeStyles[`provider-${provider}`],
-        isLoading && commonStyles.loading,
+        isLoading && baseStyles.loading,
         isLoading && themeStyles.loading,
-        fullWidth && commonStyles.fullWidth,
+        fullWidth && baseStyles.fullWidth,
         className
       )}
       disabled={isLoading || props.disabled}
       {...props}
     >
-      {isLoading && <Loader2 className={cn(commonStyles.spinner, themeStyles.spinner)} />}
-      {iconBefore && !isLoading && <span className={commonStyles.iconBefore}>{iconBefore}</span>}
-      <span className={cn(commonStyles.buttonText, themeStyles.buttonText, isLoading && commonStyles.loadingText)}>
+      {isLoading && <Loader2 className={cn(baseStyles.spinner, themeStyles.spinner)} />}
+      {iconBefore && !isLoading && <span className={baseStyles.iconBefore}>{iconBefore}</span>}
+      <span className={cn(baseStyles.buttonText, themeStyles.buttonText, isLoading && baseStyles.loadingText)}>
         {children}
       </span>
-      {iconAfter && !isLoading && <span className={commonStyles.iconAfter}>{iconAfter}</span>}
+      {iconAfter && !isLoading && <span className={baseStyles.iconAfter}>{iconAfter}</span>}
     </Component>
   );
 };

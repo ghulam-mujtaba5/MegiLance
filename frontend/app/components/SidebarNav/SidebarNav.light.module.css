@@ -1,0 +1,15 @@
+/* Light theme overrides for SidebarNav */
+
+.sidebarNav { --sidebar-theme: light; }
+.sidebarNavCollapsed { --sidebar-theme-collapsed: light; }
+.sidebarNavHeader { --sidebar-theme-header: light; }
+.sidebarNavLogo { --sidebar-theme-logo: light; }
+.sidebarNavNav { --sidebar-theme-nav: light; }
+.sidebarNavList { --sidebar-theme-list: light; }
+.sidebarNavItem { --sidebar-theme-item: light; }
+.sidebarNavLink { --sidebar-theme-link: light; }
+.sidebarNavLink:hover { --sidebar-theme-link-hover: light; }
+.sidebarNavLinkActive { --sidebar-theme-link-active: light; }
+.sidebarNavIcon { --sidebar-theme-icon: light; }
+.sidebarNavLabel { --sidebar-theme-label: light; }
+.sidebarNavFooter { --sidebar-theme-footer: light; }

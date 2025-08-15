@@ -1,4 +1,4 @@
-/* @AI-HINT: Shared styles for SidebarNav component. Do not use or import any global or theme CSS. */
+/* Base, theme-agnostic styles for SidebarNav component */
 
 .sidebarNav {
   display: flex;
@@ -37,7 +37,7 @@
 }
 
 .sidebarNavCollapsed .sidebarNavLogo {
-  font-size: 1.5rem; /* Smaller logo when collapsed */
+  font-size: 1.5rem;
 }
 
 .sidebarNavNav {
@@ -122,15 +122,12 @@
   border-top: 1px solid var(--sidebar-border-color);
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .sidebarNav {
-    /* On mobile, collapse the sidebar by default */
     width: var(--sidebar-collapsed-width, 80px);
   }
-
   .sidebarNav:not(.sidebarNavCollapsed) {
-    /* Allow it to expand if needed, e.g., via a toggle button */
     width: var(--sidebar-width, 260px);
   }
 }

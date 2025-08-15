@@ -1,10 +1,10 @@
-/* AI-HINT: This file contains common, theme-independent styles for the Input component. */
+/* Base, theme-agnostic styles for the Input component (extracted from Input.common.module.css) */
 
 .input {
   display: flex;
   width: 100%;
   height: 2.5rem; /* 40px */
-  border-radius: 0.5rem; /* 8px, consistent with modern UIs */
+  border-radius: 0.5rem; /* 8px */
   padding: 0.5rem 0.75rem;
   font-family: 'Inter', sans-serif;
   font-size: 0.875rem; /* 14px */
@@ -13,19 +13,14 @@
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.input::placeholder {
-  font-style: italic;
-}
+.input::placeholder { font-style: italic; }
 
 .input:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--megilance-primary-blue, #4573df);
 }
 
-.input:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
+.input:disabled { cursor: not-allowed; opacity: 0.7; }
 
 /* Styles for file inputs */
 .input[type="file"]::file-selector-button {
