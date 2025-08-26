@@ -23,13 +23,18 @@
   border-radius: var(--border-radius-md);
   border: 1px solid;
   background-color: transparent;
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
   min-height: 120px; /* Default height */
   resize: vertical; /* Allow vertical resizing */
+  caret-color: var(--color-primary);
 }
 
 .textareaField:focus {
   outline: none;
+}
+
+.textareaField::placeholder {
+  opacity: 0.7;
 }
 
 .errorMessage {

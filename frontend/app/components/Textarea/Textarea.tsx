@@ -36,6 +36,8 @@ const Textarea: React.FC<TextareaProps> = ({
 
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
   const hasError = !!error;
+  const errorId = hasError ? `${id}-error` : undefined;
+  const helpId = !hasError && helpText ? `${id}-help` : undefined;
 
   return (
     <div
@@ -57,10 +59,17 @@ const Textarea: React.FC<TextareaProps> = ({
           themeStyles.textareaField,
           className
         )}
+        aria-invalid={hasError ? 'true' : undefined}
+        aria-describedby={errorId ?? helpId}
+        aria-errormessage={errorId}
         {...props}
       />
-      {hasError && typeof error === 'string' && <p className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>{error}</p>}
-      {!hasError && helpText && <p className={cn(commonStyles.helpText, themeStyles.helpText)}>{helpText}</p>}
+      {hasError && typeof error === 'string' && (
+        <p id={errorId} className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>{error}</p>
+      )}
+      {!hasError && helpText && (
+        <p id={helpId} className={cn(commonStyles.helpText, themeStyles.helpText)}>{helpText}</p>
+      )}
     </div>
   );
 };
