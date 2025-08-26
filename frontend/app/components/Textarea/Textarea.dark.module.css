@@ -10,6 +10,14 @@
   background-color: var(--bg-primary-dark);
 }
 
+.textareaField::placeholder {
+  color: var(--color-text-secondary-dark);
+}
+
+.textareaField:hover:not(:disabled) {
+  background-color: var(--bg-secondary-dark);
+}
+
 .textareaField:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);

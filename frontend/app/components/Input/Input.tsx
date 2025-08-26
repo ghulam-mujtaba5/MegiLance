@@ -40,6 +40,8 @@ const Input: React.FC<InputProps> = ({
   
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
   const hasError = !!error;
+  const errorId = hasError ? `${id}-error` : undefined;
+  const helpId = !hasError && helpText ? `${id}-help` : undefined;
 
   return (
     <div
@@ -69,12 +71,19 @@ const Input: React.FC<InputProps> = ({
             iconAfter && themeStyles.inputFieldWithIconAfter,
             className
           )}
+          aria-invalid={hasError ? 'true' : undefined}
+          aria-describedby={errorId ?? helpId}
+          aria-errormessage={errorId}
           {...props}
         />
         {iconAfter && <span className={cn(commonStyles.inputIcon, themeStyles.inputIcon, commonStyles.inputIconAfter, themeStyles.inputIconAfter)}>{iconAfter}</span>}
       </div>
-      {hasError && typeof error === 'string' && <p className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>{error}</p>}
-      {!hasError && helpText && <p className={cn(commonStyles.helpText, themeStyles.helpText)}>{helpText}</p>}
+      {hasError && typeof error === 'string' && (
+        <p id={errorId} className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>{error}</p>
+      )}
+      {!hasError && helpText && (
+        <p id={helpId} className={cn(commonStyles.helpText, themeStyles.helpText)}>{helpText}</p>
+      )}
     </div>
   );
 };
