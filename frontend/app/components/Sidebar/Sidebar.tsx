@@ -25,6 +25,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType }) => {
   const { theme } = useTheme();
+  const [isHovered, setIsHovered] = useState(false);
 
   if (!theme) return null;
 
@@ -37,10 +38,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
         themeStyles.sidebar,
         isCollapsed ? commonStyles.sidebarCollapsed : commonStyles.sidebarExpanded
       )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <header className={cn(commonStyles.sidebarHeader, themeStyles.sidebarHeader)}>
         <div className={cn(commonStyles.logoContainer)}>
-          <MegiLanceLogo className={commonStyles.logoIcon} />
+          <MegiLanceLogo className={cn(commonStyles.logoIcon, isHovered && commonStyles.logoIconHovered)} />
           <span
             className={cn(
               commonStyles.logoText,
@@ -69,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>
         <div className={cn(commonStyles.userInfo)}>
-          <UserAvatar src="/mock-avatar.svg" name="John Doe" size="large" />
+          <UserAvatar src="/mock-avatar.svg" name="John Doe" size="large" className={commonStyles.avatar} />
           <div
             className={cn(
               commonStyles.userDetails,

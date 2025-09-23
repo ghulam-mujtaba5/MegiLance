@@ -154,13 +154,13 @@ const Payments: React.FC = () => {
       )}
 
       {paginatedPayments.length > 0 && (
-        <footer className={common.footer}>
+        <div className={common.paginationContainer}>
           <Pagination
             currentPage={currentPage}
             totalPages={Math.ceil(sortedPayments.length / itemsPerPage)}
             onPageChange={setCurrentPage}
           />
-        </footer>
+        </div>
       )}
     </div>
   );

@@ -7,12 +7,17 @@
   height: 100vh;
   background-color: var(--sidebar-bg-color);
   border-right: 1px solid var(--sidebar-border-color);
-  transition: width 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out, box-shadow 0.3s ease;
   overflow: hidden;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 90;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.sidebarNav:hover {
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
 }
 
 .sidebarNavCollapsed {
@@ -26,6 +31,7 @@
   padding: 1.5rem 1rem;
   height: var(--header-height, 80px);
   box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
 .sidebarNavLogo {
@@ -34,15 +40,17 @@
   color: var(--sidebar-logo-color);
   white-space: nowrap;
   overflow: hidden;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
   background: linear-gradient(90deg, var(--color-primary-600), var(--color-primary-400));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .sidebarNavCollapsed .sidebarNavLogo {
   font-size: 1.5rem; /* Smaller logo when collapsed */
+  transform: rotate(5deg);
 }
 
 .sidebarNavNav {
@@ -60,6 +68,11 @@
 .sidebarNavItem {
   padding: 0 1rem;
   margin-bottom: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.sidebarNavItem:hover {
+  transform: translateX(2px);
 }
 
 .sidebarNavCollapsed .sidebarNavItem {
@@ -76,17 +89,12 @@
   text-decoration: none;
   color: var(--sidebar-link-color);
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   position: relative;
   overflow: hidden;
   margin: 0.25rem 0;
-}
-
-.sidebarNavCollapsed .sidebarNavLink {
-  padding: 0.875rem;
-  justify-content: center;
-  margin: 0.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
 .sidebarNavLink::before {
@@ -108,9 +116,9 @@
 }
 
 .sidebarNavLink:hover {
-  transform: translateX(2px);
+  transform: translateX(4px);
   color: var(--sidebar-link-hover-color);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 .sidebarNavLinkActive {
@@ -136,7 +144,12 @@
   margin-right: 1rem;
   font-size: 1.25rem;
   min-width: 24px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+.sidebarNavIconActive {
+  transform: scale(1.15) rotate(5deg);
 }
 
 .sidebarNavCollapsed .sidebarNavIcon {
@@ -145,7 +158,8 @@
 
 .sidebarNavLabel {
   opacity: 1;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transform: translateZ(0); /* Force hardware acceleration */
 }
 
 .sidebarNavCollapsed .sidebarNavLabel {
@@ -173,13 +187,47 @@
   font-weight: 600;
   margin-left: auto;
   transition: all 0.2s ease;
+  transform: translateZ(0); /* Force hardware acceleration */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sidebarNavCollapsed .badge {
   position: absolute;
   top: 0;
   right: 0;
-  transform: translate(50%, -50%);
+  transform: translate(50%, -50%) scale(1.1);
+}
+
+.badge:hover {
+  transform: scale(1.1);
+}
+
+/* Submenu styles */
+.sidebarNavSubItem {
+  margin-top: 0.25rem;
+}
+
+.sidebarNavSubLink {
+  padding: 0.625rem 1rem;
+  font-size: 0.9rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-left: 3px solid var(--color-primary-400);
+}
+
+.sidebarNavSubLink:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: translateX(6px);
+}
+
+.sidebarNavChevron {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+/* Active states for submenus */
+.sidebarNavSubLink.sidebarNavLinkActive {
+  background: linear-gradient(90deg, var(--color-primary-400), var(--color-primary-300));
+  border-left-color: white;
 }
 
 /* Responsive adjustments */
@@ -192,5 +240,27 @@
   .sidebarNav:not(.sidebarNavCollapsed) {
     /* Allow it to expand if needed, e.g., via a toggle button */
     width: var(--sidebar-width, 260px);
+  }
+}
+
+/* Animation for link transitions */
+.sidebarNavLink {
+  animation-duration: 0.2s;
+  animation-fill-mode: both;
+}
+
+.sidebarNavLink:hover {
+  animation-name: pulse;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  100% {
+    transform: translateX(4px);
   }
 }

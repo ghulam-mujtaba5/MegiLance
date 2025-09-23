@@ -61,3 +61,18 @@
   background-color: #4b5563;
   border-color: #1f2937;
 }
+
+/* Enhanced hover states for dark theme */
+.sidebar:hover {
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+.userInfo:hover {
+  background: linear-gradient(90deg, #1e3a8a, #1e40af);
+  border-color: #3b82f6;
+}
+
+.toggleButton:hover {
+  background-color: #1e3a8a;
+  color: #bfdbfe;
+}

@@ -24,7 +24,15 @@ import {
   Briefcase,
   Bell,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Home,
+  User,
+  FileText,
+  BarChart3,
+  Calendar,
+  Mail,
+  Phone,
+  Lock
 } from 'lucide-react';
 
 // Define the structure for a navigation item
@@ -73,12 +81,14 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                 icon: <CreditCard size={18} />,
                 badge: '3',
                 submenu: [
-                  { href: '/admin/payments/invoices', label: 'Invoices', icon: <CreditCard size={14} /> },
+                  { href: '/admin/payments/invoices', label: 'Invoices', icon: <FileText size={14} /> },
                   { href: '/admin/payments/refunds', label: 'Refunds', icon: <CreditCard size={14} /> },
                 ]
               },
+              { href: '/admin/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
               { href: '/admin/support', label: 'Support', icon: <ShieldAlert size={18} />, badge: '5' },
               { href: '/admin/ai-monitoring', label: 'AI Monitoring', icon: <LineChart size={18} /> },
+              { href: '/admin/calendar', label: 'Calendar', icon: <Calendar size={18} /> },
               { href: '/admin/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
           case 'client':
@@ -87,6 +97,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
               { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7' },
               { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} /> },
               { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} /> },
+              { href: '/client/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
               { href: '/help', label: 'Help', icon: <HelpCircle size={18} /> },
               { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
@@ -96,11 +107,17 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
               { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '2' },
               { href: '/freelancer/projects', label: 'Projects', icon: <Briefcase size={18} /> },
               { href: '/freelancer/wallet', label: 'Wallet', icon: <Wallet size={18} /> },
+              { href: '/freelancer/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
               { href: '/help', label: 'Help', icon: <HelpCircle size={18} /> },
               { href: '/freelancer/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
           default:
-            return [];
+            return [
+              { href: '/', label: 'Home', icon: <Home size={18} /> },
+              { href: '/profile', label: 'Profile', icon: <User size={18} /> },
+              { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
+              { href: '/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
+            ];
         }
       })();
 
@@ -154,7 +171,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                       }
                     }}
                   >
-                    <span className={styles.sidebarNavIcon} aria-hidden>
+                    <span className={cn(styles.sidebarNavIcon, isActive && styles.sidebarNavIconActive)} aria-hidden>
                       {item.icon}
                     </span>
                     {!isCollapsed && (
@@ -164,7 +181,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                           <span className={cn(styles.badge, themeStyles.badge)}>{item.badge}</span>
                         )}
                         {item.submenu && (
-                          <span className={styles.sidebarNavIcon}>
+                          <span className={cn(styles.sidebarNavIcon, styles.sidebarNavChevron)}>
                             {isSubmenuOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </span>
                         )}
@@ -177,19 +194,20 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                     {item.submenu.map((subItem) => {
                       const isSubActive = pathname === subItem.href;
                       return (
-                        <li key={subItem.href} className={styles.sidebarNavItem}>
+                        <li key={subItem.href} className={cn(styles.sidebarNavItem, styles.sidebarNavSubItem)}>
                           <Link
                             href={subItem.href}
                             className={cn(
                               styles.sidebarNavLink,
                               themeStyles.navLinkInactive,
                               isSubActive && styles.sidebarNavLinkActive,
-                              isSubActive && themeStyles.navLinkActive
+                              isSubActive && themeStyles.navLinkActive,
+                              styles.sidebarNavSubLink
                             )}
                             aria-current={isSubActive ? 'page' : undefined}
                             title={subItem.label}
                           >
-                            <span className={styles.sidebarNavIcon} aria-hidden>
+                            <span className={cn(styles.sidebarNavIcon, isSubActive && styles.sidebarNavIconActive)} aria-hidden>
                               {subItem.icon}
                             </span>
                             <span className={styles.sidebarNavLabel}>{subItem.label}</span>
@@ -206,6 +224,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       </nav>
       <div className={styles.sidebarNavFooter}>
         {/* Placeholder for future UserAvatar or ProfileMenu component */}
+
       </div>
     </aside>
   );

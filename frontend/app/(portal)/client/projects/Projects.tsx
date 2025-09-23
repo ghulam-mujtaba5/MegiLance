@@ -144,13 +144,13 @@ const Projects: React.FC = () => {
       )}
 
       {paginatedProjects.length > 0 && (
-        <footer className={common.footer}>
+        <div className={common.paginationContainer}>
           <Pagination
             currentPage={currentPage}
             totalPages={Math.ceil(sortedProjects.length / itemsPerPage)}
             onPageChange={setCurrentPage}
           />
-        </footer>
+        </div>
       )}
     </div>
   );

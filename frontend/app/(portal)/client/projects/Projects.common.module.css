@@ -71,7 +71,7 @@
   }
 }
 
-.footer {
+.paginationContainer {
   display: flex;
   justify-content: center;
   padding-top: 1.5rem;

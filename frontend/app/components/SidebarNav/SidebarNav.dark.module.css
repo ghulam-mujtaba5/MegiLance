@@ -24,9 +24,26 @@
 .badge {
   background-color: #374151;
   color: #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .navLinkActive .badge {
   background-color: rgba(255, 255, 255, 0.2);
   color: white;
+}
+
+/* Enhanced hover states for dark theme */
+.navLinkInactive:hover {
+  background: linear-gradient(90deg, #1e3a8a, #1e40af);
+  border: 1px solid #3b82f6;
+  transform: translateX(4px);
+}
+
+.sidebarNavSubLink {
+  background-color: rgba(30, 41, 59, 0.5);
+  border-left-color: #60a5fa;
+}
+
+.sidebarNavSubLink:hover {
+  background-color: rgba(30, 58, 138, 0.7);
 }
