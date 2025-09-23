@@ -7,7 +7,7 @@
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
   overflow-x: hidden;
   position: relative;
-  z-index: 100;
+  z-index: var(--z-sidebar);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(10px);
   border-radius: 0 16px 0 0;

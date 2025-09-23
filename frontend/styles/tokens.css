@@ -33,4 +33,14 @@
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
   --shadow-lg: 0 10px 24px rgba(0,0,0,0.15);
+
+  /* Z-Index Layers (low -> high) */
+  --z-base: 0;                /* default document flow */
+  --z-header: 20;             /* sticky headers / public nav */
+  --z-sidebar: 100;           /* application sidebar */
+  --z-dropdown: 400;          /* menus, popovers */
+  --z-sticky: 500;            /* sticky utility bars */
+  --z-modal: 900;             /* modal content */
+  --z-overlay: 950;           /* overlay/backdrop above everything but toasts */
+  --z-toast: 9999;            /* toast notifications */
 }
