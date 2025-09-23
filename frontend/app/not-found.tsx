@@ -1,20 +1,14 @@
 // @AI-HINT: Custom 404 page for MegiLance.
-'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import common from './NotFound.common.module.css';
-import light from './NotFound.light.module.css';
-import dark from './NotFound.dark.module.css';
 
-const NotFoundPage: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
-
+// Server-side component - no client hooks
+export default function NotFoundPage() {
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
+    <main className={common.page}>
       <div className={common.container}>
         <div className={common.content}>
           <h1 className={common.title}>404</h1>
@@ -51,6 +45,4 @@ const NotFoundPage: React.FC = () => {
       </div>
     </main>
   );
-};
-
-export default NotFoundPage; 
+}
