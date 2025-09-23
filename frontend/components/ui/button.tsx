@@ -10,7 +10,7 @@ import dark from './Button.dark.module.css';
 // It strictly follows the design specifications outlined in the MegiLance Brand Playbook.
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'accent' | 'destructive' | 'ghost' | 'link';
+  variant?: 'primary' | 'secondary' | 'accent' | 'destructive' | 'ghost' | 'link' | 'outline';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   asChild?: boolean;
   // Accept legacy prop silently (theme is handled globally)

@@ -17,6 +17,10 @@ export interface ToasterItem {
 interface ToasterContextValue {
   notify: (item: Omit<ToasterItem, 'id'>) => string;
   dismiss: (id: string) => void;
+  // Convenience helpers used across pages (added to resolve missing property TS errors)
+  success: (description: string, title?: string) => string;
+  error: (description: string, title?: string) => string;
+  info: (description: string, title?: string) => string;
 }
 
 const ToasterContext = createContext<ToasterContextValue | null>(null);
@@ -39,7 +43,11 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setItems((prev) => prev.filter((x) => x.id !== id));
   }, []);
 
-  const value = useMemo(() => ({ notify, dismiss }), [notify, dismiss]);
+  const success = useCallback((description: string, title = 'Success') => notify({ title, description, variant: 'success' }), [notify]);
+  const error = useCallback((description: string, title = 'Error') => notify({ title, description, variant: 'danger' }), [notify]);
+  const info = useCallback((description: string, title = 'Info') => notify({ title, description, variant: 'info' }), [notify]);
+
+  const value = useMemo(() => ({ notify, dismiss, success, error, info }), [notify, dismiss, success, error, info]);
 
   return (
     <ToasterContext.Provider value={value}>
