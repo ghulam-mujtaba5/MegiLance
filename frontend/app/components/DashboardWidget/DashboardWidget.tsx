@@ -54,7 +54,7 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
   // Simple skeleton when loading
   if (loading) {
     return (
-      <div className={cn(common.widget, themed.widget, common.loading, className)} aria-busy>
+      <div className={cn(common.widget, themed.widget, common.loading, className)} aria-busy="true">
         <div className={common.header}>
           <div className={cn(common.iconWrapper, themed.iconWrapper)} />
           <div className={common.titleSkeleton} />

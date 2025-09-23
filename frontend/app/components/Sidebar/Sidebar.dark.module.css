@@ -3,6 +3,7 @@
 .sidebar {
   background-color: rgba(17, 24, 39, 0.85);
   border-right: 1px solid #374151;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 

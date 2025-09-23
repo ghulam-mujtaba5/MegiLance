@@ -81,6 +81,7 @@
   padding: 8px 16px;
   border-radius: 9999px;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
 }
@@ -183,6 +184,7 @@
   position: relative;
   overflow: hidden;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 

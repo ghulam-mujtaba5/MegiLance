@@ -174,7 +174,7 @@ const ClientDashboard: React.FC = () => {
         </header>
 
         {loading && (
-          <div className={common.loading} aria-busy={true}>
+          <div className={common.loading} aria-busy="true">
             <Skeleton width={40} height={40} radius="50%" />
             <div>Loading dashboard...</div>
           </div>
@@ -256,7 +256,7 @@ const ClientDashboard: React.FC = () => {
           </div>
 
           {/* Projects Section */}
-          <section className={cn(common.section, common.gridSpan2)} aria-labelledby="recent-projects-title" aria-busy={loading}>
+          <section className={cn(common.section, common.gridSpan2)} aria-labelledby="recent-projects-title" aria-busy={loading ? 'true' : 'false'}>
             <div className={common.sectionHeader}>
               <h2 id="recent-projects-title" className={common.sectionTitle}>
                 <Briefcase size={24} />
@@ -300,7 +300,7 @@ const ClientDashboard: React.FC = () => {
           </section>
 
           {/* Transactions Section */}
-          <section className={cn(common.section, common.gridSpanFull)} aria-labelledby="recent-transactions-title" aria-busy={loading}>
+          <section className={cn(common.section, common.gridSpanFull)} aria-labelledby="recent-transactions-title" aria-busy={loading ? 'true' : 'false'}>
             <div className={common.sectionHeader}>
               <h2 id="recent-transactions-title" className={common.sectionTitle}>
                 <DollarSign size={24} />
