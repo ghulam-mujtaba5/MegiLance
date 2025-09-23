@@ -1,0 +1,83 @@
+/* @AI-HINT: Dark theme styles for Button component. */
+.primary {
+  background-color: var(--primary-4573df);
+  color: var(--text-on-primary-ffffff);
+  border-color: var(--primary-4573df);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: color-mix(in oklab, var(--primary-4573df) 90%, white);
+  border-color: color-mix(in oklab, var(--primary-4573df) 90%, white);
+}
+
+.secondary {
+  background-color: var(--background-1d2127);
+  color: var(--text-primary-f5f7fa);
+  border-color: var(--border-3a414a);
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: var(--surface-272b32);
+  border-color: color-mix(in oklab, var(--border-3a414a) 80%, white);
+}
+
+.accent {
+  background-color: var(--accent-ff9800);
+  color: var(--text-on-accent-ffffff);
+  border-color: var(--accent-ff9800);
+}
+
+.accent:hover:not(:disabled) {
+  background-color: color-mix(in oklab, var(--accent-ff9800) 90%, white);
+  border-color: color-mix(in oklab, var(--accent-ff9800) 90%, white);
+}
+
+.destructive {
+  background-color: var(--error-e81123);
+  color: var(--text-on-primary-ffffff);
+  border-color: var(--error-e81123);
+}
+
+.destructive:hover:not(:disabled) {
+  background-color: color-mix(in oklab, var(--error-e81123) 90%, white);
+  border-color: color-mix(in oklab, var(--error-e81123) 90%, white);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--text-primary-f5f7fa);
+  border-color: transparent;
+}
+
+.ghost:hover:not(:disabled) {
+  background-color: var(--surface-272b32);
+}
+
+.link {
+  background-color: transparent;
+  color: var(--primary-4573df);
+  border-color: transparent;
+  text-decoration: underline;
+}
+
+.link:hover:not(:disabled) {
+  background-color: transparent;
+  color: color-mix(in oklab, var(--primary-4573df) 80%, white);
+}
+
+.outline {
+  background-color: transparent;
+  color: var(--text-primary-f5f7fa);
+  border-color: var(--border-3a414a);
+}
+
+.outline:hover:not(:disabled) {
+  background-color: var(--surface-272b32);
+  border-color: color-mix(in oklab, var(--border-3a414a) 80%, white);
+}
+
+.disabled {
+  background-color: var(--surface-272b32);
+  color: var(--text-secondary-a9b1bd);
+  border-color: var(--border-3a414a);
+}

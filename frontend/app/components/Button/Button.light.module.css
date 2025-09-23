@@ -2,23 +2,23 @@
 
 /* Primary Button */
 .primary {
-  background-color: var(--primary);
+  background-color: var(--primary-4573df);
   /* Ensure text is always visible on brand background */
-  color: #ffffff;
-  border-color: var(--primary);
+  color: var(--text-on-primary-ffffff);
+  border-color: var(--primary-4573df);
 }
 
 .primary:hover:not(:disabled) {
-  background-color: var(--primary-strong);
-  border-color: var(--primary-strong);
-  color: #ffffff;
+  background-color: color-mix(in oklab, var(--primary-4573df) 90%, black);
+  border-color: color-mix(in oklab, var(--primary-4573df) 90%, black);
+  color: var(--text-on-primary-ffffff);
 }
 
 /* Secondary Button */
 .secondary {
   /* premium glass/gradient surface */
   background: linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(249,250,251,0.78) 100%);
-  color: var(--text-primary);
+  color: var(--text-primary-23272f);
   border-color: rgba(15, 23, 42, 0.08);
   box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 1px 2px rgba(16,24,40,0.05);
   -webkit-backdrop-filter: saturate(140%) blur(6px);
@@ -58,21 +58,6 @@
   box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 2px 8px rgba(16,24,40,0.12);
 }
 
-/* Provider accents */
-.googleAccent {
-  border-color: rgba(234,67,53,0.25);
-}
-.googleAccent:hover:not(:disabled) {
-  border-color: rgba(234,67,53,0.35);
-}
-
-.githubAccent {
-  border-color: rgba(0,0,0,0.18);
-}
-.githubAccent:hover:not(:disabled) {
-  border-color: rgba(0,0,0,0.28);
-}
-
 /* Provider prop-based accents (preferred) */
 .provider-google { border-color: rgba(234,67,53,0.25); }
 .provider-google:hover:not(:disabled) { border-color: rgba(234,67,53,0.35); }
@@ -81,74 +66,65 @@
 
 /* Success Button */
 .success {
-  background-color: var(--success);
-  color: var(--text-on-color);
-  border-color: var(--success);
+  background-color: var(--success-27AE60);
+  color: var(--text-on-primary-ffffff);
+  border-color: var(--success-27AE60);
 }
 
 .success:hover:not(:disabled) {
-  background-color: var(--success-strong);
-  border-color: var(--success-strong);
+  background-color: color-mix(in oklab, var(--success-27AE60) 90%, black);
+  border-color: color-mix(in oklab, var(--success-27AE60) 90%, black);
 }
 
 /* Warning Button */
 .warning {
-  background-color: var(--warning);
-  color: var(--text-primary);
-  border-color: var(--warning);
+  background-color: var(--warning-f2c94c);
+  color: var(--text-primary-23272f);
+  border-color: var(--warning-f2c94c);
 }
 
 .warning:hover:not(:disabled) {
-  background-color: var(--warning-strong);
-  border-color: var(--warning-strong);
-}
-
-.variant-warning {
-  background-color: var(--color-warning);
-  color: var(--color-text-on-primary-light);
-}
-
-.variant-warning:hover {
-  background-color: var(--color-warning-hover-light);
+  background-color: color-mix(in oklab, var(--warning-f2c94c) 90%, black);
+  border-color: color-mix(in oklab, var(--warning-f2c94c) 90%, black);
 }
 
 /* Danger Button */
 .danger {
-  background-color: var(--danger);
-  color: var(--text-on-color);
-  border-color: var(--danger);
-}
-
-.variant-danger:hover {
-  background-color: var(--color-danger-hover-light);
+  background-color: var(--error-e81123);
+  color: var(--text-on-primary-ffffff);
+  border-color: var(--error-e81123);
 }
 
 .danger:hover:not(:disabled) {
-  background-color: var(--danger-strong);
-  border-color: var(--danger-strong);
+  background-color: color-mix(in oklab, var(--error-e81123) 90%, black);
+  border-color: color-mix(in oklab, var(--error-e81123) 90%, black);
 }
 
 /* Outline Button */
 .outline {
-  border-color: var(--border);
-  color: var(--text-primary);
+  border-color: var(--border-e0e0e0);
+  color: var(--text-primary-23272f);
+  background-color: transparent;
 }
 
 .outline:hover:not(:disabled) {
-  background-color: var(--surface-alt);
-  border-color: var(--border-strong);
+  background-color: var(--surface-alt-f4f6f8);
+  border-color: color-mix(in oklab, var(--border-e0e0e0) 80%, black);
 }
 
 /* Ghost Button */
 .ghost {
-  color: var(--text-secondary);
+  color: var(--text-secondary-333333);
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .ghost:hover:not(:disabled) {
-  background-color: var(--surface-alt-hover);
-  color: var(--text-primary);
+  background-color: var(--surface-f5f7fa);
+  color: var(--text-primary-23272f);
 }
 
 .ghost:active:not(:disabled) {
-  background-color: var(--surface-alt);
+  background-color: var(--surface-alt-f4f6f8);
 }

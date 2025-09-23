@@ -2,17 +2,23 @@
 .row {
   display: grid;
   grid-template-columns: 100px 1fr auto;
-  gap: var(--space-4);
+  gap: var(--spacing-4);
   align-items: center;
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--border-radius-md);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-md);
   border: 1px solid;
   transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
-  font-family: var(--font-inter);
+  font-family: var(--font-family-body);
 }
 
-.row:hover { background: var(--color-bg-muted); }
-.row:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.row:hover { 
+  background: var(--surface-alt); 
+}
+
+.row:focus-visible { 
+  outline: 2px solid var(--primary); 
+  outline-offset: 2px; 
+}
 
 .date {
   font-size: var(--font-size-sm);
@@ -24,7 +30,7 @@
 }
 
 .amount {
-  font-family: var(--font-jetbrains-mono);
+  font-family: var(--font-family-code);
   font-size: var(--font-size-base);
   font-weight: 600;
   text-align: right;

@@ -1,0 +1,76 @@
+/* @AI-HINT: Common styles for Button component. Theme-specific styles are in light/dark modules. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  transition: all var(--transition-duration-fast) ease-in-out;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Sizes */
+.button.default {
+  height: 40px;
+  padding: 0 16px;
+  font-size: var(--font-size-base);
+}
+
+.button.sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: var(--font-size-sm);
+}
+
+.button.lg {
+  height: 48px;
+  padding: 0 24px;
+  font-size: var(--font-size-lg);
+}
+
+.button.icon {
+  height: 40px;
+  width: 40px;
+  padding: 0;
+}
+
+/* Variants */
+.button.primary {
+  box-shadow: 0 2px 6px rgba(69, 115, 223, 0.2);
+}
+
+.button.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.button.primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(69, 115, 223, 0.2);
+}
+
+.button.secondary {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.button.secondary:hover:not(:disabled) {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button.secondary:active:not(:disabled) {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}

@@ -31,16 +31,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button';
 
-    const themeClasses = `theme-light:${light[variant]} theme-dark:${dark[variant]}`;
-    const disabledClasses = `theme-light:${light.disabled} theme-dark:${dark.disabled}`;
-
     return (
       <Comp
         className={cn(
           common.button,
           common[size],
           common[variant],
-          disabled ? disabledClasses : themeClasses,
+          'light:' + light[variant],
+          'dark:' + dark[variant],
+          disabled && ('light:' + light.disabled, 'dark:' + dark.disabled),
           className
         )}
         ref={ref}
