@@ -1,8 +1,8 @@
 /* @AI-HINT: This stylesheet provides a premium, investor-grade design for the Wallet page. It uses a CSS grid for layout, custom properties for theming, and is fully responsive. It covers the balance card, metric summaries, payment methods, and a detailed transaction history table. */
 
 .walletContainer {
-  padding: var(--space-6);
-  background-color: var(--color-background-secondary);
+  padding: var(--spacing-6);
+  background-color: var(--surface-f5f7fa);
   min-height: 100%;
 }
 
@@ -12,25 +12,25 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-e0e0e0);
 }
 
 .pageHeader h1 {
   font-family: var(--font-poppins);
-  font-size: var(--font-size-xxl);
+  font-size: var(--font-size-2xl);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .statementButton {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  background-color: var(--color-background-tertiary);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background-color: var(--surface-alt-f4f6f8);
+  color: var(--text-secondary-333333);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
@@ -38,8 +38,8 @@
 }
 
 .statementButton:hover {
-  background-color: var(--color-background-hover);
-  border-color: var(--color-border-hover);
+  background-color: var(--surface-272b32);
+  border-color: color-mix(in oklab, var(--border-e0e0e0) 80%, black);
 }
 
 .mainGrid {
@@ -49,71 +49,71 @@
     "balance balance metrics"
     "methods methods transactions"
     "transactions transactions transactions";
-  gap: var(--space-6);
+  gap: var(--spacing-6);
 }
 
 .balanceCard {
   grid-area: balance;
-  background: var(--color-background-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-6);
+  background: var(--background-ffffff);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--spacing-4);
 }
 
 .balanceHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   font-size: var(--font-size-md);
 }
 
 .moreIcon {
   cursor: pointer;
-  color: var(--color-icon-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .balanceAmount {
   font-size: 2.5rem; /* 40px */
   font-weight: 600;
   font-family: var(--font-poppins);
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .balanceActions {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--spacing-4);
   margin-top: auto;
 }
 
 /* Range buttons beneath balance */
 .rangeControls {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--spacing-2);
 }
 
 .rangeButton {
   padding: 0.4rem 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
-  background: var(--color-background-tertiary);
-  color: var(--color-text-secondary);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt-f4f6f8);
+  color: var(--text-secondary-333333);
   font-size: var(--font-size-sm);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .rangeButton:hover {
-  background-color: var(--color-background-hover);
+  background-color: var(--surface-272b32);
 }
 
 .rangeButtonActive {
   background-color: rgba(69, 115, 223, 0.1);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--primary-4573df);
+  border-color: var(--primary-4573df);
 }
 
 /* Focus-visible for interactive controls */
@@ -124,7 +124,7 @@
 .sortButton:focus-visible,
 .searchBox input:focus-visible,
 .filterButton:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--primary-4573df);
   outline-offset: 2px;
 }
 
@@ -139,82 +139,82 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) 0;
-  border-radius: var(--border-radius-md);
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) 0;
+  border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .addFundsButton {
-  background-color: var(--color-primary);
-  color: white;
-  border: 1px solid var(--color-primary);
+  background-color: var(--primary-4573df);
+  color: var(--text-on-primary-ffffff);
+  border: 1px solid var(--primary-4573df);
 }
 
 .addFundsButton:hover {
-  background-color: var(--color-primary-hover);
+  background-color: color-mix(in oklab, var(--primary-4573df) 90%, black);
 }
 
 .withdrawButton {
-  background-color: var(--color-background-tertiary);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  background-color: var(--surface-alt-f4f6f8);
+  color: var(--text-primary-23272f);
+  border: 1px solid var(--border-e0e0e0);
 }
 
 .withdrawButton:hover {
-  background-color: var(--color-background-hover);
-  border-color: var(--color-border-hover);
+  background-color: var(--surface-272b32);
+  border-color: color-mix(in oklab, var(--border-e0e0e0) 80%, black);
 }
 
 .metricsGrid {
   grid-area: metrics;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--spacing-4);
 }
 
 .metricCard {
-  background: var(--color-background-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-4);
+  background: var(--background-ffffff);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
 }
 
 .metricCard h4 {
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-2);
+  color: var(--text-secondary-333333);
+  margin-bottom: var(--spacing-2);
   font-weight: 500;
 }
 
 .metricCard p {
   font-size: var(--font-size-xl);
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .paymentMethods {
   grid-area: methods;
-  background: var(--color-background-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-6);
+  background: var(--background-ffffff);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
 }
 
 .paymentMethods h3, .transactionsSection h3 {
   font-family: var(--font-poppins);
   font-size: var(--font-size-lg);
   font-weight: 600;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--spacing-4);
 }
 
 .methodCard {
   display: flex;
   align-items: center;
-  padding: var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--border-e0e0e0);
 }
 
 .methodCard:last-child {
@@ -222,8 +222,8 @@
 }
 
 .methodIcon {
-  color: var(--color-icon-primary);
-  margin-right: var(--space-4);
+  color: var(--text-secondary-333333);
+  margin-right: var(--spacing-4);
 }
 
 .methodDetails {
@@ -232,78 +232,78 @@
 
 .methodType {
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .methodExpiry {
   display: block;
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .defaultBadge {
-  background-color: var(--color-success-background);
-  color: var(--color-success-text);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--border-radius-sm);
+  background-color: color-mix(in oklab, var(--success-27AE60) 20%, white);
+  color: var(--success-27AE60);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-xs);
   font-weight: 600;
-  margin-right: var(--space-4);
+  margin-right: var(--spacing-4);
 }
 
 .methodAction {
   background: none;
   border: none;
-  color: var(--color-icon-secondary);
+  color: var(--text-secondary-333333);
   cursor: pointer;
 }
 
 .addMethodButton {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+    gap: var(--spacing-2);
     width: 100%;
-    padding: var(--space-3);
-    margin-top: var(--space-4);
+    padding: var(--spacing-3);
+    margin-top: var(--spacing-4);
     background-color: transparent;
-    border: 1px dashed var(--color-border-hover);
-    color: var(--color-text-secondary);
-    border-radius: var(--border-radius-md);
+    border: 1px dashed color-mix(in oklab, var(--border-e0e0e0) 80%, black);
+    color: var(--text-secondary-333333);
+    border-radius: var(--radius-md);
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .addMethodButton:hover {
-    background-color: var(--color-background-hover);
-    color: var(--color-text-primary);
+    background-color: var(--surface-272b32);
+    color: var(--text-primary-23272f);
 }
 
 
 .transactionsSection {
   grid-area: transactions;
-  background: var(--color-background-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-6);
+  background: var(--background-ffffff);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
 }
 
 .emptyState {
   padding: 2.5rem 1rem;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .emptyState h4 {
   margin: 0 0 0.5rem 0;
   font-family: var(--font-poppins);
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .transactionControls {
   display: flex;
-  gap: var(--space-4);
-  margin-bottom: var(--space-4);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
 }
 
 .searchBox {
@@ -313,30 +313,30 @@
 
 .searchIcon {
   position: absolute;
-  left: var(--space-3);
+  left: var(--spacing-3);
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-icon-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .searchBox input {
   width: 100%;
-  padding: var(--space-2) var(--space-3) var(--space-2) 40px;
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
-  color: var(--color-text-primary);
+  padding: var(--spacing-2) var(--spacing-3) var(--spacing-2) 40px;
+  background-color: var(--surface-f5f7fa);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
+  color: var(--text-primary-23272f);
 }
 
 .filterButton {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-4);
-  background-color: var(--color-background-tertiary);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  gap: var(--spacing-2);
+  padding: 0 var(--spacing-4);
+  background-color: var(--surface-alt-f4f6f8);
+  color: var(--text-secondary-333333);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   font-weight: 500;
   cursor: pointer;
@@ -344,21 +344,21 @@
 }
 
 .filterButton:hover {
-  background-color: var(--color-background-hover);
-  border-color: var(--color-border-hover);
+  background-color: var(--surface-272b32);
+  border-color: color-mix(in oklab, var(--border-e0e0e0) 80%, black);
 }
 
 /* Select control used for filters */
 .select {
   appearance: none;
-  background-color: var(--color-background-tertiary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  background-color: var(--surface-alt-f4f6f8);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
   padding: 0.5rem 2rem 0.5rem 0.75rem;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   font-family: var(--font-inter);
-  background-image: linear-gradient(45deg, transparent 50%, var(--color-text-secondary) 50%),
-    linear-gradient(135deg, var(--color-text-secondary) 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-secondary-333333) 50%),
+    linear-gradient(135deg, var(--text-secondary-333333) 50%, transparent 50%);
   background-position: calc(100% - 16px) calc(1.05em), calc(100% - 11px) calc(1.05em);
   background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
@@ -367,30 +367,30 @@
 .sortGroup {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--spacing-2);
 }
 
 .sortButton {
   padding: 0.35rem 0.6rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  background: var(--color-background-tertiary);
-  color: var(--color-text-secondary);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt-f4f6f8);
+  color: var(--text-secondary-333333);
   cursor: pointer;
 }
 
 .sortButtonActive {
   background: rgba(69, 115, 223, 0.1);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--primary-4573df);
+  border-color: var(--primary-4573df);
 }
 
 .transactionHeader {
   display: grid;
   grid-template-columns: 3fr 1fr 1fr 1fr 1fr;
-  padding: 0 var(--space-4);
-  margin-bottom: var(--space-2);
-  color: var(--color-text-secondary);
+  padding: 0 var(--spacing-4);
+  margin-bottom: var(--spacing-2);
+  color: var(--text-secondary-333333);
   font-size: var(--font-size-sm);
   font-weight: 500;
 }
@@ -401,28 +401,28 @@
   display: grid;
   grid-template-columns: 3fr 1fr 1fr 1fr 1fr;
   align-items: center;
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--border-radius-md);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-md);
   transition: background-color 0.2s ease;
 }
 
 .transactionRow:hover {
-  background-color: var(--color-background-hover);
+  background-color: var(--surface-272b32);
 }
 
 .transactionDescription {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--spacing-4);
 }
 
 .transactionDescription p {
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .transactionDescription small {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .typeIcon {
@@ -437,19 +437,19 @@
 }
 
 .depositIcon {
-    background-color: var(--color-success-background);
-    color: var(--color-success-text);
+    background-color: color-mix(in oklab, var(--success-27AE60) 20%, white);
+    color: var(--success-27AE60);
 }
 
 .withdrawalIcon {
-    background-color: var(--color-error-background);
-    color: var(--color-error-text);
+    background-color: color-mix(in oklab, var(--error-e81123) 20%, white);
+    color: var(--error-e81123);
 }
 
 
 .statusBadge {
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--border-radius-full);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: 600;
   text-align: center;
@@ -457,18 +457,18 @@
 }
 
 .statusCompleted {
-  background-color: var(--color-success-background);
-  color: var(--color-success-text);
+  background-color: color-mix(in oklab, var(--success-27AE60) 20%, white);
+  color: var(--success-27AE60);
 }
 
 .statusPending {
-  background-color: var(--color-warning-background);
-  color: var(--color-warning-text);
+  background-color: color-mix(in oklab, var(--warning-f2c94c) 20%, white);
+  color: var(--warning-f2c94c);
 }
 
 .statusFailed {
-  background-color: var(--color-error-background);
-  color: var(--color-error-text);
+  background-color: color-mix(in oklab, var(--error-e81123) 20%, white);
+  color: var(--error-e81123);
 }
 
 .transactionAmount {
@@ -476,8 +476,8 @@
   font-weight: 600;
 }
 
-.positiveAmount { color: var(--color-success-text); }
-.negativeAmount { color: var(--color-error-text); }
+.positiveAmount { color: var(--success-27AE60); }
+.negativeAmount { color: var(--error-e81123); }
 
 /* Responsive Adjustments */
 @media (max-width: 1200px) {
@@ -503,7 +503,7 @@
   .pageHeader {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-4);
+    gap: var(--spacing-4);
   }
 
   .balanceAmount {

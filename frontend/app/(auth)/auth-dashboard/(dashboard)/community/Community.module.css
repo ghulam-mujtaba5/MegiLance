@@ -20,14 +20,14 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-e0e0e0);
 }
 
 .pageHeader h1 {
   font-family: var(--font-poppins);
   font-size: 2rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .newPostButton {
@@ -35,10 +35,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: white;
+  background-color: var(--primary-4573df);
+  color: var(--text-on-primary-ffffff);
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-md);
   font-family: var(--font-inter);
   font-weight: 500;
   cursor: pointer;
@@ -46,7 +46,7 @@
 }
 
 .newPostButton:hover {
-  background-color: var(--color-primary-hover);
+  background-color: color-mix(in oklab, var(--primary-4573df) 90%, black);
 }
 
 /* Focus-visible for a11y */
@@ -55,7 +55,7 @@
 .sortSelect:focus-visible,
 .tag:focus-visible,
 .postCard:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--primary-4573df);
   outline-offset: 2px;
 }
 
@@ -77,16 +77,16 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .searchBox input {
   width: 100%;
   padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-background-secondary);
-  color: var(--color-text-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-e0e0e0);
+  background-color: var(--surface-f5f7fa);
+  color: var(--text-primary-23272f);
   font-family: var(--font-inter);
 }
 
@@ -94,10 +94,10 @@
 
 .sortSelect {
   padding: 0.6rem 0.9rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  background: var(--color-background-secondary);
-  color: var(--color-text-primary);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
+  background: var(--surface-f5f7fa);
+  color: var(--text-primary-23272f);
 }
 
 .postFeed {
@@ -107,15 +107,15 @@
 }
 
 .postCard {
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-large);
+  background-color: var(--surface-f5f7fa);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .postCard:hover {
-  border-color: var(--color-primary-accent-light);
+  border-color: color-mix(in oklab, var(--primary-4573df) 20%, white);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -135,24 +135,24 @@
 
 .authorName {
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .authorTitle {
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .postTitle {
   font-family: var(--font-poppins);
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   margin: 0 0 0.5rem 0;
 }
 
 .postExcerpt {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   line-height: 1.6;
   margin: 0 0 1rem 0;
 }
@@ -165,10 +165,10 @@
 }
 
 .tag {
-  background-color: var(--color-background-tertiary);
-  color: var(--color-text-secondary);
+  background-color: var(--surface-alt-f4f6f8);
+  color: var(--text-secondary-333333);
   padding: 0.25rem 0.75rem;
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-md);
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
@@ -176,21 +176,21 @@
 }
 
 .tag:hover {
-  background-color: var(--color-primary-accent-light);
-  color: var(--color-primary);
+  background-color: color-mix(in oklab, var(--primary-4573df) 15%, white);
+  color: var(--primary-4573df);
 }
 
 .tagActive {
   background-color: rgba(69,115,223,0.12);
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  color: var(--primary-4573df);
+  border: 1px solid var(--primary-4573df);
 }
 
 .postFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   font-size: 0.875rem;
 }
 
@@ -214,9 +214,9 @@
 }
 
 .sidebarWidget {
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-large);
+  background-color: var(--surface-f5f7fa);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
 }
 
@@ -224,10 +224,10 @@
   font-family: var(--font-poppins);
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   margin: 0 0 1rem 0;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-e0e0e0);
 }
 
 .statsGrid {
@@ -241,13 +241,13 @@
   display: block;
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .statsGrid > div span:last-child {
   font-size: 0.75rem;
   text-transform: uppercase;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .popularTags {
@@ -259,13 +259,13 @@
 .emptyState {
   padding: 2rem 1rem;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .emptyState h4 {
   margin: 0 0 0.25rem 0;
   font-family: var(--font-poppins);
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 /* Responsive Design */
@@ -297,10 +297,10 @@
   font-size: 2rem; /* 32px */
   font-weight: 700;
   margin-bottom: 1rem; /* 16px */
-  color: var(--text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .pageText {
-  color: var(--text-secondary);
+  color: var(--text-secondary-333333);
   line-height: 1.6;
 }

@@ -1,35 +1,35 @@
 /* AI-HINT: Premium dark theme for the Recent Projects table. Uses high-contrast colors, subtle hover effects, and vibrant status badges for excellent readability. */
 
 .recentProjectsCard {
-  background: var(--surface);
-  border: 1px solid var(--border-dark);
-  box-shadow: var(--shadow-sm-dark);
+  background: var(--surface-272b32);
+  border: 1px solid var(--border-3a414a);
+  box-shadow: var(--shadow-sm);
 }
 
 .cardTitle {
-  color: var(--text-primary-dark);
+  color: var(--text-primary-f5f7fa);
 }
 
 .viewAllLink {
-  color: var(--primary-dark);
+  color: var(--primary-4573df);
 }
 
 .viewAllLink:hover {
-  color: var(--primary-dark-hover);
+  color: color-mix(in oklab, var(--primary-4573df) 90%, white);
 }
 
 .table th {
-  color: var(--text-secondary-dark);
-  border-bottom: 1px solid var(--border-dark);
+  color: var(--text-secondary-a9b1bd);
+  border-bottom: 1px solid var(--border-3a414a);
 }
 
 .table td {
-  color: var(--text-primary-dark);
-  border-bottom: 1px solid var(--border-dark);
+  color: var(--text-primary-f5f7fa);
+  border-bottom: 1px solid var(--border-3a414a);
 }
 
 .table tr:hover td {
-  background-color: var(--surface-hover-dark);
+  background-color: var(--surface-alt-2c323a);
 }
 
 /* Status Badge Colors */

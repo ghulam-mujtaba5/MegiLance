@@ -24,7 +24,7 @@
 }
 
 .dashboardSection:not(:last-child) {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-e0e0e0);
   padding-bottom: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -33,13 +33,13 @@
   font-family: var(--font-poppins);
   font-size: 2.25rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   margin: 0;
 }
 
 .dashboardHeader p {
   font-size: 1.1rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   margin-top: 0.25rem;
 }
 
@@ -52,9 +52,9 @@
 }
 
 .kpiCard {
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-large);
+  background-color: var(--surface-f5f7fa);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
   display: flex;
   align-items: center;
@@ -66,7 +66,7 @@
 .kpiCard:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 20px rgba(0,0,0,0.07);
-  border-color: var(--color-border-hover);
+  border-color: color-mix(in oklab, var(--border-e0e0e0) 80%, black);
 }
 
 /* Focus-visible for a11y */
@@ -74,7 +74,7 @@
 .projectCard:focus-visible,
 .taskItem:focus-visible,
 .viewAllLink:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--primary-4573df);
   outline-offset: 2px;
 }
 
@@ -88,10 +88,10 @@
   flex-shrink: 0;
 }
 
-.kpiIconPrimary { background-color: var(--color-primary); }
-.kpiIconSuccess { background-color: var(--color-success); }
-.kpiIconWarning { background-color: var(--color-warning-dark); }
-.kpiIconError { background-color: var(--color-error); }
+.kpiIconPrimary { background-color: var(--primary-4573df); }
+.kpiIconSuccess { background-color: var(--success-27AE60); }
+.kpiIconWarning { background-color: var(--warning-f2c94c); }
+.kpiIconError { background-color: var(--error-e81123); }
 
 .kpiContent {
   display: flex;
@@ -100,7 +100,7 @@
 
 .kpiTitle {
   font-size: 0.9rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -108,7 +108,7 @@
 .kpiValue {
   font-size: 1.75rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 /* Main Content Grid */
@@ -124,14 +124,14 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-e0e0e0);
 }
 
 .sectionHeader h2 {
   font-family: var(--font-poppins);
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   margin: 0;
 }
 
@@ -139,7 +139,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  color: var(--color-primary);
+  color: var(--primary-4573df);
   font-weight: 500;
   text-decoration: none;
 }
@@ -154,30 +154,30 @@
 .emptyState {
   padding: 2rem 1rem;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .emptyState h4 {
   margin: 0 0 0.25rem 0;
   font-family: var(--font-poppins);
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .projectCard {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--color-background-secondary);
+  background-color: var(--surface-f5f7fa);
   padding: 1rem 1.5rem;
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
   transition: transform 160ms cubic-bezier(.2,.6,.2,1), background-color 160ms ease, border-color 160ms ease;
   will-change: transform;
 }
 
 .projectCard:hover {
-  border-color: var(--color-border-hover);
-  background-color: var(--color-background-tertiary);
+  border-color: color-mix(in oklab, var(--border-e0e0e0) 80%, black);
+  background-color: var(--surface-alt-f4f6f8);
 }
 
 .projectInfo {
@@ -187,18 +187,18 @@
 }
 
 .projectIcon {
-    color: var(--color-text-secondary);
+    color: var(--text-secondary-333333);
 }
 
 .projectTitle {
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   margin: 0;
 }
 
 .projectClient {
   font-size: 0.9rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   margin: 0.25rem 0 0 0;
 }
 
@@ -209,7 +209,7 @@
 
 .projectStatus span {
     font-size: 0.9rem;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary-333333);
     margin-bottom: 0.5rem;
     display: block;
 }
@@ -220,24 +220,24 @@
   height: 6px;
   -webkit-appearance: none;
   appearance: none;
-  background-color: var(--color-border);
+  background-color: var(--border-e0e0e0);
   border-radius: 3px;
   overflow: hidden;
 }
 
 .progress::-webkit-progress-bar {
-  background-color: var(--color-border);
+  background-color: var(--border-e0e0e0);
   border-radius: 3px;
 }
 
 .progress::-webkit-progress-value {
-  background-color: var(--color-primary);
+  background-color: var(--primary-4573df);
   border-radius: 3px;
   transition: width 180ms cubic-bezier(.2,.6,.2,1);
 }
 
 .progress::-moz-progress-bar {
-  background-color: var(--color-primary);
+  background-color: var(--primary-4573df);
   border-radius: 3px;
   transition: width 180ms cubic-bezier(.2,.6,.2,1);
 }
@@ -254,17 +254,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  background: var(--color-background-secondary);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
+  background: var(--surface-f5f7fa);
   transition: transform 140ms cubic-bezier(.2,.6,.2,1), background-color 140ms ease, border-color 140ms ease;
   will-change: transform;
 }
 
 .taskItem:hover {
   transform: translateY(-1px);
-  background: var(--color-background-hover);
-  border-color: var(--color-border-hover);
+  background: var(--surface-alt-f4f6f8);
+  border-color: color-mix(in oklab, var(--border-e0e0e0) 80%, black);
 }
 
 .taskInfo {
@@ -275,19 +275,19 @@
 
 .taskInfo p {
     margin: 0;
-    color: var(--color-text-primary);
+    color: var(--text-primary-23272f);
 }
 
 .taskIcon {
-    color: var(--color-success);
+    color: var(--success-27AE60);
 }
 
 .taskDueDate {
   font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  background-color: var(--color-background-tertiary);
+  color: var(--text-secondary-333333);
+  background-color: var(--surface-alt-f4f6f8);
   padding: 0.25rem 0.5rem;
-  border-radius: var(--border-radius-small);
+  border-radius: var(--radius-sm);
 }
 
 /* Responsive Design */
@@ -317,7 +317,7 @@
   font-size: 1.875rem; /* 30px */
   font-weight: 700;
   margin-bottom: 1.5rem; /* 24px */
-  color: var(--text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .gridContainer {
@@ -329,12 +329,12 @@
 .statValue {
   font-size: 2.25rem; /* 36px */
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-primary-23272f);
   line-height: 1.2;
 }
 
 .statLabel {
   font-size: 0.875rem; /* 14px */
-  color: var(--text-secondary);
+  color: var(--text-secondary-333333);
   margin-top: 0.5rem; /* 8px */
 }

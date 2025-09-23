@@ -12,14 +12,14 @@
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-e0e0e0);
 }
 
 .pageHeader h1 {
   font-family: var(--font-poppins);
   font-size: 2rem;
   font-weight: 600;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .newProjectButton {
@@ -27,10 +27,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: white;
+  background-color: var(--primary-4573df);
+  color: var(--text-on-primary-ffffff);
   border: none;
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-md);
   font-family: var(--font-inter);
   font-weight: 500;
   cursor: pointer;
@@ -38,7 +38,7 @@
 }
 
 .newProjectButton:hover {
-  background-color: var(--color-primary-hover);
+  background-color: color-mix(in oklab, var(--primary-4573df) 90%, black);
 }
 
 .controlsBar {
@@ -59,16 +59,16 @@
   left: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .searchBox input {
   width: 100%;
   padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-background-secondary);
-  color: var(--color-text-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-e0e0e0);
+  background-color: var(--surface-f5f7fa);
+  color: var(--text-primary-23272f);
   font-family: var(--font-inter);
 }
 
@@ -82,24 +82,24 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  color: var(--color-text-primary);
+  background-color: var(--surface-f5f7fa);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
+  color: var(--text-primary-23272f);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .filterButton:hover {
-  background-color: var(--color-background-tertiary);
+  background-color: var(--surface-alt-f4f6f8);
 }
 
 /* Active/selected filter state */
 .filterButtonActive {
   /* Use widely supported fallback tint */
   background-color: rgba(69, 115, 223, 0.08); /* MegiLance Blue @ 8% */
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: var(--primary-4573df);
+  color: var(--primary-4573df);
 }
 
 /* Accessibility focus states */
@@ -107,20 +107,20 @@
 .select:focus-visible,
 .searchBox input:focus-visible,
 .actionButton:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--primary-4573df);
   outline-offset: 2px;
 }
 
 .select {
   appearance: none;
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+  background-color: var(--surface-f5f7fa);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-md);
   padding: 0.6rem 2rem 0.6rem 0.75rem;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   font-family: var(--font-inter);
-  background-image: linear-gradient(45deg, transparent 50%, var(--color-text-secondary) 50%),
-    linear-gradient(135deg, var(--color-text-secondary) 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-secondary-333333) 50%),
+    linear-gradient(135deg, var(--text-secondary-333333) 50%, transparent 50%);
   background-position: calc(100% - 16px) calc(1.05em), calc(100% - 11px) calc(1.05em);
   background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
@@ -136,28 +136,28 @@
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: var(--color-background-tertiary);
-  color: var(--color-text-secondary);
+  background: var(--surface-alt-f4f6f8);
+  color: var(--text-secondary-333333);
 }
 
 /* Project List Table */
 .projectList {
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-large);
+  background-color: var(--surface-f5f7fa);
+  border: 1px solid var(--border-e0e0e0);
+  border-radius: var(--radius-xl);
   overflow: hidden;
 }
 
 .emptyState {
   padding: 3rem 1.5rem;
   text-align: center;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
 }
 
 .emptyState h4 {
   margin: 0 0 0.5rem 0;
   font-family: var(--font-poppins);
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .emptyState p { margin: 0; }
@@ -172,17 +172,17 @@
 }
 
 .projectListHeader {
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   font-size: 0.875rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-background-tertiary);
+  border-bottom: 1px solid var(--border-e0e0e0);
+  background-color: var(--surface-alt-f4f6f8);
 }
 
 .projectRow {
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-e0e0e0);
   transition: background-color 0.2s ease;
 }
 
@@ -191,32 +191,32 @@
 }
 
 .projectRow:hover {
-  background-color: var(--color-background-tertiary);
+  background-color: var(--surface-alt-f4f6f8);
 }
 
 .projectInfo .projectId {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   font-family: var(--font-mono);
 }
 
 .projectInfo .projectTitle {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
   margin: 0.1rem 0;
 }
 
 .projectInfo .projectClient {
   font-size: 0.9rem;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   margin: 0;
 }
 
 .projectBudget,
 .projectDeadline {
   font-size: 0.9rem;
-  color: var(--color-text-primary);
+  color: var(--text-primary-23272f);
 }
 
 .projectTeam {
@@ -227,7 +227,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid var(--color-background-secondary);
+  border: 2px solid var(--surface-f5f7fa);
   margin-left: -10px;
   object-fit: cover;
 }
@@ -244,16 +244,16 @@
 .actionButton {
   background: none;
   border: none;
-  color: var(--color-text-secondary);
+  color: var(--text-secondary-333333);
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: var(--border-radius);
+  border-radius: var(--radius-md);
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .actionButton:hover {
-  background-color: var(--color-background-tertiary);
-  color: var(--color-text-primary);
+  background-color: var(--surface-alt-f4f6f8);
+  color: var(--text-primary-23272f);
 }
 
 /* Status Badges */
@@ -267,23 +267,23 @@
 }
 
 .statusInProgress {
-  background-color: var(--color-primary-accent-light);
-  color: var(--color-primary-dark);
+  background-color: color-mix(in oklab, var(--primary-4573df) 20%, white);
+  color: var(--primary-4573df);
 }
 
 .statusCompleted {
-  background-color: var(--color-success-light);
-  color: var(--color-success-dark);
+  background-color: color-mix(in oklab, var(--success-27AE60) 20%, white);
+  color: var(--success-27AE60);
 }
 
 .statusOnHold {
-  background-color: var(--color-warning-light);
-  color: var(--color-warning-dark);
+  background-color: color-mix(in oklab, var(--warning-f2c94c) 20%, white);
+  color: var(--warning-f2c94c);
 }
 
 .statusCanceled {
-  background-color: var(--color-error-light);
-  color: var(--color-error-dark);
+  background-color: color-mix(in oklab, var(--error-e81123) 20%, white);
+  color: var(--error-e81123);
 }
 
 /* Responsive Design */
@@ -307,7 +307,7 @@
   .projectRow > *::before {
     content: attr(data-label);
     font-weight: 500;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary-333333);
     margin-right: 1rem;
   }
 

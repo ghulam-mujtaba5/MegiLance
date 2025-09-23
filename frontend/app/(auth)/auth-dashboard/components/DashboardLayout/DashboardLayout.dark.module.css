@@ -1,8 +1,8 @@
 .dashboardLayout {
-  background-color: #1a1a1a; /* A deep dark background */
+  background-color: var(--background-1d2127); /* A deep dark background */
 }
 
 .mainContent {
-  background-color: #1f1f1f;
-  border-left: 1px solid #333;
+  background-color: var(--surface-272b32);
+  border-left: 1px solid var(--border-3a414a);
 }
