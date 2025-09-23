@@ -1,6 +1,16 @@
 /* @AI-HINT: Light theme styles for the Card component. */
 
 .card {
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-header-border: #f3f4f6;
+  --card-icon-color: #4b5563;
+  --card-title-color: #111827;
+  --card-content-color: #374151;
+  --card-filled-bg: #f9fafb;
+}
+
+.card {
   background-color: var(--surface);
   border: 1px solid var(--border);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);

@@ -31,6 +31,10 @@
   background-image: linear-gradient(120deg, #f5f7fa, #58a6ff);
 }
 
+.mainHeading::after {
+  background: linear-gradient(90deg, var(--primary-4573df), var(--accent-orange-ff9800));
+}
+
 .subheading {
   color: var(--text-secondary-a9b1bd);
 }
@@ -51,4 +55,14 @@
 .statsGrid {
   border-top: 1px solid rgba(58, 65, 74, 0.5);
   padding-top: 4.5rem;
+  background: rgba(39, 43, 50, 0.6);
+  border: 1px solid rgba(58, 65, 74, 0.3);
+}
+
+.blob1 {
+  background: linear-gradient(135deg, var(--primary-4573df), var(--accent-orange-ff9800));
+}
+
+.blob2 {
+  background: linear-gradient(135deg, var(--accent-purple-9c27b0), var(--primary-4573df));
 }

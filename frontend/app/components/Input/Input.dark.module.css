@@ -1,27 +1,40 @@
-/* @AI-HINT: Dark theme for Input. */
+/* @AI-HINT: Dark theme styles for the Input component. */
 
 .inputWrapper {
-  --input-label-text: var(--text-primary);
-  --input-text: var(--text-primary);
-  --input-placeholder-text: var(--text-placeholder);
-  --input-bg: var(--surface);
-  --input-bg-hover: var(--surface-alt);
-  --input-border: var(--border);
-  --input-border-hover: var(--border-strong);
-  --input-border-focus: var(--primary);
-  --input-icon: var(--text-secondary);
+  --input-bg: #1d2127;
+  --input-bg-hover: #272b32;
+  --input-bg-focus: #1d2127;
+  --input-bg-disabled: #2c323a;
+  --input-border: #3a414a;
+  --input-border-hover: #4a515a;
+  --input-border-focus: #4573df;
+  --input-border-error: #e81123;
+  --input-border-error-focus: #e81123;
+  --input-border-disabled: #3a414a;
+  --input-text: #f5f7fa;
+  --input-text-error: #ff8a8a;
+  --input-text-disabled: #a0aec0;
+  --input-placeholder-text: #9ca3af;
+  --input-icon: #a0aec0;
+  --input-label-text: #cbd5e0;
+}
 
-  /* States */
-  --input-border-error: var(--error);
-  --input-border-error-focus: var(--error-strong);
-  --input-error-text: var(--error-strong);
-  --input-text-error: var(--error-strongest);
+.inputField {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
 
-  --input-bg-disabled: var(--surface-disabled);
-  --input-text-disabled: var(--text-disabled);
-  --input-border-disabled: var(--border-disabled);
+.inputField:hover:not(:disabled) {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
 
-  /* Focus Rings */
-  --focus-ring-primary: var(--shadow-focus-ring-primary);
-  --focus-ring-error: var(--shadow-focus-ring-danger);
+.inputField:focus {
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.3);
+}
+
+.inputWrapperError .inputField {
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.2);
+}
+
+.inputWrapperError .inputField:focus {
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.3);
 }

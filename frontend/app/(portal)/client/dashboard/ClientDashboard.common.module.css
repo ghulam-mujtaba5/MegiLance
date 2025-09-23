@@ -16,16 +16,17 @@
 .page {
   min-height: 100vh;
   padding: 2rem 0;
+  background: var(--dashboard-bg);
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }
 
 .header {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease;
@@ -37,32 +38,45 @@
 }
 
 .title {
+  font-family: var(--font-poppins);
   font-size: 2.5rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
   line-height: 1.2;
+  background: linear-gradient(90deg, var(--text-primary), var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
   font-size: 1.125rem;
   margin: 0;
   opacity: 0.8;
+  color: var(--text-secondary);
 }
 
 .loading {
   text-align: center;
-  padding: 2rem;
+  padding: 3rem;
   font-size: 1.125rem;
   opacity: 0.7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .error {
   background: var(--error-bg);
   color: var(--error-text);
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.5rem;
+  border-radius: 12px;
   margin-bottom: 2rem;
   border: 1px solid var(--error-border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .widgetsGrid {
@@ -101,17 +115,27 @@
 
 .section {
   background: var(--card-bg);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1.5rem;
   border: 1px solid var(--card-border);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
 .sectionTitle {
+  font-family: var(--font-poppins);
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 1rem 0;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .projectList,
@@ -125,6 +149,277 @@
   padding: 2rem;
   color: var(--text-secondary);
   font-style: italic;
+  background: var(--surface);
+  border-radius: 12px;
+}
+
+/* Enhanced card skeleton loading */
+.cardSkeleton {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--card-border);
+}
+
+.rowSkeleton {
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--card-border);
+}
+
+/* Welcome banner */
+.welcomeBanner {
+  background: linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary) 85% black));
+  color: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(69, 115, 223, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcomeBanner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  transform: rotate(30deg);
+}
+
+.welcomeBannerContent {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+}
+
+.welcomeBannerTitle {
+  font-family: var(--font-poppins);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+}
+
+.welcomeBannerText {
+  font-size: 1.1rem;
+  margin: 0 0 1.5rem 0;
+  opacity: 0.9;
+}
+
+/* Quick actions */
+.quickActions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.quickAction {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.quickAction:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Stats grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.statIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--stat-icon-bg);
+}
+
+.statTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.statValue {
+  font-family: var(--font-poppins);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.statTrend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.statTrend.positive {
+  color: var(--success);
+}
+
+.statTrend.negative {
+  color: var(--error);
+}
+
+/* Charts container */
+.chartsContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.chartCard {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.chartTitle {
+  font-family: var(--font-poppins);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.chartActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chartAction {
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chartAction:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+/* Recent activity */
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activityItem {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  transition: all 0.2s ease;
+}
+
+.activityItem:hover {
+  background: var(--surface-hover);
+  transform: translateX(4px);
+}
+
+.activityIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--activity-icon-bg);
+  color: var(--activity-icon-color);
+}
+
+.activityContent {
+  flex: 1;
+}
+
+.activityTitle {
+  font-weight: 500;
+  margin: 0 0 0.25rem 0;
+  color: var(--text-primary);
+}
+
+.activityDescription {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+.activityTime {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .chartsContainer {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -134,18 +429,64 @@
   .gridSpan2, .gridSpanFull {
     grid-column: span 1;
   }
+  
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .page {
     padding: 1rem 0;
   }
   
   .container {
-    padding: 0 0.75rem;
+    padding: 0 1rem;
   }
   
   .title {
     font-size: 2rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .welcomeBanner {
+    padding: 1.5rem;
+  }
+  
+  .welcomeBannerTitle {
+    font-size: 1.5rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .quickActions {
+    flex-direction: column;
+  }
+  
+  .quickAction {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardGrid {
+    gap: 1rem;
+  }
+  
+  .section {
+    padding: 1rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.125rem;
+  }
+  
+  .statValue {
+    font-size: 1.75rem;
   }
 }

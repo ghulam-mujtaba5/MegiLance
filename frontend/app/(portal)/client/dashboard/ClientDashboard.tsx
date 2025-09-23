@@ -7,12 +7,29 @@ import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useClientData } from '@/hooks/useClient';
 import KeyMetrics from './components/KeyMetrics/KeyMetrics';
-import { Briefcase, CheckCircle, Clock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { 
+  Briefcase, 
+  CheckCircle, 
+  Clock, 
+  TrendingUp, 
+  TrendingDown, 
+  Minus, 
+  Plus, 
+  FileText, 
+  DollarSign, 
+  Users, 
+  Bell,
+  Calendar,
+  MessageCircle,
+  Eye
+} from 'lucide-react';
 import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import ProjectStatusChart from './components/ProjectStatusChart/ProjectStatusChart';
 import SpendingChart from './components/SpendingChart/SpendingChart';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
+import Button from '@/app/components/Button/Button';
+import Card from '@/app/components/Card/Card';
 import common from './ClientDashboard.common.module.css';
 import light from './ClientDashboard.light.module.css';
 import dark from './ClientDashboard.dark.module.css';
@@ -58,7 +75,7 @@ const ClientDashboard: React.FC = () => {
   const metricCards = [
     { title: 'Total Projects', icon: Briefcase, trend: <Trend value={5.2} /> },
     { title: 'Active Projects', icon: CheckCircle, trend: <Trend value={-1.8} /> },
-    { title: 'Total Spent', icon: Clock, trend: <Trend value={12.5} /> },
+    { title: 'Total Spent', icon: DollarSign, trend: <Trend value={12.5} /> },
     { title: 'Pending Payments', icon: Clock, trend: <Trend value={0} /> },
   ];
 
@@ -119,12 +136,36 @@ const ClientDashboard: React.FC = () => {
     }));
   }, [payments]);
 
+  // Recent activity data
+  const recentActivity = [
+    { id: '1', title: 'New proposal received', description: 'Freelancer submitted a proposal for your project', time: '2 hours ago', icon: FileText },
+    { id: '2', title: 'Payment processed', description: 'Payment of $1,200 completed for project', time: '5 hours ago', icon: DollarSign },
+    { id: '3', title: 'Project update', description: 'Progress updated to 75% complete', time: '1 day ago', icon: Eye },
+    { id: '4', title: 'Message received', description: 'New message from freelancer', time: '1 day ago', icon: MessageCircle },
+  ];
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.srOnly} aria-live="polite" role="status">
         {liveRegionMessage}
       </div>
       <div className={common.container}>
+        {/* Welcome Banner */}
+        <div className={common.welcomeBanner}>
+          <div className={common.welcomeBannerContent}>
+            <h1 className={common.welcomeBannerTitle}>Welcome back, Client!</h1>
+            <p className={common.welcomeBannerText}>Here's what's happening with your projects and freelancers today.</p>
+            <div className={common.quickActions}>
+              <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
+                Post New Project
+              </Button>
+              <Button variant="secondary" size="md" iconBefore={<Users size={18} />}>
+                Find Freelancers
+              </Button>
+            </div>
+          </div>
+        </div>
+
         <header ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)} role="region" aria-label="Dashboard Header">
           <div>
             <h1 className={common.title}>Client Dashboard</h1>
@@ -132,20 +173,97 @@ const ClientDashboard: React.FC = () => {
           </div>
         </header>
 
-        {loading && <div className={common.loading} aria-busy={true}>Loading dashboard...</div>}
-        {error && <div className={common.error}>Failed to load dashboard data.</div>}
+        {loading && (
+          <div className={common.loading} aria-busy={true}>
+            <Skeleton width={40} height={40} radius="50%" />
+            <div>Loading dashboard...</div>
+          </div>
+        )}
+        {error && (
+          <div className={common.error}>
+            <Bell size={20} />
+            <span>Failed to load dashboard data.</span>
+          </div>
+        )}
 
-        <div ref={widgetsRef} className={cn(widgetsVisible ? common.isVisible : common.isNotVisible)}>
+        <div ref={widgetsRef} className={cn(common.widgetsGrid, widgetsVisible ? common.isVisible : common.isNotVisible)}>
           <KeyMetrics metrics={metrics} loading={loading} metricCards={metricCards} />
         </div>
 
         <div ref={contentRef} className={cn(common.dashboardGrid, contentVisible ? common.isVisible : common.isNotVisible)}>
-          <div className={common.gridSpan2}>
-            <SpendingChart data={spendingData} />
+          {/* Stats Grid */}
+          <div className={common.gridSpanFull}>
+            <div className={common.statsGrid}>
+              <Card title="Active Projects" icon={Briefcase}>
+                <div className={common.statValue}>12</div>
+                <div className={cn(common.statTrend, common.positive)}>
+                  <TrendingUp size={16} />
+                  <span>+2 from last month</span>
+                </div>
+              </Card>
+              <Card title="Total Spent" icon={DollarSign}>
+                <div className={common.statValue}>$24,580</div>
+                <div className={cn(common.statTrend, common.positive)}>
+                  <TrendingUp size={16} />
+                  <span>+12% from last month</span>
+                </div>
+              </Card>
+              <Card title="Avg. Project Cost" icon={FileText}>
+                <div className={common.statValue}>$2,048</div>
+                <div className={cn(common.statTrend, common.negative)}>
+                  <TrendingDown size={16} />
+                  <span>-3% from last month</span>
+                </div>
+              </Card>
+              <Card title="Active Freelancers" icon={Users}>
+                <div className={common.statValue}>24</div>
+                <div className={cn(common.statTrend, common.positive)}>
+                  <TrendingUp size={16} />
+                  <span>+5 from last month</span>
+                </div>
+              </Card>
+            </div>
           </div>
-          <ProjectStatusChart data={projectStatusData} />
+
+          {/* Charts */}
+          <div className={common.chartsContainer}>
+            <Card title="Spending Overview" icon={DollarSign}>
+              <SpendingChart data={spendingData} />
+            </Card>
+            <Card title="Project Status" icon={Briefcase}>
+              <ProjectStatusChart data={projectStatusData} />
+            </Card>
+          </div>
+
+          {/* Recent Activity */}
+          <div className={common.gridSpanFull}>
+            <Card title="Recent Activity" icon={Calendar}>
+              <div className={common.activityList}>
+                {recentActivity.map(activity => (
+                  <div key={activity.id} className={common.activityItem}>
+                    <div className={common.activityIcon}>
+                      <activity.icon size={20} />
+                    </div>
+                    <div className={common.activityContent}>
+                      <h4 className={common.activityTitle}>{activity.title}</h4>
+                      <p className={common.activityDescription}>{activity.description}</p>
+                      <div className={common.activityTime}>{activity.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+          {/* Projects Section */}
           <section className={cn(common.section, common.gridSpan2)} aria-labelledby="recent-projects-title" aria-busy={loading}>
-            <h2 id="recent-projects-title" className={common.sectionTitle}>Recent Projects</h2>
+            <div className={common.sectionHeader}>
+              <h2 id="recent-projects-title" className={common.sectionTitle}>
+                <Briefcase size={24} />
+                Recent Projects
+              </h2>
+              <Button variant="ghost" size="sm">View All</Button>
+            </div>
             <div className={common.projectList}>
               {loading ? (
                 Array.from({ length: 3 }).map((_, i) => (
@@ -181,8 +299,15 @@ const ClientDashboard: React.FC = () => {
             </div>
           </section>
 
+          {/* Transactions Section */}
           <section className={cn(common.section, common.gridSpanFull)} aria-labelledby="recent-transactions-title" aria-busy={loading}>
-            <h2 id="recent-transactions-title" className={common.sectionTitle}>Recent Transactions</h2>
+            <div className={common.sectionHeader}>
+              <h2 id="recent-transactions-title" className={common.sectionTitle}>
+                <DollarSign size={24} />
+                Recent Transactions
+              </h2>
+              <Button variant="ghost" size="sm">View All</Button>
+            </div>
             <div className={common.transactionList}>
               {loading ? (
                 Array.from({ length: 3 }).map((_, i) => (
@@ -215,4 +340,4 @@ const ClientDashboard: React.FC = () => {
   );
 };
 
-export default ClientDashboard; 
+export default ClientDashboard;

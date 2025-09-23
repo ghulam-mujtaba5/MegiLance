@@ -15,6 +15,23 @@ import JobModerationQueue from '@/app/components/Admin/JobModerationQueue/JobMod
 import FlaggedReviews from '@/app/components/Admin/FlaggedReviews/FlaggedReviews';
 import FlaggedFraudList from '@/app/components/Admin/FlaggedFraudList/FlaggedFraudList';
 import FraudAlertBanner from '@/app/components/AI/FraudAlertBanner/FraudAlertBanner';
+import Button from '@/app/components/Button/Button';
+import Card from '@/app/components/Card/Card';
+import { 
+  Users, 
+  Briefcase, 
+  DollarSign, 
+  TrendingUp, 
+  TrendingDown, 
+  Bell,
+  Calendar,
+  MessageCircle,
+  Eye,
+  Plus,
+  Shield,
+  AlertTriangle,
+  BarChart3
+} from 'lucide-react';
 
 interface KPI { id: string; label: string; value: string; trend: string; }
 interface UserRow { id: string; name: string; email: string; role: 'Admin' | 'Client' | 'Freelancer'; status: 'Active' | 'Suspended'; joined: string; }
@@ -62,9 +79,42 @@ const AdminDashboard: React.FC = () => {
     return role === 'All' ? effectiveUsers : effectiveUsers.filter(u => u.role === role);
   }, [effectiveUsers, role]);
 
+  // Recent activity data
+  const recentActivity = [
+    { id: '1', title: 'New user registered', description: 'New freelancer joined the platform', time: '5 minutes ago', icon: Users },
+    { id: '2', title: 'Project flagged', description: 'AI detected potential fraud in project posting', time: '15 minutes ago', icon: AlertTriangle },
+    { id: '3', title: 'Payment processed', description: 'Client payment of $2,400 completed', time: '1 hour ago', icon: DollarSign },
+    { id: '4', title: 'Review flagged', description: 'Negative review requires moderation', time: '2 hours ago', icon: MessageCircle },
+  ];
+
+  // Stats data
+  const statsData = [
+    { title: 'Total Users', value: '12,418', icon: Users, trend: '+3.2%', positive: true },
+    { title: 'Active Projects', value: '1,247', icon: Briefcase, trend: '+5.1%', positive: true },
+    { title: 'Monthly Revenue', value: '$142k', icon: DollarSign, trend: '+7.8%', positive: true },
+    { title: 'Flagged Items', value: '24', icon: Shield, trend: '-2', positive: false },
+  ];
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <FraudAlertBanner message="Multiple high-risk activities have been detected. Please review the flagged items immediately."/>
+      
+      {/* Welcome Banner */}
+      <div className={common.welcomeBanner}>
+        <div className={common.welcomeBannerContent}>
+          <h1 className={common.welcomeBannerTitle}>Welcome back, Admin!</h1>
+          <p className={common.welcomeBannerText}>Here's what's happening with the platform today.</p>
+          <div className={common.quickActions}>
+            <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
+              Create Announcement
+            </Button>
+            <Button variant="secondary" size="md" iconBefore={<Shield size={18} />}>
+              Run Maintenance
+            </Button>
+          </div>
+        </div>
+      </div>
+      
       <div className={common.container}>
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
           <div>
@@ -76,9 +126,32 @@ const AdminDashboard: React.FC = () => {
             <select id="role-filter" className={cn(common.select, themed.select)} value={role} onChange={(e) => setRole(e.target.value as any)} title="Filter users by role">
               {['All','Admin','Client','Freelancer'].map(r => <option key={r} value={r}>{r}</option>)}
             </select>
-            <button type="button" className={cn(common.button, themed.button)} title="Create a new platform-wide announcement">Create Announcement</button>
-            <button type="button" className={cn(common.button, themed.button, 'secondary')} title="Run system maintenance tasks">Run Maintenance</button>
+            <Button variant="primary" size="md">
+              Create Announcement
+            </Button>
+            <Button variant="secondary" size="md">
+              Run Maintenance
+            </Button>
           </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className={common.statsGrid}>
+          {statsData.map((stat, index) => (
+            <Card key={index} className={common.statCard}>
+              <div className={common.statHeader}>
+                <div className={common.statIcon}>
+                  <stat.icon size={20} />
+                </div>
+                <h3 className={common.statTitle}>{stat.title}</h3>
+              </div>
+              <div className={common.statValue}>{stat.value}</div>
+              <div className={cn(common.statTrend, stat.positive ? common.positive : common.negative)}>
+                {stat.positive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                <span>{stat.trend}</span>
+              </div>
+            </Card>
+          ))}
         </div>
 
         <section ref={kpiRef} className={cn(common.kpis, kpisVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="kpi-section-title">
@@ -88,9 +161,17 @@ const AdminDashboard: React.FC = () => {
           )}
           {!loading && effectiveKPIs.map(k => (
             <div key={k.id} className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby={`kpi-${k.id}-label`}>
-              <div id={`kpi-${k.id}-label`} className={cn(common.cardTitle, themed.cardTitle)}>{k.label}</div>
+              <div id={`kpi-${k.id}-label`} className={cn(common.cardTitle, themed.cardTitle)}>
+                <BarChart3 size={20} />
+                {k.label}
+              </div>
               <div className={common.metric}>{k.value}</div>
-              {k.trend && <div className={common.trend}>{k.trend}</div>}
+              {k.trend && (
+                <div className={cn(common.trend, k.trend.includes('+') ? common.positive : common.negative)}>
+                  {k.trend.includes('+') ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                  {k.trend}
+                </div>
+              )}
             </div>
           ))}
         </section>
@@ -98,8 +179,30 @@ const AdminDashboard: React.FC = () => {
         <div aria-live="polite" className={common.srOnly}>
           {role !== 'All' && `Showing ${filteredUsers.length} ${role} users.`}
         </div>
+        
         <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="main-content-title">
           <h2 id="main-content-title" className={common.srOnly}>Main Content</h2>
+          
+          {/* Recent Activity */}
+          <div className={common.gridSpanFull}>
+            <Card title="Recent Activity" icon={Calendar}>
+              <div className={common.activityList}>
+                {recentActivity.map(activity => (
+                  <div key={activity.id} className={common.activityItem}>
+                    <div className={common.activityIcon}>
+                      <activity.icon size={20} />
+                    </div>
+                    <div className={common.activityContent}>
+                      <h4 className={common.activityTitle}>{activity.title}</h4>
+                      <p className={common.activityDescription}>{activity.description}</p>
+                      <div className={common.activityTime}>{activity.time}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+          
           <UserSearchTable />
           <ReviewSentimentDashboard />
           <JobModerationQueue />
@@ -107,7 +210,10 @@ const AdminDashboard: React.FC = () => {
           <FlaggedFraudList />
 
           <div className={cn(common.card, themed.card)} aria-labelledby="activity-chart-title">
-            <div id="activity-chart-title" className={cn(common.cardTitle, themed.cardTitle)}>Activity</div>
+            <div id="activity-chart-title" className={cn(common.cardTitle, themed.cardTitle)}>
+              <BarChart3 size={20} />
+              Activity
+            </div>
             {/* SVG bar chart to avoid inline styles */}
             <svg width="100%" height="140" viewBox="0 0 200 140" preserveAspectRatio="none" role="img" aria-label="Weekly activity bars">
               <desc>Bar chart of weekly activity counts</desc>

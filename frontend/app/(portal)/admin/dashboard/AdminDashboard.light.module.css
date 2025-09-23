@@ -1,19 +1,92 @@
-/* AI-HINT: Light theme overrides for Admin Dashboard. */
+/* AI-HINT: Light theme styles for Admin Dashboard page. */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
-.subtitle { color: var(--text-secondary); }
+.page {
+  --dashboard-bg: #f5f7fa;
+}
 
-.select { background: var(--surface-elev); border: 1px solid var(--border); color: var(--text-primary); }
-.button { background: var(--primary); color: white; border: 1px solid rgba(0,0,0,0.12); }
-.button.secondary { background: var(--surface-elev); color: var(--text-primary); border: 1px solid var(--border); }
+.subtitle {
+  color: #6b7280;
+}
 
-.card { background: var(--surface-elev); border: 1px solid var(--border); }
-.cardTitle { color: var(--text-primary); }
-.metric { color: var(--text-primary); }
-.trend { color: var(--success); }
+.button {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
 
-.table { background: var(--surface-elev); }
-.th { color: var(--text-secondary); border-bottom-color: var(--border); }
-.td { color: var(--text-primary); border-bottom-color: var(--border); }
+.button:hover {
+  background: color-mix(in oklab, var(--primary) 90% black);
+  border-color: color-mix(in oklab, var(--primary) 90% black);
+}
 
-.actions .button { background: var(--primary); color: #fff; }
+.button.secondary {
+  --button-secondary-bg: #ffffff;
+  --button-secondary-text: #374151;
+  --button-secondary-border: #e5e7eb;
+}
+
+.button.secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.card {
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.th {
+  --table-header-bg: #f9fafb;
+  --table-border: #e5e7eb;
+}
+
+.td {
+  --table-border: #e5e7eb;
+}
+
+.statCard {
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --stat-icon-bg: #f0f4ff;
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+.chartCard {
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+}
+
+.chartAction {
+  --surface: #f9fafb;
+  --surface-hover: #f3f4f6;
+  --border: #e5e7eb;
+  --text-secondary: #6b7280;
+  --text-primary: #111827;
+}
+
+.activityItem {
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --surface-hover: #f9fafb;
+}
+
+.activityIcon {
+  --activity-icon-bg: #f0f4ff;
+  --activity-icon-color: #4573df;
+}
+
+.skeletonRow {
+  --card-bg: #f9fafb;
+  --card-border: #e5e7eb;
+}
+
+.emptyState {
+  --surface: #f9fafb;
+}

@@ -24,6 +24,7 @@ export interface ButtonOwnProps<E extends React.ElementType = React.ElementType>
   iconAfter?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 // Combined props including standard HTML attributes
@@ -40,6 +41,7 @@ const Button = <C extends React.ElementType = 'button'>({
   iconAfter,
   provider,
   className = '',
+  onClick,
   ...props
 }: ButtonProps<C>) => {
   const { theme } = useTheme();
@@ -52,6 +54,12 @@ const Button = <C extends React.ElementType = 'button'>({
     size === 'small' ? 'sm' : size === 'medium' ? 'md' : size === 'large' ? 'lg' : (size as 'sm' | 'md' | 'lg' | 'icon');
 
   const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+
+  // Handle click with loading state
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isLoading || props.disabled) return;
+    onClick?.(e);
+  };
 
   return (
     <Component
@@ -74,9 +82,10 @@ const Button = <C extends React.ElementType = 'button'>({
         className
       )}
       disabled={isLoading || props.disabled}
+      onClick={handleClick}
       {...props}
     >
-      {isLoading && <Loader2 className={cn(commonStyles.spinner, themeStyles.spinner)} />}
+      {isLoading && <Loader2 className={cn(commonStyles.spinner, themeStyles.spinner, commonStyles.loadingIcon)} />}
       {iconBefore && !isLoading && <span className={commonStyles.iconBefore}>{iconBefore}</span>}
       <span className={cn(commonStyles.buttonText, themeStyles.buttonText, isLoading && commonStyles.loadingText)}>
         {children}

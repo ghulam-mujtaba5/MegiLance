@@ -1,10 +1,11 @@
-// @AI-HINT: This is a versatile, enterprise-grade Input component. It supports labels, icons, validation states (error), and is fully themed. All styles are per-component only. See Input.common.module.css, Input.light.module.css, and Input.dark.module.css for theming.
+// @AI-HINT: This is a versatile, enterprise-grade Input component. It supports labels, icons, validation states (error), and is fully themed. All styles are per-component only.
 
 'use client';
 
-import React, { useId } from 'react';
+import React, { useId, useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 import commonStyles from './Input.common.module.css';
 import lightStyles from './Input.light.module.css';
 import darkStyles from './Input.dark.module.css';
@@ -18,10 +19,14 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   helpText?: string;
   wrapperClassName?: string;
   fullWidth?: boolean;
+  floatingLabel?: boolean;
+  showPasswordToggle?: boolean;
+  passwordStrength?: 'weak' | 'medium' | 'strong';
 }
 
 const Input: React.FC<InputProps> = ({
   label,
+  hideLabel,
   iconBefore,
   iconAfter,
   error,
@@ -29,10 +34,16 @@ const Input: React.FC<InputProps> = ({
   className = '',
   wrapperClassName = '',
   fullWidth = false,
+  floatingLabel = false,
+  showPasswordToggle = false,
+  passwordStrength,
+  type = 'text',
   ...props
 }) => {
   const id = useId();
   const { theme } = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   
   if (!theme) {
     return null; // Don't render until theme is resolved
@@ -42,6 +53,15 @@ const Input: React.FC<InputProps> = ({
   const hasError = !!error;
   const errorId = hasError ? `${id}-error` : undefined;
   const helpId = !hasError && helpText ? `${id}-help` : undefined;
+  const inputType = type === 'password' && showPassword ? 'text' : type;
+
+  // Handle password toggle
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  // Determine if we should show the floating label effect
+  const showFloatingLabel = floatingLabel && (isFocused || props.value || props.placeholder);
 
   return (
     <div
@@ -54,14 +74,37 @@ const Input: React.FC<InputProps> = ({
         props.disabled && themeStyles.inputWrapperDisabled,
         wrapperClassName,
         fullWidth && commonStyles.inputWrapperFullWidth,
-        fullWidth && themeStyles.inputWrapperFullWidth
+        fullWidth && themeStyles.inputWrapperFullWidth,
+        floatingLabel && commonStyles.inputWrapperFloating,
+        isFocused && commonStyles.inputWrapperFocused
       )}
     >
-      {label && <label htmlFor={id} className={cn(commonStyles.inputLabel, themeStyles.inputLabel)}>{label}</label>}
+      {label && !hideLabel && (
+        <label 
+          htmlFor={id} 
+          className={cn(
+            commonStyles.inputLabel, 
+            themeStyles.inputLabel,
+            showFloatingLabel && commonStyles.floatingLabel
+          )}
+        >
+          {label}
+        </label>
+      )}
       <div className={cn(commonStyles.inputContainer, themeStyles.inputContainer)}>
-        {iconBefore && <span className={cn(commonStyles.inputIcon, themeStyles.inputIcon, commonStyles.inputIconBefore, themeStyles.inputIconBefore)}>{iconBefore}</span>}
+        {iconBefore && (
+          <span className={cn(
+            commonStyles.inputIcon, 
+            themeStyles.inputIcon, 
+            commonStyles.inputIconBefore, 
+            themeStyles.inputIconBefore
+          )}>
+            {iconBefore}
+          </span>
+        )}
         <input
           id={id}
+          type={inputType}
           className={cn(
             commonStyles.inputField,
             themeStyles.inputField,
@@ -74,15 +117,55 @@ const Input: React.FC<InputProps> = ({
           aria-invalid={hasError ? 'true' : undefined}
           aria-describedby={errorId ?? helpId}
           aria-errormessage={errorId}
+          onFocus={(e) => {
+            setIsFocused(true);
+            props.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setIsFocused(false);
+            props.onBlur?.(e);
+          }}
           {...props}
         />
-        {iconAfter && <span className={cn(commonStyles.inputIcon, themeStyles.inputIcon, commonStyles.inputIconAfter, themeStyles.inputIconAfter)}>{iconAfter}</span>}
+        {showPasswordToggle && type === 'password' && (
+          <button
+            type="button"
+            className={cn(
+              commonStyles.inputIcon,
+              themeStyles.inputIcon,
+              commonStyles.inputIconAfter,
+              themeStyles.inputIconAfter
+            )}
+            onClick={togglePasswordVisibility}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        )}
+        {iconAfter && !(showPasswordToggle && type === 'password') && (
+          <span className={cn(
+            commonStyles.inputIcon, 
+            themeStyles.inputIcon, 
+            commonStyles.inputIconAfter, 
+            themeStyles.inputIconAfter
+          )}>
+            {iconAfter}
+          </span>
+        )}
       </div>
       {hasError && typeof error === 'string' && (
-        <p id={errorId} className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>{error}</p>
+        <p id={errorId} className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>
+          <AlertCircle size={16} />
+          {error}
+        </p>
       )}
       {!hasError && helpText && (
-        <p id={helpId} className={cn(commonStyles.helpText, themeStyles.helpText)}>{helpText}</p>
+        <p id={helpId} className={cn(commonStyles.helpText, themeStyles.helpText)}>
+          {helpText}
+        </p>
+      )}
+      {passwordStrength && (
+        <div className={cn(commonStyles.passwordStrength, themeStyles.passwordStrength, commonStyles[passwordStrength])}></div>
       )}
     </div>
   );

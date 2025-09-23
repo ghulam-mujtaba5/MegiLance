@@ -1,41 +1,45 @@
 /* AI-HINT: Light theme overrides for FAQ page. Colors and borders only. */
 
 .themeWrapper {
-  background-color: var(--surface);
-  color: var(--text-primary);
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(69, 115, 223, 0.08), transparent 60%),
+              radial-gradient(800px 400px at 100% 0%, rgba(255, 152, 0, 0.07), transparent 60%),
+              linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+  color: #374151;
 }
 
 .faqHeader h1 {
-  color: var(--text-primary);
+  color: #1f2937;
 }
 
 .faqHeader p {
-  color: var(--text-secondary);
+  color: #4b5563;
 }
 
 .faqList {
-  border-top-color: var(--border);
+  border-top-color: rgba(224, 224, 224, 0.5);
 }
 
 .faqItem {
-  border-bottom-color: var(--border);
+  border-bottom-color: rgba(224, 224, 224, 0.5);
 }
 
 .faqItemQuestion {
-  color: var(--text-primary);
+  color: #1f2937;
 }
 
 .faqItemIcon {
-  color: var(--text-secondary);
+  background: rgba(238, 242, 255, 0.8);
+  color: #4573df;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .faqItemAnswer p {
-  color: var(--text-secondary);
+  color: #4b5563;
 }
 
 /* Focus styles */
 .faqItemQuestion:focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid #4573df;
   outline-offset: 4px;
-  border-radius: var(--border-radius-sm);
+  border-radius: 12px;
 }

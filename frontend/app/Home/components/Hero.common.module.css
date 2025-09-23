@@ -21,6 +21,56 @@
   pointer-events: none;
 }
 
+/* Animated background elements for 2025 design trends */
+.animatedBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.blob1, .blob2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.3;
+  z-index: -1;
+}
+
+.blob1 {
+  width: 600px;
+  height: 600px;
+  top: -300px;
+  left: -100px;
+  background: linear-gradient(135deg, var(--primary-4573df), var(--accent-orange-ff9800));
+  animation: floatBlob1 15s infinite ease-in-out;
+}
+
+.blob2 {
+  width: 500px;
+  height: 500px;
+  bottom: -200px;
+  right: -100px;
+  background: linear-gradient(135deg, var(--accent-purple-9c27b0), var(--primary-4573df));
+  animation: floatBlob2 18s infinite ease-in-out;
+}
+
+.gridLines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(69, 115, 223, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(69, 115, 223, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 70%);
+}
+
 .contentWrapper {
   position: relative;
   z-index: 1;
@@ -44,6 +94,8 @@
   border: 1px solid;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .promoBadge:hover {
@@ -70,6 +122,19 @@
   background-clip: text;
   -webkit-background-clip: text;
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.mainHeading::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-4573df), var(--accent-orange-ff9800));
+  border-radius: 2px;
 }
 
 .mainHeading:hover {
@@ -82,6 +147,7 @@
   line-height: 1.7;
   margin: 0 auto 3rem;
   font-weight: 400;
+  position: relative;
 }
 
 .ctaButtons {
@@ -109,11 +175,15 @@
   padding: 0.75rem 1.25rem;
   border-radius: 1rem;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .featureItem:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: rgba(69, 115, 223, 0.4);
 }
 
 .statsGrid {
@@ -122,12 +192,30 @@
   gap: 2.5rem 4rem;
   width: 100%;
   max-width: 56rem; /* 896px */
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Animations */
 @keyframes floatAnim {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
+}
+
+@keyframes floatBlob1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(20px, -20px) scale(1.1); }
+  50% { transform: translate(40px, 10px) scale(0.9); }
+  75% { transform: translate(-20px, 30px) scale(1.05); }
+}
+
+@keyframes floatBlob2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-30px, 20px) scale(0.95); }
+  50% { transform: translate(10px, -40px) scale(1.1); }
+  75% { transform: translate(30px, 20px) scale(0.9); }
 }
 
 /* Responsive Design */
@@ -179,6 +267,22 @@
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .blob1, .blob2 {
+    filter: blur(40px);
+    opacity: 0.2;
+  }
+  
+  .blob1 {
+    width: 400px;
+    height: 400px;
+  }
+  
+  .blob2 {
+    width: 350px;
+    height: 350px;
   }
 }
 
@@ -195,5 +299,6 @@
   
   .statsGrid {
     gap: 1.5rem;
+    padding: 1rem;
   }
 }

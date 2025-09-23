@@ -1,11 +1,7 @@
 /* @AI-HINT: Dark theme styles for the Freelancer Dashboard. */
 
 .container {
-  background-color: #111827;
-}
-
-.title {
-  color: #f9fafb;
+  --dashboard-bg: #111827;
 }
 
 .subtitle {
@@ -13,7 +9,50 @@
 }
 
 .error {
-  background-color: #2c1d1d;
-  color: #fca5a5;
-  border: 1px solid #452323;
+  --error-bg: #3a2222;
+  --error-text: #ff8a8a;
+  --error-border: #7a2d2d;
+}
+
+.statCard {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --stat-icon-bg: #2c3a5a;
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.chartCard {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+}
+
+.chartAction {
+  --surface: #374151;
+  --surface-hover: #4b5563;
+  --border: #4b5563;
+  --text-secondary: #9ca3af;
+  --text-primary: #f9fafb;
+}
+
+.activityItem {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --surface-hover: #374151;
+}
+
+.activityIcon {
+  --activity-icon-bg: #2c3a5a;
+  --activity-icon-color: #608cfb;
+}
+
+.emptyState {
+  --surface: #1f2937;
+}
+
+.loadingSkeleton {
+  --card-bg: #1f2937;
+  --card-border: #374151;
 }

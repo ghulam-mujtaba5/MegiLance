@@ -12,6 +12,8 @@
   font-size: 0.9rem;
   color: var(--checkbox-text-color);
   position: relative;
+  transition: all 0.2s ease;
+  padding: var(--spacing-2) 0;
 }
 
 .checkboxInput {
@@ -25,59 +27,129 @@
 .checkboxCustom {
   position: relative;
   display: inline-block;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background-color: var(--checkbox-bg);
   border: 2px solid var(--checkbox-border-color);
-  border-radius: 4px;
-  margin-right: 10px;
-  transition: background-color 0.2s, border-color 0.2s;
+  border-radius: 6px;
+  margin-right: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.checkboxLabel:hover .checkboxCustom {
+  border-color: var(--checkbox-border-hover-color);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transform: translateY(-1px);
 }
 
 .checkboxInput:checked ~ .checkboxCustom {
   background-color: var(--checkbox-checked-bg);
   border-color: var(--checkbox-checked-border-color);
+  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.2);
 }
 
 .checkboxCustom::after {
   content: '';
   position: absolute;
   display: none;
-  left: 5px;
-  top: 1px;
-  width: 5px;
-  height: 10px;
+  width: 6px;
+  height: 12px;
   border: solid var(--checkbox-checkmark-color);
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  transform: rotate(45deg) scale(0);
+  transition: transform 0.2s ease;
 }
 
 .checkboxInput:checked ~ .checkboxCustom::after {
   display: block;
+  transform: rotate(45deg) scale(1);
 }
 
 .checkboxInput:focus-visible ~ .checkboxCustom {
   outline: 2px solid var(--checkbox-focus-ring-color);
   outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
 }
 
 .checkboxText {
   line-height: 1.5;
+  transition: color 0.2s ease;
+}
+
+.checkboxLabel:hover .checkboxText {
+  color: var(--checkbox-text-hover-color);
 }
 
 .checkboxText a {
   color: var(--checkbox-link-color);
   text-decoration: none;
   font-weight: 500;
+  border-radius: 4px;
+  padding: 0.125rem 0.25rem;
+  transition: all 0.2s ease;
 }
 
 .checkboxText a:hover {
   text-decoration: underline;
+  background-color: var(--checkbox-link-hover-bg);
 }
 
 .checkboxError {
   font-size: 0.8rem;
   color: var(--checkbox-error-color);
   margin-top: 4px;
-  padding-left: 28px; /* Align with text */
+  padding-left: 32px; /* Align with text */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Indeterminate state */
+.checkboxCustom.indeterminate::after {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 10px;
+  height: 2px;
+  background-color: var(--checkbox-checkmark-color);
+  border: none;
+  transform: rotate(0deg) scale(1);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Disabled state */
+.checkboxInput:disabled ~ .checkboxCustom {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: var(--checkbox-disabled-bg);
+  border-color: var(--checkbox-disabled-border-color);
+}
+
+.checkboxInput:disabled ~ .checkboxText {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.checkboxLabel:hover .checkboxInput:disabled ~ .checkboxCustom {
+  transform: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }

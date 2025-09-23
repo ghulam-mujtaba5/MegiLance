@@ -8,45 +8,165 @@
 }
 
 .textareaLabel {
-  font-family: var(--font-inter);
-  font-weight: 500;
+  font-family: var(--font-family-body);
   font-size: var(--font-size-sm);
-  margin-bottom: var(--space-2);
-  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+  color: var(--input-label-text);
+  margin-bottom: var(--spacing-2);
+  display: block;
+  transition: all 0.2s ease;
 }
 
 .textareaField {
-  font-family: var(--font-inter);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  color: var(--input-text);
+  background-color: var(--input-bg);
   width: 100%;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-size-md);
-  border-radius: var(--border-radius-md);
-  border: 1px solid;
-  background-color: transparent;
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
-  min-height: 120px; /* Default height */
-  resize: vertical; /* Allow vertical resizing */
-  caret-color: var(--color-primary);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--border-radius-xl);
+  border: var(--border-width-md) solid var(--input-border);
+  transition: border-color var(--transition-duration-fast) ease-in-out, 
+              box-shadow var(--transition-duration-fast) ease-in-out, 
+              background-color var(--transition-duration-fast) ease-in-out,
+              transform var(--transition-duration-fast) ease-in-out;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  will-change: transform, box-shadow;
+  min-height: 120px;
+  resize: vertical;
+}
+
+.textareaField::placeholder {
+  color: var(--input-placeholder-text);
+  transition: color 0.2s ease;
+}
+
+.textareaField:hover:not(:disabled) {
+  border-color: var(--input-border-hover, var(--input-border));
+  background-color: var(--input-bg-hover, var(--input-bg));
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transform: translateY(-1px);
 }
 
 .textareaField:focus {
   outline: none;
+  border-color: var(--input-border-focus);
+  background-color: var(--input-bg-focus, var(--input-bg));
+  /* Fallback ring */
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
+  transform: translateY(-1px);
+}
+@supports (color: color-mix(in oklab, white, black)) {
+  .textareaField:focus {
+    /* Enhanced ring using brand primary via color-mix */
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 25%, transparent);
+  }
 }
 
-.textareaField::placeholder {
-  opacity: 0.7;
+.textareaWrapperError .textareaField {
+  border-color: var(--input-border-error);
+  color: var(--input-text-error);
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.15);
+}
+
+.textareaWrapperError .textareaField:focus {
+  border-color: var(--input-border-error-focus);
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.25);
 }
 
 .errorMessage {
-  font-family: var(--font-inter);
-  font-size: var(--font-size-sm);
-  margin-top: var(--space-2);
   color: var(--color-danger-default);
   font-size: 0.875rem;
   margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .helpText {
   font-size: 0.875rem;
   margin-top: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.textareaWrapperDisabled {
+  cursor: not-allowed;
+}
+
+.textareaWrapperDisabled .textareaField {
+  background-color: var(--input-bg-disabled);
+  color: var(--input-text-disabled);
+  border-color: var(--input-border-disabled);
+  cursor: not-allowed;
+  opacity: var(--opacity-disabled);
+  box-shadow: none;
+  transform: none;
+}
+
+.textareaWrapperFullWidth {
+  width: 100%;
+}
+
+/* Floating label effect */
+.textareaWrapperFloating .textareaLabel {
+  position: absolute;
+  top: var(--spacing-3);
+  left: var(--spacing-4);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--input-placeholder-text);
+  pointer-events: none;
+  z-index: 1;
+  transform-origin: left;
+  transition: all 0.2s ease;
+}
+
+.textareaWrapperFloating .textareaField:focus ~ .textareaLabel,
+.textareaWrapperFloating .textareaField:not(:placeholder-shown) ~ .textareaLabel {
+  top: calc(var(--spacing-1) * -1);
+  left: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  background: var(--input-bg);
+  padding: 0 var(--spacing-1);
+  color: var(--input-border-focus);
+  transform: translateY(0);
+}
+
+/* Enhanced focus-within effect for the entire wrapper */
+.textareaWrapper:focus-within .textareaLabel {
+  color: var(--input-border-focus);
+}
+
+/* Animation for error messages */
+.errorMessage {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Character counter */
+.characterCounter {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
+.characterCounter.warning {
+  color: var(--warning-f2c94c);
+}
+
+.characterCounter.error {
+  color: var(--error-e81123);
 }

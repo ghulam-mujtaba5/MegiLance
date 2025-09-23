@@ -1,50 +1,54 @@
 /* AI-HINT: Dark theme styles for the Pricing page. Defines colors for text, backgrounds, borders, and interactive elements in dark mode. */
 
 /* --- Page & Header --- */
-.page { background-color: var(--color-gray-900); }
-.title { color: var(--color-gray-100); }
-.subtitle { color: var(--color-gray-400); }
+.page { 
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(69, 115, 223, 0.16), transparent 60%),
+              radial-gradient(800px 400px at 100% 0%, rgba(255, 152, 0, 0.10), transparent 60%),
+              linear-gradient(180deg, #0b1020 0%, #0a0f1a 100%);
+}
+
+.title { color: #f5f7fa; }
+.subtitle { color: #9ca3af; }
 
 /* --- Pricing Cards --- */
 .card {
-  background-color: var(--color-gray-850);
-  border-color: var(--color-gray-700);
+  background-color: rgba(31, 41, 55, 0.7);
+  border-color: rgba(58, 65, 74, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .card:hover {
-  box-shadow: 0 0 30px rgba(69, 115, 223, 0.1);
-  border-color: var(--color-gray-600);
+  background-color: rgba(31, 41, 55, 0.9);
+  border-color: rgba(88, 166, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 
 .popularBadge {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  border-color: var(--color-primary-lighter);
-}
-
-.card.popular {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 40px rgba(69, 115, 223, 0.2);
+  background: linear-gradient(135deg, #4573df, #58a6ff);
+  color: #ffffff;
+  border-color: rgba(88, 166, 255, 0.5);
+  box-shadow: 0 4px 15px rgba(88, 166, 255, 0.2);
 }
 
 .cardIcon {
-  background-color: rgba(69, 115, 223, 0.1);
-  color: var(--color-primary-lighter);
+  background-color: rgba(31, 41, 55, 0.8);
+  color: #58a6ff;
+  border: 1px solid rgba(58, 65, 74, 0.5);
 }
 
-.cardTier { color: var(--color-gray-100); }
-.priceAmount { color: var(--color-gray-100); }
-.pricePeriod { color: var(--color-gray-400); }
-.cardDescription { color: var(--color-gray-400); }
+.cardTier { color: #f5f7fa; }
+.priceAmount { color: #f5f7fa; }
+.pricePeriod { color: #9ca3af; }
+.cardDescription { color: #9ca3af; }
 
 .features {
-  border-color: var(--color-gray-700);
+  border-color: rgba(58, 65, 74, 0.5);
 }
 
-.featureItem { color: var(--color-gray-300); }
-.featureIcon { color: var(--color-primary-lighter); }
+.featureItem { color: #e5e7eb; }
+.featureIcon { color: #58a6ff; }
 
 /* --- FAQ Section --- */
-.faqTitle { color: var(--color-gray-100); }
-.faqSubtitle { color: var(--color-gray-400); }
-.faqList { border-color: var(--color-gray-700); }
+.faqTitle { color: #f5f7fa; }
+.faqSubtitle { color: #9ca3af; }
+.faqList { border-color: rgba(58, 65, 74, 0.5); }

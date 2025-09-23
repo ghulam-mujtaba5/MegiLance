@@ -1,37 +1,71 @@
 /* AI-HINT: Common styles for FAQ page. Structure, spacing, accordion behavior, and animations. */
 
 .faq {
-  padding: var(--spacing-16) 0;
+  padding: 100px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.faq::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 15% 25%, rgba(69, 115, 223, 0.05) 0%, transparent 25%),
+    radial-gradient(circle at 85% 75%, rgba(255, 152, 0, 0.05) 0%, transparent 25%);
+  pointer-events: none;
 }
 
 .faqContainer {
   max-width: 900px;
   margin: 0 auto;
   padding: 0 var(--spacing-6);
+  position: relative;
+  z-index: 1;
 }
 
 .faqHeader {
   text-align: center;
   margin-bottom: var(--spacing-10);
+  position: relative;
 }
 
 .faqHeader h1 {
   font-family: var(--font-family-headings);
   font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   margin-bottom: var(--spacing-3);
+  position: relative;
+}
+
+.faqHeader h1::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-4573df), var(--accent-orange-ff9800));
+  border-radius: 2px;
 }
 
 .faqHeader p {
   font-size: var(--font-size-lg);
+  position: relative;
 }
 
 .faqList {
-  border-top: 1px solid transparent; /* themed */
+  border-top: 1px solid transparent;
+  position: relative;
 }
 
 .faqItem {
-  border-bottom: 1px solid transparent; /* themed */
+  border-bottom: 1px solid transparent;
+  position: relative;
 }
 
 .faqItemQuestion {
@@ -44,18 +78,59 @@
   border: none;
   text-align: left;
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
+  font-weight: 600;
   cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.faqItemQuestion::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-4573df), var(--accent-orange-ff9800));
+  opacity: 0;
+  z-index: -1;
+  border-radius: 12px;
+  transition: opacity 0.3s ease;
+}
+
+.faqItemQuestion:hover::before {
+  opacity: 0.05;
 }
 
 .faqItemIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: var(--border-radius-sm);
-  transition: transform var(--transition-duration-normal);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.faqItemIcon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+  z-index: 1;
+  border-radius: 50%;
+}
+
+.faqItemIcon span {
+  position: relative;
+  z-index: 2;
+  font-weight: 700;
+  font-size: 1.2rem;
 }
 
 .faqItemIconOpen {
@@ -66,16 +141,18 @@
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
+  position: relative;
 }
 
 .faqItemAnswerOpen {
-  max-height: 1000px; /* large */
+  max-height: 1000px;
   transition: max-height 1s ease-in-out;
 }
 
 .faqItemAnswer p {
   padding: 0 0 var(--spacing-6) 0;
   line-height: 1.7;
+  position: relative;
 }
 
 /* Animations */
@@ -101,4 +178,41 @@
   clip: rect(0, 0, 1px, 1px);
   white-space: nowrap;
   border: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .faq {
+    padding: 60px 0;
+  }
+  
+  .faqContainer {
+    padding: 0 var(--spacing-4);
+  }
+  
+  .faqHeader {
+    margin-bottom: var(--spacing-8);
+  }
+  
+  .faqHeader h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+  }
+  
+  .faqHeader p {
+    font-size: var(--font-size-base);
+  }
+  
+  .faqItemQuestion {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-4) 0;
+  }
+  
+  .faqItemIcon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .faqItemAnswer p {
+    padding: 0 0 var(--spacing-5) 0;
+  }
 }

@@ -1,46 +1,40 @@
 /* @AI-HINT: Dark theme styles for the Textarea component. */
 
-.textareaLabel {
-  color: var(--text-secondary-dark);
+.textareaWrapper {
+  --input-bg: #1d2127;
+  --input-bg-hover: #272b32;
+  --input-bg-focus: #1d2127;
+  --input-bg-disabled: #2c323a;
+  --input-border: #3a414a;
+  --input-border-hover: #4a515a;
+  --input-border-focus: #4573df;
+  --input-border-error: #e81123;
+  --input-border-error-focus: #e81123;
+  --input-border-disabled: #3a414a;
+  --input-text: #f5f7fa;
+  --input-text-error: #ff8a8a;
+  --input-text-disabled: #a0aec0;
+  --input-placeholder-text: #9ca3af;
+  --input-icon: #a0aec0;
+  --input-label-text: #cbd5e0;
 }
 
 .textareaField {
-  color: var(--text-primary-dark);
-  border-color: var(--border-dark);
-  background-color: var(--bg-primary-dark);
-}
-
-.textareaField::placeholder {
-  color: var(--color-text-secondary-dark);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .textareaField:hover:not(:disabled) {
-  background-color: var(--bg-secondary-dark);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
 .textareaField:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.3);
 }
 
 .textareaWrapperError .textareaField {
-  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.2);
 }
 
 .textareaWrapperError .textareaField:focus {
-  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.25);
-}
-
-.textareaWrapperDisabled .textareaField {
-  background-color: var(--bg-secondary-dark);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.errorMessage {
-  color: var(--color-danger-dark);
-}
-
-.helpText {
-  color: var(--color-text-secondary-dark);
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.3);
 }

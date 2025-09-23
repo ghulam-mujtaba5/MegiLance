@@ -1,11 +1,18 @@
-/* @AI-HINT: Light theme styles for the Features section. Colors only; section background is transparent to use page background. */
+/* @AI-HINT: Light theme styles for the Features section. */
+
+.featuresSection {
+  background: transparent;
+}
 
 .tagline {
-  color: var(--color-primary);
+  color: var(--primary-4573df);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(224, 224, 224, 0.5);
+  backdrop-filter: blur(10px);
 }
 
 .title {
-  color: #111827;
+  color: #1f2937;
 }
 
 .subtitle {

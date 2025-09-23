@@ -1,43 +1,72 @@
 /* @AI-HINT: Common, theme-agnostic styles for the reusable Card component. */
 
 .card {
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
-  transition: var(--transition-all, all 0.3s ease);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.06));
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   will-change: transform, box-shadow;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-4573df), var(--accent-orange-ff9800));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.card:hover::before {
+  transform: scaleX(1);
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
   margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-header-border);
 }
 
 .cardIcon {
   margin-right: 12px;
+  color: var(--card-icon-color);
+  transition: color 0.2s ease;
 }
 
 .cardTitle {
-  font-size: 1.125rem; /* 18px */
+  font-family: var(--font-poppins);
+  font-size: 1.25rem; /* 20px */
   font-weight: 600;
   margin: 0;
+  color: var(--card-title-color);
 }
 
 .cardContent {
   flex-grow: 1;
+  color: var(--card-content-color);
 }
 
 /* Elevation and motion */
 .card:hover {
-  box-shadow: var(--shadow-md, 0 6px 18px rgba(0,0,0,0.10));
-  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
 }
 
 .card:active {
-  transform: translateY(-1px) scale(0.998);
+  transform: translateY(-2px) scale(0.998);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
 /* Accessible focus ring for interactive cards or focusable content within */
@@ -45,11 +74,81 @@
 .card:focus-within {
   outline: none;
   /* Fallback ring */
-  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25), var(--shadow-md, 0 6px 18px rgba(0,0,0,0.10));
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25), 0 8px 24px rgba(0,0,0,0.12);
 }
 @supports (color: color-mix(in oklab, white, black)) {
   .card:focus-visible,
   .card:focus-within {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 25%, transparent), var(--shadow-md, 0 6px 18px rgba(0,0,0,0.10));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 25%, transparent), 0 8px 24px rgba(0,0,0,0.12);
+  }
+}
+
+/* Card variants */
+.card.variant-elevated {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card.variant-elevated:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+
+.card.variant-outline {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  box-shadow: none;
+}
+
+.card.variant-outline:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.card.variant-filled {
+  background: var(--card-filled-bg);
+  border: none;
+}
+
+/* Card sizes */
+.card.size-sm {
+  padding: 16px;
+}
+
+.card.size-lg {
+  padding: 32px;
+}
+
+/* Loading state */
+.card.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.card.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+  animation: loadingShimmer 1.5s infinite;
+}
+
+@keyframes loadingShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .card {
+    padding: 20px;
+  }
+  
+  .card.size-sm {
+    padding: 12px;
+  }
+  
+  .card.size-lg {
+    padding: 24px;
   }
 }

@@ -15,9 +15,20 @@ export interface CardProps {
   icon?: React.ElementType;
   children: React.ReactNode;
   className?: string;
+  variant?: 'default' | 'elevated' | 'outline' | 'filled';
+  size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ title, icon: Icon, children, className = '' }) => {
+const Card: React.FC<CardProps> = ({ 
+  title, 
+  icon: Icon, 
+  children, 
+  className = '',
+  variant = 'default',
+  size = 'md',
+  loading = false
+}) => {
   const { theme } = useTheme();
 
   if (!theme) {
@@ -27,10 +38,17 @@ const Card: React.FC<CardProps> = ({ title, icon: Icon, children, className = ''
   const themeStyles = theme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <div className={cn(commonStyles.card, themeStyles.card, className)}>
+    <div className={cn(
+      commonStyles.card,
+      themeStyles.card,
+      commonStyles[`variant-${variant}`],
+      commonStyles[`size-${size}`],
+      loading && commonStyles.loading,
+      className
+    )}>
       {title && (
         <div className={cn(commonStyles.cardHeader, themeStyles.cardHeader)}>
-          {Icon && <Icon className={cn(commonStyles.cardIcon, themeStyles.cardIcon)} size={22} />}
+          {Icon && <Icon className={cn(commonStyles.cardIcon, themeStyles.cardIcon)} size={24} />}
           <h3 className={cn(commonStyles.cardTitle, themeStyles.cardTitle)}>{title}</h3>
         </div>
       )}

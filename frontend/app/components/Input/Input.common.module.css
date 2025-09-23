@@ -14,6 +14,7 @@
   color: var(--input-label-text);
   margin-bottom: var(--spacing-2);
   display: block;
+  transition: all 0.2s ease;
 }
 
 .inputContainer {
@@ -29,28 +30,38 @@
   background-color: var(--input-bg);
   width: 100%;
   padding: var(--spacing-3) var(--spacing-4);
-  border-radius: var(--border-radius-large);
+  border-radius: var(--border-radius-xl);
   border: var(--border-width-md) solid var(--input-border);
-  transition: border-color var(--transition-duration-fast) ease-in-out, box-shadow var(--transition-duration-fast) ease-in-out, background-color var(--transition-duration-fast) ease-in-out;
+  transition: border-color var(--transition-duration-fast) ease-in-out, 
+              box-shadow var(--transition-duration-fast) ease-in-out, 
+              background-color var(--transition-duration-fast) ease-in-out,
+              transform var(--transition-duration-fast) ease-in-out;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  will-change: transform, box-shadow;
 }
 
 .inputField::placeholder {
   color: var(--input-placeholder-text);
+  transition: color 0.2s ease;
 }
 
 .inputField:hover:not(:disabled) {
   border-color: var(--input-border-hover, var(--input-border));
   background-color: var(--input-bg-hover, var(--input-bg));
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transform: translateY(-1px);
 }
 
 .inputField:focus {
   outline: none;
   border-color: var(--input-border-focus);
+  background-color: var(--input-bg-focus, var(--input-bg));
   /* Fallback ring */
   box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
+  transform: translateY(-1px);
 }
 @supports (color: color-mix(in oklab, white, black)) {
   .inputField:focus {
@@ -68,6 +79,7 @@
   transform: translateY(-50%);
   color: var(--input-icon);
   font-size: var(--font-size-lg);
+  transition: color 0.2s ease;
 }
 
 .inputIconBefore {
@@ -89,22 +101,27 @@
 .inputWrapperError .inputField {
   border-color: var(--input-border-error);
   color: var(--input-text-error);
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.15);
 }
 
 .inputWrapperError .inputField:focus {
   border-color: var(--input-border-error-focus);
-  box-shadow: var(--focus-ring-error);
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.25);
 }
 
 .errorMessage {
   color: var(--color-danger-default);
   font-size: 0.875rem;
   margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .helpText {
   font-size: 0.875rem;
   margin-top: 0.5rem;
+  color: var(--text-secondary);
 }
 
 .inputWrapperDisabled {
@@ -117,6 +134,8 @@
   border-color: var(--input-border-disabled);
   cursor: not-allowed;
   opacity: var(--opacity-disabled);
+  box-shadow: none;
+  transform: none;
 }
 
 .inputWrapperDisabled .inputIcon {
@@ -125,4 +144,83 @@
 
 .inputWrapperFullWidth {
   width: 100%;
+}
+
+/* Floating label effect */
+.inputWrapperFloating .inputLabel {
+  position: absolute;
+  top: var(--spacing-3);
+  left: var(--spacing-4);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--input-placeholder-text);
+  pointer-events: none;
+  z-index: 1;
+  transform-origin: left;
+  transition: all 0.2s ease;
+}
+
+.inputWrapperFloating .inputFieldWithIconBefore ~ .inputLabel {
+  left: var(--spacing-12);
+}
+
+.inputWrapperFloating .inputField:focus ~ .inputLabel,
+.inputWrapperFloating .inputField:not(:placeholder-shown) ~ .inputLabel {
+  top: calc(var(--spacing-1) * -1);
+  left: var(--spacing-2);
+  font-size: var(--font-size-xs);
+  background: var(--input-bg);
+  padding: 0 var(--spacing-1);
+  color: var(--input-border-focus);
+  transform: translateY(0);
+}
+
+.inputWrapperFloating .inputFieldWithIconBefore:focus ~ .inputLabel,
+.inputWrapperFloating .inputFieldWithIconBefore:not(:placeholder-shown) ~ .inputLabel {
+  left: var(--spacing-3);
+}
+
+/* Enhanced focus-within effect for the entire wrapper */
+.inputWrapper:focus-within .inputLabel {
+  color: var(--input-border-focus);
+}
+
+/* Animation for error messages */
+.errorMessage {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Password strength indicator */
+.passwordStrength {
+  height: 4px;
+  border-radius: 2px;
+  margin-top: var(--spacing-2);
+  transition: all 0.3s ease;
+  background: var(--surface);
+}
+
+.passwordStrength.weak {
+  width: 33%;
+  background: var(--error-e81123);
+}
+
+.passwordStrength.medium {
+  width: 66%;
+  background: var(--warning-f2c94c);
+}
+
+.passwordStrength.strong {
+  width: 100%;
+  background: var(--success-27AE60);
 }

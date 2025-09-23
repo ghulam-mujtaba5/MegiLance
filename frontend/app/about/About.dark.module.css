@@ -1,31 +1,35 @@
 .aboutPage {
-  background-color: #0d1117;
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(69, 115, 223, 0.16), transparent 60%),
+              radial-gradient(800px 400px at 100% 0%, rgba(255, 152, 0, 0.10), transparent 60%),
+              linear-gradient(180deg, #0b1020 0%, #0a0f1a 100%);
 }
 
 .title {
-  color: #f0f6fc;
+  color: #f5f7fa;
 }
 
 .subtitle {
-  color: #8b949e;
+  color: #9ca3af;
 }
 
 .sectionTitle {
-  color: #f0f6fc;
+  color: #f5f7fa;
 }
 
 .missionText {
-  color: #c9d1d9;
+  color: #d1d5db;
 }
 
 .valueCard {
-  background-color: #161b22;
-  border-color: #30363d;
+  background-color: rgba(31, 41, 55, 0.7);
+  border-color: rgba(58, 65, 74, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .valueCard:hover {
-  border-color: #58a6ff;
-  box-shadow: 0 0 20px rgba(88, 166, 255, 0.1);
+  background-color: rgba(31, 41, 55, 0.9);
+  border-color: rgba(88, 166, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 
 .valueIcon {
@@ -33,26 +37,27 @@
 }
 
 .valueTitle {
-  color: #f0f6fc;
+  color: #f5f7fa;
 }
 
 .valueDescription {
-  color: #8b949e;
+  color: #9ca3af;
 }
 
 .teamAvatar {
-  border-color: #161b22;
-  box-shadow: 0 0 0 2px #30363d;
+  border-color: rgba(31, 41, 55, 0.9);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .teamCard:hover .teamAvatar {
-  box-shadow: 0 0 0 3px #58a6ff;
+  box-shadow: 0 12px 30px rgba(88, 166, 255, 0.3);
+  border-color: rgba(88, 166, 255, 0.4);
 }
 
 .teamName {
-  color: #f0f6fc;
+  color: #f5f7fa;
 }
 
 .teamRole {
-  color: #8b949e;
+  color: #9ca3af;
 }

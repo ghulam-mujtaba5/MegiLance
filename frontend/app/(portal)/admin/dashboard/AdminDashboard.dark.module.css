@@ -1,19 +1,92 @@
-/* AI-HINT: Dark theme overrides for Admin Dashboard. */
+/* AI-HINT: Dark theme styles for Admin Dashboard page. */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
-.subtitle { color: var(--text-secondary); }
+.page {
+  --dashboard-bg: #111827;
+}
 
-.select { background: var(--surface-elev); border: 1px solid var(--border); color: var(--text-primary); }
-.button { background: var(--primary); color: white; border: 1px solid rgba(0,0,0,0.2); }
-.button.secondary { background: var(--surface-elev); color: var(--text-primary); border: 1px solid var(--border); }
+.subtitle {
+  color: #9ca3af;
+}
 
-.card { background: var(--surface-elev); border: 1px solid var(--border); }
-.cardTitle { color: var(--text-primary); }
-.metric { color: var(--text-primary); }
-.trend { color: var(--success); }
+.button {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
 
-.table { background: var(--surface-elev); }
-.th { color: var(--text-secondary); border-bottom-color: var(--border); }
-.td { color: var(--text-primary); border-bottom-color: var(--border); }
+.button:hover {
+  background: color-mix(in oklab, var(--primary) 90% white);
+  border-color: color-mix(in oklab, var(--primary) 90% white);
+}
 
-.actions .button { background: var(--primary); color: #fff; }
+.button.secondary {
+  --button-secondary-bg: #374151;
+  --button-secondary-text: #f9fafb;
+  --button-secondary-border: #4b5563;
+}
+
+.button.secondary:hover {
+  background: #4b5563;
+  border-color: #6b7280;
+}
+
+.card {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.th {
+  --table-header-bg: #1f2937;
+  --table-border: #374151;
+}
+
+.td {
+  --table-border: #374151;
+}
+
+.statCard {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --stat-icon-bg: #2c3a5a;
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+.chartCard {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+}
+
+.chartAction {
+  --surface: #374151;
+  --surface-hover: #4b5563;
+  --border: #4b5563;
+  --text-secondary: #9ca3af;
+  --text-primary: #f9fafb;
+}
+
+.activityItem {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --surface-hover: #374151;
+}
+
+.activityIcon {
+  --activity-icon-bg: #2c3a5a;
+  --activity-icon-color: #608cfb;
+}
+
+.skeletonRow {
+  --card-bg: #1f2937;
+  --card-border: #374151;
+}
+
+.emptyState {
+  --surface: #1f2937;
+}

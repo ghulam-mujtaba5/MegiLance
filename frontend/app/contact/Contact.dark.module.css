@@ -1,43 +1,65 @@
 /* AI-HINT: Dark theme styles for Contact page. */
 
+.contactPage {
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(69, 115, 223, 0.16), transparent 60%),
+              radial-gradient(800px 400px at 100% 0%, rgba(255, 152, 0, 0.10), transparent 60%),
+              linear-gradient(180deg, #0b1020 0%, #0a0f1a 100%);
+}
+
 .title {
-  color: var(--text-dark-primary);
+  color: #f5f7fa;
 }
 
 .subtitle {
-  color: var(--text-dark-secondary);
+  color: #9ca3af;
 }
 
 .formContainer,
 .infoContainer,
 .successMessage {
-  background: var(--surface-dark);
-  border-color: var(--border-dark);
+  background: rgba(31, 41, 55, 0.7);
+  border-color: rgba(58, 65, 74, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.formContainer:hover,
+.infoContainer:hover {
+  background: rgba(31, 41, 55, 0.9);
+  border-color: rgba(88, 166, 255, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
 .textarea {
-  background: var(--background-dark);
-  color: var(--text-dark-primary);
-  border-color: var(--border-dark);
+  background: rgba(17, 24, 39, 0.8);
+  color: #f5f7fa;
+  border-color: rgba(58, 65, 74, 0.5);
 }
 
 .textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 25%, transparent);
+  background: #111827;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
 }
 
 .emailLink {
-  color: var(--primary);
+  color: #58a6ff;
 }
 
 .emailLink:hover {
-  color: var(--primary-light);
+  color: #70b7ff;
+  background: rgba(88, 166, 255, 0.1);
 }
 
 .infoContainer h3 {
-  color: var(--text-dark-primary);
+  color: #f5f7fa;
 }
 
 .infoContainer p {
-  color: var(--text-dark-secondary);
+  color: #9ca3af;
+}
+
+.successMessage {
+  background: rgba(18, 47, 36, 0.9);
+  border-color: rgba(21, 128, 61, 0.5);
+  color: #34d399;
 }

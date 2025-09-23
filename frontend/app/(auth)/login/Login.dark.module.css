@@ -2,13 +2,15 @@
 
 .loginPage {
   /* Branding Panel */
-  --branding-panel-bg: #1a2035; /* Deep, professional navy */
+  --branding-panel-bg: linear-gradient(135deg, #1a2035 0%, #111827 100%);
   --brand-icon-color: #ffffff;
   --brand-title-color: #ffffff;
   --brand-text-color: #a0aec0; /* Cool gray */
 
   /* Form Panel */
-  --form-bg-color: #111827; /* Dark slate gray */
+  --form-bg-color: rgba(17, 24, 39, 0.85);
+  --form-container-bg: rgba(30, 35, 43, 0.7);
+  --form-container-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   --text-primary: #f9fafb;
   --text-secondary: #9ca3af;
   --text-tertiary: #6b7280;
@@ -17,10 +19,13 @@
   /* Interactive Elements */
   --color-primary: #4573df;
   --color-primary-hover: #608cfb;
-  --role-button-hover-bg: #1f2937;
-  --role-button-selected-bg: rgba(69, 115, 223, 0.15);
+  --role-button-hover-bg: rgba(69, 115, 223, 0.1);
+  --role-button-selected-bg: rgba(69, 115, 223, 0.25);
+  --input-hover-bg: rgba(255, 255, 255, 0.05);
+  --link-hover-bg: rgba(69, 115, 223, 0.15);
   
   /* States */
   --color-error: #ff8a8a;
   --error-bg: rgba(232, 17, 35, 0.15);
+  --error-border: rgba(232, 17, 35, 0.3);
 }

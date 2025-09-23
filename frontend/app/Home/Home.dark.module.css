@@ -13,3 +13,39 @@
   padding-top: 4rem;
   padding-bottom: 4rem;
 }
+
+.header {
+  background: rgba(11, 16, 32, 0.8);
+  border-bottom: 1px solid rgba(58, 65, 74, 0.5);
+}
+
+.navLink {
+  color: #9ca3af; /* Gray-400 */
+}
+
+.navLink:hover {
+  color: #e5e7eb; /* Gray-200 */
+}
+
+.navLinkPrimary {
+  background: linear-gradient(135deg, #4573df, #58a6ff);
+  color: white;
+}
+
+.footer {
+  background: rgba(11, 16, 32, 0.8);
+  border-top: 1px solid rgba(58, 65, 74, 0.5);
+}
+
+.footerLinks a {
+  color: #9ca3af; /* Gray-400 */
+}
+
+.footerLinks a:hover {
+  color: #58a6ff;
+}
+
+.mobileNavMenu {
+  background: rgba(11, 16, 32, 0.95);
+  border: 1px solid rgba(58, 65, 74, 0.5);
+}

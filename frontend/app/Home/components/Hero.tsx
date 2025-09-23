@@ -77,6 +77,13 @@ const Hero: React.FC = () => {
           <StatItem value={45} label="Countries Served" />
         </div>
       </div>
+      
+      {/* Add animated background elements for 2025 design trends */}
+      <div className={commonStyles.animatedBackground}>
+        <div className={commonStyles.blob1}></div>
+        <div className={commonStyles.blob2}></div>
+        <div className={commonStyles.gridLines}></div>
+      </div>
     </div>
   );
 };

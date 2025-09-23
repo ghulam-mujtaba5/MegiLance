@@ -1,120 +1,83 @@
-.root {
-  background-color: #f9fafb;
+/* AI-HINT: Light theme styles for the Pricing page. Defines colors for text, backgrounds, borders, and interactive elements in light mode. */
+
+/* --- Page & Header --- */
+.page { 
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(69, 115, 223, 0.08), transparent 60%),
+              radial-gradient(800px 400px at 100% 0%, rgba(255, 152, 0, 0.07), transparent 60%),
+              linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
 }
 
-.header h1 {
-  color: #111827;
-}
+.title { color: #1f2937; }
+.subtitle { color: #4b5563; }
 
-.headerDescription {
-  color: #4b5563;
+/* --- Billing Toggle --- */
+.toggleContainer {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(224, 224, 224, 0.5);
 }
 
 .toggleLabel {
-  color: var(--color-gray-600);
+  color: #4b5563;
 }
 
 .toggleLabelActive {
-  color: var(--color-gray-900);
+  color: #1f2937;
+  font-weight: 600;
 }
 
 .toggleSlider {
-  background-color: var(--color-gray-200);
+  background-color: #e5e7eb;
 }
 
 .toggleSlider:before {
-  background-color: var(--color-white);
-}
-
-.toggleCheckbox:checked + .toggleSlider {
-  background-color: var(--color-primary);
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .toggleDiscount {
-  color: var(--color-green-500);
-  background-color: var(--color-green-100);
+  color: #065f46;
+  background-color: #d1fae5;
 }
 
-.pricingCard {
-  background-color: var(--color-white);
-  border-color: var(--color-gray-200);
-  box-shadow: var(--shadow-md);
+/* --- Pricing Cards --- */
+.card {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(224, 224, 224, 0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-.pricingCard:hover {
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-gray-300);
-}
-
-.popular {
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-lg);
+.card:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(69, 115, 223, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .popularBadge {
-  background-color: var(--color-primary);
-  color: var(--color-white);
-  border-color: var(--color-primary);
+  background: linear-gradient(135deg, #4573df, #58a6ff);
+  color: #ffffff;
+  border-color: rgba(69, 115, 223, 0.3);
+  box-shadow: 0 4px 15px rgba(69, 115, 223, 0.2);
 }
 
 .cardIcon {
-  background-color: var(--color-primary-lightest);
-  color: var(--color-primary);
+  background-color: rgba(238, 242, 255, 0.8);
+  color: #4573df;
+  border: 1px solid rgba(224, 224, 224, 0.3);
 }
 
-.cardTier {
-  color: var(--color-gray-900);
+.cardTier { color: #1f2937; }
+.priceAmount { color: #1f2937; }
+.pricePeriod { color: #6b7280; }
+.cardDescription { color: #4b5563; }
+
+.features {
+  border-color: rgba(224, 224, 224, 0.5);
 }
 
-.priceCustom {
-  color: var(--color-gray-900);
-}
+.featureItem { color: #374151; }
+.featureIcon { color: #4573df; }
 
-.priceAmount {
-  color: var(--color-gray-900);
-}
-
-.pricePeriod {
-  color: var(--color-gray-500);
-}
-
-.cardDescription {
-  color: var(--color-gray-600);
-}
-
-.featureItem {
-  color: var(--color-gray-700);
-}
-
-.featureIcon {
-  color: var(--color-primary);
-}
-
-.faqHeaderTitle {
-  color: var(--color-gray-900);
-}
-
-.faqHeaderText {
-  color: var(--color-gray-600);
-}
-
-.faqList,
-.faqItem {
-  border-color: var(--color-gray-200);
-}
-
-.faqQuestion {
-  color: var(--color-gray-900);
-}
-
-.faqQuestion:hover {
-  color: var(--color-primary);
-}
-
-.faqChevron {
-  color: var(--color-gray-500);
-}
-
-.faqAnswer p {
-  color: var(--color-gray-600);
-}
+/* --- FAQ Section --- */
+.faqTitle { color: #1f2937; }
+.faqSubtitle { color: #4b5563; }
+.faqList { border-color: rgba(224, 224, 224, 0.5); }
