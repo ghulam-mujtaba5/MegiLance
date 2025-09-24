@@ -61,7 +61,7 @@ export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }
 
   return (
-    <Suspense fallback={children}>
+    <Suspense fallback={null}>
       <AnalyticsContent>
         {children}
       </AnalyticsContent>

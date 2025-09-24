@@ -1,8 +1,6 @@
 // @AI-HINT: AppChrome is the top-level layout component. It intelligently renders the correct 'chrome' (header/footer) based on the route, distinguishing between public marketing pages and internal application portals.
-'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
 
 import PublicHeader from '@/app/components/Layout/PublicHeader/PublicHeader';
 import PublicFooter from '@/app/components/Layout/PublicFooter/PublicFooter';
@@ -13,35 +11,42 @@ import InstallAppBanner from '@/app/components/PWA/InstallAppBanner/InstallAppBa
 import UpdateNotification from '@/app/components/PWA/UpdateNotification/UpdateNotification';
 import PageTransition from '@/app/components/Transitions/PageTransition';
 
-/**
- * Determines if a given route should have minimal chrome.
- * This applies to authentication pages and the root of all authenticated portals,
- * which manage their own internal layouts, sidebars, and headers.
- * @param pathname The current URL pathname.
- * @returns {boolean} True if the route should be chrome-less.
- */
-function isPortalOrAuthRoute(pathname: string | null | undefined): boolean {
-  if (!pathname) return false; 
+// Separate client component for the logic that uses hooks
+const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [pathname, setPathname] = React.useState<string | null>(null);
+  
+  React.useEffect(() => {
+    // Simple pathname detection
+    setPathname(window.location.pathname);
+  }, []);
 
-  const normalizedPath = pathname.toLowerCase().replace(/\/$/, '');
+  /**
+   * Determines if a given route should have minimal chrome.
+   * This applies to authentication pages and the root of all authenticated portals,
+   * which manage their own internal layouts, sidebars, and headers.
+   * @param pathname The current URL pathname.
+   * @returns {boolean} True if the route should be chrome-less.
+   */
+  function isPortalOrAuthRoute(pathname: string | null | undefined): boolean {
+    if (!pathname) return false; 
 
-  const portalOrAuthRoots = [
-    // Standalone auth pages
-    '/login',
-    '/signup',
-    '/forgot-password',
-    '/reset-password',
-    // Root of authenticated portals
-    '/admin',
-    '/client',
-    '/freelancer',
-  ];
+    const normalizedPath = pathname.toLowerCase().replace(/\/$/, '');
 
-  return portalOrAuthRoots.some(root => normalizedPath === root || normalizedPath.startsWith(`${root}/`));
-}
+    const portalOrAuthRoots = [
+      // Standalone auth pages
+      '/login',
+      '/signup',
+      '/forgot-password',
+      '/reset-password',
+      // Root of authenticated portals
+      '/admin',
+      '/client',
+      '/freelancer',
+    ];
 
-export default function AppChrome({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+    return portalOrAuthRoots.some(root => normalizedPath === root || normalizedPath.startsWith(`${root}/`));
+  }
+
   const isMinimalChrome = isPortalOrAuthRoute(pathname);
 
   // For portal or auth routes, we render a minimal shell.
@@ -81,4 +86,11 @@ export default function AppChrome({ children }: { children: React.ReactNode }) {
       <UpdateNotification />
     </div>
   );
-}
+};
+
+// Server component
+const AppChrome: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <AppChromeClient>{children}</AppChromeClient>;
+};
+
+export default AppChrome;
