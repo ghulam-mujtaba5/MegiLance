@@ -1,10 +1,6 @@
 /* @AI-HINT: Dark theme styles for the AIShowcaseCard, defining colors for a sleek, modern look. */
 
 .card {
-  --color-primary: #4573df;
-  --color-brand-accent-light: #fbbf24;
-  --color-brand-accent-strong: #d97706;
-  
   background: #111827;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
 }
@@ -28,7 +24,7 @@
 }
 
 .card:hover .iconWrapper {
-  background-color: var(--color-primary);
+  background-color: var(--primary-4573df);
   color: #ffffff;
 }
 
@@ -51,5 +47,5 @@
 }
 
 .learnMore:hover {
-  color: var(--color-brand-accent-light);
+  color: #fbbf24;
 }

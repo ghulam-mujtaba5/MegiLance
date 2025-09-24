@@ -1,10 +1,6 @@
 /* @AI-HINT: Light theme styles for the AIShowcaseCard, defining colors for a clean, professional look. */
 
 .card {
-  --color-primary: #4573df;
-  --color-brand-accent-light: #fbbf24;
-  --color-brand-accent-strong: #d97706;
-  
   background: #ffffff;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
@@ -23,12 +19,12 @@
 
 .iconWrapper {
   background-color: #f3f4f6;
-  color: var(--color-primary);
+  color: var(--primary-4573df);
   border: 1px solid #e5e7eb;
 }
 
 .card:hover .iconWrapper {
-  background-color: var(--color-primary);
+  background-color: var(--primary-4573df);
   color: #ffffff;
 }
 
@@ -51,5 +47,7 @@
 }
 
 .learnMore:hover {
-  color: var(--color-brand-accent-strong);
+  color: #d97706;
 }
+
+
