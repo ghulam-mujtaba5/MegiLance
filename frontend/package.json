@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_TELEMETRY_DISABLED=1 TAILWIND_DISABLE_OPTIMISTIC=true next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest --verbose"
@@ -14,9 +14,6 @@
     "@hookform/resolvers": "^5.2.1",
     "@radix-ui/react-slider": "^1.3.5",
     "@radix-ui/react-slot": "^1.2.3",
-    "@tailwindcss/postcss": "^4.1.11",
-    "@types/recharts": "^1.8.29",
-    "@types/three": "^0.179.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.12",
