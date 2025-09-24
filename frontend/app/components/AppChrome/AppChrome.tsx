@@ -1,5 +1,7 @@
 // @AI-HINT: AppChrome is the top-level layout component. It intelligently renders the correct 'chrome' (header/footer) based on the route, distinguishing between public marketing pages and internal application portals.
 
+'use client';
+
 import React from 'react';
 
 import PublicHeader from '@/app/components/Layout/PublicHeader/PublicHeader';
