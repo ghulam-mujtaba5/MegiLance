@@ -1,6 +1,13 @@
 // @AI-HINT: Dedicated /Home route (optional) reusing Home component for deep linking.
 import type { Metadata } from 'next';
-import Home from './Home';
+import dynamic from 'next/dynamic';
+import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
+
+// Dynamically import the Home component with SSR disabled
+const Home = dynamic(() => import('./Home'), {
+  ssr: false,
+  loading: () => <Skeleton className="w-full h-96" />
+});
 
 export const metadata: Metadata = {
   title: 'Home – MegiLance Platform',
