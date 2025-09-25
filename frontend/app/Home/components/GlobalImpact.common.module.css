@@ -126,8 +126,9 @@
     padding: 4rem 0;
   }
 
-  .container {
-    padding: 0 1rem;
+  .globalImpactContainer {
+    padding: 0 var(--spacing-4);
+    gap: var(--spacing-16);
   }
 
   .statsGrid {
@@ -139,24 +140,6 @@
     gap: 1.5rem;
   }
 }
-
-/* --- Animations --- */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
-}
-
-/* --- Map locations --- */
-.mapDotPakistan { top: 42%; left: 68%; }
-.mapDotUsa { top: 38%; left: 25%; }
-.mapDotUk { top: 28%; left: 48%; }
-.mapDotAustralia { top: 75%; left: 85%; }
 
 /* --- Story Styles --- */
 .story {
@@ -231,19 +214,6 @@
   align-self: flex-start;
 }
 
-/* --- Animations --- */
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
-}
-
-/* --- Responsive Design --- */
 @media (max-width: 1024px) {
   .mission {
     gap: var(--spacing-8);

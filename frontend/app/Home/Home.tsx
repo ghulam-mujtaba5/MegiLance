@@ -28,50 +28,52 @@ const Home: React.FC = () => {
   return (
     <div className={cn(commonStyles.homePage, themeStyles.homePage)}>
       <AnimatedBackground />
-      <Hero />
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <TrustIndicators />
+      <div className={commonStyles.pageContent}>
+        <Hero />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <TrustIndicators />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <Features />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <Features />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <HowItWorks />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <HowItWorks />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <AIShowcase />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <AIShowcase />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <BlockchainShowcase />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <BlockchainShowcase />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <ProductScreenshots />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <ProductScreenshots />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <GlobalImpact />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <GlobalImpact />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <Testimonials />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <Testimonials />
+          </div>
         </div>
-      </div>
-      <div className={commonStyles.homeSection}>
-        <div className={commonStyles.sectionContainer}>
-          <CTA />
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <CTA />
+          </div>
         </div>
       </div>
     </div>

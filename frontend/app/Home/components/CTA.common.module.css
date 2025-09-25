@@ -27,20 +27,21 @@
   overflow: hidden;
 }
 
+/* Simplified shine effect for better performance */
 .shine {
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background-size: 200% 200%;
-  animation: shineAnimation 15s linear infinite;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shineAnimation 8s linear infinite;
   z-index: 0;
 }
 
 @keyframes shineAnimation {
-  0% { transform: translate(10%, 10%) rotate(0deg); }
-  100% { transform: translate(-10%, -10%) rotate(360deg); }
+  0% { transform: translate(-10%, -10%) rotate(0deg); }
+  100% { transform: translate(10%, 10%) rotate(360deg); }
 }
 
 .title {
@@ -50,6 +51,8 @@
   line-height: 1.2;
   letter-spacing: -1.5px;
   margin-bottom: 24px;
+  position: relative;
+  z-index: 2;
 }
 
 .subtitle {
@@ -58,12 +61,16 @@
   line-height: 1.7;
   max-width: 680px;
   margin: 0 auto 48px;
+  position: relative;
+  z-index: 2;
 }
 
 .ctaButton {
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+  z-index: 2;
 }
 
 .buttonIcon {
