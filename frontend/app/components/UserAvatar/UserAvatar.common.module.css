@@ -12,6 +12,17 @@
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
+  /* Ensure sufficient touch target size */
+  min-width: 32px;
+  min-height: 32px;
+}
+
+/* High contrast focus indicator for forced colors mode */
+@media (forced-colors: active) {
+  .userAvatar:focus {
+    outline: 2px solid highlight;
+    outline-offset: 2px;
+  }
 }
 
 .userAvatar::before {
@@ -69,6 +80,9 @@
   position: relative;
   z-index: 1;
   transition: transform 0.3s ease;
+  /* Optimize image rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 .userAvatar:hover .userAvatarImage {
@@ -80,6 +94,8 @@
   z-index: 1;
   color: var(--color-primary-700);
   transition: all 0.3s ease;
+  /* Ensure text has sufficient contrast */
+  line-height: 1.2;
 }
 
 .userAvatar:hover span {

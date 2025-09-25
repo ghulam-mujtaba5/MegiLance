@@ -1,10 +1,11 @@
-/* @AI-HINT: Provides theme-agnostic structural styles for the UpdateNotification. All colors are defined via CSS variables in the light/dark modules, which are then applied here. */
+/* @AI-HINT: Provides theme-agnostic structural styles for the OfflineIndicator. All colors are defined via CSS variables in the light/dark modules, which are then applied here. */
 
-.updateNotification {
+.offlineIndicator {
   position: fixed;
   top: var(--spacing-4);
+  left: var(--spacing-4);
   right: var(--spacing-4);
-  z-index: 2000; /* Higher than other elements */
+  z-index: 1500;
   /* Optimize rendering */
   contain: layout style paint;
 }
@@ -12,21 +13,26 @@
 .content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-4);
-  padding: var(--spacing-3) var(--spacing-5);
+  gap: var(--spacing-3);
+  padding: var(--spacing-3) var(--spacing-4);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
-  background-color: var(--notification-bg-color);
-  border: 1px solid var(--notification-border-color);
+  background-color: var(--offline-bg-color);
+  border: 1px solid var(--offline-border-color);
   transition: background-color 0.2s, border-color 0.2s;
   /* Ensure sufficient touch target size */
   min-height: 44px;
 }
 
+.icon {
+  flex-shrink: 0;
+  color: var(--offline-icon-color);
+}
+
 .text {
   margin: 0;
   font-weight: var(--font-weight-medium);
-  color: var(--notification-text-color);
+  color: var(--offline-text-color);
   transition: color 0.2s;
   /* Ensure text has sufficient contrast and readability */
   line-height: 1.4;
@@ -34,15 +40,15 @@
 
 /* Responsive design for mobile */
 @media (max-width: 768px) {
-  .updateNotification {
+  .offlineIndicator {
     top: var(--spacing-3);
-    right: var(--spacing-3);
     left: var(--spacing-3);
+    right: var(--spacing-3);
   }
   
   .content {
     padding: var(--spacing-3);
-    gap: var(--spacing-3);
+    gap: var(--spacing-2);
   }
   
   .text {
@@ -57,6 +63,10 @@
   }
   
   .text {
+    color: highlighttext;
+  }
+  
+  .icon {
     color: highlighttext;
   }
 }

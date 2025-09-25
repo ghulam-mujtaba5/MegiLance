@@ -1,0 +1,167 @@
+/* @AI-HINT: Common, theme-agnostic styles for the PieChart component with enhanced 2025 design trends. */
+
+.pieChartWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  /* Ensure sufficient spacing for touch targets */
+  margin-bottom: var(--spacing-4);
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  /* Ensure title has sufficient contrast and readability */
+  line-height: 1.4;
+}
+
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.chartContainer.size-sm {
+  max-width: 300px;
+}
+
+.chartContainer.size-md {
+  max-width: 400px;
+}
+
+.chartContainer.size-lg {
+  max-width: 500px;
+}
+
+.chartWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+}
+
+.slice {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.sliceHovered {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.percentageText {
+  font-size: 0.75rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  /* Ensure sufficient touch target size */
+  min-height: 44px;
+}
+
+.legendItem:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.legendItem:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.legendColor {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+}
+
+.legendLabel {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  /* Ensure legend label has sufficient contrast and readability */
+  line-height: 1.4;
+}
+
+.legendValue {
+  font-size: 0.875rem;
+  font-weight: 600;
+  /* Ensure legend value has sufficient contrast and readability */
+  line-height: 1.4;
+}
+
+.tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.tooltipColor {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tooltipLabel {
+  font-weight: 600;
+  font-size: 0.875rem;
+  /* Ensure tooltip label has sufficient contrast and readability */
+  line-height: 1.4;
+}
+
+.tooltipValue {
+  font-size: 0.875rem;
+  /* Ensure tooltip value has sufficient contrast and readability */
+  line-height: 1.4;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .chartContainer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .legend {
+    width: 200px;
+  }
+}

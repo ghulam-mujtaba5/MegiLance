@@ -6,6 +6,8 @@
   width: 100%;
   position: relative;
   isolation: isolate;
+  /* Ensure sufficient spacing for touch targets */
+  margin-bottom: var(--spacing-4);
 }
 
 .inputWrapper::before {
@@ -35,6 +37,8 @@
   display: block;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  /* Ensure label has sufficient contrast and readability */
+  line-height: 1.4;
 }
 
 .inputLabel::after {
@@ -78,6 +82,8 @@
   will-change: transform, box-shadow;
   position: relative;
   z-index: 1;
+  /* Ensure sufficient touch target size */
+  min-height: 44px;
 }
 
 .inputField::placeholder {
@@ -100,6 +106,16 @@
   box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
   transform: translateY(-2px);
 }
+
+/* High contrast focus indicator for forced colors mode */
+@media (forced-colors: active) {
+  .inputField:focus {
+    outline: 2px solid highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
 @supports (color: color-mix(in oklab, white, black)) {
   .inputField:focus {
     /* Enhanced ring using brand primary via color-mix */
@@ -118,6 +134,7 @@
   font-size: var(--font-size-lg);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
+  /* Ensure icons have sufficient contrast */
 }
 
 .inputIcon:hover {
@@ -130,6 +147,35 @@
 
 .inputIconAfter {
   right: var(--spacing-4);
+}
+
+/* Ensure password toggle button is accessible */
+.inputIcon:has(button) {
+  pointer-events: auto;
+}
+
+.inputIcon button {
+  pointer-events: auto;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: var(--spacing-1);
+  border-radius: var(--border-radius-md);
+  transition: background-color 0.2s ease;
+  min-height: 32px;
+  min-width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputIcon button:hover {
+  background-color: var(--input-icon-hover-bg);
+}
+
+.inputIcon button:focus {
+  outline: 2px solid var(--input-border-focus);
+  outline-offset: 2px;
 }
 
 .inputFieldWithIconBefore {
@@ -160,6 +206,15 @@
   align-items: center;
   gap: 0.5rem;
   animation: fadeInUp 0.3s ease-out;
+  /* Ensure error message has sufficient contrast and readability */
+  line-height: 1.4;
+}
+
+/* High contrast mode support for error messages */
+@media (forced-colors: active) {
+  .errorMessage {
+    color: red;
+  }
 }
 
 .helpText {
@@ -167,6 +222,15 @@
   margin-top: 0.5rem;
   color: var(--text-secondary);
   animation: fadeInUp 0.3s ease-out;
+  /* Ensure help text has sufficient contrast and readability */
+  line-height: 1.4;
+}
+
+/* High contrast mode support for help text */
+@media (forced-colors: active) {
+  .helpText {
+    color: graytext;
+  }
 }
 
 .inputWrapperDisabled {
@@ -304,6 +368,8 @@
   text-align: right;
   margin-top: 0.25rem;
   transition: color 0.2s ease;
+  /* Ensure character counter has sufficient contrast */
+  line-height: 1.4;
 }
 
 .characterCounter.warning {
@@ -312,6 +378,17 @@
 
 .characterCounter.error {
   color: var(--error-e81123);
+}
+
+/* High contrast mode support for character counter */
+@media (forced-colors: active) {
+  .characterCounter.warning {
+    color: orange;
+  }
+  
+  .characterCounter.error {
+    color: red;
+  }
 }
 
 /* Input group for addons */
@@ -331,6 +408,8 @@
   font-size: var(--font-size-base);
   white-space: nowrap;
   transition: all 0.2s ease;
+  /* Ensure sufficient touch target size */
+  min-height: 44px;
 }
 
 .inputGroupAddon:first-child {
@@ -353,4 +432,13 @@
 
 .inputGroup .inputField:not(:last-child) {
   border-radius: var(--border-radius-xl) 0 0 var(--border-radius-xl);
+}
+
+/* High contrast mode support for input groups */
+@media (forced-colors: active) {
+  .inputGroupAddon {
+    border-color: buttonText;
+    color: buttonText;
+    background: buttonFace;
+  }
 }

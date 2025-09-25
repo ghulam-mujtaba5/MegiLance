@@ -46,17 +46,21 @@ const AnimatedBackground: React.FC = () => {
     // Initialize particles
     const initParticles = () => {
       particlesRef.current = [];
-      const particleCount = Math.min(100, Math.floor(window.innerWidth / 10));
+      // Reduce particle count for a cleaner look
+      const particleCount = Math.min(30, Math.floor(window.innerWidth / 20));
       
       for (let i = 0; i < particleCount; i++) {
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * 3 + 1,
-          speedX: (Math.random() - 0.5) * 0.5,
-          speedY: (Math.random() - 0.5) * 0.5,
-          color: theme === 'dark' ? 'rgba(69, 115, 223, 0.3)' : 'rgba(69, 115, 223, 0.2)',
-          opacity: Math.random() * 0.5 + 0.1
+          // Smaller particles
+          size: Math.random() * 2 + 0.5,
+          // Slower movement
+          speedX: (Math.random() - 0.5) * 0.2,
+          speedY: (Math.random() - 0.5) * 0.2,
+          color: theme === 'dark' ? 'rgba(69, 115, 223, 0.2)' : 'rgba(69, 115, 223, 0.1)',
+          // More consistent opacity
+          opacity: Math.random() * 0.3 + 0.1
         });
       }
     };
@@ -68,11 +72,11 @@ const AnimatedBackground: React.FC = () => {
       if (!ctx) return;
       
       // Clear canvas with a semi-transparent fill for trail effect
-      ctx.fillStyle = theme === 'dark' ? 'rgba(15, 23, 42, 0.1)' : 'rgba(248, 250, 252, 0.1)';
+      ctx.fillStyle = theme === 'dark' ? 'rgba(15, 23, 42, 0.05)' : 'rgba(248, 250, 252, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Update and draw particles
-      particlesRef.current.forEach((particle, index) => {
+      // Update and draw particles (removed connecting lines for cleaner look)
+      particlesRef.current.forEach((particle) => {
         // Update position
         particle.x += particle.speedX;
         particle.y += particle.speedY;
@@ -87,27 +91,6 @@ const AnimatedBackground: React.FC = () => {
         ctx.fillStyle = particle.color;
         ctx.globalAlpha = particle.opacity;
         ctx.fill();
-        
-        // Connect nearby particles
-        particlesRef.current.forEach((otherParticle, otherIndex) => {
-          if (index !== otherIndex) {
-            const distance = Math.sqrt(
-              Math.pow(particle.x - otherParticle.x, 2) + 
-              Math.pow(particle.y - otherParticle.y, 2)
-            );
-            
-            if (distance < 100) {
-              ctx.beginPath();
-              ctx.moveTo(particle.x, particle.y);
-              ctx.lineTo(otherParticle.x, otherParticle.y);
-              ctx.strokeStyle = theme === 'dark' ? 
-                `rgba(69, 115, 223, ${0.1 * (1 - distance/100)})` : 
-                `rgba(69, 115, 223, ${0.05 * (1 - distance/100)})`;
-              ctx.lineWidth = 0.5;
-              ctx.stroke();
-            }
-          }
-        });
       });
       
       ctx.globalAlpha = 1;

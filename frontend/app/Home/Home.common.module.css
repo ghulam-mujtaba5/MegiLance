@@ -150,6 +150,7 @@
   display: none;
 }
 
+/* Simplified background with just a subtle gradient */
 .homePage::before {
   content: '';
   position: fixed;
@@ -158,8 +159,7 @@
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(ellipse at top left, rgba(69, 115, 223, 0.05) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(255, 152, 0, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at top center, rgba(69, 115, 223, 0.02) 0%, transparent 30%);
   z-index: -1;
   pointer-events: none;
 }
@@ -176,18 +176,7 @@
   overflow: hidden;
 }
 
-.homeSection::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(69, 115, 223, 0.03) 0%, transparent 20%),
-    radial-gradient(circle at 90% 80%, rgba(255, 152, 0, 0.03) 0%, transparent 20%);
-  pointer-events: none;
-}
+/* Removed complex background patterns for a cleaner look */
 
 /* @AI-HINT: Scrollbar hidden only on Home by applying scrollbar-hide to the page wrapper (.homePage). */
 

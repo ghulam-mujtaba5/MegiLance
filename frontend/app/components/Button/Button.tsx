@@ -61,6 +61,9 @@ const Button = <C extends React.ElementType = 'button'>({
     onClick?.(e);
   };
 
+  // Generate accessible label for icon-only buttons
+  const accessibleLabel = (!children && (iconBefore || iconAfter)) ? props['aria-label'] || props.title : undefined;
+
   return (
     <Component
       className={cn(
@@ -83,14 +86,15 @@ const Button = <C extends React.ElementType = 'button'>({
       )}
       disabled={isLoading || props.disabled}
       onClick={handleClick}
+      aria-label={accessibleLabel}
       {...props}
     >
       {isLoading && <Loader2 className={cn(commonStyles.spinner, themeStyles.spinner, commonStyles.loadingIcon)} />}
-      {iconBefore && !isLoading && <span className={commonStyles.iconBefore}>{iconBefore}</span>}
+      {iconBefore && !isLoading && <span className={commonStyles.iconBefore} aria-hidden="true">{iconBefore}</span>}
       <span className={cn(commonStyles.buttonText, themeStyles.buttonText, isLoading && commonStyles.loadingText)}>
         {children}
       </span>
-      {iconAfter && !isLoading && <span className={commonStyles.iconAfter}>{iconAfter}</span>}
+      {iconAfter && !isLoading && <span className={commonStyles.iconAfter} aria-hidden="true">{iconAfter}</span>}
     </Component>
   );
 };

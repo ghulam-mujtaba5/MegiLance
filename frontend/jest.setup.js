@@ -1,0 +1,84 @@
+// @AI-HINT: Jest setup file that runs before each test.
+// This file sets up the testing environment, including:
+// - Mocking modules that aren't available in the test environment
+// - Setting up global test utilities
+// - Initializing mock service workers for API mocking
+
+import '@testing-library/jest-dom';
+
+// Mock Next.js router
+jest.mock('next/router', () => ({
+  useRouter() {
+    return {
+      route: '/',
+      pathname: '',
+      query: {},
+      asPath: '',
+      push: jest.fn(),
+      replace: jest.fn(),
+      reload: jest.fn(),
+      back: jest.fn(),
+      prefetch: jest.fn(),
+      beforePopState: jest.fn(),
+      events: {
+        on: jest.fn(),
+        off: jest.fn(),
+        emit: jest.fn(),
+      },
+    };
+  },
+}));
+
+// Mock Next.js image component
+jest.mock('next/image', () => {
+  const MockImage = ({ src, alt, ...props }) => {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={src} alt={alt} {...props} />;
+  };
+  
+  MockImage.displayName = 'NextImageMock';
+  return MockImage;
+});
+
+// Mock Next.js head component
+jest.mock('next/head', () => {
+  return ({ children }) => {
+    return <>{children}</>;
+  };
+});
+
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// Mock IntersectionObserver
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  
+  disconnect() {
+    return null;
+  }
+  
+  observe() {
+    return null;
+  }
+  
+  takeRecords() {
+    return null;
+  }
+  
+  unobserve() {
+    return null;
+  }
+};

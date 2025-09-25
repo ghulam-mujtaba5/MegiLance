@@ -374,60 +374,265 @@
   border: 0;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .chartsContainer {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .container {
-    padding: var(--space-4) var(--space-5);
+/* Touch target improvements for mobile */
+@media (max-width: 767px) {
+  .quickAction,
+  .chartAction,
+  .statCard,
+  .activityItem {
+    min-height: 44px; /* Minimum touch target size */
   }
   
-  .title {
-    font-size: 2rem;
-  }
-  
-  .subtitle {
-    font-size: 1.1rem;
-  }
-  
-  .welcomeBanner {
-    padding: 1.5rem;
-  }
-  
-  .welcomeBannerTitle {
-    font-size: 1.5rem;
-  }
-  
-  .statsGrid {
-    grid-template-columns: 1fr;
-  }
-  
-  .quickActions {
-    flex-direction: column;
-  }
-  
-  .quickAction {
+  /* Apply touch target improvements to buttons, links, and role="button" elements within the dashboard */
+  button:not(.button),
+  a:not(.button):not(.quickAction),
+  [role="button"]:not(.button) {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
   }
   
-  .mainContent {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .statIcon,
+  .activityIcon {
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 
-@media (max-width: 480px) {
-  .sectionHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+/* Mobile-first responsive design */
+.container {
+  padding: var(--space-4) var(--space-5);
+}
+
+.title {
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.welcomeBanner {
+  padding: 1.25rem;
+}
+
+.welcomeBannerTitle {
+  font-size: 1.375rem;
+  line-height: 1.3;
+}
+
+.welcomeBannerText {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.statsGrid {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.statCard {
+  padding: 1.25rem;
+}
+
+.statValue {
+  font-size: 1.75rem;
+}
+
+.mainContent {
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.quickActions {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quickAction {
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+}
+
+.chartsContainer {
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.chartCard {
+  padding: 1.25rem;
+}
+
+.activityItem {
+  padding: 0.875rem;
+  gap: 0.75rem;
+}
+
+.activityIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.activityTitle {
+  font-size: 0.9375rem;
+}
+
+.activityDescription {
+  font-size: 0.875rem;
+}
+
+.activityTime {
+  font-size: 0.75rem;
+}
+
+/* Tablet and larger */
+@media (min-width: 768px) {
+  .container {
+    padding: var(--space-6) var(--space-8);
+  }
+  
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.25rem;
+  }
+  
+  .welcomeBanner {
+    padding: 2rem;
+  }
+  
+  .welcomeBannerTitle {
+    font-size: 1.75rem;
+  }
+  
+  .welcomeBannerText {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .statCard {
+    padding: 1.5rem;
   }
   
   .statValue {
+    font-size: 2rem;
+  }
+  
+  .mainContent {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+  }
+  
+  .quickActions {
+    flex-direction: row;
+    gap: 1rem;
+  }
+  
+  .quickAction {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    justify-content: flex-start;
+  }
+  
+  .chartsContainer {
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .chartCard {
+    padding: 1.5rem;
+  }
+  
+  .activityItem {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .activityIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+  
+  .activityTitle {
+    font-size: 1rem;
+  }
+  
+  .activityDescription {
+    font-size: 0.9rem;
+  }
+  
+  .activityTime {
+    font-size: 0.8rem;
+  }
+}
+
+/* Desktop and larger */
+@media (min-width: 1024px) {
+  .mainContent {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+  }
+  
+  .subtitle {
+    font-size: 1.25rem;
+  }
+  
+  .welcomeBanner {
+    padding: 2rem;
+  }
+  
+  .welcomeBannerTitle {
     font-size: 1.75rem;
+  }
+  
+  .welcomeBannerText {
+    font-size: 1.1rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+  
+  .statValue {
+    font-size: 2rem;
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1400px) {
+  .container {
+    padding: var(--space-6) var(--space-10);
+  }
+  
+  .mainContent {
+    gap: 2.5rem;
+  }
+  
+  .statsGrid {
+    gap: 2rem;
   }
 }

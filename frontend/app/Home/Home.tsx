@@ -29,15 +29,51 @@ const Home: React.FC = () => {
     <div className={cn(commonStyles.homePage, themeStyles.homePage)}>
       <AnimatedBackground />
       <Hero />
-      <TrustIndicators />
-      <Features />
-      <HowItWorks />
-      <AIShowcase />
-      <BlockchainShowcase />
-      <ProductScreenshots />
-      <GlobalImpact />
-      <Testimonials />
-      <CTA />
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <TrustIndicators />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <Features />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <HowItWorks />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <AIShowcase />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <BlockchainShowcase />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <ProductScreenshots />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <GlobalImpact />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <Testimonials />
+        </div>
+      </div>
+      <div className={commonStyles.homeSection}>
+        <div className={commonStyles.sectionContainer}>
+          <CTA />
+        </div>
+      </div>
     </div>
   );
 };
