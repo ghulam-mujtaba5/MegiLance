@@ -1,39 +1,74 @@
-/* @AI-HINT: Dark theme styles for AIShowcase, defining colors for a sleek, high-contrast, modern look. Section background is transparent. */
+/* @AI-HINT: Dark theme styles for AIShowcase, defining colors for a sleek, high-contrast, modern look with enhanced visual effects. */
+
+.aiShowcase {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
 
 .backgroundGrid {
-    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(69, 115, 223, 0.1) 0%, transparent 15%),
+    radial-gradient(circle at 80% 30%, rgba(255, 152, 0, 0.1) 0%, transparent 15%),
+    radial-gradient(circle at 40% 80%, rgba(69, 115, 223, 0.07) 0%, transparent 15%);
 }
 
 .badge {
-  background-color: #1f2937;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
   color: #9ca3af;
   border: 1px solid #374151;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.badge:hover {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
 }
 
 .badgeIcon {
-    color: #a5b4fc;
+  color: #a5b4fc;
 }
 
 .title {
-  color: #f9fafb;
+  background: linear-gradient(90deg, #e0f2fe, #bae6fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
   color: #9ca3af;
 }
 
+.techStack {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(55, 65, 81, 0.7);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
 .techTitle {
-  color: #6b7280;
+  color: #e2e8f0;
 }
 
 .techLogo {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(55, 65, 81, 0.5);
   color: #9ca3af;
 }
 
 .techLogo:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(75, 85, 99, 0.7);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
   color: #ffffff;
 }
 
-.techLogo span {
-    color: #9ca3af;
+.techLogo svg {
+  color: #93c5fd;
+}
+
+.techLogo:hover svg {
+  color: #bfdbfe;
+}
+
+.techLogoName {
+  color: #cbd5e1;
 }

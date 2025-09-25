@@ -2,10 +2,10 @@
 
 'use client';
 
-import React, { useId, useState, useEffect } from 'react';
+import React, { useId, useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import commonStyles from './Input.common.module.css';
 import lightStyles from './Input.light.module.css';
 import darkStyles from './Input.dark.module.css';
@@ -22,6 +22,9 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   floatingLabel?: boolean;
   showPasswordToggle?: boolean;
   passwordStrength?: 'weak' | 'medium' | 'strong';
+  characterLimit?: number;
+  addonBefore?: React.ReactNode;
+  addonAfter?: React.ReactNode;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -37,6 +40,9 @@ const Input: React.FC<InputProps> = ({
   floatingLabel = false,
   showPasswordToggle = false,
   passwordStrength,
+  characterLimit,
+  addonBefore,
+  addonAfter,
   type = 'text',
   ...props
 }) => {
@@ -44,6 +50,7 @@ const Input: React.FC<InputProps> = ({
   const { theme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   
   if (!theme) {
     return null; // Don't render until theme is resolved
@@ -54,6 +61,15 @@ const Input: React.FC<InputProps> = ({
   const errorId = hasError ? `${id}-error` : undefined;
   const helpId = !hasError && helpText ? `${id}-help` : undefined;
   const inputType = type === 'password' && showPassword ? 'text' : type;
+  
+  // Character counter
+  const currentValueLength = (props.value as string)?.length || 0;
+  const showCharacterCounter = characterLimit && currentValueLength > 0;
+  const characterCounterClass = cn(
+    commonStyles.characterCounter,
+    currentValueLength > characterLimit! * 0.9 ? commonStyles.error : 
+    currentValueLength > characterLimit! * 0.7 ? commonStyles.warning : ''
+  );
 
   // Handle password toggle
   const togglePasswordVisibility = () => {
@@ -63,34 +79,63 @@ const Input: React.FC<InputProps> = ({
   // Determine if we should show the floating label effect
   const showFloatingLabel = floatingLabel && (isFocused || props.value || props.placeholder);
 
-  return (
-    <div
-      className={cn(
-        commonStyles.inputWrapper,
-        themeStyles.inputWrapper,
-        hasError && commonStyles.inputWrapperError,
-        hasError && themeStyles.inputWrapperError,
-        props.disabled && commonStyles.inputWrapperDisabled,
-        props.disabled && themeStyles.inputWrapperDisabled,
-        wrapperClassName,
-        fullWidth && commonStyles.inputWrapperFullWidth,
-        fullWidth && themeStyles.inputWrapperFullWidth,
-        floatingLabel && commonStyles.inputWrapperFloating,
-        isFocused && commonStyles.inputWrapperFocused
-      )}
-    >
-      {label && !hideLabel && (
-        <label 
-          htmlFor={id} 
-          className={cn(
-            commonStyles.inputLabel, 
-            themeStyles.inputLabel,
-            showFloatingLabel && commonStyles.floatingLabel
+  // Validation status icon
+  const renderValidationIcon = () => {
+    if (hasError) {
+      return <XCircle size={16} className={cn(commonStyles.inputIcon, themeStyles.inputIcon)} />;
+    }
+    if (props.value && (props.value as string).length > 0) {
+      return <CheckCircle size={16} className={cn(commonStyles.inputIcon, themeStyles.inputIcon)} />;
+    }
+    return null;
+  };
+
+  // Handle input group rendering
+  const renderInputGroup = () => {
+    if (addonBefore || addonAfter) {
+      return (
+        <div className={cn(commonStyles.inputGroup, themeStyles.inputGroup)}>
+          {addonBefore && (
+            <span className={cn(commonStyles.inputGroupAddon, themeStyles.inputGroupAddon)}>
+              {addonBefore}
+            </span>
           )}
-        >
-          {label}
-        </label>
-      )}
+          <input
+            ref={inputRef}
+            id={id}
+            type={inputType}
+            className={cn(
+              commonStyles.inputField,
+              themeStyles.inputField,
+              iconBefore && commonStyles.inputFieldWithIconBefore,
+              iconBefore && themeStyles.inputFieldWithIconBefore,
+              iconAfter && commonStyles.inputFieldWithIconAfter,
+              iconAfter && themeStyles.inputFieldWithIconAfter,
+              className
+            )}
+            aria-invalid={hasError ? 'true' : undefined}
+            aria-describedby={errorId ?? helpId}
+            aria-errormessage={errorId}
+            onFocus={(e) => {
+              setIsFocused(true);
+              props.onFocus?.(e);
+            }}
+            onBlur={(e) => {
+              setIsFocused(false);
+              props.onBlur?.(e);
+            }}
+            {...props}
+          />
+          {addonAfter && (
+            <span className={cn(commonStyles.inputGroupAddon, themeStyles.inputGroupAddon)}>
+              {addonAfter}
+            </span>
+          )}
+        </div>
+      );
+    }
+
+    return (
       <div className={cn(commonStyles.inputContainer, themeStyles.inputContainer)}>
         {iconBefore && (
           <span className={cn(
@@ -103,6 +148,7 @@ const Input: React.FC<InputProps> = ({
           </span>
         )}
         <input
+          ref={inputRef}
           id={id}
           type={inputType}
           className={cn(
@@ -152,7 +198,49 @@ const Input: React.FC<InputProps> = ({
             {iconAfter}
           </span>
         )}
+        {!iconAfter && !showPasswordToggle && renderValidationIcon() && (
+          <span className={cn(
+            commonStyles.inputIcon, 
+            themeStyles.inputIcon, 
+            commonStyles.inputIconAfter, 
+            themeStyles.inputIconAfter
+          )}>
+            {renderValidationIcon()}
+          </span>
+        )}
       </div>
+    );
+  };
+
+  return (
+    <div
+      className={cn(
+        commonStyles.inputWrapper,
+        themeStyles.inputWrapper,
+        hasError && commonStyles.inputWrapperError,
+        hasError && themeStyles.inputWrapperError,
+        props.disabled && commonStyles.inputWrapperDisabled,
+        props.disabled && themeStyles.inputWrapperDisabled,
+        wrapperClassName,
+        fullWidth && commonStyles.inputWrapperFullWidth,
+        fullWidth && themeStyles.inputWrapperFullWidth,
+        floatingLabel && commonStyles.inputWrapperFloating,
+        isFocused && commonStyles.inputWrapperFocused
+      )}
+    >
+      {label && !hideLabel && (
+        <label 
+          htmlFor={id} 
+          className={cn(
+            commonStyles.inputLabel, 
+            themeStyles.inputLabel,
+            showFloatingLabel && commonStyles.floatingLabel
+          )}
+        >
+          {label}
+        </label>
+      )}
+      {renderInputGroup()}
       {hasError && typeof error === 'string' && (
         <p id={errorId} className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>
           <AlertCircle size={16} />
@@ -162,6 +250,11 @@ const Input: React.FC<InputProps> = ({
       {!hasError && helpText && (
         <p id={helpId} className={cn(commonStyles.helpText, themeStyles.helpText)}>
           {helpText}
+        </p>
+      )}
+      {showCharacterCounter && (
+        <p className={characterCounterClass}>
+          {currentValueLength}/{characterLimit}
         </p>
       )}
       {passwordStrength && (

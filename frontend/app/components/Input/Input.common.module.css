@@ -1,10 +1,29 @@
-/* @AI-HINT: Common, theme-agnostic styles for the Input component. */
+/* @AI-HINT: Common, theme-agnostic styles for the Input component with enhanced 2025 design trends. */
 
 .inputWrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
   position: relative;
+  isolation: isolate;
+}
+
+.inputWrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius-xl);
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.inputWrapper:hover::before {
+  opacity: 1;
 }
 
 .inputLabel {
@@ -14,7 +33,23 @@
   color: var(--input-label-text);
   margin-bottom: var(--spacing-2);
   display: block;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.inputLabel::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--input-border-focus);
+  transition: width 0.3s ease;
+}
+
+.inputWrapperFocused .inputLabel::after {
+  width: 100%;
 }
 
 .inputContainer {
@@ -41,6 +76,8 @@
   appearance: none;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   will-change: transform, box-shadow;
+  position: relative;
+  z-index: 1;
 }
 
 .inputField::placeholder {
@@ -51,8 +88,8 @@
 .inputField:hover:not(:disabled) {
   border-color: var(--input-border-hover, var(--input-border));
   background-color: var(--input-bg-hover, var(--input-bg));
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
 }
 
 .inputField:focus {
@@ -61,7 +98,7 @@
   background-color: var(--input-bg-focus, var(--input-bg));
   /* Fallback ring */
   box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 @supports (color: color-mix(in oklab, white, black)) {
   .inputField:focus {
@@ -79,7 +116,12 @@
   transform: translateY(-50%);
   color: var(--input-icon);
   font-size: var(--font-size-lg);
-  transition: color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+}
+
+.inputIcon:hover {
+  transform: translateY(-50%) scale(1.1);
 }
 
 .inputIconBefore {
@@ -102,6 +144,7 @@
   border-color: var(--input-border-error);
   color: var(--input-text-error);
   box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.15);
+  animation: shake 0.5s ease-in-out;
 }
 
 .inputWrapperError .inputField:focus {
@@ -116,12 +159,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  animation: fadeInUp 0.3s ease-out;
 }
 
 .helpText {
   font-size: 0.875rem;
   margin-top: 0.5rem;
   color: var(--text-secondary);
+  animation: fadeInUp 0.3s ease-out;
 }
 
 .inputWrapperDisabled {
@@ -147,17 +192,24 @@
 }
 
 /* Floating label effect */
+.inputWrapperFloating {
+  --label-top: var(--spacing-3);
+  --label-left: var(--spacing-4);
+}
+
 .inputWrapperFloating .inputLabel {
   position: absolute;
-  top: var(--spacing-3);
-  left: var(--spacing-4);
+  top: var(--label-top);
+  left: var(--label-left);
   margin: 0;
   font-size: var(--font-size-sm);
   color: var(--input-placeholder-text);
   pointer-events: none;
   z-index: 1;
   transform-origin: left;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  padding: 0;
 }
 
 .inputWrapperFloating .inputFieldWithIconBefore ~ .inputLabel {
@@ -201,6 +253,15 @@
   }
 }
 
+/* Shake animation for error states */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
 /* Password strength indicator */
 .passwordStrength {
   height: 4px;
@@ -208,19 +269,88 @@
   margin-top: var(--spacing-2);
   transition: all 0.3s ease;
   background: var(--surface);
+  position: relative;
+  overflow: hidden;
 }
 
-.passwordStrength.weak {
+.passwordStrength::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  transition: width 0.5s ease, background 0.3s ease;
+}
+
+.passwordStrength.weak::after {
   width: 33%;
   background: var(--error-e81123);
 }
 
-.passwordStrength.medium {
+.passwordStrength.medium::after {
   width: 66%;
   background: var(--warning-f2c94c);
 }
 
-.passwordStrength.strong {
+.passwordStrength.strong::after {
   width: 100%;
   background: var(--success-27AE60);
+}
+
+/* Enhanced character counter */
+.characterCounter {
+  font-size: 0.75rem;
+  text-align: right;
+  margin-top: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.characterCounter.warning {
+  color: var(--warning-f2c94c);
+}
+
+.characterCounter.error {
+  color: var(--error-e81123);
+}
+
+/* Input group for addons */
+.inputGroup {
+  display: flex;
+  align-items: center;
+}
+
+.inputGroupAddon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--spacing-3);
+  background: var(--input-bg);
+  border: var(--border-width-md) solid var(--input-border);
+  color: var(--input-icon);
+  font-size: var(--font-size-base);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.inputGroupAddon:first-child {
+  border-right: 0;
+  border-radius: var(--border-radius-xl) 0 0 var(--border-radius-xl);
+}
+
+.inputGroupAddon:last-child {
+  border-left: 0;
+  border-radius: 0 var(--border-radius-xl) var(--border-radius-xl) 0;
+}
+
+.inputGroup .inputField {
+  flex: 1;
+}
+
+.inputGroup .inputField:not(:first-child) {
+  border-radius: 0 var(--border-radius-xl) var(--border-radius-xl) 0;
+}
+
+.inputGroup .inputField:not(:last-child) {
+  border-radius: var(--border-radius-xl) 0 0 var(--border-radius-xl);
 }

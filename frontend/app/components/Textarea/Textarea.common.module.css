@@ -1,10 +1,29 @@
-/* @AI-HINT: Common styles for the Textarea component. */
+/* @AI-HINT: Common styles for the Textarea component with enhanced 2025 design trends. */
 
 .textareaWrapper {
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
+  isolation: isolate;
+}
+
+.textareaWrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--border-radius-xl);
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.textareaWrapper:hover::before {
+  opacity: 1;
 }
 
 .textareaLabel {
@@ -14,7 +33,23 @@
   color: var(--input-label-text);
   margin-bottom: var(--spacing-2);
   display: block;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.textareaLabel::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--input-border-focus);
+  transition: width 0.3s ease;
+}
+
+.textareaWrapperFocused .textareaLabel::after {
+  width: 100%;
 }
 
 .textareaField {
@@ -37,6 +72,8 @@
   will-change: transform, box-shadow;
   min-height: 120px;
   resize: vertical;
+  position: relative;
+  z-index: 1;
 }
 
 .textareaField::placeholder {
@@ -47,8 +84,8 @@
 .textareaField:hover:not(:disabled) {
   border-color: var(--input-border-hover, var(--input-border));
   background-color: var(--input-bg-hover, var(--input-bg));
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
 }
 
 .textareaField:focus {
@@ -57,7 +94,7 @@
   background-color: var(--input-bg-focus, var(--input-bg));
   /* Fallback ring */
   box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 @supports (color: color-mix(in oklab, white, black)) {
   .textareaField:focus {
@@ -70,6 +107,7 @@
   border-color: var(--input-border-error);
   color: var(--input-text-error);
   box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.15);
+  animation: shake 0.5s ease-in-out;
 }
 
 .textareaWrapperError .textareaField:focus {
@@ -84,12 +122,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  animation: fadeInUp 0.3s ease-out;
 }
 
 .helpText {
   font-size: 0.875rem;
   margin-top: 0.5rem;
   color: var(--text-secondary);
+  animation: fadeInUp 0.3s ease-out;
 }
 
 .textareaWrapperDisabled {
@@ -111,17 +151,24 @@
 }
 
 /* Floating label effect */
+.textareaWrapperFloating {
+  --label-top: var(--spacing-3);
+  --label-left: var(--spacing-4);
+}
+
 .textareaWrapperFloating .textareaLabel {
   position: absolute;
-  top: var(--spacing-3);
-  left: var(--spacing-4);
+  top: var(--label-top);
+  left: var(--label-left);
   margin: 0;
   font-size: var(--font-size-sm);
   color: var(--input-placeholder-text);
   pointer-events: none;
   z-index: 1;
   transform-origin: left;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  padding: 0;
 }
 
 .textareaWrapperFloating .textareaField:focus ~ .textareaLabel,
@@ -156,11 +203,21 @@
   }
 }
 
+/* Shake animation for error states */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
 /* Character counter */
 .characterCounter {
   font-size: 0.875rem;
   margin-top: 0.5rem;
   text-align: right;
+  transition: color 0.2s ease;
 }
 
 .characterCounter.warning {
@@ -169,4 +226,76 @@
 
 .characterCounter.error {
   color: var(--error-e81123);
+}
+
+/* Enhanced textarea with auto-resize functionality */
+.textareaField.autoResize {
+  resize: none;
+  overflow: hidden;
+}
+
+/* Textarea with word count visualization */
+.wordCountVisualization {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.wordCountBar {
+  flex: 1;
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.wordCountFill {
+  height: 100%;
+  background: var(--primary-4573df);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.wordCountFill.warning {
+  background: var(--warning-f2c94c);
+}
+
+.wordCountFill.error {
+  background: var(--error-e81123);
+}
+
+/* Textarea with smart suggestions */
+.suggestionContainer {
+  position: relative;
+}
+
+.suggestionsList {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  margin-bottom: var(--spacing-2);
+}
+
+.suggestionItem {
+  padding: var(--spacing-2) var(--spacing-3);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.suggestionItem:hover,
+.suggestionItem.selected {
+  background: var(--input-bg-hover);
+}
+
+.suggestionItem strong {
+  font-weight: 600;
 }

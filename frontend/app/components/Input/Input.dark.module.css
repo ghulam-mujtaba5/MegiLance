@@ -1,40 +1,80 @@
-/* @AI-HINT: Dark theme styles for the Input component. */
+/* @AI-HINT: Dark theme styles for the Input component with enhanced visual effects. */
 
 .inputWrapper {
-  --input-bg: #1d2127;
-  --input-bg-hover: #272b32;
-  --input-bg-focus: #1d2127;
-  --input-bg-disabled: #2c323a;
-  --input-border: #3a414a;
-  --input-border-hover: #4a515a;
+  --input-bg: #1e293b;
+  --input-bg-hover: #334155;
+  --input-bg-focus: #1e293b;
+  --input-bg-disabled: #0f172a;
+  --input-border: #334155;
+  --input-border-hover: #475569;
   --input-border-focus: #4573df;
   --input-border-error: #e81123;
   --input-border-error-focus: #e81123;
-  --input-border-disabled: #3a414a;
-  --input-text: #f5f7fa;
-  --input-text-error: #ff8a8a;
-  --input-text-disabled: #a0aec0;
-  --input-placeholder-text: #9ca3af;
-  --input-icon: #a0aec0;
-  --input-label-text: #cbd5e0;
+  --input-border-disabled: #334155;
+  --input-text: #f1f5f9;
+  --input-text-error: #fecaca;
+  --input-text-disabled: #64748b;
+  --input-placeholder-text: #94a3b8;
+  --input-icon: #94a3b8;
+  --input-label-text: #cbd5e1;
 }
 
 .inputField {
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  border: 1px solid var(--input-border);
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
 .inputField:hover:not(:disabled) {
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  border: 1px solid var(--input-border-hover);
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
 }
 
 .inputField:focus {
-  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.3);
+  box-shadow: 0 0 0 4px rgba(69, 115, 223, 0.3);
+  border: 1px solid var(--input-border-focus);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
 }
 
 .inputWrapperError .inputField {
-  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.2);
+  box-shadow: 0 0 0 4px rgba(232, 17, 35, 0.2);
+  border: 1px solid var(--input-border-error);
 }
 
 .inputWrapperError .inputField:focus {
-  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.3);
+  box-shadow: 0 0 0 4px rgba(232, 17, 35, 0.3);
+  border: 1px solid var(--input-border-error-focus);
+}
+
+.inputIcon {
+  color: var(--input-icon);
+}
+
+.inputWrapperDisabled .inputField {
+  background-color: var(--input-bg-disabled);
+  color: var(--input-text-disabled);
+  border-color: var(--input-border-disabled);
+}
+
+.inputGroupAddon {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  border: 1px solid var(--input-border);
+  color: var(--input-icon);
+}
+
+.inputGroupAddon:first-child {
+  border-right: 0;
+}
+
+.inputGroupAddon:last-child {
+  border-left: 0;
+}
+
+.inputGroup .inputField:not(:first-child) {
+  border-left: 0;
+}
+
+.inputGroup .inputField:not(:last-child) {
+  border-right: 0;
 }

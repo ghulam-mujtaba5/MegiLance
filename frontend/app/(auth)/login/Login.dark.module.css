@@ -28,4 +28,10 @@
   --color-error: #ff8a8a;
   --error-bg: rgba(232, 17, 35, 0.15);
   --error-border: rgba(232, 17, 35, 0.3);
+  
+  /* Glassmorphism effect */
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(55, 65, 81, 0.5);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-backdrop: blur(12px);
 }

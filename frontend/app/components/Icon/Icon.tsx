@@ -25,6 +25,8 @@ export type IconName =
   | 'ai-brain' | 'cpu'
   // Brand
   | 'logo-icon' | 'avatar-placeholder'
+  // Time & Calendar
+  | 'calendar' | 'infinity'
   // Utility
   | 'globe' | 'file' | 'window';
 
@@ -70,6 +72,10 @@ const iconPaths: Record<IconName, string> = {
   'logo-icon': '',
   'avatar-placeholder': '',
   
+  // Time & Calendar
+  'calendar': 'M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
+  'infinity': 'M12 12c-2-2.67-5.33-4-8-4s-6 1.33-6 4 2.67 4 6 4c2.67 0 6-1.33 8-4zm0 0c2 2.67 5.33 4 8 4s6-1.33 6-4-2.67-4-6-4c-2.67 0-6 1.33-8 4z',
+  
   // Utility
   'globe': 'M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20zM2 12h20M8 12a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1-4 10z',
   'file': 'M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM13 2v7h7',
@@ -113,6 +119,21 @@ const specialIcons: Partial<Record<IconName, React.ComponentType<any>>> = {
       <path d="M3 3v18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M7 16l4-4 4 4 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       <circle cx="18" cy="6" r="2" stroke="currentColor" strokeWidth="2" fill="currentColor"/>
+    </>
+  ),
+  'calendar': () => (
+    <>
+      <path d="M8 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+      <path d="M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </>
+  ),
+  'infinity': () => (
+    <>
+      <path d="M9.5 12a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" stroke="currentColor" strokeWidth="2" fill="none"/>
+      <path d="M19.5 12a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" stroke="currentColor" strokeWidth="2" fill="none"/>
+      <path d="M9.5 12h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
     </>
   )
 };

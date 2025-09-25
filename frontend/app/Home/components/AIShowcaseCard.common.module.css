@@ -6,7 +6,30 @@
   overflow: hidden;
   z-index: 1;
   height: 100%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px) rotateX(5deg);
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .cardBorder {
@@ -20,6 +43,28 @@
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: -2;
+  background: linear-gradient(90deg, var(--primary-4573df), var(--accent-ff9800));
+  padding: 1px;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.card:hover .cardBorder {
+  opacity: 1;
+}
+
+.cardGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 0%, rgba(69, 115, 223, 0.15), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -3;
 }
 
 .card:hover .cardGlow {
@@ -35,6 +80,14 @@
   flex-direction: column;
   z-index: 2;
   flex-grow: 1;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background 0.3s ease;
+}
+
+.card:hover .cardContent {
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .iconWrapper {
@@ -45,12 +98,41 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 24px;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.iconWrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover .iconWrapper::before {
+  opacity: 1;
+}
+
+.card:hover .iconWrapper {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .iconWrapper svg {
   width: 28px;
   height: 28px;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .iconWrapper svg {
+  transform: scale(1.1);
 }
 
 .title {
@@ -59,6 +141,12 @@
   font-weight: 600;
   margin-bottom: 12px;
   letter-spacing: -0.5px;
+  color: #111827;
+  transition: color 0.3s ease;
+}
+
+.card:hover .title {
+  color: var(--primary-4573df);
 }
 
 .description {
@@ -66,6 +154,12 @@
   line-height: 1.65;
   flex-grow: 1;
   margin-bottom: 24px;
+  color: #4b5563;
+  transition: color 0.3s ease;
+}
+
+.card:hover .description {
+  color: #374151;
 }
 
 .footer {
@@ -74,6 +168,12 @@
   align-items: center;
   margin-top: auto;
   padding-top: 16px;
+  border-top: 1px solid rgba(229, 231, 235, 0.7);
+  transition: border-color 0.3s ease;
+}
+
+.card:hover .footer {
+  border-color: rgba(209, 213, 219, 0.7);
 }
 
 .stats {
@@ -83,6 +183,15 @@
   letter-spacing: 0.5px;
   padding: 6px 10px;
   border-radius: 8px;
+  background-color: #eef2ff;
+  color: #4338ca;
+  transition: all 0.3s ease;
+}
+
+.card:hover .stats {
+  background-color: #e0e7ff;
+  color: #3730a3;
+  transform: translateY(-2px);
 }
 
 .learnMore {
@@ -92,17 +201,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   transform: rotate(-45deg);
+  background-color: #f3f4f6;
+  color: #4b5563;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.card:hover .learnMore {
-  transform: rotate(0deg);
+.learnMore:hover {
+  transform: rotate(0deg) scale(1.1);
+  background-color: var(--primary-4573df);
+  color: white;
+  box-shadow: 0 4px 8px rgba(69, 115, 223, 0.2);
 }
 
 .arrowIcon {
   width: 18px;
   height: 18px;
   transition: transform 0.3s ease;
+}
+
+.learnMore:hover .arrowIcon {
+  transform: translateX(2px);
 }

@@ -1,4 +1,4 @@
-/* @AI-HINT: Common, theme-agnostic styles for the Checkbox component. */
+/* @AI-HINT: Common, theme-agnostic styles for the Checkbox component with enhanced 2025 design trends. */
 
 .checkboxWrapper {
   display: flex;
@@ -12,8 +12,27 @@
   font-size: 0.9rem;
   color: var(--checkbox-text-color);
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding: var(--spacing-2) 0;
+  isolation: isolate;
+}
+
+.checkboxLabel::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.checkboxLabel:hover::before {
+  opacity: 1;
 }
 
 .checkboxInput {
@@ -33,24 +52,26 @@
   border: 2px solid var(--checkbox-border-color);
   border-radius: 6px;
   margin-right: 12px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  overflow: hidden;
 }
 
 .checkboxLabel:hover .checkboxCustom {
   border-color: var(--checkbox-border-hover-color);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
 .checkboxInput:checked ~ .checkboxCustom {
   background-color: var(--checkbox-checked-bg);
   border-color: var(--checkbox-checked-border-color);
-  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.2);
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+  animation: checkboxPulse 0.3s ease;
 }
 
 .checkboxCustom::after {
@@ -62,7 +83,7 @@
   border: solid var(--checkbox-checkmark-color);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg) scale(0);
-  transition: transform 0.2s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .checkboxInput:checked ~ .checkboxCustom::after {
@@ -73,7 +94,7 @@
 .checkboxInput:focus-visible ~ .checkboxCustom {
   outline: 2px solid var(--checkbox-focus-ring-color);
   outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
+  box-shadow: 0 0 0 4px rgba(69, 115, 223, 0.3);
 }
 
 .checkboxText {
@@ -121,6 +142,18 @@
   }
 }
 
+@keyframes checkboxPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Indeterminate state */
 .checkboxCustom.indeterminate::after {
   content: '';
@@ -134,6 +167,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Disabled state */
@@ -152,4 +186,29 @@
 .checkboxLabel:hover .checkboxInput:disabled ~ .checkboxCustom {
   transform: none;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Ripple effect */
+.checkboxCustom::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(69, 115, 223, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.checkboxInput:checked ~ .checkboxCustom::before {
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+}
+
+/* Enhanced focus states */
+.checkboxInput:focus ~ .checkboxCustom {
+  border-color: var(--checkbox-border-hover-color);
 }
