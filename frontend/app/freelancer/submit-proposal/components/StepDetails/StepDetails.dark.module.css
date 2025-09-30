@@ -1,0 +1,11 @@
+.title {
+  color: var(--text-primary-dark);
+}
+
+.description {
+  color: var(--text-secondary-dark);
+}
+
+.error {
+  color: var(--error-dark);
+}

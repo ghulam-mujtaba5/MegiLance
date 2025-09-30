@@ -1,0 +1,89 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  text-align: center;
+  padding-bottom: 1rem;
+}
+
+.title {
+  font-family: var(--font-poppins);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.description {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.reviewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-poppins);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.reviewItem {
+  padding: 1rem;
+  border-radius: var(--border-radius-md);
+}
+
+.reviewValue {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.reviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.attachmentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.attachmentItem {
+  font-size: 0.875rem;
+}
+
+.termsSection {
+  padding-top: 1rem;
+  border-top: 1px solid;
+}
+
+.termsAgreement {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.termsIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.termsText {
+  font-weight: 500;
+}

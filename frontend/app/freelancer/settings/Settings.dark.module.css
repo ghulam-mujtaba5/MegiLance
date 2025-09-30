@@ -1,18 +1,31 @@
 /* @AI-HINT: Dark theme styles for the Settings pages. */
 
-.formContainer {
+.settingsContainer {
   background-color: var(--bg-primary-dark);
 }
 
-.formHeader {
+.header {
   border-bottom: 1px solid var(--border-dark);
 }
 
-.formTitle {
+.title {
   color: var(--text-primary-dark);
 }
 
-.formDescription {
+.subtitle {
+  color: var(--text-secondary-dark);
+}
+
+.section {
+  border-color: var(--border-dark);
+  background-color: var(--bg-secondary-dark);
+}
+
+.sectionTitle {
+  color: var(--text-primary-dark);
+}
+
+.sectionDescription {
   color: var(--text-secondary-dark);
 }
 
@@ -26,4 +39,27 @@
 
 .formFooter {
   border-top: 1px solid var(--border-dark);
+}
+
+.switchDescription {
+  color: var(--text-secondary-dark);
+}
+
+.radioLabel {
+  border-color: var(--border-dark);
+  background-color: var(--bg-primary-dark);
+}
+
+.radioLabel:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-hover-dark);
+}
+
+.radioDescription {
+  color: var(--text-secondary-dark);
+}
+
+.accountRow {
+  border-color: var(--border-dark);
+  background-color: var(--bg-primary-dark);
 }

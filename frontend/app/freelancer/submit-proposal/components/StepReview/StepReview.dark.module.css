@@ -1,0 +1,37 @@
+.title {
+  color: var(--text-primary-dark);
+}
+
+.description {
+  color: var(--text-secondary-dark);
+}
+
+.sectionTitle {
+  color: var(--text-primary-dark);
+}
+
+.reviewItem {
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.reviewValue {
+  color: var(--text-primary-dark);
+}
+
+.attachmentsList {
+  color: var(--text-secondary-dark);
+}
+
+.termsSection {
+  border-top-color: var(--border-dark);
+}
+
+.termsIcon {
+  background-color: var(--success-dark);
+  color: white;
+}
+
+.termsText {
+  color: var(--text-primary-dark);
+}

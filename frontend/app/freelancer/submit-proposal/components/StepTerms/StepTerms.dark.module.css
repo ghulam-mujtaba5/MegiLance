@@ -1,19 +1,23 @@
-.header, .modalActions {
-  border-color: var(--border-dark);
-}
-
 .title {
   color: var(--text-primary-dark);
 }
 
-.subtitle {
+.description {
   color: var(--text-secondary-dark);
 }
 
-.emptyTitle {
+.sectionTitle {
   color: var(--text-primary-dark);
 }
 
-.emptyText {
+.termsList {
   color: var(--text-secondary-dark);
+}
+
+.agreement {
+  border-top-color: var(--border-dark);
+}
+
+.error {
+  color: var(--error-dark);
 }

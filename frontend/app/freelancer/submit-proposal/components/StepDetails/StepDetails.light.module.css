@@ -1,0 +1,11 @@
+.title {
+  color: var(--text-primary-light);
+}
+
+.description {
+  color: var(--text-secondary-light);
+}
+
+.error {
+  color: var(--error-light);
+}

@@ -1,23 +1,63 @@
 /* @AI-HINT: Common styles for the Settings pages. Defines the form layout, typography, and structure for a premium, modern user experience. */
 
-.formContainer {
+.settingsContainer {
   padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.formHeader {
-  padding-bottom: 1.5rem;
+.header {
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid;
+}
+
+.title {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  font-family: var(--font-poppins);
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 1rem; /* 16px */
+  margin: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.section {
+  border: 1px solid;
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-.formTitle {
+.sectionIcon {
+  font-size: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.sectionTitle {
   font-size: 1.25rem; /* 20px */
   font-weight: 600;
   font-family: var(--font-poppins);
+  margin: 0 0 0.25rem 0;
 }
 
-.formDescription {
-  margin-top: 0.25rem;
+.sectionDescription {
   font-size: 0.875rem; /* 14px */
+  margin: 0;
 }
 
 .form {
@@ -42,4 +82,110 @@
   justify-content: flex-start;
   padding-top: 1.5rem;
   margin-top: 1.5rem;
+  border-top: 1px solid;
+}
+
+/* Switch group styles */
+.switchGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.switchRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.switchDescription {
+  font-size: 0.875rem; /* 14px */
+  margin: 0.25rem 0 0 0;
+}
+
+/* Radio group styles */
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.radioLabel {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid;
+  transition: all 0.2s ease;
+}
+
+.radioLabel:hover {
+  border-color: var(--primary);
+}
+
+.radioLabel input {
+  margin-right: 0.5rem;
+}
+
+.radioDescription {
+  font-size: 0.875rem; /* 14px */
+  margin: 0.25rem 0 0 0;
+}
+
+/* Action button styles */
+.actionButton {
+  align-self: flex-start;
+}
+
+/* Connected accounts styles */
+.connectedAccounts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.accountRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid;
+}
+
+.accountIcon {
+  font-size: 1.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .settingsContainer {
+    padding: 1rem;
+  }
+  
+  .section {
+    padding: 1rem;
+  }
+  
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .switchRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .accountRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }

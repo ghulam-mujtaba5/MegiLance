@@ -18,9 +18,10 @@ export interface PortfolioItemCardProps {
   imageUrl: string;
   projectUrl?: string;
   onDelete: (id: number) => void;
+  onEdit: (id: number) => void;
 }
 
-const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({ id, title, description, imageUrl, projectUrl, onDelete }) => {
+const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({ id, title, description, imageUrl, projectUrl, onDelete, onEdit }) => {
   const { theme } = useTheme();
   const styles = useMemo(() => {
     const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
@@ -47,7 +48,7 @@ const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({ id, title, descri
           </a>
         ) : <div />} 
         <div className={styles.actions}>
-          <Button variant="secondary" size="small" aria-label={`Edit ${title}`} title={`Edit ${title}`}>Edit</Button>
+          <Button variant="secondary" size="small" onClick={() => onEdit(id)} aria-label={`Edit ${title}`} title={`Edit ${title}`}>Edit</Button>
           <Button variant="danger" size="small" onClick={() => onDelete(id)} aria-label={`Delete ${title}`} title={`Delete ${title}`}>Delete</Button>
         </div>
       </div>
@@ -56,5 +57,3 @@ const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({ id, title, descri
 };
 
 export default PortfolioItemCard;
-
-

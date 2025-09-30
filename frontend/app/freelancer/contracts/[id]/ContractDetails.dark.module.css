@@ -1,0 +1,60 @@
+.container {
+  background-color: var(--bg-primary-dark);
+}
+
+.contractHeader {
+  border-bottom-color: var(--border-dark);
+}
+
+.title {
+  color: var(--text-primary-dark);
+}
+
+.client {
+  color: var(--text-secondary-dark);
+}
+
+.metaLabel {
+  color: var(--text-secondary-dark);
+}
+
+.metaValue {
+  color: var(--text-primary-dark);
+}
+
+.sectionTitle {
+  color: var(--text-primary-dark);
+}
+
+.description {
+  color: var(--text-secondary-dark);
+}
+
+.milestone {
+  border-color: var(--border-dark);
+  background-color: var(--bg-secondary-dark);
+}
+
+.milestoneTitle {
+  color: var(--text-primary-dark);
+}
+
+.milestoneAmount {
+  color: var(--text-primary-dark);
+}
+
+.termTitle {
+  color: var(--text-primary-dark);
+}
+
+.termDescription {
+  color: var(--text-secondary-dark);
+}
+
+.timelineLabel {
+  color: var(--text-secondary-dark);
+}
+
+.timelineValue {
+  color: var(--text-primary-dark);
+}

@@ -1,0 +1,36 @@
+.main {
+  background-color: var(--bg-primary-dark);
+}
+
+.title {
+  color: var(--text-primary-dark);
+}
+
+.subtitle {
+  color: var(--text-secondary-dark);
+}
+
+.footer {
+  border-top-color: var(--border-dark);
+}
+
+.result_card {
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.result_title {
+  color: var(--text-primary-dark);
+}
+
+.result_message {
+  color: var(--text-secondary-dark);
+}
+
+.success_icon {
+  color: var(--success-dark);
+}
+
+.error_icon {
+  color: var(--error-dark);
+}

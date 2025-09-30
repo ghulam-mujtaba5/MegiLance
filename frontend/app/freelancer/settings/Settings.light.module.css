@@ -1,18 +1,31 @@
 /* @AI-HINT: Light theme styles for the Settings pages. */
 
-.formContainer {
+.settingsContainer {
   background-color: var(--bg-primary-light);
 }
 
-.formHeader {
+.header {
   border-bottom: 1px solid var(--border-light);
 }
 
-.formTitle {
+.title {
   color: var(--text-primary-light);
 }
 
-.formDescription {
+.subtitle {
+  color: var(--text-secondary-light);
+}
+
+.section {
+  border-color: var(--border-light);
+  background-color: var(--bg-secondary-light);
+}
+
+.sectionTitle {
+  color: var(--text-primary-light);
+}
+
+.sectionDescription {
   color: var(--text-secondary-light);
 }
 
@@ -26,4 +39,27 @@
 
 .formFooter {
   border-top: 1px solid var(--border-light);
+}
+
+.switchDescription {
+  color: var(--text-secondary-light);
+}
+
+.radioLabel {
+  border-color: var(--border-light);
+  background-color: var(--bg-primary-light);
+}
+
+.radioLabel:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-hover-light);
+}
+
+.radioDescription {
+  color: var(--text-secondary-light);
+}
+
+.accountRow {
+  border-color: var(--border-light);
+  background-color: var(--bg-primary-light);
 }

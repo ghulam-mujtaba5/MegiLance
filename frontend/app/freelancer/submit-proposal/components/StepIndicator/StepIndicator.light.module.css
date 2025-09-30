@@ -1,0 +1,41 @@
+.container {
+  background-color: var(--bg-secondary-light);
+}
+
+.stepIcon {
+  background-color: var(--bg-primary-light);
+  border: 2px solid var(--border-light);
+  color: var(--text-secondary-light);
+}
+
+.stepLabel {
+  color: var(--text-secondary-light);
+}
+
+.connector {
+  background-color: var(--border-light);
+}
+
+.completed .stepIcon {
+  background-color: var(--success-light);
+  border-color: var(--success-light);
+  color: white;
+}
+
+.completedLabel {
+  color: var(--text-primary-light);
+}
+
+.current .stepIcon {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.currentLabel {
+  color: var(--text-primary-light);
+}
+
+.completedConnector {
+  background-color: var(--success-light);
+}

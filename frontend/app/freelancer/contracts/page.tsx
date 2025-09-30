@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import Badge from '@/app/components/Badge/Badge';
 import DataToolbar, { SortOption } from '@/app/components/DataToolbar/DataToolbar';
@@ -419,7 +420,8 @@ const ContractsPage: React.FC = () => {
                     {show('projectTitle') && (
                       <td><span className={styles.projectTitle}>{contract.projectTitle}</span></td>
                     )}
-                    {show('clientName') && <td>{contract.clientName}</td>}
+                    {show('clientName') && <td>{contract.clientName}</td>
+                    }
                     {show('value') && (
                       <td><span className={styles.value}>{contract.value} USDC</span></td>
                     )}
@@ -441,7 +443,9 @@ const ContractsPage: React.FC = () => {
                     {show('actions') && (
                       <td>
                         <div className={styles.rowActions} role="group" aria-label={`Actions for ${contract.projectTitle}`}>
-                          <Button size="small" variant="outline" onClick={() => viewContract(contract)} aria-label={`View ${contract.projectTitle}`} title={`View ${contract.projectTitle}`}>View</Button>
+                          <Link href={`/freelancer/contracts/${contract.id}`} passHref legacyBehavior>
+                            <Button size="small" variant="outline" aria-label={`View ${contract.projectTitle}`} title={`View ${contract.projectTitle}`}>View</Button>
+                          </Link>
                           <Button size="small" variant="secondary" onClick={() => downloadContract(contract)} aria-label={`Download ${contract.projectTitle}`} title={`Download ${contract.projectTitle}`}>Download</Button>
                           {contract.status === 'Active' && (
                             <>
