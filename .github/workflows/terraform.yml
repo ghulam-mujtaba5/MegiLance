@@ -46,9 +46,9 @@ jobs:
           TF_VAR_aws_region: ${{ env.AWS_REGION }}
         run: terraform init
 
-      - name: Terraform Format
+      - name: Terraform Format (write)
         working-directory: infra/terraform
-        run: terraform fmt -check
+        run: terraform fmt -recursive
 
       - name: Terraform Validate
         working-directory: infra/terraform

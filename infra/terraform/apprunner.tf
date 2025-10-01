@@ -49,7 +49,7 @@ variable "api_base_url" {
 }
 
 output "apprunner_service_arn" {
-  value       = try(aws_apprunner_service.frontend[0].service_arn, null)
+  value       = try(aws_apprunner_service.frontend[0].arn, null)
   description = "App Runner service ARN"
 }
 
