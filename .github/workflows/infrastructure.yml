@@ -40,6 +40,18 @@ jobs:
           aws sts get-caller-identity || true
           echo "AWS env vars:" && env | grep AWS || true
 
+      - name: Check DB password secret
+        env:
+          TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
+        run: |
+          if [ -z "$TF_VAR_db_password" ]; then
+            echo "ERROR: TF_VAR_db_password secret is empty or not set."
+            echo "Please add it at: https://github.com/${{ github.repository }}/settings/secrets/actions"
+            exit 1
+          else
+            echo "TF_VAR_db_password secret is present."
+          fi
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
