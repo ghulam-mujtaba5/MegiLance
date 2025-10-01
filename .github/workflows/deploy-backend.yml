@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: eu-central-1
+  AWS_REGION: us-east-2
   ECR_REPOSITORY: megilance-backend
   ECS_SERVICE: megilance-backend-service
   ECS_CLUSTER: megilance-cluster

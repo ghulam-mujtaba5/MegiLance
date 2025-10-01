@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: us-east-2
-      TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,6 +58,7 @@ jobs:
         working-directory: infra/terraform
         env:
           TF_VAR_aws_region: ${{ env.AWS_REGION }}
+          TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
         run: terraform plan -out=tfplan
 
       - name: Terraform Apply
@@ -66,4 +66,5 @@ jobs:
         working-directory: infra/terraform
         env:
           TF_VAR_aws_region: ${{ env.AWS_REGION }}
+          TF_VAR_db_password: ${{ secrets.TF_VAR_db_password }}
         run: terraform apply -auto-approve tfplan
