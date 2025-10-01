@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg2://megilance:megilance_pw@db:5432/megilance_db"
     # Path to mounted JSON data directory (for mock/admin/demo endpoints)
     json_data_dir: str = "/data/db"
+    
+    # Security
+    secret_key: str = "megilance_secret_key_for_jwt_tokens"
 
     class Config:
         env_file = ".env"
