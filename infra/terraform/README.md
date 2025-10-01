@@ -33,3 +33,8 @@ Outputs
 Notes
 -----
 This is a starting scaffold—review and customize instance classes, backup windows, and tags before applying to production.
+
+2025-10-01: Duplicates cleanup
+--------------------------------
+- Removed duplicate provider/data declarations and consolidated ECR frontend resources/outputs.
+- If you encountered errors like "Duplicate provider configuration", "Duplicate data aws_availability_zones", or duplicate outputs/resources, pull latest and re-run Terraform.
