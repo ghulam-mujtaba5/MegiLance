@@ -43,9 +43,31 @@ export function clearDraft() {
 export async function submitJob(input: CreateJobInput): Promise<CreateJobResult> {
   // Simulate network latency
   await new Promise((r) => setTimeout(r, 600));
-  const id = genId('job_');
+  
+  // Send the job data to the real backend
+  const response = await fetch('/api/client/jobs', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: input.title,
+      category: input.category,
+      budgetType: input.budgetType,
+      budget: input.budget,
+      description: input.description,
+      skills: input.skills,
+      timeline: input.timeline
+    }),
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to submit job');
+  }
+  
+  const result = await response.json();
   // In a real app, we'd persist server-side. For now, mark draft submitted and clear.
   saveDraft({ status: 'submitted', updatedAt: nowISO() });
   clearDraft();
-  return { id, message: 'Job submitted successfully (mock).' };
+  return result;
 }

@@ -57,11 +57,12 @@ export function useClientData() {
       setLoading(true);
       setError(null);
       try {
+        // Use the real backend endpoints instead of mock ones
         const [projectsRes, paymentsRes, freelancersRes, reviewsRes] = await Promise.all([
-          fetch('/api/projects'),
-          fetch('/api/payments'),
-          fetch('/api/freelancers'),
-          fetch('/api/reviews'),
+          fetch('/api/client/projects'),
+          fetch('/api/client/payments'),
+          fetch('/api/client/freelancers'),
+          fetch('/api/client/reviews'),
         ]);
         
         if ([projectsRes, paymentsRes, freelancersRes, reviewsRes].some(r => !r.ok)) {
@@ -93,4 +94,4 @@ export function useClientData() {
   }, []);
 
   return { projects, payments, freelancers, reviews, loading, error } as const;
-} 
+}
