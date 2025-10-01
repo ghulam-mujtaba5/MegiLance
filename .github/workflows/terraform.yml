@@ -23,6 +23,15 @@ jobs:
           role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
           aws-region: eu-central-1
 
+      - name: Debug AWS credentials
+        run: |
+          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
+          echo "GITHUB_RUN_ID=$GITHUB_RUN_ID"
+          echo "Attempting aws sts get-caller-identity..."
+          aws sts get-caller-identity || true
+          echo "Listing AWS-related environment variables (keys only):"
+          env | grep AWS || true
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
