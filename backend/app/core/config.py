@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     
     # AWS Configuration
-    aws_region: Optional[str] = "eu-central-1"
+    aws_region: Optional[str] = "us-east-2"
     aws_access_key_id: Optional[str] = None
     aws_secret_access_key: Optional[str] = None
     

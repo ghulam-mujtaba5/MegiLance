@@ -4,7 +4,7 @@
 
 set -e
 
-REGION="eu-central-1"
+REGION="us-east-2"
 ACCOUNT_ID="789406175220"
 CLUSTER_NAME="megilance-cluster"
 SERVICE_NAME="megilance-backend-service"

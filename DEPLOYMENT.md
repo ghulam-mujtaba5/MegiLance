@@ -79,7 +79,7 @@ cd ~/MegiLance/infra/terraform
 
 # Create variables file
 cat > terraform.tfvars <<EOF
-aws_region = "eu-central-1"
+aws_region = "us-east-2"
 project_prefix = "megilance"
 db_password = "YOUR_STRONG_PASSWORD_HERE"
 EOF

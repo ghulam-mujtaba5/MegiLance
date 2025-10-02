@@ -38,7 +38,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_MINUTES=10080
 
 # AWS (Production)
-AWS_REGION=eu-central-1
+AWS_REGION=us-east-2
 S3_BUCKET_UPLOADS=megilance-prod-uploads
 ```
 

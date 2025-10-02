@@ -95,6 +95,26 @@ jobs:
             echo "ℹ️ Policy already attached"
           fi
 
+      - name: Secrets existence & read check (best-effort)
+        continue-on-error: true
+        run: |
+          echo "🔎 Checking Secrets Manager secrets existence and read access (best-effort)"
+          SECRETS=("megilance/prod/database" "megilance/prod/jwt")
+          for S in "${SECRETS[@]}"; do
+            echo "-- Checking $S --"
+            aws secretsmanager describe-secret --secret-id "$S" --region ${{ env.AWS_REGION }} --output json >/dev/null 2>&1 && echo "Found: $S" || echo "Missing: $S"
+            # Try to read secret value to validate permissions (will be redacted in logs)
+            set +e
+            aws secretsmanager get-secret-value --secret-id "$S" --region ${{ env.AWS_REGION }} --query SecretString --output text >/dev/null 2>&1
+            RC=$?
+            set -e
+            if [ $RC -eq 0 ]; then
+              echo "Readable: $S"
+            else
+              echo "Unreadable or not accessible: $S (ensure exec role has secretsmanager:GetSecretValue)"
+            fi
+          done
+
       - name: Tune ECS health check grace periods (best-effort)
         continue-on-error: true
         run: |
