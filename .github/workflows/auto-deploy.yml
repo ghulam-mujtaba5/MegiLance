@@ -178,6 +178,43 @@ jobs:
           role-session-name: github-actions-deploy-backend
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Get VPC Configuration
+        id: vpc-config
+        run: |
+          # Get VPC ID
+          VPC_ID=$(aws ec2 describe-vpcs \
+            --filters "Name=tag:Name,Values=megilance-vpc" \
+            --query 'Vpcs[0].VpcId' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          echo "vpc_id=$VPC_ID" >> $GITHUB_OUTPUT
+          
+          # Get public subnets
+          PUBLIC_SUBNETS=$(aws ec2 describe-subnets \
+            --filters "Name=vpc-id,Values=$VPC_ID" "Name=tag:Name,Values=*public*" \
+            --query 'Subnets[*].SubnetId' \
+            --output text \
+            --region ${{ env.AWS_REGION }} | tr '\t' ',')
+          echo "public_subnets=$PUBLIC_SUBNETS" >> $GITHUB_OUTPUT
+          echo "Found subnets: $PUBLIC_SUBNETS"
+          
+          # Get security group
+          SG_ID=$(aws ec2 describe-security-groups \
+            --filters "Name=vpc-id,Values=$VPC_ID" "Name=group-name,Values=megilance-ecs-sg" \
+            --query 'SecurityGroups[0].GroupId' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          if [ "$SG_ID" == "None" ] || [ -z "$SG_ID" ]; then
+            # Get default security group if custom one doesn't exist
+            SG_ID=$(aws ec2 describe-security-groups \
+              --filters "Name=vpc-id,Values=$VPC_ID" "Name=group-name,Values=default" \
+              --query 'SecurityGroups[0].GroupId' \
+              --output text \
+              --region ${{ env.AWS_REGION }})
+          fi
+          echo "security_group=$SG_ID" >> $GITHUB_OUTPUT
+          echo "Found security group: $SG_ID"
+
       - name: Create/Update task definition
         id: task-def
         run: |
@@ -258,8 +295,19 @@ jobs:
             aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-definition $TASK_FAMILY --force-new-deployment --region $AWS_REGION || echo "update-service returned non-zero";
           else
             echo "Service not found - creating"
-            # create service (basic) - assumes subnets/security groups created by infra
-            aws ecs create-service --cluster $CLUSTER --service-name $SERVICE --task-definition $TASK_FAMILY --desired-count 1 --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[${{ env.PUBLIC_SUBNETS || '' }}],assignPublicIp=ENABLED,securityGroups=[]}" --region $AWS_REGION || (echo "create-service failed"; exit 1)
+            # Get subnets and security group from previous step
+            SUBNETS="${{ steps.vpc-config.outputs.public_subnets }}"
+            SG="${{ steps.vpc-config.outputs.security_group }}"
+            echo "Using subnets: $SUBNETS"
+            echo "Using security group: $SG"
+            aws ecs create-service \
+              --cluster $CLUSTER \
+              --service-name $SERVICE \
+              --task-definition $TASK_FAMILY \
+              --desired-count 1 \
+              --launch-type FARGATE \
+              --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],assignPublicIp=ENABLED,securityGroups=[$SG]}" \
+              --region $AWS_REGION || (echo "create-service failed"; exit 1)
           fi
 
       - name: Wait for service stability
@@ -281,6 +329,39 @@ jobs:
           role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
           role-session-name: github-actions-deploy-frontend
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get VPC Configuration
+        id: vpc-config
+        run: |
+          # Get VPC ID
+          VPC_ID=$(aws ec2 describe-vpcs \
+            --filters "Name=tag:Name,Values=megilance-vpc" \
+            --query 'Vpcs[0].VpcId' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          
+          # Get public subnets
+          PUBLIC_SUBNETS=$(aws ec2 describe-subnets \
+            --filters "Name=vpc-id,Values=$VPC_ID" "Name=tag:Name,Values=*public*" \
+            --query 'Subnets[*].SubnetId' \
+            --output text \
+            --region ${{ env.AWS_REGION }} | tr '\t' ',')
+          echo "public_subnets=$PUBLIC_SUBNETS" >> $GITHUB_OUTPUT
+          
+          # Get security group
+          SG_ID=$(aws ec2 describe-security-groups \
+            --filters "Name=vpc-id,Values=$VPC_ID" "Name=group-name,Values=megilance-ecs-sg" \
+            --query 'SecurityGroups[0].GroupId' \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          if [ "$SG_ID" == "None" ] || [ -z "$SG_ID" ]; then
+            SG_ID=$(aws ec2 describe-security-groups \
+              --filters "Name=vpc-id,Values=$VPC_ID" "Name=group-name,Values=default" \
+              --query 'SecurityGroups[0].GroupId' \
+              --output text \
+              --region ${{ env.AWS_REGION }})
+          fi
+          echo "security_group=$SG_ID" >> $GITHUB_OUTPUT
 
       - name: Create/Update task definition
         run: |
@@ -339,7 +420,19 @@ jobs:
             aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-definition $TASK_FAMILY --force-new-deployment --region $AWS_REGION || echo "update-service returned non-zero";
           else
             echo "Frontend service not found - creating"
-            aws ecs create-service --cluster $CLUSTER --service-name $SERVICE --task-definition $TASK_FAMILY --desired-count 1 --launch-type FARGATE --network-configuration "awsvpcConfiguration={subnets=[${{ env.PUBLIC_SUBNETS || '' }}],assignPublicIp=ENABLED,securityGroups=[]}" --region $AWS_REGION || (echo "create-service failed"; exit 1)
+            # Get subnets and security group from previous step
+            SUBNETS="${{ steps.vpc-config.outputs.public_subnets }}"
+            SG="${{ steps.vpc-config.outputs.security_group }}"
+            echo "Using subnets: $SUBNETS"
+            echo "Using security group: $SG"
+            aws ecs create-service \
+              --cluster $CLUSTER \
+              --service-name $SERVICE \
+              --task-definition $TASK_FAMILY \
+              --desired-count 1 \
+              --launch-type FARGATE \
+              --network-configuration "awsvpcConfiguration={subnets=[$SUBNETS],assignPublicIp=ENABLED,securityGroups=[$SG]}" \
+              --region $AWS_REGION || (echo "create-service failed"; exit 1)
           fi
 
       - name: Wait for service stability
