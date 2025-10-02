@@ -149,9 +149,10 @@ const AccountSettingsPage = () => {
                   <p className={cn(commonStyles.switchDescription)}>Get notified about new jobs that match your skills</p>
                 </div>
                 <Switch
+                  label="Job Opportunities"
                   id="job-notifications"
                   checked={jobNotifications}
-                  onCheckedChange={setJobNotifications}
+                  onChange={setJobNotifications}
                 />
               </div>
               
@@ -161,9 +162,10 @@ const AccountSettingsPage = () => {
                   <p className={cn(commonStyles.switchDescription)}>Receive notifications for new messages</p>
                 </div>
                 <Switch
+                  label="Messages"
                   id="message-notifications"
                   checked={messageNotifications}
-                  onCheckedChange={setMessageNotifications}
+                  onChange={setMessageNotifications}
                 />
               </div>
               
@@ -173,9 +175,10 @@ const AccountSettingsPage = () => {
                   <p className={cn(commonStyles.switchDescription)}>Get notified about payments and financial updates</p>
                 </div>
                 <Switch
+                  label="Payments"
                   id="payment-notifications"
                   checked={paymentNotifications}
-                  onCheckedChange={setPaymentNotifications}
+                  onChange={setPaymentNotifications}
                 />
               </div>
               
@@ -185,9 +188,10 @@ const AccountSettingsPage = () => {
                   <p className={cn(commonStyles.switchDescription)}>Receive updates about new features and promotions</p>
                 </div>
                 <Switch
+                  label="Marketing & Promotions"
                   id="marketing-notifications"
                   checked={marketingNotifications}
-                  onCheckedChange={setMarketingNotifications}
+                  onChange={setMarketingNotifications}
                 />
               </div>
             </div>
@@ -259,9 +263,10 @@ const AccountSettingsPage = () => {
                   <p className={cn(commonStyles.switchDescription)}>Allow clients to see your contact details</p>
                 </div>
                 <Switch
+                  label="Show Contact Information"
                   id="show-contact-info"
                   checked={showContactInfo}
-                  onCheckedChange={setShowContactInfo}
+                  onChange={setShowContactInfo}
                 />
               </div>
             </div>
@@ -292,9 +297,10 @@ const AccountSettingsPage = () => {
                   <p className={cn(commonStyles.switchDescription)}>Add an extra layer of security to your account</p>
                 </div>
                 <Switch
+                  label="Two-Factor Authentication"
                   id="two-factor-auth"
                   checked={twoFactorAuth}
-                  onCheckedChange={setTwoFactorAuth}
+                  onChange={setTwoFactorAuth}
                 />
               </div>
             </div>

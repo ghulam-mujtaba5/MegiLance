@@ -22,8 +22,11 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/public ./public
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+# Create non-root user (check if UID 1000 exists first)
+RUN if id -u 1000 >/dev/null 2>&1; then \
+        userdel $(id -nu 1000); \
+    fi && \
+    useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
 ENV NODE_ENV=production

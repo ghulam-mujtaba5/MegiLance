@@ -11,6 +11,9 @@ import { ProposalData, ProposalErrors } from './SubmitProposal.types';
 
 import Button from '@/app/components/Button/Button';
 import StepIndicator from './components/StepIndicator/StepIndicator';
+import StepDetails from './components/StepDetails/StepDetails';
+import StepTerms from './components/StepTerms/StepTerms';
+import StepReview from './components/StepReview/StepReview';
 
 import common from './SubmitProposal.common.module.css';
 import light from './SubmitProposal.light.module.css';
