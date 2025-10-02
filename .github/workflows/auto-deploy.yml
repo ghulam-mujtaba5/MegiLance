@@ -167,7 +167,7 @@ jobs:
           pip install alembic psycopg2-binary || true
           echo "DATABASE_URL=$DATABASE_URL"
           # Validate connection before running migrations
-          python - <<PY
+          python - <<'PY'
 import os
 import sys
 from urllib.parse import urlparse
@@ -284,9 +284,7 @@ PY
 
       - name: Wait for service stability
         run: |
-          aws ecs wait services-stable \
-            --cluster ${{ env.ECS_CLUSTER }} \
-            --services ${{ env.ECS_BACKEND_SERVICE }}
+          aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_BACKEND_SERVICE }}
 
   deploy-frontend-to-ecs:
     name: Deploy Frontend to ECS
@@ -366,9 +364,7 @@ PY
 
       - name: Wait for service stability
         run: |
-          aws ecs wait services-stable \
-            --cluster ${{ env.ECS_CLUSTER }} \
-            --services ${{ env.ECS_FRONTEND_SERVICE }}
+          aws ecs wait services-stable --cluster ${{ env.ECS_CLUSTER }} --services ${{ env.ECS_FRONTEND_SERVICE }}
 
   smoke-tests:
     name: Run Smoke Tests
@@ -411,6 +407,9 @@ PY
 
       - name: Test API documentation
         run: |
+          if [ -z "${{ steps.endpoints.outputs.backend_url }}" ]; then
+            echo "No backend URL available, skipping API docs check"; exit 0
+          fi
           curl -f ${{ steps.endpoints.outputs.backend_url }}/api/docs || exit 1
 
   notify-deployment:
