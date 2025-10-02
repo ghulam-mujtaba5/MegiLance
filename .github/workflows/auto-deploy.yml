@@ -230,10 +230,29 @@ jobs:
       - name: Create/Update task definition
         id: task-def
         run: |
-          # Get current task definition
-          TASK_DEF=$(aws ecs describe-task-definition \
-            --task-definition megilance-backend \
-            --query 'taskDefinition' || echo '{}')
+          # Get AWS account ID
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          
+          # Get secret ARNs (including version suffix)
+          DB_SECRET_ARN=$(aws secretsmanager describe-secret \
+            --secret-id megilance/prod/database \
+            --region ${{ env.AWS_REGION }} \
+            --query 'ARN' --output text)
+          
+          JWT_SECRET_ARN=$(aws secretsmanager describe-secret \
+            --secret-id megilance/prod/jwt \
+            --region ${{ env.AWS_REGION }} \
+            --query 'ARN' --output text)
+          
+          echo "Database Secret ARN: $DB_SECRET_ARN"
+          echo "JWT Secret ARN: $JWT_SECRET_ARN"
+          
+          # Get execution role ARN
+          EXEC_ROLE_ARN=$(aws iam get-role --role-name megilance-exec-role --query 'Role.Arn' --output text)
+          TASK_ROLE_ARN=$(aws iam get-role --role-name megilance-task-role --query 'Role.Arn' --output text)
+          
+          echo "Execution Role ARN: $EXEC_ROLE_ARN"
+          echo "Task Role ARN: $TASK_ROLE_ARN"
           
           # Create new task definition with updated image
           cat > task-def.json <<EOF
@@ -243,8 +262,8 @@ jobs:
             "requiresCompatibilities": ["FARGATE"],
             "cpu": "512",
             "memory": "1024",
-            "executionRoleArn": "$(aws iam get-role --role-name megilance-exec-role --query 'Role.Arn' --output text)",
-            "taskRoleArn": "$(aws iam get-role --role-name megilance-task-role --query 'Role.Arn' --output text)",
+            "executionRoleArn": "$EXEC_ROLE_ARN",
+            "taskRoleArn": "$TASK_ROLE_ARN",
             "containerDefinitions": [
               {
                 "name": "backend",
@@ -265,11 +284,11 @@ jobs:
                 "secrets": [
                   {
                     "name": "DATABASE_URL",
-                    "valueFrom": "arn:aws:secretsmanager:${{ env.AWS_REGION }}:$(aws sts get-caller-identity --query Account --output text):secret:megilance/prod/database"
+                    "valueFrom": "$DB_SECRET_ARN:database_url::"
                   },
                   {
                     "name": "SECRET_KEY",
-                    "valueFrom": "arn:aws:secretsmanager:${{ env.AWS_REGION }}:$(aws sts get-caller-identity --query Account --output text):secret:megilance/prod/jwt"
+                    "valueFrom": "$JWT_SECRET_ARN:access_secret::"
                   }
                 ],
                 "logConfiguration": {
@@ -291,6 +310,8 @@ jobs:
             ]
           }
           EOF
+          
+          cat task-def.json
           
           # Register new task definition
           aws ecs register-task-definition --cli-input-json file://task-def.json
