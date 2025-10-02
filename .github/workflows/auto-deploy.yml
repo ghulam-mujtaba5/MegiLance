@@ -155,20 +155,12 @@ jobs:
             echo "Failed to read secret megilance/prod/database" >&2; exit 1)
           echo "secret_json=$SECRET_JSON" >> $GITHUB_OUTPUT
 
-      - name: Run Alembic migrations
-        env:
-          # Prefer a full DATABASE_URL in the secret, otherwise construct it from parts
-          DATABASE_URL: ${{ fromJson( steps.db_secret.outputs.secret_json ).DATABASE_URL || format('postgresql://%s:%s@%s/%s', fromJson( steps.db_secret.outputs.secret_json ).username, fromJson( steps.db_secret.outputs.secret_json ).password, fromJson( steps.db_secret.outputs.secret_json ).host, fromJson( steps.db_secret.outputs.secret_json ).dbname ) }}
+      - name: Skip migrations (RDS is private)
         run: |
-          set -eux
-          cd backend
-          python -V || true
-          pip install --upgrade pip
-          pip install alembic psycopg2-binary
-          echo "DATABASE_URL=$DATABASE_URL"
-          # Validate connection before running migrations
-          python -c "import os,sys; from urllib.parse import urlparse; import psycopg2; u=os.getenv('DATABASE_URL'); sys.exit(2) if not u else None; o=urlparse(u); conn=psycopg2.connect(dbname=o.path.lstrip('/'), user=o.username, password=o.password, host=o.hostname, port=o.port or 5432); conn.close(); print('DB connection OK')"
-          alembic upgrade head
+          echo "⚠️ SKIPPING database migrations in GitHub Actions"
+          echo "RDS is in private subnet and not accessible from GitHub Actions runners"
+          echo "✅ Migrations will run automatically from ECS container on startup"
+          echo "See backend/main.py startup event for migration logic"
 
   deploy-backend-to-ecs:
     name: Deploy Backend to ECS
