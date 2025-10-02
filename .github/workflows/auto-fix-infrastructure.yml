@@ -55,7 +55,7 @@ jobs:
           echo "🔧 Creating IAM policy for Secrets Manager access..."
           
           # Create policy JSON
-          cat > secrets-policy.json << 'EOF'
+          cat > secrets-policy.json << EOF
           {
             "Version": "2012-10-17",
             "Statement": [
@@ -85,40 +85,50 @@ jobs:
           echo "📝 Policy JSON created"
           cat secrets-policy.json
           
-          # Check if policy exists
-          EXISTING_POLICY=$(aws iam list-policies --scope Local --query "Policies[?PolicyName=='megilance-secrets-access'].Arn" --output text || echo "")
-          
-          if [ -n "$EXISTING_POLICY" ]; then
-            echo "ℹ️  Policy already exists: $EXISTING_POLICY"
-            POLICY_ARN="$EXISTING_POLICY"
+          # Attempt 1: Attach AWS managed policy (no need to list/create)
+          MANAGED_POLICY_ARN="arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+          echo "📎 Trying to attach managed policy: $MANAGED_POLICY_ARN"
+          aws iam attach-role-policy \
+            --role-name megilance-exec-role \
+            --policy-arn "$MANAGED_POLICY_ARN" \
+            && echo "✅ Managed policy attached" || echo "ℹ️ Attach managed policy may have failed (insufficient perms or already attached)."
+
+          # Attempt 2: Create and attach custom least-privilege policy (may require iam:CreatePolicy)
+          set +e
+          POLICY_ARN=$(aws iam create-policy \
+            --policy-name megilance-secrets-access \
+            --policy-document file://secrets-policy.json \
+            --description "Allow ECS tasks to read secrets from Secrets Manager" \
+            --query 'Policy.Arn' \
+            --output text 2>/dev/null)
+          CREATE_RC=$?
+          set -e
+          if [ $CREATE_RC -eq 0 ] && [ -n "$POLICY_ARN" ]; then
+            echo "✅ Created custom policy: $POLICY_ARN"
+            aws iam attach-role-policy --role-name megilance-exec-role --policy-arn "$POLICY_ARN" && echo "✅ Custom policy attached" || true
           else
-            echo "🆕 Creating new policy..."
-            POLICY_ARN=$(aws iam create-policy \
-              --policy-name megilance-secrets-access \
-              --policy-document file://secrets-policy.json \
-              --description "Allow ECS tasks to read secrets from Secrets Manager" \
-              --query 'Policy.Arn' \
-              --output text)
-            echo "✅ Policy created: $POLICY_ARN"
+            echo "ℹ️ Skipping custom policy creation (likely insufficient IAM perms)"
           fi
-          
-          # Check if already attached
-          ATTACHED=$(aws iam list-attached-role-policies --role-name megilance-exec-role --query 'AttachedPolicies[?PolicyName==`megilance-secrets-access`].PolicyArn' --output text || echo "")
-          
-          if [ -n "$ATTACHED" ]; then
-            echo "ℹ️  Policy already attached to megilance-exec-role"
+
+          # Attempt 3: Inline policy (requires iam:PutRolePolicy)
+          echo "📎 Trying to put inline least-privilege policy"
+          set +e
+          aws iam put-role-policy \
+            --role-name megilance-exec-role \
+            --policy-name megilance-secrets-inline \
+            --policy-document file://secrets-policy.json
+          INLINE_RC=$?
+          set -e
+          if [ $INLINE_RC -eq 0 ]; then
+            echo "✅ Inline policy attached"
           else
-            echo "📎 Attaching policy to execution role..."
-            aws iam attach-role-policy \
-              --role-name megilance-exec-role \
-              --policy-arn "$POLICY_ARN"
-            echo "✅ Policy attached successfully"
+            echo "⚠️ Could not attach inline policy. If Secrets still fail, grant this OIDC role permissions: iam:AttachRolePolicy or iam:PutRolePolicy"
           fi
           
           # Verify
           echo ""
-          echo "🔍 Verifying policy attachment..."
-          aws iam list-attached-role-policies --role-name megilance-exec-role --query 'AttachedPolicies[*].[PolicyName,PolicyArn]' --output table
+          echo "🔍 Verifying policy attachment (best-effort)..."
+          aws iam list-attached-role-policies --role-name megilance-exec-role --output table || true
           
           echo ""
           echo "✅ IAM fix completed!"
