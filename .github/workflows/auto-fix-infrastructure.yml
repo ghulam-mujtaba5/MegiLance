@@ -21,7 +21,6 @@ on:
 
 env:
   AWS_REGION: us-east-2
-  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 jobs:
   apply-infrastructure-fixes:
@@ -38,8 +37,8 @@ jobs:
       - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          role-session-name: github-actions-auto-fix
           aws-region: ${{ env.AWS_REGION }}
       
       - name: ✅ Verify AWS connection
@@ -48,6 +47,7 @@ jobs:
           ACCOUNT=$(aws sts get-caller-identity --query 'Account' --output text)
           echo "✅ Connected to AWS Account: $ACCOUNT"
           echo "📍 Region: ${{ env.AWS_REGION }}"
+          echo "ACCOUNT_ID=$ACCOUNT" >> $GITHUB_ENV
       
       - name: 📋 Apply IAM Secrets Manager Policy
         if: ${{ inputs.apply_iam_fix }}
@@ -66,8 +66,8 @@ jobs:
                   "secretsmanager:DescribeSecret"
                 ],
                 "Resource": [
-                  "arn:aws:secretsmanager:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:megilance/prod/database-*",
-                  "arn:aws:secretsmanager:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:secret:megilance/prod/jwt-*"
+                  "arn:aws:secretsmanager:${{ env.AWS_REGION }}:${ACCOUNT_ID}:secret:megilance/prod/database-*",
+                  "arn:aws:secretsmanager:${{ env.AWS_REGION }}:${ACCOUNT_ID}:secret:megilance/prod/jwt-*"
                 ]
               },
               {
@@ -295,6 +295,27 @@ jobs:
           echo ""
           echo "✅ All ECS services updated!"
           echo "ℹ️  New tasks will start with updated IAM permissions"
+
+      - name: 🛠️ Tune ECS Health Check Grace Period (optional)
+        if: ${{ inputs.force_ecs_update }}
+        continue-on-error: true
+        run: |
+          echo "🛠️ Adjusting health check grace period to reduce premature failures..."
+          # Backend often needs longer startup time
+          aws ecs update-service \
+            --cluster megilance-cluster \
+            --service megilance-backend-service \
+            --health-check-grace-period-seconds 120 \
+            --query 'service.{Name:serviceName,Grace:healthCheckGracePeriodSeconds}' \
+            --output table || true
+          
+          # Frontend usually faster; set modest grace period
+          aws ecs update-service \
+            --cluster megilance-cluster \
+            --service megilance-frontend-service \
+            --health-check-grace-period-seconds 60 \
+            --query 'service.{Name:serviceName,Grace:healthCheckGracePeriodSeconds}' \
+            --output table || true
       
       - name: 📊 Monitor Service Health
         run: |
