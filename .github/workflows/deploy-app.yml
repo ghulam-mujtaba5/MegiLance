@@ -1,6 +1,11 @@
-name: Complete Application Deployment
+name: 🚀 Auto-Deploy to AWS (Vercel-style)
 
 on:
+  # Automatic deployment on every push to main (like Vercel!)
+  push:
+    branches: [main]
+  
+  # Manual deployment trigger (optional)
   workflow_dispatch:
     inputs:
       environment:
@@ -12,12 +17,11 @@ on:
           - dev
           - staging
           - prod
-  push:
-    branches: [main]
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - '.github/workflows/deploy-app.yml'
+      skip_tests:
+        description: 'Skip tests (not recommended)'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   id-token: write
