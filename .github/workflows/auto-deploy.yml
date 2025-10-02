@@ -47,7 +47,8 @@ jobs:
           role-session-name: github-actions-preflight
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Ensure exec role has Secrets Manager access
+      - name: Ensure exec role has Secrets Manager access (best-effort)
+        continue-on-error: true
         run: |
           set -e
           echo "🔐 Ensuring megilance-exec-role has Secrets Manager access..."
@@ -373,7 +374,10 @@ jobs:
                   }
                 },
                 "healthCheck": {
-                  "command": ["CMD-SHELL", "curl -f http://localhost:8000/api/health/live || exit 1"],
+                  "command": [
+                    "CMD-SHELL",
+                    "python -c \"import sys,urllib.request,socket; socket.setdefaulttimeout(3); r=urllib.request.urlopen('http://127.0.0.1:8000/api/health/live'); sys.exit(0 if 200<=r.getcode()<400 else 1)\""
+                  ],
                   "interval": 30,
                   "timeout": 5,
                   "retries": 3,
@@ -522,7 +526,10 @@ jobs:
                   }
                 },
                 "healthCheck": {
-                  "command": ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"],
+                  "command": [
+                    "CMD-SHELL",
+                    "node -e \"require('http').get('http://127.0.0.1:3000',res=>process.exit(res.statusCode>=200&&res.statusCode<400?0:1)).on('error',()=>process.exit(1))\""
+                  ],
                   "interval": 30,
                   "timeout": 5,
                   "retries": 3,
