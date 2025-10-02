@@ -7,10 +7,11 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Q
 from sqlalchemy.orm import Session
 import uuid
 import os
+from io import BytesIO
 
 from app.core.security import get_current_active_user
 from app.core.s3 import S3Client
-from app.core.config import settings
+from app.core.config import get_settings
 from app.db.session import get_db
 from app.models.user import User
 
@@ -29,8 +30,12 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 def validate_file(file: UploadFile, allowed_extensions: set) -> None:
     """Validate file extension and size"""
-    # Check extension
-    ext = os.path.splitext(file.filename)[1].lower()
+    # Ensure filename is a string for type checkers, then check extension
+    filename: str = file.filename or ""
+    ext = os.path.splitext(filename)[1].lower()
+    if not filename or ext == "":
+        raise HTTPException(status_code=400, detail="Invalid file or missing filename")
+
     if ext not in allowed_extensions:
         raise HTTPException(
             status_code=400,
@@ -58,15 +63,19 @@ async def upload_profile_image(
     validate_file(file, ALLOWED_IMAGE_EXTENSIONS)
     
     # Generate unique filename
-    ext = os.path.splitext(file.filename)[1]
+    filename: str = file.filename or ""
+    ext = os.path.splitext(filename)[1]
     s3_key = f"profile-images/{current_user.id}/{uuid.uuid4()}{ext}"
     
     # Upload to S3
     file_content = await file.read()
+    file_obj = BytesIO(file_content)
+    settings = get_settings()
+    bucket_name = settings.s3_bucket_assets or "megilance-assets"
     s3_url = s3_client.upload_file(
-        file_content=file_content,
-        s3_key=s3_key,
-        bucket_name=settings.s3_bucket_assets
+        file_obj=file_obj,
+        bucket_name=bucket_name,
+        object_name=s3_key
     )
     
     # TODO: Delete old profile image from S3 if exists
@@ -97,7 +106,8 @@ async def upload_portfolio_image(
     validate_file(file, ALLOWED_IMAGE_EXTENSIONS)
     
     # Generate unique filename
-    ext = os.path.splitext(file.filename)[1]
+    filename: str = file.filename or ""
+    ext = os.path.splitext(filename)[1]
     portfolio_path = f"portfolio/{current_user.id}"
     if portfolio_item_id:
         portfolio_path += f"/{portfolio_item_id}"
@@ -105,10 +115,13 @@ async def upload_portfolio_image(
     
     # Upload to S3
     file_content = await file.read()
+    file_obj = BytesIO(file_content)
+    settings = get_settings()
+    bucket_name = settings.s3_bucket_assets or "megilance-assets"
     s3_url = s3_client.upload_file(
-        file_content=file_content,
-        s3_key=s3_key,
-        bucket_name=settings.s3_bucket_assets
+        file_obj=file_obj,
+        bucket_name=bucket_name,
+        object_name=s3_key
     )
     
     return {
@@ -136,15 +149,19 @@ async def upload_proposal_attachment(
     validate_file(file, ALLOWED_DOCUMENT_EXTENSIONS)
     
     # Generate unique filename
-    ext = os.path.splitext(file.filename)[1]
+    filename: str = file.filename or ""
+    ext = os.path.splitext(filename)[1]
     s3_key = f"proposals/{proposal_id}/attachments/{uuid.uuid4()}{ext}"
     
     # Upload to S3
     file_content = await file.read()
+    file_obj = BytesIO(file_content)
+    settings = get_settings()
+    bucket_name = settings.s3_bucket_uploads or "megilance-uploads"
     s3_url = s3_client.upload_file(
-        file_content=file_content,
-        s3_key=s3_key,
-        bucket_name=settings.s3_bucket_uploads
+        file_obj=file_obj,
+        bucket_name=bucket_name,
+        object_name=s3_key
     )
     
     # TODO: Add attachment to proposal.attachments JSON field
@@ -173,15 +190,19 @@ async def upload_project_file(
     # TODO: Verify user is part of the project (client or accepted freelancer)
     
     # Generate unique filename
-    ext = os.path.splitext(file.filename)[1]
+    filename: str = file.filename or ""
+    ext = os.path.splitext(filename)[1]
     s3_key = f"projects/{project_id}/files/{current_user.id}/{uuid.uuid4()}{ext}"
     
     # Upload to S3
     file_content = await file.read()
+    file_obj = BytesIO(file_content)
+    settings = get_settings()
+    bucket_name = settings.s3_bucket_uploads or "megilance-uploads"
     s3_url = s3_client.upload_file(
-        file_content=file_content,
-        s3_key=s3_key,
-        bucket_name=settings.s3_bucket_uploads
+        file_obj=file_obj,
+        bucket_name=bucket_name,
+        object_name=s3_key
     )
     
     return {
@@ -216,22 +237,26 @@ async def upload_multiple_files(
     
     for file in files:
         validate_file(file, allowed_exts)
-        
-        ext = os.path.splitext(file.filename)[1]
+
+        filename: str = file.filename or ""
+        ext = os.path.splitext(filename)[1]
         s3_key = f"{file_type}/{current_user.id}"
         if reference_id:
             s3_key += f"/{reference_id}"
         s3_key += f"/{uuid.uuid4()}{ext}"
-        
+
         file_content = await file.read()
+        file_obj = BytesIO(file_content)
+        settings = get_settings()
+        bucket_name = settings.s3_bucket_uploads or "megilance-uploads"
         s3_url = s3_client.upload_file(
-            file_content=file_content,
-            s3_key=s3_key,
-            bucket_name=settings.s3_bucket_uploads
+            file_obj=file_obj,
+            bucket_name=bucket_name,
+            object_name=s3_key
         )
-        
+
         uploaded_files.append({
-            "filename": file.filename,
+            "filename": filename,
             "url": s3_url,
             "s3_key": s3_key
         })
@@ -257,9 +282,10 @@ async def delete_file(
     if f"/{current_user.id}/" not in s3_key and current_user.user_type != "Admin":
         raise HTTPException(status_code=403, detail="Not authorized to delete this file")
     
-    bucket_name = settings.s3_bucket_assets if bucket == "assets" else settings.s3_bucket_uploads
+    settings = get_settings()
+    bucket_name = (settings.s3_bucket_assets if bucket == "assets" else settings.s3_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
     
-    success = s3_client.delete_file(s3_key=s3_key, bucket_name=bucket_name)
+    success = s3_client.delete_file(bucket_name=bucket_name, object_name=s3_key)
     
     if not success:
         raise HTTPException(status_code=500, detail="Failed to delete file")
@@ -281,11 +307,12 @@ async def get_presigned_url(
     """
     Generate presigned URL for secure file download
     """
-    bucket_name = settings.s3_bucket_assets if bucket == "assets" else settings.s3_bucket_uploads
+    settings = get_settings()
+    bucket_name = (settings.s3_bucket_assets if bucket == "assets" else settings.s3_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
     
     presigned_url = s3_client.generate_presigned_url(
-        s3_key=s3_key,
         bucket_name=bucket_name,
+        object_name=s3_key,
         expiration=expiration
     )
     
