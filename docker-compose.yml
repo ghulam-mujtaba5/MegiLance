@@ -3,14 +3,9 @@ services:
     build: ./frontend
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
     depends_on:
       - backend
   backend:
@@ -18,12 +13,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
       - ./db:/data/db:ro
     env_file:
       - ./backend/.env
     environment:
-      - environment=development
+      - environment=production
     depends_on:
       - db
     healthcheck:
