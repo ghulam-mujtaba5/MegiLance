@@ -63,42 +63,74 @@ Frontend (Next.js) → ALB → ECS Fargate (FastAPI) → RDS PostgreSQL
 - Node.js 18+
 - Python 3.11+
 
-### Start Services
+### Development Mode (Hot Reloading) ⚡
 
-1) From the repo root, start services in the background
+**Recommended for development** - Code changes automatically reload:
 
 ```pwsh
-docker compose up -d db backend frontend
+# Start with hot reloading
+.\start-dev.ps1
+
+# Or manually
+docker compose -f docker-compose.dev.yml up --build
 ```
 
-2) Open in your browser
+**Features:**
+- ✅ Frontend hot reloading (Next.js Fast Refresh)
+- ✅ Backend hot reloading (Uvicorn auto-reload)
+- ✅ Instant code changes without rebuild
+- ✅ Volume mounts for live development
 
+**Services:**
+- Frontend: http://localhost:3000 (Hot Reload: ✓)
+- Backend API: http://localhost:8000/api/docs (Hot Reload: ✓)
+- Database: localhost:5432
+
+**View logs:**
+```pwsh
+docker compose -f docker-compose.dev.yml logs -f
+docker compose -f docker-compose.dev.yml logs -f frontend
+docker compose -f docker-compose.dev.yml logs -f backend
+```
+
+**Stop services:**
+```pwsh
+docker compose -f docker-compose.dev.yml down
+```
+
+### Production Mode
+
+**For production-like testing:**
+
+```pwsh
+# Start in production mode
+.\start-prod.ps1
+
+# Or manually
+docker compose up --build -d
+```
+
+**Services:**
 - Frontend: http://localhost:3000
-- Backend health: http://localhost:8000/api/health/live and /ready
+- Backend: http://localhost:8000/api/docs
+- Database: localhost:5432
 
-3) Stop everything
-
+**Stop services:**
 ```pwsh
 docker compose down
 ```
 
-4) Rebuild images (if you change dependencies)
+### Notes
 
-```pwsh
-docker compose build backend frontend
-```
-
-Notes
-
-- The frontend is configured to proxy the backend under the path prefix `/backend/*`. From browser code you can call:
-
+- The frontend proxies backend requests via `/backend/*`:
   ```ts
   // Example from the frontend
   const res = await fetch('/backend/api/health/live');
   const data = await res.json();
   ```
 
-- The backend container initializes the database and exposes health endpoints at `/api/health/*`.
+- Backend exposes health endpoints at `/api/health/live` and `/api/health/ready`
+- In development mode, code changes reflect immediately without rebuilding containers
 
 # MegiLance Frontend
 
