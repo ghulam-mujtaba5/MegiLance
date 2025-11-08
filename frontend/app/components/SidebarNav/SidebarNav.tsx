@@ -64,7 +64,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   className = '',
 }) => {
   const pathname = usePathname();
-  const { theme } = useTheme(); // Use hook for theme
+  const { resolvedTheme } = useTheme(); // Use hook for theme
   const [openSubmenus, setOpenSubmenus] = React.useState<Record<string, boolean>>({});
 
   // Provide sensible defaults when navItems are not passed in, based on userType
@@ -127,7 +127,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         }
       })();
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const toggleSubmenu = (href: string) => {
     setOpenSubmenus(prev => ({
@@ -138,7 +138,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
   const sidebarClasses = cn(
     styles.sidebarNav,
-    `theme-${theme}`, // Apply global theme class for CSS variables
+    `theme-${resolvedTheme}`, // Apply global theme class for CSS variables
     isCollapsed && styles.sidebarNavCollapsed,
     className
   );
@@ -196,7 +196,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                   </Link>
                 </li>
                 {item.submenu && !isCollapsed && isSubmenuOpen && (
-                  <ul className={styles.sidebarNavList} style={{ paddingLeft: '1.5rem' }}>
+                  <ul className={cn(styles.sidebarNavList, styles.sidebarNavListNested)}>
                     {item.submenu.map((subItem) => {
                       const isSubActive = pathname === subItem.href;
                       return (

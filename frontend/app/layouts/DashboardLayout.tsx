@@ -14,11 +14,11 @@ interface DashboardLayoutProps {
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, userType }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   return (
-    <div className={`DashboardLayout DashboardLayout--${theme}`}>
-      <SidebarNav theme={theme} userType={userType} />
+    <div className={`DashboardLayout DashboardLayout--${resolvedTheme}`}>
+      <SidebarNav theme={resolvedTheme} userType={userType} />
       <main className="DashboardLayout-main">
         {children}
       </main>

@@ -15,9 +15,14 @@ import lightStyles from './Hero.light.module.css';
 import darkStyles from './Hero.dark.module.css';
 
 const Hero: React.FC = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Trigger animations after component mounts
@@ -27,8 +32,21 @@ const Hero: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  if (!mounted) {
+    return (
+      <div className={cn(commonStyles.heroContainer)}>
+        <div className={commonStyles.contentWrapper}>
+          <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', border: '3px solid #4573df', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn(commonStyles.heroContainer, styles.heroContainer)}>
+
       <div className={cn(commonStyles.backgroundVisuals, styles.backgroundVisuals)}></div>
       <div className={commonStyles.contentWrapper}>
         <a 
@@ -66,14 +84,14 @@ const Hero: React.FC = () => {
           commonStyles.ctaButtons,
           isVisible && commonStyles.ctaButtonsVisible
         )}>
-          <Link href="/signup" passHref legacyBehavior>
-            <Button as="a" variant="primary" size="large" className={commonStyles.primaryCta}>
+          <Link href="/signup">
+            <Button variant="primary" size="large" className={commonStyles.primaryCta}>
               Get Started Free
               <ArrowRight size={18} />
             </Button>
           </Link>
-          <Link href="/contact" passHref legacyBehavior>
-            <Button as="a" variant="secondary" size="large">
+          <Link href="/contact">
+            <Button variant="secondary" size="large">
               <PlayCircle size={18} />
               Contact Sales
             </Button>

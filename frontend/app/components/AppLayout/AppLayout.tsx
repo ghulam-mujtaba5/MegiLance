@@ -34,7 +34,7 @@ const user = {
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const pathname = usePathname();
 
   const area: 'client' | 'freelancer' | 'admin' | 'general' = useMemo(() => {
@@ -89,9 +89,9 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setIsCollapsed(!isCollapsed);
   };
 
-  if (!theme) return null; // Avoid rendering until theme is loaded to prevent flash of unstyled content
+  if (!resolvedTheme) return null; // Avoid rendering until theme is loaded to prevent flash of unstyled content
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>

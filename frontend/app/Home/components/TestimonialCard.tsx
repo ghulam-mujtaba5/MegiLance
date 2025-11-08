@@ -26,8 +26,8 @@ interface TestimonialCardProps {
 }
 
 const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div

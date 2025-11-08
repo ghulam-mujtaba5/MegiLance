@@ -1,10 +1,104 @@
 /* AI-HINT: Common styles for How It Works page. Add base layout, grid, and card styles. */
 
-.HowItWorksPage-container {}
-.HowItWorksPage-header {}
-.HowItWorksPage-title {}
-.HowItWorksPage-subtitle {}
-.HowItWorksPage-main {}
-.HowItWorksPage-section {}
-.HowItWorksPage-section-title {}
-.HowItWorksPage-grid {}
+.HowItWorksPage-container {
+  min-height: 100vh;
+  padding: 6rem 2rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.HowItWorksPage-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.HowItWorksPage-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
+}
+
+.HowItWorksPage-subtitle {
+  font-size: 1.25rem;
+  opacity: 0.8;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.HowItWorksPage-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+.HowItWorksPage-section {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.HowItWorksPage-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 3rem;
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.HowItWorksPage-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #4573df, #ff9800);
+  border-radius: 2px;
+}
+
+.HowItWorksPage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .HowItWorksPage-container {
+    padding: 5rem 1.5rem 3rem;
+  }
+
+  .HowItWorksPage-title {
+    font-size: 2rem;
+  }
+
+  .HowItWorksPage-subtitle {
+    font-size: 1rem;
+  }
+
+  .HowItWorksPage-section-title {
+    font-size: 1.5rem;
+  }
+
+  .HowItWorksPage-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

@@ -12,7 +12,7 @@
 
 .promoBadge {
   background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  color: #9ca3af;
+  color: #d1d5db;
   border: 1px solid #374151;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
@@ -29,14 +29,12 @@
 }
 
 .mainHeading {
-  background: linear-gradient(90deg, #93c5fd, #60a5fa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .subheading {
-  color: #9ca3af;
+  color: #e5e7eb;
 }
 
 .featureItem {
@@ -68,5 +66,5 @@
 .floatingElement1, .floatingElement2, .floatingElement3 {
   background: rgba(30, 41, 59, 0.3);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(55, 65, 81, 0.5);
+  border: 1px solid rgba(55, 65, 81, 0.7);
 }

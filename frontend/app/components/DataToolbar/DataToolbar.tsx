@@ -58,11 +58,11 @@ const DataToolbar: React.FC<DataToolbarProps> = ({
   pageSizeTitle = 'Results per page',
   exportFormatTitle = 'Export format',
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const [fmt, setFmt] = useState<ExportFormat>(exportDefaultFormat);
   const uid = useId();

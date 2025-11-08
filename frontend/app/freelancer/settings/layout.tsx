@@ -16,8 +16,8 @@ interface FreelancerSettingsLayoutProps {
 }
 
 export default function FreelancerSettingsLayout({ children }: FreelancerSettingsLayoutProps) {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.container, styles.container)}>

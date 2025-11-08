@@ -34,11 +34,11 @@ const faqItems = [
 ];
 
 const SupportPage: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <div className={cn(styles.pageWrapper)}>

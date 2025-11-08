@@ -25,14 +25,14 @@ import light from './Dashboard.light.module.css';
 import dark from './Dashboard.dark.module.css';
 
 const Dashboard: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { user, loading: userLoading } = useUser();
-  const themed = theme === 'dark' ? dark : light;
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const headerStyles = useMemo(() => {
-    const t = theme === 'light' ? authLight : authDark;
+    const t = resolvedTheme === 'light' ? authLight : authDark;
     return { ...authCommon, ...t } as { [k: string]: string };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const metricsRef = useRef<HTMLDivElement | null>(null);

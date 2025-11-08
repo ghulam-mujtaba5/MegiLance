@@ -37,8 +37,8 @@ const steps: Array<Omit<StepCardProps, 'stepNumber' | 'type'>> = [
 ];
 
 const HowItWorks: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <section className={cn(commonStyles.howItWorks, themeStyles.howItWorks)}>

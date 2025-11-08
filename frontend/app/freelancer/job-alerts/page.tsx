@@ -42,13 +42,13 @@ const frequencyOptions: SelectOption[] = [
 ];
 
 const JobAlertsPage: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [alerts, setAlerts] = useState(mockAlerts);
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const handleDelete = (id: number) => {
     setAlerts(alerts.filter(alert => alert.id !== id));

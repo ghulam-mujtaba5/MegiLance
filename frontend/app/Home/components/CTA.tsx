@@ -16,8 +16,8 @@ import lightStyles from './CTA.light.module.css';
 import darkStyles from './CTA.dark.module.css';
 
 const CTA: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <section className={cn(commonStyles.ctaSection, themeStyles.ctaSection)}>
@@ -26,8 +26,8 @@ const CTA: React.FC = () => {
         <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
           Join MegiLance today and unlock AI-powered tools, access global projects, and get paid instantly with crypto.
         </p>
-        <Link href="/signup" passHref>
-          <Button as="a" className={cn(commonStyles.ctaButton, themeStyles.ctaButton)}>
+        <Link href="/signup" className={cn(commonStyles.ctaButton, themeStyles.ctaButton)}>
+          <Button>
             Get Started Free
             <Rocket className={commonStyles.buttonIcon} />
           </Button>

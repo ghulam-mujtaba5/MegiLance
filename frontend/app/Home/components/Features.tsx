@@ -34,8 +34,8 @@ const featuresData = [
 ];
 
 const Features: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const [heroFeature, ...secondaryFeatures] = featuresData;
 

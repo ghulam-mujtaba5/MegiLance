@@ -36,16 +36,16 @@ const PieChart: React.FC<PieChartProps> = ({
   className = '',
   wrapperClassName = ''
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const chartRef = useRef<HTMLDivElement>(null);
   
-  if (!theme) {
+  if (!resolvedTheme) {
     return null; // Don't render until theme is resolved
   }
   
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
   
   // Calculate total value
   const total = data.reduce((sum, item) => sum + item.value, 0);

@@ -34,13 +34,13 @@ const mockPolicies = {
 type PolicyType = keyof typeof mockPolicies;
 
 const AdminPolicyEditor: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [selectedPolicy, setSelectedPolicy] = useState<PolicyType>('terms');
   const [content, setContent] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
     setContent(mockPolicies[selectedPolicy].content);

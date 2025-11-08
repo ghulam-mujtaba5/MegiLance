@@ -49,7 +49,7 @@ const StatusBadge = ({ status }: { status: Status }) => {
 };
 
 const Withdrawals: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [requests, setRequests] = useState(mockWithdrawals);
   const [filter, setFilter] = useState<Status | 'All'>('Pending');
   const [sortBy, setSortBy] = useState<SortBy>('date');
@@ -88,10 +88,10 @@ const Withdrawals: React.FC = () => {
     },
   ];
 
-  const styles = { ...commonStyles, ...(theme === 'dark' ? darkStyles : lightStyles) };
+  const styles = { ...commonStyles, ...(resolvedTheme === 'dark' ? darkStyles : lightStyles) };
 
   return (
-    <div className={clsx(styles.pageContainer, theme === 'dark' ? styles.dark : styles.light)}>
+    <div className={clsx(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
       <div className={styles.header}>
         <h1 className={styles.headerTitle}>Withdrawal Requests</h1>
         <div className={styles.headerActions}>

@@ -32,8 +32,8 @@ const statusVariantMap: Record<PaymentCardProps['status'], NonNullable<BadgeProp
 
 const PaymentCard: React.FC<PaymentCardProps> = (props) => {
   const { id, date, project, projectId, freelancerName, freelancerAvatarUrl, amount, status } = props;
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const menuItems = [
     { label: 'Download Receipt', icon: FileText, onClick: () => console.log('Download receipt for', id) },

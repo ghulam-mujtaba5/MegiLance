@@ -25,8 +25,8 @@ const STATUSES = ['All', 'Completed', 'Pending', 'Failed'] as const;
 const ROLES = ['All', 'Client', 'Freelancer'] as const;
 
 const AdminPayments: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { payments, loading, error } = useAdminData();
 
   const rows: Txn[] = useMemo(() => {

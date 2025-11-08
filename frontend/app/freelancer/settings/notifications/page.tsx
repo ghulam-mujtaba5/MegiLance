@@ -23,8 +23,8 @@ const initialSettings = {
 };
 
 const NotificationSettingsPage = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const toaster = useToaster();
 
   const [settings, setSettings] = useState(initialSettings);

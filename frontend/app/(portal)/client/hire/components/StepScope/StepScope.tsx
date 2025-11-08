@@ -19,8 +19,8 @@ interface StepScopeProps {
 }
 
 const StepScope: React.FC<StepScopeProps> = ({ title, setTitle, description, setDescription }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
     <section className={cn(common.section, themed.section)} aria-labelledby="scope-step-title">

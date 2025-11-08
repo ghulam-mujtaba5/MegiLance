@@ -22,12 +22,12 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   size = 'medium',
   className,
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-  if (!theme) {
+  if (!resolvedTheme) {
     return null; // Avoid hydration mismatch
   }
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   let sizeClass = '';
   let imageSize: number;

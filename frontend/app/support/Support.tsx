@@ -10,8 +10,8 @@ import light from './Support.light.module.css';
 import dark from './Support.dark.module.css';
 
 const Support: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const headerRef = useRef<HTMLElement | null>(null);
   const catsRef = useRef<HTMLDivElement | null>(null);

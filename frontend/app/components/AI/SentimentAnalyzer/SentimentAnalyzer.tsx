@@ -15,10 +15,10 @@ interface SentimentAnalyzerProps {
 }
 
 const SentimentAnalyzer: React.FC<SentimentAnalyzerProps> = ({ score, className }) => {
-  const { theme } = useTheme();
-  if (!theme) return null;
+  const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const getSentimentDetails = (score: number) => {
     if (score > 0.2) {

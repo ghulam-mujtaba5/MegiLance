@@ -53,8 +53,8 @@ const SORT_OPTIONS = [
 ];
 
 const Payments: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { payments: rawPayments, loading, error } = useClientData();
   const payments = useMemo(() => transformPaymentData(rawPayments || []), [rawPayments]);
 

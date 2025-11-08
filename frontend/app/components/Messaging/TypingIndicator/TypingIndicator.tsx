@@ -9,10 +9,10 @@ import lightStyles from './TypingIndicator.light.module.css';
 import darkStyles from './TypingIndicator.dark.module.css';
 
 const TypingIndicator: React.FC = () => {
-  const { theme } = useTheme();
-  if (!theme) return null;
+  const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.container, themeStyles.container)}>

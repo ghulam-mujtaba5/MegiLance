@@ -36,12 +36,12 @@ const mockFlaggedReviews: FlaggedReview[] = [
 ];
 
 const FlaggedReviews: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [reviews, setReviews] = useState(mockFlaggedReviews);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Pending');
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleAction = (id: string, newStatus: 'Kept' | 'Removed') => {
     setReviews(reviews.map(review => (review.id === id ? { ...review, status: newStatus } : review)));

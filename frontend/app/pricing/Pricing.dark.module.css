@@ -8,7 +8,7 @@
 }
 
 .title { color: #f5f7fa; }
-.subtitle { color: #9ca3af; }
+.subtitle { color: #d1d5db; }
 
 /* --- Pricing Cards --- */
 .card {
@@ -38,8 +38,8 @@
 
 .cardTier { color: #f5f7fa; }
 .priceAmount { color: #f5f7fa; }
-.pricePeriod { color: #9ca3af; }
-.cardDescription { color: #9ca3af; }
+.pricePeriod { color: #d1d5db; }
+.cardDescription { color: #d1d5db; }
 
 .features {
   border-color: rgba(58, 65, 74, 0.5);
@@ -50,5 +50,5 @@
 
 /* --- FAQ Section --- */
 .faqTitle { color: #f5f7fa; }
-.faqSubtitle { color: #9ca3af; }
+.faqSubtitle { color: #d1d5db; }
 .faqList { border-color: rgba(58, 65, 74, 0.5); }

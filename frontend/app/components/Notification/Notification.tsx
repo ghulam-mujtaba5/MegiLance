@@ -46,7 +46,7 @@ const Notification: React.FC<NotificationProps> = ({
   className = '',
   persistent = false
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isVisible, setIsVisible] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -54,7 +54,7 @@ const Notification: React.FC<NotificationProps> = ({
   const remainingTimeRef = useRef<number>(duration);
 
   const IconComponent = iconMap[type];
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   // Map duration to CSS duration buckets to avoid inline styles
   const getDurationClass = (ms: number) => {
@@ -118,7 +118,7 @@ const Notification: React.FC<NotificationProps> = ({
     }
   };
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
   return (
     <div 

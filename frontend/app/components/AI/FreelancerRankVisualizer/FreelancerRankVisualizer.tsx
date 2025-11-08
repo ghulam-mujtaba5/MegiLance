@@ -53,8 +53,8 @@ const RadialProgress: React.FC<{ radius: number; stroke: number; theme: string }
 };
 
 const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({ rank, score, className }) => {
-  const { theme } = useTheme();
-  if (!theme) return null; // Or a loading skeleton
+  const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null; // Or a loading skeleton
 
   const currentRank = rankTiers[rank] || rankTiers['N/A'];
   const RankIcon = currentRank.icon;
@@ -85,16 +85,16 @@ const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({ ran
     >
       <div className={commonStyles.contentWrapper}>
         <div className={commonStyles.progressContainer}>
-          <RadialProgress radius={radius} stroke={stroke} theme={theme} />
+          <RadialProgress radius={radius} stroke={stroke} theme={resolvedTheme} />
           <div className={commonStyles.progressTextContainer}>
-            <p className={cn(commonStyles.scoreValue, theme === 'dark' ? darkStyles.scoreValue : lightStyles.scoreValue)}>{score}</p>
-            <p className={cn(commonStyles.scoreLabel, theme === 'dark' ? darkStyles.scoreLabel : lightStyles.scoreLabel)}>Score</p>
+            <p className={cn(commonStyles.scoreValue, resolvedTheme === 'dark' ? darkStyles.scoreValue : lightStyles.scoreValue)}>{score}</p>
+            <p className={cn(commonStyles.scoreLabel, resolvedTheme === 'dark' ? darkStyles.scoreLabel : lightStyles.scoreLabel)}>Score</p>
           </div>
         </div>
         <div className={commonStyles.detailsContainer}>
           <h3 className={commonStyles.rankName}>{rank} Tier</h3>
           {currentRank.next && (
-            <p className={cn(commonStyles.nextRankInfo, theme === 'dark' ? darkStyles.nextRankInfo : lightStyles.nextRankInfo)}>
+            <p className={cn(commonStyles.nextRankInfo, resolvedTheme === 'dark' ? darkStyles.nextRankInfo : lightStyles.nextRankInfo)}>
               {pointsToNext > 0 ? 
                 `+${pointsToNext} points to ${currentRank.next}` :
                 `You've reached the top tier!`

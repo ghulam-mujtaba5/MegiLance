@@ -1,7 +1,7 @@
 // @AI-HINT: Premium SaaS Login component for MegiLance platform. This is the main authentication interface that handles three user roles (Admin, Client, Freelancer) with investor-grade UI quality. Features secure login, role selection, social authentication, and responsive design following exact MegiLance brand guidelines. Uses per-component CSS architecture with .common.css, .light.css, .dark.css theming. Designed to match quality standards of Linear, Vercel, GitHub, and Upwork Pro.
 // @AI-HINT: Premium SaaS Login component for MegiLance. Redesigned for investor-grade UI/UX quality, matching standards of Vercel, Linear, and Toptal. Features a modern two-panel layout, role-based dynamic content, and pixel-perfect implementation of the official brand playbook.
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaUserShield } from 'react-icons/fa';
@@ -55,7 +55,8 @@ const roleConfig = {
 
 // @AI-HINT: The main Login component, orchestrating the layout and state. It's structured for clarity, separating the branding panel from the login form.
 const Login: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [showPassword, setShowPassword] = useState(false);
@@ -64,8 +65,12 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '', general: '' });
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
     return {
       loginPage: merge('loginPage'),
@@ -99,7 +104,7 @@ const Login: React.FC = () => {
       signupPrompt: merge('signupPrompt'),
       generalError: merge('generalError'),
     } as const;
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const validate = () => {
     const newErrors = { email: '', password: '', general: '' };
@@ -163,6 +168,16 @@ const Login: React.FC = () => {
     }
   };
 
+  if (!mounted) {
+    return (
+      <div className={cn(commonStyles.loginPage)}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+          <div style={{ width: '40px', height: '40px', border: '3px solid #4573df', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.loginPage}>
       <div className={styles.brandingSlot}>
@@ -224,6 +239,7 @@ const Login: React.FC = () => {
                 onChange={handleChange}
                 error={errors.email}
                 disabled={loading}
+                autoComplete="email"
               />
             </div>
             <div className={styles.inputGroup}>
@@ -237,6 +253,7 @@ const Login: React.FC = () => {
                   onChange={handleChange}
                   error={errors.password}
                   disabled={loading}
+                  autoComplete="current-password"
                   iconAfter={
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
                       {showPassword ? <FaEyeSlash /> : <FaEye />}

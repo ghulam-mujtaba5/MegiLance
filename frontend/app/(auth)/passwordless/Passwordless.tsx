@@ -51,7 +51,7 @@ const roleConfig = {
 };
 
 const Passwordless: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [email, setEmail] = useState('');
@@ -127,7 +127,7 @@ const Passwordless: React.FC = () => {
   };
 
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
     return {
       loginPage: merge('loginPage'),
@@ -160,7 +160,7 @@ const Passwordless: React.FC = () => {
       successMessage: merge('successMessage'),
       countdownText: merge('countdownText'),
     } as const;
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <div className={styles.loginPage}>

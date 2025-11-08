@@ -15,8 +15,8 @@ interface TableSkeletonProps {
 }
 
 const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows = 6, cols, dense, useCards }) => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => (theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [theme]);
+  const { resolvedTheme } = useTheme();
+  const styles = useMemo(() => (resolvedTheme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [resolvedTheme]);
   return (
     <div className={styles.wrap} aria-hidden="true" data-cards={useCards ? '1' : '0'}>
       {[...Array(rows)].map((_, r) => (

@@ -5,7 +5,7 @@
 }
 
 .subtitle {
-  color: #9ca3af;
+  color: #d1d5db;
 }
 
 .error {
@@ -33,7 +33,7 @@
   --surface: #374151;
   --surface-hover: #4b5563;
   --border: #4b5563;
-  --text-secondary: #9ca3af;
+  --text-secondary: #d1d5db;
   --text-primary: #f9fafb;
 }
 

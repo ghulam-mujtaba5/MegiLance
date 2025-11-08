@@ -3,6 +3,7 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@/lib/utils';
 import styles from './BillingToggle.module.css';
 import lightStyles from './BillingToggle.light.module.css';
 import darkStyles from './BillingToggle.dark.module.css';
@@ -20,9 +21,9 @@ export const BillingToggle: React.FC<BillingToggleProps> = ({ billingCycle, setB
   };
 
   return (
-    <div className={`${styles.toggleWrapper} ${lightStyles.theme} ${darkStyles.theme}`}>
+    <div className={cn(styles.toggleWrapper, lightStyles.theme, darkStyles.theme)}>
       <label 
-        className={`${styles.toggleLabel} ${!isYearly ? styles.toggleLabelActive : ''}`}
+        className={cn(styles.toggleLabel, !isYearly && styles.toggleLabelActive)}
         onClick={() => setBillingCycle('monthly')}
       >
         Monthly
@@ -39,7 +40,7 @@ export const BillingToggle: React.FC<BillingToggleProps> = ({ billingCycle, setB
         <label htmlFor="billing-toggle" className={styles.toggleSlider}></label>
       </div>
       <label 
-        className={`${styles.toggleLabel} ${isYearly ? styles.toggleLabelActive : ''}`}
+        className={cn(styles.toggleLabel, isYearly && styles.toggleLabelActive)}
         onClick={() => setBillingCycle('yearly')}
       >
         Yearly

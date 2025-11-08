@@ -151,11 +151,11 @@ const Testimonials: React.FC = () => {
           <div className={cn(common.cta, themed.cta)}>
             <h2 className={cn(common.ctaTitle, themed.ctaTitle)}>Ready to build your masterpiece?</h2>
             <div className={common.buttonGroup}>
-              <Link href="/signup/client" passHref legacyBehavior>
-                <Button as="a" size="lg" variant="primary">Join as a Client</Button>
+              <Link href="/signup/client">
+                <Button size="lg" variant="primary">Join as a Client</Button>
               </Link>
-              <Link href="/signup/freelancer" passHref legacyBehavior>
-                <Button as="a" size="lg" variant="secondary">Apply as Talent</Button>
+              <Link href="/signup/freelancer">
+                <Button size="lg" variant="secondary">Apply as Talent</Button>
               </Link>
             </div>
           </div>

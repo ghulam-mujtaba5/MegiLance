@@ -22,7 +22,7 @@
 }
 
 .cardTitle {
-  color: #9ca3af; /* Lighter gray for titles */
+  color: #d1d5db; /* Lighter gray for titles */
 }
 
 .cardMetric {
@@ -34,7 +34,7 @@
 }
 
 .cardDescription {
-  color: #9ca3af;
+  color: #d1d5db;
 }
 
 .reviewItem {

@@ -1,7 +1,7 @@
 // @AI-HINT: This component provides a fully theme-aware chat interface for interacting with an AI agent. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import { MessageSquare, X } from 'lucide-react';
@@ -17,15 +17,20 @@ interface Message {
 }
 
 const ChatbotAgent: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: 'Hello! How can I help you with your project today?', sender: 'bot' },
     { id: 2, text: 'I need to find a developer skilled in Next.js and Web3.', sender: 'user' },
   ]);
   const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +55,20 @@ const ChatbotAgent: React.FC = () => {
       setMessages(prevMessages => [...prevMessages, botResponse]);
     }, 1000);
   };
+
+  if (!mounted) {
+    return (
+      <div className={commonStyles.chatbotContainer}>
+        <button
+          className={cn(commonStyles.toggleButton, lightStyles.toggleButton)}
+          aria-label="Loading chat"
+          disabled
+        >
+          <MessageSquare size={24} />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={commonStyles.chatbotContainer}>

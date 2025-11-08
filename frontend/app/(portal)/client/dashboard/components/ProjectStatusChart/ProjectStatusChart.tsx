@@ -24,8 +24,8 @@ const COLORS = {
 };
 
 const CustomTooltip: React.FC<any> = ({ active, payload }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   if (active && payload && payload.length) {
     return (
       <div className={cn(common.customTooltip, themed.customTooltip)}>
@@ -38,8 +38,8 @@ const CustomTooltip: React.FC<any> = ({ active, payload }) => {
 
 const LegendContent: React.FC<any> = (props) => {
   const { payload } = props;
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   return (
     <ul className={cn(common.legendList, themed.legendList)}>
       {payload?.map((entry: any, index: number) => (

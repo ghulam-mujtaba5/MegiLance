@@ -37,8 +37,8 @@ const strengthLevels = [
 ];
 
 const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password = '' }) => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const strength = calculateStrength(password);
 
   if (!password) {

@@ -31,8 +31,8 @@ const ACTIONS = ['All', 'Login', 'Logout', 'Role Change', 'Password Reset', 'Pro
 const RANGES = ['Any time', 'Past week', 'Past month', 'Past year'] as const;
 
 const AuditLogs: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [action, setAction] = useState<(typeof ACTIONS)[number]>('All');
   const [range, setRange] = useState<(typeof RANGES)[number]>('Past month');

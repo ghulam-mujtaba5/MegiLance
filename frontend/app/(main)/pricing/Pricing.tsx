@@ -75,10 +75,10 @@ const pricingData = {
 
 const Pricing: React.FC = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annually'>('monthly');
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = {
     ...commonStyles,
-    ...(theme === 'dark' ? darkStyles : lightStyles),
+    ...(resolvedTheme === 'dark' ? darkStyles : lightStyles),
   };
 
   const containerVariants = {

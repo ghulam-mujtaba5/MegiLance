@@ -11,9 +11,9 @@ import darkStyles from './PublicLayout.dark.module.css';
 type Props = { children: React.ReactNode };
 
 const PublicLayout: React.FC<Props> = ({ children }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const styles = React.useMemo(() => ({
     root: cn(commonStyles.root, themeStyles.root),
     skipLink: cn(commonStyles.skipLink, themeStyles.skipLink),

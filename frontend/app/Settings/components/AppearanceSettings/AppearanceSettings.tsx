@@ -14,12 +14,12 @@ import lightStyles from './AppearanceSettings.light.module.css';
 import darkStyles from './AppearanceSettings.dark.module.css';
 
 const AppearanceSettings: React.FC = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <SettingsSection
@@ -28,17 +28,17 @@ const AppearanceSettings: React.FC = () => {
     >
       <div className={styles.switcher}>
         <button
-          className={cn(styles.button, theme === 'light' && styles.active)}
+          className={cn(styles.button, resolvedTheme === 'light' && styles.active)}
           onClick={() => setTheme('light')}
-          aria-pressed={(theme === 'light') || undefined}
+          aria-pressed={(resolvedTheme === 'light') || undefined}
         >
           <Sun size={20} />
           <span>Light</span>
         </button>
         <button
-          className={cn(styles.button, theme === 'dark' && styles.active)}
+          className={cn(styles.button, resolvedTheme === 'dark' && styles.active)}
           onClick={() => setTheme('dark')}
-          aria-pressed={(theme === 'dark') || undefined}
+          aria-pressed={(resolvedTheme === 'dark') || undefined}
         >
           <Moon size={20} />
           <span>Dark</span>

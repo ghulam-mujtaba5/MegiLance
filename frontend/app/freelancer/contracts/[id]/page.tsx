@@ -50,13 +50,13 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 const ContractDetailsPage: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const router = useRouter();
   const toaster = useToaster();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const handleBack = () => {
     router.back();
@@ -79,7 +79,7 @@ const ContractDetailsPage: React.FC = () => {
   const progressPercentage = totalMilestones > 0 ? (completedMilestones / totalMilestones) * 100 : 0;
 
   return (
-    <div className={cn(styles.container, theme && styles[theme])}>
+    <div className={cn(styles.container, resolvedTheme && styles[resolvedTheme])}>
       <header className={styles.header}>
         <Button 
           variant="secondary" 

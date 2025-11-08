@@ -22,8 +22,8 @@ interface StepDetailsProps {
 }
 
 const StepDetails: React.FC<StepDetailsProps> = ({ data, updateData, errors }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
     <motion.div

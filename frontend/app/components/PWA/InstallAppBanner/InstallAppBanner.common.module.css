@@ -28,6 +28,36 @@
   min-height: 44px;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--banner-text-color);
+  transition: all 0.2s;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.closeButton:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+}
+
 .text {
   margin: 0;
   font-size: var(--font-size-md);
@@ -49,6 +79,12 @@
     padding: var(--spacing-3) var(--spacing-4);
     width: 100%;
     max-width: 500px;
+  }
+  
+  .actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
   }
   
   .text {

@@ -14,8 +14,8 @@ interface PlaceholderPageProps {
 }
 
 const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, description, className }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.placeholderPage, themeStyles.placeholderPage, className)}>

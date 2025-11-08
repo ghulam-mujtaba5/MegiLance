@@ -20,8 +20,8 @@ const navItems = [
 
 const SettingsNav = () => {
   const pathname = usePathname();
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <nav className={cn(commonStyles.nav, styles.nav)}>

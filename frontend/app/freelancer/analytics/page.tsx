@@ -14,16 +14,16 @@ import lightStyles from './Analytics.light.module.css';
 import darkStyles from './Analytics.dark.module.css';
 
 const AnalyticsPage: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { analytics, loading, error } = useFreelancerData();
   const [range, setRange] = usePersistedState<'7d' | '30d' | '90d'>('freelancer:analytics:range', '30d');
   const [uiLoading, setUiLoading] = useState(false);
   const [exportFormat, setExportFormat] = useState<'csv' | 'xlsx' | 'pdf'>('csv');
   
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const analyticsData = useMemo(() => {
     if (!analytics) return null;

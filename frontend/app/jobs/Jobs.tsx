@@ -85,8 +85,8 @@ const mockJobs: Job[] = [
 ];
 
 const Jobs: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [q, setQ] = useState('');
   const [location, setLocation] = useState('');

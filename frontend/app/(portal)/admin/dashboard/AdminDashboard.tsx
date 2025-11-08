@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -51,8 +52,8 @@ const FALLBACK_USERS: UserRow[] = [
 ];
 
 const AdminDashboard: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const { users, kpis, loading, error } = useAdminData();
   const [role, setRole] = useState<'All' | 'Admin' | 'Client' | 'Freelancer'>('All');
@@ -105,12 +106,16 @@ const AdminDashboard: React.FC = () => {
           <h1 className={common.welcomeBannerTitle}>Welcome back, Admin!</h1>
           <p className={common.welcomeBannerText}>Here&apos;s what&apos;s happening with the platform today.</p>
           <div className={common.quickActions}>
-            <Button as="a" href="/admin/users" variant="secondary" size="md" iconBefore={<Plus size={18} />}>
-              Manage Users
-            </Button>
-            <Button as="a" href="/admin/settings" variant="secondary" size="md" iconBefore={<Shield size={18} />}>
-              System Settings
-            </Button>
+            <Link href="/admin/users">
+              <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
+                Manage Users
+              </Button>
+            </Link>
+            <Link href="/admin/settings">
+              <Button variant="secondary" size="md" iconBefore={<Shield size={18} />}>
+                System Settings
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@
   border-radius: 16px;
   padding: 3rem;
   backdrop-filter: blur(5px);
-  border: 1px solid rgba(55, 65, 81, 0.3);
+  border: 1px solid rgba(55, 65, 81, 0.7);
   position: relative;
   overflow: hidden;
 }
@@ -59,7 +59,7 @@
 }
 
 .subtitle {
-  color: #94a3b8; /* slate-400 */
+  color: #cbd5e1; /* improved from slate-400 to slate-300 */
 }
 
 .globePlaceholder {
@@ -90,7 +90,7 @@
 }
 
 .statLabel {
-  color: #94a3b8; /* slate-400 */
+  color: #cbd5e1; /* improved from slate-400 to slate-300 */
 }
 
 .statDescription {
@@ -128,7 +128,7 @@
 }
 
 .storyLocation {
-  color: #64748b; /* slate-500 */
+  color: #94a3b8; /* slate-400 */
 }
 
 .storyQuote {

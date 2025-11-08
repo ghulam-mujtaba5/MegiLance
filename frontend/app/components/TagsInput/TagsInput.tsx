@@ -20,8 +20,8 @@ export interface TagsInputProps {
 }
 
 const TagsInput: React.FC<TagsInputProps> = ({ id, label, tags, onTagsChange, placeholder, error }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const [inputValue, setInputValue] = useState('');
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {

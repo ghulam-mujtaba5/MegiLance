@@ -1,0 +1,6 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="#4573df"/>
+  <path d="M256 128L384 256L256 384L128 256L256 128Z" fill="white"/>
+  <circle cx="256" cy="256" r="64" fill="#4573df"/>
+  <text x="256" y="440" font-family="Poppins, sans-serif" font-size="64" font-weight="700" fill="white" text-anchor="middle">ML</text>
+</svg>

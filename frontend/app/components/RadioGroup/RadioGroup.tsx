@@ -23,8 +23,8 @@ interface RadioGroupProps {
 }
 
 const RadioGroup: React.FC<RadioGroupProps> = ({ label, options, selectedValue, onChange, name }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
     <fieldset className={common.fieldset}>

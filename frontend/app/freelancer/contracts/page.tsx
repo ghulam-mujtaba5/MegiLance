@@ -70,11 +70,11 @@ const getStatusBadgeVariant = (status: string) => {
 };
 
 const ContractsPage: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
   const toaster = useToaster();
 
   const [query, setQuery] = usePersistedState<string>('freelancer:contracts:q', '');
@@ -443,7 +443,7 @@ const ContractsPage: React.FC = () => {
                     {show('actions') && (
                       <td>
                         <div className={styles.rowActions} role="group" aria-label={`Actions for ${contract.projectTitle}`}>
-                          <Link href={`/freelancer/contracts/${contract.id}`} passHref legacyBehavior>
+                          <Link href={`/freelancer/contracts/${contract.id}`}>
                             <Button size="small" variant="outline" aria-label={`View ${contract.projectTitle}`} title={`View ${contract.projectTitle}`}>View</Button>
                           </Link>
                           <Button size="small" variant="secondary" onClick={() => downloadContract(contract)} aria-label={`Download ${contract.projectTitle}`} title={`Download ${contract.projectTitle}`}>Download</Button>

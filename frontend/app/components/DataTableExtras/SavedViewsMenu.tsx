@@ -16,8 +16,8 @@ export interface SavedViewsMenuProps<T = any> {
 }
 
 const SavedViewsMenu = <T,>({ storageKey, buildPayload, onApply, 'aria-label': ariaLabel = 'Saved Views' }: SavedViewsMenuProps<T>) => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => (theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [theme]);
+  const { resolvedTheme } = useTheme();
+  const styles = useMemo(() => (resolvedTheme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [resolvedTheme]);
   const { views, save, remove, clearAll } = useSavedViews<T>(storageKey);
   const [name, setName] = useState('');
 

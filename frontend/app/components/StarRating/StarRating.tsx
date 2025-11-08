@@ -21,8 +21,8 @@ const StarRating: React.FC<StarRatingProps> = ({
   totalStars = 5,
   className,
 }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.starRating, className)}>

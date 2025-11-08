@@ -1,10 +1,11 @@
-// @AI-HINT: This is the dedicated header for the public-facing marketing website. It includes navigation, branding, and primary calls-to-action like 'Sign In' and 'Sign Up'.
+// @AI-HINT: This is the dedicated header for the public-facing marketing website with dropdown menus. It includes navigation, branding, and primary calls-to-action like 'Sign In' and 'Sign Up'.
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { Menu, X, ChevronDown, Users, Briefcase, Zap, Shield } from 'lucide-react';
 
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import Button from '@/app/components/Button/Button';
@@ -20,39 +21,230 @@ const navLinks = [
   { name: 'Contact', href: '/contact' },
 ];
 
+const servicesDropdown = [
+  { name: 'For Freelancers', href: '/freelancers', icon: Users, description: 'Find work and build your career' },
+  { name: 'For Clients', href: '/clients', icon: Briefcase, description: 'Hire top talent for your projects' },
+  { name: 'AI Tools', href: '/ai', icon: Zap, description: 'Powered by AI matching' },
+  { name: 'Enterprise', href: '/enterprise', icon: Shield, description: 'Scale your team globally' },
+];
+
 const PublicHeader = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+
+  // Close mobile menu when window is resized to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Add scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleServicesClick = () => {
+    setIsServicesOpen(!isServicesOpen);
+  };
+
+  const closeServicesDropdown = () => {
+    setIsServicesOpen(false);
+  };
 
   return (
-    <header className={cn(commonStyles.header, styles.header)}>
-      <div className={cn(commonStyles.container, styles.container)}>
-        <div className={commonStyles.logoContainer}>
-          <Link href="/" aria-label="MegiLance Home">
-            <MegiLanceLogo />
-          </Link>
+    <>
+      <header className={cn(commonStyles.header, styles.header, isScrolled && commonStyles.scrolled, isScrolled && styles.scrolled)}>
+        <div className={cn(commonStyles.container, styles.container)}>
+          <div className={commonStyles.logoContainer}>
+            <Link href="/" aria-label="MegiLance Home" onClick={closeMobileMenu}>
+              <MegiLanceLogo />
+            </Link>
+          </div>
+          
+          {/* Desktop Navigation */}
+          <nav className={commonStyles.nav}>
+            <ul className={commonStyles.navList}>
+              {/* Services Dropdown */}
+              <li 
+                className={commonStyles.dropdownContainer}
+                onMouseEnter={() => setIsServicesOpen(true)}
+                onMouseLeave={() => setIsServicesOpen(false)}
+              >
+                <button 
+                  className={cn(commonStyles.navLink, styles.navLink, commonStyles.dropdownTrigger)}
+                  onClick={handleServicesClick}
+                  aria-expanded={isServicesOpen}
+                  aria-haspopup="true"
+                >
+                  Services
+                  <ChevronDown size={16} className={cn(commonStyles.dropdownIcon, isServicesOpen && commonStyles.dropdownIconOpen)} />
+                </button>
+                
+                {isServicesOpen && (
+                  <div className={cn(commonStyles.dropdown, styles.dropdown)}>
+                    <div className={commonStyles.dropdownContent}>
+                      {servicesDropdown.map((item) => (
+                        <Link 
+                          key={item.name} 
+                          href={item.href} 
+                          className={cn(commonStyles.dropdownItem, styles.dropdownItem)}
+                          onClick={closeServicesDropdown}
+                        >
+                          <div className={cn(commonStyles.dropdownItemIcon, styles.dropdownItemIcon)}>
+                            <item.icon size={20} />
+                          </div>
+                          <div className={commonStyles.dropdownItemText}>
+                            <div className={cn(commonStyles.dropdownItemTitle, styles.dropdownItemTitle)}>{item.name}</div>
+                            <div className={cn(commonStyles.dropdownItemDesc, styles.dropdownItemDesc)}>{item.description}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </li>
+              
+              {navLinks.map((link) => (
+                <li key={link.name}>
+                  <Link href={link.href} className={cn(commonStyles.navLink, styles.navLink)}>
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          
+          {/* Desktop Actions */}
+          <div className={commonStyles.actionsContainer}>
+            <Link href="/login">
+              <Button variant="ghost" className={cn(commonStyles.signInButton, styles.signInButton)}>
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button variant="primary">
+                Sign Up Free
+              </Button>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className={cn(commonStyles.mobileMenuButton, styles.mobileMenuButton)}
+            onClick={toggleMobileMenu}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-        <nav className={commonStyles.nav}>
-          <ul className={commonStyles.navList}>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className={cn(commonStyles.mobileMenuOverlay, styles.mobileMenuOverlay)}
+          onClick={closeMobileMenu}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile Menu */}
+      <div className={cn(
+        commonStyles.mobileMenu,
+        styles.mobileMenu,
+        isMobileMenuOpen && commonStyles.mobileMenuOpen,
+        isMobileMenuOpen && styles.mobileMenuOpen
+      )}>
+        <nav className={commonStyles.mobileNav}>
+          <ul className={commonStyles.mobileNavList}>
+            {/* Mobile Services Section */}
+            <li>
+              <div className={cn(commonStyles.mobileNavCategory, styles.mobileNavCategory)}>Services</div>
+              <ul className={commonStyles.mobileSubList}>
+                {servicesDropdown.map((item) => (
+                  <li key={item.name}>
+                    <Link 
+                      href={item.href} 
+                      className={cn(commonStyles.mobileNavLink, commonStyles.mobileNavSubLink, styles.mobileNavLink)}
+                      onClick={closeMobileMenu}
+                    >
+                      <item.icon size={18} className={commonStyles.mobileNavLinkIcon} />
+                      <div>
+                        <div>{item.name}</div>
+                        <div className={cn(commonStyles.mobileNavLinkDesc, styles.mobileNavLinkDesc)}>{item.description}</div>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+            
             {navLinks.map((link) => (
               <li key={link.name}>
-                <Link href={link.href} className={cn(commonStyles.navLink, styles.navLink)}>
+                <Link 
+                  href={link.href} 
+                  className={cn(commonStyles.mobileNavLink, styles.mobileNavLink)}
+                  onClick={closeMobileMenu}
+                >
                   {link.name}
                 </Link>
               </li>
             ))}
           </ul>
+          <div className={commonStyles.mobileActions}>
+            <Link href="/login" onClick={closeMobileMenu}>
+              <Button 
+                variant="ghost" 
+                fullWidth
+              >
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/signup" onClick={closeMobileMenu}>
+              <Button 
+                variant="primary"
+                fullWidth
+              >
+                Sign Up Free
+              </Button>
+            </Link>
+          </div>
         </nav>
-        <div className={commonStyles.actionsContainer}>
-          <Button as="a" href="/login" variant="ghost" className={cn(commonStyles.signInButton, styles.signInButton)}>
-            Sign In
-          </Button>
-          <Button as="a" href="/signup" variant="primary">
-            Sign Up Free
-          </Button>
-        </div>
       </div>
-    </header>
+    </>
   );
 };
 

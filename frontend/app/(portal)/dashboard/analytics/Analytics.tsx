@@ -13,8 +13,8 @@ const RANGES = ['Last 7 days', 'Last 30 days', 'Last 90 days'] as const;
 const SEGMENTS = ['All', 'Clients', 'Freelancers'] as const;
 
 const Analytics: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [range, setRange] = useState<(typeof RANGES)[number]>('Last 30 days');
   const [segment, setSegment] = useState<(typeof SEGMENTS)[number]>('All');

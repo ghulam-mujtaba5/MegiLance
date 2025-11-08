@@ -23,8 +23,8 @@ const STEPS = ['Details', 'Terms', 'Review'] as const;
 type Step = typeof STEPS[number];
 
 const SubmitProposal: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [data, setData] = useState<ProposalData>({
     jobId: '',

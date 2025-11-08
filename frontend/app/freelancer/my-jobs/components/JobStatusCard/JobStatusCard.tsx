@@ -19,8 +19,8 @@ export interface JobStatusCardProps {
 }
 
 const JobStatusCard: React.FC<JobStatusCardProps> = ({ title, client, status, progress, completionDate }) => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const isCompleted = status.toLowerCase() === 'completed' || !!completionDate;
 
   return (

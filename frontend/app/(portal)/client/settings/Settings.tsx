@@ -20,11 +20,11 @@ import dark from './Settings.dark.module.css';
 type SettingsTab = 'profile' | 'security' | 'notifications' | 'billing' | 'support';
 
 const Settings: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? dark : light;
+    const themeStyles = resolvedTheme === 'dark' ? dark : light;
     return { ...common, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 

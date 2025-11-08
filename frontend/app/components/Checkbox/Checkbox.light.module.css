@@ -3,7 +3,7 @@
 .checkboxWrapper {
   --checkbox-bg: #ffffff;
   --checkbox-border-color: #d1d5db;
-  --checkbox-border-hover-color: #9ca3af;
+  --checkbox-border-hover-color: #6b7280;
   --checkbox-checked-bg: linear-gradient(135deg, #4573df 0%, #3a66c7 100%);
   --checkbox-checked-border-color: #4573df;
   --checkbox-checkmark-color: #ffffff;

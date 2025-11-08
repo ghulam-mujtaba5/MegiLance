@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useFreelancerData } from '@/hooks/useFreelancer';
@@ -34,9 +35,9 @@ import lightStyles from './Dashboard.light.module.css';
 import darkStyles from './Dashboard.dark.module.css';
 
 const Dashboard: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { analytics, jobs, transactions, loading, error } = useFreelancerData();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const renderJobItem = (job: any) => (
       <ProjectCard
@@ -88,12 +89,16 @@ const Dashboard: React.FC = () => {
           <h1 className={commonStyles.welcomeBannerTitle}>Welcome back, Freelancer!</h1>
           <p className={commonStyles.welcomeBannerText}>Here&apos;s what&apos;s happening with your projects and earnings today.</p>
           <div className={commonStyles.quickActions}>
-            <Button as="a" href="/jobs" variant="secondary" size="md" iconBefore={<Plus size={18} />}>
-              Browse Jobs
-            </Button>
-            <Button as="a" href="/freelancer/proposals" variant="secondary" size="md" iconBefore={<FileText size={18} />}>
-              Submit Proposal
-            </Button>
+            <Link href="/jobs">
+              <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
+                Browse Jobs
+              </Button>
+            </Link>
+            <Link href="/freelancer/proposals">
+              <Button variant="secondary" size="md" iconBefore={<FileText size={18} />}>
+                Submit Proposal
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

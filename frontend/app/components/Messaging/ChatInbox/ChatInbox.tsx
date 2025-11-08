@@ -27,12 +27,12 @@ const mockConversations: Conversation[] = [
 ];
 
 const ChatInbox: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [activeConversation, setActiveConversation] = useState('convo_001');
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.container, themeStyles.container)}>

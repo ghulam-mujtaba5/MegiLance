@@ -23,7 +23,7 @@ export interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer, size = 'medium', className = '' }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     setIsMounted(true);
@@ -74,7 +74,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer,
     };
   }, [isOpen, onClose]);
 
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const sizeClass = {
     small: commonStyles.sizeSmall,

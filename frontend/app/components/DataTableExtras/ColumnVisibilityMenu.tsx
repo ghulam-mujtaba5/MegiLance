@@ -19,8 +19,8 @@ interface ColumnVisibilityMenuProps {
 }
 
 const ColumnVisibilityMenu: React.FC<ColumnVisibilityMenuProps> = ({ columns, visibleKeys, onToggle, onShowAll, onHideAll, 'aria-label': ariaLabel = 'Columns' }) => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => (theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [theme]);
+  const { resolvedTheme } = useTheme();
+  const styles = useMemo(() => (resolvedTheme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [resolvedTheme]);
   const descId = 'column-visibility-help';
   return (
     <div className={styles.menu} role="group" aria-label={ariaLabel} title={ariaLabel} aria-describedby={descId}>

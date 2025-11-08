@@ -25,8 +25,8 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string 
 };
 
 const BlogPage: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <main id="main-content" role="main" aria-labelledby="blog-title" className={commonStyles.container}>

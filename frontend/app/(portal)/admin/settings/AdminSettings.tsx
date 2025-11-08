@@ -11,8 +11,8 @@ import light from './AdminSettings.light.module.css';
 import dark from './AdminSettings.dark.module.css';
 
 const AdminSettings: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { loading, error } = useAdminData();
 
   const headerRef = useRef<HTMLDivElement | null>(null);

@@ -70,8 +70,8 @@ const completedSortOptions: SortOption[] = [
 ];
 
 const MyJobs: React.FC = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.container, styles.container)}>

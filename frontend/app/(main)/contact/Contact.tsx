@@ -57,10 +57,10 @@ const itemVariants = {
 } satisfies Variants;
 
 const Contact: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { toast } = useToast();
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'dark' ? dark : light;
+    const themeStyles = resolvedTheme === 'dark' ? dark : light;
     return {
       page: cn(common.page, themeStyles.page),
       container: cn(common.container),
@@ -75,7 +75,7 @@ const Contact: React.FC = () => {
       formPanel: cn(common.formPanel, themeStyles.formPanel),
       form: cn(common.form),
     };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const {
     register,

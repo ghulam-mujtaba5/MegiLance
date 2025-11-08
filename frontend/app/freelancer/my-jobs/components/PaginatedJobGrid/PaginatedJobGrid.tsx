@@ -25,11 +25,11 @@ interface PaginatedJobGridProps {
 }
 
 const PaginatedJobGrid: React.FC<PaginatedJobGridProps> = ({ storageKey, jobs, sortOptions, defaultSortKey, searchKeys, title }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const [query, setQuery] = usePersistedState<string>(`${storageKey}:q`, '');
   const [sortKey, setSortKey] = usePersistedState<string>(`${storageKey}:sortKey`, defaultSortKey);

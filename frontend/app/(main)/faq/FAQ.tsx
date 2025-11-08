@@ -34,9 +34,9 @@ const faqData = [
 ];
 
 const FAQ: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'dark' ? dark : light;
+    const themeStyles = resolvedTheme === 'dark' ? dark : light;
     return {
       root: cn(common.root, themeStyles.root),
       header: cn(common.header, themeStyles.header),
@@ -45,7 +45,7 @@ const FAQ: React.FC = () => {
       badge: cn(common.badge, themeStyles.badge),
       accordionContainer: cn(common.accordionContainer),
     };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const schema = {
     '@context': 'https://schema.org',

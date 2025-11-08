@@ -23,7 +23,7 @@ export interface DropdownProps {
 }
 
 const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeholder = 'Select...', className = '' }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -93,8 +93,8 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeh
     }
   }, [isOpen, focusedIndex, listId]);
 
-  if (!theme) return null;
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  if (!resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.dropdown, themeStyles.dropdown, className)} ref={dropdownRef}>

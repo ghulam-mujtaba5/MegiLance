@@ -44,16 +44,16 @@ const Button = <C extends React.ElementType = 'button'>({
   onClick,
   ...props
 }: ButtonProps<C>) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const Component = (as || 'button') as React.ElementType;
 
-  if (!theme) return null; // Or a loading skeleton
+  if (!resolvedTheme) return null; // Or a loading skeleton
 
   // normalize legacy size values
   const normalizedSize: 'sm' | 'md' | 'lg' | 'icon' =
     size === 'small' ? 'sm' : size === 'medium' ? 'md' : size === 'large' ? 'lg' : (size as 'sm' | 'md' | 'lg' | 'icon');
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   // Handle click with loading state
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {

@@ -23,7 +23,7 @@ const userProfile = {
 };
 
 const Profile: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [name, setName] = useState(userProfile.name);
   const [title, setTitle] = useState(userProfile.title);
   const [bio, setBio] = useState(userProfile.bio);
@@ -110,9 +110,9 @@ const Profile: React.FC = () => {
   };
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <div className={styles.profileContainer}>

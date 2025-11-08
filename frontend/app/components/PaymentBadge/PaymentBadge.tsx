@@ -22,8 +22,8 @@ const statusLabels: Record<PaymentStatus, string> = {
 };
 
 const PaymentBadge: React.FC<PaymentBadgeProps> = ({ status, className }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const statusClass = commonStyles[status];
 
   return (

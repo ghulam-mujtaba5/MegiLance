@@ -33,8 +33,8 @@ const statusDotClass = (status: ProjectRow['status']) => {
 };
 
 const AdminProjects: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { projects, loading, error } = useAdminData();
 
   const [query, setQuery] = useState('');

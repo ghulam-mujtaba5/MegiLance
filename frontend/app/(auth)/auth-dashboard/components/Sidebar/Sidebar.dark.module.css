@@ -59,7 +59,7 @@
 .navItem.active {
   background: linear-gradient(90deg, var(--primary-4573df), #3a66c7);
   color: white;
-  border: 1px solid rgba(69, 115, 223, 0.3);
+  border: 1px solid rgba(69, 115, 223, 0.5);
   box-shadow: 0 4px 6px rgba(69, 115, 223, 0.3);
 }
 
@@ -78,7 +78,7 @@
 .logoutButton:hover {
   background: rgba(30, 41, 59, 0.9);
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.5);
 }
 
 .sidebarFooter {
@@ -94,5 +94,5 @@
 .themeToggle:hover {
   background: var(--primary-4573df);
   color: white;
-  border: 1px solid rgba(69, 115, 223, 0.3);
+  border: 1px solid rgba(69, 115, 223, 0.5);
 }

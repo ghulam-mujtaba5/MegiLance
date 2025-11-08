@@ -29,8 +29,8 @@ const TYPES = ['All', 'Payment', 'Payout', 'Refund', 'Fee'] as const;
 const RANGES = ['Any time', 'Past week', 'Past month', 'Past year'] as const;
 
 const Wallet: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [type, setType] = useState<(typeof TYPES)[number]>('All');
   const [range, setRange] = useState<(typeof RANGES)[number]>('Past month');

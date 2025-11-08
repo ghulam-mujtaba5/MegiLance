@@ -55,8 +55,8 @@ const TeamMemberCard: React.FC<{ member: typeof teamMembers[0]; themeStyles: any
 
 // --- Main Component ---
 const About: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <main id="main-content" role="main" className={cn(commonStyles.aboutPage, themeStyles.aboutPage)}>

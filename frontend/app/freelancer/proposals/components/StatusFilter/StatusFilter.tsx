@@ -16,8 +16,8 @@ interface StatusFilterProps {
 }
 
 const StatusFilter: React.FC<StatusFilterProps> = ({ allStatuses, selectedStatuses, onChange }) => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleToggle = (status: Proposal['status']) => {
     const newSelection = selectedStatuses.includes(status)

@@ -22,7 +22,7 @@ const resetPasswordBranding = {
 };
 
 const ResetPassword: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [formData, setFormData] = useState({ password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({ password: '', confirmPassword: '' });
   const [loading, setLoading] = useState(false);
@@ -71,9 +71,9 @@ const ResetPassword: React.FC = () => {
   };
 
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <div className={styles.loginPage}>

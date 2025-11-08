@@ -23,10 +23,10 @@ const Loader: React.FC<LoaderProps> = ({
   variant = 'spinner',
   className = '' 
 }) => {
-  const { theme } = useTheme();
-  if (!theme) return null; // Avoid rendering until the theme is loaded
+  const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null; // Avoid rendering until the theme is loaded
 
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const sizeClass = {
     xs: commonStyles.sizeXs,

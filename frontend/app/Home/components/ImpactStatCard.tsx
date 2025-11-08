@@ -26,8 +26,8 @@ interface ImpactStatCardProps {
 // --- Main Component ---
 const ImpactStatCard: React.FC<ImpactStatCardProps> = ({ stat }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const { icon: Icon, number, label, description } = stat;
 
   // --- Animated Counter Logic ---

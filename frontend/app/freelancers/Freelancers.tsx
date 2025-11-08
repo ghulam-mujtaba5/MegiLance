@@ -81,8 +81,8 @@ const rates = ['Any', '< $75', '$75–$100', '$100–$125', '> $125'] as const;
 const locations = ['Any', 'US', 'EU', 'APAC', 'LATAM', 'Hybrid'] as const;
 
 const Freelancers: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [keyword, setKeyword] = useState('');
   const [rate, setRate] = useState<(typeof rates)[number]>('Any');

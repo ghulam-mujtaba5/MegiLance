@@ -30,8 +30,8 @@ const TYPES = ['All', 'Message', 'Project', 'User', 'Invoice'] as const;
 const DATES = ['Any time', 'Past week', 'Past month', 'Past year'] as const;
 
 const Search: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { notify } = useToaster();
 
   const [query, setQuery] = useState('');

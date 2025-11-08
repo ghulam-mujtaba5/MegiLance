@@ -20,12 +20,12 @@ interface Particle {
 }
 
 const AnimatedBackground: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const animationFrameRef = useRef<number>(0);
   
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -58,7 +58,7 @@ const AnimatedBackground: React.FC = () => {
           // Slower movement
           speedX: (Math.random() - 0.5) * 0.2,
           speedY: (Math.random() - 0.5) * 0.2,
-          color: theme === 'dark' ? 'rgba(69, 115, 223, 0.2)' : 'rgba(69, 115, 223, 0.1)',
+          color: resolvedTheme === 'dark' ? 'rgba(69, 115, 223, 0.2)' : 'rgba(69, 115, 223, 0.1)',
           // More consistent opacity
           opacity: Math.random() * 0.3 + 0.1
         });
@@ -72,7 +72,7 @@ const AnimatedBackground: React.FC = () => {
       if (!ctx) return;
       
       // Clear canvas with a semi-transparent fill for trail effect
-      ctx.fillStyle = theme === 'dark' ? 'rgba(15, 23, 42, 0.05)' : 'rgba(248, 250, 252, 0.05)';
+      ctx.fillStyle = resolvedTheme === 'dark' ? 'rgba(15, 23, 42, 0.05)' : 'rgba(248, 250, 252, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       // Update and draw particles (removed connecting lines for cleaner look)
@@ -103,7 +103,7 @@ const AnimatedBackground: React.FC = () => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [theme]);
+  }, [resolvedTheme]);
   
   return (
     <div className={cn(commonStyles.container)}>

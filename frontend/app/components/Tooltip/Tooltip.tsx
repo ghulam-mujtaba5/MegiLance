@@ -17,7 +17,7 @@ export interface TooltipProps {
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ children, text, position = 'top', delay = 200, className = '' }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [visible, setVisible] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const tooltipId = useId();
@@ -62,7 +62,7 @@ const Tooltip: React.FC<TooltipProps> = ({ children, text, position = 'top', del
           role="tooltip"
           className={cn(
             commonStyles.tooltip,
-            theme === 'light' ? lightStyles.tooltip : darkStyles.tooltip,
+            resolvedTheme === 'light' ? lightStyles.tooltip : darkStyles.tooltip,
             positionMap[position]
           )}
         >

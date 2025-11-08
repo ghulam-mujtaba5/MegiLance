@@ -22,7 +22,7 @@ const forgotPasswordBranding = {
 };
 
 const ForgotPassword: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -40,7 +40,7 @@ const ForgotPassword: React.FC = () => {
   };
 
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
     return {
       loginPage: merge('loginPage'),
@@ -69,7 +69,7 @@ const ForgotPassword: React.FC = () => {
       signupPrompt: merge('signupPrompt'),
       generalError: merge('generalError'),
     } as const;
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <div className={styles.loginPage}>

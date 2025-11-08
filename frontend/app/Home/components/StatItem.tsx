@@ -19,8 +19,8 @@ interface StatItemProps {
 }
 
 const StatItem: React.FC<StatItemProps> = ({ value, label, prefix = '', suffix = '', icon }) => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const ref = useRef<HTMLDivElement>(null);
   const animatedValue = useAnimatedCounter(value, 2000, 0, ref);
 

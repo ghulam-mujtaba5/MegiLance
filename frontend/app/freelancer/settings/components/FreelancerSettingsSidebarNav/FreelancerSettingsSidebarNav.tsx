@@ -20,11 +20,11 @@ interface FreelancerSettingsSidebarNavProps {
 
 const FreelancerSettingsSidebarNav: React.FC<FreelancerSettingsSidebarNavProps> = ({ items }) => {
   const pathname = usePathname();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   // Handle the case where the base /settings path should default to the /settings/account active state.
   const getIsActive = (href: string) => {

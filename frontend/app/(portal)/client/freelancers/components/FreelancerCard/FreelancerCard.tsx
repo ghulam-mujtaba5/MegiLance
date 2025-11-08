@@ -33,9 +33,9 @@ interface FreelancerCardProps {
 }
 
 const FreelancerCard: React.FC<FreelancerCardProps> = ({ freelancer }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const router = useRouter();
-  const themed = theme === 'dark' ? dark : light;
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
     <article className={cn(common.card, themed.card)}>

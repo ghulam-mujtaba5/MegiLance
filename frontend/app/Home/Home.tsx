@@ -1,6 +1,9 @@
 // @AI-HINT: This is the comprehensive Home page showcasing MegiLance's AI-powered freelancing platform with blockchain integration. Maximum scope implementation with premium sections.
 
+'use client';
+
 import React from 'react';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 // Import all the components that make up the home page
@@ -20,9 +23,8 @@ import lightStyles from './Home.light.module.css';
 import darkStyles from './Home.dark.module.css';
 
 const Home: React.FC = () => {
-  // Simple theme detection - only run on client side
-  const isDark = typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : false;
-  const themeStyles = isDark ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.homePage, themeStyles.homePage)}>

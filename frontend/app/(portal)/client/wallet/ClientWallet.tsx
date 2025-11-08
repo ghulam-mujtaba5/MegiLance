@@ -13,8 +13,8 @@ import light from './ClientWallet.light.module.css';
 import dark from './ClientWallet.dark.module.css';
 
 const ClientWallet: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { payments, loading, error } = useClientData();
 
   const headerRef = useRef<HTMLDivElement | null>(null);

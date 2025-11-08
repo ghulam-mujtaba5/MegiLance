@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useMemo, useRef, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -64,8 +65,8 @@ const spendingData = [
 ];
 
 const ClientDashboard: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { projects, payments, loading, error } = useClientData();
 
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -156,12 +157,16 @@ const ClientDashboard: React.FC = () => {
             <h1 className={common.welcomeBannerTitle}>Welcome back, Client!</h1>
             <p className={common.welcomeBannerText}>Here&apos;s what&apos;s happening with your projects and freelancers today.</p>
             <div className={common.quickActions}>
-              <Button as="a" href="/client/post-job" variant="secondary" size="md" iconBefore={<Plus size={18} />}>
-                Post New Project
-              </Button>
-              <Button as="a" href="/freelancers" variant="secondary" size="md" iconBefore={<Users size={18} />}>
-                Find Freelancers
-              </Button>
+              <Link href="/client/post-job">
+                <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
+                  Post New Project
+                </Button>
+              </Link>
+              <Link href="/freelancers">
+                <Button variant="secondary" size="md" iconBefore={<Users size={18} />}>
+                  Find Freelancers
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

@@ -24,12 +24,12 @@ interface SidebarProps {
 // AI-HINT: Role-aware navigation is provided by the shared SidebarNav component.
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
     <aside

@@ -18,9 +18,9 @@ export interface EmptyStateProps {
 }
 
 const EmptyState: React.FC<EmptyStateProps> = ({ icon, title, description, action, className }) => {
-  const { theme } = useTheme();
-  if (!theme) return null;
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <section className={cn(commonStyles.wrapper, themeStyles.wrapper, className)} aria-live="polite">

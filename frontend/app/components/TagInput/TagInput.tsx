@@ -15,12 +15,12 @@ interface TagInputProps {
 }
 
 const TagInput: React.FC<TagInputProps> = ({ label, tags, setTags }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [inputValue, setInputValue] = useState('');
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {

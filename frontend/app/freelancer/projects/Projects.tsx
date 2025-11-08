@@ -12,7 +12,7 @@ import lightStyles from './Projects.light.module.css';
 import darkStyles from './Projects.dark.module.css';
 
 const Projects: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { jobs, loading, error } = useFreelancerData();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortKey, setSortKey] = useState<'title' | 'clientName' | 'budget' | 'postedTime'>('postedTime');
@@ -21,9 +21,9 @@ const Projects: React.FC = () => {
   const [pageSize, setPageSize] = useState(12);
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const filteredProjects = useMemo(() => {
     if (!Array.isArray(jobs)) return [];

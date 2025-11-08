@@ -1,7 +1,27 @@
 /* Light Theme for Impact Globe */
-.pakistan { color: #27AE60; } /* Green */
-.usa { color: #4573df; } /* MegiLance Blue */
-.uk { color: #e81123; } /* Red */
-.aus { color: #ff9800; } /* Orange */
-.eur { color: #9B59B6; } /* Purple */
-.asia { color: #F2C94C; } /* Yellow */
+
+.globeContainer {
+  background: radial-gradient(circle, rgba(69, 115, 223, 0.05), transparent 70%);
+}
+
+.globe {
+  background: radial-gradient(circle at 30% 30%, rgba(69, 115, 223, 0.15), rgba(39, 174, 96, 0.1), rgba(245, 247, 250, 0.05) 70%);
+  border-color: rgba(69, 115, 223, 0.3);
+  box-shadow: 
+    0 0 60px rgba(69, 115, 223, 0.3),
+    inset 0 0 60px rgba(69, 115, 223, 0.1);
+}
+
+.connection {
+  background: linear-gradient(to bottom, rgba(69, 115, 223, 0.7), transparent);
+}
+
+.dot {
+  background: rgba(69, 115, 223, 0.9);
+  box-shadow: 0 0 12px rgba(69, 115, 223, 0.6);
+}
+
+.centerPulse {
+  background: rgba(39, 174, 96, 0.9);
+  box-shadow: 0 0 20px rgba(39, 174, 96, 0.8);
+}

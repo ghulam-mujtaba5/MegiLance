@@ -84,13 +84,13 @@ const UserCard: React.FC<{ user: User; themeStyles: any }> = ({ user, themeStyle
 };
 
 const UserSearchTable: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [roleFilter, setRoleFilter] = React.useState('All');
   const [statusFilter, setStatusFilter] = React.useState('All');
   const [sortOrder, setSortOrder] = React.useState('date-desc');
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const filteredAndSortedUsers = mockUsers
     .filter(user => {

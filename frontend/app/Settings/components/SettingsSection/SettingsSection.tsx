@@ -17,12 +17,12 @@ interface SettingsSectionProps {
 }
 
 const SettingsSection: React.FC<SettingsSectionProps> = ({ title, description, children }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <section className={cn(styles.section)}>

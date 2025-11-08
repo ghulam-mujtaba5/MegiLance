@@ -17,8 +17,8 @@ interface SpendingChartProps {
 }
 
 const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   if (active && payload && payload.length) {
     return (
       <div className={cn(common.customTooltip, themed.customTooltip)}>
@@ -31,8 +31,8 @@ const CustomTooltip: React.FC<any> = ({ active, payload, label }) => {
 };
 
 const SpendingChart: React.FC<SpendingChartProps> = ({ data }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
     <DashboardWidget title="Monthly Spending" icon={DollarSign}>

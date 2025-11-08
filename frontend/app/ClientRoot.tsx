@@ -12,9 +12,11 @@ const ClientRoot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="light"
+      defaultTheme="system"
       enableSystem={true}
-      disableTransitionOnChange={false}
+      disableTransitionOnChange={true}
+      enableColorScheme={true}
+      storageKey="megilance-theme"
     >
       <AnalyticsProvider>
         <ToasterProvider>

@@ -14,10 +14,10 @@ interface DefaultLayoutProps {
 }
 
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   return (
-    <div className={`DefaultLayout DefaultLayout--${theme}`}>
+    <div className={`DefaultLayout DefaultLayout--${resolvedTheme}`}>
       <Header />
       <main className="DefaultLayout-main">
         {children}

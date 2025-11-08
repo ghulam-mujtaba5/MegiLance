@@ -17,8 +17,8 @@ interface StepReviewProps {
 }
 
 const StepReview: React.FC<StepReviewProps> = ({ data }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   // Format availability for display
   const formatAvailability = (availability: string) => {

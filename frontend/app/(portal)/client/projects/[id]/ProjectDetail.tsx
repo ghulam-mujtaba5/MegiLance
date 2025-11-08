@@ -32,8 +32,8 @@ const MOCK = {
 };
 
 const ProjectDetail: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const params = useParams<{ id: string }>();
   const projectId = useMemo(() => params?.id ?? 'unknown', [params]);
 

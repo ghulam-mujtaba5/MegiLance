@@ -20,8 +20,8 @@ interface NotificationOptionProps {
 }
 
 const NotificationOption: React.FC<NotificationOptionProps> = ({ id, title, description, checked, onChange }) => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.container, styles.container)}>

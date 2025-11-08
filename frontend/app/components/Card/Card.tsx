@@ -29,13 +29,13 @@ const Card: React.FC<CardProps> = ({
   size = 'md',
   loading = false
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-  if (!theme) {
+  if (!resolvedTheme) {
     return null; // Don't render until theme is resolved to prevent flash
   }
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
     <div className={cn(

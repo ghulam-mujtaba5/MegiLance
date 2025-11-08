@@ -34,13 +34,13 @@ const mockFlaggedItems: FlaggedItem[] = [
 ];
 
 const FlaggedFraudList: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [items, setItems] = useState(mockFlaggedItems);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Pending Review');
   const [typeFilter, setTypeFilter] = useState('All');
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleAction = (id: string, newStatus: 'Resolved' | 'Dismissed') => {
     setItems(items.map(item => (item.id === id ? { ...item, status: newStatus } : item)));

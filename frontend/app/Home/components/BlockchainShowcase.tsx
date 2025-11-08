@@ -69,8 +69,8 @@ const AnimatedStat: React.FC<{ rawValue: string; duration?: number }> = ({ rawVa
 };
 
 const BlockchainShowcase: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <section className={cn(commonStyles.blockchainShowcase, themeStyles.blockchainShowcase)}>

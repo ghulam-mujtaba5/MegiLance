@@ -30,8 +30,8 @@ const MOCK_PROJECTS: Project[] = [
 const STATUSES = ['All', 'In Progress', 'Review', 'Completed', 'Overdue'] as const;
 
 const Projects: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');

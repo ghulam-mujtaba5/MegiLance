@@ -35,8 +35,8 @@ interface AccordionItemProps {
 
 export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, children }) => {
   const { openItems, toggleItem } = useAccordion();
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const contentId = useId();
   const buttonId = useId();
 
@@ -115,8 +115,8 @@ const Accordion: React.FC<AccordionProps> = ({
     }
   };
 
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <AccordionContext.Provider value={{ openItems, toggleItem, type }}>

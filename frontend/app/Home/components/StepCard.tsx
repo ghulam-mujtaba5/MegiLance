@@ -19,8 +19,8 @@ export interface StepCardProps {
 }
 
 const StepCard: React.FC<StepCardProps> = ({ icon, title, description, stepNumber, type }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.stepCard, themeStyles.stepCard, commonStyles[type])}>

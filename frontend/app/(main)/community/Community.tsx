@@ -10,8 +10,8 @@ import light from './Community.light.module.css';
 import dark from './Community.dark.module.css';
 
 const Community: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>

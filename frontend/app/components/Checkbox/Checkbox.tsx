@@ -31,13 +31,13 @@ const Checkbox: React.FC<CheckboxProps> = ({
   disabled = false,
   indeterminate = false
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   
-  if (!theme) {
+  if (!resolvedTheme) {
     return null; // Don't render until theme is resolved
   }
   
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
   
   return (
     <div className={cn(commonStyles.checkboxWrapper, themeStyles.checkboxWrapper, className)}>

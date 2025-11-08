@@ -84,14 +84,14 @@ const JobCard: React.FC<JobCardProps> = ({ job, onModerate, themeStyles, isExpan
 };
 
 const JobModerationQueue: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [jobs, setJobs] = useState(mockJobs);
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState('All');
   const [sortOrder, setSortOrder] = useState('date-desc');
   const [expandedJobs, setExpandedJobs] = useState<Set<string>>(new Set());
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleModerate = (id: string, newStatus: 'Approved' | 'Rejected') => {
     setJobs(jobs.map(job => (job.id === id ? { ...job, status: newStatus } : job)));

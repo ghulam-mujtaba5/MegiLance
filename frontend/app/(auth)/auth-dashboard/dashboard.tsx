@@ -27,12 +27,12 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ userRole, user }) => {
-    const { theme } = useTheme();
+    const { resolvedTheme } = useTheme();
 
     const styles = React.useMemo(() => {
-        const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+        const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
         return { ...commonStyles, ...themeStyles };
-    }, [theme]);
+    }, [resolvedTheme]);
 
     return (
         <DashboardLayout user={user}>

@@ -87,9 +87,9 @@ const AnimatedSection = ({ children }: { children: React.ReactNode }) => {
 
 // --- Main Pricing Page Component ---
 const PricingPage = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const getTierProps = (tier: string): Pick<PricingCardProps, 'price' | 'pricePeriod' | 'ctaText' | 'ctaLink'> => {
     const isMonthly = billingCycle === 'monthly';

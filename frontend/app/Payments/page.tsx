@@ -5,13 +5,14 @@
 import React from 'react';
 import Payments from './Payments';
 import { useTheme } from 'next-themes';
+import styles from './PaymentsPage.module.css';
 
 const PaymentsPage: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   
   return (
-    <div style={{ padding: '2rem' }}>
-      <Payments theme={theme === 'dark' ? 'dark' : 'light'} />
+    <div className={styles.pageWrapper}>
+      <Payments theme={resolvedTheme === 'dark' ? 'dark' : 'light'} />
     </div>
   );
 };

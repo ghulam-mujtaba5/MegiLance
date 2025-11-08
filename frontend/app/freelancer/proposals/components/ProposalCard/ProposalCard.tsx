@@ -35,8 +35,8 @@ const statusVariantMap: { [key in Proposal['status']]: 'default' | 'success' | '
 };
 
 const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, onView, onEdit, onWithdraw }) => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const { id, jobTitle, clientName, status, dateSubmitted, bidAmount } = proposal;
 

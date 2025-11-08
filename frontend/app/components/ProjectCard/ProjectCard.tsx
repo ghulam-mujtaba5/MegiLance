@@ -44,8 +44,8 @@ const statusVariantMap: Record<ProjectCardProps['status'], NonNullable<BadgeProp
 
 const ProjectCard: React.FC<ProjectCardProps> = (props) => {
   const { id, title, status, progress, budget, paid, freelancers, updatedAt } = props;
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   const menuItems = [
     { label: 'View Details', icon: Briefcase, href: `/client/projects/${id}` },

@@ -9,10 +9,10 @@ import lightStyles from './MegiLanceLogo.light.module.css';
 import darkStyles from './MegiLanceLogo.dark.module.css';
 
 export const MegiLanceLogo: React.FC<{ className?: string }> = ({ className }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
   return (
     <svg
@@ -29,8 +29,8 @@ export const MegiLanceLogo: React.FC<{ className?: string }> = ({ className }) =
       <desc>MegiLance brand logo featuring stylized M lettermark with AI neural network connections</desc>
       <defs>
         <linearGradient id="brandGradient" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={theme === 'dark' ? '#4573df' : '#4573df'} />
-          <stop offset="100%" stopColor={theme === 'dark' ? '#6b8ff0' : '#6b8ff0'} />
+          <stop offset="0%" stopColor={resolvedTheme === 'dark' ? '#4573df' : '#4573df'} />
+          <stop offset="100%" stopColor={resolvedTheme === 'dark' ? '#6b8ff0' : '#6b8ff0'} />
         </linearGradient>
         <linearGradient id="neuralGradient" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="#ffffff" stopOpacity="0.8" />

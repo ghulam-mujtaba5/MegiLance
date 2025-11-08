@@ -26,11 +26,11 @@ export interface SidebarNavProps {
 
 const SidebarNav: React.FC<SidebarNavProps> = ({ isCollapsed, navItems }) => {
   const pathname = usePathname();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
     <nav className={cn(commonStyles.sidebarNav)}>

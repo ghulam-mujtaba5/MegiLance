@@ -15,10 +15,10 @@ interface ChatMessageBubbleProps {
 }
 
 const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ text, timestamp, isSender }) => {
-  const { theme } = useTheme();
-  if (!theme) return null;
+  const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(

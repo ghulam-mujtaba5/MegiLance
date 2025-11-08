@@ -27,12 +27,12 @@ const initialSettings: AISettingsState = {
 };
 
 const AISettings: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [settings, setSettings] = useState(initialSettings);
   const [isSaved, setIsSaved] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleSliderChange = (name: keyof AISettingsState) => (value: number[]) => {
     setSettings(prev => ({ ...prev, [name]: value }));

@@ -17,7 +17,7 @@ import lightStyles from './SecuritySettings.light.module.css';
 import darkStyles from './SecuritySettings.dark.module.css';
 
 const SecuritySettings: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [passwords, setPasswords] = useState({
     currentPassword: '',
     newPassword: '',
@@ -25,9 +25,9 @@ const SecuritySettings: React.FC = () => {
   });
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

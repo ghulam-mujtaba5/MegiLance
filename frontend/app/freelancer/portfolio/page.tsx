@@ -54,13 +54,13 @@ const PortfolioPage: React.FC = () => {
   const [description, setDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [projectUrl, setProjectUrl] = useState('');
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { notify } = useToaster();
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   // Open modal for adding a new item
   const handleAdd = () => {

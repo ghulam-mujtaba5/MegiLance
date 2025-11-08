@@ -23,8 +23,8 @@ interface StepBudgetProps {
 }
 
 const StepBudget: React.FC<StepBudgetProps> = ({ data, updateData, errors }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
     <motion.div

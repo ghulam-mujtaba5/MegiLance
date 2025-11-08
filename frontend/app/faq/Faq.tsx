@@ -72,8 +72,8 @@ const FaqItem = ({ item, isOpen, onClick, index }: FaqItemProps & { index: numbe
 };
 
 const Faq: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 

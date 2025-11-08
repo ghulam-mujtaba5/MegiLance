@@ -25,7 +25,7 @@ export interface ActionMenuProps {
 }
 
 const ActionMenu: React.FC<ActionMenuProps> = ({ items, trigger }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -59,8 +59,8 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ items, trigger }) => {
     };
   }, [isOpen]);
 
-  if (!theme) return null;
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  if (!resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleItemClick = (item: ActionMenuItem) => {
     if (item.onClick) {
@@ -72,7 +72,20 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ items, trigger }) => {
   return (
     <div className={cn(commonStyles.menuContainer)} ref={menuRef}>
       {trigger ? (
-        <div onClick={() => setIsOpen(!isOpen)} ref={triggerRef as any}>
+        <div 
+          onClick={() => setIsOpen(!isOpen)} 
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsOpen(!isOpen);
+            }
+          }}
+          ref={triggerRef as any}
+          role="button"
+          tabIndex={0}
+          aria-haspopup="true"
+          aria-expanded={isOpen}
+        >
           {trigger}
         </div>
       ) : (

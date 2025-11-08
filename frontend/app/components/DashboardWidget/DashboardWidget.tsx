@@ -33,8 +33,8 @@ const DashboardWidget: React.FC<DashboardWidgetProps> = ({
   iconColor,
   style,
 }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const titleId = useId();
 
   const isClickable = !!onClick;

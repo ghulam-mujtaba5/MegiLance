@@ -13,9 +13,9 @@ export interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> 
 }
 
 export const Label: React.FC<LabelProps> = ({ className = '', requiredMark = false, children, ...props }) => {
-  const { theme } = useTheme();
-  if (!theme) return null;
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
+  const themed = resolvedTheme === 'dark' ? dark : light;
   return (
     <label {...props} className={cn(common.label, themed.label, className)}>
       {children}

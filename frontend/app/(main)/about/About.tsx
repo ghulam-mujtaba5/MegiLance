@@ -8,8 +8,8 @@ import light from './About.light.module.css';
 import dark from './About.dark.module.css';
 
 const About: React.FC = () => {
-  const { theme } = useTheme();
-  const t = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const t = resolvedTheme === 'dark' ? dark : light;
   const styles = {
     root: cn(common.root, t.root),
     hero: cn(common.hero, t.hero),

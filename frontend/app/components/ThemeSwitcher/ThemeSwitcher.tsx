@@ -11,7 +11,7 @@ import lightStyles from './ThemeSwitcher.light.module.css';
 import darkStyles from './ThemeSwitcher.dark.module.css';
 
 const ThemeSwitcher = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Prevent hydration mismatch by not rendering until mounted on client
@@ -23,16 +23,16 @@ const ThemeSwitcher = () => {
     return null;
   }
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
     <button
-      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
       className={cn(commonStyles.themeToggle, themeStyles.themeToggle)}
-      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      title={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
       aria-label="Toggle theme"
     >
-      {theme === 'light' ? 
+      {resolvedTheme === 'light' ? 
         <Moon size={20} className={cn(commonStyles.icon, themeStyles.icon)} /> : 
         <Sun size={20} className={cn(commonStyles.icon, themeStyles.icon)} />
       }

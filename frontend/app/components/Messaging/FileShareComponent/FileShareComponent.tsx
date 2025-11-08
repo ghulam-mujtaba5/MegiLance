@@ -10,13 +10,13 @@ import lightStyles from './FileShareComponent.light.module.css';
 import darkStyles from './FileShareComponent.dark.module.css';
 
 const FileShareComponent: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {

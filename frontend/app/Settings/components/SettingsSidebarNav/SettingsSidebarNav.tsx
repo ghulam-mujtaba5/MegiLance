@@ -31,14 +31,14 @@ interface SettingsSidebarNavProps {
 }
 
 const SettingsSidebarNav: React.FC<SettingsSidebarNavProps> = ({ activeSection, onSectionChange }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
-  const appearanceIcon = theme === 'dark' ? Moon : Sun;
+  const appearanceIcon = resolvedTheme === 'dark' ? Moon : Sun;
   const updatedNavItems = navItems.map(item => 
     item.id === 'appearance' ? { ...item, icon: appearanceIcon } : item
   );

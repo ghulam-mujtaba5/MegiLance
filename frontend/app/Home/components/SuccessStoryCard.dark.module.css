@@ -6,7 +6,7 @@
 .storyCard:hover {
   transform: translateY(-4px);
   background-color: #293649;
-  border-color: #475569; /* cool-gray-600 */
+  border-color: #64748b; /* cool-gray-500 */
   box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.2);
 }
 
@@ -16,7 +16,7 @@
 
 .avatar {
   border: 2px solid #1e293b; /* cool-gray-800 */
-  box-shadow: 0 0 0 2px #475569; /* cool-gray-600 */
+  box-shadow: 0 0 0 2px #64748b; /* cool-gray-500 */
 }
 
 .name {
@@ -24,11 +24,11 @@
 }
 
 .role {
-  color: #94a3b8; /* cool-gray-400 */
+  color: #cbd5e1; /* cool-gray-300 */
 }
 
 .location {
-  color: #94a3b8; /* cool-gray-400 */
+  color: #cbd5e1; /* cool-gray-300 */
 }
 
 .achievement {

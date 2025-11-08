@@ -23,8 +23,8 @@ const STEPS = ['Freelancer', 'Scope', 'Terms', 'Review'] as const;
 type Step = typeof STEPS[number];
 
 const Hire: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const params = useSearchParams();
 
   const [step, setStep] = useState<Step>('Freelancer');

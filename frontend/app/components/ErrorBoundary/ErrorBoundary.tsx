@@ -41,11 +41,11 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
 
 // Themed fallback component to access theme in client components
 const ThemedFallback: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <div role="alert" className={styles.container}>

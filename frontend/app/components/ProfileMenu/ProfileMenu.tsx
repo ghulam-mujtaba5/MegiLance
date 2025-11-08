@@ -38,11 +38,11 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
   theme: themeProp,
 }) => {
   const { resolvedTheme } = useTheme();
-  const theme = themeProp || resolvedTheme;
+  const currentTheme = themeProp || resolvedTheme;
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = currentTheme === 'dark' ? darkStyles : lightStyles;
 
   const toggleMenu = (event: React.MouseEvent) => {
     event.stopPropagation();

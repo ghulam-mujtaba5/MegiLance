@@ -30,8 +30,8 @@ const BlogPostPage: React.FC = () => {
   const slug = params.slug as string;
   const post = mockPosts.find((p) => p.slug === slug);
 
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   if (!post) {
     return (

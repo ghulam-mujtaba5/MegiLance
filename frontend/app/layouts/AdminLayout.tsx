@@ -13,11 +13,11 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   return (
-    <div className={`DashboardLayout DashboardLayout--${theme}`}>
-      <SidebarNav theme={theme} userType="admin" />
+    <div className={`DashboardLayout DashboardLayout--${resolvedTheme}`}>
+      <SidebarNav theme={resolvedTheme} userType="admin" />
       <main className="DashboardLayout-main">
         {children}
       </main>

@@ -31,11 +31,11 @@ const Alert: React.FC<AlertProps> = ({
   onClose,
   className = '',
 }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   // Return null or a skeleton if the theme isn't loaded yet
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
   return (
     <div 

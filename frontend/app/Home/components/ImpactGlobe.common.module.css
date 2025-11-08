@@ -5,12 +5,229 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  min-height: 500px; /* Ensure container has a size */
+  min-height: 500px;
+  perspective: 1000px;
 }
 
 .globePlaceholder {
-  width: 600px;
-  height: 600px;
+  width: 400px;
+  height: 400px;
   border-radius: 50%;
-  background-color: rgba(128, 128, 128, 0.1);
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(39, 174, 96, 0.1));
+  animation: pulse 3s ease-in-out infinite;
 }
+
+.globe {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(69, 115, 223, 0.3), rgba(39, 174, 96, 0.2), transparent 70%);
+  border: 2px solid rgba(69, 115, 223, 0.3);
+  box-shadow: 
+    0 0 60px rgba(69, 115, 223, 0.4),
+    inset 0 0 60px rgba(69, 115, 223, 0.2);
+  animation: rotate3d 30s linear infinite;
+  transform-style: preserve-3d;
+}
+
+.connection {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(69, 115, 223, 0.8), transparent);
+  transform-origin: bottom center;
+  opacity: 0;
+  animation: connectionPulse 4s ease-in-out infinite;
+}
+
+.connection1 {
+  height: 150px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%) rotate(0deg);
+  animation-delay: 0s;
+}
+
+.connection2 {
+  height: 180px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%) rotate(60deg);
+  animation-delay: 0.7s;
+}
+
+.connection3 {
+  height: 160px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%) rotate(120deg);
+  animation-delay: 1.4s;
+}
+
+.connection4 {
+  height: 140px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%) rotate(180deg);
+  animation-delay: 2.1s;
+}
+
+.connection5 {
+  height: 170px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%) rotate(240deg);
+  animation-delay: 2.8s;
+}
+
+.connection6 {
+  height: 155px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%) rotate(300deg);
+  animation-delay: 3.5s;
+}
+
+.orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  border: 1px solid rgba(69, 115, 223, 0.2);
+  animation: rotate 20s linear infinite;
+}
+
+.orbit1 {
+  width: 300px;
+  height: 300px;
+  margin: -150px 0 0 -150px;
+}
+
+.orbit2 {
+  width: 360px;
+  height: 360px;
+  margin: -180px 0 0 -180px;
+  animation-duration: 25s;
+  animation-direction: reverse;
+}
+
+.orbit3 {
+  width: 420px;
+  height: 420px;
+  margin: -210px 0 0 -210px;
+  animation-duration: 30s;
+}
+
+.dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(69, 115, 223, 0.8);
+  box-shadow: 0 0 12px rgba(69, 115, 223, 0.6);
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.centerPulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  background: rgba(39, 174, 96, 0.8);
+  box-shadow: 0 0 20px rgba(39, 174, 96, 0.8);
+  animation: centerPulseAnimation 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes rotate3d {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes connectionPulse {
+  0%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scaleY(0.5);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -100%) scaleY(1);
+  }
+  20%, 80% {
+    opacity: 0.6;
+    transform: translate(-50%, -100%) scaleY(1);
+  }
+  90% {
+    opacity: 0;
+    transform: translate(-50%, -100%) scaleY(0.5);
+  }
+}
+
+@keyframes centerPulseAnimation {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 768px) {
+  .globe {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .orbit1 {
+    width: 220px;
+    height: 220px;
+    margin: -110px 0 0 -110px;
+  }
+  
+  .orbit2 {
+    width: 260px;
+    height: 260px;
+    margin: -130px 0 0 -130px;
+  }
+  
+  .orbit3 {
+    width: 300px;
+    height: 300px;
+    margin: -150px 0 0 -150px;
+  }
+  
+  .connection {
+    height: 80px !important;
+  }
+}
+

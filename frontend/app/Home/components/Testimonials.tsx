@@ -37,8 +37,8 @@ const testimonialsData: Testimonial[] = [
 ];
 
 const Testimonials: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <section className={cn(commonStyles.testimonials, themeStyles.testimonials)}>

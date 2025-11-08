@@ -41,8 +41,8 @@ const securityBadges: SecurityBadge[] = [
 ];
 
 const TrustIndicators: React.FC = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.trustContainer, styles.trustContainer)}>

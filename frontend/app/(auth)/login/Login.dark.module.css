@@ -12,7 +12,7 @@
   --form-container-bg: rgba(30, 35, 43, 0.7);
   --form-container-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
+  --text-secondary: #d1d5db;
   --text-tertiary: #6b7280;
   --border-color: #374151;
   
@@ -31,7 +31,7 @@
   
   /* Glassmorphism effect */
   --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(55, 65, 81, 0.5);
+  --glass-border: rgba(55, 65, 81, 0.7);
   --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   --glass-backdrop: blur(12px);
 }

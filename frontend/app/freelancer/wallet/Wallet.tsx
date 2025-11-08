@@ -21,14 +21,14 @@ import lightStyles from './Wallet.light.module.css';
 import darkStyles from './Wallet.dark.module.css';
 
 const Wallet: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { analytics, transactions, loading, error } = useFreelancerData();
   const toaster = useToaster();
   
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const balance = useMemo(() => {
     if (!analytics?.walletBalance) return 0;

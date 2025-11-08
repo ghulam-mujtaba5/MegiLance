@@ -12,10 +12,10 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   return (
-    <div className={`AuthLayout AuthLayout--${theme}`}>
+    <div className={`AuthLayout AuthLayout--${resolvedTheme}`}>
       <main className="AuthLayout-main">
         {children}
       </main>

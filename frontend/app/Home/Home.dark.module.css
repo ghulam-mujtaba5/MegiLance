@@ -24,7 +24,7 @@
 }
 
 .navLink {
-  color: #9ca3af; /* Gray-400 */
+  color: #d1d5db;
 }
 
 .navLink:hover {
@@ -44,7 +44,7 @@
 }
 
 .footerLinks a {
-  color: #9ca3af; /* Gray-400 */
+  color: #d1d5db;
 }
 
 .footerLinks a:hover {

@@ -46,8 +46,8 @@ const socialLinks = [
 ];
 
 const PublicFooter = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <footer className={cn(commonStyles.footer, styles.footer)}>

@@ -16,8 +16,8 @@ import lightStyles from '../Settings.light.module.css';
 import darkStyles from '../Settings.dark.module.css';
 
 const PasswordSettingsPage = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const toaster = useToaster();
 
   const [currentPassword, setCurrentPassword] = useState('');

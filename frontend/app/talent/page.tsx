@@ -17,7 +17,7 @@ const mock: TalentProfile[] = Array.from({ length: 8 }).map((_, i) => ({
 }));
 
 const TalentDirectoryPage = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [q, setQ] = useState('');
   const filtered = mock.filter(m => !q || m.name.toLowerCase().includes(q.toLowerCase()) || m.skills.some(s => s.toLowerCase().includes(q.toLowerCase())));
 

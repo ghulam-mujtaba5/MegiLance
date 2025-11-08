@@ -41,8 +41,8 @@ const sortOptions: SortOption[] = [
 const allStatuses: Proposal['status'][] = ['Draft', 'Submitted', 'Interview', 'Rejected'];
 
 const ProposalsPage: React.FC = () => {
-  const { theme } = useTheme();
-  const styles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const toaster = useToaster();
 
   const [q, setQ] = usePersistedState<string>('freelancer:proposals:q', '');

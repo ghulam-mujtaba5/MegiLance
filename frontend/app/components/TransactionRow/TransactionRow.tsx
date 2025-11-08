@@ -12,12 +12,12 @@ export interface TransactionRowProps {
 }
 
 const TransactionRow: React.FC<TransactionRowProps> = ({ date, description, amount }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const isPositive = typeof amount === 'number' ? amount >= 0 : !String(amount).startsWith('-');
   const formattedAmount = typeof amount === 'number' 

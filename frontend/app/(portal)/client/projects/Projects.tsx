@@ -47,8 +47,8 @@ const SORT_OPTIONS = [
 ];
 
 const Projects: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { projects: rawProjects, loading, error } = useClientData();
   const projects = useMemo(() => transformProjectData(rawProjects || []), [rawProjects]);
 

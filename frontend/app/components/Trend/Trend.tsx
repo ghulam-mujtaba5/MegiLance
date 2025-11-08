@@ -15,8 +15,8 @@ export interface TrendProps {
 }
 
 const Trend: React.FC<TrendProps> = ({ direction, value }) => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const Icon = direction === 'up' ? ArrowUp : ArrowDown;
 
   return (

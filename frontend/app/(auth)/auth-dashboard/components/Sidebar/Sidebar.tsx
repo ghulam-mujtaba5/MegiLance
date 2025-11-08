@@ -24,15 +24,15 @@ const navItems = [
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -48,9 +48,13 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           </div>
           <div className={styles.logo}>MegiLance</div>
         </div>
-        <div className={styles.themeToggle} onClick={toggleTheme}>
-          {theme === 'light' ? <FaMoon /> : <FaSun />}
-        </div>
+        <button 
+          className={styles.themeToggle} 
+          onClick={toggleTheme}
+          aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
+        >
+          {resolvedTheme === 'light' ? <FaMoon /> : <FaSun />}
+        </button>
       </div>
       <div className={styles.userProfile}>
         <Image src={user.avatar} alt={`${user.fullName}'s avatar`} width={40} height={40} className={styles.avatar} />

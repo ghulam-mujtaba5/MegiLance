@@ -13,8 +13,8 @@ interface FraudAlertBannerProps {
 }
 
 const FraudAlertBanner: React.FC<FraudAlertBannerProps> = ({ message }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
     <div className={cn(commonStyles.fraudAlertBanner, themeStyles.fraudAlertBanner)}>

@@ -41,7 +41,7 @@ const Textarea: React.FC<TextareaProps> = ({
   ...props
 }) => {
   const id = useId();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const [charCount, setCharCount] = useState(props.value?.toString().length || 0);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -52,7 +52,7 @@ const Textarea: React.FC<TextareaProps> = ({
   // Click outside to close suggestions
   useEffect(() => {
     // Don't attach event listeners until theme is resolved
-    if (!theme) return;
+    if (!resolvedTheme) return;
     
     const handleClickOutside = (event: MouseEvent) => {
       if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
@@ -65,9 +65,9 @@ const Textarea: React.FC<TextareaProps> = ({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [theme]);
+  }, [resolvedTheme]);
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
   const hasError = !!error;
   const errorId = hasError ? `${id}-error` : undefined;
   const helpId = !hasError && helpText ? `${id}-help` : undefined;

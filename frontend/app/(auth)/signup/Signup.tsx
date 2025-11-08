@@ -41,7 +41,7 @@ const roleConfig = {
 
 
 const Signup: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const router = useRouter();
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [showPassword, setShowPassword] = useState(false);
@@ -110,7 +110,7 @@ const Signup: React.FC = () => {
   };
 
   const styles = useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
     return {
       loginPage: merge('loginPage'),
@@ -143,7 +143,7 @@ const Signup: React.FC = () => {
       signupPrompt: merge('signupPrompt'),
       generalError: merge('generalError'),
     } as const;
-  }, [theme]);
+  }, [resolvedTheme]);
 
   return (
     <div className={styles.loginPage}>

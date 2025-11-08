@@ -45,8 +45,8 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   const progressId = React.useId();
   const safeProgress = Math.min(100, Math.max(0, progress || 0));
 
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.progressBarContainer, className)}>

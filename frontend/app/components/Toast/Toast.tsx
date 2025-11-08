@@ -30,8 +30,8 @@ const Toast: React.FC<ToastProps> = ({
   duration = 4000,
   className = '',
 }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
     if (!show || !duration || !onClose) return;
@@ -39,7 +39,7 @@ const Toast: React.FC<ToastProps> = ({
     return () => clearTimeout(t);
   }, [show, duration, onClose]);
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
   const baseClassName = cn(
     commonStyles.toast,

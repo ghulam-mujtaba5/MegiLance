@@ -26,8 +26,8 @@ const STATUSES = ['All', 'Open', 'In Progress', 'Resolved'] as const;
 const PRIORITIES = ['All', 'Low', 'Medium', 'High'] as const;
 
 const AdminSupport: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { tickets, loading, error } = useAdminData();
 
   const [localTickets, setLocalTickets] = useState<Ticket[]>([]);

@@ -16,13 +16,13 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange, className }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-  if (!theme || totalPages <= 1) {
+  if (!resolvedTheme || totalPages <= 1) {
     return null;
   }
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handlePrevious = () => {
     if (currentPage > 1) {

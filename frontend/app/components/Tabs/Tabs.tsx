@@ -168,7 +168,7 @@ interface TabsComponent extends FC<TabsProps> {
 const Tabs: TabsComponent = ({ children, defaultIndex = 0, className = '', onTabChange }) => {
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const tabsId = useId();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -177,8 +177,8 @@ const Tabs: TabsComponent = ({ children, defaultIndex = 0, className = '', onTab
     if (onTabChange) onTabChange(index);
   };
 
-  if (!mounted || !theme) return null;
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  if (!mounted || !resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
     <TabsContext.Provider value={{ selectedIndex, setSelectedIndex: handleSetSelectedIndex, tabsId, themeStyles }}>

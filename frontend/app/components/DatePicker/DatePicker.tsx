@@ -51,18 +51,18 @@ const DatePicker: React.FC<DatePickerProps> = ({
   fullWidth = false,
   size = 'md'
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(value);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState<{ hours: number; minutes: number }>({ hours: 12, minutes: 0 });
   const datePickerRef = useRef<HTMLDivElement>(null);
 
-  if (!theme) {
+  if (!resolvedTheme) {
     return null; // Don't render until theme is resolved
   }
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
   const hasError = !!error;
 
   // Close picker when clicking outside

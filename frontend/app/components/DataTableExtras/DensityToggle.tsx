@@ -15,8 +15,8 @@ interface DensityToggleProps {
 }
 
 const DensityToggle: React.FC<DensityToggleProps> = ({ value, onChange }) => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => (theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [theme]);
+  const { resolvedTheme } = useTheme();
+  const styles = useMemo(() => (resolvedTheme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [resolvedTheme]);
   return (
     <div className={styles.group} role="group" aria-label="Row density" title="Row density">
       <button

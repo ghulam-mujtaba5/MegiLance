@@ -32,8 +32,8 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   ctaText, 
   ctaLink 
 }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(styles.card, themeStyles.card, isPopular && styles.popular, isPopular && themeStyles.popular)}>

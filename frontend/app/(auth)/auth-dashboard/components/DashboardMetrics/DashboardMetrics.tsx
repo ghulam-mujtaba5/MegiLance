@@ -21,13 +21,13 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 const DashboardMetrics: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const { data, loading, error } = useDashboardData();
 
   const styles = React.useMemo(() => {
-    const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles } as { [k: string]: string };
-  }, [theme]);
+  }, [resolvedTheme]);
 
   if (loading) {
     return (

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import commonStyles from './InstallAppBanner.common.module.css';
@@ -19,6 +19,7 @@ interface BeforeInstallPromptEvent extends Event {
 
 const InstallAppBanner: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
@@ -45,7 +46,11 @@ const InstallAppBanner: React.FC = () => {
     setDeferredPrompt(null);
   };
 
-  if (!deferredPrompt) {
+  const handleDismiss = () => {
+    setIsDismissed(true);
+  };
+
+  if (!deferredPrompt || isDismissed) {
     return null;
   }
 
@@ -53,7 +58,16 @@ const InstallAppBanner: React.FC = () => {
     <div className={commonStyles.installAppBanner}>
       <div className={commonStyles.content}>
         <p className={commonStyles.text}>Get the full MegiLance experience. Install the app on your device.</p>
-        <Button variant="primary" onClick={handleInstallClick}>Install App</Button>
+        <div className={commonStyles.actions}>
+          <Button variant="primary" onClick={handleInstallClick}>Install App</Button>
+          <button 
+            onClick={handleDismiss} 
+            className={commonStyles.closeButton}
+            aria-label="Dismiss install banner"
+          >
+            <X size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );

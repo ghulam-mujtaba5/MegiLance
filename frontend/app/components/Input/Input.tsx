@@ -47,16 +47,21 @@ const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   const id = useId();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   
-  if (!theme) {
-    return null; // Don't render until theme is resolved
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  if (!mounted) {
+    return null; // Don't render until theme is resolved and mounted
   }
   
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
   const hasError = !!error;
   const errorId = hasError ? `${id}-error` : undefined;
   const helpId = !hasError && helpText ? `${id}-help` : undefined;

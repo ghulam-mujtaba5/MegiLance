@@ -21,8 +21,8 @@ const AVAILABILITIES = ['All', 'Full-time', 'Part-time', 'Contract'] as const;
 type Availability = (typeof AVAILABILITIES)[number];
 
 const Freelancers: React.FC = () => {
-  const { theme } = useTheme();
-  const themed = theme === 'dark' ? dark : light;
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const { freelancers, loading, error } = useClientData();
 
   // Unique IDs for ARIA

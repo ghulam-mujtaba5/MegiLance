@@ -40,12 +40,12 @@ const mockLogs: LogEntry[] = [
 const ITEMS_PER_PAGE = 5;
 
 const AuditLog: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [filters, setFilters] = useState({ search: '', actor: '', action: '' });
   const [sort, setSort] = useState<{ key: keyof LogEntry; direction: 'asc' | 'desc' }>({ key: 'timestamp', direction: 'desc' });
   const [currentPage, setCurrentPage] = useState(1);
 
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });

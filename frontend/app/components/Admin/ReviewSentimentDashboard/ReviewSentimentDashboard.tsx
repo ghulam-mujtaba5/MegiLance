@@ -48,9 +48,9 @@ const timeRangeOptions = [
 ];
 
 const ReviewSentimentDashboard: React.FC = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [timeRange, setTimeRange] = useState('30d');
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const getSentimentClass = (sentiment: string) => {
     if (sentiment === 'Positive') return themeStyles.sentimentPositive;

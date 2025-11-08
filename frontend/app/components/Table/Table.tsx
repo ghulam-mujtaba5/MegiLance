@@ -25,11 +25,11 @@ interface TableProps {
 }
 
 const Table: React.FC<TableProps> = ({ columns, data, caption }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
-  if (!theme) return null;
+  if (!resolvedTheme) return null;
 
-  const themeStyles = theme === 'light' ? lightStyles : darkStyles;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
     <div className={cn(commonStyles.tableContainer, themeStyles.tableContainer)}>

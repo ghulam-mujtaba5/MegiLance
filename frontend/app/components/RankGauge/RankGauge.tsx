@@ -16,8 +16,8 @@ interface RankGaugeProps {
 }
 
 const RankGauge: React.FC<RankGaugeProps> = ({ score, className }) => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const safeScore = Math.min(100, Math.max(0, score || 0));
   const rotation = (safeScore / 100) * 180;

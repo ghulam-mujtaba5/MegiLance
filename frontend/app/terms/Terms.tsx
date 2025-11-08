@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import { cn } from '@/lib/utils';
 import commonStyles from '@/app/styles/LegalPage.common.module.css';
 import lightStyles from '@/app/styles/LegalPage.light.module.css';
 import darkStyles from '@/app/styles/LegalPage.dark.module.css';
@@ -12,7 +13,7 @@ interface TermsProps {
 
 const Terms: React.FC<TermsProps> = ({ theme = 'light' }) => {
   return (
-    <main id="main-content" role="main" className={`LegalPage LegalPage--${theme}`}>
+    <main id="main-content" role="main" className={cn('LegalPage', `LegalPage--${theme}`)}>
       <div className="LegalPage-container">
         <header className="LegalPage-header">
           <h1>Terms of Service</h1>

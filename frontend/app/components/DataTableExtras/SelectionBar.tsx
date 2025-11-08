@@ -16,8 +16,8 @@ interface SelectionBarProps {
 }
 
 const SelectionBar: React.FC<SelectionBarProps> = ({ count, onClear, onExportCSV, onExport }) => {
-  const { theme } = useTheme();
-  const styles = useMemo(() => (theme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [theme]);
+  const { resolvedTheme } = useTheme();
+  const styles = useMemo(() => (resolvedTheme === 'dark' ? { ...commonStyles, ...darkStyles } : { ...commonStyles, ...lightStyles }), [resolvedTheme]);
   const [fmt, setFmt] = useState<ExportFormat>('csv');
   if (count === 0) return null;
   return (

@@ -57,8 +57,8 @@ const BackgroundGrid = () => (
 );
 
 const TechLogos = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.techStack, themeStyles.techStack)}>
@@ -77,8 +77,8 @@ const TechLogos = () => {
 
 // --- Main Component ---
 const AIShowcase: React.FC = () => {
-  const { theme } = useTheme();
-  const themeStyles = theme === 'dark' ? darkStyles : lightStyles;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <section className={cn(commonStyles.aiShowcase, themeStyles.aiShowcase)}>
