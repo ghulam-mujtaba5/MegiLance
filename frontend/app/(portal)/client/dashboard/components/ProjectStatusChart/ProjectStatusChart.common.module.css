@@ -40,3 +40,12 @@
   border-radius: 50%;
   display: inline-block;
 }
+
+/* Color mapping via data attribute */
+.legendIcon[data-color] {
+  background-color: var(--legend-color, currentColor);
+}
+.legendIcon[data-color="#4573DF"] { background-color: #4573DF; }
+.legendIcon[data-color="#27AE60"] { background-color: #27AE60; }
+.legendIcon[data-color="#F2C94C"] { background-color: #F2C94C; }
+.legendIcon[data-color="#E81123"] { background-color: #E81123; }

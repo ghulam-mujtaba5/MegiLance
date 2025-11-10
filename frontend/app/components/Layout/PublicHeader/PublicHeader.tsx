@@ -105,7 +105,7 @@ const PublicHeader = () => {
                 <button 
                   className={cn(commonStyles.navLink, styles.navLink, commonStyles.dropdownTrigger)}
                   onClick={handleServicesClick}
-                  aria-expanded={isServicesOpen}
+                  aria-expanded={isServicesOpen ? 'true' : 'false'}
                   aria-haspopup="true"
                 >
                   Services
@@ -165,7 +165,7 @@ const PublicHeader = () => {
             className={cn(commonStyles.mobileMenuButton, styles.mobileMenuButton)}
             onClick={toggleMobileMenu}
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={isMobileMenuOpen}
+            aria-expanded={isMobileMenuOpen ? 'true' : 'false'}
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

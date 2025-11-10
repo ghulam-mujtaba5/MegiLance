@@ -48,7 +48,7 @@ const FaqItem = ({ item, isOpen, onClick, index }: FaqItemProps & { index: numbe
         id={buttonId}
         className={commonStyles.faqItemQuestion}
         onClick={onClick}
-        aria-expanded={!!isOpen}
+        aria-expanded={isOpen ? 'true' : 'false'}
         aria-controls={contentId}
       >
         <span>{item.question}</span>

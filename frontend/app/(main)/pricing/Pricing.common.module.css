@@ -17,33 +17,37 @@
 
 .title {
   font-family: var(--font-poppins);
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 700;
-  letter-spacing: -1px;
-  margin-bottom: 12px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 14px;
 }
 
 .subtitle {
   max-width: 550px;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
 }
 
 .toggleContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
   margin-bottom: 64px;
 }
 
 .toggleLabel {
   font-family: var(--font-inter);
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .toggleSwitch {
@@ -55,19 +59,25 @@
   cursor: pointer;
   border: none;
   box-sizing: border-box;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.toggleSwitch:hover {
+  transform: scale(1.05);
 }
 
 .toggleHandle {
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .discountBadge {
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 8px;
 }
 
 .grid {

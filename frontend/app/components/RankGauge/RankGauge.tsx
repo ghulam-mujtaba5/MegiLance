@@ -22,13 +22,9 @@ const RankGauge: React.FC<RankGaugeProps> = ({ score, className }) => {
   const safeScore = Math.min(100, Math.max(0, score || 0));
   const rotation = (safeScore / 100) * 180;
 
-  const gaugeStyle = {
-    '--gauge-rotation': `${rotation}deg`,
-  } as React.CSSProperties;
-
   return (
     <div className={cn(commonStyles.rankGauge, className)}>
-      <div className={cn(commonStyles.fill, themeStyles.fill)} style={gaugeStyle}></div>
+      <div className={cn(commonStyles.fill, themeStyles.fill)} data-rotation={rotation}></div>
       <div className={cn(commonStyles.cover, themeStyles.cover)}></div>
       <span className={cn(commonStyles.score, themeStyles.score)}>{safeScore}</span>
     </div>

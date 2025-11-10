@@ -86,7 +86,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
         className={cn(commonStyles.trigger, themeStyles.trigger)}
         onClick={toggleMenu}
         aria-haspopup="true"
-        aria-expanded={isOpen}
+        aria-expanded={isOpen ? 'true' : 'false'}
         aria-label={`Open user menu for ${userName}`}
         title={`Open user menu for ${userName}`}
       >

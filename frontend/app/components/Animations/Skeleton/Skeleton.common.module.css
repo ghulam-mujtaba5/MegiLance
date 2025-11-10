@@ -1,12 +1,26 @@
 /* AI-HINT: Common styles for Skeleton. Uses shimmer animation with reduced-motion safety. */
-.container { display: grid; gap: 8px; }
+.container { display: grid; gap: 10px; }
 .inline { display: inline-grid; }
 
 .block {
   position: relative;
   overflow: hidden;
-  /* Fallback background for browsers without color-mix */
+  width: 100%;
+  height: 14px;
+  border-radius: 8px;
   background: linear-gradient(180deg, #111a36, #0c142c);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Dynamic sizing via data attributes */
+.block[data-width] {
+  width: var(--skeleton-width, 100%);
+}
+.block[data-height] {
+  height: var(--skeleton-height, 14px);
+}
+.block[data-radius] {
+  border-radius: var(--skeleton-radius, 8px);
 }
 
 @supports (color: color-mix(in oklab, white, black)) {
@@ -24,8 +38,8 @@
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-  animation: shimmer 1350ms ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+  animation: shimmer 1350ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @keyframes shimmer {

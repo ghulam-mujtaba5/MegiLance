@@ -10,14 +10,25 @@
   --font-family-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-family-code: 'JetBrains Mono', 'Fira Code', monospace;
 
+  --font-size-xxs: 0.6875rem; /* 11px */
   --font-size-xs: 0.75rem;    /* 12px */
   --font-size-sm: 0.875rem;   /* 14px */
   --font-size-base: 1rem;     /* 16px */
   --font-size-lg: 1.125rem;   /* 18px */
   --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-xxl: 1.375rem;  /* 22px */
   --font-size-2xl: 1.5rem;    /* 24px */
   --font-size-3xl: 1.875rem;  /* 30px */
   --font-size-4xl: 2.25rem;   /* 36px */
+  --font-size-5xl: 3rem;      /* 48px */
+  
+  --letter-spacing-tighter: -0.03em;
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: -0.01em;
+  --letter-spacing-wide: 0.01em;
+  --letter-spacing-wider: 0.02em;
+  --letter-spacing-widest: 0.05em;
+  --letter-spacing-ultra: 0.08em;
   
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -50,12 +61,17 @@
   /* ------------------------- */
   /*   Borders & Radius        */
   /* ------------------------- */
-  --radius-sm: 0.25rem;    /* 4px */
-  --radius-md: 0.5rem; /* 8px */
-  --radius-lg: 0.75rem; /* 12px */
+  --radius-xs: 0.375rem;   /* 6px */
+  --radius-sm: 0.5rem;     /* 8px */
+  --radius-md: 0.625rem;   /* 10px */
+  --radius-lg: 0.75rem;    /* 12px */
   --radius-xl: 1rem;       /* 16px */
+  --radius-2xl: 1.25rem;   /* 20px */
+  --radius-3xl: 1.5rem;    /* 24px */
   --radius-full: 9999px;
   
+  --border-width-thin: 1px;
+  --border-width-base: 1.5px;
   --border-width-sm: 1px;
   --border-width-md: 2px;
   --border-width-lg: 3px;
@@ -63,10 +79,12 @@
   /* ------------------------- */
   /*   Shadows & Elevation     */
   /* ------------------------- */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-base: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1);
   --shadow-focus-ring-primary: 0 0 0 3px rgba(69, 115, 223, 0.3);
   --shadow-focus-ring-danger: 0 0 0 3px rgba(232, 17, 35, 0.3);
   --shadow-modal-light: var(--shadow-xl);
@@ -77,9 +95,16 @@
   /* ------------------------- */
   --transition-duration-fast: 150ms;
   --transition-duration-normal: 250ms;
+  --transition-duration-medium: 300ms;
   --transition-duration-slow: 350ms;
-  --transition-all-fast: all var(--transition-duration-fast) ease-in-out;
-  --transition-all-normal: all var(--transition-duration-normal) ease-in-out;
+  
+  --transition-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --transition-easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  
+  --transition-all-fast: all var(--transition-duration-fast) var(--transition-easing-standard);
+  --transition-all-normal: all var(--transition-duration-normal) var(--transition-easing-standard);
+  --transition-all-medium: all var(--transition-duration-medium) var(--transition-easing-standard);
 
   --z-index-dropdown: 1000;
   --z-index-modal: 1050;
@@ -108,8 +133,9 @@ h1, h2, h3, h4, h5, h6 {
 /*   Global UX Enhancements  */
 /* ------------------------- */
 ::selection {
-  background: color-mix(in oklab, var(--primary) 18%, transparent);
-  color: var(--text-on-dark);
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+  color: var(--text-primary);
+  text-shadow: none;
 }
 
 /* Respect reduced motion */
@@ -129,13 +155,15 @@ a {
   text-decoration-color: var(--primary);
   /* Enhanced underline color on capable browsers */
   text-decoration-color: color-mix(in oklab, var(--primary) 30%, transparent);
-  text-underline-offset: 2px;
-  transition: var(--transition-all-fast);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: all var(--transition-duration-normal) var(--transition-easing-standard);
 }
 
 a:hover, a:focus-visible {
   text-decoration-color: var(--primary);
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
 }
 
 /* Utility: brand focus ring */

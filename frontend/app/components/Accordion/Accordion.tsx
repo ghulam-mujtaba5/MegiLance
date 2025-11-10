@@ -48,7 +48,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, chil
                 <button
           id={buttonId}
           onClick={() => toggleItem(value)}
-          aria-expanded={isOpen}
+          aria-expanded={isOpen ? 'true' : 'false'}
           aria-controls={contentId}
           className={cn(commonStyles.accordionTrigger, themeStyles.accordionTrigger)}
         >

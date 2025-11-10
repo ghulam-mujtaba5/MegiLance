@@ -10,7 +10,11 @@
   padding: 0;
   cursor: pointer;
   border-radius: 50%;
-  transition: box-shadow 0.2s;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.trigger:hover {
+  transform: scale(1.05);
 }
 
 .dropdown {
@@ -18,13 +22,14 @@
   top: calc(100% + 8px);
   right: 0;
   width: 280px;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   z-index: 50;
   opacity: 0;
   transform: translateY(-10px);
   visibility: hidden;
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out, visibility 0.2s;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.2s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 .dropdownOpen {
@@ -46,11 +51,14 @@
   font-size: 15px;
   font-weight: 600;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .userEmail {
   font-size: 13px;
   margin-top: 4px;
+  opacity: 0.8;
+  letter-spacing: 0.01em;
 }
 
 .items {
@@ -63,14 +71,19 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 8px 16px;
+  padding: 10px 16px;
   font-size: 14px;
   text-align: left;
   background-color: transparent;
   border: none;
   cursor: pointer;
-  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+  transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.item:hover {
+  transform: translateX(2px);
 }
 
 .item:focus-visible {
@@ -78,12 +91,17 @@
 }
 
 .itemIcon {
-  margin-right: 16px;
+  margin-right: 12px;
   display: flex;
   align-items: center;
   font-size: 18px;
   width: 20px;
   justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.item:hover .itemIcon {
+  transform: scale(1.1);
 }
 
 .itemLabel {

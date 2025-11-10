@@ -3,44 +3,50 @@
 }
 
 .header {
-  padding-bottom: var(--space-6);
-  border-bottom: 1px solid;
-  margin-bottom: var(--space-8);
+  padding-bottom: 1.5rem;
+  border-bottom: 1.5px solid;
+  margin-bottom: 2rem;
 }
 
 .header h1 {
   font-family: var(--font-poppins);
-  font-size: var(--font-size-xxl);
+  font-size: 32px;
   font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   margin: 0;
 }
 
 .header p {
-  font-size: var(--font-size-md);
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
   margin-top: var(--space-1);
 }
 
 .mainGrid {
   display: grid;
   grid-template-columns: 1fr 2.5fr;
-  gap: var(--space-8);
+  gap: 2rem;
   align-items: flex-start;
 }
 
 .summaryCard {
   position: sticky;
-  top: var(--space-8);
-  padding: var(--space-6);
-  border-radius: var(--border-radius-lg);
+  top: 2rem;
+  padding: 1.5rem;
+  border-radius: 16px;
   text-align: center;
-  border: 1px solid;
+  border: 1.5px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .summaryCard h2 {
   font-family: var(--font-poppins);
-  font-size: var(--font-size-lg);
-  font-weight: 500;
-  margin-bottom: var(--space-4);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
 }
 
 .summaryRating {
@@ -53,29 +59,35 @@
 
 .summaryRatingScore {
   font-family: var(--font-poppins);
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .summaryCard .reviewCount {
-  font-size: var(--font-size-sm);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
 }
 
 .reviewsList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: 1.5rem;
 }
 
 .reviewItem {
-  padding: var(--space-5);
-  border-radius: var(--border-radius-lg);
-  border: 1px solid;
-  transition: all 0.2s ease-in-out;
+  padding: 1.25rem;
+  border-radius: 16px;
+  border: 1.5px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .reviewItem:hover {
   transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 .reviewItemHeader {

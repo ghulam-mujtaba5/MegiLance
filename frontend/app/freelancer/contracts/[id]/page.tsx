@@ -142,7 +142,7 @@ const ContractDetailsPage: React.FC = () => {
           <div className={styles.progressBar}>
             <div 
               className={styles.progressFill} 
-              style={{ width: `${progressPercentage}%` }}
+              data-progress={progressPercentage}
             ></div>
           </div>
         </div>

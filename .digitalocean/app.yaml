@@ -1,0 +1,54 @@
+# Digital Ocean App Platform Configuration
+# Deploy MegiLance Frontend (Next.js) for FREE
+# 3 static sites included in free tier
+
+name: megilance-frontend
+region: nyc
+
+static_sites:
+  - name: frontend
+    github:
+      repo: ghulam-mujtaba5/MegiLance
+      branch: main
+      deploy_on_push: true
+    
+    source_dir: /frontend
+    
+    build_command: npm run build
+    
+    output_dir: /.next
+    
+    environment_slug: node-js
+    
+    envs:
+      - key: NODE_ENV
+        value: production
+        scope: BUILD_TIME
+      
+      - key: NEXT_PUBLIC_API_URL
+        value: ${backend.PUBLIC_URL}
+        scope: BUILD_TIME
+      
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+        scope: BUILD_TIME
+    
+    routes:
+      - path: /
+    
+    cors:
+      allow_origins:
+        - exact: https://megilance.com
+        - prefix: https://
+      allow_methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      allow_headers:
+        - "*"
+    
+    health_check:
+      http_path: /

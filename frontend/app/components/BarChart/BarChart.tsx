@@ -27,10 +27,6 @@ const BarChart: React.FC<BarChartProps> = ({ data, className }) => {
     <div className={cn(commonStyles.barChart, themeStyles.barChart, className)}>
       {data.map(item => {
         const safeValue = Math.min(100, Math.max(0, item.value || 0));
-        const barStyle = {
-          width: `${safeValue}%`,
-          backgroundColor: item.color, // Directly apply color
-        } as React.CSSProperties;
 
         return (
           <div key={item.label} className={cn(commonStyles.barChartBarContainer, themeStyles.barChartBarContainer)}>
@@ -38,7 +34,8 @@ const BarChart: React.FC<BarChartProps> = ({ data, className }) => {
             <div className={cn(commonStyles.barChartBarWrapper, themeStyles.barChartBarWrapper)}>
               <div
                 className={cn(commonStyles.barChartBar, themeStyles.barChartBar)}
-                style={barStyle}
+                data-value={safeValue}
+                data-color={item.color}
                 role="progressbar"
                 aria-valuenow={safeValue}
                 aria-valuemin={0}

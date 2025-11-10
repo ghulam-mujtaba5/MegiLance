@@ -2,16 +2,16 @@
 
 .featureCard {
   position: relative;
-  padding: 32px;
-  border-radius: 24px;
+  padding: 28px; /* Slightly reduced for better proportion */
+  border-radius: 20px; /* More refined radius */
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03); /* Layered shadow */
 }
 
 .featureCard::before {
@@ -27,9 +27,14 @@
 }
 
 .featureCard:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-  border-color: rgba(69, 115, 223, 0.3);
+  transform: translateY(-6px) scale(1.01); /* Combined transform for premium feel */
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06); /* Enhanced layered shadow */
+  border-color: rgba(69, 115, 223, 0.4);
+}
+
+.featureCard:hover .iconWrapper {
+  transform: scale(1.05) rotate(2deg); /* Subtle icon animation */
+  box-shadow: 0 6px 20px rgba(69, 115, 223, 0.25);
 }
 
 .featureCard:hover::after {
@@ -48,15 +53,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  margin-bottom: 24px;
+  width: 60px; /* Slightly smaller for balance */
+  height: 60px;
+  border-radius: 16px; /* Refined radius */
+  margin-bottom: 20px;
   flex-shrink: 0;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
 .iconWrapper::before {
@@ -71,18 +76,20 @@
 }
 
 .iconWrapper svg {
-  width: 32px;
-  height: 32px;
+  width: 28px; /* Proportional to container */
+  height: 28px;
   position: relative;
   z-index: 2;
+  transition: transform 0.3s ease; /* Smooth icon transform */
 }
 
 .title {
   font-family: var(--font-poppins);
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 16px;
+  font-size: 1.125rem; /* 18px - More refined */
+  font-weight: 600; /* Slightly lighter */
+  margin-bottom: 14px;
   line-height: 1.4;
+  letter-spacing: -0.01em;
   position: relative;
 }
 

@@ -116,7 +116,7 @@ const BlockchainShowcase: React.FC = () => {
 
           <div className={commonStyles.features}>
             {blockchainFeatures.map((feature, index) => (
-              <div key={feature.title} className={commonStyles.feature} style={{ transitionDelay: `${index * 0.1}s` }}>
+              <div key={feature.title} className={commonStyles.feature} data-delay-index={index}>
                 <div className={commonStyles.featureIcon} aria-hidden="true">
                   <feature.icon />
                 </div>

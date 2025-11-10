@@ -98,6 +98,23 @@
   transition: width 0.5s ease-in-out;
 }
 
+/* Dynamic width based on data-progress attribute */
+.progressBar[data-progress="10"] { width: 10%; }
+.progressBar[data-progress="20"] { width: 20%; }
+.progressBar[data-progress="25"] { width: 25%; }
+.progressBar[data-progress="30"] { width: 30%; }
+.progressBar[data-progress="40"] { width: 40%; }
+.progressBar[data-progress="50"] { width: 50%; }
+.progressBar[data-progress="60"] { width: 60%; }
+.progressBar[data-progress="65"] { width: 65%; }
+.progressBar[data-progress="70"] { width: 70%; }
+.progressBar[data-progress="75"] { width: 75%; }
+.progressBar[data-progress="80"] { width: 80%; }
+.progressBar[data-progress="85"] { width: 85%; }
+.progressBar[data-progress="90"] { width: 90%; }
+.progressBar[data-progress="95"] { width: 95%; }
+.progressBar[data-progress="100"] { width: 100%; }
+
 .progressText {
   font-size: 0.875rem; /* 14px */
   font-size: var(--font-size-xs);

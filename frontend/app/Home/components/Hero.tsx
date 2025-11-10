@@ -36,8 +36,8 @@ const Hero: React.FC = () => {
     return (
       <div className={cn(commonStyles.heroContainer)}>
         <div className={commonStyles.contentWrapper}>
-          <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: '40px', height: '40px', border: '3px solid #4573df', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+          <div className={commonStyles.loadingContainer}>
+            <div className={commonStyles.loadingSpinner} />
           </div>
         </div>
       </div>

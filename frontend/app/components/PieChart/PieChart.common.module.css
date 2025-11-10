@@ -10,12 +10,12 @@
 }
 
 .title {
-  font-size: 1.25rem;
+  font-size: 1.125rem; /* 18px - More refined */
   font-weight: 600;
   margin-bottom: 1rem;
   text-align: center;
-  /* Ensure title has sufficient contrast and readability */
   line-height: 1.4;
+  letter-spacing: -0.01em;
 }
 
 .chartContainer {
@@ -26,15 +26,15 @@
 }
 
 .chartContainer.size-sm {
-  max-width: 300px;
+  max-width: 280px; /* Slightly smaller */
 }
 
 .chartContainer.size-md {
-  max-width: 400px;
+  max-width: 380px;
 }
 
 .chartContainer.size-lg {
-  max-width: 500px;
+  max-width: 480px;
 }
 
 .chartWrapper {
@@ -76,11 +76,10 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem;
+  padding: 0.625rem 0.75rem; /* 10px 12px - Better proportion */
   border-radius: 0.5rem;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  /* Ensure sufficient touch target size */
   min-height: 44px;
 }
 
@@ -90,42 +89,52 @@
 }
 
 .legendItem:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.04);
+  transform: translateX(2px); /* Subtle slide */
 }
 
 .legendColor {
   width: 1rem;
   height: 1rem;
   border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Subtle depth */
 }
 
 .legendLabel {
   flex: 1;
-  font-size: 0.875rem;
+  font-size: 0.875rem; /* 14px */
   font-weight: 500;
-  /* Ensure legend label has sufficient contrast and readability */
   line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
 .legendValue {
-  font-size: 0.875rem;
+  font-size: 0.875rem; /* 14px */
   font-weight: 600;
-  /* Ensure legend value has sufficient contrast and readability */
   line-height: 1.4;
+  letter-spacing: -0.01em; /* Tighter for numbers */
 }
 
 .tooltip {
   position: absolute;
   transform: translate(-50%, -100%);
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.75rem 1rem; /* 12px 16px - More generous */
+  border-radius: 0.75rem; /* 12px */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18), 0 2px 4px rgba(0, 0, 0, 0.1); /* Layered shadow */
   display: flex;
   align-items: center;
   gap: 0.5rem;
   pointer-events: none;
   z-index: 1000;
   min-width: 150px;
+}
+
+/* Tooltip positioning via data attributes */
+.tooltip[data-x] {
+  left: var(--tooltip-x, 0);
+}
+.tooltip[data-y] {
+  top: var(--tooltip-y, 0);
 }
 
 .tooltipColor {

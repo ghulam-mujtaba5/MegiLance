@@ -3,46 +3,59 @@
 .wrapper {
   width: 100%;
   text-align: center;
-  padding: 2.5rem 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid transparent;
-  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  padding: 3rem 1.5rem;
+  border-radius: 16px;
+  border: 1.5px solid transparent;
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .iconWrap {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: 999px;
-  margin: 0 auto 0.75rem auto;
+  margin: 0 auto 1rem auto;
   display: grid;
   place-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wrapper:hover .iconWrap {
+  transform: scale(1.05);
 }
 
 .title {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 1.125rem;
+  font-size: 18px;
   line-height: 1.4;
+  letter-spacing: -0.01em;
+  margin: 0;
 }
 
 .description {
-  margin-top: 0.5rem;
-  font-size: 0.95rem;
-  line-height: 1.7;
+  margin-top: 0.625rem;
+  font-size: 14px;
+  line-height: 1.6;
   max-width: 48rem;
   margin-left: auto;
   margin-right: auto;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
 }
 
-.action { margin-top: 1rem; }
+.action { 
+  margin-top: 1.25rem;
+}
 
 /* Focus ring when interactive children are focused */
 .wrapper:focus-within {
-  /* Fallback */
-  box-shadow: 0 0 0 3px rgba(69,115,223,0.18) inset;
+  box-shadow: 0 0 0 3px rgba(69,115,223,0.18) inset, 0 2px 6px rgba(0, 0, 0, 0.04);
 }
+
 @supports (color: color-mix(in oklab, white, black)) {
   .wrapper:focus-within {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent) inset;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent) inset, 0 2px 6px rgba(0, 0, 0, 0.04);
   }
 }

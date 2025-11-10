@@ -104,7 +104,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeh
         className={cn(commonStyles.trigger, themeStyles.trigger)}
         onClick={() => setIsOpen(!isOpen)}
         aria-haspopup="listbox"
-        aria-expanded={isOpen}
+        aria-expanded={isOpen ? 'true' : 'false'}
         aria-controls={listId}
         aria-labelledby={`${labelId} ${triggerRef.current?.id}`}
       >
@@ -132,7 +132,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, placeh
               onClick={() => handleSelect(option)}
               onMouseEnter={() => setFocusedIndex(index)}
               role="option"
-              aria-selected={selected?.value === option.value}
+              aria-selected={selected?.value === option.value ? 'true' : 'false'}
             >
               {option.label}
             </li>

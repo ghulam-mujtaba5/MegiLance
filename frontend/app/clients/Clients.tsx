@@ -125,7 +125,7 @@ const Clients: React.FC = () => {
                 key={c}
                 type="button"
                 className={cn(common.chip, active && common.chipActive)}
-                aria-pressed={active || undefined}
+                aria-pressed={active ? 'true' : 'false'}
                 data-active={active || undefined}
                 onClick={() => onSelect(c)}
               >

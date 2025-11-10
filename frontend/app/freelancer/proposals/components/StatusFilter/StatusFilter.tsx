@@ -35,7 +35,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({ allStatuses, selectedStatus
             key={status}
             type="button"
             role="checkbox"
-            aria-checked={isSelected}
+            aria-checked={isSelected ? 'true' : 'false'}
             onClick={() => handleToggle(status)}
             className={cn(
               commonStyles.filterButton,

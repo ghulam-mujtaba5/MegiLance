@@ -20,22 +20,18 @@ export type SkeletonProps = {
 export default function Skeleton({ width, height = 14, radius = 8, lines = 1, inline = false, theme, className }: SkeletonProps) {
   const themeClass = theme === 'dark' ? dark.theme : theme === 'light' ? light.theme : '';
 
-  const style: React.CSSProperties = {
-    width: width ?? (inline ? undefined : '100%'),
-    height,
-    borderRadius: typeof radius === 'number' ? `${radius}px` : radius,
-  };
-
   const items = Array.from({ length: Math.max(1, lines) });
 
-  // AI-HINT: Inline style is intentionally limited to sizing tokens (width/height/radius)
-  // to keep the shimmer animation performant in CSS. Visual tokens remain in CSS modules.
-  // If preferred, pass fixed sizes via className and theme files instead.
   return (
     <div className={clsx(styles.container, themeClass, inline && styles.inline, className)} aria-hidden>
       {items.map((_, i) => (
-        // eslint-disable-next-line react/forbid-dom-props
-        <div key={i} className={styles.block} style={style} />
+        <div 
+          key={i} 
+          className={styles.block} 
+          data-width={typeof width === 'number' ? `${width}px` : width}
+          data-height={typeof height === 'number' ? `${height}px` : height}
+          data-radius={typeof radius === 'number' ? `${radius}px` : radius}
+        />
       ))}
     </div>
   );

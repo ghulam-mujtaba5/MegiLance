@@ -218,7 +218,7 @@ const Textarea: React.FC<TextareaProps> = ({
             autoResize && commonStyles.autoResize,
             className
           )}
-          aria-invalid={hasError ? 'true' : undefined}
+          aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={errorId ?? helpId}
           aria-errormessage={errorId}
           maxLength={maxLength}
@@ -294,7 +294,7 @@ const Textarea: React.FC<TextareaProps> = ({
                 isOverLimit && commonStyles.error,
                 isNearLimit && !isOverLimit && commonStyles.warning
               )}
-              style={{ width: `${Math.min(100, (currentLength / maxLength) * 100)}%` }}
+              data-progress={Math.min(100, Math.round((currentLength / maxLength) * 100))}
             ></div>
           </div>
         </div>

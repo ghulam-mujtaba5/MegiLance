@@ -1,5 +1,31 @@
 /* @AI-HINT: Common styles for the Hero component. Defines layout, typography, and advanced interactive elements with enhanced animations. */
 
+/* Loading states */
+.loadingContainer {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #4573df;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .heroContainer {
   position: relative;
   padding: 6rem 1rem 4rem;
@@ -84,33 +110,36 @@
 
 .mainHeading {
   font-family: var(--font-poppins);
-  font-size: 2.5rem;
+  font-size: 2.5rem; /* 40px */
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.15; /* Slightly taller for better readability */
+  letter-spacing: -0.03em; /* Tighter tracking for large text */
   margin-bottom: 1.5rem;
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Ensure proper text wrapping */
   word-wrap: break-word;
   hyphens: auto;
 }
 
 @media (min-width: 768px) {
   .mainHeading {
-    font-size: 3.5rem;
+    font-size: 3.25rem; /* 52px - More refined scale */
+    letter-spacing: -0.04em;
   }
 }
 
 @media (min-width: 1024px) {
   .mainHeading {
-    font-size: 4rem;
+    font-size: 3.75rem; /* 60px */
+    letter-spacing: -0.045em;
   }
 }
 
 @media (min-width: 1200px) {
   .mainHeading {
-    font-size: 4.5rem;
+    font-size: 4.25rem; /* 68px - More restrained maximum */
+    letter-spacing: -0.05em;
   }
 }
 

@@ -7,9 +7,35 @@
 
 A comprehensive freelancing platform featuring AI-powered matching, blockchain-based payments, and enterprise-grade architecture.
 
+## 🎯 **NEW: 100% FREE Oracle Cloud Migration!**
+
+**Migrating from AWS to Oracle Cloud?** → See **[ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md)** 🚀
+
+**Quick Start (Oracle):** 
+```powershell
+.\oracle-setup.ps1  # One command setup!
+```
+
+**Benefits:**
+- ✅ 100% Free Forever (Always Free tier)
+- ✅ Better specs (20GB DB, 2 VMs, 10GB storage)
+- ✅ No expiration (unlike AWS 12-month free tier)
+- ✅ $600-2,280/year savings
+- ✅ Production-ready
+
+**Migration Docs:**
+- **[ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md)** - Start here! 📖
+- **[QUICK_START_ORACLE.md](QUICK_START_ORACLE.md)** - 5-minute setup ⚡
+- **[COMPLETE_HOSTING_GUIDE.md](COMPLETE_HOSTING_GUIDE.md)** - Hosting strategy 🏗️
+- **[MIGRATION_CHECKLIST.md](MIGRATION_CHECKLIST.md)** - Step-by-step guide ✅
+
+---
+
 ## 🚀 Quick Start
 
-**New to deployment?** → See [QUICKSTART.md](QUICKSTART.md)
+**New to deployment?** → See [QUICKSTART.md](QUICKSTART.md) *(AWS - Legacy)*
+
+**Want Oracle Cloud (FREE)?** → See [ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md) *(Recommended!)*
 
 **Want full AWS deployment?** → See [DEPLOYMENT.md](DEPLOYMENT.md)
 
@@ -17,8 +43,17 @@ A comprehensive freelancing platform featuring AI-powered matching, blockchain-b
 
 ## 📋 Documentation
 
+### Oracle Cloud (NEW - Recommended)
+- **[ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md)** - Oracle migration overview
+- **[QUICK_START_ORACLE.md](QUICK_START_ORACLE.md)** - 5-minute Oracle setup
+- **[COMPLETE_HOSTING_GUIDE.md](COMPLETE_HOSTING_GUIDE.md)** - Free hosting strategy
+- **[MIGRATION_CHECKLIST.md](MIGRATION_CHECKLIST.md)** - Complete migration checklist
+
+### AWS (Legacy)
 - **[QUICKSTART.md](QUICKSTART.md)** - 5-minute autonomous AWS deployment
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete production deployment guide
+
+### General
 - **[docs/](docs/)** - System architecture and design docs
 - **[infra/README.md](infra/README.md)** - Infrastructure as Code details
 - **[backend/README.md](backend/README.md)** - Backend API documentation
@@ -26,6 +61,16 @@ A comprehensive freelancing platform featuring AI-powered matching, blockchain-b
 
 ## 🏗️ Architecture
 
+### New Architecture (Oracle Cloud - Recommended)
+```
+Digital Ocean Frontend → Oracle VM (FastAPI) → Oracle Autonomous DB
+                              ↓
+                        Oracle Object Storage
+                              ↓
+                        Oracle VM #2 (AI Service)
+```
+
+### Legacy Architecture (AWS)
 ```
 Frontend (Next.js) → ALB → ECS Fargate (FastAPI) → RDS PostgreSQL
                       ↓
@@ -38,9 +83,9 @@ Frontend (Next.js) → ALB → ECS Fargate (FastAPI) → RDS PostgreSQL
 
 **Backend:**
 - FastAPI + Python 3.11
-- PostgreSQL + SQLAlchemy
+- PostgreSQL / Oracle Autonomous DB
 - JWT Authentication
-- AWS S3 for file storage
+- Oracle Object Storage / AWS S3 for file storage
 - Circle API for USDC payments
 - OpenAI for AI features
 

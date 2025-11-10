@@ -84,7 +84,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ items, trigger }) => {
           role="button"
           tabIndex={0}
           aria-haspopup="true"
-          aria-expanded={isOpen}
+          aria-expanded={isOpen ? 'true' : 'false'}
         >
           {trigger}
         </div>
@@ -95,7 +95,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ items, trigger }) => {
           size="icon"
           onClick={() => setIsOpen(!isOpen)}
           aria-haspopup="true"
-          aria-expanded={isOpen}
+          aria-expanded={isOpen ? 'true' : 'false'}
           aria-controls={menuId}
         >
           <MoreHorizontal size={20} />

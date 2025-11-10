@@ -171,8 +171,8 @@ const Login: React.FC = () => {
   if (!mounted) {
     return (
       <div className={cn(commonStyles.loginPage)}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <div style={{ width: '40px', height: '40px', border: '3px solid #4573df', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div className={commonStyles.loadingContainer}>
+          <div className={commonStyles.loadingSpinner} />
         </div>
       </div>
     );

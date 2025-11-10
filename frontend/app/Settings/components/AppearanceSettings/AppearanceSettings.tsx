@@ -30,7 +30,7 @@ const AppearanceSettings: React.FC = () => {
         <button
           className={cn(styles.button, resolvedTheme === 'light' && styles.active)}
           onClick={() => setTheme('light')}
-          aria-pressed={(resolvedTheme === 'light') || undefined}
+          aria-pressed={resolvedTheme === 'light' ? 'true' : 'false'}
         >
           <Sun size={20} />
           <span>Light</span>
@@ -38,7 +38,7 @@ const AppearanceSettings: React.FC = () => {
         <button
           className={cn(styles.button, resolvedTheme === 'dark' && styles.active)}
           onClick={() => setTheme('dark')}
-          aria-pressed={(resolvedTheme === 'dark') || undefined}
+          aria-pressed={resolvedTheme === 'dark' ? 'true' : 'false'}
         >
           <Moon size={20} />
           <span>Dark</span>

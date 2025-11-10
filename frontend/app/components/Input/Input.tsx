@@ -46,7 +46,8 @@ const Input: React.FC<InputProps> = ({
   type = 'text',
   ...props
 }) => {
-  const id = useId();
+  const generatedId = useId();
+  const inputId = props.id || generatedId;
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -63,8 +64,8 @@ const Input: React.FC<InputProps> = ({
   
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
   const hasError = !!error;
-  const errorId = hasError ? `${id}-error` : undefined;
-  const helpId = !hasError && helpText ? `${id}-help` : undefined;
+  const errorId = hasError ? `${inputId}-error` : undefined;
+  const helpId = !hasError && helpText ? `${inputId}-help` : undefined;
   const inputType = type === 'password' && showPassword ? 'text' : type;
   
   // Character counter
@@ -107,7 +108,7 @@ const Input: React.FC<InputProps> = ({
           )}
           <input
             ref={inputRef}
-            id={id}
+            id={inputId}
             type={inputType}
             className={cn(
               commonStyles.inputField,
@@ -118,7 +119,7 @@ const Input: React.FC<InputProps> = ({
               iconAfter && themeStyles.inputFieldWithIconAfter,
               className
             )}
-            aria-invalid={hasError ? 'true' : undefined}
+            aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={errorId ?? helpId}
             aria-errormessage={errorId}
             onFocus={(e) => {
@@ -154,7 +155,7 @@ const Input: React.FC<InputProps> = ({
         )}
         <input
           ref={inputRef}
-          id={id}
+          id={inputId}
           type={inputType}
           className={cn(
             commonStyles.inputField,
@@ -165,7 +166,7 @@ const Input: React.FC<InputProps> = ({
             iconAfter && themeStyles.inputFieldWithIconAfter,
             className
           )}
-          aria-invalid={hasError ? 'true' : undefined}
+          aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={errorId ?? helpId}
           aria-errormessage={errorId}
           onFocus={(e) => {
@@ -235,7 +236,7 @@ const Input: React.FC<InputProps> = ({
     >
       {label && !hideLabel && (
         <label 
-          htmlFor={id} 
+          htmlFor={inputId} 
           className={cn(
             commonStyles.inputLabel, 
             themeStyles.inputLabel,

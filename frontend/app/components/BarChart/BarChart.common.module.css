@@ -31,6 +31,22 @@
   transition: width 0.5s ease-in-out;
 }
 
+/* Dynamic width based on data-value attribute */
+.barChartBar[data-value="0"] { width: 0%; }
+.barChartBar[data-value="10"] { width: 10%; }
+.barChartBar[data-value="20"] { width: 20%; }
+.barChartBar[data-value="30"] { width: 30%; }
+.barChartBar[data-value="40"] { width: 40%; }
+.barChartBar[data-value="50"] { width: 50%; }
+.barChartBar[data-value="60"] { width: 60%; }
+.barChartBar[data-value="70"] { width: 70%; }
+.barChartBar[data-value="75"] { width: 75%; }
+.barChartBar[data-value="80"] { width: 80%; }
+.barChartBar[data-value="85"] { width: 85%; }
+.barChartBar[data-value="90"] { width: 90%; }
+.barChartBar[data-value="95"] { width: 95%; }
+.barChartBar[data-value="100"] { width: 100%; }
+
 .barChartPercentage {
   font-size: 0.875rem;
   font-weight: 500;

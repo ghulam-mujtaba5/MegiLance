@@ -38,7 +38,7 @@ const Tab = forwardRef<HTMLButtonElement, TabProps>(({ children, icon, disabled,
   const { selectedIndex, setSelectedIndex, tabsId, themeStyles } = useTabs();
   const isSelected = selectedIndex === index;
   return (
-    <button ref={ref} role="tab" type="button" id={`${tabsId}-tab-${index}`} aria-controls={`${tabsId}-panel-${index}`} aria-selected={!!isSelected} tabIndex={isSelected ? 0 : -1} onClick={() => !disabled && index !== undefined && setSelectedIndex(index)} disabled={disabled} className={cn(commonStyles.tabsTab, themeStyles.tabsTab, isSelected && [commonStyles.tabsTabSelected, themeStyles.tabsTabSelected], disabled && [commonStyles.tabsTabDisabled, themeStyles.tabsTabDisabled])}>
+    <button ref={ref} role="tab" type="button" id={`${tabsId}-tab-${index}`} aria-controls={`${tabsId}-panel-${index}`} aria-selected={isSelected ? 'true' : 'false'} tabIndex={isSelected ? 0 : -1} onClick={() => !disabled && index !== undefined && setSelectedIndex(index)} disabled={disabled} className={cn(commonStyles.tabsTab, themeStyles.tabsTab, isSelected && [commonStyles.tabsTabSelected, themeStyles.tabsTabSelected], disabled && [commonStyles.tabsTabDisabled, themeStyles.tabsTabDisabled])}>
       {icon && <span className={commonStyles.tabIcon}>{icon}</span>}
       <span className={commonStyles.tabLabel}>{children}</span>
     </button>

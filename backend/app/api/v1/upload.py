@@ -1,6 +1,7 @@
 """
-File upload endpoints using AWS S3
-Supports profile images, portfolio images, proposal attachments, and project files
+@AI-HINT: File upload endpoints using Oracle Cloud Infrastructure (OCI) Object Storage.
+Supports profile images, portfolio images, proposal attachments, and project files.
+Compatible with OCI Always Free tier (10GB storage).
 """
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, status
@@ -10,15 +11,15 @@ import os
 from io import BytesIO
 
 from app.core.security import get_current_active_user
-from app.core.s3 import S3Client
+from app.core.oci_storage import OCIStorageClient
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.models.user import User
 
 router = APIRouter()
 
-# Initialize S3 client
-s3_client = S3Client()
+# Initialize OCI Storage client
+oci_storage_client = OCIStorageClient()
 
 # Allowed file extensions
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
@@ -65,27 +66,27 @@ async def upload_profile_image(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    s3_key = f"profile-images/{current_user.id}/{uuid.uuid4()}{ext}"
+    object_key = f"profile-images/{current_user.id}/{uuid.uuid4()}{ext}"
     
-    # Upload to S3
+    # Upload to OCI Object Storage
     file_content = await file.read()
     file_obj = BytesIO(file_content)
     settings = get_settings()
-    bucket_name = settings.s3_bucket_assets or "megilance-assets"
-    s3_url = s3_client.upload_file(
+    bucket_name = settings.oci_bucket_assets or "megilance-assets"
+    object_url = oci_storage_client.upload_file(
         file_obj=file_obj,
         bucket_name=bucket_name,
-        object_name=s3_key
+        object_name=object_key
     )
     
-    # TODO: Delete old profile image from S3 if exists
+    # TODO: Delete old profile image from OCI if exists
     # TODO: Update user.profile_image in database
     
     return {
         "message": "Profile image uploaded successfully",
-        "url": s3_url,
+        "url": object_url,
         "filename": file.filename,
-        "s3_key": s3_key
+        "object_key": object_key
     }
 
 
@@ -111,24 +112,24 @@ async def upload_portfolio_image(
     portfolio_path = f"portfolio/{current_user.id}"
     if portfolio_item_id:
         portfolio_path += f"/{portfolio_item_id}"
-    s3_key = f"{portfolio_path}/{uuid.uuid4()}{ext}"
+    object_key = f"{portfolio_path}/{uuid.uuid4()}{ext}"
     
-    # Upload to S3
+    # Upload to OCI Object Storage
     file_content = await file.read()
     file_obj = BytesIO(file_content)
     settings = get_settings()
-    bucket_name = settings.s3_bucket_assets or "megilance-assets"
-    s3_url = s3_client.upload_file(
+    bucket_name = settings.oci_bucket_assets or "megilance-assets"
+    object_url = oci_storage_client.upload_file(
         file_obj=file_obj,
         bucket_name=bucket_name,
-        object_name=s3_key
+        object_name=object_key
     )
     
     return {
         "message": "Portfolio image uploaded successfully",
-        "url": s3_url,
+        "url": object_url,
         "filename": file.filename,
-        "s3_key": s3_key
+        "object_key": object_key
     }
 
 
@@ -151,26 +152,26 @@ async def upload_proposal_attachment(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    s3_key = f"proposals/{proposal_id}/attachments/{uuid.uuid4()}{ext}"
+    object_key = f"proposals/{proposal_id}/attachments/{uuid.uuid4()}{ext}"
     
-    # Upload to S3
+    # Upload to OCI Object Storage
     file_content = await file.read()
     file_obj = BytesIO(file_content)
     settings = get_settings()
-    bucket_name = settings.s3_bucket_uploads or "megilance-uploads"
-    s3_url = s3_client.upload_file(
+    bucket_name = settings.oci_bucket_uploads or "megilance-uploads"
+    object_url = oci_storage_client.upload_file(
         file_obj=file_obj,
         bucket_name=bucket_name,
-        object_name=s3_key
+        object_name=object_key
     )
     
     # TODO: Add attachment to proposal.attachments JSON field
     
     return {
         "message": "Proposal attachment uploaded successfully",
-        "url": s3_url,
+        "url": object_url,
         "filename": file.filename,
-        "s3_key": s3_key
+        "object_key": object_key
     }
 
 
@@ -192,24 +193,24 @@ async def upload_project_file(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    s3_key = f"projects/{project_id}/files/{current_user.id}/{uuid.uuid4()}{ext}"
+    object_key = f"projects/{project_id}/files/{current_user.id}/{uuid.uuid4()}{ext}"
     
-    # Upload to S3
+    # Upload to OCI Object Storage
     file_content = await file.read()
     file_obj = BytesIO(file_content)
     settings = get_settings()
-    bucket_name = settings.s3_bucket_uploads or "megilance-uploads"
-    s3_url = s3_client.upload_file(
+    bucket_name = settings.oci_bucket_uploads or "megilance-uploads"
+    object_url = oci_storage_client.upload_file(
         file_obj=file_obj,
         bucket_name=bucket_name,
-        object_name=s3_key
+        object_name=object_key
     )
     
     return {
         "message": "Project file uploaded successfully",
-        "url": s3_url,
+        "url": object_url,
         "filename": file.filename,
-        "s3_key": s3_key
+        "object_key": object_key
     }
 
 
@@ -240,25 +241,25 @@ async def upload_multiple_files(
 
         filename: str = file.filename or ""
         ext = os.path.splitext(filename)[1]
-        s3_key = f"{file_type}/{current_user.id}"
+        object_key = f"{file_type}/{current_user.id}"
         if reference_id:
-            s3_key += f"/{reference_id}"
-        s3_key += f"/{uuid.uuid4()}{ext}"
+            object_key += f"/{reference_id}"
+        object_key += f"/{uuid.uuid4()}{ext}"
 
         file_content = await file.read()
         file_obj = BytesIO(file_content)
         settings = get_settings()
-        bucket_name = settings.s3_bucket_uploads or "megilance-uploads"
-        s3_url = s3_client.upload_file(
+        bucket_name = settings.oci_bucket_uploads or "megilance-uploads"
+        object_url = oci_storage_client.upload_file(
             file_obj=file_obj,
             bucket_name=bucket_name,
-            object_name=s3_key
+            object_name=object_key
         )
 
         uploaded_files.append({
             "filename": filename,
-            "url": s3_url,
-            "s3_key": s3_key
+            "url": object_url,
+            "object_key": object_key
         })
     
     return {
@@ -269,50 +270,50 @@ async def upload_multiple_files(
 
 @router.delete("/file", response_model=dict)
 async def delete_file(
-    s3_key: str = Query(..., description="S3 object key"),
+    object_key: str = Query(..., description="Object storage key"),
     bucket: str = Query("uploads", description="Bucket name: assets or uploads"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     """
-    Delete a file from S3
+    Delete a file from OCI Object Storage
     Users can only delete their own files
     """
     # Verify the file belongs to the current user
-    if f"/{current_user.id}/" not in s3_key and current_user.user_type != "Admin":
+    if f"/{current_user.id}/" not in object_key and current_user.user_type != "Admin":
         raise HTTPException(status_code=403, detail="Not authorized to delete this file")
     
     settings = get_settings()
-    bucket_name = (settings.s3_bucket_assets if bucket == "assets" else settings.s3_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
+    bucket_name = (settings.oci_bucket_assets if bucket == "assets" else settings.oci_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
     
-    success = s3_client.delete_file(bucket_name=bucket_name, object_name=s3_key)
+    success = oci_storage_client.delete_file(bucket_name=bucket_name, object_name=object_key)
     
     if not success:
         raise HTTPException(status_code=500, detail="Failed to delete file")
     
     return {
         "message": "File deleted successfully",
-        "s3_key": s3_key
+        "object_key": object_key
     }
 
 
 @router.get("/presigned-url", response_model=dict)
 async def get_presigned_url(
-    s3_key: str = Query(..., description="S3 object key"),
+    object_key: str = Query(..., description="Object storage key"),
     bucket: str = Query("uploads", description="Bucket name: assets or uploads"),
     expiration: int = Query(3600, description="URL expiration in seconds"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     """
-    Generate presigned URL for secure file download
+    Generate pre-authenticated request URL for secure file download
     """
     settings = get_settings()
-    bucket_name = (settings.s3_bucket_assets if bucket == "assets" else settings.s3_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
+    bucket_name = (settings.oci_bucket_assets if bucket == "assets" else settings.oci_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
     
-    presigned_url = s3_client.generate_presigned_url(
+    presigned_url = oci_storage_client.generate_presigned_url(
         bucket_name=bucket_name,
-        object_name=s3_key,
+        object_name=object_key,
         expiration=expiration
     )
     
@@ -322,5 +323,5 @@ async def get_presigned_url(
     return {
         "url": presigned_url,
         "expiration": expiration,
-        "s3_key": s3_key
+        "object_key": object_key
     }

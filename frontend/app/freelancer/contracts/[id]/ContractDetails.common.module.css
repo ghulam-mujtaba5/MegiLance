@@ -102,6 +102,15 @@
   transition: width 0.3s ease;
 }
 
+/* Dynamic width based on data-progress */
+.progressFill[data-progress="0"] { width: 0%; }
+.progressFill[data-progress="25"] { width: 25%; }
+.progressFill[data-progress="33"] { width: 33.33%; }
+.progressFill[data-progress="50"] { width: 50%; }
+.progressFill[data-progress="66"] { width: 66.66%; }
+.progressFill[data-progress="75"] { width: 75%; }
+.progressFill[data-progress="100"] { width: 100%; }
+
 .section {
   display: flex;
   flex-direction: column;

@@ -224,6 +224,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
           value={selectedTime.hours}
           onChange={(e) => handleTimeChange(parseInt(e.target.value), selectedTime.minutes)}
           className={cn(commonStyles.timeSelect, themeStyles.timeSelect)}
+          aria-label="Select hour"
         >
           {Array.from({ length: 24 }, (_, i) => (
             <option key={i} value={i}>
@@ -236,6 +237,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
           value={selectedTime.minutes}
           onChange={(e) => handleTimeChange(selectedTime.hours, parseInt(e.target.value))}
           className={cn(commonStyles.timeSelect, themeStyles.timeSelect)}
+          aria-label="Select minute"
         >
           {Array.from({ length: 12 }, (_, i) => {
             const minute = i * 5;
@@ -340,7 +342,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                 !isSelectable && themeStyles.disabled
               )}
               aria-label={date.toDateString()}
-              aria-selected={isSelected}
+              aria-pressed={isSelected ? 'true' : 'false'}
             >
               {date.getDate()}
             </button>

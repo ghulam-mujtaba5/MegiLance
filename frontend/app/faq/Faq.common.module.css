@@ -37,6 +37,8 @@
   font-family: var(--font-family-headings);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
   margin-bottom: var(--spacing-3);
   position: relative;
 }
@@ -48,23 +50,25 @@
   left: 50%;
   transform: translateX(-50%);
   width: 80px;
-  height: 4px;
+  height: 5px;
   background: linear-gradient(90deg, var(--primary-4573df), var(--accent-orange-ff9800));
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .faqHeader p {
-  font-size: var(--font-size-lg);
+  font-size: 18px;
+  letter-spacing: 0.01em;
+  opacity: 0.85;
   position: relative;
 }
 
 .faqList {
-  border-top: 1px solid transparent;
+  border-top: 1.5px solid transparent;
   position: relative;
 }
 
 .faqItem {
-  border-bottom: 1px solid transparent;
+  border-bottom: 1.5px solid transparent;
   position: relative;
 }
 
@@ -77,11 +81,12 @@
   background: none;
   border: none;
   text-align: left;
-  font-size: var(--font-size-lg);
+  font-size: 18px;
   font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .faqItemQuestion::before {
@@ -152,6 +157,9 @@
 .faqItemAnswer p {
   padding: 0 0 var(--spacing-6) 0;
   line-height: 1.7;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+  opacity: 0.9;
   position: relative;
 }
 

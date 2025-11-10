@@ -159,7 +159,7 @@ const PieChart: React.FC<PieChartProps> = ({
           >
             <div 
               className={cn(commonStyles.legendColor, themeStyles.legendColor)}
-              style={{ backgroundColor: item.color || `hsl(${index * 30}, 70%, 50%)` }}
+              data-color-index={index}
             />
             <span className={cn(commonStyles.legendLabel, themeStyles.legendLabel)}>
               {item.label}
@@ -182,14 +182,12 @@ const PieChart: React.FC<PieChartProps> = ({
     return (
       <div
         className={cn(commonStyles.tooltip, themeStyles.tooltip)}
-        style={{
-          left: tooltipPosition.x,
-          top: tooltipPosition.y
-        }}
+        data-x={tooltipPosition.x}
+        data-y={tooltipPosition.y}
       >
         <div 
           className={cn(commonStyles.tooltipColor, themeStyles.tooltipColor)}
-          style={{ backgroundColor: item.color || `hsl(${hoveredIndex * 30}, 70%, 50%)` }}
+          data-color-index={hoveredIndex}
         />
         <div className={cn(commonStyles.tooltipContent, themeStyles.tooltipContent)}>
           <div className={cn(commonStyles.tooltipLabel, themeStyles.tooltipLabel)}>

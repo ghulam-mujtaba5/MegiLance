@@ -10,16 +10,18 @@
 
 .tooltip {
   position: absolute;
-  padding: 0.5rem 0.875rem;
+  padding: 0.5rem 0.875rem; /* 8px 14px */
   border-radius: 0.5rem; /* 8px */
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.8125rem; /* 13px - Slightly smaller for refinement */
   font-weight: 500;
   line-height: 1.4;
   white-space: nowrap;
-  z-index: 110; /* Higher than dropdown */
-  animation: fadeInScale 0.15s ease-out;
-  pointer-events: none; /* Tooltip should not be interactive */
+  z-index: 110;
+  animation: fadeInScale 0.18s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother easing */
+  pointer-events: none;
   will-change: transform, opacity;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1); /* Layered shadow */
+  letter-spacing: 0.01em;
 }
 
 .tooltipArrow,
@@ -42,7 +44,7 @@
 
 /* Positioning */
 .tooltipTop {
-  bottom: calc(100% + 5px);
+  bottom: calc(100% + 8px); /* More space */
   left: 50%;
   transform: translateX(-50%);
 }
@@ -51,7 +53,7 @@
 }
 
 .tooltipBottom {
-  top: calc(100% + 5px);
+  top: calc(100% + 8px); /* More space */
   left: 50%;
   transform: translateX(-50%);
 }
@@ -60,7 +62,7 @@
 }
 
 .tooltipLeft {
-  right: calc(100% + 5px);
+  right: calc(100% + 8px); /* More space */
   top: 50%;
   transform: translateY(-50%);
 }
@@ -69,7 +71,7 @@
 }
 
 .tooltipRight {
-  left: calc(100% + 5px);
+  left: calc(100% + 8px); /* More space */
   top: 50%;
   transform: translateY(-50%);
 }

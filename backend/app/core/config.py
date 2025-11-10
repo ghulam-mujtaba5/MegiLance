@@ -21,17 +21,27 @@ class Settings(BaseSettings):
     refresh_token_expire_minutes: int = 60 * 24 * 7  # 7 days
     jwt_algorithm: str = "HS256"
     
-    # AWS Configuration
-    aws_region: Optional[str] = "us-east-2"
+    # Oracle Cloud Infrastructure (OCI) Configuration
+    oci_region: Optional[str] = "us-ashburn-1"
+    oci_profile: Optional[str] = "DEFAULT"  # OCI CLI config profile
+    oci_namespace: Optional[str] = None  # Auto-detected if not provided
+    oci_compartment_id: Optional[str] = None
+    
+    # OCI Object Storage (replaces AWS S3)
+    oci_bucket_assets: Optional[str] = "megilance-assets"
+    oci_bucket_logs: Optional[str] = "megilance-logs"
+    oci_bucket_uploads: Optional[str] = "megilance-uploads"
+    
+    # OCI Vault (replaces AWS Secrets Manager)
+    oci_vault_secret_id: Optional[str] = None
+    
+    # Legacy AWS Configuration (for backward compatibility - can be removed after migration)
+    aws_region: Optional[str] = None
     aws_access_key_id: Optional[str] = None
     aws_secret_access_key: Optional[str] = None
-    
-    # AWS S3
     s3_bucket_assets: Optional[str] = None
     s3_bucket_logs: Optional[str] = None
     s3_bucket_uploads: Optional[str] = None
-    
-    # AWS Secrets Manager ARNs
     db_secret_arn: Optional[str] = None
     jwt_secret_arn: Optional[str] = None
     

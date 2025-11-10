@@ -16,7 +16,7 @@ export interface UserAvatarProps {
   className?: string;
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({
+  const UserAvatar: React.FC<UserAvatarProps> = ({
   name,
   src,
   size = 'medium',
@@ -31,15 +31,11 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
 
   let sizeClass = '';
   let imageSize: number;
-  let inlineStyles: React.CSSProperties = {};
+  let sizeAttr: string | undefined;
 
   if (typeof size === 'number') {
     imageSize = size;
-    inlineStyles = {
-      width: `${size}px`,
-      height: `${size}px`,
-      fontSize: `${Math.max(12, size * 0.4)}px`, // Ensure font size is not too small
-    };
+    sizeAttr = size.toString();
   } else {
     const sizeMap = {
       small: { class: commonStyles.userAvatarSmall, size: 32 },
@@ -67,7 +63,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
 
   if (src) {
     return (
-      <div className={avatarClasses} style={inlineStyles}>
+      <div className={avatarClasses} data-custom-size={sizeAttr}>
         <Image
           src={src}
           alt={name}
@@ -88,7 +84,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
   }
 
   return (
-    <div className={avatarClasses} style={inlineStyles}>
+    <div className={avatarClasses} data-custom-size={sizeAttr}>
       <span>{getInitials(name)}</span>
     </div>
   );

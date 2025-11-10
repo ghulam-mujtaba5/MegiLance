@@ -14,21 +14,26 @@
 
 .title {
   font-family: var(--font-poppins);
-  font-size: var(--font-size-xxl);
+  font-size: 32px;
   font-weight: 700;
   margin: 0;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
 }
 
 .subtitle {
-  font-size: var(--font-size-lg);
+  font-size: 15px;
   margin: var(--space-1) 0 0;
+  letter-spacing: 0.01em;
+  line-height: 1.6;
 }
 
 .tableContainer {
-  border-radius: var(--border-radius-lg);
+  border-radius: 12px;
   overflow: auto;
-  border: 1px solid;
+  border: 1.5px solid;
   max-height: 520px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .table {
@@ -44,10 +49,10 @@
 }
 
 .table th {
-  font-size: var(--font-size-sm);
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
 }
 
 /* Sticky header */
@@ -65,17 +70,19 @@
 
 .projectTitle {
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .value {
   font-family: var(--font-jetbrains-mono);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .link {
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Accessibility helpers */
@@ -102,29 +109,42 @@
 .input {
   flex: 1;
   min-width: 220px;
-  padding: 10px 12px;
-  border: 1px solid;
-  border-radius: var(--border-radius-md);
+  padding: 10px 14px;
+  border: 1.5px solid;
+  border-radius: 10px;
   background: transparent;
   font: inherit;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .select {
   appearance: none;
   background: transparent;
-  border: 1px solid;
-  padding: 10px 12px;
-  border-radius: var(--border-radius-md);
+  border: 1.5px solid;
+  padding: 10px 14px;
+  border-radius: 10px;
   font: inherit;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .button {
-  padding: 10px 14px;
-  border: 1px solid;
-  border-radius: var(--border-radius-md);
+  padding: 10px 16px;
+  border: 1.5px solid;
+  border-radius: 10px;
   background: transparent;
   font-weight: 600;
   cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button:hover {
+  transform: translateY(-1px);
 }
 
 /* Sort buttons */

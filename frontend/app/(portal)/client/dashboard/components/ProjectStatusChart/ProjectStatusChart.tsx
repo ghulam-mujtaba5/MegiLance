@@ -44,7 +44,7 @@ const LegendContent: React.FC<any> = (props) => {
     <ul className={cn(common.legendList, themed.legendList)}>
       {payload?.map((entry: any, index: number) => (
         <li key={`item-${index}`} className={common.legendItem}>
-          <span className={common.legendIcon} style={{ backgroundColor: entry.color }} />
+          <span className={common.legendIcon} data-color={entry.color} />
           <span className={themed.legendText}>{entry.value}</span>
         </li>
       ))}

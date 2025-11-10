@@ -54,7 +54,7 @@ const JobStatusCard: React.FC<JobStatusCardProps> = ({ title, client, status, pr
           <div className={cn(commonStyles.progressBarWrapper, styles.progressBarWrapper)}>
             <div 
               className={cn(commonStyles.progressBar, styles.progressBar)} 
-              style={{ width: `${progress}%` }}
+              data-progress={progress}
               role="progressbar"
               aria-valuenow={progress}
               aria-valuemin={0}

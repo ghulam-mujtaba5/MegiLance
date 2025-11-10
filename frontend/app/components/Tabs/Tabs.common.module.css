@@ -16,28 +16,34 @@
 }
 
 .tabsTab {
-  padding: 0.75rem 1.25rem;
-  font-size: 1rem;
+  padding: 0.75rem 1.5rem; /* 12px 24px - More generous */
+  font-size: 0.9375rem; /* 15px - Refined size */
   font-weight: 600;
   background-color: transparent;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent; /* Thicker border for prominence */
   cursor: pointer;
   margin-bottom: -1px;
-  transition: color 0.2s, border-color 0.2s, background-color 0.2s, transform 0.12s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   border-radius: 0.5rem 0.5rem 0 0;
+  letter-spacing: 0.01em;
+  position: relative;
 }
 
 .tabsTab:focus-visible {
-  /* Outline is handled by theme-specific styles */
   outline-offset: -2px;
   border-radius: 0.375rem;
 }
 
+.tabsTab:hover:not([aria-selected="true"]) {
+  background-color: rgba(69, 115, 223, 0.05); /* Subtle background */
+  transform: translateY(-1px); /* Slight lift */
+}
+
 .tabsPanel {
   padding: 1.5rem 0.25rem;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.25s ease-in-out; /* Slightly faster */
 }
 
 .tabsPanel[hidden] {
@@ -47,12 +53,13 @@
 /* Animated selection indicator (color set in theme files) */
 .tabsIndicator {
   position: absolute;
-  bottom: -1px; /* sit on top of border-bottom line */
-  height: 2px;
+  bottom: -1px;
+  height: 3px; /* Match tab border thickness */
   left: 0;
   width: var(--indicator-width, 0px);
-  border-radius: 2px;
+  border-radius: 3px 3px 0 0; /* Rounded top */
   transform: translateX(var(--indicator-left, 0px));
-  transition: transform 200ms ease, width 200ms ease;
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), width 250ms cubic-bezier(0.4, 0, 0.2, 1); /* Smoother easing */
   will-change: transform, width;
+  box-shadow: 0 -2px 4px rgba(69, 115, 223, 0.2); /* Subtle glow */
 }

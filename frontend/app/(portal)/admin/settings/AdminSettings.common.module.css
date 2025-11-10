@@ -4,16 +4,16 @@
 .container { max-width: 960px; margin: 0 auto; display: grid; gap: var(--spacing-6); }
 
 .header { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-4); }
-.title { font-family: var(--font-family-headings); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: var(--font-weight-bold); }
-.subtitle { font-size: var(--font-size-sm); opacity: .9; }
+.title { font-family: var(--font-family-headings); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: var(--font-weight-bold); letter-spacing: -0.02em; line-height: 1.2; }
+.subtitle { font-size: 14px; opacity: 0.85; letter-spacing: 0.01em; }
 
-.section { border: 1px solid transparent; border-radius: var(--border-radius-lg); padding: var(--spacing-4); display: grid; gap: var(--spacing-4); }
-.sectionTitle { font-weight: var(--font-weight-semibold); }
+.section { border: 1.5px solid transparent; border-radius: 16px; padding: 1.25rem; display: grid; gap: var(--spacing-4); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04); }
+.sectionTitle { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
 
-.field { display: grid; gap: 6px; }
-.label { font-weight: var(--font-weight-medium); }
-.input, .select, .textarea { padding: 10px 12px; border-radius: var(--border-radius-md); border: 1px solid transparent; resize: vertical; }
-.help { font-size: 12px; opacity: .9; }
+.field { display: grid; gap: 8px; }
+.label { font-weight: 600; font-size: 14px; letter-spacing: 0.01em; }
+.input, .select, .textarea { padding: 10px 14px; border-radius: 10px; border: 1.5px solid transparent; resize: vertical; font-size: 14px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+.help { font-size: 12px; opacity: 0.85; letter-spacing: 0.01em; }
 
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-4); }
 @media (max-width: 720px) { .row { grid-template-columns: 1fr; } }
@@ -22,7 +22,8 @@
 .toggle input { width: 40px; height: 22px; }
 
 .saveBar { position: sticky; bottom: 16px; display: flex; gap: var(--spacing-2); justify-content: flex-end; margin-top: var(--spacing-2); }
-.button { padding: 10px 14px; border-radius: var(--border-radius-md); border: 1px solid transparent; cursor: pointer; font-weight: var(--font-weight-medium); }
+.button { padding: 10px 16px; border-radius: 10px; border: 1.5px solid transparent; cursor: pointer; font-weight: 600; letter-spacing: 0.01em; font-size: 14px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+.button:hover { transform: translateY(-1px); }
 
 .isNotVisible { opacity: 0; transform: translateY(16px); }
 .isVisible { opacity: 1; transform: translateY(0); transition: opacity .6s ease-out, transform .6s ease-out; }
