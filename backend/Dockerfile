@@ -1,5 +1,6 @@
 # Multi-stage production Dockerfile for MegiLance backend
-FROM python:3.11-slim as builder
+# Supports both PostgreSQL (dev) and Oracle Autonomous Database (production)
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
@@ -7,7 +8,17 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
+    wget \
+    unzip \
+    libaio1 \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Oracle Instant Client (required for cx_Oracle)
+RUN wget -q https://download.oracle.com/otn_software/linux/instantclient/2113000/instantclient-basic-linux.x64-21.13.0.0.0dbru.zip && \
+    unzip instantclient-basic-linux.x64-21.13.0.0.0dbru.zip -d /opt/oracle && \
+    rm instantclient-basic-linux.x64-21.13.0.0.0dbru.zip && \
+    echo /opt/oracle/instantclient_21_13 > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    ldconfig
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
@@ -22,7 +33,13 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     libpq5 \
+    libaio1 \
     && rm -rf /var/lib/apt/lists/*
+
+# Copy Oracle Instant Client from builder
+COPY --from=builder /opt/oracle /opt/oracle
+COPY --from=builder /etc/ld.so.conf.d/oracle-instantclient.conf /etc/ld.so.conf.d/
+RUN ldconfig
 
 # Copy Python packages from builder
 COPY --from=builder /usr/local /usr/local
@@ -37,6 +54,11 @@ USER appuser
 # Make sure scripts in .local are usable
 ENV PATH=/usr/local/bin:$PATH
 ENV PYTHONUNBUFFERED=1
+
+# Oracle environment variables
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_21_13
+ENV ORACLE_HOME=/opt/oracle/instantclient_21_13
+ENV TNS_ADMIN=/app/oracle-wallet
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \

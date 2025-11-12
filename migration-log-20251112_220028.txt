@@ -1,0 +1,16 @@
+[2025-11-12 22:00:28] [INFO] Checking required tools...
+[2025-11-12 22:00:28] [SUCCESS] Python installed: Python 3.12.10
+[2025-11-12 22:00:28] [SUCCESS] Docker installed
+[2025-11-12 22:00:29] [SUCCESS] OCI CLI installed: 3.68.1
+[2025-11-12 22:00:29] [INFO] Creating backup directory: migration-backup-20251112_220028
+[2025-11-12 22:00:29] [INFO] Backing up database using Docker...
+[2025-11-12 22:00:29] [INFO] Database container not running. Starting containers...
+[2025-11-12 22:00:41] [SUCCESS] Database backup created successfully
+[2025-11-12 22:00:41] [INFO] Backing up configuration files...
+[2025-11-12 22:00:41] [SUCCESS] Configuration files backed up
+[2025-11-12 22:00:41] [INFO] Found existing API key authentication
+[2025-11-12 22:00:44] [SUCCESS] ✓ Existing API key authentication works! Using it for automation.
+[2025-11-12 22:00:44] [SUCCESS] No browser authentication needed - fully automated!
+[2025-11-12 22:00:46] [SUCCESS] Authentication verified - Connected to tenancy
+[2025-11-12 22:00:46] [INFO] Fetching available compartments...
+[2025-11-12 22:00:52] [SUCCESS] Using root compartment: ocid1.tenancy.oc1..aaaaaaaa4h764yvig7p4xtyxhmty36cwnbhqxsr3ldbaxnwykf2a5ws3qwlq

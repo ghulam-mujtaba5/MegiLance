@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./oracle-wallet:/app/oracle-wallet:ro
+      - ./db:/data/db:ro
+    environment:
+      - DATABASE_URL=\
+      - OCI_REGION=eu-frankfurt-1
+      - OCI_NAMESPACE=frj6px39shbv
+      - OCI_BUCKET_NAME=megilance-storage
+      - OCI_COMPARTMENT_ID=ocid1.tenancy.oc1..aaaaaaaa4h764yvig7p4xtyxhmty36cwnbhqxsr3ldbaxnwykf2a5ws3qwlq
+      - ORACLE_WALLET_LOCATION=/app/oracle-wallet
+      - ORACLE_WALLET_PASSWORD=MegiLance2025!Wallet
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - megilance
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    command: npm run dev
+    networks:
+      - megilance
+
+networks:
+  megilance:
+    driver: bridge

@@ -11,7 +11,16 @@ class Settings(BaseSettings):
     backend_cors_origins: list[str] = ["*"]
 
     # Database
+    # Supports both PostgreSQL and Oracle Autonomous Database
+    # PostgreSQL: postgresql+psycopg2://user:pass@host:port/dbname
+    # Oracle: oracle+oracledb://user:pass@host:port/service?wallet_location=/path&wallet_password=pass
     database_url: str = "postgresql+psycopg2://megilance:megilance_pw@db:5432/megilance_db"
+    
+    # Oracle Autonomous Database specific settings
+    oracle_wallet_location: Optional[str] = None
+    oracle_wallet_password: Optional[str] = None
+    oracle_service_name: Optional[str] = None
+    
     # Path to mounted JSON data directory (for mock/admin/demo endpoints)
     json_data_dir: str = "/data/db"
     
@@ -28,9 +37,12 @@ class Settings(BaseSettings):
     oci_compartment_id: Optional[str] = None
     
     # OCI Object Storage (replaces AWS S3)
+    oci_bucket_name: Optional[str] = "megilance-storage"  # Main storage bucket
     oci_bucket_assets: Optional[str] = "megilance-assets"
     oci_bucket_logs: Optional[str] = "megilance-logs"
     oci_bucket_uploads: Optional[str] = "megilance-uploads"
+    oci_config_file: Optional[str] = None  # Path to OCI config file (~/.oci/config)
+    oci_config_profile: Optional[str] = "DEFAULT"
     
     # OCI Vault (replaces AWS Secrets Manager)
     oci_vault_secret_id: Optional[str] = None
