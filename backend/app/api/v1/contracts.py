@@ -59,7 +59,7 @@ def create_contract(
     current_user: User = Depends(get_current_active_user)
 ):
     # Check if user is a client
-    if current_user.user_type != "Client":
+    if not current_user.user_type or current_user.user_type.lower() != "client":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only clients can create contracts"
@@ -79,7 +79,7 @@ def create_contract(
     freelancer = db.query(User).filter(User.id == contract.freelancer_id).first()
     if not freelancer:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Freelancer not found")
-    if freelancer.user_type != "Freelancer":
+    if not freelancer.user_type or freelancer.user_type.lower() != "freelancer":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User is not a freelancer"

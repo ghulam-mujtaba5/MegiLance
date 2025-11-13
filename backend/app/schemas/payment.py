@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class PaymentBase(BaseModel):
-    contract_id: Optional[str] = Field(default=None, description="Related contract identifier")
+    contract_id: Optional[int] = Field(default=None, description="Related contract identifier")
     amount: float
     currency: str = "USDC"
     status: Optional[str] = "pending"
@@ -14,7 +14,7 @@ class PaymentBase(BaseModel):
 
 
 class PaymentCreate(BaseModel):
-    contract_id: Optional[str] = Field(default=None, description="Optional contract reference")
+    contract_id: Optional[int] = Field(default=None, description="Optional contract reference")
     to_user_id: Optional[int] = Field(default=None, description="Recipient user ID when no contract is provided")
     amount: float
     currency: str = "USDC"
@@ -29,7 +29,7 @@ class PaymentUpdate(BaseModel):
 
 class PaymentRead(PaymentBase):
     id: int
-    contract_id: Optional[str]
+    contract_id: Optional[int]
     from_user_id: int
     to_user_id: int
     created_at: datetime

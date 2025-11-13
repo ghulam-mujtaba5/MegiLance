@@ -1,5 +1,5 @@
 """Audit log models for MegiLance platform"""
-from sqlalchemy import String, Integer, DateTime, ForeignKey, JSON
+from sqlalchemy import String, Integer, DateTime, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime
@@ -37,8 +37,8 @@ class AuditLog(Base):
     entity_type: Mapped[str] = mapped_column(String(50), index=True)  # User, Project, Contract, etc.
     entity_id: Mapped[int] = mapped_column(Integer, nullable=True, index=True)
     action: Mapped[str] = mapped_column(String(50), index=True)
-    old_values: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
-    new_values: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    old_values: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle
+    new_values: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle
     ip_address: Mapped[str] = mapped_column(String(45), nullable=True)
     user_agent: Mapped[str] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)

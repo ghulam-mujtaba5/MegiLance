@@ -15,6 +15,7 @@ class Proposal(Base):
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
     freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     cover_letter: Mapped[str] = mapped_column(Text)
+    bid_amount: Mapped[float] = mapped_column(Float, nullable=False)  # Total bid amount for the project
     estimated_hours: Mapped[int] = mapped_column(Integer)
     hourly_rate: Mapped[float] = mapped_column(Float)
     availability: Mapped[str] = mapped_column(String(20))  # immediate, 1-2_weeks, 1_month, flexible

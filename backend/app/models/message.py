@@ -1,5 +1,5 @@
 """Message models for MegiLance platform"""
-from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey, JSON
+from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime
@@ -32,7 +32,7 @@ class Message(Base):
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=True, index=True)
     content: Mapped[str] = mapped_column(Text)
     message_type: Mapped[str] = mapped_column(String(20), default=MessageType.TEXT.value)
-    attachments: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    attachments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle compatibility
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     read_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     sent_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)

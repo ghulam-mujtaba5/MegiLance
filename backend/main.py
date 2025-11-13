@@ -69,7 +69,7 @@ def root():
 @app.get("/api")
 def api_root():
     return {
-        "message": "MegiLance API",
+        "message": "MegiLance API - Hot Reload Test",
         "version": "1.0.0",
         "docs": "/api/docs",
         "redoc": "/api/redoc"

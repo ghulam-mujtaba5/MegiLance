@@ -22,7 +22,7 @@ def list_proposals(
     current_user: User = Depends(get_current_active_user)
 ):
     # Freelancers can see their own proposals, clients can see proposals for their projects
-    if current_user.user_type == "Freelancer":
+    if current_user.user_type and current_user.user_type.lower() == "freelancer":
         query = db.query(Proposal).filter(Proposal.freelancer_id == current_user.id)
     else:
         # Get all projects for this client
@@ -71,7 +71,7 @@ def create_proposal(
     current_user: User = Depends(get_current_active_user)
 ):
     # Check if user is a freelancer
-    if current_user.user_type != "Freelancer":
+    if not current_user.user_type or current_user.user_type.lower() != "freelancer":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only freelancers can submit proposals"

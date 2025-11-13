@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from datetime import datetime
+import json
 
 class ProjectBase(BaseModel):
     title: str
@@ -32,6 +33,17 @@ class ProjectRead(ProjectBase):
     client_id: int
     created_at: datetime
     updated_at: datetime
+
+    @field_validator('skills', mode='before')
+    @classmethod
+    def parse_skills(cls, v):
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except:
+                # If it's a comma-separated string
+                return [s.strip() for s in v.split(',') if s.strip()]
+        return v
 
     class Config:
         from_attributes = True

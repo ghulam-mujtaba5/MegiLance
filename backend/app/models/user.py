@@ -1,4 +1,4 @@
-from sqlalchemy import String, Boolean, Integer, Float, DateTime, Text, ForeignKey, JSON
+from sqlalchemy import String, Boolean, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime
@@ -22,13 +22,14 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     name: Mapped[str] = mapped_column(String(255), nullable=True)
+    role: Mapped[str] = mapped_column(String(50), nullable=False, default="client")  # Role for authorization
     user_type: Mapped[str] = mapped_column(String(20), nullable=True, index=True)  # Freelancer, Client
     bio: Mapped[str] = mapped_column(Text, nullable=True)
     skills: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of skills
     hourly_rate: Mapped[float] = mapped_column(Float, nullable=True)
     profile_image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     location: Mapped[str] = mapped_column(String(100), nullable=True)
-    profile_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Extended profile info
+    profile_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle compatibility
     account_balance: Mapped[float] = mapped_column(Float, default=0.0)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

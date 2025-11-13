@@ -1,5 +1,5 @@
 """Notification models for MegiLance platform"""
-from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey, JSON
+from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime
@@ -44,7 +44,7 @@ class Notification(Base):
     notification_type: Mapped[str] = mapped_column(String(50), index=True)
     title: Mapped[str] = mapped_column(String(255))
     content: Mapped[str] = mapped_column(Text)
-    data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Additional notification data
+    data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Additional notification data (JSON string for Oracle)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     read_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)

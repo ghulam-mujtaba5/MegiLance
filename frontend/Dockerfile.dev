@@ -7,14 +7,16 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy package files
+# Copy package files only
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install && npm cache clean --force
 
-# Copy the rest of the application
-COPY . .
+# Code will be mounted as volume - no COPY needed
+
+# Run as root in dev mode to avoid permission issues with mounted volumes
+# USER node  # Commented out for dev mode
 
 # Expose the development port
 EXPOSE 3000

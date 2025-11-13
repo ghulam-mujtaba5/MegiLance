@@ -25,7 +25,7 @@ def list_portfolio_items(
     # If viewing another user's portfolio, only show if they are a freelancer
     if target_user_id != current_user.id:
         target_user = db.query(User).filter(User.id == target_user_id).first()
-        if not target_user or target_user.user_type != "Freelancer":
+        if not target_user or (target_user.user_type and target_user.user_type.lower() != "freelancer"):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Portfolio not found"
@@ -57,7 +57,7 @@ def create_portfolio_item(
     current_user: User = Depends(get_current_active_user)
 ):
     # Check if user is a freelancer
-    if current_user.user_type != "Freelancer":
+    if not current_user.user_type or current_user.user_type.lower() != "freelancer":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only freelancers can create portfolio items"

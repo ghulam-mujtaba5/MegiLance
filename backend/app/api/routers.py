@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from .v1 import (
     health, users, mock, projects, proposals, contracts, portfolio, payments, 
     auth, client, upload, ai_services,
-    messages, notifications, reviews, disputes, milestones, skills
+    messages, notifications, reviews, disputes, milestones, skills, admin
 )
 
 
@@ -14,7 +14,8 @@ api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 # User management
 api_router.include_router(users.router, prefix="/users", tags=["users"])
-api_router.include_router(skills.router, prefix="/api", tags=["skills"])
+api_router.include_router(skills.router, prefix="/skills", tags=["skills"])
+api_router.include_router(admin.router, prefix="", tags=["admin"])  # Admin endpoints
 
 # Project workflow
 api_router.include_router(projects.router, prefix="/projects", tags=["projects"])
@@ -41,5 +42,5 @@ api_router.include_router(client.router, prefix="/client", tags=["client"])
 # AI services (excluded from implementation but keeping route)
 api_router.include_router(ai_services.router, prefix="/ai", tags=["ai"])
 
-# Mock endpoints
-api_router.include_router(mock.router, prefix="", tags=["mock"])
+# Mock endpoints (DISABLED - using real database endpoints)
+# api_router.include_router(mock.router, prefix="", tags=["mock"])

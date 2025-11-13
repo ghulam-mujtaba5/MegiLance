@@ -2,12 +2,13 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.oracle
+      dockerfile: Dockerfile.dev
     ports:
       - "8000:8000"
     volumes:
       - ./oracle-wallet-23ai:/app/oracle-wallet:ro
-      - ./db:/data/db:ro
+      - ./backend:/app
+      - /app/__pycache__
     environment:
       - DATABASE_URL=oracle+oracledb://ADMIN:Bfw5ZvHQXjkDb!3lAa1!@megilanceai_high?wallet_location=/app/oracle-wallet&wallet_password=MegiLance2025!Wallet
       - OCI_REGION=eu-frankfurt-1
@@ -24,12 +25,18 @@ services:
       - megilance
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - NEXT_PUBLIC_BACKEND_URL=http://backend:8000
+      - NEXT_TELEMETRY_DISABLED=1
     depends_on:
       - backend
     networks:

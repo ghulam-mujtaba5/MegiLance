@@ -1,5 +1,5 @@
 """Review models for MegiLance platform"""
-from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey, JSON, Float
+from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime
@@ -21,7 +21,7 @@ class Review(Base):
     reviewee_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     rating: Mapped[float] = mapped_column(Float)  # 1-5 rating
     comment: Mapped[str] = mapped_column(Text, nullable=True)
-    rating_breakdown: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)  # Skills, communication, quality, etc.
+    rating_breakdown: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Skills, communication, quality, etc. (JSON string for Oracle)
     is_public: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

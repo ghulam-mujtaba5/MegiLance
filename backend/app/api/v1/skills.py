@@ -29,7 +29,7 @@ router = APIRouter()
 
 # ============ Skills Catalog ============
 
-@router.get("/skills", response_model=List[SkillSchema])
+@router.get("/", response_model=List[SkillSchema])
 async def list_skills(
     category: Optional[str] = Query(None, description="Filter by category"),
     search: Optional[str] = Query(None, description="Search in name or description"),
@@ -66,7 +66,7 @@ async def list_skills(
     return skills
 
 
-@router.get("/skills/categories")
+@router.get("/categories")
 async def list_skill_categories(
     db: Session = Depends(get_db)
 ):
@@ -82,7 +82,7 @@ async def list_skill_categories(
     return {"categories": [cat[0] for cat in categories if cat[0]]}
 
 
-@router.get("/skills/{skill_id}", response_model=SkillSchema)
+@router.get("/{skill_id}", response_model=SkillSchema)
 async def get_skill(
     skill_id: int,
     db: Session = Depends(get_db)
@@ -102,7 +102,7 @@ async def get_skill(
     return skill
 
 
-@router.post("/skills", response_model=SkillSchema, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=SkillSchema, status_code=status.HTTP_201_CREATED)
 async def create_skill(
     skill_data: SkillCreate,
     current_user: User = Depends(get_current_active_user),
@@ -138,7 +138,7 @@ async def create_skill(
     return skill
 
 
-@router.patch("/skills/{skill_id}", response_model=SkillSchema)
+@router.patch("/{skill_id}", response_model=SkillSchema)
 async def update_skill(
     skill_id: int,
     skill_data: SkillUpdate,
@@ -187,7 +187,7 @@ async def update_skill(
     return skill
 
 
-@router.delete("/skills/{skill_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{skill_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_skill(
     skill_id: int,
     current_user: User = Depends(get_current_active_user),

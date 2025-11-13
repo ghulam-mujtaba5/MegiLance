@@ -32,6 +32,7 @@ class Contract(Base):
     freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     client_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     winning_bid_id: Mapped[int] = mapped_column(ForeignKey("proposals.id"), nullable=True)
+    amount: Mapped[float] = mapped_column(Float, nullable=False)  # Total contract amount
     contract_amount: Mapped[float] = mapped_column(Float)  # USDC value
     platform_fee: Mapped[float] = mapped_column(Float, default=0.0)
     status: Mapped[str] = mapped_column(String(20), default=ContractStatus.PENDING.value, index=True)

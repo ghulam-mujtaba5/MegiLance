@@ -101,7 +101,7 @@ async def upload_portfolio_image(
     Upload portfolio item image
     Freelancers only
     """
-    if current_user.user_type != "Freelancer":
+    if not current_user.user_type or current_user.user_type.lower() != "freelancer":
         raise HTTPException(status_code=403, detail="Only freelancers can upload portfolio images")
     
     validate_file(file, ALLOWED_IMAGE_EXTENSIONS)
@@ -144,7 +144,7 @@ async def upload_proposal_attachment(
     Upload proposal attachment (PDF, documents)
     Freelancers only
     """
-    if current_user.user_type != "Freelancer":
+    if not current_user.user_type or current_user.user_type.lower() != "freelancer":
         raise HTTPException(status_code=403, detail="Only freelancers can upload proposal attachments")
     
     validate_file(file, ALLOWED_DOCUMENT_EXTENSIONS)

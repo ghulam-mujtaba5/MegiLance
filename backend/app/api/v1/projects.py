@@ -56,7 +56,7 @@ def create_project(
     current_user: User = Depends(get_current_active_user)
 ):
     # Only clients can create projects
-    if current_user.user_type != "Client":
+    if not current_user.user_type or current_user.user_type.lower() != "client":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only clients can create projects"

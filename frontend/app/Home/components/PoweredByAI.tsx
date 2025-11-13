@@ -108,6 +108,7 @@ const techStackData = [
   { name: 'OpenAI', type: 'Language Models' },
   { name: 'PyTorch', type: 'ML Framework' },
   { name: 'Hugging Face', type: 'NLP Models' },
+  { name: 'Oracle 26ai', type: 'AI Database' },
   { name: 'scikit-learn', type: 'ML Tools' },
 ];
 
