@@ -1,4 +1,5 @@
 # Multi-stage production Dockerfile for Next.js frontend
+# Cache bust: 2025-11-13T20:30:00Z
 FROM node:20-bookworm-slim AS builder
 WORKDIR /app
 COPY package*.json ./
