@@ -11,11 +11,11 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Next.js 16 uses Turbopack by default
-  // Configure Turbopack with the same paths as tsconfig
+  // Next.js 16 - Configure Turbopack to properly resolve path aliases
+  // Mirror the tsconfig.json paths configuration
   turbopack: {
     resolveAlias: {
-      '@/*': './*',
+      '@': './',
     },
   },
   
