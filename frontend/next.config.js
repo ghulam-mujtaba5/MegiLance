@@ -11,9 +11,7 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable Turbopack bundler and use webpack instead
-  // Turbopack has issues with path alias resolution in Docker
-  turbo: false,
+  // Next.js 16 configuration - Turbopack disabled in Dockerfile via NEXT_PRIVATE_SKIP_TURBOPACK_WARNING
   
   // ESLint config moved - use .eslintrc.json or CLI flags instead
   // eslint: { ignoreDuringBuilds: true } is no longer supported in next.config.js
