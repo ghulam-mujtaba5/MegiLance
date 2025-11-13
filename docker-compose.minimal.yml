@@ -1,0 +1,34 @@
+# @AI-HINT: Lightweight backend-only Docker Compose for 1GB RAM Oracle VM
+# Optimized for VM.Standard.E2.1.Micro (1 OCPU, 1GB RAM)
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: megilance-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./oracle-wallet-23ai:/app/oracle-wallet:ro
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ALLOWED_ORIGINS=*
+      - PYTHONUNBUFFERED=1
+    mem_limit: 768m
+    mem_reservation: 512m
+    cpus: 0.8
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/live"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+networks:
+  default:
+    driver: bridge

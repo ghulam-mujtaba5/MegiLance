@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: megilance-backend
     ports:
       - "8000:8000"
     volumes:
@@ -37,6 +38,9 @@ services:
     build:
       context: ./ai
       dockerfile: Dockerfile
+    container_name: megilance-ai
+    ports:
+      - "8001:8001"
     volumes:
       # AI service code
       - ./ai:/app
@@ -59,6 +63,23 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  # Nginx reverse proxy for SSL and routing
+  nginx:
+    image: nginx:alpine
+    container_name: megilance-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+      - ai
+    networks:
+      - megilance-network
 
 volumes:
   ai-models:

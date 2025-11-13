@@ -1,21 +1,47 @@
-# @AI-HINT: This Dockerfile sets up the environment for the MegiLance AI services.
+# @AI-HINT: Production Dockerfile for MegiLance AI services
+# Supports FastAPI-based AI endpoints with proper health checks and logging
 
-# Use an official Python runtime as a parent image
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the dependencies file to the working directory
-COPY requirements.txt .
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install any needed packages specified in requirements.txt
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application's code to the working directory
+# Production stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python packages from builder
+COPY --from=builder /usr/local /usr/local
+
+# Copy application code
 COPY . .
 
-ENV PYTHONUNBUFFERED=1
+# Create non-root user
+RUN useradd -m -u 1000 aiuser && chown -R aiuser:aiuser /app
+USER aiuser
 
-# Command to run the application
-CMD ["python", "-c", "print('AI service placeholder - to be implemented')"]
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8001
+
+EXPOSE 8001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Start AI service with uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2"]
