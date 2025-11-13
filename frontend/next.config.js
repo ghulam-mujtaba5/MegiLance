@@ -11,13 +11,9 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Next.js 16 - Configure Turbopack to properly resolve path aliases
-  // Mirror the tsconfig.json paths configuration
-  turbopack: {
-    resolveAlias: {
-      '@': './',
-    },
-  },
+  // Next.js 16 - Turbopack enabled by default
+  // Turbopack will use tsconfig.json paths automatically
+  turbopack: {},
   
   // ESLint config moved - use .eslintrc.json or CLI flags instead
   // eslint: { ignoreDuringBuilds: true } is no longer supported in next.config.js
