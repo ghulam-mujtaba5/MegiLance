@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import QRCode from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { FaShieldAlt, FaKey, FaCheckCircle, FaTimesCircle, FaDownload } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
@@ -261,13 +261,13 @@ const TwoFactorAuth: React.FC = () => {
 
         {setupData && (
           <>
-            <div className={styles.section}>
+            <div className={styles.step}>
               <h2 className={styles.sectionTitle}>Step 1: Scan QR Code</h2>
               <p className={styles.message}>
                 Scan this QR code with your authenticator app (Google Authenticator, Authy, etc.)
               </p>
               <div className={styles.qrWrapper}>
-                <QRCode value={setupData.qr_code_url} size={200} />
+                <QRCodeCanvas value={setupData.qr_code_url} size={200} />
               </div>
               <p className={styles.message}>
                 <strong>Secret Key:</strong> {setupData.secret}

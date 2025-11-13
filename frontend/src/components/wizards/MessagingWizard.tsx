@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import WizardContainer from './WizardContainer';
+import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './MessagingWizard.common.module.css';
 import lightStyles from './MessagingWizard.light.module.css';
 import darkStyles from './MessagingWizard.dark.module.css';

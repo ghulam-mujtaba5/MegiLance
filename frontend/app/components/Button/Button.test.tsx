@@ -3,9 +3,9 @@
 // including testing different variants, interactions, and accessibility.
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Button from '../app/components/Button/Button';
+import Button from '@/app/components/Button/Button';
 
 describe('Button Component', () => {
   test('renders with default variant and children', () => {

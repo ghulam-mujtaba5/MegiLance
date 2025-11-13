@@ -3,9 +3,8 @@ import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 
-// Dynamically import the Home component with SSR disabled
+// Dynamically import the Home component
 const Home = dynamic(() => import('./Home'), {
-  ssr: false,
   loading: () => <Skeleton className="w-full h-96" />
 });
 

@@ -5,7 +5,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Input from '../app/components/Input/Input';
+import Input from '@/app/components/Input/Input';
 
 // Mock next-themes since it relies on React Context
 jest.mock('next-themes', () => ({

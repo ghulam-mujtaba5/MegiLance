@@ -5,7 +5,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Home from '../app/Home/Home';
+import Home from '@/app/home/Home';
 
 // Mock next-themes to provide a consistent theme for testing
 jest.mock('next-themes', () => ({

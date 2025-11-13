@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import WizardContainer from './WizardContainer';
+import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './PortfolioUploadWizard.common.module.css';
 import lightStyles from './PortfolioUploadWizard.light.module.css';
 import darkStyles from './PortfolioUploadWizard.dark.module.css';

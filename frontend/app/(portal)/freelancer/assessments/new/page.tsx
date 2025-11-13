@@ -1,5 +1,5 @@
 // @AI-HINT: Route page for skill assessment wizard
-import SkillAssessmentWizard from '@/components/wizards/SkillAssessmentWizard';
+import SkillAssessmentWizard from '@/src/components/wizards/SkillAssessmentWizard';
 
 export default function SkillAssessmentPage({
   searchParams

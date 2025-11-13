@@ -1,5 +1,5 @@
 // @AI-HINT: Route page for refund request wizard
-import RefundRequestWizard from '@/components/wizards/RefundRequestWizard';
+import RefundRequestWizard from '@/src/components/wizards/RefundRequestWizard';
 
 export default function RefundRequestPage({
   searchParams

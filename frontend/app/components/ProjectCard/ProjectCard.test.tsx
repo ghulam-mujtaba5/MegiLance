@@ -5,7 +5,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ProjectCard from '../app/components/ProjectCard/ProjectCard';
+import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 
 // Mock next-themes since it relies on React Context
 jest.mock('next-themes', () => ({

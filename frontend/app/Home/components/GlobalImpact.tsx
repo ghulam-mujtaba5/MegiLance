@@ -16,7 +16,6 @@ import darkStyles from './GlobalImpact.dark.module.css';
 
 // --- Dynamic Import for Globe (client-side only) ---
 const ImpactGlobe = dynamic(() => import('./ImpactGlobe'), {
-  ssr: false,
   loading: () => <div className={commonStyles.globePlaceholder} />
 });
 

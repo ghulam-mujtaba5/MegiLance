@@ -1,5 +1,5 @@
 // @AI-HINT: Route page for support ticket wizard
-import SupportTicketWizard from '@/components/wizards/SupportTicketWizard';
+import SupportTicketWizard from '@/src/components/wizards/SupportTicketWizard';
 
 export default function SupportTicketPage({
   searchParams

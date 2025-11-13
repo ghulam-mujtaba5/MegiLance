@@ -11,11 +11,12 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your Next.js config options can go here.
-  eslint: {
-    // Don't fail the build on ESLint errors; we'll address them incrementally.
-    ignoreDuringBuilds: true,
-  },
+  // Next.js 16 uses Turbopack by default - empty config enables it
+  turbopack: {},
+  
+  // ESLint config moved - use .eslintrc.json or CLI flags instead
+  // eslint: { ignoreDuringBuilds: true } is no longer supported in next.config.js
+  
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'i.pravatar.cc' },
@@ -33,12 +34,8 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      // Consolidate portal routes under /portal; if legacy /freelancer/* is hit, redirect it
-      {
-        source: '/freelancer/:path*',
-        destination: '/portal/freelancer/:path*',
-        permanent: false,
-      },
+      // Legacy route redirects - route groups (portal) are not in URLs
+      // Routes automatically match based on file structure
     ];
   },
 };

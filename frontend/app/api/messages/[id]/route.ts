@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
-import { Conversation, Message } from '@/app/Messages/components/types';
+import { Conversation, Message } from '@/app/messages/components/types';
 
 // Define the path to the JSON database file
 const dbPath = path.join(process.cwd(), 'db', 'messages.json');
@@ -23,11 +23,12 @@ async function readDb(): Promise<Conversation[]> {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const conversations = await readDb();
-    const conversationId = parseInt(params.id, 10);
+    const conversationId = parseInt(id, 10);
 
     if (isNaN(conversationId)) {
       return NextResponse.json({ message: 'Invalid conversation ID' }, { status: 400 });
@@ -58,10 +59,11 @@ async function writeDb(data: Conversation[]): Promise<void> {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const conversationId = parseInt(params.id, 10);
+    const { id } = await params;
+    const conversationId = parseInt(id, 10);
     if (isNaN(conversationId)) {
       return NextResponse.json({ message: 'Invalid conversation ID' }, { status: 400 });
     }

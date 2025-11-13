@@ -2,5 +2,6 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "react/no-inline-styles": "off"
-  }
+  },
+  "ignorePatterns": ["node_modules/", ".next/", "out/", "build/"]
 }
