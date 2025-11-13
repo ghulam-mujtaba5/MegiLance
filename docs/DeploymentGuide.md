@@ -35,194 +35,153 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/megilance_dev
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - postgres
-      - redis
+      ﻿# Deployment Guide (Backend & Frontend)
 
-  ai-backend:
-    build:
-      context: ./ai
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - ENVIRONMENT=development
-      - MONGODB_URL=mongodb://mongodb:27017/megilance_ai_dev
-      - AWS_S3_BUCKET=megilance-dev-files
-    depends_on:
-      - mongodb
+      Authoritative procedure for deploying the FastAPI backend to Oracle Always Free VM and the Next.js frontend to DigitalOcean. Aligns with repeatable, infrastructure-as-code-lite approach (scripts + manual guardrails) without external CI runners.
 
-  postgres:
-    image: postgres:15
-    environment:
-      - POSTGRES_DB=megilance_dev
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      ## 1. Overview
+      | Component | Host | Deployment Method |
+      |-----------|------|-------------------|
+      | Backend (FastAPI) | Oracle VM (Ubuntu) | Git + Docker Compose + Webhook |
+      | Database | Autonomous DB 23ai | Wallet secure connection |
+      | Frontend (Next.js) | DigitalOcean App Platform | Git-based auto build |
+      | Reverse Proxy | Nginx (container) | Same VM compose stack |
 
-  mongodb:
-    image: mongo:6
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
+      ## 2. Prerequisites
+      | Item | Description |
+      |------|------------|
+      | Oracle VM | Shape VM.Standard.E2.1.Micro, ports 22/80/443 open |
+      | Autonomous DB Wallet | Unzipped locally, ready to scp |
+      | SSH Key | Pair added during VM creation (private key local) |
+      | Docker & Compose | Installed by provisioning script |
+      | Git Access | VM can `git pull` public/private repo (deploy key if private) |
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
+      ## 3. One-Time VM Setup
+      1. SSH (once reachable): `ssh -i oracle-vm-ssh.key ubuntu@<PUBLIC_IP>`
+      2. System prep (if not auto-run):
+      ```
+      sudo apt update && sudo apt install -y docker.io docker-compose-plugin unzip python3-pip
+      sudo usermod -aG docker ubuntu
+      newgrp docker
+      ```
+      3. Clone repo: `git clone https://github.com/<org>/<repo>.git app && cd app`
+      4. Create wallet directory: `mkdir wallet && chmod 500 wallet`
+      5. Secure copy wallet & env:
+      ```
+      scp -i oracle-vm-ssh.key -r oracle-wallet-23ai/* ubuntu@<IP>:/home/ubuntu/app/wallet/
+      scp -i oracle-vm-ssh.key backend/.env.production ubuntu@<IP>:/home/ubuntu/app/backend/.env.production
+      ```
 
-volumes:
-  postgres_data:
-  mongodb_data:
-```
-
-### Production Environment
-```yaml
-# docker-compose.prod.yml
-version: '3.8'
-services:
-  frontend:
-    image: megilance/frontend:latest
-    restart: always
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://api.megilance.com
-      - NEXT_PUBLIC_AI_API_URL=https://ai.megilance.com
-
-  spring-backend:
-    image: megilance/spring-backend:latest
-    restart: always
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - DATABASE_URL=${DATABASE_URL}
-      - REDIS_URL=${REDIS_URL}
-      - JWT_SECRET=${JWT_SECRET}
-    deploy:
-      replicas: 3
-      resources:
-        limits:
-          memory: 1G
-        reservations:
-          memory: 512M
-
-  ai-backend:
-    image: megilance/ai-backend:latest
-    restart: always
-    environment:
-      - ENVIRONMENT=production
-      - MONGODB_URL=${MONGODB_URL}
-      - AWS_S3_BUCKET=${S3_BUCKET}
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 1G
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - ./ssl:/etc/ssl/certs
-    depends_on:
-      - spring-backend
-      - ai-backend
-```
-
----
-
-## 2. AWS Deployment Configuration
-
-### ECS Task Definitions
-
-#### Spring Boot Service
-```json
-{
-  "family": "megilance-spring-backend",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "1024",
-  "memory": "2048",
-  "executionRoleArn": "arn:aws:iam::ACCOUNT:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::ACCOUNT:role/ecsTaskRole",
-  "containerDefinitions": [
-    {
-      "name": "spring-backend",
-      "image": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/megilance-spring:latest",
-      "portMappings": [
-        {
-          "containerPort": 8080,
-          "protocol": "tcp"
+      ## 4. Minimal Compose Deployment
+      ```
+      cd app
         }
       ],
-      "environment": [
-        {
-          "name": "SPRING_PROFILES_ACTIVE",
-          "value": "aws"
-        }
-      ],
-      "secrets": [
-        {
-          "name": "DATABASE_URL",
-          "valueFrom": "arn:aws:secretsmanager:REGION:ACCOUNT:secret:megilance/database-url"
-        },
-        {
-          "name": "JWT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:REGION:ACCOUNT:secret:megilance/jwt-secret"
-        }
-      ],
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/megilance-spring-backend",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
-        }
-      },
-      "healthCheck": {
-        "command": [
-          "CMD-SHELL",
-          "curl -f http://localhost:8080/actuator/health || exit 1"
-        ],
-        "interval": 30,
-        "timeout": 5,
-        "retries": 3
-      }
-    }
-  ]
-}
-```
+      ```
+      Health check: `curl http://<IP>/api/health/live`
 
-#### AI Service
-```json
-{
-  "family": "megilance-ai-backend",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
-  "cpu": "2048",
-  "memory": "4096",
-  "executionRoleArn": "arn:aws:iam::ACCOUNT:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::ACCOUNT:role/ecsTaskRole",
-  "containerDefinitions": [
-    {
-      "name": "ai-backend",
-      "image": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/megilance-ai:latest",
-      "portMappings": [
-        {
-          "containerPort": 8000,
-          "protocol": "tcp"
-        }
-      ],
+      ## 5. Logs & Troubleshooting
+      | Command | Purpose |
+      |---------|---------|
+      | `docker ps` | Verify containers running |
+      | `docker compose logs -f backend` | Backend logs tail |
+      | `docker compose restart backend` | Rolling restart |
+      | `docker inspect <cid>` | Env & network inspection |
+
+      ## 6. Webhook Continuous Deployment
+      | Step | Action |
+      |------|--------|
+      | Install hook listener | (Future) small Python/Node service on port 9000 |
+      | GitHub webhook | Point to `http://<VM_IP>:9000/webhook` (push events) |
+      | Script triggered | Executes `git pull && docker compose ... up -d --build` |
+      | Health verification | Script curls `/api/health/ready` and logs result |
+
+      Fallback: Manual redeploy: `ssh` in → `git pull` → compose rebuild.
+
+      ## 7. Frontend Deployment (DigitalOcean)
+      1. Create DO App → connect GitHub repo (frontend directory build path)
+      2. Set build command: `npm install && npm run build`
+      3. Set run command (SSR if needed) or choose static output
+      4. Add environment variable: `NEXT_PUBLIC_API_BASE=https://<BACKEND_DOMAIN>/backend`
+      5. Provision DO-managed certificate (tick HTTPS)
+
+      ## 8. Domain & DNS
+      | Component | Record | Target |
+      |----------|--------|--------|
+      | Backend apex (e.g. api.example.com) | A | Oracle VM public IP |
+      | Frontend (app.example.com) | CNAME | DO app default hostname |
+
+      Add Nginx server_name entries once domain resolves.
+
+      ## 9. SSL/TLS (Backend)
+      Initial: optional HTTP only (internal testing)
+      Later:
+      ```
+      sudo apt install -y certbot
+      # Map port 80 → temporary standalone cert issuance (or use nginx plugin)
+      certbot certonly --standalone -d api.example.com --email admin@example.com --agree-tos --non-interactive
+      # Mount /etc/letsencrypt/live/api.example.com/* into nginx container (update compose)
+      ```
+      Automate renewal via cron (certbot deploy hooks reload nginx container).
+
+      ## 10. Zero-Downtime Strategy (Future)
+      | Requirement | Approach |
+      |------------|----------|
+      | Rolling update | Blue/green via secondary docker-compose file |
+      | Health gate | Keep old container until new passes `/api/health/ready` |
+
+      ## 11. Backup & Recovery (DB Focus)
+      | Action | Command (Illustrative) |
+      |--------|------------------------|
+      | Export schema | Data Pump via OCI console or `expdp` (future) |
+      | Logical snapshot | Read replica (future tier) |
+      | Wallet backup | Encrypted copy stored off-VM |
+
+      ## 12. Performance Tuning Entry Points
+      | Layer | Knob |
+      |-------|------|
+      | Uvicorn | Workers count (1 initially) |
+      | DB | Session pool size (limit for 1 GB) |
+      | OS | Swap (avoid heavy usage) |
+
+      ## 13. Deployment Verification Checklist
+      | Check | Method |
+      |-------|-------|
+      | Health live | `curl /api/health/live` == 200 |
+      | Health ready | `curl /api/health/ready` == 200 |
+      | Log errors absent | Review last 100 lines |
+      | DB connectivity | Create/read test record |
+      | CORS headers | Inspect response to frontend origin |
+
+      ## 14. Rollback Procedure
+      1. Identify last known good git commit hash (via `git log`)
+      2. `git checkout <hash>`
+      3. `docker compose ... up -d --build`
+      4. If failure persists, restore previous image (`docker image ls` → run tag)
+
+      ## 15. Security Hardening Roadmap
+      | Phase | Control |
+      |-------|---------|
+      | Short | Fail2ban SSH, ufw restrict to needed ports |
+      | Mid | HTTPS enforced, security headers via nginx |
+      | Long | WAF / CDN fronting (Cloudflare) |
+
+      ## 16. Operational Metrics (Future)
+      | Metric | Collection |
+      |--------|-----------|
+      | Request latency | Middleware + logs |
+      | Error rate | Log parser / future APM |
+      | DB pool saturation | Custom instrumentation |
+
+      ## 17. Common Issues
+      | Symptom | Cause | Fix |
+      |---------|-------|-----|
+      | 502 from nginx | Backend not healthy | Check backend logs, restart |
+      | Wallet errors | Wrong permissions | `chmod 500 wallet` |
+      | High memory | Too many workers | Reduce worker count |
+
+      ---
+      Living document; update on each material change to deployment process.
       "environment": [
         {
           "name": "ENVIRONMENT",
