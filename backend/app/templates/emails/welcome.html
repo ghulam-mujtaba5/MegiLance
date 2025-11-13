@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Welcome to MegiLance, {{ user_name }}! 🎉</h2>
+
+<p>We're thrilled to have you join our community of talented freelancers and innovative clients.</p>
+
+<p>MegiLance is an AI-powered freelance platform that connects businesses with top-tier talent worldwide. Whether you're here to find your next great project or to hire exceptional freelancers, we've got you covered.</p>
+
+<div class="info-box">
+    <strong>Get Started in 3 Easy Steps:</strong>
+    <ol style="margin: 10px 0 0 20px;">
+        <li style="margin: 5px 0;">Complete your profile</li>
+        <li style="margin: 5px 0;">Explore projects or post your first job</li>
+        <li style="margin: 5px 0;">Connect with the perfect match</li>
+    </ol>
+</div>
+
+<p style="text-align: center;">
+    <a href="{{ login_url }}" class="button">Go to Dashboard</a>
+</p>
+
+<p>Need help getting started? Check out our <a href="{{ base_url }}/help" style="color: #4573df;">comprehensive guide</a> or reach out to our support team at <a href="mailto:support@megilance.com" style="color: #4573df;">support@megilance.com</a>.</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

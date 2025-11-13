@@ -1,7 +1,42 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field
+
+
+class PortfolioItemSchema(BaseModel):
+    title: str
+    description: str
+    url: Optional[str] = None
+    imageUrl: Optional[str] = None
+    tags: List[str] = []
+
+
+class ProfileCompleteUpdate(BaseModel):
+    """Schema for completing user profile during onboarding"""
+    # Basic Info
+    firstName: str
+    lastName: str
+    title: str
+    bio: str
+    location: Optional[str] = None
+    timezone: str = "Asia/Karachi"
+    
+    # Professional Info
+    skills: List[str]
+    hourlyRate: str
+    experienceLevel: str
+    availability: str
+    languages: List[str] = ["English"]
+    
+    # Portfolio
+    portfolioItems: List[PortfolioItemSchema] = []
+    
+    # Verification
+    phoneNumber: Optional[str] = None
+    linkedinUrl: Optional[str] = None
+    githubUrl: Optional[str] = None
+    websiteUrl: Optional[str] = None
 
 
 class UserBase(BaseModel):

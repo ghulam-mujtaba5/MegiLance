@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Congratulations! Your Proposal Was Accepted! 🎉</h2>
+
+<p>Hello {{ freelancer_name }},</p>
+
+<p>Excellent news! Your proposal for "<strong>{{ project_title }}</strong>" has been accepted!</p>
+
+<div class="info-box">
+    <p><strong>✅ What's Next:</strong></p>
+    <ol style="margin: 10px 0 0 20px;">
+        <li style="margin: 5px 0;">Review the contract details</li>
+        <li style="margin: 5px 0;">Sign the contract to officially begin</li>
+        <li style="margin: 5px 0;">Start working and submit milestones</li>
+    </ol>
+</div>
+
+<p style="text-align: center;">
+    <a href="{{ contract_url }}" class="button">View Contract</a>
+</p>
+
+<p><strong>💼 Pro Tip:</strong> Clear communication and timely delivery lead to 5-star reviews!</p>
+
+<p>Wishing you success,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

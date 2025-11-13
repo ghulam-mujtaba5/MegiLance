@@ -40,11 +40,17 @@ def _create_token(data: dict, expires_delta: timedelta, token_type: str) -> str:
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.jwt_algorithm)
 
 
-def create_access_token(subject: str, custom_claims: Optional[dict] = None) -> str:
+def create_access_token(subject: str, custom_claims: Optional[dict] = None, expires_delta_minutes: Optional[int] = None) -> str:
     settings = get_settings()
     claims = custom_claims.copy() if custom_claims else {}
     claims.update({"sub": subject})
-    expires = timedelta(minutes=settings.access_token_expire_minutes)
+    
+    # Allow custom expiry for special tokens (e.g., temp 2FA tokens)
+    if expires_delta_minutes is not None:
+        expires = timedelta(minutes=expires_delta_minutes)
+    else:
+        expires = timedelta(minutes=settings.access_token_expire_minutes)
+    
     return _create_token(claims, expires, "access")
 
 

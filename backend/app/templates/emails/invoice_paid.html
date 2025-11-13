@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Invoice Paid - {{ invoice_number }} ✅</h2>
+
+<p>Hello {{ freelancer_name }},</p>
+
+<p>Great news! Your invoice has been paid:</p>
+
+<div class="info-box">
+    <p><strong>Invoice Number:</strong> {{ invoice_number }}</p>
+    <p><strong>Amount Paid:</strong> {{ amount }}</p>
+    <p style="margin-top: 10px;">The payment has been processed and will be available in your wallet shortly.</p>
+</div>
+
+<p style="text-align: center;">
+    <a href="{{ base_url }}/wallet" class="button">Check Wallet Balance</a>
+</p>
+
+<p><strong>⏱️ Processing Time:</strong> Funds typically appear within 1-2 business days.</p>
+
+<p>Thank you for your excellent work!</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

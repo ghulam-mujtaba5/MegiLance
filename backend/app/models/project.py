@@ -8,6 +8,7 @@ import enum
 if TYPE_CHECKING:
     from .user import User
     from .proposal import Proposal
+    from .project_tag import ProjectTag
 
 class ProjectCategory(enum.Enum):
     """Project category enumeration"""
@@ -31,7 +32,7 @@ class ProjectStatus(enum.Enum):
 class Project(Base):
     __tablename__ = "projects"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
     category: Mapped[str] = mapped_column(String(100))
@@ -49,3 +50,4 @@ class Project(Base):
     # Relationships
     client: Mapped["User"] = relationship("User", foreign_keys=[client_id])
     proposals: Mapped[List["Proposal"]] = relationship("Proposal", back_populates="project")
+    project_tags: Mapped[List["ProjectTag"]] = relationship("ProjectTag", back_populates="project")

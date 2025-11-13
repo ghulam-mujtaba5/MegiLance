@@ -1,0 +1,164 @@
+/* Notification Preferences - Common Styles (Layout & Structure) */
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.75;
+}
+
+.section {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  width: 100%;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid;
+  margin-bottom: 1rem;
+}
+
+.tableHeader > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.tableHeader > div:first-child {
+  justify-content: flex-start;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
+}
+
+.tableRow > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tableRow > div:first-child {
+  justify-content: flex-start;
+}
+
+.categoryCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #4573df;
+}
+
+.digestSettings {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.successMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .tableHeader > div,
+  .tableRow > div {
+    justify-content: space-between !important;
+    padding: 0.5rem;
+  }
+
+  .tableHeader > div:first-child,
+  .tableRow > div:first-child {
+    border-bottom: 1px solid;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .digestSettings .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}

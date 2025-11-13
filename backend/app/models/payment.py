@@ -2,13 +2,15 @@ from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, List
 import enum
 
 if TYPE_CHECKING:
     from .user import User
     from .contract import Contract
     from .milestone import Milestone
+    from .refund import Refund
+    from .invoice import Invoice
 
 class PaymentType(enum.Enum):
     """Payment type enumeration"""
@@ -37,7 +39,7 @@ class PaymentMethod(enum.Enum):
 class Payment(Base):
     __tablename__ = "payments"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     contract_id: Mapped[int] = mapped_column(ForeignKey("contracts.id"), nullable=True, index=True)
     milestone_id: Mapped[int] = mapped_column(ForeignKey("milestones.id"), nullable=True, index=True)
     from_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
@@ -61,3 +63,5 @@ class Payment(Base):
     milestone: Mapped[Optional["Milestone"]] = relationship("Milestone")
     from_user: Mapped["User"] = relationship("User", foreign_keys=[from_user_id])
     to_user: Mapped["User"] = relationship("User", foreign_keys=[to_user_id])
+    refunds: Mapped[List["Refund"]] = relationship("Refund", back_populates="payment")
+    invoices: Mapped[List["Invoice"]] = relationship("Invoice", back_populates="payment")

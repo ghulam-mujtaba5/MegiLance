@@ -1,0 +1,59 @@
+/* Light theme colors for ProfileWizard */
+
+.container {
+  background-color: #ffffff;
+}
+
+.title {
+  color: #1a202c;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.progressBar {
+  background-color: #e2e8f0;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df 0%, #5b8aef 100%);
+}
+
+.step {
+  color: #94a3b8;
+}
+
+.stepIcon {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+}
+
+.stepActive .stepIcon {
+  background-color: #4573df;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.stepCompleted .stepIcon {
+  background-color: #27ae60;
+  color: #ffffff;
+}
+
+.stepActive .stepTitle {
+  color: #4573df;
+  font-weight: 700;
+}
+
+.stepCompleted .stepTitle {
+  color: #27ae60;
+}
+
+.content {
+  background-color: #ffffff;
+}
+
+.actions {
+  border-top-color: #e2e8f0;
+  background-color: #ffffff;
+}

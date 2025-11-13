@@ -1,0 +1,59 @@
+/* Dark theme colors for ProfileWizard */
+
+.container {
+  background-color: #0f172a;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.progressBar {
+  background-color: #1e293b;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df 0%, #5b8aef 100%);
+}
+
+.step {
+  color: #64748b;
+}
+
+.stepIcon {
+  background-color: #1e293b;
+  color: #64748b;
+}
+
+.stepActive .stepIcon {
+  background-color: #4573df;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.4);
+}
+
+.stepCompleted .stepIcon {
+  background-color: #27ae60;
+  color: #ffffff;
+}
+
+.stepActive .stepTitle {
+  color: #4573df;
+  font-weight: 700;
+}
+
+.stepCompleted .stepTitle {
+  color: #27ae60;
+}
+
+.content {
+  background-color: #0f172a;
+}
+
+.actions {
+  border-top-color: #1e293b;
+  background-color: #0f172a;
+}

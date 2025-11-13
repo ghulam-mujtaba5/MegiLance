@@ -16,6 +16,15 @@ from .dispute import Dispute, DisputeType, DisputeStatus
 from .milestone import Milestone, MilestoneStatus
 from .session import UserSession
 from .audit_log import AuditLog, AuditAction
+from .escrow import Escrow
+from .time_entry import TimeEntry
+from .invoice import Invoice
+from .category import Category
+from .favorite import Favorite
+from .tag import Tag
+from .project_tag import ProjectTag
+from .support_ticket import SupportTicket
+from .refund import Refund
 
 __all__ = [
     "User",
@@ -49,4 +58,13 @@ __all__ = [
     "UserSession",
     "AuditLog",
     "AuditAction",
+    "Escrow",
+    "TimeEntry",
+    "Invoice",
+    "Category",
+    "Favorite",
+    "Tag",
+    "ProjectTag",
+    "SupportTicket",
+    "Refund",
 ]

@@ -15,7 +15,7 @@ class UserSkill(Base):
     """
     __tablename__ = "user_skills"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     skill_id: Mapped[int] = mapped_column(ForeignKey("skills.id"), index=True)
     proficiency_level: Mapped[int] = mapped_column(Integer, default=1)  # 1-5 scale

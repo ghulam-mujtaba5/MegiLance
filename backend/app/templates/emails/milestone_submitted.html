@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Milestone Submitted for Review ✅</h2>
+
+<p>Hello {{ client_name }},</p>
+
+<p>A milestone has been submitted for your review:</p>
+
+<div class="info-box">
+    <p><strong>Milestone:</strong> {{ milestone_title }}</p>
+    <p style="margin-top: 5px;">The freelancer has completed work and is awaiting your approval.</p>
+</div>
+
+<p><strong>Action Required:</strong> Please review the submitted work and either approve or request revisions.</p>
+
+<p style="text-align: center;">
+    <a href="{{ contract_url }}" class="button">Review Milestone</a>
+</p>
+
+<p><strong>⏱️ Note:</strong> Timely reviews help maintain project momentum and keep freelancers motivated!</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

@@ -76,7 +76,7 @@ const Signup: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Dev preview bypass: allow proceeding with empty credentials
     if (isPreviewMode()) {
@@ -90,8 +90,33 @@ const Signup: React.FC = () => {
     }
     if (validate()) {
       setLoading(true);
-      console.log('Creating account for:', selectedRole, formData);
-      setTimeout(() => setLoading(false), 2000);
+      try {
+        const response = await fetch('/backend/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+            full_name: formData.fullName,
+            role: selectedRole,
+          }),
+        });
+
+        if (response.ok) {
+          // Show verification notice
+          router.push('/verify-email?registered=true');
+        } else {
+          const data = await response.json();
+          setErrors({ email: data.detail || 'Registration failed. Please try again.' });
+        }
+      } catch (error) {
+        console.error('Signup error:', error);
+        setErrors({ email: 'An error occurred. Please try again.' });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

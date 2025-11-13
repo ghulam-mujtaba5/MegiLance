@@ -1,0 +1,31 @@
+/* @AI-HINT: Dark theme for analytics dashboard */
+
+.container {
+  background: #0f172a;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.metricCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.metricValue {
+  color: #f8fafc;
+}
+
+.metricLabel {
+  color: #94a3b8;
+}
+
+.chartCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.chartTitle {
+  color: #f8fafc;
+}

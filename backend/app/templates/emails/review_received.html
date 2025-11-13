@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>New Review Received ⭐</h2>
+
+<p>Hello {{ user_name }},</p>
+
+<p>{{ reviewer_name }} has left a review for you!</p>
+
+<div class="info-box">
+    <p><strong>Project:</strong> {{ project_title }}</p>
+    <p><strong>Rating:</strong> {{ rating }}/5 ⭐</p>
+    <p style="margin-top: 10px;">Reviews help build your reputation and attract more opportunities.</p>
+</div>
+
+<p style="text-align: center;">
+    <a href="{{ base_url }}/profile" class="button">View Your Profile</a>
+</p>
+
+<p><strong>💡 Tip:</strong> Respond to reviews professionally to show potential clients you value feedback!</p>
+
+<p>Keep up the great work!</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

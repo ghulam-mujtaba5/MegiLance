@@ -14,7 +14,7 @@ class UserSession(Base):
     """
     __tablename__ = "user_sessions"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     session_token: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     refresh_token: Mapped[str] = mapped_column(String(255), unique=True, index=True)

@@ -1,0 +1,55 @@
+/* Light theme for EscrowTracker */
+
+.container {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.title {
+  color: #1a202c;
+}
+
+.summaryItem .label {
+  color: #64748b;
+}
+
+.summaryItem .value {
+  color: #1e293b;
+}
+
+.timeline::before {
+  background-color: #cbd5e0;
+}
+
+.milestone {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.milestone:hover {
+  background-color: #f1f5f9;
+  border-color: #4573df;
+}
+
+.milestoneActive {
+  background-color: #ffffff;
+  border-color: #4573df;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.2);
+}
+
+.milestoneIcon {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.milestoneTitle {
+  color: #1e293b;
+}
+
+.milestoneDetails {
+  color: #475569;
+}
+
+.milestoneActions {
+  border-top-color: #e2e8f0;
+}

@@ -39,7 +39,7 @@ class Notification(Base):
     """
     __tablename__ = "notifications"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     notification_type: Mapped[str] = mapped_column(String(50), index=True)
     title: Mapped[str] = mapped_column(String(255))

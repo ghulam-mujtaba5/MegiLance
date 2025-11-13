@@ -1,0 +1,170 @@
+/* Wizard Container - Common Styles */
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.75;
+}
+
+.progressContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.progressBar {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4573df, #6b8ef9);
+  transition: width 0.3s ease;
+}
+
+.stepsIndicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.stepsIndicator::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  z-index: 0;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  max-width: 150px;
+}
+
+.stepCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border: 2px solid;
+  transition: all 0.3s;
+}
+
+.stepCircleActive {
+  background: #4573df;
+  border-color: #4573df;
+  color: #ffffff;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.stepCircleCompleted {
+  background: #27AE60;
+  border-color: #27AE60;
+  color: #ffffff;
+}
+
+.stepLabel {
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.stepDescription {
+  font-size: 0.75rem;
+  opacity: 0.6;
+  margin-top: 0.25rem;
+}
+
+.contentArea {
+  min-height: 400px;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  border: 1px solid;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .stepsIndicator {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .stepsIndicator::before {
+    display: none;
+  }
+
+  .stepItem {
+    flex-direction: row;
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+
+  .stepLabel {
+    text-align: left;
+  }
+
+  .contentArea {
+    padding: 1rem;
+    min-height: 300px;
+  }
+
+  .navigation {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .buttonGroup {
+    width: 100%;
+    justify-content: center;
+  }
+}

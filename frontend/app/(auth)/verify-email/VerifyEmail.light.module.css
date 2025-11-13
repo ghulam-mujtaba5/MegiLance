@@ -1,0 +1,18 @@
+/* @AI-HINT: Light theme for email verification */
+
+.container {
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.title {
+  color: #1a1a1a;
+}
+
+.message {
+  color: #4b5563;
+}

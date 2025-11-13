@@ -1,0 +1,51 @@
+/* Notification Preferences - Dark Theme */
+
+.container {
+  background: #1a202c;
+  color: #e2e8f0;
+}
+
+.title {
+  color: #f7fafc;
+}
+
+.subtitle {
+  color: #a0aec0;
+}
+
+.section {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.sectionTitle {
+  color: #e2e8f0;
+}
+
+.tableHeader {
+  background: #1a202c;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.tableRow {
+  background: #2d3748;
+}
+
+.tableRow:hover {
+  background: #374151;
+}
+
+.categoryCell strong {
+  color: #f7fafc;
+}
+
+.categoryCell span {
+  color: #cbd5e0;
+}
+
+.successMessage {
+  background: #2f855a;
+  color: #c6f6d5;
+  border: 1px solid #38a169;
+}

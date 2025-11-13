@@ -1,0 +1,63 @@
+/* User Profile - Light Theme */
+
+.container {
+  background: #ffffff;
+  color: #2d3748;
+}
+
+.header {
+  background: linear-gradient(135deg, #f7fafc, #edf2f7);
+  border-color: #e2e8f0;
+}
+
+.title {
+  color: #1a202c;
+}
+
+.sectionTitle {
+  color: #2d3748;
+  border-color: #cbd5e0;
+}
+
+.section {
+  background: #f7fafc;
+  border-color: #e2e8f0;
+}
+
+.aboutText {
+  color: #4a5568;
+}
+
+.skillTag {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.skillTag:hover {
+  background: #4573df;
+  color: #ffffff;
+  border-color: #4573df;
+}
+
+.portfolioCard {
+  background: #ffffff;
+  border-color: #cbd5e0;
+}
+
+.reviewCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.socialLinks a {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.socialLinks a:hover {
+  background: #4573df;
+  color: #ffffff;
+  border-color: #4573df;
+}

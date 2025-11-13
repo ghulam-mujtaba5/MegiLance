@@ -15,7 +15,7 @@ class Review(Base):
     """
     __tablename__ = "reviews"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     contract_id: Mapped[int] = mapped_column(ForeignKey("contracts.id"), index=True)
     reviewer_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     reviewee_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)

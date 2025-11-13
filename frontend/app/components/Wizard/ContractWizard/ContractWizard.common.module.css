@@ -1,0 +1,86 @@
+/* Contract Wizard - Common Styles */
+
+.stepContent {
+  width: 100%;
+}
+
+.templateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.templateCard {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.templateCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.templateCardSelected {
+  border-color: #4573df;
+  background: rgba(69, 115, 223, 0.1);
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.deliverablesList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.deliverableItem {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.milestoneCard {
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid;
+}
+
+.signatureBox {
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px dashed;
+}
+
+.reviewSection {
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .templateGrid {
+    grid-template-columns: 1fr;
+  }
+}

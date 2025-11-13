@@ -25,7 +25,7 @@ class Message(Base):
     """
     __tablename__ = "messages"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"), index=True)
     sender_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     receiver_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)

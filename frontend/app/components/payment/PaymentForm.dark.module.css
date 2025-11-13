@@ -1,0 +1,23 @@
+/* @AI-HINT: Dark theme for payment form */
+
+.container {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.header {
+  border-bottom-color: #334155;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.cardWrapper {
+  background: #0f172a;
+  border-color: #475569;
+}
+
+.securityBadge {
+  color: #94a3b8;
+}

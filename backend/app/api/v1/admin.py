@@ -269,7 +269,7 @@ async def get_top_freelancers(
         func.coalesce(func.sum(Payment.amount), 0.0).label('total_earnings'),
         func.count(Contract.id).label('completed_projects')
     ).join(
-        Payment, Payment.payee_id == User.id, isouter=True
+        Payment, Payment.to_user_id == User.id, isouter=True
     ).join(
         Contract, Contract.freelancer_id == User.id, isouter=True
     ).filter(
@@ -313,7 +313,7 @@ async def get_top_clients(
         func.count(case((Project.status.in_(['open', 'in_progress']), Project.id))).label('active_projects'),
         func.count(case((Project.status == 'completed', Project.id))).label('completed_projects')
     ).join(
-        Payment, Payment.payer_id == User.id, isouter=True
+        Payment, Payment.from_user_id == User.id, isouter=True
     ).join(
         Project, Project.client_id == User.id, isouter=True
     ).filter(
@@ -323,7 +323,7 @@ async def get_top_clients(
         User.id, User.name, User.email
     ).order_by(
         desc('total_spent')
-    ).limit(limit).all()
+    ).limit(10).all()
     
     return [
         TopClient(
@@ -387,9 +387,9 @@ async def get_recent_activity(
         })
     
     # Recent payments
-    recent_payments = db.query(Payment).join(User, Payment.payee_id == User.id).order_by(desc(Payment.created_at)).limit(5).all()
+    recent_payments = db.query(Payment).join(User, Payment.to_user_id == User.id).order_by(desc(Payment.created_at)).limit(5).all()
     for payment in recent_payments:
-        payee = db.query(User).filter(User.id == payment.payee_id).first()
+        payee = db.query(User).filter(User.id == payment.to_user_id).first()
         activities.append({
             'type': 'payment_made',
             'description': f"Payment: {payment.description or payment.payment_type}",

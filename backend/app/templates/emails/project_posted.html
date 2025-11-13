@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>New Project Alert! 🚀</h2>
+
+<p>Hello {{ freelancer_name }},</p>
+
+<p>Great news! A new project matching your skills has just been posted:</p>
+
+<div class="info-box">
+    <h3 style="color: #4573df; margin-bottom: 10px;">{{ project_title }}</h3>
+    <p style="margin: 5px 0; font-size: 14px;">This project aligns with your expertise and is now open for proposals.</p>
+</div>
+
+<p>Don't miss out on this opportunity! Submit your proposal early to stand out from the competition.</p>
+
+<p style="text-align: center;">
+    <a href="{{ project_url }}" class="button">View Project Details</a>
+</p>
+
+<p><strong>💡 Pro Tip:</strong> Personalized proposals have a 3x higher acceptance rate. Make sure to highlight your relevant experience!</p>
+
+<p>Best of luck,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

@@ -1,0 +1,38 @@
+/* Light theme for ProposalBuilder */
+
+.container {
+  background-color: #ffffff;
+}
+
+.title {
+  color: #1a202c;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.templateCard {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.templateCard:hover {
+  background-color: #f1f5f9;
+  border-color: #4573df;
+}
+
+.tip {
+  background-color: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #92400e;
+}
+
+.formSection {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.sectionTitle {
+  color: #1e293b;
+}

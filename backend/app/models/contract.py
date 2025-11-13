@@ -12,6 +12,9 @@ if TYPE_CHECKING:
     from .dispute import Dispute
     from .milestone import Milestone
     from .payment import Payment
+    from .escrow import Escrow
+    from .time_entry import TimeEntry
+    from .invoice import Invoice
 
 class ContractStatus(enum.Enum):
     """Contract status enumeration"""
@@ -26,7 +29,7 @@ class ContractStatus(enum.Enum):
 class Contract(Base):
     __tablename__ = "contracts"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     contract_address: Mapped[str] = mapped_column(String(100), unique=True, nullable=True)  # Blockchain contract address
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), index=True)
     freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
@@ -49,6 +52,9 @@ class Contract(Base):
     project: Mapped["Project"] = relationship("Project")
     freelancer: Mapped["User"] = relationship("User", foreign_keys=[freelancer_id])
     client: Mapped["User"] = relationship("User", foreign_keys=[client_id])
+    escrow_records: Mapped[List["Escrow"]] = relationship("Escrow", back_populates="contract")
+    time_entries: Mapped[List["TimeEntry"]] = relationship("TimeEntry", back_populates="contract")
+    invoices: Mapped[List["Invoice"]] = relationship("Invoice", back_populates="contract")
     reviews: Mapped[List["Review"]] = relationship("Review", back_populates="contract")
     disputes: Mapped[List["Dispute"]] = relationship("Dispute", back_populates="contract")
     milestone_items: Mapped[List["Milestone"]] = relationship("Milestone", back_populates="contract")

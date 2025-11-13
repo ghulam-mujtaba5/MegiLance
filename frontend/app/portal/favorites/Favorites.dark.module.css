@@ -1,0 +1,21 @@
+/* Dark - Favorites */
+.container { color: #f9fafb; }
+.subtitle { color: #d1d5db; }
+.error { background-color: #7f1d1d; border-color: #ef4444; color: #fecaca; }
+.statCard { background-color: #1f2937; border-color: #374151; }
+.statIcon { color: #60a5fa; }
+.filterSelect { background-color: #1f2937; border-color: #374151; color: #f9fafb; }
+.filterSelect:focus { outline: none; border-color: #4573df; box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2); }
+.loading, .empty, .emptyText { color: #9ca3af; }
+.favoriteCard { background-color: #1f2937; border-color: #374151; }
+.favoriteCard:hover { border-color: #4573df; }
+.typeIcon { background-color: #1e3a8a; color: #60a5fa; }
+.typeBadge { background-color: #1e3a8a; color: #93c5fd; }
+.typeBadge[data-type="project"] { background-color: #1e3a8a; color: #93c5fd; }
+.typeBadge[data-type="freelancer"] { background-color: #064e3b; color: #6ee7b7; }
+.typeBadge[data-type="client"] { background-color: #78350f; color: #fcd34d; }
+.cardActions { border-color: #374151; }
+.viewBtn { background-color: #4573df; color: #ffffff; }
+.viewBtn:hover { background-color: #5b83e3; }
+.removeBtn { background-color: #374151; color: #9ca3af; }
+.removeBtn:hover { background-color: #7f1d1d; color: #f87171; }

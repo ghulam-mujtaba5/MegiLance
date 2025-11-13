@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class PortfolioItem(Base):
     __tablename__ = "portfolio_items"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)

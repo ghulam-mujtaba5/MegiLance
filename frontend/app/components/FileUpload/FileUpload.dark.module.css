@@ -1,0 +1,45 @@
+/* Dark theme for FileUpload */
+
+.label {
+  color: #f8fafc;
+}
+
+.dropzone {
+  border-color: #334155;
+  background-color: #1e293b;
+}
+
+.dropzone:hover {
+  border-color: #4573df;
+  background-color: #0f172a;
+}
+
+.dropzoneDragging {
+  border-color: #4573df;
+  background-color: #1e3a8a;
+}
+
+.icon {
+  color: #94a3b8;
+}
+
+.text {
+  color: #cbd5e1;
+}
+
+.hint {
+  color: #64748b;
+}
+
+.progressBar {
+  background-color: #334155;
+}
+
+.success {
+  background-color: #022c22;
+  border: 1px solid #10b981;
+}
+
+.error {
+  color: #fca5a5;
+}

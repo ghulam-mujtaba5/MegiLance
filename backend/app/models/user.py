@@ -14,15 +14,27 @@ class UserType(enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
     first_name: Mapped[str] = mapped_column(String(100), nullable=True)
     last_name: Mapped[str] = mapped_column(String(100), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    email_verification_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     name: Mapped[str] = mapped_column(String(255), nullable=True)
     role: Mapped[str] = mapped_column(String(50), nullable=False, default="client")  # Role for authorization
+    
+    # Two-Factor Authentication fields
+    two_factor_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    two_factor_secret: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    two_factor_backup_codes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of codes
+    
+    # Password reset fields
+    password_reset_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    password_reset_expires: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    last_password_changed: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     user_type: Mapped[str] = mapped_column(String(20), nullable=True, index=True)  # Freelancer, Client
     bio: Mapped[str] = mapped_column(Text, nullable=True)
     skills: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of skills
@@ -30,6 +42,7 @@ class User(Base):
     profile_image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     location: Mapped[str] = mapped_column(String(100), nullable=True)
     profile_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle compatibility
+    notification_preferences: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for notification settings
     account_balance: Mapped[float] = mapped_column(Float, default=0.0)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
     joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -42,3 +55,12 @@ class User(Base):
     received_reviews: Mapped[List["Review"]] = relationship("Review", foreign_keys="Review.reviewee_id", back_populates="reviewee")
     sessions: Mapped[List["UserSession"]] = relationship("UserSession", back_populates="user")
     audit_logs: Mapped[List["AuditLog"]] = relationship("AuditLog", back_populates="user")
+    escrow_records: Mapped[List["Escrow"]] = relationship("Escrow", foreign_keys="Escrow.client_id", back_populates="client")
+    time_entries: Mapped[List["TimeEntry"]] = relationship("TimeEntry", back_populates="user")
+    invoices_sent: Mapped[List["Invoice"]] = relationship("Invoice", foreign_keys="Invoice.from_user_id", back_populates="from_user")
+    invoices_received: Mapped[List["Invoice"]] = relationship("Invoice", foreign_keys="Invoice.to_user_id", back_populates="to_user")
+    favorites: Mapped[List["Favorite"]] = relationship("Favorite", back_populates="user")
+    support_tickets: Mapped[List["SupportTicket"]] = relationship("SupportTicket", foreign_keys="SupportTicket.user_id", back_populates="user")
+    assigned_tickets: Mapped[List["SupportTicket"]] = relationship("SupportTicket", foreign_keys="SupportTicket.assigned_to", back_populates="assigned_user")
+    refunds_requested: Mapped[List["Refund"]] = relationship("Refund", foreign_keys="Refund.requested_by", back_populates="requester")
+    refunds_approved: Mapped[List["Refund"]] = relationship("Refund", foreign_keys="Refund.approved_by", back_populates="approver")

@@ -12,6 +12,62 @@ from app.core.security import get_current_active_user
 
 router = APIRouter()
 
+@router.get("/drafts", response_model=List[ProposalRead])
+def list_draft_proposals(
+    project_id: Optional[int] = Query(None, description="Filter by project ID"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get all draft proposals for the current user"""
+    query = db.query(Proposal).filter(
+        Proposal.freelancer_id == current_user.id,
+        Proposal.is_draft == True
+    )
+    
+    if project_id:
+        query = query.filter(Proposal.project_id == project_id)
+    
+    drafts = query.all()
+    return drafts
+
+
+@router.post("/draft", response_model=ProposalRead, status_code=status.HTTP_201_CREATED)
+def create_draft_proposal(
+    proposal: ProposalCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Save a proposal as draft"""
+    # Check if user is a freelancer
+    if not current_user.user_type or current_user.user_type.lower() != "freelancer":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only freelancers can create proposals"
+        )
+    
+    # Check if project exists
+    project = db.query(Project).filter(Project.id == proposal.project_id).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+    
+    db_proposal = Proposal(
+        project_id=proposal.project_id,
+        freelancer_id=current_user.id,
+        cover_letter=proposal.cover_letter or "",
+        bid_amount=proposal.bid_amount or 0,
+        estimated_hours=proposal.estimated_hours or 0,
+        hourly_rate=proposal.hourly_rate or 0,
+        availability=proposal.availability or "",
+        attachments=proposal.attachments or "",
+        status="draft",
+        is_draft=True
+    )
+    db.add(db_proposal)
+    db.commit()
+    db.refresh(db_proposal)
+    return db_proposal
+
+
 @router.get("/", response_model=List[ProposalRead])
 def list_proposals(
     skip: int = Query(0, ge=0),
@@ -92,7 +148,8 @@ def create_proposal(
     # Check if freelancer has already submitted a proposal for this project
     existing_proposal = db.query(Proposal).filter(
         Proposal.project_id == proposal.project_id,
-        Proposal.freelancer_id == current_user.id
+        Proposal.freelancer_id == current_user.id,
+        Proposal.is_draft == False
     ).first()
     if existing_proposal:
         raise HTTPException(
@@ -104,11 +161,13 @@ def create_proposal(
         project_id=proposal.project_id,
         freelancer_id=current_user.id,
         cover_letter=proposal.cover_letter,
+        bid_amount=proposal.bid_amount or (proposal.estimated_hours * proposal.hourly_rate),
         estimated_hours=proposal.estimated_hours,
         hourly_rate=proposal.hourly_rate,
         availability=proposal.availability,
         attachments=proposal.attachments,
-        status="submitted"
+        status="submitted",
+        is_draft=False
     )
     db.add(db_proposal)
     db.commit()

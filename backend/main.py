@@ -5,9 +5,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import JSONResponse
+from starlette.middleware.base import BaseHTTPMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app.api.routers import api_router
 from app.core.config import get_settings
+from app.core.rate_limit import limiter
+from app.core.websocket import socket_app, websocket_manager
 from app.db.init_db import init_db
 from app.db.session import engine
 
@@ -23,6 +28,12 @@ app = FastAPI(
     openapi_url="/api/openapi.json"
 )
 
+# Add rate limiting state to app
+app.state.limiter = limiter
+
+# Add rate limit exception handler
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.backend_cors_origins,
@@ -30,6 +41,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount Socket.IO app for WebSocket support
+app.mount("/ws", socket_app)
 
 
 @app.on_event("startup")

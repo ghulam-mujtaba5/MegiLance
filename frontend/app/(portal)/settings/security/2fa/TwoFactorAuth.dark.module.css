@@ -1,0 +1,46 @@
+/* @AI-HINT: Dark theme for 2FA settings */
+
+.container {
+  background: #0f172a;
+}
+
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.header {
+  border-bottom-color: #334155;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #cbd5e1;
+}
+
+.sectionTitle {
+  color: #f8fafc;
+}
+
+.message {
+  color: #cbd5e1;
+}
+
+.qrWrapper {
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+.backupCodes {
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+.codeItem {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #334155;
+}

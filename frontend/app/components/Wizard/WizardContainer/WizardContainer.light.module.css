@@ -1,0 +1,52 @@
+/* Wizard Container - Light Theme */
+
+.container {
+  background: #ffffff;
+  color: #2d3748;
+}
+
+.title {
+  color: #1a202c;
+}
+
+.subtitle {
+  color: #4a5568;
+}
+
+.progressBar {
+  background: #e2e8f0;
+}
+
+.stepsIndicator::before {
+  background: #cbd5e0;
+}
+
+.stepCircle {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #4a5568;
+}
+
+.stepItemCompleted .stepCircle {
+  background: #27AE60;
+  border-color: #27AE60;
+  color: #ffffff;
+}
+
+.stepLabel {
+  color: #2d3748;
+}
+
+.stepItemActive .stepLabel {
+  color: #4573df;
+  font-weight: 600;
+}
+
+.contentArea {
+  background: #f7fafc;
+  border-color: #e2e8f0;
+}
+
+.navigation {
+  border-color: #e2e8f0;
+}

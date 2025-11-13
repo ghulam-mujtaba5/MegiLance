@@ -1,0 +1,261 @@
+/* Dark theme colors for Invoices */
+
+.container {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #d1d5db;
+}
+
+.createBtn {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.createBtn:hover {
+  background-color: #5b83e3;
+}
+
+.error {
+  background-color: #7f1d1d;
+  border-color: #ef4444;
+  color: #fecaca;
+}
+
+.formCard {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.closeBtn {
+  border-color: #374151;
+  color: #d1d5db;
+}
+
+.closeBtn:hover {
+  background-color: #374151;
+  border-color: #ef4444;
+  color: #f87171;
+}
+
+.select,
+.input,
+.textarea,
+.filterSelect {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.select:focus,
+.input:focus,
+.textarea:focus,
+.filterSelect:focus {
+  outline: none;
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+.addItemBtn {
+  border-color: #4573df;
+  color: #60a5fa;
+}
+
+.addItemBtn:hover {
+  background-color: #1e3a8a;
+}
+
+.lineItemDesc,
+.lineItemQty,
+.lineItemPrice {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.lineItemAmount {
+  color: #f9fafb;
+}
+
+.removeItemBtn {
+  border-color: #374151;
+  color: #f87171;
+}
+
+.removeItemBtn:hover {
+  background-color: #7f1d1d;
+}
+
+.totalRow {
+  border-color: #374151;
+}
+
+.totalAmount {
+  color: #60a5fa;
+}
+
+.cancelBtn {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+.cancelBtn:hover {
+  background-color: #4b5563;
+}
+
+.submitBtn {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.submitBtn:hover {
+  background-color: #5b83e3;
+}
+
+.loading,
+.empty {
+  color: #9ca3af;
+}
+
+.emptyBtn {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.emptyBtn:hover {
+  background-color: #5b83e3;
+}
+
+.table {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.tableElement th {
+  background-color: #111827;
+  color: #d1d5db;
+  border-color: #374151;
+}
+
+.tableElement td {
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+.tableElement tbody tr:hover {
+  background-color: #374151;
+}
+
+.invoiceNumber {
+  color: #60a5fa;
+}
+
+.amount {
+  color: #f9fafb;
+}
+
+.badge {
+  color: #ffffff;
+}
+
+.badge[data-status="draft"] {
+  background-color: #6b7280;
+}
+
+.badge[data-status="sent"] {
+  background-color: #2563eb;
+}
+
+.badge[data-status="pending"] {
+  background-color: #d97706;
+}
+
+.badge[data-status="paid"] {
+  background-color: #059669;
+}
+
+.badge[data-status="overdue"] {
+  background-color: #dc2626;
+}
+
+.iconBtn {
+  border-color: #374151;
+  color: #d1d5db;
+}
+
+.iconBtn:hover {
+  background-color: #374151;
+  border-color: #4573df;
+  color: #60a5fa;
+}
+
+.iconBtn[data-action="send"] {
+  color: #60a5fa;
+  border-color: #2563eb;
+}
+
+.iconBtn[data-action="send"]:hover {
+  background-color: #1e3a8a;
+}
+
+.iconBtn[data-action="paid"] {
+  color: #34d399;
+  border-color: #059669;
+}
+
+.iconBtn[data-action="paid"]:hover {
+  background-color: #064e3b;
+}
+
+.iconBtn[data-action="delete"] {
+  color: #9ca3af;
+  border-color: #4b5563;
+}
+
+.iconBtn[data-action="delete"]:hover {
+  background-color: #7f1d1d;
+  color: #f87171;
+  border-color: #dc2626;
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.modalContent {
+  background-color: #1f2937;
+}
+
+.detailRow {
+  border-color: #374151;
+}
+
+.detailLabel {
+  color: #9ca3af;
+}
+
+.detailLineItem {
+  background-color: #111827;
+}
+
+.lineItemMeta {
+  color: #9ca3af;
+}
+
+.lineItemTotal {
+  color: #f9fafb;
+}
+
+.invoiceTotal {
+  background-color: #1e3a8a;
+  color: #e0e7ff;
+}
+
+.notesSection {
+  border-color: #374151;
+}
+
+.notes {
+  color: #d1d5db;
+}

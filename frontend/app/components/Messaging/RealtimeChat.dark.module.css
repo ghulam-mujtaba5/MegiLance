@@ -1,0 +1,33 @@
+/* @AI-HINT: Dark theme for realtime chat */
+
+.container {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.header {
+  background: #0f172a;
+  border-bottom-color: #334155;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.status {
+  color: #94a3b8;
+}
+
+.messagesContainer {
+  background: #1e293b;
+}
+
+.messageOther {
+  background: #334155;
+  color: #f8fafc;
+}
+
+.inputContainer {
+  background: #0f172a;
+  border-top-color: #334155;
+}

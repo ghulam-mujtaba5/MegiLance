@@ -23,7 +23,7 @@ class Conversation(Base):
     """
     __tablename__ = "conversations"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=True, index=True)
     client_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)

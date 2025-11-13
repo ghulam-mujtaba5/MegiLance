@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>New Invoice - {{ invoice_number }} 📄</h2>
+
+<p>Hello {{ client_name }},</p>
+
+<p>You have received a new invoice for services rendered:</p>
+
+<div class="info-box">
+    <p><strong>Invoice Number:</strong> {{ invoice_number }}</p>
+    <p><strong>Amount Due:</strong> {{ amount }}</p>
+    <p style="margin-top: 10px;">Please review and process payment at your earliest convenience.</p>
+</div>
+
+<p style="text-align: center;">
+    <a href="{{ invoice_url }}" class="button">View & Pay Invoice</a>
+</p>
+
+<p><strong>💡 Payment Methods:</strong> We accept credit cards, bank transfers, and cryptocurrency (USDC).</p>
+
+<p>If you have any questions about this invoice, please contact the freelancer directly or reach out to our support team.</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

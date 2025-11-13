@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Dispute Opened ⚠️</h2>
+
+<p>Hello {{ user_name }},</p>
+
+<p>A dispute has been opened regarding:</p>
+
+<div class="info-box">
+    <p><strong>Subject:</strong> {{ dispute_subject }}</p>
+    <p style="margin-top: 10px;">Our support team will review this matter and work to find a fair resolution for both parties.</p>
+</div>
+
+<p><strong>What happens next:</strong></p>
+<ul style="margin: 10px 0 20px 20px;">
+    <li style="margin: 5px 0;">Both parties can provide evidence and explanations</li>
+    <li style="margin: 5px 0;">Our mediation team will review all information</li>
+    <li style="margin: 5px 0;">A resolution will be reached within 5-7 business days</li>
+    <li style="margin: 5px 0;">All funds related to this contract are held in escrow during resolution</li>
+</ul>
+
+<p style="text-align: center;">
+    <a href="{{ dispute_url }}" class="button">View Dispute Details</a>
+</p>
+
+<p><strong>🤝 Note:</strong> Most disputes are resolved through clear communication. We encourage both parties to work together.</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Support Team</strong></p>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>New Proposal Received! 📬</h2>
+
+<p>Hello {{ client_name }},</p>
+
+<p>You've received a new proposal for your project "<strong>{{ project_title }}</strong>":</p>
+
+<div class="info-box">
+    <p><strong>From:</strong> {{ freelancer_name }}</p>
+    <p style="margin-top: 5px;">A talented freelancer is interested in working on your project.</p>
+</div>
+
+<p>Review the proposal details, check the freelancer's portfolio, and respond to move forward with your project.</p>
+
+<p style="text-align: center;">
+    <a href="{{ proposal_url }}" class="button">Review Proposal</a>
+</p>
+
+<p><strong>📊 Quick Stats:</strong> Projects with active communication receive proposals 50% faster!</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

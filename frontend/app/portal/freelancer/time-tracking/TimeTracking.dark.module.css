@@ -1,0 +1,159 @@
+/* Dark theme colors for Time Tracking */
+
+.container {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #d1d5db;
+}
+
+.error {
+  background-color: #7f1d1d;
+  border-color: #ef4444;
+  color: #fecaca;
+}
+
+.select,
+.input,
+.inputSmall,
+.filterSelect {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.select:focus,
+.input:focus,
+.inputSmall:focus,
+.filterSelect:focus {
+  outline: none;
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+.summaryCard {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.summaryCard:hover {
+  border-color: #4573df;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.summaryIcon {
+  background-color: #1e3a8a;
+  color: #60a5fa;
+}
+
+.summaryLabel {
+  color: #9ca3af;
+}
+
+.summaryValue {
+  color: #f9fafb;
+}
+
+.timerSection {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.activeTimer {
+  background-color: #1e3a8a;
+  border-color: #4573df;
+}
+
+.timerTime {
+  color: #9ca3af;
+}
+
+.table {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.tableElement th {
+  background-color: #111827;
+  color: #d1d5db;
+  border-color: #374151;
+}
+
+.tableElement td {
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+.tableElement tbody tr:hover {
+  background-color: #374151;
+}
+
+.badge {
+  color: #ffffff;
+}
+
+.badge[data-status="draft"] {
+  background-color: #6b7280;
+}
+
+.badge[data-status="submitted"] {
+  background-color: #2563eb;
+}
+
+.badge[data-status="approved"] {
+  background-color: #059669;
+}
+
+.badge[data-status="rejected"] {
+  background-color: #dc2626;
+}
+
+.iconBtn {
+  border-color: #374151;
+  color: #d1d5db;
+}
+
+.iconBtn:hover {
+  background-color: #374151;
+  border-color: #4573df;
+  color: #60a5fa;
+}
+
+.iconBtn[data-action="approve"] {
+  color: #34d399;
+  border-color: #059669;
+}
+
+.iconBtn[data-action="approve"]:hover {
+  background-color: #064e3b;
+}
+
+.iconBtn[data-action="reject"] {
+  color: #f87171;
+  border-color: #dc2626;
+}
+
+.iconBtn[data-action="reject"]:hover {
+  background-color: #7f1d1d;
+}
+
+.iconBtn[data-action="delete"] {
+  color: #9ca3af;
+  border-color: #4b5563;
+}
+
+.iconBtn[data-action="delete"]:hover {
+  background-color: #374151;
+  color: #f87171;
+  border-color: #dc2626;
+}
+
+.loading,
+.empty {
+  color: #9ca3af;
+}
+
+.checkbox input {
+  accent-color: #4573df;
+}

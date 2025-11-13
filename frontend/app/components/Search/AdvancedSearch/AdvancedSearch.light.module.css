@@ -1,0 +1,67 @@
+/* Advanced Search - Light Theme */
+
+.container {
+  background: #ffffff;
+  color: #2d3748;
+}
+
+.searchInput {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.searchInput::placeholder {
+  color: #a0aec0;
+}
+
+.filterToggle {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.filterToggle:hover {
+  background: #f7fafc;
+  border-color: #4573df;
+}
+
+.filtersPanel {
+  background: #f7fafc;
+  border-color: #e2e8f0;
+}
+
+.suggestionsDropdown {
+  background: #ffffff;
+  border-color: #cbd5e0;
+}
+
+.suggestionItem {
+  background: #ffffff;
+  color: #2d3748;
+  border-color: #e2e8f0;
+}
+
+.suggestionItem:hover {
+  background: #f7fafc;
+}
+
+.recentSearches {
+  background: #f7fafc;
+  color: #2d3748;
+}
+
+.savedSearches {
+  background: #f7fafc;
+  border-color: #e2e8f0;
+}
+
+.savedSearchItem {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.savedSearchItem:hover {
+  border-color: #4573df;
+}

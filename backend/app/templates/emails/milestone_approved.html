@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Milestone Approved - Payment Released! 💰</h2>
+
+<p>Hello {{ freelancer_name }},</p>
+
+<p>Great work! Your milestone "<strong>{{ milestone_title }}</strong>" has been approved!</p>
+
+<div class="info-box">
+    <p><strong>💵 Payment Released:</strong> {{ amount }}</p>
+    <p style="margin-top: 5px;">The payment has been released from escrow and is now available in your account.</p>
+</div>
+
+<p>Continue your excellent work on the next milestone, or celebrate this achievement!</p>
+
+<p style="text-align: center;">
+    <a href="{{ base_url }}/wallet" class="button">View Wallet</a>
+</p>
+
+<p><strong>⭐ Don't forget:</strong> Request a review from your client to build your reputation!</p>
+
+<p>Congratulations,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}

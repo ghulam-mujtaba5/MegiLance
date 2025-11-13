@@ -13,6 +13,22 @@ python-multipart==0.0.9
 pytest==8.3.2
 gunicorn==22.0.0
 alembic==1.13.1
+# Two-Factor Authentication
+pyotp==2.9.0
+qrcode[pil]==7.4.2
+# Rate Limiting
+slowapi==0.1.9
+# Stripe Payment Integration
+stripe==7.4.0
+# WebSocket Real-time Features
+python-socketio==5.10.0
+
+# Testing
+pytest==8.3.2
+pytest-asyncio==0.24.0
+pytest-cov==5.0.0
+httpx==0.27.2
+
 # Oracle Cloud support (oracledb is the modern driver, no C compiler needed)
 oci==2.119.1
 oracledb==2.0.1

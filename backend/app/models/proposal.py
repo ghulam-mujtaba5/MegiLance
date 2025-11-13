@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class Proposal(Base):
     __tablename__ = "proposals"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"))
     freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     cover_letter: Mapped[str] = mapped_column(Text)
@@ -20,7 +20,9 @@ class Proposal(Base):
     hourly_rate: Mapped[float] = mapped_column(Float)
     availability: Mapped[str] = mapped_column(String(20))  # immediate, 1-2_weeks, 1_month, flexible
     attachments: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of attachment URLs
-    status: Mapped[str] = mapped_column(String(20), default="submitted")  # submitted, accepted, rejected, withdrawn
+    status: Mapped[str] = mapped_column(String(20), default="submitted")  # submitted, accepted, rejected, withdrawn, draft
+    is_draft: Mapped[bool] = mapped_column(Boolean, default=False)  # True if proposal is a draft
+    draft_data: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string for additional draft data
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

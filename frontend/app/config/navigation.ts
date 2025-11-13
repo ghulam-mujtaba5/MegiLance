@@ -86,14 +86,17 @@ export const freelancerNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/freelancer/dashboard', icon: 'FaTachometerAlt' },
   { label: 'My Jobs', href: '/freelancer/my-jobs', icon: 'FaBriefcase' },
   { label: 'Projects', href: '/freelancer/projects', icon: 'FaFileContract' },
+  { label: 'Time Tracking', href: '/portal/freelancer/time-tracking', icon: 'FaClock' },
+  { label: 'Invoices', href: '/portal/freelancer/invoices', icon: 'FaFileInvoice' },
   { label: 'Portfolio', href: '/freelancer/portfolio', icon: 'FaPortrait' },
   { label: 'Analytics', href: '/freelancer/analytics', icon: 'FaChartLine' },
   { label: 'Wallet', href: '/freelancer/wallet', icon: 'FaWallet' },
   { label: 'Reviews', href: '/freelancer/reviews', icon: 'FaStar' },
   { label: 'Job Alerts', href: '/freelancer/job-alerts', icon: 'FaBell' },
   { label: 'Contracts', href: '/freelancer/contracts', icon: 'FaFileContract' },
+  { label: 'Favorites', href: '/portal/favorites', icon: 'FaHeart' },
   { label: 'Rank', href: '/freelancer/rank', icon: 'FaChartLine' },
-  { label: 'Support', href: '/freelancer/support', icon: 'FaLifeRing' },
+  { label: 'Support', href: '/portal/support', icon: 'FaLifeRing' },
   { label: 'Settings', href: '/freelancer/settings', icon: 'FaCogs' },
 ];
 
@@ -103,8 +106,12 @@ export const clientNavItems: NavItem[] = [
   { label: 'Post Job', href: '/client/post-job', icon: 'FaRocket' },
   { label: 'Hire', href: '/client/hire', icon: 'FaUsers' },
   { label: 'Projects', href: '/client/projects', icon: 'FaBriefcase' },
+  { label: 'Escrow', href: '/portal/client/escrow', icon: 'FaLock' },
+  { label: 'Refunds', href: '/portal/client/refunds', icon: 'FaUndo' },
   { label: 'Reviews', href: '/client/reviews', icon: 'FaStar' },
   { label: 'Wallet', href: '/client/wallet', icon: 'FaWallet' },
+  { label: 'Favorites', href: '/portal/favorites', icon: 'FaHeart' },
+  { label: 'Support', href: '/portal/support', icon: 'FaLifeRing' },
   { label: 'Settings', href: '/client/settings', icon: 'FaCogs' },
 ];
 
@@ -113,9 +120,11 @@ export const adminNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/admin/dashboard', icon: 'FaTachometerAlt' },
   { label: 'Users', href: '/admin/users', icon: 'FaUsers' },
   { label: 'Projects', href: '/admin/projects', icon: 'FaBriefcase' },
+  { label: 'Tags', href: '/portal/admin/tags', icon: 'FaTag' },
+  { label: 'Refunds', href: '/portal/admin/refunds', icon: 'FaUndo' },
   { label: 'Payments', href: '/admin/payments', icon: 'FaCreditCard' },
   { label: 'AI Monitoring', href: '/admin/ai-monitoring', icon: 'FaRobot' },
-  { label: 'Support', href: '/admin/support', icon: 'FaLifeRing' },
+  { label: 'Support', href: '/portal/support', icon: 'FaLifeRing' },
   { label: 'Audit Logs', href: '/audit-logs', icon: 'FaShieldAlt' },
   { label: 'Settings', href: '/admin/settings', icon: 'FaCogs' },
 ];
@@ -176,8 +185,6 @@ export const getNavigationForUserType = (userType: 'freelancer' | 'client' | 'ad
     default:
       return publicNavItems;
   }
-};
-
 // Icon mapping for client-side resolution
 export const iconMap = {
   FaHome: 'FaHome',
@@ -204,6 +211,14 @@ export const iconMap = {
   FaCalculator: 'FaCalculator',
   FaShieldAlt: 'FaShieldAlt',
   FaUser: 'FaUser',
+  FaSignOutAlt: 'FaSignOutAlt',
+  FaClock: 'FaClock',
+  FaFileInvoice: 'FaFileInvoice',
+  FaHeart: 'FaHeart',
+  FaLock: 'FaLock',
+  FaUndo: 'FaUndo',
+  FaTag: 'FaTag',
+};FaUser: 'FaUser',
   FaSignOutAlt: 'FaSignOutAlt',
 };
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .email-container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #4573df 0%, #3b62c9 100%); padding: 30px; text-align: center; }
+        .header h1 { color: #ffffff; font-size: 28px; margin-bottom: 5px; }
+        .header p { color: #e3ecff; font-size: 14px; }
+        .content { padding: 40px 30px; color: #333333; line-height: 1.6; }
+        .content h2 { color: #4573df; margin-bottom: 20px; font-size: 22px; }
+        .content p { margin-bottom: 15px; font-size: 15px; }
+        .button { display: inline-block; padding: 14px 32px; background-color: #4573df; color: #ffffff; text-decoration: none; border-radius: 5px; font-weight: 600; margin: 20px 0; transition: background 0.3s; }
+        .button:hover { background-color: #3b62c9; }
+        .info-box { background-color: #f8f9fa; border-left: 4px solid #4573df; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .footer { background-color: #f8f9fa; padding: 25px 30px; text-align: center; border-top: 1px solid #e0e0e0; }
+        .footer p { color: #666666; font-size: 13px; margin: 5px 0; }
+        .footer a { color: #4573df; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .social-links { margin: 15px 0; }
+        .social-links a { display: inline-block; margin: 0 10px; color: #4573df; font-size: 20px; }
+        @media only screen and (max-width: 600px) {
+            .content { padding: 25px 20px; }
+            .header h1 { font-size: 24px; }
+            .button { display: block; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{{ app_name }}</h1>
+            <p>AI-Powered Freelance Platform</p>
+        </div>
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 MegiLance. All rights reserved.</p>
+            <p>
+                <a href="{{ base_url }}/privacy">Privacy Policy</a> |
+                <a href="{{ base_url }}/terms">Terms of Service</a> |
+                <a href="{{ base_url }}/help">Help Center</a>
+            </p>
+            <p style="margin-top: 15px; color: #999999; font-size: 12px;">
+                This email was sent to you because you have an account with MegiLance.
+                <br>If you no longer wish to receive these emails, you can <a href="{{ unsubscribe_url }}">unsubscribe</a>.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

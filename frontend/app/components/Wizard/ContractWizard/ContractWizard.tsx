@@ -1,0 +1,613 @@
+// @AI-HINT: Contract Creation Wizard - 4-step contract setup with templates
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import WizardContainer, { WizardStep } from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Select from '@/app/components/Select/Select';
+import Input from '@/app/components/Input/Input';
+import Textarea from '@/app/components/Textarea/Textarea';
+import Button from '@/app/components/Button/Button';
+import { FaFileContract, FaDollarSign, FaGavel, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
+
+import commonStyles from './ContractWizard.common.module.css';
+import lightStyles from './ContractWizard.light.module.css';
+import darkStyles from './ContractWizard.dark.module.css';
+
+interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  amount: string;
+  dueDate: string;
+  deliverables: string[];
+}
+
+interface ContractData {
+  template: 'standard' | 'nda' | 'hourly' | 'milestone';
+  projectId?: string;
+  freelancerId?: string;
+  
+  // Step 1: Terms
+  title: string;
+  scope: string;
+  deliverables: string[];
+  startDate: string;
+  endDate: string;
+  
+  // Step 2: Payment
+  paymentType: 'fixed' | 'hourly';
+  totalAmount: string;
+  hourlyRate: string;
+  estimatedHours: string;
+  milestones: Milestone[];
+  
+  // Step 3: Legal
+  ipRights: 'client' | 'freelancer' | 'shared';
+  confidentiality: boolean;
+  terminationNotice: string;
+  revisionRounds: string;
+  
+  // Step 4: Signature
+  clientSignature: string;
+  freelancerSignature: string;
+}
+
+interface ContractWizardProps {
+  projectId?: string;
+  freelancerId?: string;
+  proposalData?: any;
+}
+
+const ContractWizard: React.FC<ContractWizardProps> = ({ 
+  projectId, 
+  freelancerId,
+  proposalData 
+}) => {
+  const { resolvedTheme } = useTheme();
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [contractData, setContractData] = useState<ContractData>({
+    template: 'standard',
+    projectId,
+    freelancerId,
+    title: proposalData?.projectTitle || '',
+    scope: proposalData?.scope || '',
+    deliverables: [],
+    startDate: '',
+    endDate: '',
+    paymentType: proposalData?.budgetType || 'fixed',
+    totalAmount: proposalData?.bidAmount?.toString() || '',
+    hourlyRate: proposalData?.hourlyRate?.toString() || '',
+    estimatedHours: proposalData?.estimatedHours?.toString() || '',
+    milestones: [],
+    ipRights: 'client',
+    confidentiality: true,
+    terminationNotice: '14',
+    revisionRounds: '2',
+    clientSignature: '',
+    freelancerSignature: '',
+  });
+
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const styles = {
+    stepContent: cn(commonStyles.stepContent, themeStyles.stepContent),
+    templateGrid: cn(commonStyles.templateGrid, themeStyles.templateGrid),
+    templateCard: cn(commonStyles.templateCard, themeStyles.templateCard),
+    templateCardSelected: cn(commonStyles.templateCardSelected, themeStyles.templateCardSelected),
+    formGroup: cn(commonStyles.formGroup, themeStyles.formGroup),
+    label: cn(commonStyles.label, themeStyles.label),
+    deliverablesList: cn(commonStyles.deliverablesList, themeStyles.deliverablesList),
+    deliverableItem: cn(commonStyles.deliverableItem, themeStyles.deliverableItem),
+    milestoneCard: cn(commonStyles.milestoneCard, themeStyles.milestoneCard),
+    signatureBox: cn(commonStyles.signatureBox, themeStyles.signatureBox),
+    reviewSection: cn(commonStyles.reviewSection, themeStyles.reviewSection),
+    sectionTitle: cn(commonStyles.sectionTitle, themeStyles.sectionTitle),
+  };
+
+  const addDeliverable = () => {
+    setContractData(prev => ({
+      ...prev,
+      deliverables: [...prev.deliverables, ''],
+    }));
+  };
+
+  const updateDeliverable = (index: number, value: string) => {
+    const updated = [...contractData.deliverables];
+    updated[index] = value;
+    setContractData(prev => ({ ...prev, deliverables: updated }));
+  };
+
+  const removeDeliverable = (index: number) => {
+    setContractData(prev => ({
+      ...prev,
+      deliverables: prev.deliverables.filter((_, i) => i !== index),
+    }));
+  };
+
+  const addMilestone = () => {
+    const newMilestone: Milestone = {
+      id: Date.now().toString(),
+      title: '',
+      description: '',
+      amount: '',
+      dueDate: '',
+      deliverables: [],
+    };
+    setContractData(prev => ({
+      ...prev,
+      milestones: [...prev.milestones, newMilestone],
+    }));
+  };
+
+  const updateMilestone = (id: string, field: keyof Milestone, value: any) => {
+    setContractData(prev => ({
+      ...prev,
+      milestones: prev.milestones.map(m =>
+        m.id === id ? { ...m, [field]: value } : m
+      ),
+    }));
+  };
+
+  const removeMilestone = (id: string) => {
+    setContractData(prev => ({
+      ...prev,
+      milestones: prev.milestones.filter(m => m.id !== id),
+    }));
+  };
+
+  const validateStep1 = () => {
+    if (!contractData.title.trim()) {
+      alert('Please enter a contract title');
+      return false;
+    }
+    if (!contractData.scope.trim() || contractData.scope.length < 50) {
+      alert('Please provide a detailed scope (minimum 50 characters)');
+      return false;
+    }
+    if (contractData.deliverables.filter(d => d.trim()).length === 0) {
+      alert('Please add at least one deliverable');
+      return false;
+    }
+    if (!contractData.startDate || !contractData.endDate) {
+      alert('Please specify start and end dates');
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    if (contractData.paymentType === 'fixed') {
+      if (!contractData.totalAmount || parseFloat(contractData.totalAmount) <= 0) {
+        alert('Please enter a valid total amount');
+        return false;
+      }
+      if (contractData.milestones.length === 0) {
+        alert('Please add at least one milestone for payment tracking');
+        return false;
+      }
+    } else {
+      if (!contractData.hourlyRate || parseFloat(contractData.hourlyRate) <= 0) {
+        alert('Please enter a valid hourly rate');
+        return false;
+      }
+      if (!contractData.estimatedHours || parseFloat(contractData.estimatedHours) <= 0) {
+        alert('Please enter estimated hours');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const validateStep3 = () => {
+    if (!contractData.terminationNotice || parseInt(contractData.terminationNotice) < 0) {
+      alert('Please specify termination notice period (days)');
+      return false;
+    }
+    return true;
+  };
+
+  const handleComplete = async () => {
+    if (!contractData.clientSignature.trim()) {
+      alert('Please provide your digital signature');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch('/backend/api/contracts', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...contractData,
+          deliverables: contractData.deliverables.filter(d => d.trim()),
+        }),
+      });
+
+      if (response.ok) {
+        const contract = await response.json();
+        router.push(`/contracts/${contract.id}`);
+      } else {
+        alert('Failed to create contract. Please try again.');
+      }
+    } catch (error) {
+      console.error('Contract creation failed:', error);
+      alert('An error occurred. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Step 1: Contract Terms
+  const Step1Terms = (
+    <div className={styles.stepContent}>
+      <div className={styles.templateGrid}>
+        {[
+          { value: 'standard', label: 'Standard Contract', desc: 'General freelance work' },
+          { value: 'nda', label: 'NDA Contract', desc: 'Includes confidentiality' },
+          { value: 'hourly', label: 'Hourly Contract', desc: 'Time-based billing' },
+          { value: 'milestone', label: 'Milestone Contract', desc: 'Payment by deliverables' },
+        ].map(template => (
+          <div
+            key={template.value}
+            className={cn(
+              styles.templateCard,
+              contractData.template === template.value && styles.templateCardSelected
+            )}
+            onClick={() => setContractData(prev => ({ ...prev, template: template.value as any }))}
+          >
+            <FaFileContract size={32} />
+            <h3>{template.label}</h3>
+            <p>{template.desc}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.formGroup}>
+        <Input
+          id="title"
+          label="Contract Title"
+          value={contractData.title}
+          onChange={(e) => setContractData(prev => ({ ...prev, title: e.target.value }))}
+          placeholder="E.g., Website Development Contract"
+          required
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <Textarea
+          id="scope"
+          label="Scope of Work"
+          value={contractData.scope}
+          onChange={(e) => setContractData(prev => ({ ...prev, scope: e.target.value }))}
+          placeholder="Detailed description of work to be performed..."
+          rows={6}
+          required
+        />
+        <span className="text-sm opacity-75">{contractData.scope.length}/500 characters</span>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Deliverables</label>
+        <div className={styles.deliverablesList}>
+          {contractData.deliverables.map((deliverable, index) => (
+            <div key={index} className={styles.deliverableItem}>
+              <Input
+                value={deliverable}
+                onChange={(e) => updateDeliverable(index, e.target.value)}
+                placeholder={`Deliverable ${index + 1}`}
+              />
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => removeDeliverable(index)}
+              >
+                <FaTrash />
+              </Button>
+            </div>
+          ))}
+        </div>
+        <Button variant="outline" onClick={addDeliverable}>
+          <FaPlus className="mr-2" />
+          Add Deliverable
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          id="startDate"
+          type="date"
+          label="Start Date"
+          value={contractData.startDate}
+          onChange={(e) => setContractData(prev => ({ ...prev, startDate: e.target.value }))}
+          required
+        />
+        <Input
+          id="endDate"
+          type="date"
+          label="End Date"
+          value={contractData.endDate}
+          onChange={(e) => setContractData(prev => ({ ...prev, endDate: e.target.value }))}
+          required
+        />
+      </div>
+    </div>
+  );
+
+  // Step 2: Payment Structure
+  const Step2Payment = (
+    <div className={styles.stepContent}>
+      <div className={styles.formGroup}>
+        <Select
+          id="paymentType"
+          label="Payment Type"
+          value={contractData.paymentType}
+          onChange={(e) => setContractData(prev => ({ ...prev, paymentType: e.target.value as any }))}
+          options={[
+            { value: 'fixed', label: 'Fixed Price' },
+            { value: 'hourly', label: 'Hourly Rate' },
+          ]}
+        />
+      </div>
+
+      {contractData.paymentType === 'fixed' ? (
+        <>
+          <div className={styles.formGroup}>
+            <Input
+              id="totalAmount"
+              type="number"
+              label="Total Contract Amount (USD)"
+              value={contractData.totalAmount}
+              onChange={(e) => setContractData(prev => ({ ...prev, totalAmount: e.target.value }))}
+              placeholder="5000"
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Payment Milestones</label>
+            {contractData.milestones.map((milestone) => (
+              <div key={milestone.id} className={styles.milestoneCard}>
+                <div className="flex justify-between items-start mb-3">
+                  <h4 className="font-semibold">Milestone</h4>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => removeMilestone(milestone.id)}
+                  >
+                    <FaTrash />
+                  </Button>
+                </div>
+                <Input
+                  label="Title"
+                  value={milestone.title}
+                  onChange={(e) => updateMilestone(milestone.id, 'title', e.target.value)}
+                  placeholder="Phase 1: Design"
+                />
+                <Textarea
+                  label="Description"
+                  value={milestone.description}
+                  onChange={(e) => updateMilestone(milestone.id, 'description', e.target.value)}
+                  placeholder="Deliverables for this milestone..."
+                  rows={3}
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    type="number"
+                    label="Amount (USD)"
+                    value={milestone.amount}
+                    onChange={(e) => updateMilestone(milestone.id, 'amount', e.target.value)}
+                    placeholder="1000"
+                  />
+                  <Input
+                    type="date"
+                    label="Due Date"
+                    value={milestone.dueDate}
+                    onChange={(e) => updateMilestone(milestone.id, 'dueDate', e.target.value)}
+                  />
+                </div>
+              </div>
+            ))}
+            <Button variant="outline" onClick={addMilestone}>
+              <FaPlus className="mr-2" />
+              Add Milestone
+            </Button>
+          </div>
+        </>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            id="hourlyRate"
+            type="number"
+            label="Hourly Rate (USD)"
+            value={contractData.hourlyRate}
+            onChange={(e) => setContractData(prev => ({ ...prev, hourlyRate: e.target.value }))}
+            placeholder="50"
+            required
+          />
+          <Input
+            id="estimatedHours"
+            type="number"
+            label="Estimated Hours"
+            value={contractData.estimatedHours}
+            onChange={(e) => setContractData(prev => ({ ...prev, estimatedHours: e.target.value }))}
+            placeholder="100"
+            required
+          />
+        </div>
+      )}
+    </div>
+  );
+
+  // Step 3: Legal Terms
+  const Step3Legal = (
+    <div className={styles.stepContent}>
+      <div className={styles.formGroup}>
+        <Select
+          id="ipRights"
+          label="Intellectual Property Rights"
+          value={contractData.ipRights}
+          onChange={(e) => setContractData(prev => ({ ...prev, ipRights: e.target.value as any }))}
+          options={[
+            { value: 'client', label: 'Client owns all IP rights' },
+            { value: 'freelancer', label: 'Freelancer retains IP rights' },
+            { value: 'shared', label: 'Shared IP rights' },
+          ]}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={contractData.confidentiality}
+            onChange={(e) => setContractData(prev => ({ ...prev, confidentiality: e.target.checked }))}
+            className="w-5 h-5"
+          />
+          <span>Include Confidentiality Agreement (NDA)</span>
+        </label>
+        <p className="text-sm opacity-75 mt-2">
+          Both parties agree to keep project information confidential
+        </p>
+      </div>
+
+      <div className={styles.formGroup}>
+        <Input
+          id="terminationNotice"
+          type="number"
+          label="Termination Notice Period (days)"
+          value={contractData.terminationNotice}
+          onChange={(e) => setContractData(prev => ({ ...prev, terminationNotice: e.target.value }))}
+          placeholder="14"
+          required
+        />
+        <p className="text-sm opacity-75 mt-1">
+          Either party can terminate with this notice period
+        </p>
+      </div>
+
+      <div className={styles.formGroup}>
+        <Input
+          id="revisionRounds"
+          type="number"
+          label="Number of Revision Rounds Included"
+          value={contractData.revisionRounds}
+          onChange={(e) => setContractData(prev => ({ ...prev, revisionRounds: e.target.value }))}
+          placeholder="2"
+          required
+        />
+      </div>
+    </div>
+  );
+
+  // Step 4: Review & Sign
+  const Step4Review = (
+    <div className={styles.stepContent}>
+      <div className={styles.reviewSection}>
+        <h3 className={styles.sectionTitle}>Contract Summary</h3>
+        
+        <div className="mb-4">
+          <strong>Title:</strong> {contractData.title}
+        </div>
+        <div className="mb-4">
+          <strong>Duration:</strong> {contractData.startDate} to {contractData.endDate}
+        </div>
+        <div className="mb-4">
+          <strong>Payment:</strong>{' '}
+          {contractData.paymentType === 'fixed' 
+            ? `$${contractData.totalAmount} (Fixed)` 
+            : `$${contractData.hourlyRate}/hr (Estimated ${contractData.estimatedHours} hours)`}
+        </div>
+        <div className="mb-4">
+          <strong>Deliverables:</strong>
+          <ul className="list-disc ml-6 mt-2">
+            {contractData.deliverables.filter(d => d.trim()).map((d, i) => (
+              <li key={i}>{d}</li>
+            ))}
+          </ul>
+        </div>
+        <div className="mb-4">
+          <strong>IP Rights:</strong> {contractData.ipRights === 'client' ? 'Client owns all IP' : contractData.ipRights === 'freelancer' ? 'Freelancer retains IP' : 'Shared ownership'}
+        </div>
+        <div className="mb-4">
+          <strong>NDA:</strong> {contractData.confidentiality ? 'Yes' : 'No'}
+        </div>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label className={styles.label}>Your Digital Signature</label>
+        <div className={styles.signatureBox}>
+          <Input
+            id="clientSignature"
+            value={contractData.clientSignature}
+            onChange={(e) => setContractData(prev => ({ ...prev, clientSignature: e.target.value }))}
+            placeholder="Type your full name to sign"
+            required
+          />
+          <p className="text-sm opacity-75 mt-2">
+            <FaCheckCircle className="inline mr-1" />
+            By signing, you agree to all terms and conditions
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const steps: WizardStep[] = [
+    {
+      id: 'terms',
+      title: 'Contract Terms',
+      description: 'Scope and deliverables',
+      component: Step1Terms,
+      validate: validateStep1,
+    },
+    {
+      id: 'payment',
+      title: 'Payment Structure',
+      description: 'Pricing and milestones',
+      component: Step2Payment,
+      validate: validateStep2,
+    },
+    {
+      id: 'legal',
+      title: 'Legal Terms',
+      description: 'IP, NDA, termination',
+      component: Step3Legal,
+      validate: validateStep3,
+    },
+    {
+      id: 'review',
+      title: 'Review & Sign',
+      description: 'Final confirmation',
+      component: Step4Review,
+    },
+  ];
+
+  return (
+    <WizardContainer
+      title="Create Contract"
+      subtitle="Set up a legally binding agreement"
+      steps={steps}
+      currentStep={currentStep}
+      onStepChange={setCurrentStep}
+      onComplete={handleComplete}
+      onCancel={() => router.back()}
+      isLoading={submitting}
+      canGoBack={true}
+      saveProgress={() => {
+        localStorage.setItem('contract_draft', JSON.stringify(contractData));
+        alert('Progress saved!');
+      }}
+    />
+  );
+};
+
+export default ContractWizard;

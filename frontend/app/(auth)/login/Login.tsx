@@ -64,6 +64,9 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({ email: '', password: '', general: '' });
+  const [needs2FA, setNeeds2FA] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [tempAccessToken, setTempAccessToken] = useState('');
 
   useEffect(() => {
     setMounted(true);
@@ -143,12 +146,76 @@ const Login: React.FC = () => {
     setLoading(true);
     setErrors({ email: '', password: '', general: '' });
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Login successful:', { ...formData, role: selectedRole });
-      try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
-      router.push(roleConfig[selectedRole].redirectPath);
+      const response = await fetch('/backend/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Check if 2FA is required
+        if (data.requires_2fa) {
+          setNeeds2FA(true);
+          setTempAccessToken(data.temp_token || '');
+        } else {
+          // Store tokens and redirect
+          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('refresh_token', data.refresh_token);
+          try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
+          router.push(roleConfig[selectedRole].redirectPath);
+        }
+      } else {
+        const errorData = await response.json();
+        setErrors({ email: '', password: '', general: errorData.detail || 'Login failed. Please check your credentials.' });
+      }
     } catch (error) {
+      console.error('Login error:', error);
       setErrors({ email: '', password: '', general: 'Login failed. Please check your credentials.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async () => {
+    if (twoFactorCode.length !== 6) {
+      setErrors({ email: '', password: '', general: 'Please enter a valid 6-digit code' });
+      return;
+    }
+
+    setLoading(true);
+    setErrors({ email: '', password: '', general: '' });
+    try {
+      const response = await fetch('/backend/api/auth/2fa/verify-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          code: twoFactorCode,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+        try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
+        router.push(roleConfig[selectedRole].redirectPath);
+      } else {
+        const errorData = await response.json();
+        setErrors({ email: '', password: '', general: errorData.detail || 'Invalid verification code' });
+      }
+    } catch (error) {
+      console.error('2FA verification error:', error);
+      setErrors({ email: '', password: '', general: 'Verification failed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -226,7 +293,34 @@ const Login: React.FC = () => {
             <span className={styles.dividerText}>OR</span>
           </div>
 
-          <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
+          {needs2FA ? (
+            // Two-Factor Authentication verification form
+            <div className={styles.loginForm}>
+              {errors.general && <p className={styles.generalError}>{errors.general}</p>}
+              <div className={styles.formHeader}>
+                <h2 className={styles.formTitle}>Enter Verification Code</h2>
+                <p className={styles.formSubtitle}>Enter the 6-digit code from your authenticator app</p>
+              </div>
+              <Input
+                id="twoFactorCode"
+                name="twoFactorCode"
+                type="text"
+                label="Verification Code"
+                placeholder="000000"
+                value={twoFactorCode}
+                onChange={(e) => setTwoFactorCode(e.target.value)}
+                disabled={loading}
+                maxLength={6}
+              />
+              <Button type="button" variant="primary" fullWidth className={styles.submitButton} onClick={handleVerify2FA} isLoading={loading} disabled={loading || twoFactorCode.length !== 6}>
+                {loading ? 'Verifying...' : 'Verify Code'}
+              </Button>
+              <Button type="button" variant="secondary" fullWidth onClick={() => { setNeeds2FA(false); setTwoFactorCode(''); }} disabled={loading}>
+                Back to Login
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
             {errors.general && <p className={styles.generalError}>{errors.general}</p>}
             <div className={styles.inputGroup}>
               <Input
@@ -284,6 +378,7 @@ const Login: React.FC = () => {
               {loading ? 'Signing In...' : `Sign In as ${roleConfig[selectedRole].label}`}
             </Button>
           </form>
+          )}
 
           <div className={styles.signupPrompt}>
             <p>Don&apos;t have an account? <Link href="/signup">Create one now</Link></p>

@@ -1,0 +1,94 @@
+/* Dark theme for ProjectWizard */
+
+.container {
+  background-color: #0f172a;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.progressBar {
+  background-color: #1e293b;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df 0%, #5b8aef 100%);
+}
+
+.step {
+  color: #64748b;
+}
+
+.stepIcon {
+  background-color: #1e293b;
+  color: #64748b;
+}
+
+.stepActive .stepIcon {
+  background-color: #4573df;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.4);
+}
+
+.stepCompleted .stepIcon {
+  background-color: #27ae60;
+  color: #ffffff;
+}
+
+.stepActive .stepTitle {
+  color: #4573df;
+  font-weight: 700;
+}
+
+.stepCompleted .stepTitle {
+  color: #27ae60;
+}
+
+.content {
+  background-color: #0f172a;
+}
+
+.budgetOption {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.budgetOption:hover {
+  border-color: #4573df;
+  background-color: #0f172a;
+}
+
+.budgetOptionActive {
+  background-color: #4573df;
+  border-color: #4573df;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.4);
+}
+
+.reviewSection {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.reviewItem {
+  border-bottom-color: #334155;
+}
+
+.reviewLabel {
+  color: #94a3b8;
+}
+
+.reviewValue {
+  color: #e2e8f0;
+}
+
+.actions {
+  border-top-color: #1e293b;
+  background-color: #0f172a;
+}

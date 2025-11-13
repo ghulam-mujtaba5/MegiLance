@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Support Ticket Update 🎫</h2>
+
+<p>Hello {{ user_name }},</p>
+
+<p>Your support ticket has been updated:</p>
+
+<div class="info-box">
+    <p><strong>Subject:</strong> {{ ticket_subject }}</p>
+    <p><strong>Status:</strong> <span style="text-transform: uppercase; font-weight: 600; color: #4573df;">{{ status }}</span></p>
+    <p style="margin-top: 10px;">Our support team has added new information to your ticket.</p>
+</div>
+
+<p style="text-align: center;">
+    <a href="{{ ticket_url }}" class="button">View Ticket</a>
+</p>
+
+<p><strong>📞 Need immediate help?</strong> Contact us at support@megilance.com or via live chat.</p>
+
+<p>We're here to help!</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Support Team</strong></p>
+{% endblock %}

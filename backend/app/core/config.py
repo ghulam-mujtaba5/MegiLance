@@ -66,10 +66,25 @@ class Settings(BaseSettings):
     ses_from_email: Optional[str] = None
     sns_topic_arn: Optional[str] = None
     
+    # SMTP Configuration for Email Service
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    FROM_EMAIL: str = "noreply@megilance.com"
+    FROM_NAME: str = "MegiLance"
+    FRONTEND_URL: str = "http://localhost:3000"
+    
     # Blockchain & Payments
     circle_api_key: Optional[str] = None
     blockchain_provider_url: Optional[str] = None
     usdc_contract_address: Optional[str] = None
+    
+    # Stripe Payment Configuration
+    STRIPE_SECRET_KEY: Optional[str] = None
+    STRIPE_PUBLISHABLE_KEY: Optional[str] = None
+    STRIPE_WEBHOOK_SECRET: Optional[str] = None
+    STRIPE_PLATFORM_FEE_PERCENT: float = 10.0  # Platform fee percentage (default 10%)
     
     # Monitoring
     sentry_dsn: Optional[str] = None

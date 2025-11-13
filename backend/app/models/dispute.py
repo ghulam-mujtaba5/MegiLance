@@ -34,7 +34,7 @@ class Dispute(Base):
     """
     __tablename__ = "disputes"
 
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     contract_id: Mapped[int] = mapped_column(ForeignKey("contracts.id"), index=True)
     raised_by: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     dispute_type: Mapped[str] = mapped_column(String(50), index=True)

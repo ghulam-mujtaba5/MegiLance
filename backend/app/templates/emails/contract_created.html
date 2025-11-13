@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Contract Created 📄</h2>
+
+<p>Hello {{ user_name }},</p>
+
+<p>A contract has been created for the project "<strong>{{ project_title }}</strong>".</p>
+
+<div class="info-box">
+    <p><strong>Contract Details:</strong></p>
+    <ul style="margin: 10px 0 0 20px;">
+        <li style="margin: 5px 0;">Review all terms and conditions carefully</li>
+        <li style="margin: 5px 0;">Check milestone details and payment schedule</li>
+        <li style="margin: 5px 0;">Sign the contract to activate escrow protection</li>
+    </ul>
+</div>
+
+<p style="text-align: center;">
+    <a href="{{ contract_url }}" class="button">View Contract</a>
+</p>
+
+<p><strong>🔒 Escrow Protection:</strong> All payments are secured in escrow until milestones are approved.</p>
+
+<p>Best regards,<br>
+<strong>The MegiLance Team</strong></p>
+{% endblock %}
