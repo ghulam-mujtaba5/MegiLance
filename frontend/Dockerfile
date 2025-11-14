@@ -5,7 +5,8 @@ COPY package*.json ./
 # Use npm install with --legacy-peer-deps to handle eslint version conflicts
 RUN npm install --legacy-peer-deps && npm cache clean --force
 COPY . .
-# Build the Next.js application
+# Build the Next.js application in dev mode to use local tsconfig resolution
+ENV NODE_ENV=development
 RUN npm run build
 
 # Production stage
@@ -22,6 +23,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/tsconfig.json ./
 
 # Use the node user from the base image
 USER node
