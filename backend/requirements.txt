@@ -22,7 +22,7 @@ slowapi==0.1.9
 # Stripe Payment Integration
 stripe==11.5.0
 # WebSocket Real-time Features
-python-socketio==5.15.0
+python-socketio==5.14.3
 
 # Testing
 pytest==8.3.5
