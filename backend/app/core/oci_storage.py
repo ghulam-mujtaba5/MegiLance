@@ -53,10 +53,14 @@ class OCIStorageClient:
         
         # Get namespace
         try:
-            self.namespace = self.object_storage_client.get_namespace().data
-            logger.info(f"OCI Object Storage namespace: {self.namespace}")
+            if self.object_storage_client:
+                self.namespace = self.object_storage_client.get_namespace().data
+                logger.info(f"OCI Object Storage namespace: {self.namespace}")
+            else:
+                self.namespace = settings.oci_namespace
+                logger.warning("OCI Storage client not available - using configured namespace")
         except Exception as e:
-            logger.error(f"Failed to get OCI namespace: {e}")
+            logger.warning(f"Failed to get OCI namespace: {e}")
             self.namespace = settings.oci_namespace
     
     def upload_file(
