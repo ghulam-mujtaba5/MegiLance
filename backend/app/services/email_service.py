@@ -10,7 +10,9 @@ import smtplib
 import os
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
-from app.core.config import settings
+from app.core.config import get_settings
+
+settings = get_settings()
 
 class EmailService:
     """
