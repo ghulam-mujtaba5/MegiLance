@@ -61,8 +61,8 @@ ENV ORACLE_HOME=/opt/oracle/instantclient_21_13
 ENV TNS_ADMIN=/app/oracle-wallet
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
+    CMD curl -f http://localhost:8000/api/health/live || exit 1
 
 # Use gunicorn with uvicorn workers for production
 CMD ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-"]

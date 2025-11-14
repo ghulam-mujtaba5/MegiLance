@@ -1,10 +1,10 @@
-fastapi==0.115.0
-uvicorn[standard]==0.32.1
+fastapi==0.115.5
+uvicorn[standard]==0.34.0
 python-dotenv==1.0.1
 psycopg2-binary==2.9.11
 sqlalchemy==2.0.36
-pydantic==2.10.3
-pydantic-settings==2.6.1
+pydantic==2.10.5
+pydantic-settings==2.7.1
 email-validator==2.2.0
 passlib==1.7.4
 bcrypt==4.2.0
@@ -22,14 +22,14 @@ slowapi==0.1.9
 # Stripe Payment Integration
 stripe==11.5.0
 # WebSocket Real-time Features
-python-socketio==5.14.0
+python-socketio==5.15.0
 
 # Testing
 pytest==8.3.5
-pytest-asyncio==0.24.0
+pytest-asyncio==0.25.0
 pytest-cov==6.0.0
 httpx==0.28.1
 
 # Oracle Cloud support (oracledb is the modern driver, no C compiler needed)
-oci==2.163.1
+oci==2.165.0
 oracledb==3.4.1
