@@ -14,7 +14,7 @@ const nextConfig = {
   // Use Turbopack (explicitly enabled for Next.js 16)
   turbopack: {
     resolveAlias: {
-      '@/app': './app',
+      '@': require('path').resolve(__dirname, '.'),
     },
   },
   images: {
