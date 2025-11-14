@@ -1,0 +1,26 @@
+name: megilance-frontend
+services:
+- name: web
+  dockerfile_path: Dockerfile
+  source_dir: frontend
+  github:
+    repo: Mwaqarulmulk/MegiLance
+    branch: main
+    deploy_on_push: true
+  health_check:
+    http_path: /
+    initial_delay_seconds: 90
+    period_seconds: 30
+    timeout_seconds: 10
+    success_threshold: 1
+    failure_threshold: 5
+  http_port: 3000
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  envs:
+  - key: NEXT_PUBLIC_BACKEND_URL
+    value: "https://megilance-backend-qhnxp.ondigitalocean.app"
+    scope: RUN_AND_BUILD_TIME
+  - key: NODE_ENV
+    value: "production"
+    scope: RUN_AND_BUILD_TIME
