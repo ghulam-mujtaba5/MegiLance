@@ -14,7 +14,7 @@ from app.core.config import get_settings
 from app.core.rate_limit import limiter
 from app.core.websocket import socket_app, websocket_manager
 from app.db.init_db import init_db
-from app.db.session import engine
+from app.db.session import get_engine
 
 
 settings = get_settings()
@@ -49,6 +49,7 @@ app.mount("/ws", socket_app)
 @app.on_event("startup")
 def on_startup():
     try:
+        engine = get_engine()
         init_db(engine)
         print("✅ Database initialized successfully")
     except Exception as e:
