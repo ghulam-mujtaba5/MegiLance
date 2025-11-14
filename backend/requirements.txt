@@ -31,5 +31,5 @@ pytest-cov==6.0.0
 httpx==0.28.1
 
 # Oracle Cloud support (oracledb is the modern driver, no C compiler needed)
-oci==2.165.0
+oci==2.163.1
 oracledb==3.4.1
