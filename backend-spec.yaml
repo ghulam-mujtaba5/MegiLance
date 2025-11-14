@@ -12,7 +12,7 @@ services:
   envs:
   - key: DATABASE_URL
     scope: RUN_TIME
-    value: 'oracle+oracledb://admin:CHANGE_ME_ORACLE_PASSWORD@megilanceai_high?wallet_location=/app/oracle-wallet&wallet_password='
+    value: 'oracle+oracledb://admin:Bfw5ZvHQXjkDb!3lAa1!@megilanceai_high?wallet_location=/app/oracle-wallet&wallet_password='
   - key: DB_TYPE
     scope: RUN_TIME
     value: oracle
@@ -47,3 +47,4 @@ services:
   instance_size_slug: apps-s-1vcpu-1gb-fixed
   name: api
   source_dir: backend
+
