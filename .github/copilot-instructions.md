@@ -2,9 +2,9 @@
 
 ## Architecture Overview
 ```
-Next.js Frontend → FastAPI Backend → PostgreSQL
+Next.js Frontend → FastAPI Backend → Turso (libSQL)
 ```
-**Stack**: Next.js 14 + TypeScript + CSS Modules | FastAPI + SQLAlchemy + PostgreSQL
+**Stack**: Next.js 14 + TypeScript + CSS Modules | FastAPI + SQLAlchemy + Turso
 
 ## Frontend Rules (Next.js 14)
 
@@ -54,7 +54,7 @@ app/
 ### Project Structure
 ```
 backend/app/
-  core/      → config, security, AWS utils
+  core/      → config, security, storage utils
   models/    → SQLAlchemy models
   schemas/   → Pydantic request/response
   api/v1/    → endpoint handlers
@@ -75,19 +75,21 @@ backend/app/
 - Auth: `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`
 
 ### Database
+- **Database**: Turso (libSQL) - distributed SQLite
 - **Models**: User, Project, Proposal, Contract, Payment, Portfolio, Message, Review, Skill
-- **Dev**: `init_db()` creates tables on startup
-- **Prod**: Use Alembic migrations
+- **Dev**: SQLite file (`local.db`), `init_db()` creates tables on startup
+- **Prod**: Turso cloud database with auth token
+- **Migrations**: Use Alembic for schema changes
 
 ## Local Development
 
 **Start all services:**
 ```powershell
-docker compose up -d db backend frontend
+docker compose up -d
 ```
 - Frontend: http://localhost:3000
 - Backend: http://localhost:8000/api/docs
-- Database: PostgreSQL on port 5432
+- Database: SQLite file at `backend/local.db`
 
 **Frontend API calls** (backend proxied at `/backend/*`):
 ```ts
@@ -113,7 +115,7 @@ npm test
 ## Common Pitfalls
 ❌ **DON'T**:
 - Use global CSS or Tailwind utilities for component styles
-- Hardcode AWS credentials
+- Hardcode credentials or API keys
 - Forget light/dark theme handling
 - Skip `@AI-HINT` comments
 - Break Button variant/size contracts
@@ -151,6 +153,7 @@ alembic upgrade head
 ```
 
 ## Key Files
+- `TURSO_SETUP.md` - Database setup and configuration
 - `frontend/README.md` - Frontend architecture details
 - `backend/README.md` - Backend API documentation
 - `MegiLance-Brand-Playbook.md` - Design system

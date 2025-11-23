@@ -8,24 +8,25 @@ services:
       - NEXT_TELEMETRY_DISABLED=1
     depends_on:
       - backend
+      
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     volumes:
       - ./db:/data/db:ro
-      - ./oracle-wallet-23ai:/app/oracle-wallet:ro
+      - ./backend/local.db:/app/local.db  # SQLite database file
+      - ./uploads:/app/uploads  # File uploads
     env_file:
       - ./backend/.env
     environment:
-      - environment=production
-    depends_on:
-      - db
+      - ENVIRONMENT=production
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/live"]
       interval: 10s
       timeout: 5s
       retries: 5
+      
   ai:
     build: ./ai
     volumes:
@@ -34,18 +35,3 @@ services:
       - ENV=development
     depends_on:
       - backend
-  db:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: megilance
-      POSTGRES_PASSWORD: megilance_pw
-      POSTGRES_DB: megilance_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./db:/docker-entrypoint-initdb.d
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:

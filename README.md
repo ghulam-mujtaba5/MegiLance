@@ -3,102 +3,88 @@
 > **AI-Powered Freelancing Platform with Blockchain Payments**
 
 [![Deploy Status](https://github.com/ghulam-mujtaba5/MegiLance/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/ghulam-mujtaba5/MegiLance/actions)
-[![Terraform](https://github.com/ghulam-mujtaba5/MegiLance/actions/workflows/terraform.yml/badge.svg)](https://github.com/ghulam-mujtaba5/MegiLance/actions)
 
 A comprehensive freelancing platform featuring AI-powered matching, blockchain-based payments, and enterprise-grade architecture.
 
-## 🎯 **NEW: 100% FREE Oracle Cloud Migration!**
+## 🎯 **NEW: Turso Database - Simple & Scalable!**
 
-**Migrating from AWS to Oracle Cloud?** → See **[ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md)** 🚀
+**Using Turso for database?** → See **[TURSO_SETUP.md](TURSO_SETUP.md)** 🚀
 
-**Quick Start (Oracle):** 
+**Quick Start (Turso):** 
 ```powershell
-.\oracle-setup.ps1  # One command setup!
+# Local development - just works!
+cd backend
+python -m uvicorn main:app --reload
 ```
 
 **Benefits:**
-- ✅ 100% Free Forever (Always Free tier)
-- ✅ Better specs (20GB DB, 2 VMs, 10GB storage)
-- ✅ No expiration (unlike AWS 12-month free tier)
-- ✅ $600-2,280/year savings
-- ✅ Production-ready
+- ✅ Free tier: 500 databases, 9GB storage, 1B reads/month
+- ✅ Edge replication for global low latency
+- ✅ SQLite-compatible (simple migration)
+- ✅ No complex setup (one URL + token)
+- ✅ Perfect for serverless deployments
 
-**Migration Docs:**
-- **[ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md)** - Start here! 📖
-- **[QUICK_START_ORACLE.md](QUICK_START_ORACLE.md)** - 5-minute setup ⚡
-- **[COMPLETE_HOSTING_GUIDE.md](COMPLETE_HOSTING_GUIDE.md)** - Hosting strategy 🏗️
-- **[MIGRATION_CHECKLIST.md](MIGRATION_CHECKLIST.md)** - Step-by-step guide ✅
+**Setup Docs:**
+- **[TURSO_SETUP.md](TURSO_SETUP.md)** - Complete Turso guide 📖
 
 ---
 
 ## 🚀 Quick Start
 
-**New to deployment?** → See [QUICKSTART.md](QUICKSTART.md) *(AWS - Legacy)*
+**Local development:**
 
-**Want Oracle Cloud (FREE)?** → See [ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md) *(Recommended!)*
+```bash
+# Start all services
+docker compose up -d
 
-**Want full AWS deployment?** → See [DEPLOYMENT.md](DEPLOYMENT.md)
-
-**Local development?** → See below ↓
+# Frontend: http://localhost:3000
+# Backend: http://localhost:8000/api/docs
+```
 
 ## 📋 Documentation
 
-### Oracle Cloud (NEW - Recommended)
-- **[ORACLE_MIGRATION_README.md](ORACLE_MIGRATION_README.md)** - Oracle migration overview
-- **[QUICK_START_ORACLE.md](QUICK_START_ORACLE.md)** - 5-minute Oracle setup
-- **[COMPLETE_HOSTING_GUIDE.md](COMPLETE_HOSTING_GUIDE.md)** - Free hosting strategy
-- **[MIGRATION_CHECKLIST.md](MIGRATION_CHECKLIST.md)** - Complete migration checklist
+### Database
+- **[TURSO_SETUP.md](TURSO_SETUP.md)** - Turso database setup and management
 
-### AWS (Legacy)
-- **[QUICKSTART.md](QUICKSTART.md)** - 5-minute autonomous AWS deployment
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete production deployment guide
-
-### General
+### Deployment
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment guide
 - **[docs/](docs/)** - System architecture and design docs
-- **[infra/README.md](infra/README.md)** - Infrastructure as Code details
+
+### Services
 - **[backend/README.md](backend/README.md)** - Backend API documentation
 - **[frontend/README.md](frontend/README.md)** - Frontend architecture
 
 ## 🏗️ Architecture
 
-### New Architecture (Oracle Cloud - Recommended)
+### Current Architecture
 ```
-Digital Ocean Frontend → Oracle VM (FastAPI) → Oracle Autonomous DB
-                              ↓
-                        Oracle Object Storage
-                              ↓
-                        Oracle VM #2 (AI Service)
-```
-
-### Legacy Architecture (AWS)
-```
-Frontend (Next.js) → ALB → ECS Fargate (FastAPI) → RDS PostgreSQL
-                      ↓
-                    S3 (Assets/Uploads)
-                      ↓
-                  Secrets Manager
+Frontend (Next.js) → Backend (FastAPI) → Turso (libSQL)
+                          ↓
+                    Local/Cloud Storage
+                          ↓
+                    AI Service (optional)
 ```
 
 ### Tech Stack
 
 **Backend:**
 - FastAPI + Python 3.11
-- PostgreSQL / Oracle Autonomous DB
+- Turso (libSQL) - Distributed SQLite
 - JWT Authentication
-- Oracle Object Storage / AWS S3 for file storage
+- Local file storage (upgradeable to S3/R2)
 - Circle API for USDC payments
 - OpenAI for AI features
 
 **Frontend:**
 - Next.js 14 (App Router)
 - TypeScript
-- Tailwind CSS
-- CSS Modules
+- CSS Modules (light/dark themes)
+- Responsive design
 
 **Infrastructure:**
-- AWS (ECS Fargate, RDS, S3, ALB)
-- Terraform for IaC
-- GitHub Actions for CI/CD
+- Docker Compose for local development
+- Turso for database (edge replicated)
+- Flexible deployment (any cloud platform)
 - Docker for containerization
 
 ## 💻 Local Development

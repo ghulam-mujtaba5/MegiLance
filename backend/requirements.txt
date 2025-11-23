@@ -1,7 +1,6 @@
 fastapi==0.115.5
 uvicorn[standard]==0.34.0
 python-dotenv==1.0.1
-psycopg2-binary==2.9.11
 sqlalchemy==2.0.36
 pydantic==2.10.5
 pydantic-settings==2.7.1
@@ -30,6 +29,5 @@ pytest-asyncio==0.25.0
 pytest-cov==6.0.0
 httpx==0.28.1
 
-# Oracle Cloud support (oracledb is the modern driver, no C compiler needed)
-oci==2.163.1
-oracledb==3.4.1
+# Turso (libSQL) - Managed SQLite database service
+libsql-client==0.4.1

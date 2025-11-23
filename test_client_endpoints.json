@@ -1,9 +1,0 @@
-{
-  "title": "Test Job",
-  "category": "Web Development",
-  "budgetType": "Fixed",
-  "budget": 1000,
-  "description": "Test description",
-  "skills": ["React", "Node.js"],
-  "timeline": "1-2 weeks"
-}
