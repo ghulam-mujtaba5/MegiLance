@@ -9,9 +9,9 @@ from sqlalchemy.orm import sessionmaker, Session
 from datetime import datetime, timedelta
 
 from app.main import app
-from app.core.database import Base, get_db
+from app.db.session import Base, get_db
 from app.core.security import create_access_token, get_password_hash
-from app.models.models import User
+from app.models.user import User
 from app.services.email_service import EmailService
 from app.services.stripe_service import StripeService
 

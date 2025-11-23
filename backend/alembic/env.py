@@ -31,8 +31,17 @@ from app.models import (
 # Get settings
 settings = get_settings()
 
+# Determine database URL - prioritize Turso if configured
+if settings.turso_database_url and settings.turso_auth_token:
+    # For Turso, use SQLite dialect with local path
+    db_url = f"sqlite:///{settings.database_url.replace('file:', '').replace('file://', '')}"
+else:
+    db_url = settings.database_url
+    if not db_url.startswith("sqlite"):
+        db_url = f"sqlite:///{db_url.replace('file:', '').replace('file://', '')}"
+
 # Override sqlalchemy.url from settings
-config.set_main_option("sqlalchemy.url", settings.database_url)
+config.set_main_option("sqlalchemy.url", db_url)
 
 target_metadata = Base.metadata
 

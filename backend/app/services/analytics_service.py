@@ -6,10 +6,17 @@ from typing import Dict, List, Any, Optional
 from sqlalchemy import func, and_, or_, extract
 from sqlalchemy.orm import Session
 
-from app.models.models import (
-    User, Project, Payment, Proposal, Contract, Review, 
-    Message, Notification, TimeEntry, Dispute, SupportTicket
-)
+from app.models.user import User
+from app.models.project import Project
+from app.models.payment import Payment
+from app.models.proposal import Proposal
+from app.models.contract import Contract
+from app.models.review import Review
+from app.models.message import Message
+from app.models.notification import Notification
+from app.models.time_entry import TimeEntry
+from app.models.dispute import Dispute
+from app.models.support_ticket import SupportTicket
 
 
 class AnalyticsService:

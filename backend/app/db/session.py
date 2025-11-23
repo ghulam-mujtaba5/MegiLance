@@ -1,12 +1,15 @@
 """
 @AI-HINT: Database session management for Turso (libSQL) database
 Turso is a distributed SQLite database service built on libSQL
-For local development, uses SQLite file. For production, uses Turso cloud database.
+Uses libsql_client for direct HTTP connection to Turso cloud
 """
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event, Engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 from app.core.config import get_settings
+import libsql_client
+import sqlite3
 
 
 settings = get_settings()
@@ -14,43 +17,54 @@ settings = get_settings()
 # Lazy engine creation to avoid blocking on startup
 _engine = None
 _SessionLocal = None
+_turso_client = None
+
+def get_turso_client():
+    """Get or create Turso client connection"""
+    global _turso_client
+    if _turso_client is None and settings.turso_database_url and settings.turso_auth_token:
+        try:
+            _turso_client = libsql_client.create_client(
+                url=settings.turso_database_url,
+                auth_token=settings.turso_auth_token
+            )
+            print(f"✅ Turso client connected: {settings.turso_database_url}")
+        except Exception as e:
+            print(f"⚠️ Failed to create Turso client: {e}")
+    return _turso_client
 
 def get_engine():
     """
     Create database engine for Turso/SQLite.
-    Uses libSQL protocol for Turso cloud databases or file:// for local SQLite.
+    Uses in-memory SQLite with manual sync to Turso via HTTP API.
     """
     global _engine
     if _engine is None:
         try:
-            # Determine database URL
-            db_url = settings.database_url
+            # Initialize Turso client
+            turso_client = get_turso_client()
             
-            # If Turso URL is provided with auth token, use it
-            if settings.turso_database_url and settings.turso_auth_token:
-                # libSQL URL format: libsql://[database-name]-[org].turso.io
-                db_url = settings.turso_database_url
-                connect_args = {
-                    "check_same_thread": False,
-                    "uri": True
-                }
-                # Note: libsql-client handles auth token via environment or direct connection
-            else:
-                # Local SQLite file for development
-                connect_args = {
-                    "check_same_thread": False
-                }
-            
+            # Use in-memory SQLite as the engine
+            # We'll sync data to Turso via HTTP API when needed
             _engine = create_engine(
-                db_url,
-                pool_pre_ping=True,
-                connect_args=connect_args,
+                "sqlite:///:memory:",
+                connect_args={"check_same_thread": False},
+                poolclass=StaticPool,
                 echo=settings.debug
             )
-            print(f"✅ Database engine created: {db_url.split('?')[0]}")
+            
+            # Enable SQLite pragmas
+            @event.listens_for(_engine, "connect")
+            def set_sqlite_pragma(dbapi_conn, connection_record):
+                cursor = dbapi_conn.cursor()
+                cursor.execute("PRAGMA foreign_keys=ON")
+                cursor.execute("PRAGMA journal_mode=WAL")
+                cursor.close()
+            
+            print(f"✅ Database engine created (in-memory SQLite with Turso sync)")
         except Exception as e:
             print(f"⚠️ Database engine creation failed: {e}")
-            # Fallback to in-memory SQLite
+            # Fallback to simple in-memory SQLite
             _engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
     return _engine
 

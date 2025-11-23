@@ -1,25 +1,21 @@
 """
-@AI-HINT: File upload endpoints using Oracle Cloud Infrastructure (OCI) Object Storage.
+@AI-HINT: File upload endpoints using local file storage.
 Supports profile images, portfolio images, proposal attachments, and project files.
-Compatible with OCI Always Free tier (10GB storage).
+Can be easily upgraded to cloud storage (S3/R2/Cloudflare) later.
 """
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, status
 from sqlalchemy.orm import Session
 import uuid
 import os
-from io import BytesIO
 
 from app.core.security import get_current_active_user
-from app.core.oci_storage import OCIStorageClient
+from app.core.storage import save_file, delete_file, get_file_url
 from app.core.config import get_settings
 from app.db.session import get_db
 from app.models.user import User
 
 router = APIRouter()
-
-# Initialize OCI Storage client
-oci_storage_client = OCIStorageClient()
 
 # Allowed file extensions
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
@@ -66,27 +62,21 @@ async def upload_profile_image(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    object_key = f"profile-images/{current_user.id}/{uuid.uuid4()}{ext}"
+    file_path = f"profile-images/{current_user.id}/{uuid.uuid4()}{ext}"
     
-    # Upload to OCI Object Storage
+    # Save to local storage
     file_content = await file.read()
-    file_obj = BytesIO(file_content)
-    settings = get_settings()
-    bucket_name = settings.oci_bucket_assets or "megilance-assets"
-    object_url = oci_storage_client.upload_file(
-        file_obj=file_obj,
-        bucket_name=bucket_name,
-        object_name=object_key
-    )
+    saved_path = save_file(file_content, file_path)
+    file_url = get_file_url(saved_path)
     
-    # TODO: Delete old profile image from OCI if exists
+    # TODO: Delete old profile image if exists
     # TODO: Update user.profile_image in database
     
     return {
         "message": "Profile image uploaded successfully",
-        "url": object_url,
+        "url": file_url,
         "filename": file.filename,
-        "object_key": object_key
+        "file_path": saved_path
     }
 
 
@@ -112,24 +102,18 @@ async def upload_portfolio_image(
     portfolio_path = f"portfolio/{current_user.id}"
     if portfolio_item_id:
         portfolio_path += f"/{portfolio_item_id}"
-    object_key = f"{portfolio_path}/{uuid.uuid4()}{ext}"
+    file_path = f"{portfolio_path}/{uuid.uuid4()}{ext}"
     
-    # Upload to OCI Object Storage
+    # Save to local storage
     file_content = await file.read()
-    file_obj = BytesIO(file_content)
-    settings = get_settings()
-    bucket_name = settings.oci_bucket_assets or "megilance-assets"
-    object_url = oci_storage_client.upload_file(
-        file_obj=file_obj,
-        bucket_name=bucket_name,
-        object_name=object_key
-    )
+    saved_path = save_file(file_content, file_path)
+    file_url = get_file_url(saved_path)
     
     return {
         "message": "Portfolio image uploaded successfully",
-        "url": object_url,
+        "url": file_url,
         "filename": file.filename,
-        "object_key": object_key
+        "file_path": saved_path
     }
 
 
@@ -152,26 +136,20 @@ async def upload_proposal_attachment(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    object_key = f"proposals/{proposal_id}/attachments/{uuid.uuid4()}{ext}"
+    file_path = f"proposals/{proposal_id}/attachments/{uuid.uuid4()}{ext}"
     
-    # Upload to OCI Object Storage
+    # Save to local storage
     file_content = await file.read()
-    file_obj = BytesIO(file_content)
-    settings = get_settings()
-    bucket_name = settings.oci_bucket_uploads or "megilance-uploads"
-    object_url = oci_storage_client.upload_file(
-        file_obj=file_obj,
-        bucket_name=bucket_name,
-        object_name=object_key
-    )
+    saved_path = save_file(file_content, file_path)
+    file_url = get_file_url(saved_path)
     
     # TODO: Add attachment to proposal.attachments JSON field
     
     return {
         "message": "Proposal attachment uploaded successfully",
-        "url": object_url,
+        "url": file_url,
         "filename": file.filename,
-        "object_key": object_key
+        "file_path": saved_path
     }
 
 
@@ -193,24 +171,18 @@ async def upload_project_file(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    object_key = f"projects/{project_id}/files/{current_user.id}/{uuid.uuid4()}{ext}"
+    file_path = f"projects/{project_id}/files/{current_user.id}/{uuid.uuid4()}{ext}"
     
-    # Upload to OCI Object Storage
+    # Save to local storage
     file_content = await file.read()
-    file_obj = BytesIO(file_content)
-    settings = get_settings()
-    bucket_name = settings.oci_bucket_uploads or "megilance-uploads"
-    object_url = oci_storage_client.upload_file(
-        file_obj=file_obj,
-        bucket_name=bucket_name,
-        object_name=object_key
-    )
+    saved_path = save_file(file_content, file_path)
+    file_url = get_file_url(saved_path)
     
     return {
         "message": "Project file uploaded successfully",
-        "url": object_url,
+        "url": file_url,
         "filename": file.filename,
-        "object_key": object_key
+        "file_path": saved_path
     }
 
 
@@ -241,25 +213,19 @@ async def upload_multiple_files(
 
         filename: str = file.filename or ""
         ext = os.path.splitext(filename)[1]
-        object_key = f"{file_type}/{current_user.id}"
+        file_path = f"{file_type}/{current_user.id}"
         if reference_id:
-            object_key += f"/{reference_id}"
-        object_key += f"/{uuid.uuid4()}{ext}"
+            file_path += f"/{reference_id}"
+        file_path += f"/{uuid.uuid4()}{ext}"
 
         file_content = await file.read()
-        file_obj = BytesIO(file_content)
-        settings = get_settings()
-        bucket_name = settings.oci_bucket_uploads or "megilance-uploads"
-        object_url = oci_storage_client.upload_file(
-            file_obj=file_obj,
-            bucket_name=bucket_name,
-            object_name=object_key
-        )
+        saved_path = save_file(file_content, file_path)
+        file_url = get_file_url(saved_path)
 
         uploaded_files.append({
             "filename": filename,
-            "url": object_url,
-            "object_key": object_key
+            "url": file_url,
+            "file_path": saved_path
         })
     
     return {
@@ -269,59 +235,45 @@ async def upload_multiple_files(
 
 
 @router.delete("/file", response_model=dict)
-async def delete_file(
-    object_key: str = Query(..., description="Object storage key"),
-    bucket: str = Query("uploads", description="Bucket name: assets or uploads"),
+async def delete_uploaded_file(
+    file_path: str = Query(..., description="File path to delete"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     """
-    Delete a file from OCI Object Storage
+    Delete a file from local storage
     Users can only delete their own files
     """
     # Verify the file belongs to the current user
-    if f"/{current_user.id}/" not in object_key and current_user.user_type != "Admin":
+    if f"/{current_user.id}/" not in file_path and current_user.user_type != "Admin":
         raise HTTPException(status_code=403, detail="Not authorized to delete this file")
     
-    settings = get_settings()
-    bucket_name = (settings.oci_bucket_assets if bucket == "assets" else settings.oci_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
-    
-    success = oci_storage_client.delete_file(bucket_name=bucket_name, object_name=object_key)
+    success = delete_file(file_path)
     
     if not success:
         raise HTTPException(status_code=500, detail="Failed to delete file")
     
     return {
         "message": "File deleted successfully",
-        "object_key": object_key
+        "file_path": file_path
     }
 
 
-@router.get("/presigned-url", response_model=dict)
-async def get_presigned_url(
-    object_key: str = Query(..., description="Object storage key"),
-    bucket: str = Query("uploads", description="Bucket name: assets or uploads"),
-    expiration: int = Query(3600, description="URL expiration in seconds"),
+@router.get("/file-url", response_model=dict)
+async def get_file_access_url(
+    file_path: str = Query(..., description="File path"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
     """
-    Generate pre-authenticated request URL for secure file download
+    Get file URL for secure file access
     """
-    settings = get_settings()
-    bucket_name = (settings.oci_bucket_assets if bucket == "assets" else settings.oci_bucket_uploads) or ("megilance-assets" if bucket == "assets" else "megilance-uploads")
+    file_url = get_file_url(file_path)
     
-    presigned_url = oci_storage_client.generate_presigned_url(
-        bucket_name=bucket_name,
-        object_name=object_key,
-        expiration=expiration
-    )
-    
-    if not presigned_url:
+    if not file_url:
         raise HTTPException(status_code=404, detail="File not found or failed to generate URL")
     
     return {
-        "url": presigned_url,
-        "expiration": expiration,
-        "object_key": object_key
+        "url": file_url,
+        "file_path": file_path
     }

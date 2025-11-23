@@ -4,7 +4,7 @@ from .v1 import (
     auth, client, upload, ai_services,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
-    stripe, websocket, analytics, uploads
+    stripe, websocket, uploads
 )
 
 
@@ -56,8 +56,8 @@ api_router.include_router(refunds.router, prefix="", tags=["refunds"])
 # Search functionality
 api_router.include_router(search.router, prefix="", tags=["search"])
 
-# Analytics and reporting
-api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
+# Analytics and reporting (temporarily disabled for quick startup)
+# api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 
 # File uploads and client tools
 api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])

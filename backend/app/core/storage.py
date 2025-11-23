@@ -125,3 +125,39 @@ storage = LocalStorage()
 def get_storage() -> LocalStorage:
     """Dependency for getting storage instance"""
     return storage
+
+
+# Module-level convenience functions
+def save_file(file_data: bytes, file_path: str) -> str:
+    """Save file and return URL"""
+    # Extract subfolder and filename from file_path
+    parts = Path(file_path).parts
+    if len(parts) > 1:
+        subfolder = str(Path(*parts[:-1]))
+        filename = parts[-1]
+    else:
+        subfolder = ""
+        filename = file_path
+    
+    rel_path = storage.save_file(file_data, filename, subfolder)
+    return storage.get_file_url(rel_path)
+
+
+def get_file(file_path: str) -> Optional[bytes]:
+    """Get file content"""
+    return storage.get_file(file_path)
+
+
+def delete_file(file_path: str) -> bool:
+    """Delete file"""
+    return storage.delete_file(file_path)
+
+
+def get_file_url(file_path: str) -> str:
+    """Get file URL"""
+    return storage.get_file_url(file_path)
+
+
+def file_exists(file_path: str) -> bool:
+    """Check if file exists"""
+    return storage.file_exists(file_path)

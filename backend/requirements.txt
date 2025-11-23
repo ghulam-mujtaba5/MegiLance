@@ -1,12 +1,12 @@
-fastapi==0.115.5
+fastapi==0.115.6
 uvicorn[standard]==0.34.0
 python-dotenv==1.0.1
 sqlalchemy==2.0.36
-pydantic==2.10.5
+pydantic==2.10.6
 pydantic-settings==2.7.1
 email-validator==2.2.0
 passlib==1.7.4
-bcrypt==4.2.0
+bcrypt==4.2.1
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.20
 pytest==8.3.5
@@ -15,7 +15,7 @@ alembic==1.17.1
 jinja2==3.1.4
 # Two-Factor Authentication
 pyotp==2.9.0
-qrcode[pil]==7.4.2
+qrcode[pil]==8.0
 # Rate Limiting
 slowapi==0.1.9
 # Stripe Payment Integration
@@ -25,9 +25,9 @@ python-socketio==5.14.3
 
 # Testing
 pytest==8.3.5
-pytest-asyncio==0.25.0
+pytest-asyncio==0.25.1
 pytest-cov==6.0.0
 httpx==0.28.1
 
-# Turso (libSQL) - Managed SQLite database service
-libsql-client==0.4.1
+# Turso (libSQL) - Managed SQLite database service (use latest available)
+libsql-client>=0.3.1

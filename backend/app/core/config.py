@@ -65,7 +65,6 @@ class Settings(BaseSettings):
     
     # Additional settings from .env
     debug: bool = False
-    allowed_origins: str = "*"
     jwt_secret_key: Optional[str] = None
     refresh_token_expire_days: int = 7
     smtp_host: Optional[str] = None
@@ -80,6 +79,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"  # Ignore extra fields from .env
 
 
 @lru_cache

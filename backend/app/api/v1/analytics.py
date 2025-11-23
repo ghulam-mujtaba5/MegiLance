@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from datetime import datetime, timedelta
 
-from app.core.database import get_db
+from app.db.session import get_db
 from app.core.security import get_current_user, require_admin
 from app.services.analytics_service import AnalyticsService
 from app.schemas.analytics_schemas import (
@@ -29,7 +29,7 @@ from app.schemas.analytics_schemas import (
     IntervalEnum,
     SortByEnum
 )
-from app.models.models import User
+from app.models.user import User
 from app.core.rate_limit import api_rate_limit
 
 router = APIRouter()
