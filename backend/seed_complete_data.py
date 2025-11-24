@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0, '/app')
 
 from datetime import datetime, timedelta
-from app.db.session import SessionLocal
+from app.db.session import get_session_local
 from app.models.user import User
 from app.models.project import Project
 from app.models.proposal import Proposal
@@ -15,6 +15,7 @@ from app.models.payment import Payment
 from app.models.portfolio import PortfolioItem
 from app.core.security import get_password_hash
 
+SessionLocal = get_session_local()
 db = SessionLocal()
 
 try:
@@ -296,6 +297,7 @@ try:
             cover_letter="I'm excited about this AI analytics project. With 8 years of full-stack experience and deep expertise in React, FastAPI, and ML integration, I've built similar dashboards handling 500K+ users. I can deliver a scalable, real-time solution with predictive analytics.",
             estimated_hours=320,
             hourly_rate=85.0,
+            bid_amount=320 * 85.0,
             availability="1-2_weeks",
             status="submitted",
             created_at=datetime.utcnow() - timedelta(days=4),
@@ -307,6 +309,7 @@ try:
             cover_letter="As an ML engineer, I specialize in building AI-powered analytics systems. I'll implement advanced prediction models using PyTorch and create interactive visualizations with D3.js. My solutions are optimized for high-traffic applications.",
             estimated_hours=280,
             hourly_rate=95.0,
+            bid_amount=280 * 95.0,
             availability="immediate",
             status="submitted",
             created_at=datetime.utcnow() - timedelta(days=3),
@@ -320,6 +323,7 @@ try:
             cover_letter="I've published 50+ React Native apps, including 3 fintech applications. I'm well-versed in biometric authentication, secure storage, and banking regulations. I can deliver a production-ready app with comprehensive security measures.",
             estimated_hours=480,
             hourly_rate=75.0,
+            bid_amount=480 * 75.0,
             availability="1-2_weeks",
             status="accepted",
             created_at=datetime.utcnow() - timedelta(days=2),
@@ -333,6 +337,7 @@ try:
             cover_letter="As a blockchain specialist, I've developed 5 NFT marketplaces on Ethereum. I'll implement gas-optimized smart contracts, IPFS storage, and seamless wallet integration. My code passes rigorous security audits.",
             estimated_hours=400,
             hourly_rate=100.0,
+            bid_amount=400 * 100.0,
             availability="immediate",
             status="submitted",
             created_at=datetime.utcnow() - timedelta(days=6),
@@ -346,6 +351,7 @@ try:
             cover_letter="I'll create a stunning, high-converting landing page with modern animations and mobile-first design. My designs have improved client conversion rates by 40% on average. Includes A/B testing setup and analytics integration.",
             estimated_hours=60,
             hourly_rate=70.0,
+            bid_amount=60 * 70.0,
             availability="immediate",
             status="accepted",
             created_at=datetime.utcnow() - timedelta(days=19),
@@ -359,6 +365,7 @@ try:
             cover_letter="I specialize in building scalable FastAPI backends. I'll implement a robust e-commerce API with Redis caching, async operations, and comprehensive testing. Includes Docker setup and CI/CD pipeline.",
             estimated_hours=200,
             hourly_rate=85.0,
+            bid_amount=200 * 85.0,
             availability="1-2_weeks",
             status="submitted",
             created_at=datetime.utcnow() - timedelta(days=1),
@@ -372,6 +379,7 @@ try:
             cover_letter="I've built 10+ AI chatbots using GPT-4 and custom fine-tuned models. I'll create an intelligent, context-aware chatbot with multi-language support and seamless integration with your existing systems.",
             estimated_hours=160,
             hourly_rate=95.0,
+            bid_amount=160 * 95.0,
             availability="immediate",
             status="submitted",
             created_at=datetime.utcnow() - timedelta(hours=12),
@@ -397,15 +405,14 @@ try:
             project_id=accepted_proposal_1.project_id,
             client_id=clients[1].id,
             freelancer_id=accepted_proposal_1.freelancer_id,
-            proposal_id=accepted_proposal_1.id,
-            title="Mobile Banking App Development Contract",
+            winning_bid_id=accepted_proposal_1.id,
             description="Development of secure mobile banking application with biometric authentication",
-            contract_type="fixed",
-            total_amount=36000.0,
+            amount=36000.0,
+            contract_amount=36000.0,
             start_date=datetime.utcnow() - timedelta(days=1),
             end_date=datetime.utcnow() + timedelta(days=83),
             status="active",
-            terms_and_conditions="Standard freelance contract with NDA. Payment upon milestone completion.",
+            terms="Standard freelance contract with NDA. Payment upon milestone completion.",
             created_at=datetime.utcnow() - timedelta(days=1),
             updated_at=datetime.utcnow() - timedelta(days=1)
         ),
@@ -413,15 +420,14 @@ try:
             project_id=accepted_proposal_2.project_id,
             client_id=clients[0].id,
             freelancer_id=accepted_proposal_2.freelancer_id,
-            proposal_id=accepted_proposal_2.id,
-            title="SaaS Landing Page Design Contract",
+            winning_bid_id=accepted_proposal_2.id,
             description="Modern landing page redesign with A/B testing",
-            contract_type="fixed",
-            total_amount=4200.0,
+            amount=4200.0,
+            contract_amount=4200.0,
             start_date=datetime.utcnow() - timedelta(days=18),
             end_date=datetime.utcnow() + timedelta(days=10),
             status="active",
-            terms_and_conditions="2 rounds of revisions included. Source files provided.",
+            terms="2 rounds of revisions included. Source files provided.",
             created_at=datetime.utcnow() - timedelta(days=18),
             updated_at=datetime.utcnow() - timedelta(days=1)
         ),
@@ -429,16 +435,14 @@ try:
             project_id=projects[6].id,
             client_id=clients[0].id,
             freelancer_id=freelancers[0].id,
-            proposal_id=None,
-            title="DevOps Pipeline Setup - Completed",
+            winning_bid_id=None,
             description="Complete CI/CD pipeline with Kubernetes and monitoring",
-            contract_type="hourly",
-            hourly_rate=85.0,
-            total_amount=12750.0,
+            amount=12750.0,
+            contract_amount=12750.0,
             start_date=datetime.utcnow() - timedelta(days=60),
             end_date=datetime.utcnow() - timedelta(days=30),
             status="completed",
-            terms_and_conditions="Hourly billing. 150 hours approved.",
+            terms="Hourly billing. 150 hours approved.",
             created_at=datetime.utcnow() - timedelta(days=60),
             updated_at=datetime.utcnow() - timedelta(days=30)
         )
@@ -457,9 +461,11 @@ try:
         # Contract 1 (Mobile Banking) - Milestone payment
         Payment(
             contract_id=contracts[0].id,
-            payer_id=clients[1].id,
-            payee_id=freelancers[4].id,
+            from_user_id=clients[1].id,
+            to_user_id=freelancers[4].id,
             amount=12000.0,
+            freelancer_amount=12000.0 * 0.9, # 10% fee
+            platform_fee=12000.0 * 0.1,
             payment_type="milestone",
             status="completed",
             payment_method="stripe",
@@ -472,9 +478,11 @@ try:
         # Contract 2 (Landing Page) - Deposit
         Payment(
             contract_id=contracts[1].id,
-            payer_id=clients[0].id,
-            payee_id=freelancers[1].id,
+            from_user_id=clients[0].id,
+            to_user_id=freelancers[1].id,
             amount=2100.0,
+            freelancer_amount=2100.0 * 0.9,
+            platform_fee=2100.0 * 0.1,
             payment_type="deposit",
             status="completed",
             payment_method="stripe",
@@ -487,10 +495,12 @@ try:
         # Contract 3 (DevOps) - Final payment (completed project)
         Payment(
             contract_id=contracts[2].id,
-            payer_id=clients[0].id,
-            payee_id=freelancers[0].id,
+            from_user_id=clients[0].id,
+            to_user_id=freelancers[0].id,
             amount=12750.0,
-            payment_type="full",
+            freelancer_amount=12750.0 * 0.9,
+            platform_fee=12750.0 * 0.1,
+            payment_type="project", # "full" is not in Enum, using "project"
             status="completed",
             payment_method="stripe",
             transaction_id="txn_devops_final_" + datetime.utcnow().strftime("%Y%m%d"),
@@ -502,10 +512,12 @@ try:
         # Pending payment
         Payment(
             contract_id=contracts[1].id,
-            payer_id=clients[0].id,
-            payee_id=freelancers[1].id,
+            from_user_id=clients[0].id,
+            to_user_id=freelancers[1].id,
             amount=2100.0,
-            payment_type="final",
+            freelancer_amount=2100.0 * 0.9,
+            platform_fee=2100.0 * 0.1,
+            payment_type="project", # "final" is not in Enum
             status="pending",
             payment_method="stripe",
             description="Final 50% payment - Landing Page Design (pending client approval)",

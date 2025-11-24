@@ -1,0 +1,37 @@
+/* @AI-HINT: Light theme colors for DevQuickLogin component */
+
+.container {
+  background: #fef3c7;
+  border-color: #f59e0b;
+}
+
+.title {
+  color: #92400e;
+}
+
+.subtitle {
+  color: #78350f;
+}
+
+.toggleLabel {
+  color: #92400e;
+}
+
+.roleButton {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.roleButton:hover {
+  background: #f9fafb;
+  border-color: #4573df;
+}
+
+.roleIcon {
+  color: #4573df;
+}
+
+.roleEmail {
+  color: #6b7280;
+}

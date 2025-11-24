@@ -5,34 +5,30 @@ This bypasses Alembic and creates tables from the models
 """
 import os
 import sys
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
+from dotenv import load_dotenv
 
-# Add app to path
-sys.path.insert(0, '/app')
+# Load environment variables
+load_dotenv()
+
+# Add current directory to path to allow imports
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from app.db.base import Base
-from app.models import (
-    User, Skill, UserSkill, Project, Proposal, Contract, Payment,
-    PortfolioItem, Message, Conversation, Notification, Review,
-    Dispute, Milestone, UserSession, AuditLog
-)
-
-DATABASE_URL = os.getenv('DATABASE_URL')
-if not DATABASE_URL:
-    print("❌ DATABASE_URL not set!")
-    sys.exit(1)
+# Import all models to ensure they are registered
+from app.models import *
+from app.db.session import get_engine
 
 print("\n🔨 Creating all database tables...")
-print(f"📊 Database: {DATABASE_URL.split('@')[1].split('?')[0] if '@' in DATABASE_URL else 'Oracle ADB'}")
 
-engine = create_engine(DATABASE_URL)
+# Use the engine from the app configuration
+engine = get_engine()
+print(f"📊 Engine: {engine.url}")
 
 # Import all models so they're registered with Base
 print("\n📦 Loaded models:")
-for model in [User, Skill, UserSkill, Project, Proposal, Contract, Payment,
-              PortfolioItem, Message, Conversation, Notification, Review,
-              Dispute, Milestone, UserSession, AuditLog]:
-    print(f"  - {model.__tablename__}")
+for table_name in Base.metadata.tables:
+    print(f"  - {table_name}")
 
 # Create all tables
 try:
@@ -41,7 +37,13 @@ try:
     
     # Verify
     with engine.connect() as conn:
-        result = conn.execute(text('SELECT table_name FROM user_tables ORDER BY table_name'))
+        # Check for tables - query depends on DB type
+        if "sqlite" in str(engine.url) or "libsql" in str(engine.url):
+            result = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table';"))
+        else:
+            # Postgres/Oracle/etc
+            result = conn.execute(text("SELECT table_name FROM information_schema.tables WHERE table_schema='public'"))
+            
         tables = [row[0] for row in result]
         print(f"\n📊 Total tables in database: {len(tables)}")
         for table in tables:
@@ -51,4 +53,5 @@ try:
     
 except Exception as e:
     print(f"\n❌ Error creating tables: {e}")
-    sys.exit(1)
+    # Don't exit, just print error
+

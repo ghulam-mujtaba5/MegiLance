@@ -2,11 +2,12 @@
 import sys
 sys.path.insert(0, 'backend')
 
-from app.db.session import SessionLocal
+from app.db.session import get_session_local
 from app.models.user import User
 from app.core.security import get_password_hash
 from datetime import datetime
 
+SessionLocal = get_session_local()
 db = SessionLocal()
 
 # Check if users exist

@@ -120,8 +120,16 @@ def login_user(request: Request, credentials: LoginRequest, db: Session = Depend
     If user has 2FA enabled, returns requires_2fa=True and a temporary token.
     Client must then call POST /auth/2fa/verify with the temporary token and TOTP code.
     """
+    print(f"\n🔐 LOGIN ATTEMPT:")
+    print(f"   Email: {credentials.email}")
+    print(f"   Role: {credentials.role if hasattr(credentials, 'role') else 'N/A'}")
+    print(f"   DB Session: {db}")
+    
     user = authenticate_user(db, credentials.email, credentials.password)
+    print(f"   Auth Result: {'✅ SUCCESS' if user else '❌ FAILED'}")
+    
     if not user:
+        print(f"   Reason: User not found or password mismatch")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect email or password")
 
     # Check if 2FA is enabled

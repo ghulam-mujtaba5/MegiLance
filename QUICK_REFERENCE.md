@@ -24,15 +24,17 @@ npm run dev
 
 ### Admin
 - Email: `admin@megilance.com`
-- Password: `Admin@123456`
+- Password: `password123`
 
 ### Freelancer  
-- Email: `freelancer@megilance.com`
-- Password: `Freelancer@123`
+- Email: `freelancer1@example.com`
+- Password: `password123`
 
 ### Client
-- Email: `client@megilance.com`
-- Password: `Client@123`
+- Email: `client1@example.com`
+- Password: `password123`
+
+> 💡 **Dev Quick Login**: In development mode, the login page shows quick login buttons for instant access to all roles!
 
 ## 🎤 ONE-MINUTE PITCH
 

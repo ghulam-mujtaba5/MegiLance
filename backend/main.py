@@ -36,10 +36,12 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.backend_cors_origins,
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 # Mount Socket.IO app for WebSocket support
@@ -47,11 +49,12 @@ app.mount("/ws", socket_app)
 
 
 @app.on_event("startup")
-def on_startup():
+async def on_startup():
     try:
         engine = get_engine()
         init_db(engine)
         print("✅ Database initialized successfully")
+        print("ℹ️  Using remote Turso database directly (no local cache)")
     except Exception as e:
         print(f"⚠️ Database initialization failed: {e}")
         print("⚠️ App will continue but database-dependent features will not work")
@@ -75,15 +78,24 @@ async def validation_exception_handler(request, exc):
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
+    import traceback
+    error_details = traceback.format_exc()
+    print(f"\n❌❌❌ UNHANDLED EXCEPTION ❌❌❌")
+    print(f"Request: {request.method} {request.url}")
+    print(f"Exception Type: {type(exc).__name__}")
+    print(f"Exception Message: {str(exc)}")
+    print(f"Traceback:\n{error_details}")
+    print(f"❌❌❌ END EXCEPTION ❌❌❌\n")
     return JSONResponse(
         status_code=500,
-        content={"detail": "An unexpected error occurred"}
+        content={"detail": str(exc), "error_type": type(exc).__name__}
     )
 
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to the MegiLance API!", "version": "1.0.0"}
+    # Force reload trigger
+    return {"message": "Welcome to the MegiLance API!", "version": "1.0.1"}
 
 
 @app.get("/api")

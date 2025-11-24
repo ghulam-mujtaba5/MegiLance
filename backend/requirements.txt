@@ -29,5 +29,6 @@ pytest-asyncio==0.25.1
 pytest-cov==6.0.0
 httpx==0.28.1
 
-# Turso (libSQL) - Managed SQLite database service (use latest available)
+# Turso (libSQL) - Managed SQLite database service
+# Uses libsql-client HTTP API for direct queries (authentication, etc.)
 libsql-client>=0.3.1

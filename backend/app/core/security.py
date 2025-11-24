@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional
+import asyncio
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -8,7 +9,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.db.session import get_db
+from app.db.session import get_db, get_turso_client
 from app.models.user import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -24,11 +25,103 @@ def get_password_hash(password: str) -> str:
 
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
+    """Authenticate user against Turso remote database"""
+    print(f"\n🔍 AUTHENTICATE_USER:")
+    print(f"   Email: {email}")
+    
+    # Try Turso first for fresh data
+    turso_client = get_turso_client()
+    if turso_client:
+        try:
+            print(f"   🌐 Querying Turso directly...")
+            
+            # Use asyncio.run with proper cleanup
+            async def query_and_verify():
+                try:
+                    result = await turso_client.execute(
+                        "SELECT id, email, hashed_password, name, role, is_active, user_type, joined_at, created_at FROM users WHERE email = ?",
+                        [email]
+                    )
+                    return result
+                finally:
+                    # Ensure session is closed
+                    await turso_client.close()
+            
+            result = asyncio.run(query_and_verify())
+            
+            if result.rows:
+                row = result.rows[0]
+                print(f"   ✅ User found in Turso")
+                print(f"   Row data: ID={row[0]}, Email={row[1]}, Name={row[3]}, Role={row[4]}, Active={row[5]}")
+                print(f"   Hash preview: {row[2][:30] if row[2] else 'None'}...")
+                
+                password_valid = verify_password(password, row[2])
+                print(f"   Password valid: {password_valid}")
+                
+                if password_valid:
+                    # Create User-like object from Turso result
+                    # Row order: id, email, hashed_password, name, role, is_active, user_type, joined_at, created_at
+                    from datetime import datetime
+                    
+                    # Parse dates safely - Turso may return string or datetime
+                    def parse_date(value):
+                        if value is None:
+                            return datetime.utcnow()
+                        if isinstance(value, datetime):
+                            return value
+                        if isinstance(value, str):
+                            try:
+                                # Try ISO format first
+                                return datetime.fromisoformat(value.replace('Z', '+00:00'))
+                            except:
+                                try:
+                                    # Try other common formats
+                                    return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                                except:
+                                    return datetime.utcnow()
+                        return datetime.utcnow()
+                    
+                    user = User(
+                        id=row[0],
+                        email=row[1],
+                        hashed_password=row[2],
+                        name=row[3],
+                        role=row[4],
+                        is_active=bool(row[5]),
+                        user_type=row[6],
+                        joined_at=parse_date(row[7]),
+                        created_at=parse_date(row[8])
+                    )
+                    print(f"   ✅ Authentication successful via Turso")
+                    return user
+                else:
+                    print(f"   ❌ Password verification failed")
+                    return None
+            else:
+                print(f"   ❌ No user with email {email} in Turso")
+                return None
+        except Exception as e:
+            print(f"   ⚠️ Turso query failed: {e}, falling back to local DB")
+    
+    # Fallback to local DB (for dev environments without Turso)
+    print(f"   📂 Falling back to local DB...")
     user = db.query(User).filter(User.email == email).first()
+    
     if not user:
+        print(f"   ❌ No user with email {email}")
         return None
-    if not verify_password(password, user.hashed_password):
+    
+    print(f"   User ID: {user.id}, Role: {user.role}")
+    print(f"   Hash preview: {user.hashed_password[:30] if user.hashed_password else 'None'}...")
+    
+    password_valid = verify_password(password, user.hashed_password)
+    print(f"   Password valid: {password_valid}")
+    
+    if not password_valid:
+        print(f"   ❌ Password verification failed")
         return None
+    
+    print(f"   ✅ Authentication successful")
     return user
 
 
@@ -68,6 +161,7 @@ def decode_token(token: str) -> dict:
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+    """Get current user from JWT token, querying Turso for fresh data"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -87,6 +181,29 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
 
+    # Try Turso first for fresh user data
+    turso_client = get_turso_client()
+    if turso_client:
+        try:
+            result = asyncio.run(turso_client.execute(
+                "SELECT id, email, hashed_password, name, role, is_active FROM users WHERE email = ?",
+                [email]
+            ))
+            
+            if result.rows:
+                row = result.rows[0]
+                return User(
+                    id=row[0],
+                    email=row[1],
+                    hashed_password=row[2],
+                    full_name=row[3],  # 'name' column in Turso
+                    role=row[4],
+                    is_active=bool(row[5])
+                )
+        except Exception as e:
+            print(f"⚠️ Turso query failed in get_current_user: {e}")
+    
+    # Fallback to local DB
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception

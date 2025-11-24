@@ -1,14 +1,14 @@
 """
 @AI-HINT: Database session management for Turso (libSQL) database
 Turso is a distributed SQLite database service built on libSQL
-Uses libsql_client for direct HTTP connection to Turso cloud
+Uses custom HTTP client for direct connection to Turso cloud
 """
 
-from sqlalchemy import create_engine, event, Engine
+from sqlalchemy import create_engine, event, Engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from app.core.config import get_settings
-import libsql_client
+from app.db.turso_client import TursoHttpClient
 import sqlite3
 
 
@@ -20,51 +20,54 @@ _SessionLocal = None
 _turso_client = None
 
 def get_turso_client():
-    """Get or create Turso client connection"""
+    """Get or create Turso HTTP client connection"""
     global _turso_client
     if _turso_client is None and settings.turso_database_url and settings.turso_auth_token:
         try:
-            _turso_client = libsql_client.create_client(
+            _turso_client = TursoHttpClient(
                 url=settings.turso_database_url,
                 auth_token=settings.turso_auth_token
             )
-            print(f"✅ Turso client connected: {settings.turso_database_url}")
+            print(f"✅ Turso HTTP client created: {settings.turso_database_url}")
         except Exception as e:
             print(f"⚠️ Failed to create Turso client: {e}")
     return _turso_client
 
 def get_engine():
     """
-    Create database engine for Turso/SQLite.
-    Uses in-memory SQLite with manual sync to Turso via HTTP API.
+    Create database engine.
+    Uses the configured `database_url` (file:... for local sqlite) if provided.
+    Note: Turso (libsql://) requires a compatible SQLAlchemy dialect/driver
+    (e.g. sqlalchemy-libsql). If you run with `DATABASE_URL` pointing at Turso,
+    ensure the appropriate driver is installed in the environment.
     """
     global _engine
     if _engine is None:
         try:
-            # Initialize Turso client
-            turso_client = get_turso_client()
-            
-            # Use in-memory SQLite as the engine
-            # We'll sync data to Turso via HTTP API when needed
+            db_url = settings.database_url or "sqlite:///:memory:"
+            print(f"✅ Database engine created: {db_url}")
+            connect_args = {}
+            if db_url.startswith("file:") or db_url.startswith("sqlite"):
+                connect_args = {"check_same_thread": False}
             _engine = create_engine(
-                "sqlite:///:memory:",
-                connect_args={"check_same_thread": False},
-                poolclass=StaticPool,
+                db_url,
+                connect_args=connect_args,
+                poolclass=StaticPool if db_url.startswith("sqlite") else None,
                 echo=settings.debug
             )
-            
-            # Enable SQLite pragmas
-            @event.listens_for(_engine, "connect")
-            def set_sqlite_pragma(dbapi_conn, connection_record):
-                cursor = dbapi_conn.cursor()
-                cursor.execute("PRAGMA foreign_keys=ON")
-                cursor.execute("PRAGMA journal_mode=WAL")
-                cursor.close()
-            
-            print(f"✅ Database engine created (in-memory SQLite with Turso sync)")
+
+            # If using sqlite, enable recommended pragmas
+            if db_url.startswith("sqlite") or db_url.startswith("file:"):
+                @event.listens_for(_engine, "connect")
+                def set_sqlite_pragma(dbapi_conn, connection_record):
+                    cursor = dbapi_conn.cursor()
+                    try:
+                        cursor.execute("PRAGMA foreign_keys=ON")
+                        cursor.execute("PRAGMA journal_mode=WAL")
+                    finally:
+                        cursor.close()
         except Exception as e:
             print(f"⚠️ Database engine creation failed: {e}")
-            # Fallback to simple in-memory SQLite
             _engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
     return _engine
 
@@ -74,23 +77,27 @@ def get_session_local():
         _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
     return _SessionLocal
 
+# Note: previous implementation synced Turso -> local cache (turso_cache.db).
+# That local cache has been removed from the workflow. Use the Turso client
+# (`get_turso_client()`) directly when you need to run SQL against the remote DB.
+
 # For backward compatibility
 engine = None
 SessionLocal = None
 
 def get_db():
     """Dependency for getting database sessions"""
-    db = None
+    print(f"\n📊 GET_DB: Creating session...")
+    session_factory = get_session_local()
+    db = session_factory()
+    print(f"   Session created: {db}")
     try:
-        session_factory = get_session_local()
-        db = session_factory()
         yield db
+        print(f"   ✅ Session completed successfully")
     except Exception as e:
-        print(f"⚠️ Database session creation failed: {e}")
-        yield None
+        print(f"   ❌ Session error: {e}")
+        db.rollback()
+        raise
     finally:
-        if db is not None:
-            try:
-                db.close()
-            except:
-                pass
+        print(f"   🔒 Closing session")
+        db.close()

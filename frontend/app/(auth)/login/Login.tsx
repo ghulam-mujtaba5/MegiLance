@@ -13,6 +13,7 @@ import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
+import DevQuickLogin from '@/app/components/Auth/DevQuickLogin/DevQuickLogin';
 import commonStyles from './Login.common.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
@@ -132,6 +133,56 @@ const Login: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleDevQuickLogin = (email: string, password: string, role: 'admin' | 'freelancer' | 'client') => {
+    // Auto-fill credentials
+    setFormData({ email, password });
+    // Set the correct role tab
+    setSelectedRole(role);
+    // Clear any previous errors
+    setErrors({ email: '', password: '', general: '' });
+  };
+
+  const handleDevAutoLogin = async (email: string, password: string, role: 'admin' | 'freelancer' | 'client') => {
+    // Set credentials and role
+    setFormData({ email, password });
+    setSelectedRole(role);
+    setErrors({ email: '', password: '', general: '' });
+    
+    // Trigger login
+    setLoading(true);
+    try {
+      const response = await fetch('/backend/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.requires_2fa) {
+          setNeeds2FA(true);
+          setTempAccessToken(data.temp_token || '');
+        } else {
+          localStorage.setItem('access_token', data.access_token);
+          localStorage.setItem('refresh_token', data.refresh_token);
+          try { window.localStorage.setItem('portal_area', role); } catch {}
+          router.push(roleConfig[role].redirectPath);
+        }
+      } else {
+        const errorData = await response.json();
+        setErrors({ email: '', password: '', general: errorData.detail || 'Login failed.' });
+      }
+    } catch (error) {
+      console.error('Auto-login error:', error);
+      setErrors({ email: '', password: '', general: 'Login failed. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -292,6 +343,11 @@ const Login: React.FC = () => {
           <div className={styles.divider}>
             <span className={styles.dividerText}>OR</span>
           </div>
+
+          <DevQuickLogin 
+            onCredentialSelect={handleDevQuickLogin}
+            onAutoLogin={handleDevAutoLogin}
+          />
 
           {needs2FA ? (
             // Two-Factor Authentication verification form
