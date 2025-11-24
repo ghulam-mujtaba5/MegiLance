@@ -282,17 +282,25 @@ async def get_top_freelancers(
         desc('total_earnings')
     ).limit(limit).all()
     
-    return [
-        TopFreelancer(
+    from app.models.review import Review
+    
+    result = []
+    for f in freelancers:
+        # Calculate average rating
+        avg_rating = db.query(func.avg(Review.rating)).filter(
+            Review.reviewee_id == f.id
+        ).scalar()
+        
+        result.append(TopFreelancer(
             id=f.id,
             name=f.name,
             email=f.email,
             total_earnings=float(f.total_earnings),
             completed_projects=f.completed_projects,
-            average_rating=None  # TODO: Add rating system
-        )
-        for f in freelancers
-    ]
+            average_rating=round(float(avg_rating), 2) if avg_rating else None
+        ))
+    
+    return result
 
 
 @router.get("/admin/dashboard/top-clients", response_model=List[TopClient])

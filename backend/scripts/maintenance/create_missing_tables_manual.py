@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Manually create missing Oracle tables without index conflicts
+Manually create missing tables (legacy Oracle wording removed) without index conflicts
 """
 from sqlalchemy import create_engine, text
 import os
@@ -171,7 +171,7 @@ indexes_sql = [
     "CREATE INDEX idx_audit_entity ON audit_logs(entity_type, entity_id)"
 ]
 
-print("Creating missing Oracle tables...")
+print("Creating missing tables...")
 
 with engine.connect() as conn:
     for i, sql in enumerate(missing_tables_sql, 1):
@@ -204,7 +204,7 @@ with engine.connect() as conn:
     result = conn.execute(text('SELECT table_name FROM user_tables ORDER BY table_name'))
     tables = [row[0] for row in result]
     
-    print(f"\n✅ Oracle Database now has {len(tables)} tables:")
+    print(f"\n✅ Database now has {len(tables)} tables:")
     for table in tables:
         count_result = conn.execute(text(f'SELECT COUNT(*) FROM {table}'))
         count = count_result.scalar()

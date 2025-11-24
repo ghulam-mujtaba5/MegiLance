@@ -1,6 +1,9 @@
 # @AI-HINT: This is the main entry point for the MegiLance FastAPI backend.
 
 import logging
+import json
+import time
+import uuid
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -15,13 +18,29 @@ from app.core.config import get_settings
 from app.core.rate_limit import limiter
 from app.db.init_db import init_db
 from app.db.session import get_engine
+from sqlalchemy import text
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        base = {
+            "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(record.created)),
+            "level": record.levelname,
+            "logger": record.name,
+            "msg": record.getMessage(),
+        }
+        if hasattr(record, 'request_id'):
+            base["request_id"] = record.request_id
+        if hasattr(record, 'path'):
+            base["path"] = record.path
+        return json.dumps(base)
+
+handler = logging.StreamHandler()
+handler.setFormatter(JsonFormatter())
+logger = logging.getLogger("megilance")
+logger.setLevel(logging.INFO)
+logger.handlers = [handler]
+logger.propagate = False
 
 settings = get_settings()
 
@@ -37,6 +56,23 @@ app = FastAPI(
 # Rate limiting
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+class RequestIDMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        request_id = request.headers.get("X-Request-Id") or str(uuid.uuid4())
+        start = time.time()
+        response = None
+        try:
+            response = await call_next(request)
+            return response
+        finally:
+            duration_ms = int((time.time() - start) * 1000)
+            extra = logging.LoggerAdapter(logger, {"request_id": request_id, "path": request.url.path})
+            extra.info(f"request.complete duration_ms={duration_ms} status={response.status_code if response else 'error'}")
+            response_headers = getattr(response, 'headers', None)
+            if response_headers is not None:
+                response.headers["X-Request-Id"] = request_id
+
+app.add_middleware(RequestIDMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -53,11 +89,9 @@ async def on_startup():
     try:
         engine = get_engine()
         init_db(engine)
-        logger.info("Database initialized successfully")
-        logger.info("Using remote Turso database directly (no local cache)")
+        logger.info("startup.database_initialized")
     except Exception as e:
-        logger.warning(f"Database initialization failed: {e}")
-        logger.warning("App will continue but database-dependent features will not work")
+        logger.error(f"startup.database_failed error={e}")
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -80,8 +114,7 @@ async def validation_exception_handler(request, exc):
 async def general_exception_handler(request, exc):
     import traceback
     error_details = traceback.format_exc()
-    logger.error(f"UNHANDLED EXCEPTION: {str(exc)}")
-    logger.error(f"Traceback:\n{error_details}")
+    logger.error(f"unhandled_exception type={type(exc).__name__} message={str(exc)} traceback={error_details.replace(chr(10), ' | ')}")
     return JSONResponse(
         status_code=500,
         content={"detail": str(exc), "error_type": type(exc).__name__}
@@ -101,6 +134,21 @@ def api_root():
         "docs": "/api/docs",
         "redoc": "/api/redoc"
     }
+
+@app.get("/api/health/live")
+def health_live():
+    return {"status": "ok"}
+
+@app.get("/api/health/ready")
+def health_ready():
+    engine = get_engine()
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return {"status": "ready", "db": "ok"}
+    except Exception as e:
+        logger.error(f"health.ready_failed error={e}")
+        return JSONResponse(status_code=503, content={"status": "degraded", "db_error": str(e)})
 
 
 app.include_router(api_router, prefix="/api")

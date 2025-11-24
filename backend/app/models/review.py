@@ -21,7 +21,7 @@ class Review(Base):
     reviewee_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     rating: Mapped[float] = mapped_column(Float)  # 1-5 rating
     comment: Mapped[str] = mapped_column(Text, nullable=True)
-    rating_breakdown: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Skills, communication, quality, etc. (JSON string for Oracle)
+    rating_breakdown: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Skills, communication, quality, etc. (stored as JSON string)
     is_public: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

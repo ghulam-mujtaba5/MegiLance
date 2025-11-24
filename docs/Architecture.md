@@ -113,7 +113,7 @@ Frontend (DigitalOcean App Platform)
 
 ## 11. Build & Release Flow
 ```
-Commit (main) ──▶ GitHub Repo ──▶ CI/CD → Deploy Target (VM / container platform):
+Commit (main) ──▶ GitHub Repo ──▶ CI/CD → Deploy Target (VM / container platform)
   git pull → docker-compose up --build → health test → live
 ```
 Future upgrade: Add canary or blue/green via versioned compose profiles.
@@ -174,6 +174,7 @@ Status legend: ACCEPTED, IN_PROGRESS, PLANNED, MITIGATED.
 3. Bump `doc_version` if structural change (not for typo/format).
 4. Update `last_updated` date.
 5. Validate checklist (Section 15) after change.
+6. Ensure fallback DB logic documented in `ConfigEnvironment.md` if modified.
 
 ---
 Prepared under modern architecture documentation conventions (C4-lite + operational overlays). See `ProjectOverview.md` for contextual grounding. Aligns with 2025 engineering standards.

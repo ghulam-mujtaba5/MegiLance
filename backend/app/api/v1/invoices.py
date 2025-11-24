@@ -62,7 +62,7 @@ async def create_invoice(
     tax = subtotal * (invoice.tax_rate / 100) if hasattr(invoice, 'tax_rate') else 0
     total = subtotal + tax
     
-    # Convert items list to JSON string for Oracle
+    # Store items list as JSON string (generic DB compatibility)
     import json
     items_json = json.dumps(invoice.items)
     

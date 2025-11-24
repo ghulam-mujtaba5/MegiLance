@@ -5,7 +5,7 @@ Run this inside the backend container
 from app.db.session import engine
 from sqlalchemy import text
 
-print("\n🔌 Using existing Oracle database connection...")
+print("\n🔌 Using existing database connection (Turso/libSQL preferred)...")
 
 # SQL statements for critical tables
 tables_sql = [

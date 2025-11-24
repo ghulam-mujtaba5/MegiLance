@@ -171,3 +171,35 @@ class NotificationService:
             send_email=True,
             send_push=True
         )
+    
+    async def send_payment_notification(
+        self,
+        recipient_id: int,
+        payment_id: int,
+        amount: float,
+        currency: str,
+        notification_type: str,
+        db: Session
+    ) -> Dict[str, Any]:
+        """
+        Send payment-related notification
+        Types: 'payment_received', 'payment_confirmed', 'payment_refunded'
+        """
+        messages = {
+            'payment_received': f'You received a payment of {amount} {currency}',
+            'payment_confirmed': f'Payment of {amount} {currency} has been confirmed',
+            'payment_refunded': f'Payment of {amount} {currency} has been refunded'
+        }
+        
+        message = messages.get(notification_type, 'Payment update')
+        
+        # Use the send_notification method
+        return await self.send_notification(
+            user_id=recipient_id,
+            notification_type=notification_type.upper(),
+            title='Payment Update',
+            message=message,
+            data={'payment_id': payment_id, 'amount': amount, 'currency': currency},
+            send_email=True,
+            send_push=True
+        )

@@ -72,7 +72,7 @@ def seed_tags(db: Session):
         {"name": "fastapi", "type": "skill", "slug": "fastapi"},
         {"name": "django", "type": "skill", "slug": "django"},
         {"name": "postgresql", "type": "skill", "slug": "postgresql"},
-        {"name": "oracle", "type": "skill", "slug": "oracle"},
+        {"name": "turso", "type": "skill", "slug": "turso"},
         {"name": "figma", "type": "skill", "slug": "figma"},
         {"name": "photoshop", "type": "skill", "slug": "photoshop"},
         {"name": "ui/ux", "type": "skill", "slug": "ui-ux"},

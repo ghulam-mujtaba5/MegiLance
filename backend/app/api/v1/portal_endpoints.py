@@ -260,10 +260,20 @@ async def get_client_wallet(
     client: User = Depends(get_client_user)
 ):
     """Get client's wallet balance and transactions"""
+    # Calculate from pending payments
+    pending_payments = float(
+        db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
+            and_(
+                Payment.from_user_id == client.id, 
+                Payment.status == 'pending'
+            )
+        ).scalar() or 0.0
+    )
+    
     return {
         "balance": float(client.account_balance or 0.0),
         "currency": "USD",
-        "pending_payments": 0.0,  # TODO: Calculate from pending payments
+        "pending_payments": pending_payments,
         "total_spent": float(
             db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
                 and_(Payment.from_user_id == client.id, Payment.status == 'completed')
@@ -314,13 +324,19 @@ async def get_freelancer_dashboard_stats(
     
     success_rate = (completed_projects / total_proposals * 100) if total_proposals > 0 else 0.0
     
+    # Calculate average rating
+    from app.models.review import Review
+    avg_rating = db.query(func.avg(Review.rating)).filter(
+        Review.reviewee_id == freelancer.id
+    ).scalar()
+    
     return FreelancerDashboardStats(
         total_earnings=float(total_earnings or 0.0),
         active_projects=active_projects or 0,
         completed_projects=completed_projects or 0,
         pending_proposals=pending_proposals or 0,
         success_rate=round(success_rate, 2),
-        average_rating=None  # TODO: Implement rating system
+        average_rating=round(float(avg_rating), 2) if avg_rating else None
     )
 
 
@@ -445,10 +461,24 @@ async def get_freelancer_portfolio(
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get freelancer's portfolio items"""
-    # TODO: Implement portfolio model and logic
+    from app.models.portfolio import PortfolioItem
+    
+    items = db.query(PortfolioItem).filter(
+        PortfolioItem.freelancer_id == freelancer.id
+    ).order_by(desc(PortfolioItem.created_at)).all()
+    
     return {
-        "portfolio_items": [],
-        "message": "Portfolio feature not yet implemented"
+        "portfolio_items": [
+            {
+                "id": item.id,
+                "title": item.title,
+                "description": item.description,
+                "image_url": item.image_url,
+                "project_url": item.project_url,
+                "created_at": item.created_at
+            }
+            for item in items
+        ]
     }
 
 

@@ -50,7 +50,7 @@ class Payment(Base):
     status: Mapped[str] = mapped_column(String(20), default=PaymentStatus.PENDING.value, index=True)
     transaction_id: Mapped[str] = mapped_column(String(200), nullable=True, unique=True)
     blockchain_tx_hash: Mapped[str] = mapped_column(String(200), nullable=True)  # Blockchain transaction hash
-    payment_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle compatibility
+    payment_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Stored as JSON string (DB-neutral)
     platform_fee: Mapped[float] = mapped_column(Float, default=0.0)
     freelancer_amount: Mapped[float] = mapped_column(Float)  # Amount after platform fee
     description: Mapped[str] = mapped_column(Text, nullable=True)

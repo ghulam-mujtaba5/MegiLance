@@ -70,7 +70,7 @@ async def search_projects(
     # Filter by skills (if project's skills JSON contains any of the search skills)
     if skills:
         skill_list = [s.strip().lower() for s in skills.split(',')]
-        # Oracle: Use JSON_EXISTS or simple text search
+        # Generic DB text search fallback (JSON search enhancements future)
         for skill in skill_list:
             query = query.filter(Project.skills.ilike(f"%{skill}%"))
     

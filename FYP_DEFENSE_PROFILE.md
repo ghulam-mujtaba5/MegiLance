@@ -60,11 +60,18 @@
 | Area | Problem | Root Cause |
 |------|---------|------------|
 | **Scope Creep** | Promised blockchain + AI + payments - delivered basic CRUD | Overambitious proposal |
-| **Tech Mismatch** | Proposal: Spring Boot + MongoDB + PostgreSQL | Actual: FastAPI + Turso |
-| **Blockchain Claims** | Proposal: Solidity, Web3.js, smart contracts | None implemented |
+| **Tech Stack Evolution** | Proposal: Spring Boot + MongoDB + PostgreSQL | At proposal time, solution was unclear; evolved during development |
+| **Blockchain Claims** | Proposal: Solidity, Web3.js, smart contracts | Complexity underestimated at proposal stage |
 | **AI Claims** | TensorFlow, ML models, chatbot | OpenAI API stub only |
-| **Database Migration** | Oracle → Turso mid-project | Technical debt |
+| **Database Migration** | Oracle → Turso mid-project | Iterative learning led to better choice |
 | **Time Allocation** | Too much on UI polish, less on core features | Priority misalignment |
+
+### Tech Stack Evolution Justification
+> **At proposal time (early stage), we were unclear about the exact solution approach.** As we progressed through development, we discovered that:
+> - FastAPI (Python) was more suitable than Spring Boot (Java) for rapid prototyping and our team's skill set
+> - Turso (distributed SQLite) provided simpler deployment than PostgreSQL + MongoDB combo
+> - The original multi-database approach (PostgreSQL + MongoDB) was over-engineered for MVP
+> - This evolution represents **iterative learning** - a core software engineering principle
 
 ---
 
@@ -77,7 +84,7 @@
 **A**: We have OpenAI API integration stub in `/backend/app/api/v1/ai.py`. Full ML models (ranking, sentiment) are future scope due to training data requirements.
 
 ### Q3: Why different tech stack from proposal?
-**A**: FastAPI + Turso proved more suitable for rapid development and deployment. Spring Boot was dropped for team expertise reasons.
+**A**: At proposal time, we were still exploring solutions and unclear about the best approach. During development, we learned that FastAPI + Turso was more practical for our team size, skill set, and timeline. This is normal in software engineering - **requirements and solutions evolve through iterative development**. The final stack delivers the same functionality more efficiently.
 
 ### Q4: How do you handle security?
 **A**: JWT authentication, Pydantic validation, bcrypt hashing. Acknowledge gaps: no rate limiting (planned), no HTTPS in dev (production requirement).

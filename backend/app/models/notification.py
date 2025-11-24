@@ -44,7 +44,7 @@ class Notification(Base):
     notification_type: Mapped[str] = mapped_column(String(50), index=True)
     title: Mapped[str] = mapped_column(String(255))
     content: Mapped[str] = mapped_column(Text)
-    data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Additional notification data (JSON string for Oracle)
+    data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Additional notification data (stored as JSON string)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     read_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)

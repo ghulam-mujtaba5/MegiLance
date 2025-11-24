@@ -17,6 +17,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=Fals
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # Handle bytes from database
+    if isinstance(hashed_password, bytes):
+        hashed_password = hashed_password.decode('utf-8')
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -77,14 +80,22 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
                                     return datetime.utcnow()
                         return datetime.utcnow()
                     
+                    # Helper function to decode bytes to string
+                    def to_str(value):
+                        if value is None:
+                            return None
+                        if isinstance(value, bytes):
+                            return value.decode('utf-8')
+                        return value
+                    
                     user = User(
                         id=row[0],
-                        email=row[1],
-                        hashed_password=row[2],
-                        name=row[3],
-                        role=row[4],
+                        email=to_str(row[1]),
+                        hashed_password=to_str(row[2]),
+                        name=to_str(row[3]),
+                        role=to_str(row[4]),
                         is_active=bool(row[5]),
-                        user_type=row[6],
+                        user_type=to_str(row[6]),
                         joined_at=parse_date(row[7]),
                         created_at=parse_date(row[8])
                     )

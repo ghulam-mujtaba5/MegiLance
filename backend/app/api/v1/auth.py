@@ -138,23 +138,73 @@ def login_user(request: Request, credentials: LoginRequest, db: Session = Depend
         temp_claims = {"user_id": user.id, "temp_2fa": True}
         temp_token = create_access_token(subject=user.email, custom_claims=temp_claims, expires_delta_minutes=5)
         
+        # Helper to safely convert any bytes to string
+        def safe_str(val):
+            if val is None:
+                return None
+            if isinstance(val, bytes):
+                return val.decode('utf-8')
+            return val
+        
+        # Manually construct UserRead
+        user_data = UserRead(
+            id=user.id,
+            email=safe_str(user.email),
+            is_active=bool(user.is_active),
+            name=safe_str(user.name),
+            user_type=safe_str(user.user_type),
+            bio=safe_str(user.bio),
+            skills=safe_str(user.skills),
+            hourly_rate=float(user.hourly_rate) if user.hourly_rate else None,
+            profile_image_url=safe_str(user.profile_image_url),
+            location=safe_str(user.location),
+            joined_at=user.joined_at
+        )
+        
         return AuthResponse(
             access_token=temp_token,
             refresh_token="",  # No refresh token until 2FA verified
-            user=UserRead.from_orm(user),
+            user=user_data,
             requires_2fa=True,
             message="Two-factor authentication required. Please provide your TOTP code."
         )
 
     # No 2FA - proceed with normal login
-    custom_claims: Dict[str, Any] = {"user_id": user.id, "role": user.user_type or ""}
-    access_token = create_access_token(subject=user.email, custom_claims=custom_claims)
-    refresh_token = create_refresh_token(subject=user.email, custom_claims=custom_claims)
+    # Helper to safely convert any bytes to string
+    def safe_str(val):
+        if val is None:
+            return None
+        if isinstance(val, bytes):
+            return val.decode('utf-8')
+        return val
+    
+    # Ensure email is string for token creation
+    email_str = safe_str(user.email)
+    user_type_str = safe_str(user.user_type) or ""
+    
+    custom_claims: Dict[str, Any] = {"user_id": user.id, "role": user_type_str}
+    access_token = create_access_token(subject=email_str, custom_claims=custom_claims)
+    refresh_token = create_refresh_token(subject=email_str, custom_claims=custom_claims)
 
+    # Manually construct UserRead to avoid bytes serialization issues
+    user_data = UserRead(
+        id=user.id,
+        email=email_str,
+        is_active=bool(user.is_active),
+        name=safe_str(user.name),
+        user_type=user_type_str,
+        bio=safe_str(user.bio),
+        skills=safe_str(user.skills),
+        hourly_rate=float(user.hourly_rate) if user.hourly_rate else None,
+        profile_image_url=safe_str(user.profile_image_url),
+        location=safe_str(user.location),
+        joined_at=user.joined_at
+    )
+    
     return AuthResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user=UserRead.from_orm(user),
+        user=user_data,
     )
 
 

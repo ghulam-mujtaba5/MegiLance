@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Clean Oracle database and run fresh migrations
+Clean database and run fresh migrations (Oracle wording removed)
 """
 from sqlalchemy import create_engine, text
 import os
@@ -11,7 +11,7 @@ if not DATABASE_URL:
     print("❌ DATABASE_URL not set!")
     sys.exit(1)
 
-print("\n🧹 Cleaning Oracle database...")
+print("\n🧹 Cleaning database...")
 engine = create_engine(DATABASE_URL)
 
 with engine.connect() as conn:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create minimal Oracle schema for demo - 5 core tables only
+Create minimal schema for demo - legacy Oracle wording removed; aligns with Turso/libSQL.
 This bypasses all migration issues and gets a working system FAST
 """
 import os
@@ -39,7 +39,7 @@ with engine.connect() as conn:
         except Exception as e:
             pass  # Table might not exist
 
-# Create minimal tables (Oracle-compatible, no JSON types)
+# Create minimal tables (SQLite/libSQL compatible, avoid engine-specific types)
 tables = {
     'users': """
         CREATE TABLE users (

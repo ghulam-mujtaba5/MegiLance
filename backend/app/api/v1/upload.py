@@ -69,8 +69,19 @@ async def upload_profile_image(
     saved_path = save_file(file_content, file_path)
     file_url = get_file_url(saved_path)
     
-    # TODO: Delete old profile image if exists
-    # TODO: Update user.profile_image in database
+    # Delete old profile image if exists
+    if current_user.profile_image:
+        try:
+            delete_file(current_user.profile_image)
+            print(f"[UPLOAD] Deleted old profile image: {current_user.profile_image}")
+        except Exception as e:
+            print(f"[WARNING] Failed to delete old profile image: {str(e)}")
+    
+    # Update user.profile_image in database
+    current_user.profile_image = saved_path
+    db.commit()
+    db.refresh(current_user)
+    print(f"[UPLOAD] Updated profile image for user {current_user.id}")
     
     return {
         "message": "Profile image uploaded successfully",
@@ -143,7 +154,29 @@ async def upload_proposal_attachment(
     saved_path = save_file(file_content, file_path)
     file_url = get_file_url(saved_path)
     
-    # TODO: Add attachment to proposal.attachments JSON field
+    # Add attachment to proposal.attachments JSON field
+    from app.models.proposal import Proposal
+    import json
+    
+    proposal = db.query(Proposal).filter(Proposal.id == int(proposal_id)).first()
+    if proposal:
+        # Verify user owns this proposal
+        if proposal.freelancer_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized to upload attachments to this proposal")
+        
+        # Parse existing attachments or initialize empty list
+        attachments = json.loads(proposal.attachments) if proposal.attachments else []
+        attachments.append({
+            "filename": file.filename,
+            "url": file_url,
+            "file_path": saved_path,
+            "uploaded_at": str(uuid.uuid4())
+        })
+        proposal.attachments = json.dumps(attachments)
+        db.commit()
+        print(f"[UPLOAD] Added attachment to proposal {proposal_id}")
+    else:
+        print(f"[WARNING] Proposal {proposal_id} not found, attachment saved but not linked")
     
     return {
         "message": "Proposal attachment uploaded successfully",
@@ -166,7 +199,24 @@ async def upload_project_file(
     """
     validate_file(file, ALLOWED_EXTENSIONS)
     
-    # TODO: Verify user is part of the project (client or accepted freelancer)
+    # Verify user is part of the project (client or accepted freelancer)
+    from app.models.project import Project
+    from app.models.proposal import Proposal
+    
+    project = db.query(Project).filter(Project.id == int(project_id)).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Check if user is client or accepted freelancer
+    is_client = project.client_id == current_user.id
+    is_accepted_freelancer = db.query(Proposal).filter(
+        Proposal.project_id == int(project_id),
+        Proposal.freelancer_id == current_user.id,
+        Proposal.status == "accepted"
+    ).first() is not None
+    
+    if not is_client and not is_accepted_freelancer and current_user.user_type != "Admin":
+        raise HTTPException(status_code=403, detail="Not authorized to upload files to this project")
     
     # Generate unique filename
     filename: str = file.filename or ""

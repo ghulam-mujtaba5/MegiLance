@@ -32,7 +32,7 @@ class Message(Base):
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=True, index=True)
     content: Mapped[str] = mapped_column(Text)
     message_type: Mapped[str] = mapped_column(String(20), default=MessageType.TEXT.value)
-    attachments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle compatibility
+    attachments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string (portable format)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     read_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     sent_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)

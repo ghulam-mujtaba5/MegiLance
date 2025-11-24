@@ -11,6 +11,7 @@ from app.models.contract import Contract
 from app.models.payment import Payment
 from app.models.user import User
 from app.schemas.payment import PaymentCreate, PaymentRead, PaymentUpdate
+from app.services.notification_service import NotificationService
 # from app.services.blockchain_service import blockchain_service  # Disabled - import issues
 
 
@@ -151,7 +152,7 @@ def update_payment(
 
 
 @router.post("/{payment_id}/confirm", response_model=PaymentRead)
-def confirm_payment(
+async def confirm_payment(
     payment_id: int,
     transaction_hash: str = Query(..., description="Blockchain transaction hash"),
     db: Session = Depends(get_db),
@@ -172,8 +173,21 @@ def confirm_payment(
     payment.transaction_hash = transaction_hash
     payment.status = "completed"
 
-    # TODO: Verify transaction on blockchain
-    # TODO: Notify recipient of completed payment
+    # TODO: Verify transaction on blockchain (requires blockchain_service)
+    
+    # Notify recipient of completed payment
+    try:
+        notif_service = NotificationService(db)
+        await notif_service.send_payment_notification(
+            recipient_id=payment.to_user_id,
+            payment_id=payment.id,
+            amount=float(payment.amount),
+            currency=payment.currency,
+            notification_type='payment_confirmed',
+            db=db
+        )
+    except Exception as e:
+        print(f"[WARNING] Notification failed: {str(e)}")
 
     db.commit()
     db.refresh(payment)
@@ -181,7 +195,7 @@ def confirm_payment(
 
 
 @router.post("/{payment_id}/refund", response_model=PaymentRead)
-def refund_payment(
+async def refund_payment(
     payment_id: int,
     reason: str = Query(..., description="Refund reason"),
     db: Session = Depends(get_db),
@@ -202,8 +216,31 @@ def refund_payment(
     payment.status = "refunded"
     payment.description = f"{payment.description or ''} | Refund: {reason}".strip()
 
-    # TODO: Initiate blockchain refund transaction
-    # TODO: Notify both parties of refund status
+    # TODO: Initiate blockchain refund transaction (requires blockchain_service)
+    
+    # Notify both parties of refund status
+    try:
+        notif_service = NotificationService(db)
+        # Notify payer
+        await notif_service.send_payment_notification(
+            recipient_id=payment.from_user_id,
+            payment_id=payment.id,
+            amount=float(payment.amount),
+            currency=payment.currency,
+            notification_type='payment_refunded',
+            db=db
+        )
+        # Notify payee
+        await notif_service.send_payment_notification(
+            recipient_id=payment.to_user_id,
+            payment_id=payment.id,
+            amount=float(payment.amount),
+            currency=payment.currency,
+            notification_type='payment_refunded',
+            db=db
+        )
+    except Exception as e:
+        print(f"[WARNING] Refund notifications failed: {str(e)}")
 
     db.commit()
     db.refresh(payment)

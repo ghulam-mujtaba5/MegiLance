@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-11-25T01:48:34.522594",
+  "summary": {
+    "total": 10,
+    "passed": 2,
+    "failed": 8,
+    "skipped": 0,
+    "pass_rate": "20.0%"
+  },
+  "details": [
+    {
+      "status": "PASS",
+      "endpoint": "GET /health/live",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /health/ready",
+      "message": ""
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "POST /auth/login",
+      "error": "Status: 401"
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "GET /auth/me",
+      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "User endpoints",
+      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "Project endpoints",
+      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "Payment endpoints",
+      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "Client portal endpoints",
+      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "Freelancer portal endpoints",
+      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "status": "FAIL",
+      "endpoint": "Admin endpoints",
+      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+    }
+  ]
+}

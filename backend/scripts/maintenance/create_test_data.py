@@ -69,7 +69,7 @@ try:
             budget_type="hourly",
             budget_min=40.00,
             budget_max=60.00,
-            skills=json.dumps(["Python", "FastAPI", "Oracle"]),  # Store as JSON string for Oracle
+            skills=json.dumps(["Python", "FastAPI", "Turso", "libSQL"]),  # Updated skill set (legacy Oracle removed)
             status="open",
             client_id=client.id,
             experience_level="intermediate"

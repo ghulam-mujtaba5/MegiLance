@@ -41,7 +41,7 @@ class User(Base):
     hourly_rate: Mapped[float] = mapped_column(Float, nullable=True)
     profile_image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     location: Mapped[str] = mapped_column(String(100), nullable=True)
-    profile_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for Oracle compatibility
+    profile_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Stored as JSON string for portability
     notification_preferences: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for notification settings
     account_balance: Mapped[float] = mapped_column(Float, default=0.0)
     created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)

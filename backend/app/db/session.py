@@ -44,7 +44,12 @@ def get_engine():
     global _engine
     if _engine is None:
         try:
-            db_url = settings.database_url or "sqlite:///:memory:"
+            # Prefer explicit TURSO_DATABASE_URL if provided; fallback to settings.database_url; else local file sqlite for persistence
+            db_url = (
+                settings.turso_database_url
+                or settings.database_url
+                or "sqlite:///./local_dev.db"
+            )
             print(f"[OK] Database engine created: {db_url}")
             connect_args = {}
             if db_url.startswith("file:") or db_url.startswith("sqlite"):
