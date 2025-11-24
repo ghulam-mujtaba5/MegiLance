@@ -8,7 +8,7 @@ A comprehensive freelancing platform featuring AI-powered matching, blockchain-b
 
 ## 🎯 **NEW: Turso Database - Simple & Scalable!**
 
-**Using Turso for database?** → See **[TURSO_SETUP.md](TURSO_SETUP.md)** 🚀
+**Using Turso for database?** → See **[docs/TURSO_SETUP.md](docs/TURSO_SETUP.md)** 🚀
 
 **Quick Start (Turso):** 
 ```powershell
@@ -25,7 +25,7 @@ python -m uvicorn main:app --reload
 - ✅ Perfect for serverless deployments
 
 **Setup Docs:**
-- **[TURSO_SETUP.md](TURSO_SETUP.md)** - Complete Turso guide 📖
+- **[docs/TURSO_SETUP.md](docs/TURSO_SETUP.md)** - Complete Turso guide 📖
 
 ---
 
@@ -43,11 +43,12 @@ docker compose up -d
 
 ## 📋 Documentation
 
-### Database
-- **[TURSO_SETUP.md](TURSO_SETUP.md)** - Turso database setup and management
+### Maintenance
+- **[docs/MAINTENANCE.md](docs/MAINTENANCE.md)** - Maintenance scripts and common tasks
+- **[docs/TURSO_SETUP.md](docs/TURSO_SETUP.md)** - Turso database setup and management
 
 ### Deployment
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment guide
+- **[docs/DeploymentGuide.md](docs/DeploymentGuide.md)** - Production deployment guide
 - **[docs/](docs/)** - System architecture and design docs
 
 ### Services

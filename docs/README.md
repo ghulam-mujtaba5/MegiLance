@@ -6,8 +6,8 @@ This is the single source of truth for project documentation. Use this index to 
 
 ## Platform Overview
 
-- Project Requirements & Specification (canonical): `../MegiLance-Requirements-and-Specification.md`
-- Brand Guidelines (canonical): `../MegiLance-Brand-Playbook.md`
+- Project Requirements & Specification (canonical): `MegiLance-Requirements-and-Specification.md`
+- Brand Guidelines (canonical): `MegiLance-Brand-Playbook.md`
 - Architecture Diagrams (canonical): `SystemArchitectureDiagrams.md`
 - System Construction Plan (canonical): `SystemConstructionPlan.md`
 - Deployment Guide (canonical): `DeploymentGuide.md`
