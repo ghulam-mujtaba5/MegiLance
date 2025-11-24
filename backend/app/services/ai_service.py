@@ -4,9 +4,15 @@ Provides AI-powered features: job matching, price estimation, proposal generatio
 """
 from typing import List, Dict, Any, Optional
 from decimal import Decimal
-import openai
 import os
 from sqlalchemy.orm import Session
+
+try:
+    import openai
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    print("[WARNING] OpenAI not installed - AI features will use rule-based fallbacks")
 
 class AIWorkflowService:
     """Service for AI-powered platform features"""
@@ -124,7 +130,7 @@ class AIWorkflowService:
         Creates professional proposal text
         """
         # Check if OpenAI is configured
-        if not self.openai_api_key:
+        if not self.openai_api_key or not OPENAI_AVAILABLE:
             # Fallback to template-based generation
             return self._generate_template_proposal(
                 job_title,

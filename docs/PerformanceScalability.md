@@ -26,7 +26,7 @@ Initial constraints: 1 OCPU / 1 GB RAM micro VM. Strategy focuses on lean footpr
 | Layer | Tactic | Status |
 |-------|--------|--------|
 | Python runtime | Single worker, no gunicorn overhead | Active |
-| DB connections | Min pool size tuned | Planned |
+| DB access | Direct Turso libSQL connections (no wallet) | Active |
 | Serialization | Pydantic models only, avoid heavy ORMs | Active |
 | Logging | INFO only in prod | Active |
 | Dependencies | Avoid large AI libs in main image | Active |

@@ -51,7 +51,7 @@ def get_project(
     return project
 
 @router.post("/", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
-async def create_project(
+def create_project(
     project: ProjectCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
@@ -63,28 +63,16 @@ async def create_project(
             detail="Only clients can create projects"
         )
     
-    # AI price estimation for new projects
-    estimated_price = None
-    if project.description and project.category:
-        try:
-            price_estimate = await ai_service.estimate_project_price(
-                project_description=project.description,
-                category=project.category,
-                estimated_hours=None,
-                complexity=project.experience_level or "medium"
-            )
-            estimated_price = price_estimate.get("estimated_price")
-            print(f"[AI] Price estimate for project: {estimated_price}")
-        except Exception as e:
-            print(f"[WARNING] AI price estimation failed: {str(e)}")
+    # AI price estimation disabled temporarily
+    # TODO: Re-enable AI price estimation when ai_service is stable
     
     db_project = Project(
         title=project.title,
         description=project.description,
         category=project.category,
         budget_type=project.budget_type,
-        budget_min=project.budget_min or estimated_price,
-        budget_max=project.budget_max or (estimated_price * 1.5 if estimated_price else None),
+        budget_min=project.budget_min,
+        budget_max=project.budget_max,
         experience_level=project.experience_level,
         estimated_duration=project.estimated_duration,
         skills=",".join(project.skills) if project.skills else "",

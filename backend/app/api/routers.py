@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from .v1 import (
     health, users, mock, projects, proposals, contracts, portfolio, payments, 
-    auth, client, upload, ai_services, ai,
+    auth, client, upload, ai_services,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
-    websocket, uploads, portal_endpoints, analytics  # stripe temporarily disabled
+    websocket, uploads, portal_endpoints, analytics  # stripe, ai temporarily disabled
 )
 
 
@@ -59,8 +59,8 @@ api_router.include_router(search.router, prefix="", tags=["search"])
 # Analytics and reporting
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 
-# AI Services
-api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
+# AI Services - temporarily disabled for stability
+# api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
 
 # File uploads and client tools
 api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])

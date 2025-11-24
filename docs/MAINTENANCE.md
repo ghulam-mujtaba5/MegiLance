@@ -42,7 +42,8 @@ Check frontend and backend builds:
 ```
 
 ### Database Maintenance
-Scripts for database fixes and schema verification are located in `scripts/maintenance/`.
+Scripts for schema verification are in `scripts/maintenance/`.
+Turso migration removed Oracle wallet tasks; legacy scripts deprecated.
 Example:
 ```bash
 python scripts/maintenance/verify_schema.py

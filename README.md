@@ -18,7 +18,7 @@ description: High-level platform overview, quick start, architecture summary, an
 
 A comprehensive freelancing platform featuring AI-powered matching, blockchain-based payments, and enterprise-grade architecture.
 
-## 🎯 **NEW: Turso Database - Simple & Scalable!**
+## 🎯 Turso Database (Primary Storage)
 
 **Using Turso for database?** → See **[docs/TURSO_SETUP.md](docs/TURSO_SETUP.md)** 🚀
 
@@ -30,14 +30,19 @@ python -m uvicorn main:app --reload
 ```
 
 **Benefits:**
-- ✅ Free tier: 500 databases, 9GB storage, 1B reads/month
 - ✅ Edge replication for global low latency
-- ✅ SQLite-compatible (simple migration)
-- ✅ No complex setup (one URL + token)
-- ✅ Perfect for serverless deployments
+- ✅ SQLite-compatible (easy local dev & migration)
+- ✅ Simple provisioning (URL + auth token)
+- ✅ Efficient for serverless & container platforms
+- ✅ Eliminated legacy Oracle wallet complexity
 
-**Setup Docs:**
-- **[docs/TURSO_SETUP.md](docs/TURSO_SETUP.md)** - Complete Turso guide 📖
+Environment variables (example):
+```
+TURSO_DATABASE_URL=libsql://<db-name>-<org>.turso.io
+TURSO_AUTH_TOKEN=sk_turso_...
+```
+
+See **[docs/TURSO_SETUP.md](docs/TURSO_SETUP.md)** for full guide.
 
 ---
 
@@ -73,7 +78,7 @@ docker compose up -d
 ```
 Frontend (Next.js) → Backend (FastAPI) → Turso (libSQL)
                           ↓
-                    Local/Cloud Storage
+                    Local/Cloud Storage (static assets)
                           ↓
                     AI Service (optional)
 ```
@@ -96,10 +101,9 @@ Frontend (Next.js) → Backend (FastAPI) → Turso (libSQL)
 
 **Infrastructure:**
 - Docker Compose for local development
-- Turso for database (edge replicated)
-- Flexible deployment (any cloud platform)
-- Docker for containerization
-- Observability-ready (logging, rate limiting, health + future metrics)
+- Turso database (edge replicated distributed SQLite)
+- Flexible deployment (any cloud VM / container platform)
+- Observability-ready (structured logging, rate limiting, health endpoints; metrics planned)
 
 ## 💻 Local Development
 
@@ -129,7 +133,7 @@ docker compose -f docker-compose.dev.yml up --build
 **Services:**
 - Frontend: http://localhost:3000 (Hot Reload: ✓)
 - Backend API: http://localhost:8000/api/docs (Hot Reload: ✓)
-- Database: localhost:5432
+-- Database: Turso remote endpoint (libSQL) or local SQLite fallback
 
 **View logs:**
 ```pwsh

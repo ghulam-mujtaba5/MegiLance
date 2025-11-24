@@ -20,7 +20,7 @@ Baseline aligned with OWASP ASVS (selected controls), OWASP Top 10 2021, and pre
 | Source Code | Internal | Public portions (frontend) distinct from backend private logic |
 | User Accounts (PII: email) | Confidential | Minimal PII stored |
 | Credentials (JWT secrets, DB password) | Secret | Rotate & never commit |
-| Oracle Wallet | Secret | File permission 500, segregated mount |
+| Turso Auth Token | Secret | Stored in env var; rotate & restrict scope |
 
 ## 2. Threat Surface Summary
 | Vector | Risk | Current Control | Roadmap |
@@ -58,7 +58,7 @@ Baseline aligned with OWASP ASVS (selected controls), OWASP Top 10 2021, and pre
 ## 6. Secure Configuration Checklist (Backend Container)
 | Check | Command / Verification |
 |-------|-----------------------|
-| Wallet perms | `ls -ld wallet` == 500 |
+| Turso token scope | Validate token permissions (read/write) |
 | No secrets in image | `docker history` review build layers |
 | Running user (future) | Use non-root base image |
 

@@ -1,9 +1,21 @@
-# MegiLance — AWS Deployment Guide
+---
+title: AWS Deployment Guide (Deprecated)
+doc_version: 1.0.0
+last_updated: 2025-11-25
+status: deprecated
+owners: ["architecture", "ops"]
+related: ["DeploymentGuide.md", "Architecture.md", "TURSO_SETUP.md"]
+description: Legacy AWS-specific deployment instructions retained for reference; superseded by Turso-first, provider-neutral deployment model.
+---
+
+# MegiLance — AWS Deployment Guide (Deprecated)
+
+> @AI-HINT: This guide is deprecated. Current production stack uses Turso (libSQL) and provider-neutral container deployment. Use `DeploymentGuide.md` for active instructions.
 
 This guide turns the local Docker Compose setup into a production-ready AWS deployment, aligned with the architecture already captured in SystemArchitectureDiagrams.md and DeploymentGuide.md.
 
 - Compute: ECS Fargate (containers) behind an Application Load Balancer (ALB)
-- Database: Amazon RDS for PostgreSQL (Multi-AZ recommended)
+- Database: (Legacy) Amazon RDS PostgreSQL — replaced by Turso libSQL in current architecture
 - Storage: Amazon S3 for files
 - Networking: Dedicated VPC with public and private subnets, NAT Gateway
 - Security & Secrets: AWS Secrets Manager, IAM roles, Security Groups, AWS WAF (optional)
@@ -47,7 +59,7 @@ Create (or reuse) a VPC with:
   - Backend SG: allow 3000/8000 from ALB SG (depending on container port)
   - RDS SG: allow 5432 from Backend SG only
 
-## 3) Database (RDS PostgreSQL)
+## 3) Database (RDS PostgreSQL) [Legacy]
 
 - Engine: PostgreSQL (matching local dev version where feasible)
 - Multi-AZ: recommended for production
@@ -132,16 +144,25 @@ Certificates: Create ACM certs in us-east-1 for your domains and attach to ALB l
   - ECR repo names
   - GitHub OIDC to AWS or AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY (prefer OIDC)
 
-## 9) Environment variables summary
+## 9) Environment variables summary (Legacy vs Current)
 
 - Frontend (ECS):
   - NEXT_PUBLIC_BACKEND_URL=https://api.megilance.com
   - NEXT_ENABLE_PWA=1 (optional)
-- Backend (ECS):
+- Backend (Legacy ECS):
   - DATABASE_URL=postgresql+psycopg2://USER:PASSWORD@HOST:5432/DB (via Secrets)
   - JWT_SECRET=... (via Secrets)
   - BACKEND_CORS_ORIGINS=["https://app.megilance.com"]
   - AWS_S3_BUCKET=megilance-prod-files
+
+Current (Turso-based):
+```
+TURSO_DATABASE_URL=libsql://<db>-<org>.turso.io
+TURSO_AUTH_TOKEN=sk_turso_...
+JWT_SECRET=...
+BACKEND_CORS_ORIGINS=["https://app.megilance.com"]
+FILE_STORAGE_MODE=local   # or future object storage abstraction
+```
 
 ## 10) Region and naming
 
@@ -156,7 +177,7 @@ Certificates: Create ACM certs in us-east-1 for your domains and attach to ALB l
 
 ---
 
-Acceptance checklist:
+Acceptance checklist (Legacy AWS deployment):
 - [ ] ECR repos created; images pushed
 - [ ] VPC with public/private subnets and NAT
 - [ ] RDS provisioned; secret(s) stored

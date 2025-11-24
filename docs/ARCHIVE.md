@@ -22,6 +22,7 @@ Maintain a lightweight, production-ready repository while retaining institutiona
 - **Session / Test Reports**: BACKEND_AUTH_DEBUG_SESSION.md, PARALLEL_DEVELOPMENT_SESSION.md, SYSTEM_TESTING_REPORT_2025-11-24.md, COMPREHENSIVE_TESTING_REPORT_2025-11-25.md, TESTING_SESSION_COMPLETE.md
 - **Screenshots / Visual Captures**: top-level PNGs (homepage verification, admin dashboard states), `screenshots/` directory
 - **Backups**: migration-backup-20251112_* directories
+- **Legacy Oracle Artifacts**: Wallet config references, Oracle-specific deployment notes (superseded by Turso)
 - **Throwaway Scripts**: quick_test.py, test_fetch.html, test_login.html
 
 ## Relocations
@@ -49,6 +50,7 @@ If a removed artifact is unexpectedly needed:
 ## Future Policy
 - New transient artifacts (logs, screenshots) must not be committed.
 - Historical migrations documented instead of retaining raw backups.
+- Legacy vendor-specific artifacts (Oracle wallet, AWS-specific docs) marked deprecated rather than retained.
 - Large one-off reports summarized into living docs (Architecture, TestingStrategy).
 
 ---

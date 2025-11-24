@@ -15,7 +15,7 @@ description: High-level and deployment architecture (C4-lite) plus operational o
 ## 1. Logical Architecture (Context & Containers)
 ```
 +---------------+        HTTPS        +----------------+        Wallet TLS        +---------------------------+
-|   Frontend    |  ─────────────────▶ |    Backend     |  ─────────────────────▶  | Oracle Autonomous DB 23ai |
+|   Frontend    |  ─────────────────▶ |    Backend     |  ─────────────────────▶  | Turso (libSQL – distributed SQLite) |
 | Next.js 14    |                     | FastAPI / Uvicorn|                         | (Managed, encrypted)      |
 +---------------+                     +----------------+                          +---------------------------+
         │                                      │
@@ -28,16 +28,16 @@ description: High-level and deployment architecture (C4-lite) plus operational o
 
 ## 2. Deployment Architecture (Profiles)
 Current supported deployment profiles:
-- minimal (oracle-vm + backend + nginx, external frontend hosting)
+- minimal (single VM/container set: backend + nginx; frontend externally hosted) [Oracle VM legacy removed]
 - dev (docker compose: frontend, backend, local Turso/SQLite)
 - prod (planned: consolidated compose with observability sidecars)
 ```
-Oracle VM (VM.Standard.E2.1.Micro)
+Legacy Oracle VM profile DECOMMISSIONED. Current baseline: containerized deployment on generic cloud VM or platform service.
   ├─ docker-compose.minimal.yml
   │   ├─ backend (FastAPI, Gunicorn/Uvicorn workers)
   │   └─ nginx (reverse proxy, static caching)
   │
-  └─ Attached: Oracle Wallet (secure client credentials)
+  └─ No wallet dependency (removed with Turso migration)
 
 Frontend (DigitalOcean App Platform)
   └─ Build → Deploy → Serve static + SSR over Node runtime
@@ -49,14 +49,14 @@ Frontend (DigitalOcean App Platform)
 | Frontend | UI rendering, theme mgmt, auth token storage, API calls | Next.js 14, TypeScript | Horizontal (platform-managed) |
 | Nginx | Reverse proxy, compression, static caching, security headers | Nginx | Add rate limiting / WAF |
 | Backend API | Auth, domain logic, validation, orchestration | FastAPI, Pydantic, SQLAlchemy | Split services (user, project, messaging) |
-| Database | Persistent relational storage & SQL features | Turso libSQL (dev) / Oracle 23ai (minimal prod) | Scale via service tier (future) |
+| Database | Persistent relational storage & SQL features | Turso libSQL (primary) | Scale via edge replicas / service tier |
 | AI (Future) | Recommendation, skill inference, NLP | FastAPI + ML libs | Separate microservice + GPU (if needed) |
 
 ## 4. Data Flow (Authentication Sequence)
 ```
 [User] → /api/auth/login (POST credentials)
   → Validate (FastAPI / Pydantic)
-  → Query user (Oracle DB)
+  → Query user (Turso libSQL)
   → Issue JWT access (30m) + refresh (7d)
   → Store minimal session claims in token (stateless)
 [User] ← Tokens stored (httpOnly cookie or memory) → Subsequent API calls attach Authorization: Bearer <token>
@@ -65,7 +65,7 @@ Frontend (DigitalOcean App Platform)
 ## 5. Persistence Model Decisions
 | Aspect | Choice | Rationale |
 |--------|--------|-----------|
-| DB | Turso libSQL (primary target) / Oracle Autonomous DB 23ai (legacy minimal) | Turso: distributed SQLite; Oracle: managed, wallet security |
+| DB | Turso libSQL (primary) | Distributed SQLite; edge replication; zero wallet management |
 | ORM / Access | SQLAlchemy + Async | Balance productivity & performance |
 | Migrations | Future Alembic integration | Deterministic schema evolution |
 | Transactions | Unit-of-work per request dependency | Consistency & rollback safety |
@@ -113,7 +113,7 @@ Frontend (DigitalOcean App Platform)
 
 ## 11. Build & Release Flow
 ```
-Commit (main) ──▶ GitHub Repo ──▶ Webhook → Oracle VM:
+Commit (main) ──▶ GitHub Repo ──▶ CI/CD → Deploy Target (VM / container platform):
   git pull → docker-compose up --build → health test → live
 ```
 Future upgrade: Add canary or blue/green via versioned compose profiles.
@@ -122,7 +122,7 @@ Future upgrade: Add canary or blue/green via versioned compose profiles.
 | ID | Decision | Status | Rationale |
 |----|----------|--------|-----------|
 | ADR-001 | FastAPI backend | Accepted | Async & typed | 
-| ADR-002 | Oracle Autonomous DB | Accepted | Free tier + managed |
+| ADR-002 | Oracle Autonomous DB | Deprecated | Replaced by Turso migration (simpler ops, edge performance) |
 | ADR-003 | Remove AI from minimal VM | Accepted | Memory constraint |
 | ADR-004 | Webhook CD instead of Actions | Accepted | Requirement constraint |
 | ADR-005 | Docker Compose (minimal) | Accepted | Simplicity & portability |
