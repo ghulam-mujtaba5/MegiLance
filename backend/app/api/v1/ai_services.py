@@ -15,7 +15,85 @@ from app.services.ai_matching import get_project_matches
 from app.services.price_estimation import estimate_project, estimate_freelancer_rate_quick
 from app.services.fraud_detection import FraudDetectionService
 
-router = APIRouter(prefix="/ai", tags=["AI Services"])
+router = APIRouter(tags=["AI Services"])  # Prefix is added in routers.py
+
+
+# ============ Chatbot Endpoint ============
+
+@router.post("/chat")
+async def ai_chatbot(
+    message: str,
+    db: Session = Depends(get_db)
+):
+    """
+    AI Chatbot endpoint - responds to user queries
+    
+    **No authentication required** - public chatbot
+    """
+    # Simple rule-based responses for now
+    message_lower = message.lower()
+    
+    if "hello" in message_lower or "hi" in message_lower:
+        return {
+            "response": "Hello! I'm MegiLance AI assistant. How can I help you today?",
+            "confidence": 0.95
+        }
+    elif "price" in message_lower or "cost" in message_lower:
+        return {
+            "response": "I can help you estimate project costs! Please use the /ai/estimate-price endpoint with your project details.",
+            "confidence": 0.9
+        }
+    elif "freelancer" in message_lower:
+        return {
+            "response": "Looking for freelancers? I can match you with the best talent for your project. Try posting a project first!",
+            "confidence": 0.85
+        }
+    elif "help" in message_lower:
+        return {
+            "response": "I can assist with: project price estimation, freelancer matching, and answering questions about MegiLance. What would you like to know?",
+            "confidence": 0.9
+        }
+    else:
+        return {
+            "response": "Thanks for your message! I'm still learning. For now, try asking about pricing, freelancers, or help.",
+            "confidence": 0.6
+        }
+
+
+# ============ Fraud Detection Endpoint ============
+
+@router.post("/fraud-check")
+async def fraud_detection(
+    text: str,
+    db: Session = Depends(get_db)
+):
+    """
+    AI Fraud Detection - analyzes text for potential fraud indicators
+    
+    **No authentication required** - can be used during project posting
+    """
+    # Simple keyword-based fraud detection
+    fraud_keywords = [
+        "wire money", "western union", "moneygram", "advance payment",
+        "upfront fee", "processing fee", "guarantee", "risk free",
+        "click here", "urgent", "act now", "limited time"
+    ]
+    
+    text_lower = text.lower()
+    detected_flags = []
+    
+    for keyword in fraud_keywords:
+        if keyword in text_lower:
+            detected_flags.append(keyword)
+    
+    risk_score = min(len(detected_flags) * 15, 100)
+    
+    return {
+        "risk_score": risk_score,
+        "risk_level": "high" if risk_score > 60 else "medium" if risk_score > 30 else "low",
+        "flags": detected_flags,
+        "message": "Potential fraud indicators detected" if detected_flags else "No obvious fraud indicators"
+    }
 
 
 @router.get("/match-freelancers/{project_id}")

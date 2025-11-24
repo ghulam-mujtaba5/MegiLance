@@ -1,0 +1,75 @@
+{
+  "working": [
+    {
+      "feature": "Health - Live endpoint",
+      "details": "{'status': 'ok'}"
+    },
+    {
+      "feature": "Health - Ready endpoint",
+      "details": "{'status': 'ready'}"
+    },
+    {
+      "feature": "Admin authentication",
+      "details": "Token: eyJhbGciOiJIUzI1NiIs..."
+    },
+    {
+      "feature": "Admin - Dashboard stats",
+      "details": "Users: 0"
+    }
+  ],
+  "broken": [
+    {
+      "feature": "Admin - List users",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Admin - Filter users by role",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Admin - List projects",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Admin - List payments",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Admin - Analytics overview",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Admin - Support tickets",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Admin - AI usage monitoring",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Admin - Platform settings",
+      "details": "{'status': 401, 'text': '{\"detail\":\"Could not validate credentials\"}'}"
+    },
+    {
+      "feature": "Client authentication",
+      "details": "Status: 401, Response: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "feature": "Freelancer authentication",
+      "details": "Status: 401, Response: {\"detail\":\"Incorrect email or password\"}"
+    },
+    {
+      "feature": "AI - Chatbot",
+      "details": "{'status': 404, 'text': '{\"detail\":\"Not Found\"}'}"
+    },
+    {
+      "feature": "AI - Fraud detection",
+      "details": "{'status': 404, 'text': '{\"detail\":\"Not Found\"}'}"
+    },
+    {
+      "feature": "AI - Price estimator",
+      "details": "{'status': 404, 'text': '{\"detail\":\"Not Found\"}'}"
+    }
+  ],
+  "missing": []
+}

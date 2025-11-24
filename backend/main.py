@@ -12,7 +12,8 @@ from slowapi.errors import RateLimitExceeded
 from app.api.routers import api_router
 from app.core.config import get_settings
 from app.core.rate_limit import limiter
-from app.core.websocket import socket_app, websocket_manager
+# Temporarily disabled WebSocket for debugging
+# from app.core.websocket import socket_app, websocket_manager
 from app.db.init_db import init_db
 from app.db.session import get_engine
 
@@ -28,11 +29,11 @@ app = FastAPI(
     openapi_url="/api/openapi.json"
 )
 
-# Add rate limiting state to app
-app.state.limiter = limiter
+# Add rate limiting state to app - TEMPORARILY DISABLED FOR DEBUGGING
+# app.state.limiter = limiter
 
-# Add rate limit exception handler
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# Add rate limit exception handler - TEMPORARILY DISABLED FOR DEBUGGING
+# app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -44,8 +45,8 @@ app.add_middleware(
     max_age=3600,
 )
 
-# Mount Socket.IO app for WebSocket support
-app.mount("/ws", socket_app)
+# Mount Socket.IO app for WebSocket support - TEMPORARILY DISABLED FOR DEBUGGING
+# app.mount("/ws", socket_app)
 
 
 @app.on_event("startup")
@@ -53,11 +54,11 @@ async def on_startup():
     try:
         engine = get_engine()
         init_db(engine)
-        print("✅ Database initialized successfully")
-        print("ℹ️  Using remote Turso database directly (no local cache)")
+        print("[OK] Database initialized successfully")
+        print("[INFO] Using remote Turso database directly (no local cache)")
     except Exception as e:
-        print(f"⚠️ Database initialization failed: {e}")
-        print("⚠️ App will continue but database-dependent features will not work")
+        print(f"[WARNING] Database initialization failed: {e}")
+        print("[WARNING] App will continue but database-dependent features will not work")
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -109,3 +110,9 @@ def api_root():
 
 
 app.include_router(api_router, prefix="/api")
+
+if __name__ == "__main__":
+    import uvicorn
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")

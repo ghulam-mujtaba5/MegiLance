@@ -4,7 +4,7 @@ from .v1 import (
     auth, client, upload, ai_services,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
-    stripe, websocket, uploads
+    stripe, websocket, uploads, portal_endpoints, analytics
 )
 
 
@@ -56,8 +56,8 @@ api_router.include_router(refunds.router, prefix="", tags=["refunds"])
 # Search functionality
 api_router.include_router(search.router, prefix="", tags=["search"])
 
-# Analytics and reporting (temporarily disabled for quick startup)
-# api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
+# Analytics and reporting
+api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 
 # File uploads and client tools
 api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])
@@ -66,6 +66,9 @@ api_router.include_router(client.router, prefix="/client", tags=["client"])
 
 # AI services (excluded from implementation but keeping route)
 api_router.include_router(ai_services.router, prefix="/ai", tags=["ai"])
+
+# Portal endpoints (client and freelancer dashboards)
+api_router.include_router(portal_endpoints.router, prefix="", tags=["portals"])
 
 # Mock endpoints (DISABLED - using real database endpoints)
 # api_router.include_router(mock.router, prefix="", tags=["mock"])

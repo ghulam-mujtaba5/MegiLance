@@ -88,7 +88,8 @@ class RecentActivity(BaseModel):
 
 async def get_admin_user(current_user: User = Depends(get_current_active_user)):
     """Verify that current user is an admin"""
-    if current_user.user_type != 'Admin':
+    # Check user_type field which is consistently available in all contexts
+    if current_user.user_type not in ['Admin', 'admin']:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
@@ -475,4 +476,173 @@ async def toggle_user_status(
         "success": True,
         "user_id": user_id,
         "is_active": user.is_active
+    }
+
+
+# ============ Additional Admin Endpoints ============
+
+@router.get("/admin/users")
+async def get_admin_users(
+    role: Optional[str] = Query(None, description="Filter by role"),
+    search: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """List all users - Admin endpoint"""
+    return await list_all_users(user_type=role, search=search, skip=skip, limit=limit, db=db, admin=admin)
+
+
+@router.get("/admin/projects")
+async def get_admin_projects(
+    status: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Get all projects with admin access"""
+    query = db.query(Project)
+    
+    if status:
+        query = query.filter(Project.status == status)
+    
+    total = query.count()
+    projects = query.order_by(desc(Project.created_at)).offset(skip).limit(limit).all()
+    
+    return {
+        "total": total,
+        "projects": [
+            {
+                "id": p.id,
+                "title": p.title,
+                "description": p.description,
+                "status": p.status,
+                "budget_min": p.budget_min,
+                "budget_max": p.budget_max,
+                "client_id": p.client_id,
+                "created_at": p.created_at,
+                "updated_at": p.updated_at
+            }
+            for p in projects
+        ]
+    }
+
+
+@router.get("/admin/payments")
+async def get_admin_payments(
+    status: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Get all payments with admin access"""
+    query = db.query(Payment)
+    
+    if status:
+        query = query.filter(Payment.status == status)
+    
+    total = query.count()
+    payments = query.order_by(desc(Payment.created_at)).offset(skip).limit(limit).all()
+    
+    return {
+        "total": total,
+        "payments": [
+            {
+                "id": p.id,
+                "amount": float(p.amount),
+                "status": p.status,
+                "payment_type": p.payment_type,
+                "from_user_id": p.from_user_id,
+                "to_user_id": p.to_user_id,
+                "description": p.description,
+                "created_at": p.created_at
+            }
+            for p in payments
+        ]
+    }
+
+
+@router.get("/admin/analytics/overview")
+async def get_analytics_overview(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Get platform analytics overview"""
+    return {
+        "users": {
+            "total": db.query(func.count(User.id)).scalar(),
+            "active": db.query(func.count(User.id)).filter(User.is_active == True).scalar(),
+            "clients": db.query(func.count(User.id)).filter(User.user_type == 'Client').scalar(),
+            "freelancers": db.query(func.count(User.id)).filter(User.user_type == 'Freelancer').scalar()
+        },
+        "projects": {
+            "total": db.query(func.count(Project.id)).scalar(),
+            "open": db.query(func.count(Project.id)).filter(Project.status == 'open').scalar(),
+            "in_progress": db.query(func.count(Project.id)).filter(Project.status == 'in_progress').scalar(),
+            "completed": db.query(func.count(Project.id)).filter(Project.status == 'completed').scalar()
+        },
+        "revenue": {
+            "total": float(db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(Payment.status == 'completed').scalar()),
+            "pending": float(db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(Payment.status == 'pending').scalar())
+        }
+    }
+
+
+@router.get("/admin/support/tickets")
+async def get_support_tickets(
+    status: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Get support tickets - placeholder for now"""
+    # TODO: Implement support ticket system
+    return {
+        "total": 0,
+        "tickets": [],
+        "message": "Support ticket system not yet implemented"
+    }
+
+
+@router.get("/admin/ai/usage")
+async def get_ai_usage(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Get AI usage statistics - placeholder for now"""
+    # TODO: Implement AI usage tracking
+    return {
+        "total_requests": 0,
+        "chatbot_queries": 0,
+        "fraud_checks": 0,
+        "price_estimates": 0,
+        "message": "AI usage tracking not yet implemented"
+    }
+
+
+@router.get("/admin/settings")
+async def get_platform_settings(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Get platform settings"""
+    return {
+        "platform": {
+            "name": "MegiLance",
+            "version": "1.0.0",
+            "maintenance_mode": False
+        },
+        "fees": {
+            "platform_fee_percentage": 12.5,
+            "payment_processing_fee": 2.9
+        },
+        "features": {
+            "ai_enabled": True,
+            "blockchain_enabled": True,
+            "escrow_enabled": True
+        }
     }

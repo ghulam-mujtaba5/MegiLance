@@ -29,14 +29,14 @@ const DEV_CREDENTIALS: DevCredential[] = [
     icon: FaUserShield,
   },
   {
-    email: 'john.dev@example.com',
+    email: 'freelancer1@example.com',
     password: 'Password123!',
     role: 'freelancer',
     label: 'Freelancer',
     icon: FaUserTie,
   },
   {
-    email: 'jane.client@example.com',
+    email: 'client1@example.com',
     password: 'Password123!',
     role: 'client',
     label: 'Client',

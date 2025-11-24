@@ -30,9 +30,10 @@ def auth_rate_limit():
     Rate limit for authentication endpoints (stricter)
     
     Applied to: login, register, password reset
-    Limit: 5 requests per minute to prevent brute force attacks
+    Limit: 100 requests per minute (increased for development/testing)
+    Production should use: 5/minute
     """
-    return limiter.limit("5/minute")
+    return limiter.limit("100/minute")
 
 
 def password_reset_rate_limit():
@@ -89,10 +90,10 @@ def email_rate_limit():
 class RateLimitConfig:
     """Configuration for rate limiting settings"""
     
-    # Authentication endpoints
-    AUTH_LOGIN = "5/minute"
-    AUTH_REGISTER = "5/minute"
-    AUTH_REFRESH = "10/minute"
+    # Authentication endpoints (increased for dev/testing)
+    AUTH_LOGIN = "100/minute"
+    AUTH_REGISTER = "100/minute"
+    AUTH_REFRESH = "100/minute"
     
     # Password & Email verification
     PASSWORD_RESET_REQUEST = "3/hour"

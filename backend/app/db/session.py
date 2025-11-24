@@ -28,9 +28,9 @@ def get_turso_client():
                 url=settings.turso_database_url,
                 auth_token=settings.turso_auth_token
             )
-            print(f"✅ Turso HTTP client created: {settings.turso_database_url}")
+            print(f"[OK] Turso HTTP client created: {settings.turso_database_url}")
         except Exception as e:
-            print(f"⚠️ Failed to create Turso client: {e}")
+            print(f"[WARNING] Failed to create Turso client: {e}")
     return _turso_client
 
 def get_engine():
@@ -45,7 +45,7 @@ def get_engine():
     if _engine is None:
         try:
             db_url = settings.database_url or "sqlite:///:memory:"
-            print(f"✅ Database engine created: {db_url}")
+            print(f"[OK] Database engine created: {db_url}")
             connect_args = {}
             if db_url.startswith("file:") or db_url.startswith("sqlite"):
                 connect_args = {"check_same_thread": False}
@@ -93,11 +93,11 @@ def get_db():
     print(f"   Session created: {db}")
     try:
         yield db
-        print(f"   ✅ Session completed successfully")
+        print(f"   [OK] Session completed successfully")
     except Exception as e:
-        print(f"   ❌ Session error: {e}")
+        print(f"   [ERROR] Session error: {e}")
         db.rollback()
         raise
     finally:
-        print(f"   🔒 Closing session")
+        print(f"   [INFO] Closing session")
         db.close()

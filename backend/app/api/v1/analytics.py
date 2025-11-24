@@ -30,7 +30,7 @@ from app.schemas.analytics_schemas import (
     SortByEnum
 )
 from app.models.user import User
-from app.core.rate_limit import api_rate_limit
+# from app.core.rate_limit import api_rate_limit  # Temporarily disabled - causes issues
 
 router = APIRouter()
 
@@ -43,7 +43,7 @@ router = APIRouter()
     summary="Get user registration trends",
     description="Retrieve user registration statistics over time with daily, weekly, or monthly aggregation"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_registration_trends(
     start_date: datetime = Query(..., description="Start date for analysis"),
     end_date: datetime = Query(..., description="End date for analysis"),
@@ -66,7 +66,7 @@ async def get_registration_trends(
     summary="Get active user statistics",
     description="Retrieve statistics about active, verified, and 2FA-enabled users"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_active_user_stats(
     days: int = Query(default=30, ge=1, le=365, description="Number of days to look back"),
     current_user: User = Depends(require_admin),
@@ -87,7 +87,7 @@ async def get_active_user_stats(
     summary="Get user location distribution",
     description="Get user count by location (top 20)"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_location_distribution(
     current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
@@ -109,7 +109,7 @@ async def get_location_distribution(
     summary="Get project statistics",
     description="Get overall project statistics including status breakdown and averages"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_project_stats(
     current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
@@ -129,7 +129,7 @@ async def get_project_stats(
     summary="Get project completion rate",
     description="Calculate project completion metrics"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_completion_rate(
     current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
@@ -149,7 +149,7 @@ async def get_completion_rate(
     summary="Get popular project categories",
     description="Get most popular project categories by project count"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_popular_categories(
     limit: int = Query(default=10, ge=1, le=50, description="Number of categories to return"),
     current_user: User = Depends(require_admin),
@@ -172,7 +172,7 @@ async def get_popular_categories(
     summary="Get revenue statistics",
     description="Get revenue statistics for specified date range"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_revenue_stats(
     start_date: datetime = Query(..., description="Start date"),
     end_date: datetime = Query(..., description="End date"),
@@ -194,7 +194,7 @@ async def get_revenue_stats(
     summary="Get revenue trends",
     description="Get revenue trends over time with daily, weekly, or monthly aggregation"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_revenue_trends(
     start_date: datetime = Query(..., description="Start date"),
     end_date: datetime = Query(..., description="End date"),
@@ -219,7 +219,7 @@ async def get_revenue_trends(
     summary="Get top freelancers",
     description="Get top performing freelancers ranked by earnings, rating, or project count"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_top_freelancers(
     limit: int = Query(default=10, ge=1, le=100, description="Number of results"),
     sort_by: SortByEnum = Query(default=SortByEnum.earnings, description="Sort criteria"),
@@ -241,7 +241,7 @@ async def get_top_freelancers(
     summary="Get freelancer success metrics",
     description="Get success rate and performance metrics for a specific freelancer"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_freelancer_success_rate(
     freelancer_id: int,
     current_user: User = Depends(get_current_user),
@@ -269,7 +269,7 @@ async def get_freelancer_success_rate(
     summary="Get top clients",
     description="Get top clients by total spending"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_top_clients(
     limit: int = Query(default=10, ge=1, le=100, description="Number of results"),
     current_user: User = Depends(require_admin),
@@ -292,7 +292,7 @@ async def get_top_clients(
     summary="Get platform health metrics",
     description="Get overall platform health indicators"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_platform_health(
     current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)
@@ -312,7 +312,7 @@ async def get_platform_health(
     summary="Get engagement metrics",
     description="Get user engagement statistics for specified period"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_engagement_metrics(
     days: int = Query(default=30, ge=1, le=365, description="Number of days to look back"),
     current_user: User = Depends(require_admin),
@@ -334,7 +334,7 @@ async def get_engagement_metrics(
     summary="Get dashboard summary",
     description="Get comprehensive dashboard summary with key metrics"
 )
-@api_rate_limit()
+# @api_rate_limit()  # Temporarily disabled
 async def get_dashboard_summary(
     current_user: User = Depends(require_admin),
     db: Session = Depends(get_db)

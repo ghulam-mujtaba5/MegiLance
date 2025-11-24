@@ -1,0 +1,17 @@
+services:      
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./db:/data/db:ro
+      - ./uploads:/app/uploads
+    env_file:
+      - ./backend/.env
+    environment:
+      - ENVIRONMENT=development
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/live').read()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

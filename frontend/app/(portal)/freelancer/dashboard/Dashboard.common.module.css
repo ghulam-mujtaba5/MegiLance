@@ -383,10 +383,9 @@
     min-height: 44px; /* Minimum touch target size */
   }
   
-  /* Apply touch target improvements to buttons, links, and role="button" elements within the dashboard */
-  button:not(.button),
-  a:not(.button):not(.quickAction),
-  [role="button"]:not(.button) {
+  /* Apply touch target improvements to buttons and links within the dashboard */
+  .container button,
+  .container a:not(.quickAction) {
     min-height: 44px;
     min-width: 44px;
     display: inline-flex;

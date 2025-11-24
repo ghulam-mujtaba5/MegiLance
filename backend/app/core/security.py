@@ -35,19 +35,15 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
         try:
             print(f"   🌐 Querying Turso directly...")
             
-            # Use asyncio.run with proper cleanup
-            async def query_and_verify():
-                try:
-                    result = await turso_client.execute(
-                        "SELECT id, email, hashed_password, name, role, is_active, user_type, joined_at, created_at FROM users WHERE email = ?",
-                        [email]
-                    )
-                    return result
-                finally:
-                    # Ensure session is closed
-                    await turso_client.close()
+            # Use asyncio.run WITHOUT closing session (shared client)
+            async def query_user():
+                result = await turso_client.execute(
+                    "SELECT id, email, hashed_password, name, role, is_active, user_type, joined_at, created_at FROM users WHERE email = ?",
+                    [email]
+                )
+                return result
             
-            result = asyncio.run(query_and_verify())
+            result = asyncio.run(query_user())
             
             if result.rows:
                 row = result.rows[0]
@@ -185,21 +181,42 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     turso_client = get_turso_client()
     if turso_client:
         try:
-            result = asyncio.run(turso_client.execute(
-                "SELECT id, email, hashed_password, name, role, is_active FROM users WHERE email = ?",
-                [email]
-            ))
+            # Use asyncio.run for Turso query in sync context
+            async def query_turso():
+                return await turso_client.execute(
+                    "SELECT id, email, hashed_password, name, role, is_active, user_type, joined_at, created_at FROM users WHERE email = ?",
+                    [email]
+                )
+            result = asyncio.run(query_turso())
             
             if result.rows:
                 row = result.rows[0]
-                return User(
+                from datetime import datetime
+                
+                # Parse dates safely
+                def parse_date(val):
+                    if not val:
+                        return datetime.utcnow()
+                    if isinstance(val, datetime):
+                        return val
+                    try:
+                        return datetime.fromisoformat(str(val).replace('Z', '+00:00'))
+                    except:
+                        return datetime.utcnow()
+                
+                user = User(
                     id=row[0],
                     email=row[1],
                     hashed_password=row[2],
-                    full_name=row[3],  # 'name' column in Turso
+                    name=row[3],
                     role=row[4],
-                    is_active=bool(row[5])
+                    is_active=bool(row[5]),
+                    user_type=row[6],
+                    joined_at=parse_date(row[7]),
+                    created_at=parse_date(row[8])
                 )
+                print(f"✅ get_current_user from Turso: id={user.id}, email={user.email}, role={user.role}, user_type={user.user_type}")
+                return user
         except Exception as e:
             print(f"⚠️ Turso query failed in get_current_user: {e}")
     

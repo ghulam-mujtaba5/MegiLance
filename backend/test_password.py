@@ -3,9 +3,9 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# The hash we set in Turso
-hash_in_db = "$2b$12$qOfuTHPGetkM0vgtMAMTM.bDvoA9SKQrYu1OcuX3zsxyKzse2G.fy"
-password = "password123"
+# The hash in Turso for freelancer1
+hash_in_db = "$2b$12$/a7xuoKlIJ7wI0GZuDpFFetKHbmOlAt7fJqR6nhQ1lW67KV/s.8Ea"
+password = "Password123!"
 
 print(f"Testing password verification...")
 print(f"Password: {password}")

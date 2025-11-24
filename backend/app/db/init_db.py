@@ -15,17 +15,17 @@ def init_db(engine: Engine) -> None:
         existing_tables = inspector.get_table_names()
         
         if not existing_tables:
-            print("📊 Creating database tables...")
+            print("[INFO] Creating database tables...")
             Base.metadata.create_all(bind=engine)
-            print("✅ Database tables created successfully")
+            print("[OK] Database tables created successfully")
         else:
-            print(f"✅ Database already initialized ({len(existing_tables)} tables found)")
+            print(f"[OK] Database already initialized ({len(existing_tables)} tables found)")
             
     except Exception as e:
-        print(f"⚠️ Database initialization error: {e}")
-        print("⚠️ Attempting to create tables anyway...")
+        print(f"[WARNING] Database initialization error: {e}")
+        print("[WARNING] Attempting to create tables anyway...")
         try:
             Base.metadata.create_all(bind=engine)
-            print("✅ Database tables created")
+            print("[OK] Database tables created")
         except Exception as create_error:
-            print(f"❌ Failed to create tables: {create_error}")
+            print(f"[ERROR] Failed to create tables: {create_error}")
