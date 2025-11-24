@@ -26,14 +26,14 @@ def get_password_hash(password: str) -> str:
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     """Authenticate user against Turso remote database"""
-    print(f"\n🔍 AUTHENTICATE_USER:")
+    print(f"\n[AUTH] AUTHENTICATE_USER:")
     print(f"   Email: {email}")
     
     # Try Turso first for fresh data
     turso_client = get_turso_client()
     if turso_client:
         try:
-            print(f"   🌐 Querying Turso directly...")
+            print(f"   [TURSO] Querying Turso directly...")
             
             # Use asyncio.run WITHOUT closing session (shared client)
             async def query_user():
@@ -47,7 +47,7 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
             
             if result.rows:
                 row = result.rows[0]
-                print(f"   ✅ User found in Turso")
+                print(f"   [OK] User found in Turso")
                 print(f"   Row data: ID={row[0]}, Email={row[1]}, Name={row[3]}, Role={row[4]}, Active={row[5]}")
                 print(f"   Hash preview: {row[2][:30] if row[2] else 'None'}...")
                 
@@ -88,23 +88,23 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
                         joined_at=parse_date(row[7]),
                         created_at=parse_date(row[8])
                     )
-                    print(f"   ✅ Authentication successful via Turso")
+                    print(f"   [SUCCESS] Authentication successful via Turso")
                     return user
                 else:
-                    print(f"   ❌ Password verification failed")
+                    print(f"   [FAIL] Password verification failed")
                     return None
             else:
-                print(f"   ❌ No user with email {email} in Turso")
+                print(f"   [FAIL] No user with email {email} in Turso")
                 return None
         except Exception as e:
-            print(f"   ⚠️ Turso query failed: {e}, falling back to local DB")
+            print(f"   [WARNING] Turso query failed: {e}, falling back to local DB")
     
     # Fallback to local DB (for dev environments without Turso)
-    print(f"   📂 Falling back to local DB...")
+    print(f"   [FALLBACK] Falling back to local DB...")
     user = db.query(User).filter(User.email == email).first()
     
     if not user:
-        print(f"   ❌ No user with email {email}")
+        print(f"   [FAIL] No user with email {email}")
         return None
     
     print(f"   User ID: {user.id}, Role: {user.role}")
@@ -114,10 +114,10 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     print(f"   Password valid: {password_valid}")
     
     if not password_valid:
-        print(f"   ❌ Password verification failed")
+        print(f"   [FAIL] Password verification failed")
         return None
     
-    print(f"   ✅ Authentication successful")
+    print(f"   [SUCCESS] Authentication successful")
     return user
 
 
@@ -215,10 +215,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
                     joined_at=parse_date(row[7]),
                     created_at=parse_date(row[8])
                 )
-                print(f"✅ get_current_user from Turso: id={user.id}, email={user.email}, role={user.role}, user_type={user.user_type}")
+                print(f"[OK] get_current_user from Turso: id={user.id}, email={user.email}, role={user.role}, user_type={user.user_type}")
                 return user
         except Exception as e:
-            print(f"⚠️ Turso query failed in get_current_user: {e}")
+            print(f"[WARNING] Turso query failed in get_current_user: {e}")
     
     # Fallback to local DB
     user = db.query(User).filter(User.email == email).first()

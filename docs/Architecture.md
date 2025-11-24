@@ -1,6 +1,18 @@
+---
+title: System Architecture
+doc_version: 1.0.0
+last_updated: 2025-11-24
+status: active
+owners: ["architecture", "backend"]
+related: ["API_Overview.md", "SecurityCompliance.md", "Observability.md", "PerformanceScalability.md", "TestingStrategy.md", "ENGINEERING_STANDARDS_2025.md"]
+description: High-level and deployment architecture (C4-lite) plus operational overlays and current gap register.
+---
+
 # System Architecture
 
-## 1. Logical Architecture
+> @AI-HINT: This document defines the current platform structure (context, containers, components), deployment topology, cross-cutting concerns, and tracked technical debt. It is the canonical source for system-wide architectural decisions.
+
+## 1. Logical Architecture (Context & Containers)
 ```
 +---------------+        HTTPS        +----------------+        Wallet TLS        +---------------------------+
 |   Frontend    |  ─────────────────▶ |    Backend     |  ─────────────────────▶  | Oracle Autonomous DB 23ai |
@@ -14,7 +26,11 @@
   End Users (Client / Freelancer)
 ```
 
-## 2. Deployment Architecture (Current Minimal)
+## 2. Deployment Architecture (Profiles)
+Current supported deployment profiles:
+- minimal (oracle-vm + backend + nginx, external frontend hosting)
+- dev (docker compose: frontend, backend, local Turso/SQLite)
+- prod (planned: consolidated compose with observability sidecars)
 ```
 Oracle VM (VM.Standard.E2.1.Micro)
   ├─ docker-compose.minimal.yml
@@ -27,13 +43,13 @@ Frontend (DigitalOcean App Platform)
   └─ Build → Deploy → Serve static + SSR over Node runtime
 ```
 
-## 3. Component Responsibilities
+## 3. Component Responsibilities (Component Diagram)
 | Component | Responsibilities | Tech | Scaling Path |
 |-----------|-----------------|------|--------------|
 | Frontend | UI rendering, theme mgmt, auth token storage, API calls | Next.js 14, TypeScript | Horizontal (platform-managed) |
 | Nginx | Reverse proxy, compression, static caching, security headers | Nginx | Add rate limiting / WAF |
 | Backend API | Auth, domain logic, validation, orchestration | FastAPI, Pydantic, SQLAlchemy | Split services (user, project, messaging) |
-| Database | Persistent relational storage & SQL features | Oracle 23ai Autonomous | Scale via service tier (future) |
+| Database | Persistent relational storage & SQL features | Turso libSQL (dev) / Oracle 23ai (minimal prod) | Scale via service tier (future) |
 | AI (Future) | Recommendation, skill inference, NLP | FastAPI + ML libs | Separate microservice + GPU (if needed) |
 
 ## 4. Data Flow (Authentication Sequence)
@@ -49,7 +65,7 @@ Frontend (DigitalOcean App Platform)
 ## 5. Persistence Model Decisions
 | Aspect | Choice | Rationale |
 |--------|--------|-----------|
-| DB | Oracle Autonomous DB 23ai | Managed, free tier eligible, wallet security |
+| DB | Turso libSQL (primary target) / Oracle Autonomous DB 23ai (legacy minimal) | Turso: distributed SQLite; Oracle: managed, wallet security |
 | ORM / Access | SQLAlchemy + Async | Balance productivity & performance |
 | Migrations | Future Alembic integration | Deterministic schema evolution |
 | Transactions | Unit-of-work per request dependency | Consistency & rollback safety |
@@ -121,21 +137,43 @@ Future upgrade: Add canary or blue/green via versioned compose profiles.
 | Analytics | Event ingestion + warehouse (DuckDB / ClickHouse) |
 | AI Services | Isolated container with resource requests |
 
-## 14. Current Gaps / Technical Debt
-| Gap | Impact | Planned Action |
-|-----|--------|----------------|
-| Missing Alembic migrations | Risk of drift | Introduce migration baseline |
-| Lack of structured logging | Harder diagnostics | Add log config module |
-| No automated tests in CI | Manual regression risk | Add lightweight test runner (local) |
-| No rate limiting | Abuse potential | Introduce Nginx or app-level limiter |
+## 14. Current Gaps / Technical Debt Register
+Status legend: ACCEPTED, IN_PROGRESS, PLANNED, MITIGATED.
+| Gap | Impact | Status | Planned Action |
+|-----|--------|--------|----------------|
+| Missing Alembic migrations | Risk of drift | PLANNED | Introduce migration baseline + initial revision |
+| Structured logging incomplete | Harder diagnostics | IN_PROGRESS | Finalize JSON formatter + request_id middleware |
+| No automated tests in CI | Manual regression risk | PLANNED | Add GitHub Actions workflow reusing `comprehensive_test.py` |
+| Rate limiting coverage | Abuse potential | IN_PROGRESS | Expand beyond auth endpoints; add Nginx limits |
+| Dual DB modes divergence | Complexity & config drift | PLANNED | Formalize environment-specific DB selection contract |
+| Secrets rotation process | Operational risk | PLANNED | Add rotation SOP & calendar |
 
 ## 15. Architecture Validation Checklist
 - [x] Single responsibility per container boundary
 - [x] Stateless API (sessionless JWT)
 - [x] Separation of configuration from code
 - [x] Horizontal scalability plan documented
-- [ ] Structured logging implemented (IN PROGRESS)
+- [ ] Structured logging implemented (IN_PROGRESS)
 - [ ] Formal migration process established (PLANNED)
+- [ ] CI test workflow active (PLANNED)
+- [ ] Secrets rotation SOP published (PLANNED)
+
+## 16. Cross-Reference Map
+| Concern | Detailed Doc |
+|---------|--------------|
+| API contracts & versioning | `API_Overview.md` |
+| Testing coverage & strategy | `TestingStrategy.md` |
+| Performance budgets & scaling | `PerformanceScalability.md` |
+| Security controls | `SecurityCompliance.md` |
+| Observability signals | `Observability.md` |
+| Engineering standards | `ENGINEERING_STANDARDS_2025.md` |
+
+## 17. Update Process
+1. Propose change via ADR (new file under `docs/adr/ADR-<nnn>-<slug>.md`).
+2. Reference ADR in relevant section above.
+3. Bump `doc_version` if structural change (not for typo/format).
+4. Update `last_updated` date.
+5. Validate checklist (Section 15) after change.
 
 ---
-Prepared under modern architecture documentation conventions (C4-lite + operational overlays). See `ProjectOverview.md` for contextual grounding.
+Prepared under modern architecture documentation conventions (C4-lite + operational overlays). See `ProjectOverview.md` for contextual grounding. Aligns with 2025 engineering standards.

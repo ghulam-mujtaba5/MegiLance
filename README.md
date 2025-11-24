@@ -1,4 +1,16 @@
+---
+title: Project Overview (Root)
+doc_version: 1.0.0
+last_updated: 2025-11-25
+status: active
+owners: ["architecture", "backend", "frontend"]
+related: ["docs/README.md", "docs/Architecture.md", "backend/README.md", "frontend/README.md"]
+description: High-level platform overview, quick start, architecture summary, and development workflow.
+---
+
 # MegiLance
+
+> @AI-HINT: Root project overview, quick start instructions, architecture snapshot, and development environment guidance.
 
 > **AI-Powered Freelancing Platform with Blockchain Payments**
 
@@ -87,6 +99,7 @@ Frontend (Next.js) → Backend (FastAPI) → Turso (libSQL)
 - Turso for database (edge replicated)
 - Flexible deployment (any cloud platform)
 - Docker for containerization
+- Observability-ready (logging, rate limiting, health + future metrics)
 
 ## 💻 Local Development
 
@@ -163,6 +176,8 @@ docker compose down
 
 - Backend exposes health endpoints at `/api/health/live` and `/api/health/ready`
 - In development mode, code changes reflect immediately without rebuilding containers
+- Canonical system test runner: `comprehensive_test.py`
+- Engineering standards: `docs/ENGINEERING_STANDARDS_2025.md`
 
 # MegiLance Frontend
 

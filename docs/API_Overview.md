@@ -1,4 +1,16 @@
+---
+title: API Overview & Versioning
+doc_version: 1.0.0
+last_updated: 2025-11-24
+status: active
+owners: ["backend", "api"]
+related: ["Architecture.md", "TestingStrategy.md", "SecurityCompliance.md"]
+description: Canonical reference for public API surface, versioning, envelopes, error taxonomy, and evolution policies.
+---
+
 # API Overview & Versioning
+
+> @AI-HINT: Defines current public API organization, versioning strategy, response envelope, error taxonomy, stability zones, and lifecycle policies.
 
 Current stack: FastAPI backend, JSON/REST style. Future evolution may introduce GraphQL or gRPC for internal services.
 
@@ -22,7 +34,7 @@ Current stack: FastAPI backend, JSON/REST style. Future evolution may introduce 
 | Reviews | Reputation data | POST /contracts/{id}/reviews |
 | Skills | Taxonomy listing | GET /skills |
 
-## 3. Standard Response Envelope (Proposed)
+## 3. Standard Response Envelope (Status: IN_PROGRESS)
 ```json
 {
   "data": { /* resource or collection */ },
@@ -63,7 +75,7 @@ Response pagination meta includes: page, page_size, total, total_pages.
 - Whitelist filterable fields per resource (server-side enforcement)
 - Disallow arbitrary field injection (prevent mass assignment)
 
-## 7. Rate Limiting (Planned)
+## 7. Rate Limiting (Status: IN_PROGRESS)
 | Scope | Limit | Window |
 |-------|-------|--------|
 | Auth login | 5 attempts | 5 min |
@@ -100,5 +112,32 @@ Response pagination meta includes: page, page_size, total, total_pages.
 | Deprecated | OpenAPI deprecation flag | 4–8 weeks |
 | Removal | 410 Gone if accessed | After window |
 
+## 13. Naming & Consistency Guidelines
+| Element | Guideline |
+|---------|-----------|
+| Resource names | Plural nouns (`projects`, `users`) |
+| Path nesting | Depth <= 3; use sub-resources (`/projects/{id}/proposals`) |
+| IDs | UUID v4 (string) |
+| Timestamps | ISO 8601 UTC (suffix Z) |
+| Booleans | `is_` prefix (e.g. `is_active`) |
+| Sorting | `field:direction` pairs, direction in {asc,desc} |
+
+## 14. Pagination & Filtering Enforcement
+All pagination params validated centrally. Reject page_size > 100 with 400. Filtering uses allowlist per model to prevent mass assignment.
+
+## 15. Envelope Adoption Plan
+| Phase | Scope | Status |
+|-------|-------|--------|
+| P1 | Auth & Projects endpoints | IN_PROGRESS |
+| P2 | Remaining core resources | PLANNED |
+| P3 | Error normalization (details array) | PLANNED |
+
+## 16. Change Management Workflow
+1. Draft change proposal referencing endpoint(s).
+2. Update OpenAPI schema & regenerate client stubs if any.
+3. Update relevant examples here.
+4. Add changelog entry (deprecation if applicable).
+5. Bump SemVer major if breaking; otherwise minor/patch.
+
 ---
-Canonical API contract reference; update alongside any schema or semantics change.
+Canonical API contract reference; update alongside any schema or semantics change. Cross-check with `SecurityCompliance.md` for auth & hardening controls and `TestingStrategy.md` for contract test coverage.

@@ -1,4 +1,16 @@
+---
+title: Security & Compliance Overview
+doc_version: 1.0.0
+last_updated: 2025-11-24
+status: active
+owners: ["security", "backend"]
+related: ["Architecture.md", "API_Overview.md", "Observability.md"]
+description: Summarizes security posture, mapped controls, threat surface, policies, and prioritized roadmap aligned to OWASP & future ISO governance.
+---
+
 # Security & Compliance Overview
+
+> @AI-HINT: Captures current security controls, gaps, and roadmap aligned with OWASP ASVS and Top 10; guides incremental hardening and compliance evolution.
 
 Baseline aligned with OWASP ASVS (selected controls), OWASP Top 10 2021, and preparation for future ISO 27001 style governance.
 
@@ -83,5 +95,18 @@ Baseline aligned with OWASP ASVS (selected controls), OWASP Top 10 2021, and pre
 | P3 | Centralized secret rotation doc |
 | P3 | Basic WAF/CDN front layer |
 
+## 11. Environment Variable Governance
+| Category | Example | Policy |
+|----------|---------|--------|
+| Secrets | `JWT_SECRET`, DB password | Never committed; rotate on compromise |
+| Feature flags | `FEATURE_FLAG_AI_MATCHING` | Default off; documented before enable |
+| Security toggles | `SLOWAPI_ENABLED` | Must default to secure posture (enabled) |
+
+## 12. Rate Limiting Status
+App-level rate limiting middleware present (auth endpoints priority). Nginx layer limits PLANNED for defense-in-depth.
+
+## 13. Review Cadence
+Security posture review monthly; full threat model revision quarterly or post major feature (payments, messaging) deployment.
+
 ---
-Living document – update after each security-relevant change.
+Living document – update after each security-relevant change. Cross-check with `Observability.md` for logging hygiene and `Architecture.md` for container isolation strategy.

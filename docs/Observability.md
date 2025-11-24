@@ -1,4 +1,16 @@
+---
+title: Observability & Logging
+doc_version: 1.0.0
+last_updated: 2025-11-24
+status: active
+owners: ["backend", "ops"]
+related: ["PerformanceScalability.md", "Architecture.md", "SecurityCompliance.md"]
+description: Defines logging, metrics, and tracing foundations plus phased instrumentation and alert seeding roadmap.
+---
+
 # Observability & Logging
+
+> @AI-HINT: Establishes baseline structured logging, correlation fields, planned metrics and tracing integration schedule, and alert conditions.
 
 Establishes foundation for logs + metrics; tracing optional future.
 
@@ -76,5 +88,15 @@ Rely on host NTP to ensure coherent timestamps.
 |---------|-----------|
 | Disk fill | Size-based rotate + compression |
 
+## 12. Review Cadence
+Monthly check: validate latency distribution & error rate anomaly detection thresholds still appropriate.
+
+## 13. Cross References
+| Topic | Doc |
+|-------|-----|
+| Performance budgets | `PerformanceScalability.md` |
+| Security logging hygiene | `SecurityCompliance.md` |
+| Architecture container boundaries | `Architecture.md` |
+
 ---
-Observability evolves with scale; expand once baseline traffic justifies.
+Observability evolves with scale; expand once baseline traffic justifies. Align additions with security and performance budgets.

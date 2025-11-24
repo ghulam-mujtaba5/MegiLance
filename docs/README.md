@@ -1,4 +1,16 @@
+---
+title: Documentation Index
+doc_version: 1.0.0
+last_updated: 2025-11-25
+status: active
+owners: ["architecture", "docs"]
+related: ["Architecture.md", "ProjectOverview.md", "SystemArchitectureDiagrams.md"]
+description: Entry point and navigation index for all project documentation.
+---
+
 # MegiLance Documentation Index
+
+> @AI-HINT: Provides canonical navigation map to all structured project documentation and consolidation policies.
 
 This is the single source of truth for project documentation. Use this index to navigate to canonical docs. Files outside `docs/` that overlap are kept for history but now point back here.
 

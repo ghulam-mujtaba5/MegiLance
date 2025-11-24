@@ -1,4 +1,16 @@
+---
+title: Maintenance Guide
+doc_version: 1.0.0
+last_updated: 2025-11-25
+status: active
+owners: ["ops", "backend"]
+related: ["ARCHIVE.md", "README.md", "ENGINEERING_STANDARDS_2025.md"]
+description: Operational tasks, script usage, and routine hygiene procedures for the repository.
+---
+
 # Maintenance Guide
+
+> @AI-HINT: Provides standardized procedures for routine cleanup, test execution, build verification, and database maintenance.
 
 This directory contains scripts and tools for maintaining the MegiLance project.
 

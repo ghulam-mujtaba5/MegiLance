@@ -1,4 +1,16 @@
+---
+title: Data Model Specification
+doc_version: 1.0.0
+last_updated: 2025-11-25
+status: active
+owners: ["backend", "architecture"]
+related: ["Architecture.md", "SecurityCompliance.md", "TestingStrategy.md"]
+description: Conceptual, logical, and integrity definitions for core platform entities with indexing and migration guidelines.
+---
+
 # Data Model Specification
+
+> @AI-HINT: Defines core entities, relational schema, constraints, indexing, integrity rules, and planned extensions.
 
 Conforms to conceptual → logical → physical layering. Aligns with ISO/IEC 11179 naming clarity, and domain‑driven boundaries.
 

@@ -2,6 +2,8 @@
 
 This is the FastAPI backend for MegiLance. It provides a comprehensive API for the freelancing platform with AI-powered features and blockchain-based payments.
 
+> Updated to 2025 engineering standards. See `../docs/ENGINEERING_STANDARDS_2025.md` for global policies.
+
 ## Features
 
 - **Authentication**: JWT-based authentication with access and refresh tokens
@@ -21,6 +23,18 @@ This is the FastAPI backend for MegiLance. It provides a comprehensive API for t
 - `app/schemas/` — Pydantic schemas for request/response validation
 - `app/api/v1/` — API route handlers organized by resource
 - `main.py` — Application factory, CORS, routes, startup initialization
+- `scripts/maintenance/` — Data maintenance, migration & admin tooling (non-runtime)
+- `tests/legacy/` — Historical / superseded test harnesses (kept for audit)
+
+### Layering Model
+```
+Presentation (Routers) → Services (Business Logic) → Domain / Schemas → Persistence (DB Session / Repos)
+```
+Rules:
+- Routers call services only (no inline business logic beyond orchestration).
+- Services never import FastAPI objects (keep pure / testable).
+- DB access isolated in repository/helper functions.
+- Pydantic schemas split: request / response / internal (avoid leaking internal IDs unintentionally).
 
 ## Environment
 
@@ -40,6 +54,9 @@ REFRESH_TOKEN_EXPIRE_MINUTES=10080
 # AWS (Production)
 AWS_REGION=us-east-2
 S3_BUCKET_UPLOADS=megilance-prod-uploads
+SLOWAPI_ENABLED=true          # Toggle rate limiting
+REQUEST_LOG_LEVEL=info        # Adjust verbosity (debug|info|warning|error)
+FEATURE_FLAG_AI_MATCHING=true # Example feature flag
 ```
 
 ## Run Locally
@@ -70,6 +87,7 @@ gunicorn -k uvicorn.workers.UvicornWorker main:app --workers 4 --bind 0.0.0.0:80
 - `GET /api/health/ready` — Readiness check
 - `GET /api/docs` — Swagger UI documentation
 - `GET /api/redoc` — ReDoc documentation
+- `GET /api/health/metrics` — Metrics/telemetry (if enabled)
 
 ### Authentication (`/api/auth`)
 - `POST /api/auth/register` — Register new user
@@ -123,6 +141,7 @@ Run backend tests:
 ```bash
 python -m pytest tests/
 python -m pytest tests/test_auth.py -v
+python comprehensive_test.py        # Canonical system smoke
 ```
 
 ## Database
@@ -131,6 +150,7 @@ On startup, tables are created automatically (dev only). For production:
 - Use Alembic for migrations
 - Set up RDS PostgreSQL on AWS
 - Configure connection pooling and SSL
+- Turso (libSQL) supported for edge deployment; see `../docs/TURSO_SETUP.md`.
 
 ## AWS Deployment
 
@@ -148,3 +168,29 @@ See [AWS Deployment Guide](../docs/AWS-Deployment.md) for:
 - Token refresh every 30 minutes (access) or 7 days (refresh)
 - Role-based access: Client vs Freelancer permissions enforced
 - AWS credentials managed via IAM roles in production (no hardcoded keys)
+
+## Operational Standards
+- **Rate Limiting**: Enabled via `SLOWAPI_ENABLED`; defaults ON in production.
+- **Structured Logging**: See `ENGINEERING_STANDARDS_2025.md`; all logs include timestamp, level, module.
+- **Observability**: Add Prometheus exporter or OpenTelemetry collector when scaling.
+- **Error Format**: `{ "detail": string, "error_type": string }` for unhandled exceptions.
+
+## Maintenance Scripts
+Non-runtime scripts (data fixes, migrations, user/password audits) live in `scripts/maintenance/`. Run only with explicit intent and backups available.
+
+Example:
+```bash
+python scripts/maintenance/verify_turso.py
+python scripts/maintenance/create_all_tables.py
+```
+
+## Deprecation & Legacy
+Legacy tests retained under `tests/legacy/`; new tests must target `tests/` with focused unit or integration coverage.
+
+## Security & Compliance
+- JWT secrets rotated every 90 days.
+- Auth events logged (login, password reset, role change) — extend to external audit sink when required.
+- Threat model updated quarterly (`../docs/ThreatModel.md`).
+
+---
+_Last updated: 2025-11-25_

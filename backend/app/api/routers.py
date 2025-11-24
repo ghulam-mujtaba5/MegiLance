@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from .v1 import (
     health, users, mock, projects, proposals, contracts, portfolio, payments, 
-    auth, client, upload, ai_services,
+    auth, client, upload, ai_services, ai,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
-    stripe, websocket, uploads, portal_endpoints, analytics
+    websocket, uploads, portal_endpoints, analytics  # stripe temporarily disabled
 )
 
 
@@ -36,7 +36,7 @@ api_router.include_router(disputes.router, prefix="/disputes", tags=["disputes"]
 
 # Payments and portfolio
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
-api_router.include_router(stripe.router, prefix="/stripe", tags=["stripe"])  # Stripe integration
+# api_router.include_router(stripe.router, prefix="/stripe", tags=["stripe"])  # Stripe temporarily disabled - import error
 api_router.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
 
 # Time tracking, invoices, and escrow
@@ -58,6 +58,9 @@ api_router.include_router(search.router, prefix="", tags=["search"])
 
 # Analytics and reporting
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
+
+# AI Services
+api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
 
 # File uploads and client tools
 api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])

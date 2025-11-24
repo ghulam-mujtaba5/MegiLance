@@ -1,4 +1,16 @@
+---
+title: Performance & Scalability
+doc_version: 1.0.0
+last_updated: 2025-11-24
+status: active
+owners: ["backend", "ops"]
+related: ["Observability.md", "Architecture.md", "TestingStrategy.md"]
+description: Baseline performance targets, optimization tactics, scaling path, and monitoring roadmap for constrained initial environment.
+---
+
 # Performance & Scalability
+
+> @AI-HINT: Documents current performance budgets, optimization status, planned scaling milestones, and monitoring triggers under micro VM resource constraints.
 
 Initial constraints: 1 OCPU / 1 GB RAM micro VM. Strategy focuses on lean footprint + graceful evolution.
 
@@ -89,5 +101,15 @@ Initial constraints: 1 OCPU / 1 GB RAM micro VM. Strategy focuses on lean footpr
 | Memory nearing limit | Restart after capturing heap (future tool) |
 | DB saturation | Throttle heavy endpoints |
 
+## 13. Review Cadence
+Monthly quick review of latency vs budgets; quarterly deep profiling; trigger immediate review if p95 exceeds budget for 3 consecutive days.
+
+## 14. Cross-References
+| Concern | Doc |
+|---------|-----|
+| Metrics definitions | `Observability.md` |
+| Architecture scaling context | `Architecture.md` |
+| Load test integration | `TestingStrategy.md` |
+
 ---
-Baseline plus iterative roadmap; refine post real traffic observations.
+Baseline plus iterative roadmap; refine post real traffic observations. Ensure consistency with Observability instrumentation plan.
