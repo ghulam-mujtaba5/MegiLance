@@ -1,6 +1,6 @@
 /* @AI-HINT: Common, theme-independent styles for the refactored Job Alerts page. */
 .container {
-  padding: var(--space-6) 0;
+  padding: var(--space-6) var(--space-4);
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -9,89 +9,157 @@
 }
 
 .header {
-  padding: 0 var(--space-2);
-}
-
-.title {
-  font-family: var(--font-poppins);
-  font-size: var(--font-size-xxl);
-  font-weight: 700;
-  margin: 0;
-}
-
-.subtitle {
-  font-size: var(--font-size-lg);
-  margin: var(--space-1) 0 0;
-}
-
-.mainContent {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-6);
-  align-items: flex-start;
-}
-
-.card {
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-6);
-  border: 1px solid;
-}
-
-.cardTitle {
-  font-family: var(--font-poppins);
-  font-size: var(--font-size-xl);
-  font-weight: 600;
-  margin: 0 0 var(--space-5) 0;
-}
-
-.form {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: var(--space-4);
-  align-items: flex-end;
-}
-
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.listItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-4);
-  border-radius: var(--border-radius-md);
-  border: 1px solid;
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid transparent; /* Theme will handle color */
+}
+
+.headerContent {
+  flex: 1;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  margin: var(--space-2) 0 0;
+  opacity: 0.8;
+  max-width: 600px;
+}
+
+.headerIcon {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .headerIcon {
+    display: block;
+    opacity: 0.2;
+  }
+}
+
+.mainContent {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 350px 1fr;
+    align-items: flex-start;
+  }
+}
+
+/* Create Section */
+.createSection {
+  position: sticky;
+  top: var(--space-6);
+}
+
+.createCard {
+  /* Card component handles padding/border */
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.formRow {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.formActions {
+  margin-top: var(--space-2);
+}
+
+/* List Section */
+.listSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.sectionTitle {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.alertList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.alertItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent; /* Theme handles color */
   transition: all 0.2s ease-in-out;
 }
 
-.alertInfo {
+.alertContent {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
 }
 
-.alertName {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+.alertHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .alertKeywords {
-  font-size: var(--font-size-sm);
-  font-style: italic;
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-.alertDetails {
+.aiBadge {
+  display: inline-flex;
+  align-items: center;
+}
+
+.alertMeta {
   display: flex;
   align-items: center;
   gap: var(--space-4);
 }
 
-.alertFrequency {
-  font-size: var(--font-size-sm);
-  text-transform: capitalize;
+.frequencyLabel {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  opacity: 0.8;
 }
 
 .alertActions {
@@ -99,15 +167,11 @@
   gap: var(--space-2);
 }
 
-/* Accessibility helper */
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.deleteButton {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.deleteButton:hover {
+  opacity: 1;
 }

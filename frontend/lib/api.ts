@@ -559,6 +559,28 @@ export const reviewsApi = {
     apiFetch(`/reviews/${reviewId}`),
 };
 
+// ===========================
+// JOB ALERTS
+// ===========================
+export const jobAlertsApi = {
+  getAll: () => apiFetch<any[]>('/job-alerts/'),
+
+  create: (data: { keywords: string; frequency: string; is_ai_powered?: boolean }) =>
+    apiFetch<any>('/job-alerts/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  update: (id: number, data: { keywords?: string; frequency?: string; is_ai_powered?: boolean }) =>
+    apiFetch<any>(`/job-alerts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id: number) =>
+    apiFetch(`/job-alerts/${id}`, { method: 'DELETE' }),
+};
+
 export default {
   auth: authApi,
   timeEntries: timeEntriesApi,
@@ -574,4 +596,5 @@ export default {
   contracts: contractsApi,
   proposals: proposalsApi,
   reviews: reviewsApi,
+  jobAlerts: jobAlertsApi,
 };

@@ -4,7 +4,7 @@ from .v1 import (
     auth, client, upload, ai_services,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
-    websocket, uploads, portal_endpoints, analytics  # stripe, ai temporarily disabled
+    websocket, uploads, portal_endpoints, analytics, job_alerts  # stripe, ai temporarily disabled
 )
 
 
@@ -18,6 +18,7 @@ api_router.include_router(websocket.router, prefix="/ws", tags=["websocket"])  #
 # User management
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(skills.router, prefix="/skills", tags=["skills"])
+api_router.include_router(job_alerts.router, prefix="/job-alerts", tags=["job-alerts"])
 api_router.include_router(admin.router, prefix="", tags=["admin"])  # Admin endpoints
 
 # Project workflow

@@ -45,6 +45,8 @@ export type FreelancerAnalytics = {
   completedProjects: number;
   profileViews?: number;
   applicationsSent?: number;
+  successRate?: number;
+  averageRating?: number;
 };
 
 export function useFreelancerData() {
@@ -77,18 +79,65 @@ export function useFreelancerData() {
           }
         };
         
-        const [projectsJson, jobsJson, transactionsJson, analyticsJson] = await Promise.all([
-          fetchWithFallback('/backend/api/portal/freelancer/projects', []),
-          fetchWithFallback('/backend/api/portal/freelancer/jobs', []),
-          fetchWithFallback('/backend/api/portal/freelancer/wallet', {}), // wallet has transactions
-          fetchWithFallback('/backend/api/portal/freelancer/dashboard/stats', {}), // dashboard stats for analytics
+        const [projectsJson, jobsJson, walletJson, paymentsJson, statsJson] = await Promise.all([
+          fetchWithFallback('/backend/api/portal/freelancer/projects', { projects: [] }),
+          fetchWithFallback('/backend/api/portal/freelancer/jobs', { jobs: [] }),
+          fetchWithFallback('/backend/api/portal/freelancer/wallet', { balance: 0 }),
+          fetchWithFallback('/backend/api/portal/freelancer/payments', { payments: [] }),
+          fetchWithFallback('/backend/api/portal/freelancer/dashboard/stats', {}),
         ]);
         
         if (!mounted) return;
-        setProjects(projectsJson?.projects ?? projectsJson ?? []);
-        setJobs(jobsJson?.jobs ?? jobsJson ?? []);
-        setTransactions(transactionsJson?.transactions ?? transactionsJson?.recentTransactions ?? []);
-        setAnalytics(analyticsJson?.analytics ?? analyticsJson ?? null);
+
+        // Map Projects
+        const mappedProjects: FreelancerProject[] = (projectsJson.projects || []).map((p: any) => ({
+          id: String(p.id),
+          title: p.title || 'Untitled Project',
+          clientName: p.client_name || 'Unknown Client',
+          budget: `$${p.total_amount}`,
+          postedTime: p.start_date || new Date().toISOString(),
+          tags: [], // Not available in backend yet
+          status: p.status === 'active' || p.status === 'in_progress' ? 'Active' : 
+                  p.status === 'completed' ? 'Completed' : 'Pending'
+        }));
+        setProjects(mappedProjects);
+
+        // Map Jobs
+        const mappedJobs: FreelancerJob[] = (jobsJson.jobs || []).map((j: any) => ({
+          id: String(j.id),
+          title: j.title,
+          clientName: j.client_name || 'Unknown Client',
+          budget: j.budget_max,
+          postedTime: j.created_at,
+          skills: j.skills || [],
+          status: 'Open'
+        }));
+        setJobs(mappedJobs);
+
+        // Map Transactions
+        const mappedTransactions: FreelancerTransaction[] = (paymentsJson.payments || []).map((t: any) => ({
+          id: String(t.id),
+          amount: `$${t.amount}`,
+          date: t.created_at,
+          description: t.description || t.payment_type || 'Transaction',
+          type: t.payment_type === 'withdrawal' ? 'Withdrawal' : 'Payment',
+          status: t.status === 'completed' ? 'Completed' : 
+                  t.status === 'pending' ? 'Pending' : 'Failed'
+        }));
+        setTransactions(mappedTransactions);
+
+        // Map Analytics
+        setAnalytics({
+          activeProjects: statsJson.active_projects || 0,
+          pendingProposals: statsJson.pending_proposals || 0,
+          walletBalance: `$${walletJson.balance || 0}`,
+          rank: 'Silver', // Hardcoded for now, logic needed
+          totalEarnings: `$${statsJson.total_earnings || 0}`,
+          completedProjects: statsJson.completed_projects || 0,
+          successRate: statsJson.success_rate || 0,
+          averageRating: statsJson.average_rating || 0
+        });
+
       } catch (e: any) {
         if (!mounted) return;
         setError(e?.message ?? 'Failed to load freelancer data');

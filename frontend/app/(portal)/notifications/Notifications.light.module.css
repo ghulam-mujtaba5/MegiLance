@@ -16,3 +16,14 @@
 .button:hover { filter: brightness(1.05); }
 .buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
 .buttonSecondary:hover { background: var(--surface); }
+
+/* Loading and Error States */
+.loadingState {
+  color: var(--primary);
+}
+
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}

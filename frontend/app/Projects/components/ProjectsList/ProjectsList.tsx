@@ -6,7 +6,6 @@ import { ProjectType } from '../../types';
 import ProjectCard from '../../../components/ProjectCard/ProjectCard';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import { mockProjects } from '../../mock-data';
 import commonStyles from './ProjectsList.common.module.css';
 import lightStyles from './ProjectsList.light.module.css';
 import darkStyles from './ProjectsList.dark.module.css';
@@ -18,10 +17,26 @@ const ProjectsList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const fetchProjects = async () => {
       try {
-        // Demo: use mock data while backend is paused
-        setProjects(mockProjects);
+        const token = localStorage.getItem('access_token');
+        const res = await fetch('/backend/api/projects', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
+        if (!res.ok) throw new Error('Failed to fetch projects');
+        const data = await res.json();
+        const mapped: ProjectType[] = (data.items || data || []).map((p: any) => ({
+          id: p.id,
+          name: p.title || p.name,
+          status: p.status || 'pending',
+          progress: p.progress ?? 0,
+          budget: p.budget ?? 0,
+          paid: p.paid ?? 0,
+          freelancers: p.freelancers ?? [],
+          updatedAt: p.updated_at || p.updatedAt || 'Recently updated',
+          client: p.client_name || p.client || '',
+        }));
+        setProjects(mapped);
       } catch (err: any) {
         const message = err?.message || 'Unexpected error';
         setError(message);
@@ -29,8 +44,8 @@ const ProjectsList: React.FC = () => {
       } finally {
         setLoading(false);
       }
-    }, 400);
-    return () => clearTimeout(timer);
+    };
+    fetchProjects();
   }, [notify]);
 
   if (loading) return <div className="ProjectsList-loading">Loading projects...</div>;

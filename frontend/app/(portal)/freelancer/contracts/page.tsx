@@ -20,45 +20,19 @@ import VirtualTableBody from '@/app/components/DataTableExtras/VirtualTableBody'
 import Modal from '@/app/components/Modal/Modal';
 import Button from '@/app/components/Button/Button';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
+import { Loader2 } from 'lucide-react';
 import commonStyles from './Contracts.common.module.css';
 import lightStyles from './Contracts.light.module.css';
 import darkStyles from './Contracts.dark.module.css';
 
-// @AI-HINT: Mock data for contracts.
-const mockContracts = [
-  {
-    id: 'contract_abc123',
-    projectTitle: 'Build a Decentralized Exchange',
-    clientName: 'DeFi Innovators Inc.',
-    value: 5000, // USDC
-    status: 'Active',
-    contractAddress: '0x123...def',
-  },
-  {
-    id: 'contract_def456',
-    projectTitle: 'Create 3D NFT Avatars',
-    clientName: 'Metaverse Creations',
-    value: 2500,
-    status: 'Completed',
-    contractAddress: '0x456...abc',
-  },
-  {
-    id: 'contract_ghi789',
-    projectTitle: 'Audit a Smart Contract',
-    clientName: 'SecureChain Labs',
-    value: 1500,
-    status: 'Disputed',
-    contractAddress: '0x789...ghi',
-  },
-  {
-    id: 'contract_jkl012',
-    projectTitle: 'Develop a Web3 Wallet',
-    clientName: 'Crypto Wallet Co.',
-    value: 7500,
-    status: 'Completed',
-    contractAddress: '0x012...jkl',
-  },
-];
+interface ContractData {
+  id: string;
+  projectTitle: string;
+  clientName: string;
+  value: number;
+  status: string;
+  contractAddress: string;
+}
 
 const getStatusBadgeVariant = (status: string) => {
   switch (status.toLowerCase()) {
@@ -76,6 +50,38 @@ const ContractsPage: React.FC = () => {
     return { ...commonStyles, ...themeStyles };
   }, [resolvedTheme]);
   const toaster = useToaster();
+
+  const [contracts, setContracts] = useState<ContractData[]>([]);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // Fetch contracts from API
+  useEffect(() => {
+    const fetchContracts = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        const res = await fetch('/backend/api/contracts', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        });
+        if (!res.ok) throw new Error('Failed to fetch contracts');
+        const data = await res.json();
+        const mapped: ContractData[] = (data.items || data || []).map((c: any) => ({
+          id: c.id || c.contract_id,
+          projectTitle: c.project_title || c.title || 'Untitled',
+          clientName: c.client_name || c.client || '—',
+          value: c.amount || c.value || 0,
+          status: c.status || 'Active',
+          contractAddress: c.contract_address || c.escrow_address || '—',
+        }));
+        setContracts(mapped);
+      } catch (err: any) {
+        setFetchError(err.message || 'Failed to load contracts');
+      } finally {
+        setFetchLoading(false);
+      }
+    };
+    fetchContracts();
+  }, []);
 
   const [query, setQuery] = usePersistedState<string>('freelancer:contracts:q', '');
   const [sortKey, setSortKey] = usePersistedState<'projectTitle' | 'clientName' | 'value' | 'status'>('freelancer:contracts:sortKey', 'projectTitle');
@@ -100,7 +106,7 @@ const ContractsPage: React.FC = () => {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return mockContracts.filter(c => {
+    return contracts.filter(c => {
       const qMatch = !q ||
         c.projectTitle.toLowerCase().includes(q) ||
         c.clientName.toLowerCase().includes(q) ||
@@ -108,7 +114,7 @@ const ContractsPage: React.FC = () => {
       const statusMatch = statusFilters.length === 0 || statusFilters.includes(c.status);
       return qMatch && statusMatch;
     });
-  }, [query, statusFilters]);
+  }, [query, statusFilters, contracts]);
 
   const sorted = useMemo(() => {
     const copy = [...filtered];
@@ -240,6 +246,19 @@ const ContractsPage: React.FC = () => {
         <p className={styles.subtitle}>View and manage all your smart contracts.</p>
       </header>
 
+      {fetchLoading ? (
+        <main className={commonStyles.loadingState}>
+          <Loader2 className={commonStyles.spinner} size={32} />
+          <span>Loading contracts...</span>
+        </main>
+      ) : fetchError ? (
+        <main className={commonStyles.errorState}>
+          <p>{fetchError}</p>
+          <Button variant="secondary" size="sm" onClick={() => window.location.reload()}>
+            Retry
+          </Button>
+        </main>
+      ) : (
       <main>
         <DataToolbar
           query={query}
@@ -496,6 +515,7 @@ const ContractsPage: React.FC = () => {
           </span>
         )}
       </main>
+      )}
     </div>
   );
 };

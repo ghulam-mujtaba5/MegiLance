@@ -1,4 +1,8 @@
 /* @AI-HINT: Light theme styles for the refactored Job Alerts page. */
+.header {
+  border-bottom-color: var(--border-light);
+}
+
 .title {
   color: var(--text-primary-light);
 }
@@ -7,33 +11,30 @@
   color: var(--text-secondary-light);
 }
 
-.card {
-  background-color: var(--bg-primary-light);
-  border-color: var(--border-light);
-}
-
-.cardTitle {
+.sectionTitle {
   color: var(--text-primary-light);
 }
 
-.listItem {
-  background-color: var(--bg-secondary-light);
+.alertItem {
+  background-color: var(--bg-primary-light);
   border-color: var(--border-light);
-}
-
-.listItem:hover {
-  border-color: var(--brand-primary);
   box-shadow: var(--shadow-sm);
 }
 
-.alertName {
-  color: var(--text-primary-light);
+.alertItem:hover {
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .alertKeywords {
-  color: var(--text-tertiary-light);
+  color: var(--text-primary-light);
 }
 
-.alertFrequency {
+.frequencyLabel {
   color: var(--text-secondary-light);
+}
+
+.frequencyLabel strong {
+  color: var(--text-primary-light);
 }

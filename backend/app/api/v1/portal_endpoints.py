@@ -456,9 +456,11 @@ async def get_freelancer_jobs(
     # Get jobs
     params.extend([limit, skip])
     result = execute_query(
-        f"""SELECT id, title, description, budget_min, budget_max, created_at
-            FROM projects {where_sql}
-            ORDER BY created_at DESC
+        f"""SELECT p.id, p.title, p.description, p.budget_min, p.budget_max, p.created_at, u.name, p.skills
+            FROM projects p
+            JOIN users u ON p.client_id = u.id
+            {where_sql}
+            ORDER BY p.created_at DESC
             LIMIT ? OFFSET ?""",
         params
     )
@@ -466,13 +468,23 @@ async def get_freelancer_jobs(
     jobs = []
     if result and result.get("rows"):
         for row in result["rows"]:
+            skills_val = _get_val(row, 7)
+            skills_list = []
+            if skills_val:
+                try:
+                    skills_list = json.loads(skills_val)
+                except:
+                    skills_list = []
+            
             jobs.append({
                 "id": int(_get_val(row, 0) or 0),
                 "title": _safe_str(_get_val(row, 1)),
                 "description": _safe_str(_get_val(row, 2)),
                 "budget_min": float(_get_val(row, 3) or 0),
                 "budget_max": float(_get_val(row, 4) or 0),
-                "created_at": parse_date(_get_val(row, 5))
+                "created_at": parse_date(_get_val(row, 5)),
+                "client_name": _safe_str(_get_val(row, 6)),
+                "skills": skills_list
             })
     
     return {"total": total, "jobs": jobs}
@@ -502,9 +514,13 @@ async def get_freelancer_projects(
     # Get contracts
     params.extend([limit, skip])
     result = execute_query(
-        f"""SELECT id, project_id, status, start_date, end_date, total_amount, created_at
-            FROM contracts {where_sql}
-            ORDER BY created_at DESC
+        f"""SELECT c.id, c.project_id, c.status, c.start_date, c.end_date, c.total_amount, c.created_at,
+            p.title, u.name as client_name
+            FROM contracts c
+            JOIN projects p ON c.project_id = p.id
+            JOIN users u ON p.client_id = u.id
+            {where_sql}
+            ORDER BY c.created_at DESC
             LIMIT ? OFFSET ?""",
         params
     )
@@ -518,7 +534,9 @@ async def get_freelancer_projects(
                 "status": _safe_str(_get_val(row, 2)),
                 "start_date": parse_date(_get_val(row, 3)),
                 "end_date": parse_date(_get_val(row, 4)),
-                "total_amount": float(_get_val(row, 5) or 0)
+                "total_amount": float(_get_val(row, 5) or 0),
+                "title": _safe_str(_get_val(row, 7)),
+                "client_name": _safe_str(_get_val(row, 8))
             })
     
     return {"total": total, "projects": projects}
@@ -683,6 +701,47 @@ async def get_freelancer_wallet(freelancer: User = Depends(get_freelancer_user))
         "pending_earnings": pending_earnings,
         "total_earned": total_earned
     }
+
+
+@router.get("/freelancer/payments")
+async def get_freelancer_payments(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    freelancer: User = Depends(get_freelancer_user)
+):
+    """Get freelancer's payment history"""
+    # Get total
+    count_result = execute_query(
+        "SELECT COUNT(*) FROM payments WHERE to_user_id = ?",
+        [freelancer.id]
+    )
+    total = 0
+    if count_result and count_result.get("rows"):
+        total = int(_get_val(count_result["rows"][0], 0) or 0)
+    
+    # Get payments
+    result = execute_query(
+        """SELECT id, amount, status, payment_type, description, created_at
+           FROM payments
+           WHERE to_user_id = ?
+           ORDER BY created_at DESC
+           LIMIT ? OFFSET ?""",
+        [freelancer.id, limit, skip]
+    )
+    
+    payments = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            payments.append({
+                "id": int(_get_val(row, 0) or 0),
+                "amount": float(_get_val(row, 1) or 0),
+                "status": _safe_str(_get_val(row, 2)),
+                "payment_type": _safe_str(_get_val(row, 3)),
+                "description": _safe_str(_get_val(row, 4)),
+                "created_at": parse_date(_get_val(row, 5))
+            })
+    
+    return {"total": total, "payments": payments}
 
 
 # ============ SHARED ENDPOINTS ============

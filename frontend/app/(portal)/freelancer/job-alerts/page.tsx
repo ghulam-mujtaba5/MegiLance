@@ -1,108 +1,237 @@
-// @AI-HINT: This page allows freelancers to manage their job alerts. It's now fully theme-aware and uses our premium, reusable form components.
+// @AI-HINT: This page allows freelancers to manage their job alerts. It's now fully theme-aware, connected to the backend, and uses our premium, reusable form components.
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from 'next-themes';
+import { useToaster } from '@/app/components/Toast/ToasterProvider';
+import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import Input from '@/app/components/Input/Input';
 import Select, { SelectOption } from '@/app/components/Select/Select';
+import ToggleSwitch from '@/app/components/ToggleSwitch/ToggleSwitch';
+import Card from '@/app/components/Card/Card';
+import EmptyState from '@/app/components/EmptyState/EmptyState';
+import MegaLoader from '@/app/components/Loading/MegaLoader';
+import { Bell, Trash2, Search, Zap } from 'lucide-react';
+
 import commonStyles from './JobAlerts.common.module.css';
 import lightStyles from './JobAlerts.light.module.css';
 import darkStyles from './JobAlerts.dark.module.css';
 
-// @AI-HINT: Mock data for existing job alerts.
-const mockAlerts = [
-  {
-    id: 1,
-    name: 'Solidity Developer Jobs',
-    keywords: 'solidity, smart contract, evm',
-    frequency: 'daily',
-    isAiPowered: false,
-  },
-  {
-    id: 2,
-    name: 'Web3 UI/UX Design',
-    keywords: 'web3, ui, ux, figma, design',
-    frequency: 'weekly',
-    isAiPowered: false,
-  },
-  {
-    id: 3,
-    name: 'AI Smart Alert',
-    keywords: 'Based on your profile and application history',
-    frequency: 'daily',
-    isAiPowered: true,
-  },
-];
+interface JobAlert {
+  id: number;
+  keywords: string;
+  frequency: string;
+  is_ai_powered: boolean;
+}
 
 const frequencyOptions: SelectOption[] = [
-  { value: 'daily', label: 'Daily' },
-  { value: 'weekly', label: 'Weekly' },
+  { value: 'daily', label: 'Daily Digest' },
+  { value: 'weekly', label: 'Weekly Summary' },
+  { value: 'realtime', label: 'Real-time (Instant)' },
 ];
 
 const JobAlertsPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [alerts, setAlerts] = useState(mockAlerts);
+  const toaster = useToaster();
+  const [alerts, setAlerts] = useState<JobAlert[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+
+  // Form State
+  const [keywords, setKeywords] = useState('');
+  const [frequency, setFrequency] = useState('daily');
+  const [isAiPowered, setIsAiPowered] = useState(false);
 
   const styles = useMemo(() => {
     const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
   }, [resolvedTheme]);
 
-  const handleDelete = (id: number) => {
-    setAlerts(alerts.filter(alert => alert.id !== id));
+  const fetchAlerts = async () => {
+    try {
+      setIsLoading(true);
+      const data = await api.jobAlerts.getAll();
+      setAlerts(data);
+    } catch (error) {
+      console.error('Failed to fetch alerts:', error);
+      toaster.error('Failed to load job alerts. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchAlerts();
+  }, []);
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!keywords.trim()) {
+      toaster.error('Please enter keywords for your alert.');
+      return;
+    }
+
+    try {
+      setIsCreating(true);
+      const newAlert = await api.jobAlerts.create({
+        keywords,
+        frequency,
+        is_ai_powered: isAiPowered,
+      });
+      setAlerts([newAlert, ...alerts]);
+      toaster.success('Job alert created successfully!');
+      
+      // Reset form
+      setKeywords('');
+      setFrequency('daily');
+      setIsAiPowered(false);
+    } catch (error) {
+      console.error('Failed to create alert:', error);
+      toaster.error('Failed to create job alert.');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this alert?')) return;
+
+    try {
+      await api.jobAlerts.delete(id);
+      setAlerts(alerts.filter(a => a.id !== id));
+      toaster.success('Job alert deleted.');
+    } catch (error) {
+      console.error('Failed to delete alert:', error);
+      toaster.error('Failed to delete job alert.');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <MegaLoader />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Job Alerts</h1>
-        <p className={styles.subtitle}>Never miss an opportunity. Get notified about jobs that match your skills.</p>
+        <div className={styles.headerContent}>
+          <h1 className={styles.title}>Job Alerts</h1>
+          <p className={styles.subtitle}>
+            Stay ahead of the competition. Get notified instantly when jobs matching your skills are posted.
+          </p>
+        </div>
+        <div className={styles.headerIcon}>
+          <Bell size={48} className={styles.bellIcon} />
+        </div>
       </header>
 
       <main className={styles.mainContent}>
-        <div className={styles.card}>
-          <h2 className={styles.cardTitle}>Create New Alert</h2>
-          <form className={styles.form}>
-            <Input
-              id="alert-keywords"
-              placeholder="Keywords (e.g., 'rust, defi')"
-              aria-label="Alert keywords"
-              title="Alert keywords"
-              fullWidth
-            />
-            <Select
-              id="alert-frequency"
-              options={frequencyOptions}
-              aria-label="Alert frequency"
-              title="Alert frequency"
-            />
-            <Button variant="primary" title="Create alert">Create Alert</Button>
-          </form>
-        </div>
-
-        <div className={styles.card}>
-          <h2 className={styles.cardTitle}>Your Alerts</h2>
-          <div className={styles.list}>
-            {alerts.map(alert => (
-              <div key={alert.id} className={styles.listItem}>
-                <div className={styles.alertInfo}>
-                  <span className={styles.alertName}>{alert.name}</span>
-                  <span className={styles.alertKeywords}>{alert.keywords}</span>
+        <div className={styles.grid}>
+          {/* Create Alert Section */}
+          <section className={styles.createSection}>
+            <Card title="Create New Alert" icon={Search} className={styles.createCard}>
+              <form onSubmit={handleCreate} className={styles.form}>
+                <div className={styles.formGroup}>
+                  <Input
+                    id="alert-keywords"
+                    label="Keywords"
+                    placeholder="e.g. React, Python, DeFi, Smart Contracts"
+                    value={keywords}
+                    onChange={(e) => setKeywords(e.target.value)}
+                    fullWidth
+                    helperText="Separate multiple keywords with commas."
+                  />
                 </div>
-                <div className={styles.alertDetails}>
-                  {alert.isAiPowered && <Badge variant="info">AI</Badge>}
-                  <span className={styles.alertFrequency}>{alert.frequency}</span>
-                  <div className={styles.alertActions}>
-                    <Button variant="secondary" size="small" aria-label={`Edit ${alert.name}`} title={`Edit ${alert.name}`}>Edit</Button>
-                    <Button variant="danger" size="small" onClick={() => handleDelete(alert.id)} aria-label={`Delete ${alert.name}`} title={`Delete ${alert.name}`}>Delete</Button>
+                
+                <div className={styles.formRow}>
+                  <div className={styles.formGroup}>
+                    <Select
+                      id="alert-frequency"
+                      label="Frequency"
+                      options={frequencyOptions}
+                      value={frequency}
+                      onChange={(val) => setFrequency(val)}
+                    />
                   </div>
                 </div>
+
+                <div className={styles.formGroup}>
+                  <ToggleSwitch
+                    id="ai-powered"
+                    label="Enable AI Matching"
+                    checked={isAiPowered}
+                    onChange={setIsAiPowered}
+                    helpText="Our AI will analyze job descriptions to ensure they truly match your profile, reducing noise."
+                  />
+                </div>
+
+                <div className={styles.formActions}>
+                  <Button 
+                    type="submit" 
+                    variant="primary" 
+                    isLoading={isCreating} 
+                    fullWidth
+                    iconBefore={<Bell size={18} />}
+                  >
+                    Create Alert
+                  </Button>
+                </div>
+              </form>
+            </Card>
+          </section>
+
+          {/* Alerts List Section */}
+          <section className={styles.listSection}>
+            <h2 className={styles.sectionTitle}>Your Active Alerts ({alerts.length})</h2>
+            
+            {alerts.length === 0 ? (
+              <EmptyState
+                title="No alerts yet"
+                description="Create your first job alert to start receiving notifications about new opportunities."
+                icon={Bell}
+                actionLabel="Create Alert Above"
+                onAction={() => document.getElementById('alert-keywords')?.focus()}
+              />
+            ) : (
+              <div className={styles.alertList}>
+                {alerts.map(alert => (
+                  <div key={alert.id} className={styles.alertItem}>
+                    <div className={styles.alertContent}>
+                      <div className={styles.alertHeader}>
+                        <h3 className={styles.alertKeywords}>{alert.keywords}</h3>
+                        {alert.is_ai_powered && (
+                          <Badge variant="info" className={styles.aiBadge}>
+                            <Zap size={12} className="mr-1" /> AI Powered
+                          </Badge>
+                        )}
+                      </div>
+                      <div className={styles.alertMeta}>
+                        <span className={styles.frequencyLabel}>
+                          Frequency: <strong>{alert.frequency}</strong>
+                        </span>
+                      </div>
+                    </div>
+                    <div className={styles.alertActions}>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        onClick={() => handleDelete(alert.id)}
+                        title="Delete Alert"
+                        className={styles.deleteButton}
+                      >
+                        <Trash2 size={18} />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <span className={styles.srOnly} aria-live="polite">You have {alerts.length} job alert{alerts.length === 1 ? '' : 's'}.</span>
+            )}
+          </section>
         </div>
       </main>
     </div>

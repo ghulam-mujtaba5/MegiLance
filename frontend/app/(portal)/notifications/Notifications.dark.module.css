@@ -16,3 +16,7 @@
 .button:hover { filter: brightness(1.06); }
 .buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
 .buttonSecondary:hover { background: var(--surface); }
+
+.loadingState { background: var(--surface-elev); color: var(--text-secondary); }
+.errorBanner { background: #ff6b6b20; border: 1px solid #ff6b6b; color: #ff6b6b; }
+.spinner { border-top-color: #6b9aff; }

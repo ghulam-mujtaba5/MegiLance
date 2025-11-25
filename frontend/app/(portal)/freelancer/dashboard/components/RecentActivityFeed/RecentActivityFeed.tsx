@@ -2,6 +2,11 @@
 'use client';
 
 import React from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import commonStyles from './RecentActivityFeed.common.module.css';
+import lightStyles from './RecentActivityFeed.light.module.css';
+import darkStyles from './RecentActivityFeed.dark.module.css';
 
 export interface RecentActivityFeedProps<T> {
   title: string;
@@ -12,23 +17,37 @@ export interface RecentActivityFeedProps<T> {
 }
 
 function RecentActivityFeed<T>({ title, items, renderItem, loading, emptyStateMessage = 'No items found.' }: RecentActivityFeedProps<T>) {
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <section style={{ marginTop: 16 }} aria-label={title}>
-      <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{title}</h2>
+    <section 
+      className={cn(commonStyles.container, themeStyles.container)} 
+      aria-label={title}
+    >
+      <div className={commonStyles.header}>
+        <h2 className={commonStyles.title}>{title}</h2>
+      </div>
+      
       {loading ? (
-        <div role="status" aria-busy="true" style={{ display: 'grid', gap: 8 }}>
+        <div role="status" aria-busy="true" className={commonStyles.list}>
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} style={{ height: 64, borderRadius: 10, background: 'var(--surface-f5f7fa, #f5f7fa)' }} />
+            <div 
+              key={i} 
+              style={{ height: 64, borderRadius: 8, background: 'var(--bg-hover)' }} 
+            />
           ))}
         </div>
       ) : items?.length ? (
-        <div style={{ display: 'grid', gap: 8 }}>
+        <div className={commonStyles.list}>
           {items.map((it, idx) => (
             <div key={idx}>{renderItem(it)}</div>
           ))}
         </div>
       ) : (
-        <div role="note" style={{ opacity: 0.8 }}>{emptyStateMessage}</div>
+        <div className={commonStyles.emptyState} role="note">
+          {emptyStateMessage}
+        </div>
       )}
     </section>
   );
