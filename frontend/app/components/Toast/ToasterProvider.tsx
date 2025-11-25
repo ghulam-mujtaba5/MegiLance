@@ -3,8 +3,12 @@
 
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import Toast, { ToastProps, ToastVariant } from './Toast';
-import styles from './Toast.stack.module.css';
+import commonStyles from './ToasterProvider.common.module.css';
+import lightStyles from './ToasterProvider.light.module.css';
+import darkStyles from './ToasterProvider.dark.module.css';
 
 export interface ToasterItem {
   id: string;
@@ -32,6 +36,8 @@ export const useToaster = () => {
 
 export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<ToasterItem[]>([]);
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const notify = useCallback((item: Omit<ToasterItem, 'id'>) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -54,7 +60,7 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({ child
       {children}
       {typeof window !== 'undefined'
         ? createPortal(
-            <div className={styles.stack} aria-live="polite" aria-atomic="false">
+            <div className={cn(commonStyles.stack, themeStyles.stack)} aria-live="polite" aria-atomic="false">
               {items.map(({ id, title, description, variant = 'info', duration = 4000 }) => (
                 <Toast
                   key={id}

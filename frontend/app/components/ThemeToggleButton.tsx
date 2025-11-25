@@ -3,7 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
-import styles from './ThemeToggleButton.module.css';
+import { cn } from '@/lib/utils';
+import commonStyles from './ThemeToggleButton.common.module.css';
+import lightStyles from './ThemeToggleButton.light.module.css';
+import darkStyles from './ThemeToggleButton.dark.module.css';
 
 const ThemeToggleButton: React.FC = () => {
   const { resolvedTheme, setTheme } = useTheme();
@@ -15,20 +18,22 @@ const ThemeToggleButton: React.FC = () => {
 
   if (!mounted) {
     return (
-      <div className={styles.themeToggleFloating}>
-        <button className={styles.themeToggleBtn} aria-label="Loading theme toggle">
+      <div className={commonStyles.themeToggleFloating}>
+        <button className={commonStyles.themeToggleBtn} aria-label="Loading theme toggle">
           <Moon size={28} />
         </button>
       </div>
     );
   }
 
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
   return (
-    <div className={styles.themeToggleFloating}>
+    <div className={commonStyles.themeToggleFloating}>
       <button
         aria-label={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-        className={styles.themeToggleBtn}
+        className={cn(commonStyles.themeToggleBtn, themeStyles.themeToggleBtn)}
       >
         {resolvedTheme === 'dark' ? <Sun size={28} /> : <Moon size={28} />}
       </button>

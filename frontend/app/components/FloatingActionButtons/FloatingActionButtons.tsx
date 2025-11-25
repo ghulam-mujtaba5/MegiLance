@@ -2,7 +2,11 @@
 'use client';
 
 import React from 'react';
-import styles from './FloatingActionButtons.module.css';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import commonStyles from './FloatingActionButtons.common.module.css';
+import lightStyles from './FloatingActionButtons.light.module.css';
+import darkStyles from './FloatingActionButtons.dark.module.css';
 
 type Props = {
   children: React.ReactNode;
@@ -11,8 +15,16 @@ type Props = {
 };
 
 const FloatingActionButtons: React.FC<Props> = ({ children, position = 'right', className }) => {
-  const sideClass = position === 'left' ? styles.left : styles.right;
-  return <div className={`${styles.container} ${sideClass} ${className ?? ''}`.trim()}>{children}</div>;
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  
+  const sideClass = position === 'left' ? commonStyles.left : commonStyles.right;
+  
+  return (
+    <div className={cn(commonStyles.container, themeStyles.container, sideClass, className)}>
+      {children}
+    </div>
+  );
 };
 
 export default FloatingActionButtons;
