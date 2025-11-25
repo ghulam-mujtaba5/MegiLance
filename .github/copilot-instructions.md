@@ -1,62 +1,58 @@
 # MegiLance AI Agent Instructions
-My development agent instructions high priority important;please follow them strictly.
-Efficiency and Resource Management:
-- Avoid redundant builds to prevent wasting time and computational resources
-- Minimize use of automated scripts for fixes; prioritize manual reviews instead  
-- Use progress tracking effectively for iterative and complex tasks
 
-Progress Tracking and Task Management:
-- Maintain detailed progress tracking and to-do lists throughout development
-- Continue working iteratively until all remaining work is completed
+> AI-powered freelancing platform: Next.js 14 + FastAPI + Turso (libSQL)
 
-Additional Context:
- Apply these principles consistently across all development activities within this codebase.
+## Agent Work Standards (HIGH PRIORITY)
 
+### Efficiency & Resource Management
+- **Avoid redundant builds** - Don't waste time rebuilding Docker containers or recompiling unless necessary
+- **Skip Docker for fast iteration** - Use direct `uvicorn` / `npm run dev` instead of `docker compose` during active development
+- **Minimize automated script fixes** - Prioritize manual code review over blind automated fixes
+- **Respect free tier limits** - Keep Turso/D1 database usage within free tier constraints (no billing upgrades)
 
-Problem-Solving Approach:
+### Progress Tracking & Task Execution
+- Maintain detailed to-do lists for complex multi-step tasks
+- Work iteratively until **100% completion** - no skipping or leaving work incomplete
+- Continue autonomously without manual intervention
+- Only request input for **critical reviews or decisions**, not routine problem-solving
 
-- Identify problems and implement fixes based on your understanding
+### Problem-Solving Approach
+- Identify and fix issues based on your understanding
+- **Manually review all frontend elements** - examine CSS and TSX files for UI/UX, performance, security, and optimization issues
+- Check all perspectives: layout, accessibility, responsiveness, dark/light themes
 
-- Only request my input for critical reviews or decisions, not for routine problem-solving
+### Development Tools & Environment
+- Prefer **CLI tools** for deployments, hosting, and database operations
+- Extensively utilize **Chrome DevTools** for debugging and development tasks
+- Use **MCP (Model Context Protocol)** development tools for AI-assisted development
+- Execute all operations through **terminal/command prompt** interfaces
+- Prioritize existing installed tools; install new ones only when absolutely necessary
+- For authenticated services: verify auth status first, prompt for credentials if needed
 
-- Manually review all frontend/UI/UX elements, specifically examining all  CSS files and TSX files for issues check all issues types to make them perfect for each angle and perspective and domain ui ux peromnce secuoty and optimization and evrything in sofwtare negeiring relted 
-Development Tools and Environment:
-Prefer command-line interface (CLI) tools for all third-party deployments, hosting services, database management, and development operations to enable full automation and proper context-aware development with comprehensive system overview.
-
-Mandatory tool usage requirements:
-- Extensively utilize Chrome DevTools for debugging and development tasks
-- Use MCP (Model Context Protocol) development tools for AI-assisted development
-- Execute all operations through terminal/command prompt interfaces
-- Prioritize existing installed tools whenever possible
-- Automatically install missing tools only when absolutely necessary for task completion
-
-Authentication protocols:
-- For any service requiring authentication, verify current authentication status first
-- If not authenticated, prompt me to provide login credentials and complete authentication before proceeding
-
-Work execution standards:
+### Work Execution Standards
 - Maintain continuous automated operation without manual intervention
 - Persistently work until all identified tasks and fixes are fully completed
 - Provide progress updates only when critical issues arise or tasks are completed
-make sure you all plan and staretgy create fulll implentaetd 100 percent no nayhting skip and left before stop working
-keep in mind the d1 datad base free tier limts also in mind we not want to updagre to biiling just wnat to use the free tier only
-## Architecture Overview
-```
-Next.js Frontend → FastAPI Backend → Turso (libSQL)
-```
-**Stack**: Next.js 14 + TypeScript + CSS Modules | FastAPI + SQLAlchemy + Turso
+- Ensure all plans and strategies are **100% fully implemented** - nothing skipped or left incomplete
 
-## Frontend Rules (Next.js 14)
-
-### CSS Architecture (CRITICAL)
-**Every component needs 3 CSS files:**
+## Architecture
 ```
-Component.common.module.css  → layout, structure, motion
-Component.light.module.css   → light theme colors
-Component.dark.module.css    → dark theme colors
+Frontend (Next.js 14) → Backend (FastAPI) → Turso (libSQL)
+                              ↓
+                        File Storage (local/S3)
 ```
+**Roles**: Client, Freelancer, Admin | **Auth**: JWT (30min access, 7 days refresh)
 
-**Theme integration pattern:**
+## Critical Patterns
+
+### Frontend: 3-File CSS Module System (MANDATORY)
+Every component requires exactly 3 CSS files:
+```
+Component.common.module.css  → layout, structure, animations
+Component.light.module.css   → light theme colors only
+Component.dark.module.css    → dark theme colors only
+```
+**Usage pattern** (see `frontend/app/components/Button/Button.tsx`):
 ```tsx
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -65,136 +61,121 @@ import lightStyles from './Component.light.module.css';
 import darkStyles from './Component.dark.module.css';
 
 const { resolvedTheme } = useTheme();
+if (!resolvedTheme) return null; // Prevent flash
 const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 return <div className={cn(commonStyles.container, themeStyles.container)} />;
 ```
 
-### Component Conventions
-- **@AI-HINT comment required** at top of every file explaining purpose
-- **TypeScript mandatory** with full type safety
-- **Button variants**: primary, secondary, danger, outline, ghost, social, success, warning
-- **Button sizes**: sm, md, lg, icon
-- **No global CSS** - all styling scoped to components
-- **Accessibility**: Include ARIA labels on interactive elements
+### Backend: Layered Architecture
+```
+Routers (api/v1/) → Services (services/) → Models/Schemas → DB Session
+```
+- **Routers**: HTTP handling only, call services
+- **Services**: Pure business logic, no FastAPI imports
+- **Schemas**: Split into request/response Pydantic models (`schemas/`)
 
-### Route Structure
+### File Comments
+Every file starts with `// @AI-HINT:` explaining its purpose:
+```tsx
+// @AI-HINT: Dual-flow payment wizard for withdrawals and adding funds
+```
+
+## Project Structure
+
+### Frontend (`frontend/`)
 ```
 app/
-  (auth)/      → login, signup (public)
-  (main)/      → marketing pages (public)
-  (portal)/    → dashboards (protected)
+  (auth)/       → login, signup, forgot-password (public)
+  (main)/       → marketing pages (public)
+  (portal)/     → client/freelancer/admin dashboards (protected)
+  components/   → reusable UI (Button, Input, UserAvatar)
+  home/         → homepage sections
+lib/utils.ts    → cn() class merge utility
+styles/tokens.css → design tokens (colors, spacing)
 ```
 
-### Design Tokens
-- Primary: `#4573df` | Success: `#27AE60` | Error: `#e81123` | Warning: `#F2C94C` | Accent: `#ff9800`
-- Fonts: Poppins (headings), Inter (body), JetBrains Mono (code)
-
-## Backend Rules (FastAPI)
-
-### Project Structure
+### Backend (`backend/`)
 ```
-backend/app/
-  core/      → config, security, storage utils
-  models/    → SQLAlchemy models
-  schemas/   → Pydantic request/response
-  api/v1/    → endpoint handlers
-  services/  → business logic
+app/
+  api/v1/       → 30+ endpoint modules (auth, projects, proposals, payments...)
+  core/         → config.py, security.py, rate_limit.py
+  models/       → SQLAlchemy models (User, Project, Proposal, Contract...)
+  schemas/      → Pydantic request/response schemas
+  services/     → Business logic layer
+  db/           → Database session, initialization
+main.py         → App factory, middleware, startup
 ```
 
-### API Conventions
-- **Authentication**: JWT tokens (30min access, 7 days refresh)
-- **Roles**: Client/Freelancer enforced at endpoint level
-- **Status codes**: 201 (created), 204 (no content), 400 (bad request), 403 (forbidden), 404 (not found)
-- **All inputs** validated via Pydantic schemas
-- **All endpoints** have comprehensive docstrings
-- Use `Depends()` for DB sessions and auth
+## Development Commands
 
-### Key Endpoints
-- Health: `/api/health/live`, `/api/health/ready`
-- Docs: `/api/docs` (Swagger), `/api/redoc`
-- Auth: `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`
+```powershell
+# Docker (recommended)
+docker compose up -d                    # Start all services
+docker compose -f docker-compose.dev.yml up --build  # Hot reload mode
+docker compose logs -f backend          # View logs
+
+# Backend standalone
+cd backend
+uvicorn main:app --reload --port 8000   # Dev server
+pytest tests/ -v                        # Run tests
+python comprehensive_test.py            # System smoke test
+
+# Frontend standalone
+cd frontend
+npm run dev                             # Dev server :3000
+npm test                                # Jest tests
+```
+
+**URLs**: Frontend `localhost:3000` | Backend API `localhost:8000/api/docs` | Health `localhost:8000/api/health/ready`
+
+## API Conventions
+
+- **Auth endpoints**: `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`, `/api/auth/me`
+- **Resource pattern**: `GET /api/{resource}`, `POST /api/{resource}`, `GET /api/{resource}/{id}`
+- **Frontend calls**: Use `/backend/api/*` proxy (configured in Next.js)
+- **Error format**: `{"detail": "message", "error_type": "ExceptionType"}`
+- **Rate limiting**: Enabled via `SLOWAPI_ENABLED` env var
+
+## Key Conventions
+
+### Button Component Contract
+```tsx
+// Variants: primary | secondary | danger | ghost | link | success | warning | social | outline
+// Sizes: sm | md | lg | icon
+<Button variant="primary" size="md" isLoading={false} fullWidth>Submit</Button>
+<Button variant="social" provider="google">Sign in with Google</Button>
+```
 
 ### Database
-- **Database**: Turso (libSQL) - distributed SQLite
-- **Models**: User, Project, Proposal, Contract, Payment, Portfolio, Message, Review, Skill
-- **Dev**: SQLite file (`local.db`), `init_db()` creates tables on startup
-- **Prod**: Turso cloud database with auth token
-- **Migrations**: Use Alembic for schema changes
+- **Dev**: SQLite file `backend/local.db` (auto-created on startup)
+- **Prod**: Turso cloud (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`)
+- **Migrations**: `alembic revision --autogenerate -m "desc"` then `alembic upgrade head`
 
-## Local Development
-
-**Start all services:**
-```powershell
-docker compose up -d
-```
-- Frontend: http://localhost:3000
-- Backend: http://localhost:8000/api/docs
-- Database: SQLite file at `backend/local.db`
-
-**Frontend API calls** (backend proxied at `/backend/*`):
-```ts
-const res = await fetch('/backend/api/health/live');
-```
-
-**Rebuild after dependency changes:**
-```powershell
-docker compose build backend frontend
-```
-
-## Testing
-```powershell
-# Backend
-cd backend
-pytest tests/ -v
-
-# Frontend
-cd frontend
-npm test
+### Design Tokens
+```css
+Primary: #4573df | Success: #27AE60 | Error: #e81123 | Warning: #F2C94C | Accent: #ff9800
+Fonts: Poppins (headings), Inter (body), JetBrains Mono (code)
 ```
 
 ## Common Pitfalls
-❌ **DON'T**:
-- Use global CSS or Tailwind utilities for component styles
-- Hardcode credentials or API keys
-- Forget light/dark theme handling
-- Skip `@AI-HINT` comments
-- Break Button variant/size contracts
 
-✅ **DO**:
-- Use 3-file CSS Module pattern
-- Validate all API inputs with Pydantic
-- Use `cn()` utility for class merging
-- Check health endpoints after backend changes
-- Test both auth states for new features
+❌ **Avoid**:
+- Global CSS or inline styles (use 3-file CSS modules)
+- Business logic in routers (use services layer)
+- Missing `@AI-HINT` comments
+- Hardcoded secrets (use `.env`)
+- Breaking Button variant/size contracts
 
-## Quick Commands
+✅ **Always**:
+- Test both light/dark themes
+- Validate inputs via Pydantic
+- Check `/api/health/ready` after backend changes
+- Use `cn()` for class merging
+- Add ARIA labels to interactive elements
 
-```powershell
-# Local dev
-docker compose up -d                    # Start
-docker compose logs -f backend          # Logs
-docker compose down                     # Stop
-
-# Backend
-cd backend
-uvicorn main:app --reload              # Dev server
-pytest tests/ -v                       # Tests
-
-# Frontend
-cd frontend
-npm run dev                            # Dev server
-npm run build                          # Production build
-npm test                               # Tests
-
-# Database migrations
-cd backend
-alembic revision --autogenerate -m "description"
-alembic upgrade head
-```
-
-## Key Files
-- `TURSO_SETUP.md` - Database setup and configuration
-- `frontend/README.md` - Frontend architecture details
-- `backend/README.md` - Backend API documentation
-- `MegiLance-Brand-Playbook.md` - Design system
-- `docs/SystemArchitectureDiagrams.md` - System architecture
+## Key Documentation
+- `docs/ENGINEERING_STANDARDS_2025.md` - Full coding standards
+- `docs/Architecture.md` - System architecture details
+- `docs/TURSO_SETUP.md` - Database configuration
+- `frontend/README.md` - Frontend patterns
+- `backend/README.md` - API documentation
