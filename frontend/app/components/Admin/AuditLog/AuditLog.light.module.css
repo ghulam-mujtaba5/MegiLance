@@ -41,3 +41,12 @@
 .paginationInfo {
   color: #718096;
 }
+
+/* Loading and Error States */
+.loadingState {
+  color: #718096;
+}
+
+.errorState {
+  color: #e81123;
+}

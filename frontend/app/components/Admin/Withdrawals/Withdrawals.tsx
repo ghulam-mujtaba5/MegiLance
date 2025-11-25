@@ -1,10 +1,10 @@
-// @AI-HINT: This component provides a modernized interface for admins to review and process freelancer withdrawal requests using a card-based UI with advanced filtering.
+// @AI-HINT: This component provides a modernized interface for admins to review and process freelancer withdrawal requests. Fetches from /payments API with outgoing filter.
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import clsx from 'clsx';
-import { CheckCircle, XCircle, MoreVertical, Copy, ArrowDownUp, Calendar, Inbox, Search, ChevronDown } from 'lucide-react';
+import { CheckCircle, XCircle, MoreVertical, Copy, ArrowDownUp, Calendar, Inbox, Search, ChevronDown, Loader2 } from 'lucide-react';
 
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
@@ -15,7 +15,7 @@ import lightStyles from './Withdrawals.light.module.css';
 import darkStyles from './Withdrawals.dark.module.css';
 
 // Types
-type Status = 'Pending' | 'Approved' | 'Rejected';
+type Status = 'Pending' | 'Approved' | 'Rejected' | 'completed' | 'pending' | 'failed';
 type SortBy = 'date' | 'amount';
 
 interface WithdrawalRequest {
@@ -29,66 +29,170 @@ interface WithdrawalRequest {
   status: Status;
 }
 
-// Mock Data
-const mockWithdrawals: WithdrawalRequest[] = [
-  { id: 'wd_001', freelancerName: 'Alice Johnson', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=alice', amount: 500, currency: 'USDC', destinationAddress: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', dateRequested: '2025-08-15', status: 'Pending' },
-  { id: 'wd_002', freelancerName: 'Charlie Brown', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=charlie', amount: 1250, currency: 'ETH', destinationAddress: '0x1e6f4f2b2c1b9b1e6f4f2b2c1b9b1e6f4f2b2c1b', dateRequested: '2025-08-14', status: 'Pending' },
-  { id: 'wd_003', freelancerName: 'Diana Prince', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=diana', amount: 75, currency: 'USDC', destinationAddress: '0x9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b', dateRequested: '2025-08-12', status: 'Approved' },
-  { id: 'wd_004', freelancerName: 'Frank Wright', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=frank', amount: 3500, currency: 'USDC', destinationAddress: '0x...', dateRequested: '2025-08-10', status: 'Rejected' },
-  { id: 'wd_005', freelancerName: 'Eve Adams', freelancerAvatarUrl: 'https://i.pravatar.cc/100?u=eve', amount: 800, currency: 'ETH', destinationAddress: '0x...', dateRequested: '2025-08-16', status: 'Pending' },
-];
+interface ApiPayment {
+  id: number;
+  contract_id: number | null;
+  from_user_id: number;
+  to_user_id: number;
+  amount: number;
+  currency: string;
+  status: string;
+  payment_type: string;
+  tx_hash: string | null;
+  escrow_address: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+}
+
+function normalizeStatus(status: string): Status {
+  const lower = status.toLowerCase();
+  if (lower === 'completed') return 'Approved';
+  if (lower === 'pending') return 'Pending';
+  if (lower === 'failed' || lower === 'rejected') return 'Rejected';
+  return 'Pending';
+}
 
 const StatusBadge = ({ status }: { status: Status }) => {
+  const normalizedStatus = normalizeStatus(status);
   const variant = {
     Pending: 'warning',
     Approved: 'success',
     Rejected: 'danger',
-  }[status] as 'warning' | 'success' | 'danger';
+  }[normalizedStatus] as 'warning' | 'success' | 'danger';
 
-  return <Badge variant={variant}>{status}</Badge>;
+  return <Badge variant={variant}>{normalizedStatus}</Badge>;
 };
 
 const Withdrawals: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [requests, setRequests] = useState(mockWithdrawals);
-  const [filter, setFilter] = useState<Status | 'All'>('Pending');
+  const [requests, setRequests] = useState<WithdrawalRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'Pending' | 'Approved' | 'Rejected' | 'All'>('Pending');
   const [sortBy, setSortBy] = useState<SortBy>('date');
+
+  useEffect(() => {
+    async function fetchWithdrawals() {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Authentication required');
+          setLoading(false);
+          return;
+        }
+
+        // Fetch outgoing payments (withdrawals/payouts)
+        const response = await fetch('/backend/api/payments/?limit=50', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch withdrawals: ${response.status}`);
+        }
+
+        const payments: ApiPayment[] = await response.json();
+
+        // Transform API payments to withdrawal format
+        const transformed: WithdrawalRequest[] = payments.map((payment) => ({
+          id: `wd_${payment.id}`,
+          freelancerName: `User #${payment.to_user_id}`,
+          freelancerAvatarUrl: `https://i.pravatar.cc/100?u=user${payment.to_user_id}`,
+          amount: payment.amount,
+          currency: payment.currency || 'USD',
+          destinationAddress: payment.escrow_address || payment.tx_hash || 'N/A',
+          dateRequested: payment.created_at.split('T')[0],
+          status: normalizeStatus(payment.status),
+        }));
+
+        setRequests(transformed);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load withdrawals');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchWithdrawals();
+  }, []);
 
   const handleProcess = (id: string, newStatus: 'Approved' | 'Rejected') => {
     setRequests(requests.map(req => (req.id === id ? { ...req, status: newStatus } : req)));
+    // In production, this would also make a PATCH API call
   };
 
   const filteredAndSortedRequests = useMemo(() => {
     return requests
-      .filter(req => filter === 'All' || req.status === filter)
+      .filter(req => {
+        const normalized = normalizeStatus(req.status);
+        return filter === 'All' || normalized === filter;
+      })
       .sort((a, b) => {
         if (sortBy === 'amount') return b.amount - a.amount;
         return new Date(b.dateRequested).getTime() - new Date(a.dateRequested).getTime();
       });
   }, [requests, filter, sortBy]);
 
-  const getActionItems = (request: WithdrawalRequest): ActionMenuItem[] => [
-    {
-      label: 'Approve',
-      onClick: () => handleProcess(request.id, 'Approved'),
-      icon: CheckCircle,
-      disabled: request.status !== 'Pending',
-    },
-    {
-      label: 'Reject',
-      onClick: () => handleProcess(request.id, 'Rejected'),
-      icon: XCircle,
-      disabled: request.status !== 'Pending',
-    },
-    { isSeparator: true },
-    {
-      label: 'Copy Address',
-      onClick: () => navigator.clipboard.writeText(request.destinationAddress),
-      icon: Copy,
-    },
-  ];
+  const getActionItems = (request: WithdrawalRequest): ActionMenuItem[] => {
+    const normalizedStatus = normalizeStatus(request.status);
+    return [
+      {
+        label: 'Approve',
+        onClick: () => handleProcess(request.id, 'Approved'),
+        icon: CheckCircle,
+        disabled: normalizedStatus !== 'Pending',
+      },
+      {
+        label: 'Reject',
+        onClick: () => handleProcess(request.id, 'Rejected'),
+        icon: XCircle,
+        disabled: normalizedStatus !== 'Pending',
+      },
+      { isSeparator: true },
+      {
+        label: 'Copy Address',
+        onClick: () => navigator.clipboard.writeText(request.destinationAddress),
+        icon: Copy,
+      },
+    ];
+  };
 
   const styles = { ...commonStyles, ...(resolvedTheme === 'dark' ? darkStyles : lightStyles) };
+
+  if (loading) {
+    return (
+      <div className={clsx(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
+        <div className={styles.header}>
+          <h1 className={styles.headerTitle}>Withdrawal Requests</h1>
+        </div>
+        <div className={styles.loadingState}>
+          <Loader2 className={styles.spinner} size={32} />
+          <span>Loading withdrawal requests...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={clsx(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
+        <div className={styles.header}>
+          <h1 className={styles.headerTitle}>Withdrawal Requests</h1>
+        </div>
+        <div className={styles.errorState}>
+          <span>{error}</span>
+        </div>
+      </div>
+    );
+  }
+
+  const countByStatus = (status: 'Pending' | 'Approved' | 'Rejected') => 
+    requests.filter(r => normalizeStatus(r.status) === status).length;
 
   return (
     <div className={clsx(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
@@ -103,7 +207,7 @@ const Withdrawals: React.FC = () => {
       <div className={styles.filterTabs}>
         {(['Pending', 'Approved', 'Rejected', 'All'] as const).map(status => (
           <button key={status} onClick={() => setFilter(status)} className={clsx(styles.filterTab, { [styles.activeTab]: filter === status })}>
-            {status} <Badge variant="info">{status === 'All' ? requests.length : requests.filter(r => r.status === status).length}</Badge>
+            {status} <Badge variant="info">{status === 'All' ? requests.length : countByStatus(status)}</Badge>
           </button>
         ))}
       </div>

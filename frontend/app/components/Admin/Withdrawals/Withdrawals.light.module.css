@@ -76,3 +76,7 @@
 .emptyStateIcon { color: var(--color-icon-secondary-light); }
 .emptyStateTitle { color: var(--color-text-primary-light); }
 .emptyStateText { color: var(--color-text-secondary-light); }
+
+/* Loading and Error States */
+.loadingState { color: var(--color-text-secondary-light); }
+.errorState { color: var(--color-error); }

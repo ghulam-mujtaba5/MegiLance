@@ -81,3 +81,12 @@
 .emptyStateText { 
   color: var(--color-text-secondary-dark); 
 }
+
+/* Loading and Error States */
+.loadingState { 
+  color: var(--color-text-secondary-dark); 
+}
+
+.errorState { 
+  color: var(--color-error-dark); 
+}

@@ -1,7 +1,7 @@
-// @AI-HINT: This component displays a theme-aware list of conversations. It's built with a clean separation of concerns: structural styles are in the common module, while all colors and theme-specific properties are handled by global CSS variables defined in the light and dark modules.
+// @AI-HINT: This component displays a theme-aware list of conversations fetched from /messages/conversations API.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Badge from '@/app/components/Badge/Badge';
@@ -19,20 +19,125 @@ interface Conversation {
   unreadCount: number;
 }
 
-const mockConversations: Conversation[] = [
-  { id: 'convo_001', userName: 'Bob Williams', avatarUrl: '/avatars/bob.png', lastMessage: 'Sure, I can get that done by tomorrow.', timestamp: '10:30 AM', unreadCount: 2 },
-  { id: 'convo_002', userName: 'Diana Prince', avatarUrl: '/avatars/diana.png', lastMessage: 'The project files are attached.', timestamp: 'Yesterday', unreadCount: 0 },
-  { id: 'convo_003', userName: 'Ethan Hunt', avatarUrl: '/avatars/ethan.png', lastMessage: 'Great work on the last milestone!', timestamp: '2 days ago', unreadCount: 0 },
-  { id: 'convo_004', userName: 'Support Bot', avatarUrl: '/avatars/bot.png', lastMessage: 'How can I help you today?', timestamp: '1 week ago', unreadCount: 0 },
-];
+interface ApiConversation {
+  id: number;
+  client_id: number;
+  freelancer_id: number;
+  project_id: number | null;
+  status: string;
+  is_archived: boolean;
+  last_message_at: string;
+  created_at: string;
+  updated_at: string;
+  // Additional fields that may be joined
+  other_user_name?: string;
+  other_user_avatar?: string;
+  last_message_content?: string;
+  unread_count?: number;
+}
+
+function formatTimestamp(isoDate: string): string {
+  const date = new Date(isoDate);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else if (diffDays === 1) {
+    return 'Yesterday';
+  } else if (diffDays < 7) {
+    return `${diffDays} days ago`;
+  } else {
+    return date.toLocaleDateString();
+  }
+}
 
 const ChatInbox: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [activeConversation, setActiveConversation] = useState('convo_001');
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeConversation, setActiveConversation] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchConversations() {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Authentication required');
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch('/backend/api/messages/conversations', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch conversations: ${response.status}`);
+        }
+
+        const data: ApiConversation[] = await response.json();
+        
+        // Transform API response to component format
+        const transformed: Conversation[] = data.map((conv) => ({
+          id: `convo_${conv.id}`,
+          userName: conv.other_user_name || `User ${conv.client_id || conv.freelancer_id}`,
+          avatarUrl: conv.other_user_avatar || '/avatars/default.png',
+          lastMessage: conv.last_message_content || 'No messages yet',
+          timestamp: formatTimestamp(conv.last_message_at || conv.created_at),
+          unreadCount: conv.unread_count || 0,
+        }));
+
+        setConversations(transformed);
+        if (transformed.length > 0 && !activeConversation) {
+          setActiveConversation(transformed[0].id);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load conversations');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchConversations();
+  }, []);
 
   if (!resolvedTheme) return null;
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  if (loading) {
+    return (
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <div className={cn(commonStyles.header, themeStyles.header)}>
+          <h2 className={cn(commonStyles.title, themeStyles.title)}>Inbox</h2>
+        </div>
+        <div className={cn(commonStyles.loadingState, themeStyles.loadingState)}>
+          <div className={commonStyles.spinner} />
+          <span>Loading conversations...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <div className={cn(commonStyles.header, themeStyles.header)}>
+          <h2 className={cn(commonStyles.title, themeStyles.title)}>Inbox</h2>
+        </div>
+        <div className={cn(commonStyles.errorState, themeStyles.errorState)}>
+          <span>{error}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(commonStyles.container, themeStyles.container)}>
@@ -40,7 +145,11 @@ const ChatInbox: React.FC = () => {
         <h2 className={cn(commonStyles.title, themeStyles.title)}>Inbox</h2>
       </div>
       <div className={cn(commonStyles.list, themeStyles.list)}>
-        {mockConversations.map(convo => (
+        {conversations.length === 0 ? (
+          <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+            <span>No conversations yet</span>
+          </div>
+        ) : conversations.map(convo => (
           <div 
             key={convo.id} 
             className={cn(
@@ -52,7 +161,7 @@ const ChatInbox: React.FC = () => {
             onClick={() => setActiveConversation(convo.id)}
             role="button"
             tabIndex={0}
-            aria-current={activeConversation === convo.id}
+            aria-current={activeConversation === convo.id ? 'true' : undefined}
           >
             <UserAvatar src={convo.avatarUrl} name={convo.userName} size="medium" />
             <div className={cn(commonStyles.itemDetails, themeStyles.itemDetails)}>

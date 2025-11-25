@@ -135,3 +135,14 @@
 .upcoming_title {
   color: #1a1a2e;
 }
+
+/* Loading and Error States */
+.loadingState {
+  color: #4573df;
+}
+
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}

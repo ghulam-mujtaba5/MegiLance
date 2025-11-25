@@ -33,3 +33,14 @@
 .active .timestamp {
   color: var(--text-primary);
 }
+
+/* Loading, Error, and Empty States */
+.loadingState,
+.errorState,
+.emptyState {
+  color: var(--text-secondary);
+}
+
+.errorState {
+  color: var(--error);
+}

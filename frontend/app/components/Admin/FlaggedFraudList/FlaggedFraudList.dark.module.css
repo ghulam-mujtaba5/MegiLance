@@ -61,3 +61,12 @@
 .emptyState p {
   color: #d1d5db;
 }
+
+/* Loading and Error States */
+.loadingState {
+  color: #d1d5db;
+}
+
+.errorState {
+  color: #f87171;
+}

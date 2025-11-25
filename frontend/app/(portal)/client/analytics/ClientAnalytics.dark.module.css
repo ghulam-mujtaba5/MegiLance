@@ -127,3 +127,23 @@
 .stat_label_sm {
   color: #94a3b8;
 }
+
+/* Loading and Error States */
+.loadingState {
+  color: #6b9aff;
+}
+
+.loadingText {
+  color: #94a3b8;
+}
+
+.errorBanner {
+  background: #2d1b1b;
+  border: 1px solid #5c2626;
+  color: #fca5a5;
+}
+
+.retryButton {
+  background: #dc2626;
+  color: #ffffff;
+}

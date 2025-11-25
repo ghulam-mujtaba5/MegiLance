@@ -1,12 +1,13 @@
-// @AI-HINT: Client Analytics component with spending, project, and freelancer metrics
+// @AI-HINT: Client Analytics component with spending, project, and freelancer metrics. Fetches from client APIs.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { useClientData } from '@/hooks/useClient';
 import { 
   TrendingUp, TrendingDown, DollarSign, Briefcase, Users, Clock, 
-  Download, Calendar, ArrowUpRight, ArrowDownRight, Star
+  Download, Calendar, ArrowUpRight, ArrowDownRight, Star, Loader2
 } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 
@@ -34,42 +35,129 @@ interface ProjectMetric {
   color: string;
 }
 
-const MOCK_METRICS: MetricCard[] = [
-  { title: 'Total Spent', value: '$24,580', change: 12.5, icon: <DollarSign size={20} />, trend: 'up' },
-  { title: 'Active Projects', value: '8', change: 3, icon: <Briefcase size={20} />, trend: 'up' },
-  { title: 'Freelancers Hired', value: '24', change: 8, icon: <Users size={20} />, trend: 'up' },
-  { title: 'Avg. Project Time', value: '2.3 weeks', change: -15, icon: <Clock size={20} />, trend: 'down' },
-];
-
-const SPENDING_DATA: SpendingData[] = [
-  { month: 'Jan', amount: 3200 },
-  { month: 'Feb', amount: 2800 },
-  { month: 'Mar', amount: 4100 },
-  { month: 'Apr', amount: 3600 },
-  { month: 'May', amount: 5200 },
-  { month: 'Jun', amount: 4800 },
-];
-
-const PROJECT_METRICS: ProjectMetric[] = [
-  { status: 'Completed', count: 12, percentage: 48, color: '#27AE60' },
-  { status: 'In Progress', count: 8, percentage: 32, color: '#4573df' },
-  { status: 'Pending Review', count: 3, percentage: 12, color: '#ff9800' },
-  { status: 'Cancelled', count: 2, percentage: 8, color: '#e81123' },
-];
-
-const TOP_FREELANCERS = [
-  { name: 'Sarah Chen', role: 'Full Stack Developer', projects: 5, rating: 4.9, spent: '$8,200' },
-  { name: 'Mike Johnson', role: 'UI/UX Designer', projects: 3, rating: 4.8, spent: '$4,500' },
-  { name: 'Emily Parker', role: 'Mobile Developer', projects: 4, rating: 4.7, spent: '$6,100' },
-  { name: 'Alex Rivera', role: 'DevOps Engineer', projects: 2, rating: 5.0, spent: '$3,200' },
-];
+interface TopFreelancer {
+  name: string;
+  role: string;
+  projects: number;
+  rating: number;
+  spent: string;
+}
 
 const ClientAnalytics: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
   const [dateRange, setDateRange] = useState('6m');
+  const { projects, payments, freelancers, loading, error } = useClientData();
 
-  const maxSpending = Math.max(...SPENDING_DATA.map(d => d.amount));
+  // Calculate metrics from real data
+  const metrics = useMemo<MetricCard[]>(() => {
+    const totalSpent = Array.isArray(payments) 
+      ? payments.reduce((sum, p) => sum + parseFloat(p.amount?.replace(/[$,]/g, '') || '0'), 0)
+      : 0;
+    const activeProjects = Array.isArray(projects) 
+      ? projects.filter(p => p.status === 'In Progress' || p.status === 'Active').length
+      : 0;
+    const freelancersHired = Array.isArray(freelancers) ? freelancers.length : 0;
+
+    return [
+      { title: 'Total Spent', value: `$${totalSpent.toLocaleString()}`, change: 12.5, icon: <DollarSign size={20} />, trend: 'up' },
+      { title: 'Active Projects', value: String(activeProjects), change: 3, icon: <Briefcase size={20} />, trend: 'up' },
+      { title: 'Freelancers Hired', value: String(freelancersHired), change: 8, icon: <Users size={20} />, trend: 'up' },
+      { title: 'Avg. Project Time', value: '2.3 weeks', change: -15, icon: <Clock size={20} />, trend: 'down' },
+    ];
+  }, [projects, payments, freelancers]);
+
+  // Calculate spending data from payments
+  const spendingData = useMemo<SpendingData[]>(() => {
+    if (!Array.isArray(payments) || payments.length === 0) {
+      return [
+        { month: 'Jan', amount: 0 },
+        { month: 'Feb', amount: 0 },
+        { month: 'Mar', amount: 0 },
+        { month: 'Apr', amount: 0 },
+        { month: 'May', amount: 0 },
+        { month: 'Jun', amount: 0 },
+      ];
+    }
+
+    const monthlySpending: Record<string, number> = {};
+    payments.forEach((payment) => {
+      const date = new Date(payment.date || Date.now());
+      const monthKey = date.toLocaleString('default', { month: 'short' });
+      const amount = parseFloat(payment.amount?.replace(/[$,+]/g, '') || '0');
+      monthlySpending[monthKey] = (monthlySpending[monthKey] || 0) + amount;
+    });
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    return months.map(month => ({
+      month,
+      spending: monthlySpending[month] || 0,
+      amount: monthlySpending[month] || 0,
+    }));
+  }, [payments]);
+
+  // Calculate project metrics from real data
+  const projectMetrics = useMemo<ProjectMetric[]>(() => {
+    if (!Array.isArray(projects) || projects.length === 0) {
+      return [
+        { status: 'Completed', count: 0, percentage: 0, color: '#27AE60' },
+        { status: 'In Progress', count: 0, percentage: 0, color: '#4573df' },
+        { status: 'Pending Review', count: 0, percentage: 0, color: '#ff9800' },
+        { status: 'Cancelled', count: 0, percentage: 0, color: '#e81123' },
+      ];
+    }
+
+    const total = projects.length;
+    const statusCounts: Record<string, number> = {};
+    projects.forEach(p => {
+      const status = p.status || 'Open';
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
+    });
+
+    return [
+      { status: 'Completed', count: statusCounts['Completed'] || 0, percentage: Math.round(((statusCounts['Completed'] || 0) / total) * 100), color: '#27AE60' },
+      { status: 'In Progress', count: statusCounts['In Progress'] || statusCounts['Active'] || 0, percentage: Math.round((((statusCounts['In Progress'] || 0) + (statusCounts['Active'] || 0)) / total) * 100), color: '#4573df' },
+      { status: 'Pending Review', count: statusCounts['Open'] || 0, percentage: Math.round(((statusCounts['Open'] || 0) / total) * 100), color: '#ff9800' },
+      { status: 'Cancelled', count: statusCounts['Cancelled'] || 0, percentage: Math.round(((statusCounts['Cancelled'] || 0) / total) * 100), color: '#e81123' },
+    ];
+  }, [projects]);
+
+  // Top freelancers from API
+  const topFreelancers = useMemo<TopFreelancer[]>(() => {
+    if (!Array.isArray(freelancers) || freelancers.length === 0) {
+      return [];
+    }
+
+    return freelancers.slice(0, 4).map(f => ({
+      name: f.name,
+      role: f.title || 'Freelancer',
+      projects: f.completedProjects || 0,
+      rating: f.rating || 0,
+      spent: f.hourlyRate ? `$${parseFloat(f.hourlyRate.replace(/[$,]/g, '') || '0') * 40}` : '$0',
+    }));
+  }, [freelancers]);
+
+  const maxSpending = Math.max(...spendingData.map(d => d.amount), 1);
+  const totalProjects = Array.isArray(projects) ? projects.length : 0;
+  const totalSpendingPeriod = spendingData.reduce((sum, d) => sum + d.amount, 0);
+
+  if (!resolvedTheme) return null;
+
+  if (loading) {
+    return (
+      <main className={cn(common.main, themed.main)}>
+        <header className={common.header}>
+          <div>
+            <h1 className={cn(common.title, themed.title)}>Analytics</h1>
+          </div>
+        </header>
+        <div className={common.loading_state}>
+          <Loader2 className={common.spinner} size={32} />
+          <span>Loading analytics data...</span>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className={cn(common.main, themed.main)}>
@@ -99,9 +187,15 @@ const ClientAnalytics: React.FC = () => {
         </div>
       </header>
 
+      {error && (
+        <div className={common.error_banner}>
+          Unable to load some analytics data. Showing available information.
+        </div>
+      )}
+
       {/* Metrics Cards */}
       <div className={common.metrics_grid}>
-        {MOCK_METRICS.map((metric, idx) => (
+        {metrics.map((metric, idx) => (
           <div key={idx} className={cn(common.metric_card, themed.metric_card)}>
             <div className={cn(common.metric_icon, themed.metric_icon)}>
               {metric.icon}
@@ -132,11 +226,11 @@ const ClientAnalytics: React.FC = () => {
           <div className={common.chart_header}>
             <h3 className={cn(common.chart_title, themed.chart_title)}>Monthly Spending</h3>
             <span className={cn(common.chart_subtitle, themed.chart_subtitle)}>
-              Total: $23,700 this period
+              Total: ${totalSpendingPeriod.toLocaleString()} this period
             </span>
           </div>
           <div className={common.bar_chart}>
-            {SPENDING_DATA.map((data, idx) => (
+            {spendingData.map((data, idx) => (
               <div key={idx} className={common.bar_container}>
                 <div 
                   className={cn(common.bar, themed.bar)}
@@ -159,11 +253,11 @@ const ClientAnalytics: React.FC = () => {
           <div className={common.chart_header}>
             <h3 className={cn(common.chart_title, themed.chart_title)}>Project Status</h3>
             <span className={cn(common.chart_subtitle, themed.chart_subtitle)}>
-              25 total projects
+              {totalProjects} total projects
             </span>
           </div>
           <div className={common.project_stats}>
-            {PROJECT_METRICS.map((metric, idx) => (
+            {projectMetrics.map((metric, idx) => (
               <div key={idx} className={common.project_stat}>
                 <div className={common.stat_header}>
                   <span 
@@ -199,7 +293,9 @@ const ClientAnalytics: React.FC = () => {
           </span>
         </div>
         <div className={common.freelancers_list}>
-          {TOP_FREELANCERS.map((freelancer, idx) => (
+          {topFreelancers.length === 0 ? (
+            <div className={common.empty_state}>No freelancers hired yet.</div>
+          ) : topFreelancers.map((freelancer, idx) => (
             <div key={idx} className={cn(common.freelancer_card, themed.freelancer_card)}>
               <div className={cn(common.freelancer_avatar, themed.freelancer_avatar)}>
                 {freelancer.name.charAt(0)}
