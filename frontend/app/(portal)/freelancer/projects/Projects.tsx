@@ -3,7 +3,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
-import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
+import JobCard from '@/app/components/JobCard/JobCard';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
 import { useFreelancerData } from '@/hooks/useFreelancer';
@@ -38,21 +38,11 @@ const Projects: React.FC = () => {
       .map((job, idx) => ({
         id: String(job.id ?? idx),
         title: job.title ?? 'Untitled Project',
-        // Map freelancer job statuses to ProjectCard's allowed statuses
-        status: ((): 'In Progress' | 'Completed' | 'Pending' | 'Cancelled' => {
-          const s = (job.status ?? 'Pending');
-          if (s === 'Hired') return 'In Progress';
-          // 'Open' and 'Applied' are considered pending for display
-          return 'Pending';
-        })(),
-        progress: job.progress ?? 0,
-        budget: typeof job.budget === 'number' ? job.budget : 0,
-        paid: job.paid ?? 0,
-        freelancers: job.freelancers ?? [],
-        updatedAt: job.updatedAt ?? '',
         clientName: job.clientName ?? 'Unknown Client',
-        postedTime: job.postedTime ?? 'Unknown',
-        tags: Array.isArray(job.skills) ? job.skills : [],
+        description: job.description,
+        budget: typeof job.budget === 'number' ? job.budget : 0,
+        skills: Array.isArray(job.skills) ? job.skills : [],
+        postedTime: job.postedTime ?? new Date().toISOString(),
       }));
   }, [jobs, searchQuery]);
 
@@ -79,7 +69,7 @@ const Projects: React.FC = () => {
     const header = ['Title', 'Client', 'Budget', 'Posted'];
     const rows = sortedProjects.map(p => [p.title, p.clientName, p.budget, p.postedTime]);
     const csv = [header, ...rows]
-      .map(cols => cols.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .map(cols => cols.map(v => "").join(','))
       .join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -150,15 +140,13 @@ const Projects: React.FC = () => {
           </select>
         </div>
         <span className={styles.srOnly} aria-live="polite">
-          {`${sortedProjects.length} result${sortedProjects.length === 1 ? '' : 's'}. `}
-          {searchQuery ? `Filter: "${searchQuery}". ` : ''}
-          {`Sort: ${sortKey} ${sortDir}. Page size: ${pageSize}.`}
+          {`${sortedProjects.length} result(s). ${searchQuery ? `Filter: ${searchQuery}.` : ''} Sort: ${sortKey}. Page size: ${pageSize}.`}
         </span>
       </div>
 
       <div className={styles.projectGrid} role="region" aria-label="Project results" title="Project results">
         {pagedProjects.map((project) => (
-          <ProjectCard key={project.id} {...project} />
+          <JobCard key={project.id} {...project} />
         ))}
         {sortedProjects.length === 0 && !loading && (
           <div className={styles.emptyState}>

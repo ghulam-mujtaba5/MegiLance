@@ -1,7 +1,7 @@
 // @AI-HINT: This is the main Account Settings page for freelancers. It features a modern, clean form for updating profile information and is built to be theme-aware and responsive.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
@@ -12,6 +12,7 @@ import Textarea from '@/app/components/Textarea/Textarea';
 import Button from '@/app/components/Button/Button';
 import { Label } from '@/app/components/Label/Label';
 import Switch from '@/app/components/ToggleSwitch/ToggleSwitch';
+import api from '@/lib/api';
 
 import commonStyles from './Settings.common.module.css';
 import lightStyles from './Settings.light.module.css';
@@ -23,10 +24,10 @@ const AccountSettingsPage = () => {
   const toaster = useToaster();
 
   // Profile settings
-  const [fullName, setFullName] = useState('Morgan Lee');
-  const [professionalTitle, setProfessionalTitle] = useState('Senior Frontend Developer');
-  const [bio, setBio] = useState('Experienced developer with a passion for creating beautiful and functional web applications.');
-  const [email] = useState('morgan.lee@megilance.dev'); // Email is typically not editable
+  const [fullName, setFullName] = useState('');
+  const [professionalTitle, setProfessionalTitle] = useState('');
+  const [bio, setBio] = useState('');
+  const [email, setEmail] = useState('');
   
   // Notification settings
   const [jobNotifications, setJobNotifications] = useState(true);
@@ -43,14 +44,44 @@ const AccountSettingsPage = () => {
   
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent, section: string) => {
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const user = await api.auth.me();
+        setFullName(user.name || '');
+        setProfessionalTitle(user.title || '');
+        setBio(user.bio || '');
+        setEmail(user.email || '');
+        // Set other settings if available in user object
+      } catch (error) {
+        console.error('Failed to fetch profile', error);
+        toaster.notify({ title: 'Error', description: 'Failed to load profile', variant: 'error' });
+      }
+    };
+    fetchProfile();
+  }, [toaster]);
+
+  const handleSubmit = async (e: React.FormEvent, section: string) => {
     e.preventDefault();
     setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      toaster.notify({ title: 'Saved', description: `${section} settings updated successfully!`, variant: 'success' });
-    }, 1500);
+    
+    try {
+        if (section === 'Profile') {
+            await api.auth.updateProfile({
+                full_name: fullName,
+                title: professionalTitle,
+                bio: bio
+            });
+        }
+        // Handle other sections if backend supports them
+        
+        toaster.notify({ title: 'Saved', description: `${section} settings updated successfully!`, variant: 'success' });
+    } catch (error) {
+        console.error('Failed to update profile', error);
+        toaster.notify({ title: 'Error', description: 'Failed to update settings', variant: 'error' });
+    } finally {
+        setIsSaving(false);
+    }
   };
 
   return (

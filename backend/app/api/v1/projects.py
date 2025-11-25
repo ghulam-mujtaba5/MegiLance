@@ -82,6 +82,43 @@ def list_projects(
         )
 
 
+@router.get("/my-projects", response_model=List[ProjectRead])
+def get_my_projects(
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get projects for the current user (client's posted projects or freelancer's active projects)"""
+    try:
+        turso = get_turso_http()
+        
+        if current_user.user_type and current_user.user_type.lower() == "client":
+            # Get client's posted projects
+            sql = """SELECT id, title, description, category, budget_type, 
+                            budget_min, budget_max, experience_level, estimated_duration,
+                            skills, client_id, status, created_at, updated_at 
+                     FROM projects WHERE client_id = ? ORDER BY created_at DESC"""
+            result = turso.execute(sql, [current_user.id])
+        else:
+            # Get freelancer's projects (via contracts)
+            # Note: This returns the project details for contracts the freelancer is involved in
+            sql = """SELECT p.id, p.title, p.description, p.category, p.budget_type, 
+                            p.budget_min, p.budget_max, p.experience_level, p.estimated_duration,
+                            p.skills, p.client_id, p.status, p.created_at, p.updated_at 
+                     FROM projects p
+                     JOIN contracts c ON p.id = c.project_id
+                     WHERE c.freelancer_id = ? ORDER BY c.created_at DESC"""
+            result = turso.execute(sql, [current_user.id])
+            
+        projects = [_row_to_project(row) for row in result.get("rows", [])]
+        return projects
+        
+    except Exception as e:
+        print(f"[ERROR] get_my_projects: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database unavailable: {str(e)}"
+        )
+
+
 @router.get("/{project_id}", response_model=ProjectRead)
 def get_project(
     project_id: int,

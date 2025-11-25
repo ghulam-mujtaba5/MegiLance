@@ -59,6 +59,16 @@ def _user_from_row(row: list, cols: list) -> dict:
         name = col.get("name", "")
         val = row[i].get("value") if row[i].get("type") != "null" else None
         data[name] = val
+    
+    # Parse profile_data if present
+    if data.get("profile_data"):
+        try:
+            profile = json.loads(data["profile_data"])
+            if isinstance(profile, dict):
+                data.update(profile)
+        except:
+            pass
+            
     return data
 
 
@@ -95,11 +105,20 @@ def register_user(request: Request, payload: UserCreate):
     hashed_password = get_password_hash(payload.password)
     now = datetime.utcnow().isoformat()
     
+    # Prepare profile data
+    profile_data = {}
+    if payload.title:
+        profile_data["title"] = payload.title
+    if payload.portfolio_url:
+        profile_data["portfolio_url"] = payload.portfolio_url
+    
+    profile_data_json = json.dumps(profile_data) if profile_data else None
+    
     # Insert new user
     insert_result = execute_query(
         """INSERT INTO users (email, hashed_password, is_active, name, user_type, 
-           bio, skills, hourly_rate, profile_image_url, location, joined_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           bio, skills, hourly_rate, profile_image_url, location, profile_data, joined_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         [
             payload.email,
             hashed_password,
@@ -111,6 +130,7 @@ def register_user(request: Request, payload: UserCreate):
             payload.hourly_rate or 0,
             payload.profile_image_url or "",
             payload.location or "",
+            profile_data_json,
             now
         ]
     )
@@ -124,7 +144,7 @@ def register_user(request: Request, payload: UserCreate):
     # Get the created user
     get_result = execute_query(
         """SELECT id, email, is_active, name, user_type, bio, skills, 
-           hourly_rate, profile_image_url, location, joined_at
+           hourly_rate, profile_image_url, location, profile_data, joined_at
            FROM users WHERE email = ?""",
         [payload.email]
     )
@@ -150,6 +170,8 @@ def register_user(request: Request, payload: UserCreate):
         hourly_rate=float(user_data.get("hourly_rate") or 0),
         profile_image_url=_safe_str(user_data.get("profile_image_url")),
         location=_safe_str(user_data.get("location")),
+        title=_safe_str(user_data.get("title")),
+        portfolio_url=_safe_str(user_data.get("portfolio_url")),
         joined_at=parse_date(user_data.get("joined_at"))
     )
 
@@ -175,6 +197,14 @@ def login_user(request: Request, credentials: LoginRequest):
             detail="Incorrect email or password"
         )
 
+    # Parse profile data for user object
+    profile_data = {}
+    if user.profile_data:
+        try:
+            profile_data = json.loads(user.profile_data)
+        except:
+            pass
+
     # Check if 2FA is enabled
     if hasattr(user, 'two_factor_enabled') and user.two_factor_enabled:
         # Create temporary token for 2FA verification
@@ -196,6 +226,8 @@ def login_user(request: Request, credentials: LoginRequest):
             hourly_rate=float(user.hourly_rate) if user.hourly_rate else None,
             profile_image_url=_safe_str(user.profile_image_url),
             location=_safe_str(user.location),
+            title=profile_data.get("title"),
+            portfolio_url=profile_data.get("portfolio_url"),
             joined_at=user.joined_at
         )
         
@@ -226,6 +258,8 @@ def login_user(request: Request, credentials: LoginRequest):
         hourly_rate=float(user.hourly_rate) if user.hourly_rate else None,
         profile_image_url=_safe_str(user.profile_image_url),
         location=_safe_str(user.location),
+        title=profile_data.get("title"),
+        portfolio_url=profile_data.get("portfolio_url"),
         joined_at=user.joined_at
     )
     
@@ -272,7 +306,29 @@ def refresh_token(request: RefreshTokenRequest):
 @router.get("/me", response_model=UserRead)
 def read_users_me(current_user: User = Depends(get_current_active_user)):
     """Get current user profile"""
-    return current_user
+    # Parse profile data
+    profile_data = {}
+    if current_user.profile_data:
+        try:
+            profile_data = json.loads(current_user.profile_data)
+        except:
+            pass
+            
+    return UserRead(
+        id=current_user.id,
+        email=_safe_str(current_user.email),
+        is_active=bool(current_user.is_active),
+        name=_safe_str(current_user.name),
+        user_type=_safe_str(current_user.user_type),
+        bio=_safe_str(current_user.bio),
+        skills=_safe_str(current_user.skills),
+        hourly_rate=float(current_user.hourly_rate) if current_user.hourly_rate else None,
+        profile_image_url=_safe_str(current_user.profile_image_url),
+        location=_safe_str(current_user.location),
+        title=profile_data.get("title"),
+        portfolio_url=profile_data.get("portfolio_url"),
+        joined_at=current_user.joined_at
+    )
 
 
 @router.put("/me", response_model=UserRead)
@@ -285,19 +341,7 @@ def update_user_me(
     
     if not update_data:
         # No changes - return current user
-        return UserRead(
-            id=current_user.id,
-            email=_safe_str(current_user.email),
-            is_active=bool(current_user.is_active),
-            name=_safe_str(current_user.name),
-            user_type=_safe_str(current_user.user_type),
-            bio=_safe_str(current_user.bio),
-            skills=_safe_str(current_user.skills),
-            hourly_rate=float(current_user.hourly_rate) if current_user.hourly_rate else None,
-            profile_image_url=_safe_str(current_user.profile_image_url),
-            location=_safe_str(current_user.location),
-            joined_at=current_user.joined_at
-        )
+        return read_users_me(current_user)
     
     # Handle password change
     if "password" in update_data:
@@ -314,6 +358,28 @@ def update_user_me(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already in use"
             )
+            
+    # Handle full_name alias
+    if "full_name" in update_data:
+        update_data["name"] = update_data.pop("full_name")
+
+    # Handle profile_data fields
+    profile_fields = ["title", "portfolio_url"]
+    profile_updates = {}
+    for field in profile_fields:
+        if field in update_data:
+            profile_updates[field] = update_data.pop(field)
+            
+    if profile_updates:
+        # Get existing profile_data
+        current_profile = {}
+        if current_user.profile_data:
+            try:
+                current_profile = json.loads(current_user.profile_data)
+            except:
+                pass
+        current_profile.update(profile_updates)
+        update_data["profile_data"] = json.dumps(current_profile)
     
     # Build UPDATE query
     set_parts = []
@@ -338,7 +404,7 @@ def update_user_me(
     # Fetch updated user
     get_result = execute_query(
         """SELECT id, email, is_active, name, user_type, bio, skills,
-           hourly_rate, profile_image_url, location, joined_at
+           hourly_rate, profile_image_url, location, profile_data, joined_at
            FROM users WHERE id = ?""",
         [current_user.id]
     )
@@ -364,6 +430,8 @@ def update_user_me(
         hourly_rate=float(user_data.get("hourly_rate") or 0),
         profile_image_url=_safe_str(user_data.get("profile_image_url")),
         location=_safe_str(user_data.get("location")),
+        title=_safe_str(user_data.get("title")),
+        portfolio_url=_safe_str(user_data.get("portfolio_url")),
         joined_at=parse_date(user_data.get("joined_at"))
     )
 
@@ -456,6 +524,14 @@ def verify_2fa_login(
     access_token = create_access_token(subject=email_str, custom_claims=custom_claims)
     refresh_token = create_refresh_token(subject=email_str, custom_claims=custom_claims)
     
+    # Parse profile data
+    profile_data = {}
+    if current_user.profile_data:
+        try:
+            profile_data = json.loads(current_user.profile_data)
+        except:
+            pass
+
     return AuthResponse(
         access_token=access_token,
         refresh_token=refresh_token,
@@ -470,6 +546,8 @@ def verify_2fa_login(
             hourly_rate=float(current_user.hourly_rate) if current_user.hourly_rate else None,
             profile_image_url=_safe_str(current_user.profile_image_url),
             location=_safe_str(current_user.location),
+            title=profile_data.get("title"),
+            portfolio_url=profile_data.get("portfolio_url"),
             joined_at=current_user.joined_at
         ),
         message="Login successful"

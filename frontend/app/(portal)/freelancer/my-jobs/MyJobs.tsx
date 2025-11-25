@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
 import PaginatedJobGrid from './components/PaginatedJobGrid/PaginatedJobGrid';
 import { JobStatusCardProps } from './components/JobStatusCard/JobStatusCard';
 import { SortOption } from '@/app/components/DataToolbar/DataToolbar';
@@ -28,12 +29,7 @@ interface APIContract {
   terms: string;
   created_at: string;
   updated_at: string;
-}
-
-interface APIProject {
-  id: number;
-  title: string;
-  client_id: number;
+  job_title?: string;
   client_name?: string;
 }
 
@@ -94,53 +90,19 @@ const MyJobs: React.FC = () => {
     
     try {
       // Fetch contracts for current freelancer
-      const contractsRes = await fetch('/backend/api/contracts/', {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (!contractsRes.ok) {
-        throw new Error('Failed to fetch contracts');
-      }
-      
-      const contracts: APIContract[] = await contractsRes.json();
-      
-      // Get unique project IDs to fetch project details
-      const projectIds = [...new Set(contracts.map(c => c.project_id))];
-      
-      // Fetch project details for job titles and client names
-      const projectPromises = projectIds.map(async (pid) => {
-        try {
-          const res = await fetch(`/backend/api/projects/${pid}`, {
-            credentials: 'include',
-            headers: { 'Accept': 'application/json' },
-          });
-          if (res.ok) {
-            return await res.json();
-          }
-        } catch {
-          // Ignore individual project fetch errors
-        }
-        return null;
-      });
-      
-      const projectsData = await Promise.all(projectPromises);
-      const projectMap = new Map<number, APIProject>();
-      projectsData.filter(Boolean).forEach((project: APIProject) => {
-        if (project) projectMap.set(project.id, project);
-      });
+      const response = await api.portal.freelancer.getProjects();
+      const contracts = response.projects;
       
       // Transform contracts to job cards
       const active: JobStatusCardProps[] = [];
       const completed: JobStatusCardProps[] = [];
       
-      contracts.forEach((contract) => {
-        const project = projectMap.get(contract.project_id);
+      contracts.forEach((contract: any) => {
         const { displayStatus, progress } = getStatusAndProgress(contract.status);
         
         const jobCard: JobStatusCardProps = {
-          title: project?.title || `Project #${contract.project_id}`,
-          client: project?.client_name || 'Client',
+          title: contract.title || `Project #${contract.project_id}`,
+          client: contract.client_name || 'Client',
           status: displayStatus,
           progress,
         };
@@ -155,9 +117,9 @@ const MyJobs: React.FC = () => {
       
       setActiveJobs(active);
       setCompletedJobs(completed);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch jobs:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load jobs');
+      setError(err.message || 'Failed to load jobs');
     } finally {
       setLoading(false);
     }

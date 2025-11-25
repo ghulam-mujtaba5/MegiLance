@@ -14,6 +14,9 @@ export async function POST(request: NextRequest) {
       description: body.description,
       budget: parseFloat(body.budget) || 0,
       skills: body.skills || [],
+      category: body.category,
+      budget_type: body.budgetType,
+      timeline: body.timeline
     };
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/portal/client/projects`, {

@@ -1,7 +1,7 @@
 // @AI-HINT: Client Reviews management. Theme-aware, accessible editor and animated reviews list.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -13,6 +13,7 @@ import Button from '@/app/components/Button/Button';
 import StarRating from '@/app/components/StarRating/StarRating';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Textarea from '@/app/components/Textarea/Textarea';
+import api from '@/lib/api';
 import common from './Reviews.common.module.css';
 import light from './Reviews.light.module.css';
 import dark from './Reviews.dark.module.css';
@@ -36,12 +37,12 @@ const Reviews: React.FC = () => {
     if (!Array.isArray(reviews)) return [];
     return (reviews as any[]).map((r, idx) => ({
       id: String(r.id ?? idx),
-      project: r.projectTitle ?? r.project ?? 'Unknown Project',
-      freelancer: r.freelancerName ?? r.freelancer ?? 'Unknown',
-      avatarUrl: r.avatarUrl ?? '', // Mocked for now
-      created: r.date ?? r.createdAt ?? r.created ?? '',
+      project: r.project_title ?? r.projectTitle ?? r.project ?? 'Unknown Project',
+      freelancer: r.reviewed_user_name ?? r.freelancerName ?? r.freelancer ?? 'Unknown',
+      avatarUrl: r.avatarUrl ?? '',
+      created: r.created_at ?? r.date ?? r.createdAt ?? r.created ?? '',
       rating: Number(r.rating) || 0,
-      text: r.comment ?? r.text ?? '',
+      text: r.review_text ?? r.comment ?? r.text ?? '',
     }));
   }, [reviews]);
 
@@ -50,6 +51,9 @@ const Reviews: React.FC = () => {
 
   const [newText, setNewText] = useState('');
   const [newRating, setNewRating] = useState(0);
+  const [eligibleContracts, setEligibleContracts] = useState<any[]>([]);
+  const [selectedContractId, setSelectedContractId] = useState<string>('');
+  const [submitting, setSubmitting] = useState(false);
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -58,6 +62,28 @@ const Reviews: React.FC = () => {
   const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
   const listVisible = useIntersectionObserver(listRef, { threshold: 0.1 });
   const editorVisible = useIntersectionObserver(editorRef, { threshold: 0.1 });
+
+  useEffect(() => {
+    async function loadEligible() {
+      try {
+        const me = await api.auth.me();
+        // Fetch my reviews to know what I've already reviewed
+        const myReviews = await api.reviews.list({ reviewer_id: me.id });
+        const contracts = await api.contracts.list({ status: 'completed' });
+        
+        const reviewedContractIds = new Set(myReviews.map((r: any) => String(r.contract_id)));
+        
+        const eligible = contracts.filter((c: any) => 
+          !reviewedContractIds.has(String(c.id)) && 
+          (c.client_id === me.id) // Ensure I am the client
+        );
+        setEligibleContracts(eligible);
+      } catch (e) {
+        console.error("Failed to load eligible contracts", e);
+      }
+    }
+    loadEligible();
+  }, [reviews]); // Re-run when reviews list updates
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -103,7 +129,35 @@ const Reviews: React.FC = () => {
 
   const setStar = (value: number) => setNewRating(value);
 
-  const canSubmit = newText.trim().length > 10 && newRating > 0;
+  const canSubmit = newText.trim().length > 10 && newRating > 0 && selectedContractId !== '';
+
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    setSubmitting(true);
+    try {
+      const contract = eligibleContracts.find(c => String(c.id) === selectedContractId);
+      if (!contract) throw new Error("Contract not found");
+
+      await api.reviews.create({
+        contract_id: contract.id,
+        reviewed_user_id: contract.freelancer_id,
+        rating: newRating,
+        review_text: newText,
+        is_public: true
+      });
+
+      setNewText('');
+      setNewRating(0);
+      setSelectedContractId('');
+      // Force reload to refresh lists
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to submit review');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -153,7 +207,7 @@ const Reviews: React.FC = () => {
                     <p className={common.reviewText}>{r.text}</p>
                   </div>
                   <footer className={common.cardFooter}>
-                    <time dateTime={r.created}>{r.created}</time>
+                    <time dateTime={r.created}>{new Date(r.created).toLocaleDateString()}</time>
                   </footer>
                 </article>
               ))}
@@ -188,6 +242,26 @@ const Reviews: React.FC = () => {
         <section ref={editorRef} className={cn(common.editor, themed.editor, editorVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="new-title">
           <h2 id="new-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Leave a Review</h2>
           <div className={common.editorForm}>
+            
+            {eligibleContracts.length > 0 ? (
+              <div style={{ marginBottom: '1rem' }}>
+                <label className={common.ratingLabel} style={{ display: 'block', marginBottom: '0.5rem' }}>Select Contract to Review:</label>
+                <Select
+                  options={eligibleContracts.map(c => ({ 
+                    value: String(c.id), 
+                    label: `${c.job_title} - ${c.client_name || 'Freelancer'}` 
+                  }))}
+                  value={selectedContractId}
+                  onChange={(val) => setSelectedContractId(val)}
+                  placeholder="Select a completed contract..."
+                />
+              </div>
+            ) : (
+              <div style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
+                No completed contracts pending review.
+              </div>
+            )}
+
             <div className={common.ratingSelector}>
               <span className={common.ratingLabel}>Your rating:</span>
               {[1,2,3,4,5].map(n => (
@@ -211,7 +285,16 @@ const Reviews: React.FC = () => {
             />
             <div className={common.editorActions}>
               <Button variant="secondary" onClick={() => { setNewText(''); setNewRating(0); }} title="Clear review form">Clear</Button>
-              <Button variant="primary" onClick={() => alert('Review submitted')} disabled={!canSubmit} aria-disabled={!canSubmit} title="Submit your review">Submit Review</Button>
+              <Button 
+                variant="primary" 
+                onClick={handleSubmit} 
+                disabled={!canSubmit || submitting} 
+                aria-disabled={!canSubmit || submitting} 
+                title="Submit your review"
+                isLoading={submitting}
+              >
+                Submit Review
+              </Button>
             </div>
           </div>
         </section>

@@ -178,10 +178,16 @@ def get_client_payments(
     Get client payments with transformed data structure for frontend
     """
     result = execute_query(
-        """SELECT id, to_user_id, from_user_id, amount, status, description, created_at
-           FROM payments
-           WHERE to_user_id = ? OR from_user_id = ?
-           ORDER BY created_at DESC""",
+        """SELECT p.id, p.to_user_id, p.from_user_id, p.amount, p.status, p.description, p.created_at,
+                  proj.title as project_title,
+                  u.name as freelancer_name,
+                  u.profile_image_url as freelancer_avatar
+           FROM payments p
+           LEFT JOIN contracts c ON p.contract_id = c.id
+           LEFT JOIN projects proj ON c.project_id = proj.id
+           LEFT JOIN users u ON c.freelancer_id = u.id
+           WHERE p.to_user_id = ? OR p.from_user_id = ?
+           ORDER BY p.created_at DESC""",
         [current_user["id"], current_user["id"]]
     )
     
@@ -199,13 +205,20 @@ def get_client_payments(
         payment_type = "Payment" if to_user_id == current_user["id"] else "Refund"
         created_at = parse_date(row[6])
         
+        project_title = to_str(row[7]) or "Untitled Project"
+        freelancer_name = to_str(row[8]) or "Unknown Freelancer"
+        freelancer_avatar = to_str(row[9])
+
         transformed_payment = {
             "id": str(payment_id) if payment_id else None,
             "date": created_at.isoformat() if created_at else None,
             "description": to_str(row[5]),
             "amount": str(amount),
             "status": status_val.capitalize() if status_val else "Pending",
-            "type": payment_type
+            "type": payment_type,
+            "project": project_title,
+            "freelancer": freelancer_name,
+            "freelancerAvatarUrl": freelancer_avatar
         }
         transformed_payments.append(transformed_payment)
     
@@ -221,7 +234,7 @@ def get_client_freelancers(
     """
     # Get freelancers from contracts and accepted proposals
     result = execute_query(
-        """SELECT DISTINCT u.id, u.name, u.first_name, u.last_name, u.bio, u.hourly_rate, u.skills, u.profile_image
+        """SELECT DISTINCT u.id, u.name, u.first_name, u.last_name, u.bio, u.hourly_rate, u.skills, u.profile_image_url, u.location
            FROM users u
            INNER JOIN contracts c ON c.freelancer_id = u.id
            WHERE c.client_id = ?
@@ -231,26 +244,7 @@ def get_client_freelancers(
     
     if not result or not result.get("rows"):
         # Return mock data if no real data
-        return [
-            {
-                "id": "freelancer_1",
-                "name": "Alice Johnson",
-                "title": "Senior Full-Stack Developer",
-                "rating": 4.8,
-                "hourlyRate": "$75/hr",
-                "skills": ["React", "Node.js", "Python"],
-                "completedProjects": 24
-            },
-            {
-                "id": "freelancer_2",
-                "name": "Bob Smith",
-                "title": "UI/UX Designer",
-                "rating": 4.9,
-                "hourlyRate": "$65/hr",
-                "skills": ["Figma", "UI Design", "Prototyping"],
-                "completedProjects": 18
-            }
-        ]
+        return []
     
     freelancers = []
     for row in result["rows"]:
@@ -261,9 +255,15 @@ def get_client_freelancers(
             last = to_str(row[3]) or ""
             name = f"{first} {last}".strip() or "Unknown"
         
+        bio = to_str(row[4])
+        title = bio.split('.')[0][:50] + "..." if bio else "Freelancer"
+        
         hourly_rate = float(row[5].get("value")) if row[5].get("type") != "null" else 0
         skills_str = to_str(row[6])
         skills = skills_str.split(",") if skills_str else []
+        
+        profile_image_url = to_str(row[7])
+        location = to_str(row[8]) or "Remote"
         
         # Get completed projects count
         count_result = execute_query(
@@ -288,11 +288,14 @@ def get_client_freelancers(
         freelancers.append({
             "id": f"freelancer_{freelancer_id}",
             "name": name,
-            "title": to_str(row[3]) or "Freelancer",
+            "title": title,
             "rating": avg_rating,
             "hourlyRate": f"${hourly_rate}/hr",
             "skills": skills[:5],  # Limit to 5 skills
-            "completedProjects": completed_count
+            "completedProjects": completed_count,
+            "avatarUrl": profile_image_url,
+            "location": location,
+            "availability": "Contract" # Default for now
         })
     
     return freelancers
@@ -306,7 +309,7 @@ def get_client_reviews(
     Get reviews for the client
     """
     result = execute_query(
-        """SELECT r.id, r.rating, r.comment, r.created_at, p.title, u.name, u.first_name, u.last_name
+        """SELECT r.id, r.rating, r.comment, r.created_at, p.title, u.name, u.first_name, u.last_name, u.profile_image_url
            FROM reviews r
            LEFT JOIN projects p ON r.project_id = p.id
            LEFT JOIN users u ON r.reviewer_id = u.id
@@ -317,25 +320,7 @@ def get_client_reviews(
     )
     
     if not result or not result.get("rows"):
-        # Return mock data if no real reviews
-        return [
-            {
-                "id": "review_1",
-                "projectTitle": "E-commerce Website",
-                "freelancerName": "Alice Johnson",
-                "rating": 5,
-                "comment": "Excellent work! Delivered ahead of schedule and exceeded expectations.",
-                "date": "2024-03-15"
-            },
-            {
-                "id": "review_2",
-                "projectTitle": "Mobile App Redesign",
-                "freelancerName": "Bob Smith",
-                "rating": 5,
-                "comment": "Fantastic design work. Very responsive to feedback.",
-                "date": "2024-02-28"
-            }
-        ]
+        return []
     
     reviews = []
     for row in result["rows"]:
@@ -349,13 +334,16 @@ def get_client_reviews(
             last = to_str(row[7]) or ""
             freelancer_name = f"{first} {last}".strip() or "Anonymous"
         
+        freelancer_avatar = to_str(row[8])
+
         reviews.append({
             "id": f"review_{review_id}",
             "projectTitle": to_str(row[4]) or "Project",
             "freelancerName": freelancer_name,
             "rating": rating,
             "comment": to_str(row[2]),
-            "date": created_at.strftime("%Y-%m-%d") if created_at else None
+            "date": created_at.strftime("%Y-%m-%d") if created_at else None,
+            "avatarUrl": freelancer_avatar
         })
     
     return reviews

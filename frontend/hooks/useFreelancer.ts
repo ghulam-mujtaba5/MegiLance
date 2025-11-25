@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
 
 // @AI-HINT: Hook to fetch freelancer portal datasets (projects, jobs, wallet, analytics).
 
@@ -16,6 +17,7 @@ export type FreelancerJob = {
   id: string; 
   title: string; 
   clientName: string; 
+  description?: string;
   budget: number; 
   postedTime: string;
   skills: string[];
@@ -64,27 +66,21 @@ export function useFreelancerData() {
       setLoading(true);
       setError(null);
       try {
-        // Get auth token from localStorage
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-        
-        // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
-        const fetchWithFallback = async (url: string, fallback: any = []) => {
+        // Use the API client methods
+        const fetchWithFallback = async (promise: Promise<any>, fallback: any = []) => {
           try {
-            const res = await fetch(url, { headers });
-            if (!res.ok) return fallback;
-            return await res.json();
+            return await promise;
           } catch {
             return fallback;
           }
         };
         
         const [projectsJson, jobsJson, walletJson, paymentsJson, statsJson] = await Promise.all([
-          fetchWithFallback('/backend/api/portal/freelancer/projects', { projects: [] }),
-          fetchWithFallback('/backend/api/portal/freelancer/jobs', { jobs: [] }),
-          fetchWithFallback('/backend/api/portal/freelancer/wallet', { balance: 0 }),
-          fetchWithFallback('/backend/api/portal/freelancer/payments', { payments: [] }),
-          fetchWithFallback('/backend/api/portal/freelancer/dashboard/stats', {}),
+          fetchWithFallback(api.portal.freelancer.getProjects(), { projects: [] }),
+          fetchWithFallback(api.portal.freelancer.getJobs(), { jobs: [] }),
+          fetchWithFallback(api.portal.freelancer.getWallet(), { balance: 0 }),
+          fetchWithFallback(api.portal.freelancer.getPayments(), { payments: [] }),
+          fetchWithFallback(api.portal.freelancer.getDashboardStats(), {}),
         ]);
         
         if (!mounted) return;
@@ -107,6 +103,7 @@ export function useFreelancerData() {
           id: String(j.id),
           title: j.title,
           clientName: j.client_name || 'Unknown Client',
+          description: j.description,
           budget: j.budget_max,
           postedTime: j.created_at,
           skills: j.skills || [],

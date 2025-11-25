@@ -6,7 +6,8 @@ import { useTheme } from 'next-themes';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { loadHireDraft, saveHireDraft, submitHire, clearHireDraft } from '@/app/mocks/hires';
+import { loadHireDraft, saveHireDraft, clearHireDraft } from '@/app/mocks/hires';
+import api from '@/lib/api';
 
 import Button from '@/app/components/Button/Button';
 import StepIndicator from './components/StepIndicator/StepIndicator';
@@ -89,11 +90,23 @@ const Hire: React.FC = () => {
     setSubmitting(true);
     setLiveMessage('Sending hire request…');
     try {
-      const res = await submitHire({ freelancerId, title, description, rateType, rate: Number(rate), startDate });
-      setLiveMessage(`Success: ${res.message} (id: ${res.id})`);
+      // Extract numeric ID if prefixed
+      const fId = parseInt(freelancerId.toString().replace('freelancer_', ''));
+      
+      const res = await api.contracts.createDirect({
+        freelancer_id: isNaN(fId) ? 0 : fId,
+        title,
+        description,
+        rate_type: rateType,
+        rate: Number(rate),
+        start_date: startDate
+      });
+      
+      setLiveMessage(`Success: Contract created (id: ${res.id})`);
       resetForm();
-    } catch (e) {
-      setLiveMessage('Error sending request. Please try again.');
+    } catch (e: any) {
+      console.error(e);
+      setLiveMessage(`Error: ${e.message || 'Failed to create contract'}`);
     } finally {
       setSubmitting(false);
     }

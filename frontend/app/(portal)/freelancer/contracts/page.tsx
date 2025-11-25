@@ -67,9 +67,9 @@ const ContractsPage: React.FC = () => {
         const data = await res.json();
         const mapped: ContractData[] = (data.items || data || []).map((c: any) => ({
           id: c.id || c.contract_id,
-          projectTitle: c.project_title || c.title || 'Untitled',
+          projectTitle: c.job_title || c.project_title || c.title || 'Untitled',
           clientName: c.client_name || c.client || '—',
-          value: c.amount || c.value || 0,
+          value: c.amount || c.contract_amount || c.value || 0,
           status: c.status || 'Active',
           contractAddress: c.contract_address || c.escrow_address || '—',
         }));

@@ -3,10 +3,12 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 
+import { api } from '@/lib/api';
 import { ProposalData, ProposalErrors } from './SubmitProposal.types';
 
 import Button from '@/app/components/Button/Button';
@@ -25,9 +27,11 @@ type Step = typeof STEPS[number];
 const SubmitProposal: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
+  const searchParams = useSearchParams();
+  const jobIdParam = searchParams.get('jobId');
 
   const [data, setData] = useState<ProposalData>({
-    jobId: '',
+    jobId: jobIdParam || '',
     coverLetter: '',
     estimatedHours: null,
     hourlyRate: null,
@@ -94,10 +98,18 @@ const SubmitProposal: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const bidAmount = (data.hourlyRate || 0) * (data.estimatedHours || 0);
+      
+      await api.portal.freelancer.submitProposal({
+        project_id: parseInt(data.jobId),
+        cover_letter: data.coverLetter,
+        bid_amount: bidAmount,
+        delivery_time: data.estimatedHours || 0
+      });
+      
       setSubmissionState('success');
     } catch (err) {
+      console.error(err);
       setSubmissionState('error');
     } finally {
       setSubmitting(false);

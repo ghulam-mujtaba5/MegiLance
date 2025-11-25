@@ -34,7 +34,7 @@ class ContractUpdate(BaseModel):
 
 
 class ContractRead(ContractBase):
-    id: int
+    id: str
     project_id: int
     freelancer_id: int
     client_id: int
@@ -43,6 +43,8 @@ class ContractRead(ContractBase):
     platform_fee: Optional[float] = None
     created_at: datetime
     updated_at: datetime
+    job_title: Optional[str] = None
+    client_name: Optional[str] = None
 
     class Config:
         from_attributes = True

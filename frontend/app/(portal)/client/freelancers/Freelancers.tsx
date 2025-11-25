@@ -35,7 +35,7 @@ const Freelancers: React.FC = () => {
     return (freelancers as any[]).map((f, idx) => ({
       id: String(f.id ?? idx),
       name: f.name ?? 'Unknown',
-      avatarUrl: f.avatarUrl ?? '', // Mocked for now
+      avatarUrl: f.avatarUrl ?? '',
       title: f.title ?? f.role ?? 'Freelancer',
       rate: f.hourlyRate ?? f.rate ?? '$0/hr',
       location: f.location ?? 'Remote',

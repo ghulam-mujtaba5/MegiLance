@@ -1,4 +1,8 @@
-'use client';
+import os
+
+file_path = os.path.join("frontend", "app", "(portal)", "freelancer", "projects", "[id]", "ProjectDetails.tsx")
+
+content = """'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -349,3 +353,9 @@ export default function ProjectDetails({ id }: ProjectDetailsProps) {
     </div>
   );
 }
+"""
+
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(content)
+
+print(f"Successfully updated {file_path}")

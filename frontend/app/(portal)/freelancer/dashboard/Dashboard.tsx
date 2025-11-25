@@ -5,27 +5,25 @@ import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { useFreelancerData } from '@/hooks/useFreelancer';
+import { useFreelancerData, FreelancerJob, FreelancerTransaction } from '@/hooks/useFreelancer';
 import { 
   Briefcase, 
   DollarSign, 
   FileText, 
-  Bell,
   Calendar,
-  MessageCircle,
   Plus,
   Award,
   Clock,
-  CheckCircle,
-  AlertCircle
+  AlertCircle,
+  MapPin
 } from 'lucide-react';
 
 import KeyMetricsGrid from '@/app/(portal)/freelancer/dashboard/components/KeyMetricsGrid/KeyMetricsGrid';
 import RecentActivityFeed from '@/app/(portal)/freelancer/dashboard/components/RecentActivityFeed/RecentActivityFeed';
-import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
+import Badge from '@/app/components/Badge/Badge';
 
 import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
@@ -36,29 +34,42 @@ const Dashboard: React.FC = () => {
   const { analytics, jobs, transactions, loading, error } = useFreelancerData();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  const renderJobItem = (job: any) => (
-      <ProjectCard
-        key={job.id}
-        id={job.id ?? 'unknown'}
-        title={job.title ?? 'Untitled Job'}
-        status={job.status ?? 'Pending'}
-        progress={job.progress ?? 0}
-        budget={typeof job.budget === 'number' ? job.budget : 0}
-        paid={job.paid ?? 0}
-        freelancers={job.freancers ?? []}
-        updatedAt={job.updatedAt ?? ''}
-        clientName={job.clientName ?? 'Unknown Client'}
-        postedTime={job.postedTime ?? 'Unknown'}
-        tags={Array.isArray(job.skills) ? job.skills : []}
-      />
+  const renderJobItem = (job: FreelancerJob) => (
+    <div className={cn(commonStyles.jobItem, themeStyles.jobItem)}>
+      <div className={commonStyles.jobHeader}>
+        <h4 className={cn(commonStyles.jobTitle, themeStyles.jobTitle)}>{job.title}</h4>
+        <Badge variant="info" size="small">{job.status}</Badge>
+      </div>
+      <div className={commonStyles.jobDetails}>
+        <span className={commonStyles.jobClient}>{job.clientName}</span>
+        <span className={commonStyles.jobBudget}>${job.budget.toLocaleString()}</span>
+      </div>
+      <div className={commonStyles.jobFooter}>
+        <div className={commonStyles.jobMeta}>
+          <Clock size={14} className={commonStyles.jobIcon} />
+          <span>{new Date(job.postedTime).toLocaleDateString()}</span>
+        </div>
+        {job.skills.length > 0 && (
+          <div className={commonStyles.jobSkills}>
+            {job.skills.slice(0, 2).map(skill => (
+              <span key={skill} className={cn(commonStyles.skillTag, themeStyles.skillTag)}>{skill}</span>
+            ))}
+            {job.skills.length > 2 && <span className={cn(commonStyles.skillTag, themeStyles.skillTag)}>+{job.skills.length - 2}</span>}
+          </div>
+        )}
+      </div>
+      <Link href={`/jobs/${job.id}`} className={commonStyles.jobLink}>
+        View Details
+      </Link>
+    </div>
   );
 
-  const renderTransactionItem = (txn: any) => (
+  const renderTransactionItem = (txn: FreelancerTransaction) => (
     <TransactionRow
       key={txn.id}
-      amount={txn.amount ?? '0'}
-      date={txn.date ?? ''}
-      description={txn.description ?? 'Unknown transaction'}
+      amount={txn.amount}
+      date={new Date(txn.date).toLocaleDateString()}
+      description={txn.description}
     />
   );
 
@@ -75,12 +86,12 @@ const Dashboard: React.FC = () => {
 
     // Add activities from jobs
     if (jobs && jobs.length > 0) {
-      jobs.slice(0, 2).forEach((job: any, index: number) => {
+      jobs.slice(0, 2).forEach((job, index) => {
         activities.push({
           id: `job-${job.id || index}`,
           title: 'New job available',
           description: job.title || 'A new job matching your skills was posted',
-          time: job.postedTime || 'Recently',
+          time: new Date(job.postedTime).toLocaleDateString(),
           icon: Briefcase,
           type: 'job'
         });
@@ -89,12 +100,12 @@ const Dashboard: React.FC = () => {
 
     // Add activities from transactions
     if (transactions && transactions.length > 0) {
-      transactions.slice(0, 2).forEach((txn: any, index: number) => {
+      transactions.slice(0, 2).forEach((txn, index) => {
         activities.push({
           id: `txn-${txn.id || index}`,
-          title: txn.amount?.startsWith('+') ? 'Payment received' : 'Payment processed',
+          title: txn.amount.startsWith('+') ? 'Payment received' : 'Payment processed',
           description: txn.description || `Transaction of ${txn.amount}`,
-          time: txn.date || 'Recently',
+          time: new Date(txn.date).toLocaleDateString(),
           icon: DollarSign,
           type: 'payment'
         });

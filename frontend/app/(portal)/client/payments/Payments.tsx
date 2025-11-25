@@ -23,7 +23,7 @@ import common from './Payments.common.module.css';
 import light from './Payments.light.module.css';
 import dark from './Payments.dark.module.css';
 
-// Mock data transformation
+// Data transformation
 const transformPaymentData = (payments: any[]): PaymentCardProps[] => {
   if (!Array.isArray(payments)) return [];
   return payments.map(p => ({

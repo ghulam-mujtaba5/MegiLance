@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PlusCircle, Download, Search, AlertTriangle, SearchX } from 'lucide-react';
-import { useClientData } from '@/hooks/useClient'; // Using mock data hook
+import { useClientData } from '@/hooks/useClient';
 import ProjectCard, { ProjectCardProps } from '@/app/components/ProjectCard/ProjectCard';
 import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
@@ -16,7 +16,7 @@ import common from './Projects.common.module.css';
 import light from './Projects.light.module.css';
 import dark from './Projects.dark.module.css';
 
-// Mock data transformation
+// Data transformation
 const transformProjectData = (projects: any[]): ProjectCardProps[] => {
   if (!Array.isArray(projects)) return [];
   return projects.map(p => ({

@@ -30,8 +30,12 @@ class ProposalRead(ProposalBase):
     project_id: int
     freelancer_id: int
     status: str
+    bid_amount: Optional[float] = 0.0
+    is_draft: bool = False
     created_at: datetime
     updated_at: datetime
+    job_title: Optional[str] = None
+    client_name: Optional[str] = None
 
     class Config:
         from_attributes = True

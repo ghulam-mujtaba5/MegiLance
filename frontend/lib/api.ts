@@ -85,6 +85,13 @@ export const authApi = {
     setAuthToken(data.access_token);
     return data;
   },
+
+  me: () => apiFetch<any>('/auth/me'),
+
+  updateProfile: (data: any) => apiFetch<any>('/auth/me', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
 };
 
 // ===========================
@@ -491,6 +498,19 @@ export const contractsApi = {
 
   complete: (contractId: number) =>
     apiFetch(`/contracts/${contractId}/complete`, { method: 'POST' }),
+
+  createDirect: (data: {
+    freelancer_id: number;
+    title: string;
+    description: string;
+    rate_type: string;
+    rate: number;
+    start_date?: string;
+  }) =>
+    apiFetch('/contracts/direct', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 
 // ===========================
@@ -535,20 +555,34 @@ export const proposalsApi = {
 // REVIEWS
 // ===========================
 export const reviewsApi = {
-  list: (targetId?: number, targetType?: 'freelancer' | 'client', page = 1, pageSize = 20) =>
-    apiFetch(`/reviews/?${new URLSearchParams({ 
-      ...(targetId && { target_id: targetId.toString() }),
-      ...(targetType && { target_type: targetType }), 
-      page: page.toString(), 
-      page_size: pageSize.toString() 
-    })}`),
+  list: (filters?: { 
+    user_id?: number; 
+    reviewer_id?: number; 
+    contract_id?: number; 
+    min_rating?: number; 
+    is_public?: boolean; 
+    page?: number; 
+    page_size?: number 
+  }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/reviews/?${params}`);
+  },
 
   create: (data: {
-    target_id: number;
-    target_type: 'freelancer' | 'client';
     contract_id: number;
+    reviewed_user_id: number;
     rating: number;
-    comment: string;
+    review_text: string;
+    communication_rating?: number;
+    quality_rating?: number;
+    professionalism_rating?: number;
+    deadline_rating?: number;
+    is_public?: boolean;
   }) =>
     apiFetch('/reviews/', {
       method: 'POST',
@@ -557,6 +591,9 @@ export const reviewsApi = {
 
   get: (reviewId: number) =>
     apiFetch(`/reviews/${reviewId}`),
+    
+  getStats: (userId: number) =>
+    apiFetch(`/reviews/stats/${userId}`),
 };
 
 // ===========================
@@ -581,6 +618,86 @@ export const jobAlertsApi = {
     apiFetch(`/job-alerts/${id}`, { method: 'DELETE' }),
 };
 
+// ===========================
+// PORTAL
+// ===========================
+export const portalApi = {
+  client: {
+    getDashboardStats: () => apiFetch('/portal/client/dashboard/stats'),
+    getProjects: (filters?: { status?: string; skip?: number; limit?: number }) => {
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined) params.append(key, value.toString());
+        });
+      }
+      return apiFetch(`/portal/client/projects?${params}`);
+    },
+    createProject: (data: any) => 
+      apiFetch('/portal/client/projects', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    getProposals: (filters?: { project_id?: number; skip?: number; limit?: number }) => {
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined) params.append(key, value.toString());
+        });
+      }
+      return apiFetch(`/portal/client/proposals?${params}`);
+    },
+    getPayments: (skip = 0, limit = 50) => 
+      apiFetch(`/portal/client/payments?skip=${skip}&limit=${limit}`),
+    getWallet: () => apiFetch('/portal/client/wallet'),
+  },
+  freelancer: {
+    getDashboardStats: () => apiFetch('/portal/freelancer/dashboard/stats'),
+    getJobs: (filters?: { category?: string; skip?: number; limit?: number }) => {
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined) params.append(key, value.toString());
+        });
+      }
+      return apiFetch(`/portal/freelancer/jobs?${params}`);
+    },
+    getProjects: (filters?: { status?: string; skip?: number; limit?: number }) => {
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined) params.append(key, value.toString());
+        });
+      }
+      return apiFetch(`/portal/freelancer/projects?${params}`);
+    },
+    submitProposal: (data: {
+      project_id: number;
+      cover_letter: string;
+      bid_amount: number;
+      delivery_time: number;
+    }) => {
+      const params = new URLSearchParams({
+        project_id: data.project_id.toString(),
+        cover_letter: data.cover_letter,
+        bid_amount: data.bid_amount.toString(),
+        delivery_time: data.delivery_time.toString()
+      });
+      return apiFetch(`/portal/freelancer/proposals?${params}`, {
+        method: 'POST',
+      });
+    },
+    getPortfolio: () => apiFetch('/portal/freelancer/portfolio'),
+    getSkills: () => apiFetch('/portal/freelancer/skills'),
+    getEarnings: () => apiFetch('/portal/freelancer/earnings'),
+    getWallet: () => apiFetch('/portal/freelancer/wallet'),
+    getPayments: (skip = 0, limit = 50) => 
+      apiFetch(`/portal/freelancer/payments?skip=${skip}&limit=${limit}`),
+    withdraw: (amount: number) => 
+      apiFetch(`/portal/freelancer/withdraw?amount=${amount}`, { method: 'POST' }),
+  }
+};
+
 export default {
   auth: authApi,
   timeEntries: timeEntriesApi,
@@ -597,4 +714,5 @@ export default {
   proposals: proposalsApi,
   reviews: reviewsApi,
   jobAlerts: jobAlertsApi,
+  portal: portalApi,
 };

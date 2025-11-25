@@ -1,10 +1,11 @@
 // @AI-HINT: This is the modernized Client Settings page. It features a two-panel layout with sidebar navigation and uses the reusable SettingsSection component for each category.
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { User, Shield, Bell, CreditCard, LifeBuoy } from 'lucide-react';
+import { User, Shield, Bell, CreditCard, LifeBuoy, CheckCircle, AlertCircle } from 'lucide-react';
+import api from '@/lib/api';
 
 import SettingsSection from '@/app/components/SettingsSection/SettingsSection';
 import Input from '@/app/components/Input/Input';
@@ -27,27 +28,90 @@ const Settings: React.FC = () => {
   }, [resolvedTheme]);
 
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Mock data and state handlers
-  const [name, setName] = useState('Acme Corporation');
-  const [email, setEmail] = useState('billing@acme.corp');
-  const [bio, setBio] = useState('Leading provider of innovative solutions for the modern web.');
+  // State handlers
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [bio, setBio] = useState('');
   const [twoFactor, setTwoFactor] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [productAnnouncements, setProductAnnouncements] = useState(false);
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const user = await api.auth.me();
+        setName(user.name || user.full_name || '');
+        setEmail(user.email || '');
+        setBio(user.bio || '');
+        // Set other preferences if available in user object
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load profile settings');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true);
+      setError(null);
+      setSuccessMessage(null);
+      
+      await api.auth.updateProfile({
+        name,
+        bio
+        // Email update usually requires separate flow
+      });
+      
+      setSuccessMessage('Profile updated successfully');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const renderContent = () => {
+    if (loading) {
+      return <div className={styles.loading}>Loading settings...</div>;
+    }
+
     switch (activeTab) {
       case 'profile':
         return (
           <SettingsSection
             title="Public Profile"
             description="This information will be displayed publicly on your company profile."
-            footerContent={<Button>Save Changes</Button>}
+            footerContent={
+              <Button onClick={handleSaveProfile} disabled={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            }
           >
+            {successMessage && (
+              <div className="mb-4 p-3 bg-green-100 text-green-800 rounded flex items-center">
+                <CheckCircle size={18} className="mr-2" /> {successMessage}
+              </div>
+            )}
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-800 rounded flex items-center">
+                <AlertCircle size={18} className="mr-2" /> {error}
+              </div>
+            )}
             <div className={styles.formGrid}>
               <Input label="Company Name" value={name} onChange={(e) => setName(e.target.value)} />
-              <Input label="Contact Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input label="Contact Email" type="email" value={email} disabled helpText="Contact support to change email." />
               <Textarea
                 label="Company Bio"
                 value={bio}

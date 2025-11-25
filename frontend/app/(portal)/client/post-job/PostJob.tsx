@@ -8,7 +8,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 
 import { PostJobData, PostJobErrors, type Category } from './PostJob.types';
-import { loadDraft, saveDraft, submitJob, clearDraft } from '@/app/mocks/jobs';
+import { loadDraft, saveDraft, clearDraft } from '@/app/mocks/jobs';
+import api from '@/lib/api';
 
 import Button from '@/app/components/Button/Button';
 import StepIndicator from './components/StepIndicator/StepIndicator';
@@ -125,19 +126,22 @@ const PostJob: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      // Map PostJobData to CreateJobInput for mock API
-      await submitJob({
+      await api.projects.create({
         title: data.title,
-        category: data.category || '',
-        budgetType: data.budgetType,
-        budget: Number(data.budgetAmount ?? 0),
         description: data.description,
+        category: data.category || 'Web Development',
+        budget_type: data.budgetType.toLowerCase(),
+        budget_max: Number(data.budgetAmount ?? 0),
+        budget_min: 0,
+        experience_level: 'intermediate',
+        estimated_duration: data.timeline,
         skills: data.skills,
-        timeline: data.timeline,
+        status: 'open'
       });
       setSubmissionState('success');
       clearDraft();
     } catch (err) {
+      console.error(err);
       setSubmissionState('error');
     } finally {
       setSubmitting(false);

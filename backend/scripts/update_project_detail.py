@@ -1,4 +1,9 @@
-// @AI-HINT: Client Project Detail page. Theme-aware, accessible, animated detail layout with sections and actions.
+
+import os
+
+file_path = r"e:\MegiLance\frontend\app\(portal)\client\projects\[id]\ProjectDetail.tsx"
+
+content = """// @AI-HINT: Client Project Detail page. Theme-aware, accessible, animated detail layout with sections and actions.
 'use client';
 
 import React, { useMemo, useRef, useState, useEffect } from 'react';
@@ -152,3 +157,9 @@ const ProjectDetail: React.FC = () => {
 };
 
 export default ProjectDetail;
+"""
+
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(content)
+
+print(f"Successfully updated {file_path}")

@@ -34,12 +34,7 @@ interface APIProposal {
   is_draft: boolean;
   created_at: string;
   updated_at: string;
-}
-
-interface APIProject {
-  id: number;
-  title: string;
-  client_id: number;
+  job_title?: string;
   client_name?: string;
 }
 
@@ -99,38 +94,12 @@ const ProposalsPage: React.FC = () => {
       
       const apiProposals: APIProposal[] = await proposalsRes.json();
       
-      // Get unique project IDs to fetch project details
-      const projectIds = [...new Set(apiProposals.map(p => p.project_id))];
-      
-      // Fetch project details for job titles and client names
-      const projectPromises = projectIds.map(async (pid) => {
-        try {
-          const res = await fetch(`/backend/api/projects/${pid}`, {
-            credentials: 'include',
-            headers: { 'Accept': 'application/json' },
-          });
-          if (res.ok) {
-            return await res.json();
-          }
-        } catch {
-          // Ignore individual project fetch errors
-        }
-        return null;
-      });
-      
-      const projectsData = await Promise.all(projectPromises);
-      const projectMap = new Map<number, APIProject>();
-      projectsData.filter(Boolean).forEach((project: APIProject) => {
-        if (project) projectMap.set(project.id, project);
-      });
-      
       // Transform API data to UI format
       const transformedProposals: Proposal[] = apiProposals.map((ap) => {
-        const project = projectMap.get(ap.project_id);
         return {
           id: String(ap.id),
-          jobTitle: project?.title || `Project #${ap.project_id}`,
-          clientName: project?.client_name || 'Client',
+          jobTitle: ap.job_title || Project #,
+          clientName: ap.client_name || 'Client',
           status: mapAPIStatus(ap.status, ap.is_draft),
           dateSubmitted: ap.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
           bidAmount: ap.bid_amount,
@@ -189,7 +158,7 @@ const ProposalsPage: React.FC = () => {
   const confirmWithdraw = async () => {
     if (pendingWithdrawId) {
       try {
-        const res = await fetch(`/backend/api/proposals/${pendingWithdrawId}`, {
+        const res = await fetch(/backend/api/proposals/, {
           method: 'DELETE',
           credentials: 'include',
           headers: { 'Accept': 'application/json' },
@@ -211,11 +180,11 @@ const ProposalsPage: React.FC = () => {
   };
 
   const handleView = (id: string) => {
-    window.location.href = `/portal/freelancer/proposals/${id}`;
+    window.location.href = /portal/freelancer/proposals/;
   };
   
   const handleEdit = (id: string) => {
-    window.location.href = `/portal/freelancer/proposals/${id}/edit`;
+    window.location.href = /portal/freelancer/proposals//edit;
   };
 
   if (!resolvedTheme) return null;
@@ -239,7 +208,7 @@ const ProposalsPage: React.FC = () => {
             <DataToolbar
               query={q}
               onQueryChange={(val) => { setQ(val); setPage(1); }}
-              sortValue={`${sortKey}:${sortDir}`}
+              sortValue={${sortKey}:}
               onSortChange={(val) => {
                 const [k, d] = val.split(':') as [keyof Proposal, 'asc' | 'desc'];
                 setSortKey(k); setSortDir(d); setPage(1);

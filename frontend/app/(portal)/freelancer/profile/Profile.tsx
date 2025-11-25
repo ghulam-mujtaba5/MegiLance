@@ -3,6 +3,7 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { api } from '@/lib/api';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
@@ -52,39 +53,23 @@ const Profile: React.FC = () => {
   // Fetch user profile from API
   const fetchProfile = useCallback(async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setStatus('Please log in to view your profile');
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch('/backend/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data: ApiUser = await response.json();
-        setName(data.full_name || '');
-        setTitle(data.title || 'Freelancer');
-        setBio(data.bio || '');
-        setSkills(data.skills?.join(', ') || '');
-        setPortfolioUrl(data.portfolio_url || '');
-        setHourlyRate(data.hourly_rate || 0);
-        // Determine rank based on profile completeness or other metrics
-        setRank(data.skills && data.skills.length > 5 ? 'Top 10%' : 'New');
-        setStatus('');
-      } else if (response.status === 401) {
+      const data: ApiUser = await api.auth.me();
+      setName(data.full_name || '');
+      setTitle(data.title || 'Freelancer');
+      setBio(data.bio || '');
+      setSkills(data.skills?.join(', ') || '');
+      setPortfolioUrl(data.portfolio_url || '');
+      setHourlyRate(data.hourly_rate || 0);
+      // Determine rank based on profile completeness or other metrics
+      setRank(data.skills && data.skills.length > 5 ? 'Top 10%' : 'New');
+      setStatus('');
+    } catch (error: any) {
+      console.error('Failed to load profile:', error);
+      if (error.message?.includes('401')) {
         setStatus('Session expired. Please log in again.');
       } else {
         setStatus('Failed to load profile');
       }
-    } catch (error) {
-      console.error('Failed to load profile:', error);
-      setStatus('Error loading profile');
     } finally {
       setLoading(false);
     }
@@ -164,41 +149,23 @@ const Profile: React.FC = () => {
 
     setSaving(true);
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setStatus('Please log in to save your profile');
-        return;
-      }
-
-      const response = await fetch('/backend/api/auth/me', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          full_name: name,
-          title: title,
-          bio: bio,
-          skills: skills.split(',').map(s => s.trim()).filter(Boolean),
-          portfolio_url: portfolioUrl || null,
-          hourly_rate: Number(hourlyRate) || null,
-        }),
+      await api.auth.updateProfile({
+        full_name: name,
+        title: title,
+        bio: bio,
+        skills: skills.split(',').map(s => s.trim()).filter(Boolean),
+        portfolio_url: portfolioUrl || null,
+        hourly_rate: Number(hourlyRate) || null,
       });
 
-      if (response.ok) {
-        setStatus('Profile saved successfully!');
-        // Clear draft after successful save
-        if (typeof window !== 'undefined') {
-          window.localStorage.removeItem('freelancer_profile_draft');
-        }
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        setStatus(errorData.detail || 'Failed to save profile');
+      setStatus('Profile saved successfully!');
+      // Clear draft after successful save
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('freelancer_profile_draft');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save profile:', error);
-      setStatus('Error saving profile');
+      setStatus(error.message || 'Failed to save profile');
     } finally {
       setSaving(false);
     }

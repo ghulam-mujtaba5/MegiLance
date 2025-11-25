@@ -3,6 +3,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
+import { api } from '@/lib/api';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Button from '@/app/components/Button/Button';
 import { useFreelancerData } from '@/hooks/useFreelancer';
@@ -147,8 +148,8 @@ const Wallet: React.FC = () => {
     setWithdrawError('');
     setUiLoading(true);
     try {
-      // Simulate processing delay for UI feedback
-      await new Promise(r => setTimeout(r, 900));
+      await api.portal.freelancer.withdraw(amt);
+
       toaster.notify({
         title: 'Withdrawal requested',
         description: `Withdrawal of $${amt.toLocaleString()} requested successfully.`,
@@ -156,10 +157,12 @@ const Wallet: React.FC = () => {
         duration: 4000,
       });
       setWithdrawOpen(false);
-    } catch (e) {
+      // Ideally we should refetch data here, but reload is a simple way to ensure consistency for now
+      window.location.reload();
+    } catch (e: any) {
       toaster.notify({
         title: 'Withdrawal failed',
-        description: 'Failed to submit withdrawal. Please try again.',
+        description: e.message || 'Failed to submit withdrawal. Please try again.',
         variant: 'danger',
         duration: 5000,
       });

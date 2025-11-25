@@ -151,7 +151,18 @@ def health_ready():
         return JSONResponse(status_code=503, content={"status": "degraded", "db_error": str(e)})
 
 
+from fastapi.staticfiles import StaticFiles
+import os
+
+# ... existing imports ...
+
 app.include_router(api_router, prefix="/api")
+
+# Mount uploads directory
+uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
+if not os.path.exists(uploads_dir):
+    os.makedirs(uploads_dir)
+app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 if __name__ == "__main__":
     import uvicorn

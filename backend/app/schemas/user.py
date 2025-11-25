@@ -48,6 +48,8 @@ class UserBase(BaseModel):
     hourly_rate: Optional[float] = None
     profile_image_url: Optional[str] = None
     location: Optional[str] = None
+    title: Optional[str] = None
+    portfolio_url: Optional[str] = None
 
 
 class UserCreate(UserBase):
@@ -66,12 +68,16 @@ class UserUpdate(BaseModel):
     hourly_rate: Optional[float] = None
     profile_image_url: Optional[str] = None
     location: Optional[str] = None
+    title: Optional[str] = None
+    portfolio_url: Optional[str] = None
+    full_name: Optional[str] = None # Alias for name
 
 
 class UserRead(UserBase):
     id: int
     email: EmailStr
     joined_at: datetime
+    full_name: Optional[str] = None # Alias for name
 
     class Config:
         from_attributes = True

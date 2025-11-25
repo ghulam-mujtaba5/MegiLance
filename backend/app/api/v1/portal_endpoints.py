@@ -34,6 +34,16 @@ class FreelancerDashboardStats(BaseModel):
     average_rating: Optional[float]
 
 
+class CreateProjectRequest(BaseModel):
+    title: str
+    description: str
+    budget: float
+    skills: list
+    category: Optional[str] = "Web Development"
+    budget_type: Optional[str] = "Fixed"
+    timeline: Optional[str] = "1-3 months"
+
+
 def _get_val(row: list, idx: int):
     """Extract value from Turso row"""
     if idx >= len(row):
@@ -191,28 +201,31 @@ async def get_client_projects(
 
 @router.post("/client/projects", status_code=status.HTTP_201_CREATED)
 async def create_client_project(
-    title: str,
-    description: str,
-    budget: float,
-    skills: list,
+    project_data: CreateProjectRequest,
     client: User = Depends(get_client_user)
 ):
     """Create a new project"""
     now = datetime.utcnow().isoformat()
     
+    # Determine budget range based on type
+    budget_min = project_data.budget * 0.8 if project_data.budget_type == 'Fixed' else project_data.budget
+    budget_max = project_data.budget
+    
     result = execute_query(
         """INSERT INTO projects (title, description, client_id, budget_min, budget_max, 
-           budget_type, status, skills, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+           budget_type, category, estimated_duration, status, skills, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         [
-            title,
-            description,
+            project_data.title,
+            project_data.description,
             client.id,
-            budget * 0.8,
-            budget,
-            "fixed",
+            budget_min,
+            budget_max,
+            project_data.budget_type,
+            project_data.category,
+            project_data.timeline,
             "open",
-            json.dumps(skills),
+            json.dumps(project_data.skills),
             now,
             now
         ]
@@ -233,7 +246,7 @@ async def create_client_project(
     
     return {
         "id": project_id,
-        "title": title,
+        "title": project_data.title,
         "status": "open",
         "message": "Project created successfully"
     }
@@ -783,3 +796,47 @@ async def list_freelancers(
             })
     
     return {"total": total, "freelancers": freelancers}
+
+@router.post("/freelancer/withdraw")
+async def withdraw_funds(
+    amount: float = Query(..., gt=0),
+    freelancer: User = Depends(get_freelancer_user)
+):
+    """Withdraw funds from wallet"""
+    current_balance = float(freelancer.account_balance or 0.0)
+    if amount > current_balance:
+        raise HTTPException(status_code=400, detail="Insufficient funds")
+    
+    now = datetime.utcnow().isoformat()
+    
+    # 1. Create payment record
+    result = execute_query(
+        """INSERT INTO payments (from_user_id, to_user_id, amount, payment_type, payment_method, 
+           status, description, platform_fee, freelancer_amount, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        [
+            freelancer.id,
+            freelancer.id,
+            amount,
+            "withdrawal",
+            "bank_transfer",
+            "pending",
+            f"Withdrawal of ",
+            0,
+            amount,
+            now,
+            now
+        ]
+    )
+    
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to process withdrawal")
+        
+    # 2. Update user balance
+    new_balance = current_balance - amount
+    update_result = execute_query(
+        "UPDATE users SET account_balance = ? WHERE id = ?",
+        [new_balance, freelancer.id]
+    )
+    
+    return {"message": "Withdrawal requested successfully", "new_balance": new_balance}

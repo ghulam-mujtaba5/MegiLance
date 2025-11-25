@@ -10,8 +10,19 @@ from app.core.security import get_current_active_user
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.models.user import User
 from app.schemas.contract import ContractCreate, ContractRead, ContractUpdate
+from pydantic import BaseModel
 
 router = APIRouter()
+
+
+class DirectHireRequest(BaseModel):
+    freelancer_id: int
+    title: str
+    description: str
+    rate_type: str
+    rate: float
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
 
 
 def _get_val(row: list, idx: int):
@@ -40,7 +51,8 @@ def _contract_from_row(row: list) -> dict:
         "project_id": int(_get_val(row, 1) or 0),
         "freelancer_id": int(_get_val(row, 2) or 0),
         "client_id": int(_get_val(row, 3) or 0),
-        "total_amount": float(_get_val(row, 4) or 0),
+        "amount": float(_get_val(row, 4) or 0), # Renamed to amount to match schema
+        "contract_amount": float(_get_val(row, 4) or 0), # Alias for frontend compatibility if needed
         "status": _safe_str(_get_val(row, 5)),
         "start_date": parse_date(_get_val(row, 6)),
         "end_date": parse_date(_get_val(row, 7)),
@@ -48,7 +60,9 @@ def _contract_from_row(row: list) -> dict:
         "milestones": _safe_str(_get_val(row, 9)),
         "terms": _safe_str(_get_val(row, 10)),
         "created_at": parse_date(_get_val(row, 11)),
-        "updated_at": parse_date(_get_val(row, 12))
+        "updated_at": parse_date(_get_val(row, 12)),
+        "job_title": _safe_str(_get_val(row, 13)),
+        "client_name": _safe_str(_get_val(row, 14))
     }
 
 
@@ -60,22 +74,30 @@ def list_contracts(
     current_user: User = Depends(get_current_active_user)
 ):
     """List contracts for current user"""
-    where_sql = "WHERE (client_id = ? OR freelancer_id = ?)"
+    where_sql = "WHERE (c.client_id = ? OR c.freelancer_id = ?)"
     params = [current_user.id, current_user.id]
     
     if status:
-        where_sql += " AND status = ?"
+        where_sql += " AND c.status = ?"
         params.append(status)
     
     params.extend([limit, skip])
-    result = execute_query(
-        f"""SELECT id, project_id, freelancer_id, client_id, total_amount, status,
-            start_date, end_date, description, milestones, terms, created_at, updated_at
-            FROM contracts {where_sql}
-            ORDER BY created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
-    )
+    
+    query = f"""
+        SELECT 
+            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount, c.status,
+            c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
+            p.title as job_title,
+            u.full_name as client_name
+        FROM contracts c
+        LEFT JOIN projects p ON c.project_id = p.id
+        LEFT JOIN users u ON c.client_id = u.id
+        {where_sql}
+        ORDER BY c.created_at DESC
+        LIMIT ? OFFSET ?
+    """
+    
+    result = execute_query(query, params)
     
     contracts = []
     if result and result.get("rows"):
@@ -91,12 +113,19 @@ def get_contract(
     current_user: User = Depends(get_current_active_user)
 ):
     """Get a specific contract"""
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, client_id, total_amount, status,
-           start_date, end_date, description, milestones, terms, created_at, updated_at
-           FROM contracts WHERE id = ?""",
-        [contract_id]
-    )
+    query = """
+        SELECT 
+            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount, c.status,
+            c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
+            p.title as job_title,
+            u.full_name as client_name
+        FROM contracts c
+        LEFT JOIN projects p ON c.project_id = p.id
+        LEFT JOIN users u ON c.client_id = u.id
+        WHERE c.id = ?
+    """
+    
+    result = execute_query(query, [contract_id])
     
     if not result or not result.get("rows"):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contract not found")
@@ -115,6 +144,123 @@ def get_contract(
     return _contract_from_row(row)
 
 
+@router.post("/direct", response_model=ContractRead, status_code=status.HTTP_201_CREATED)
+def create_direct_contract(
+    hire_data: DirectHireRequest,
+    current_user: User = Depends(get_current_active_user)
+):
+    """Create a direct hire contract (creates project -> proposal -> contract)"""
+    user_type = _safe_str(current_user.user_type)
+    if not user_type or user_type.lower() != "client":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only clients can create contracts"
+        )
+    
+    # Check if freelancer exists
+    result = execute_query(
+        "SELECT id, user_type FROM users WHERE id = ?",
+        [hire_data.freelancer_id]
+    )
+    
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Freelancer not found")
+    
+    freelancer_type = _safe_str(_get_val(result["rows"][0], 1))
+    if not freelancer_type or freelancer_type.lower() != "freelancer":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User is not a freelancer"
+        )
+        
+    now = datetime.utcnow().isoformat()
+    
+    # 1. Create Project
+    project_result = execute_query(
+        """INSERT INTO projects (title, description, client_id, budget_min, budget_max, 
+           budget_type, status, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        [
+            hire_data.title,
+            hire_data.description,
+            current_user.id,
+            hire_data.rate,
+            hire_data.rate,
+            hire_data.rate_type.lower(),
+            "in_progress",
+            now,
+            now
+        ]
+    )
+    
+    if not project_result:
+        raise HTTPException(status_code=500, detail="Failed to create project")
+        
+    project_id = project_result.get("last_insert_rowid")
+    
+    # 2. Create Proposal (Accepted)
+    proposal_result = execute_query(
+        """INSERT INTO proposals (project_id, freelancer_id, cover_letter, estimated_hours, 
+           hourly_rate, status, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        [
+            project_id,
+            hire_data.freelancer_id,
+            "Direct Hire",
+            0,
+            hire_data.rate if hire_data.rate_type == 'Hourly' else 0,
+            "accepted",
+            now,
+            now
+        ]
+    )
+    
+    if not proposal_result:
+        raise HTTPException(status_code=500, detail="Failed to create proposal")
+        
+    # 3. Create Contract
+    contract_id = str(uuid.uuid4())
+    
+    insert_result = execute_query(
+        """INSERT INTO contracts (id, project_id, freelancer_id, client_id, total_amount, 
+           status, start_date, end_date, description, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        [
+            contract_id,
+            project_id,
+            hire_data.freelancer_id,
+            current_user.id,
+            hire_data.rate,
+            "active",
+            hire_data.start_date.isoformat() if hire_data.start_date else now,
+            hire_data.end_date.isoformat() if hire_data.end_date else None,
+            hire_data.description,
+            now,
+            now
+        ]
+    )
+    
+    if not insert_result:
+        raise HTTPException(status_code=500, detail="Failed to create contract")
+        
+    return {
+        "id": contract_id,
+        "project_id": project_id,
+        "freelancer_id": hire_data.freelancer_id,
+        "client_id": current_user.id,
+        "amount": hire_data.rate,
+        "contract_amount": hire_data.rate,
+        "status": "active",
+        "start_date": hire_data.start_date,
+        "end_date": hire_data.end_date,
+        "description": hire_data.description,
+        "created_at": now,
+        "updated_at": now,
+        "job_title": hire_data.title,
+        "client_name": current_user.full_name
+    }
+
+
 @router.post("/", response_model=ContractRead, status_code=status.HTTP_201_CREATED)
 def create_contract(
     contract: ContractCreate,
@@ -130,14 +276,17 @@ def create_contract(
     
     # Check if project exists and belongs to client
     result = execute_query(
-        "SELECT id, client_id FROM projects WHERE id = ?",
+        "SELECT id, client_id, title FROM projects WHERE id = ?",
         [contract.project_id]
     )
     
     if not result or not result.get("rows"):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     
-    project_client_id = int(_get_val(result["rows"][0], 1) or 0)
+    project_row = result["rows"][0]
+    project_client_id = int(_get_val(project_row, 1) or 0)
+    project_title = _safe_str(_get_val(project_row, 2))
+    
     if project_client_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -189,7 +338,7 @@ def create_contract(
             contract.project_id,
             contract.freelancer_id,
             current_user.id,
-            contract.value or 0,
+            contract.amount, # Fixed: use amount instead of value
             "active",
             contract.start_date.isoformat() if contract.start_date else now,
             contract.end_date.isoformat() if contract.end_date else None,
@@ -213,7 +362,8 @@ def create_contract(
         "project_id": contract.project_id,
         "freelancer_id": contract.freelancer_id,
         "client_id": current_user.id,
-        "total_amount": contract.value or 0,
+        "amount": contract.amount,
+        "contract_amount": contract.amount,
         "status": "active",
         "start_date": contract.start_date,
         "end_date": contract.end_date,
@@ -221,7 +371,9 @@ def create_contract(
         "milestones": contract.milestones,
         "terms": contract.terms,
         "created_at": now,
-        "updated_at": now
+        "updated_at": now,
+        "job_title": project_title,
+        "client_name": current_user.full_name
     }
 
 
@@ -246,6 +398,7 @@ def update_contract(
     row = result["rows"][0]
     client_id = int(_get_val(row, 3) or 0)
     freelancer_id = int(_get_val(row, 2) or 0)
+    project_id = int(_get_val(row, 1) or 0)
     
     # Check authorization
     if client_id != current_user.id and freelancer_id != current_user.id:
@@ -257,13 +410,14 @@ def update_contract(
     update_data = contract.model_dump(exclude_unset=True, exclude_none=True)
     
     if not update_data:
-        return _contract_from_row(row)
+        # Just return existing with joins
+        return get_contract(contract_id, current_user)
     
     # Build update query
     set_parts = []
     values = []
     for key, value in update_data.items():
-        if key == "value":
+        if key == "amount": # Fixed: use amount instead of value
             key = "total_amount"
         set_parts.append(f"{key} = ?")
         if isinstance(value, datetime):
@@ -280,21 +434,8 @@ def update_contract(
         values
     )
     
-    # Fetch updated contract
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, client_id, total_amount, status,
-           start_date, end_date, description, milestones, terms, created_at, updated_at
-           FROM contracts WHERE id = ?""",
-        [contract_id]
-    )
-    
-    if result and result.get("rows"):
-        return _contract_from_row(result["rows"][0])
-    
-    raise HTTPException(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        detail="Failed to retrieve updated contract"
-    )
+    # Fetch updated contract with joins
+    return get_contract(contract_id, current_user)
 
 
 @router.delete("/{contract_id}", status_code=status.HTTP_204_NO_CONTENT)

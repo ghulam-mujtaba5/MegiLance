@@ -31,6 +31,7 @@ export type ClientFreelancer = {
   hourlyRate: string;
   skills: string[];
   completedProjects: number;
+  avatarUrl?: string;
 };
 
 export type ClientReview = { 
@@ -40,6 +41,7 @@ export type ClientReview = {
   rating: number; 
   comment: string;
   date: string;
+  avatarUrl?: string;
 };
 
 export function useClientData() {

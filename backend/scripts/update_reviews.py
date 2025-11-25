@@ -1,4 +1,5 @@
-# @AI-HINT: Review and Rating Management API - Turso-only, no SQLite fallback
+
+content = r'''# @AI-HINT: Review and Rating Management API - Turso-only, no SQLite fallback
 """
 Review and Rating Management API
 
@@ -458,3 +459,7 @@ async def delete_review(
         raise HTTPException(status_code=403, detail="Only the reviewer or admin can delete this review")
     
     execute_query("DELETE FROM reviews WHERE id = ?", [review_id])
+'''
+
+with open(r"e:\MegiLance\backend\app\api\v1\reviews.py", "w", encoding="utf-8") as f:
+    f.write(content)

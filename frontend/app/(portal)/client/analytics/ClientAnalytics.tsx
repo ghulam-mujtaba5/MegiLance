@@ -234,7 +234,7 @@ const ClientAnalytics: React.FC = () => {
               <div key={idx} className={common.bar_container}>
                 <div 
                   className={cn(common.bar, themed.bar)}
-                  data-height={Math.round((data.amount / maxSpending) * 100)}
+                  style={{ height: `${Math.round((data.amount / maxSpending) * 100)}%` }}
                 >
                   <span className={cn(common.bar_value, themed.bar_value)}>
                     ${(data.amount / 1000).toFixed(1)}k
@@ -273,7 +273,7 @@ const ClientAnalytics: React.FC = () => {
                 <div className={cn(common.stat_bar_bg, themed.stat_bar_bg)}>
                   <div 
                     className={cn(common.stat_bar_fill, common[`stat_bar_${metric.status.toLowerCase().replace(' ', '_')}`])}
-                    data-width={metric.percentage}
+                    style={{ width: `${metric.percentage}%` }}
                   />
                 </div>
               </div>

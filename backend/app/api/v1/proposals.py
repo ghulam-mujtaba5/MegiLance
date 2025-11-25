@@ -34,7 +34,7 @@ def _safe_str(val):
 
 def _proposal_from_row(row: list) -> dict:
     """Convert Turso row to proposal dict"""
-    return {
+    data = {
         "id": int(_get_val(row, 0) or 0),
         "project_id": int(_get_val(row, 1) or 0),
         "freelancer_id": int(_get_val(row, 2) or 0),
@@ -49,6 +49,14 @@ def _proposal_from_row(row: list) -> dict:
         "created_at": parse_date(_get_val(row, 11)),
         "updated_at": parse_date(_get_val(row, 12))
     }
+    
+    # Optional fields from joins
+    if len(row) > 13:
+        data["job_title"] = _safe_str(_get_val(row, 13))
+    if len(row) > 14:
+        data["client_name"] = _safe_str(_get_val(row, 14))
+        
+    return data
 
 
 @router.get("/drafts", response_model=List[ProposalRead])
@@ -57,18 +65,22 @@ def list_draft_proposals(
     current_user: User = Depends(get_current_active_user)
 ):
     """Get all draft proposals for the current user"""
-    where_sql = "WHERE freelancer_id = ? AND is_draft = 1"
+    where_sql = "WHERE p.freelancer_id = ? AND p.is_draft = 1"
     params = [current_user.id]
     
     if project_id:
-        where_sql += " AND project_id = ?"
+        where_sql += " AND p.project_id = ?"
         params.append(project_id)
     
+    # Join with projects to get title
     result = execute_query(
-        f"""SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-            estimated_hours, hourly_rate, availability, attachments, status,
-            is_draft, created_at, updated_at
-            FROM proposals {where_sql}""",
+        f"""SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
+            p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
+            p.is_draft, p.created_at, p.updated_at,
+            pr.title as job_title
+            FROM proposals p
+            LEFT JOIN projects pr ON p.project_id = pr.id
+            {where_sql}""",
         params
     )
     
@@ -152,7 +164,7 @@ def list_proposals(
     user_type = _safe_str(current_user.user_type)
     
     if user_type and user_type.lower() == "freelancer":
-        where_sql = "WHERE freelancer_id = ?"
+        where_sql = "WHERE p.freelancer_id = ?"
         params = [current_user.id]
     else:
         # Get all project IDs for this client
@@ -168,24 +180,30 @@ def list_proposals(
             return []
         
         placeholders = ",".join(["?" for _ in project_ids])
-        where_sql = f"WHERE project_id IN ({placeholders})"
+        where_sql = f"WHERE p.project_id IN ({placeholders})"
         params = project_ids
     
     if project_id:
-        where_sql += " AND project_id = ?"
+        where_sql += " AND p.project_id = ?"
         params.append(project_id)
     
     if status:
-        where_sql += " AND status = ?"
+        where_sql += " AND p.status = ?"
         params.append(status)
     
     params.extend([limit, skip])
+    
+    # Join with projects and users to get job title and client name
     result = execute_query(
-        f"""SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-            estimated_hours, hourly_rate, availability, attachments, status,
-            is_draft, created_at, updated_at
-            FROM proposals {where_sql}
-            ORDER BY created_at DESC
+        f"""SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
+            p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
+            p.is_draft, p.created_at, p.updated_at,
+            pr.title as job_title, u.full_name as client_name
+            FROM proposals p
+            LEFT JOIN projects pr ON p.project_id = pr.id
+            LEFT JOIN users u ON pr.client_id = u.id
+            {where_sql}
+            ORDER BY p.created_at DESC
             LIMIT ? OFFSET ?""",
         params
     )
@@ -204,11 +222,16 @@ def get_proposal(
     current_user: User = Depends(get_current_active_user)
 ):
     """Get a specific proposal"""
+    # Join to get job title and client name
     result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE id = ?""",
+        """SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
+           p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
+           p.is_draft, p.created_at, p.updated_at,
+           pr.title as job_title, u.full_name as client_name
+           FROM proposals p
+           LEFT JOIN projects pr ON p.project_id = pr.id
+           LEFT JOIN users u ON pr.client_id = u.id
+           WHERE p.id = ?""",
         [proposal_id]
     )
     
