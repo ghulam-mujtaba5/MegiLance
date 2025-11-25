@@ -15,7 +15,7 @@ def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
     return token_data
 
 
-@router.post("/notifications", response_model=dict)
+@router.post("/", response_model=dict)
 def create_notification(
     notification: dict,
     current_user: dict = Depends(get_current_user)
@@ -75,7 +75,7 @@ def create_notification(
     }
 
 
-@router.get("/notifications", response_model=dict)
+@router.get("/", response_model=dict)
 def get_notifications(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
@@ -158,7 +158,7 @@ def get_notifications(
     }
 
 
-@router.get("/notifications/{notification_id}", response_model=dict)
+@router.get("/{notification_id}", response_model=dict)
 def get_notification(
     notification_id: int,
     current_user: dict = Depends(get_current_user)
@@ -206,7 +206,7 @@ def get_notification(
     return notification
 
 
-@router.patch("/notifications/{notification_id}", response_model=dict)
+@router.patch("/{notification_id}", response_model=dict)
 def update_notification(
     notification_id: int,
     notification_update: dict,
@@ -272,7 +272,7 @@ def update_notification(
     return updated
 
 
-@router.post("/notifications/mark-all-read")
+@router.post("/mark-all-read")
 def mark_all_read(
     current_user: dict = Depends(get_current_user)
 ):
@@ -288,7 +288,7 @@ def mark_all_read(
     return {"message": "All notifications marked as read"}
 
 
-@router.delete("/notifications/{notification_id}")
+@router.delete("/{notification_id}")
 def delete_notification(
     notification_id: int,
     current_user: dict = Depends(get_current_user)
@@ -316,7 +316,7 @@ def delete_notification(
     return {"message": "Notification deleted successfully"}
 
 
-@router.get("/notifications/unread/count")
+@router.get("/unread/count")
 def get_unread_count(
     current_user: dict = Depends(get_current_user)
 ):

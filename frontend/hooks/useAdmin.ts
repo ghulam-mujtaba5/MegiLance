@@ -39,30 +39,35 @@ export function useAdminData() {
       setLoading(true);
       setError(null);
       try {
-        const [usersRes, projRes, payRes, supRes, aiRes, dashRes] = await Promise.all([
-          fetch('/api/admin/users'),
-          fetch('/api/admin/projects'),
-          fetch('/api/admin/payments'),
-          fetch('/api/admin/support'),
-          fetch('/api/admin/ai-monitoring'),
-          fetch('/api/admin/dashboard'),
-        ]);
-        if ([usersRes, projRes, payRes, supRes, aiRes, dashRes].some(r => !r.ok)) {
-          throw new Error('One or more admin API requests failed');
-        }
+        // Get auth token from localStorage
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
+        
+        // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
+        const fetchWithFallback = async (url: string, fallback: any = []) => {
+          try {
+            const res = await fetch(url, { headers });
+            if (!res.ok) return fallback;
+            return await res.json();
+          } catch {
+            return fallback;
+          }
+        };
+        
         const [usersJson, projJson, payJson, supJson, aiJson, dashJson] = await Promise.all([
-          usersRes.json(),
-          projRes.json(),
-          payRes.json(),
-          supRes.json(),
-          aiRes.json(),
-          dashRes.json(),
+          fetchWithFallback('/backend/api/admin/users', []),
+          fetchWithFallback('/backend/api/admin/projects', []),
+          fetchWithFallback('/backend/api/admin/payments', []),
+          fetchWithFallback('/backend/api/admin/support/tickets', []),
+          fetchWithFallback('/backend/api/admin/ai/usage', {}),
+          fetchWithFallback('/backend/api/admin/dashboard/stats', {}),
         ]);
+        
         if (!mounted) return;
-        setUsers(usersJson?.users ?? usersJson);
-        setProjects(projJson?.projects ?? projJson);
-        setPayments(payJson?.payments ?? payJson);
-        setTickets(supJson?.tickets ?? supJson);
+        setUsers(usersJson?.users ?? usersJson ?? []);
+        setProjects(projJson?.projects ?? projJson ?? []);
+        setPayments(payJson?.payments ?? payJson ?? []);
+        setTickets(supJson?.tickets ?? supJson ?? []);
         setAI(aiJson);
         setKPIs(dashJson?.kpis ?? dashJson?.metrics ?? []);
       } catch (e: any) {

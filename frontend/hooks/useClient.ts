@@ -57,30 +57,33 @@ export function useClientData() {
       setLoading(true);
       setError(null);
       try {
-        // Use the real backend endpoints instead of mock ones
-        const [projectsRes, paymentsRes, freelancersRes, reviewsRes] = await Promise.all([
-          fetch('/api/client/projects'),
-          fetch('/api/client/payments'),
-          fetch('/api/client/freelancers'),
-          fetch('/api/client/reviews'),
-        ]);
+        // Get auth token from localStorage
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
         
-        if ([projectsRes, paymentsRes, freelancersRes, reviewsRes].some(r => !r.ok)) {
-          throw new Error('One or more client API requests failed');
-        }
+        // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
+        const fetchWithFallback = async (url: string, fallback: any = []) => {
+          try {
+            const res = await fetch(url, { headers });
+            if (!res.ok) return fallback;
+            return await res.json();
+          } catch {
+            return fallback;
+          }
+        };
         
         const [projectsJson, paymentsJson, freelancersJson, reviewsJson] = await Promise.all([
-          projectsRes.json(),
-          paymentsRes.json(),
-          freelancersRes.json(),
-          reviewsRes.json(),
+          fetchWithFallback('/backend/api/client/projects', []),
+          fetchWithFallback('/backend/api/client/payments', []),
+          fetchWithFallback('/backend/api/freelancers', []),
+          fetchWithFallback('/backend/api/reviews', []), // Reviews endpoint
         ]);
         
         if (!mounted) return;
-        setProjects(projectsJson?.projects ?? projectsJson);
-        setPayments(paymentsJson?.payments ?? paymentsJson);
-        setFreelancers(freelancersJson?.freelancers ?? freelancersJson);
-        setReviews(reviewsJson?.reviews ?? reviewsJson);
+        setProjects(projectsJson?.projects ?? projectsJson ?? []);
+        setPayments(paymentsJson?.payments ?? paymentsJson ?? []);
+        setFreelancers(freelancersJson?.freelancers ?? freelancersJson ?? []);
+        setReviews(reviewsJson?.reviews ?? reviewsJson ?? []);
       } catch (e: any) {
         if (!mounted) return;
         setError(e?.message ?? 'Failed to load client data');

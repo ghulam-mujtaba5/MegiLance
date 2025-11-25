@@ -153,19 +153,16 @@ def execute_query(sql: str, params: List[Any] = None) -> Optional[Dict[str, Any]
         url = settings.turso_database_url.replace("libsql://", "https://")
         token = settings.turso_auth_token
         
-        # Convert params to Turso format
-        turso_params = []
-        for p in params:
-            if p is None:
-                turso_params.append({"type": "null", "value": None})
-            elif isinstance(p, bool):
-                turso_params.append({"type": "integer", "value": 1 if p else 0})
-            elif isinstance(p, int):
-                turso_params.append({"type": "integer", "value": str(p)})
-            elif isinstance(p, float):
-                turso_params.append({"type": "float", "value": str(p)})
-            else:
-                turso_params.append({"type": "text", "value": str(p)})
+        # Build the statement - use object format if params provided
+        if params:
+            # Convert params to the correct format for ? placeholders
+            statement = {
+                "q": sql,
+                "params": params
+            }
+        else:
+            # Simple string format for no params
+            statement = sql
         
         response = requests.post(
             url,
@@ -174,15 +171,7 @@ def execute_query(sql: str, params: List[Any] = None) -> Optional[Dict[str, Any]
                 "Content-Type": "application/json"
             },
             json={
-                "requests": [{
-                    "type": "execute",
-                    "stmt": {
-                        "sql": sql,
-                        "args": turso_params
-                    }
-                }, {
-                    "type": "close"
-                }]
+                "statements": [statement]
             },
             timeout=10
         )
@@ -192,24 +181,37 @@ def execute_query(sql: str, params: List[Any] = None) -> Optional[Dict[str, Any]
             return None
         
         data = response.json()
-        if not data or "results" not in data:
+        if not data or len(data) == 0:
             return {"cols": [], "rows": []}
         
-        results = data.get("results", [])
-        if not results:
-            return {"cols": [], "rows": []}
-        
-        first_result = results[0]
+        first_result = data[0]
         if "error" in first_result:
             print(f"[TURSO] Query error: {first_result['error']}")
             return None
         
-        resp = first_result.get("response", {})
-        result = resp.get("result", {})
+        results = first_result.get("results", {})
+        
+        # Convert to standard format with cols and rows
+        columns = results.get("columns", [])
+        rows_raw = results.get("rows", [])
+        
+        # Convert columns to col format expected by parse_rows
+        cols = [{"name": col} for col in columns]
+        
+        # Convert rows to value format expected by parse_rows
+        rows = []
+        for row in rows_raw:
+            row_data = []
+            for val in row:
+                if val is None:
+                    row_data.append({"type": "null", "value": None})
+                else:
+                    row_data.append({"type": "text", "value": val})
+            rows.append(row_data)
         
         return {
-            "cols": result.get("cols", []),
-            "rows": result.get("rows", [])
+            "cols": cols,
+            "rows": rows
         }
     except Exception as e:
         print(f"[TURSO] execute_query error: {e}")

@@ -22,7 +22,11 @@ export function useUser() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('/api/user', { signal: controller.signal });
+        // Get auth token from localStorage
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
+        
+        const res = await fetch('/backend/api/auth/me', { signal: controller.signal, headers });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         if (isMounted) setUser(json);

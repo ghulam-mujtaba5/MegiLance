@@ -30,7 +30,7 @@ const PostJob: React.FC = () => {
 
   const [data, setData] = useState<PostJobData>({
     title: '',
-    category: '',
+    category: 'Web Development', // Default to first category to avoid validation issues
     description: '',
     skills: [],
     budgetType: 'Fixed',

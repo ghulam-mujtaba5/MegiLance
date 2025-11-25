@@ -1,0 +1,137 @@
+/* @AI-HINT: Dark theme styles for Admin Calendar */
+
+.main {
+  background: #0f0f1a;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.calendar_container {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+}
+
+.nav_button {
+  background: #2a2a4a;
+  color: #e2e8f0;
+}
+
+.nav_button:hover {
+  background: #3a3a5a;
+}
+
+.month_year {
+  color: #f1f5f9;
+}
+
+.weekday {
+  color: #94a3b8;
+}
+
+.day_cell {
+  background: #1a1a2e;
+  color: #f1f5f9;
+}
+
+.day_cell:hover:not(.empty_cell) {
+  background: #2a2a4a;
+}
+
+.empty_cell {
+  background: transparent;
+}
+
+.today {
+  background: #4573df25;
+  color: #6b9aff;
+  border: 2px solid #4573df;
+}
+
+.selected {
+  background: #4573df;
+  color: #ffffff;
+}
+
+.selected.today {
+  background: #4573df;
+  color: #ffffff;
+}
+
+/* Event Type Colors */
+.event_meeting {
+  border-color: #6b9aff;
+  background: #4573df20;
+}
+
+.event_deadline {
+  border-color: #ff6b6b;
+  background: #e8112320;
+}
+
+.event_review {
+  border-color: #4ade80;
+  background: #27AE6020;
+}
+
+.event_maintenance {
+  border-color: #ffb347;
+  background: #ff980020;
+}
+
+/* Events Panel */
+.events_panel {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+}
+
+.panel_title {
+  color: #f1f5f9;
+}
+
+.no_events {
+  color: #94a3b8;
+}
+
+.event_icon {
+  color: #94a3b8;
+}
+
+.event_time {
+  color: #94a3b8;
+}
+
+.event_title {
+  color: #f1f5f9;
+}
+
+.event_description {
+  color: #94a3b8;
+}
+
+.event_type_badge {
+  background: #2a2a4a;
+  color: #cbd5e1;
+}
+
+/* Upcoming */
+.upcoming_item {
+  background: #2a2a4a;
+}
+
+.upcoming_item:hover {
+  background: #3a3a5a;
+}
+
+.upcoming_date {
+  color: #6b9aff;
+}
+
+.upcoming_title {
+  color: #f1f5f9;
+}

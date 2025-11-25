@@ -2,10 +2,10 @@
 'use client';
 
 import React from 'react';
-import AnalyticsPage from '@/app/analytics/page';
+import ClientAnalytics from './ClientAnalytics';
 
 const ClientAnalyticsPage = () => {
-  return <AnalyticsPage />;
+  return <ClientAnalytics />;
 };
 
 export default ClientAnalyticsPage;

@@ -1,6 +1,6 @@
 # MegiLance - Quick Status Card
 
-**Last Updated**: December 19, 2024  
+**Last Updated**: November 25, 2024  
 **Status**: ✅ PRODUCTION READY
 
 ---
@@ -14,6 +14,18 @@
 | **Database** | ✅ 100% | Turso remote (NO SQLite fallback) |
 | **Tests** | ✅ 16/16 | 100% passing |
 | **Docs** | ✅ Complete | All documentation created |
+
+---
+
+## 🗃️ Live Data (from Turso)
+
+| Entity | Count |
+|--------|-------|
+| Users | 9 (1 Admin, 3 Clients, 5 Freelancers) |
+| Projects | 24 (23 active) |
+| Contracts | 3 |
+| Total Revenue | $26,850 |
+| Pending Proposals | 5 |
 
 ---
 

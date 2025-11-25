@@ -1,0 +1,129 @@
+/* @AI-HINT: Dark theme styles for Client Analytics */
+
+.main {
+  background: #0f0f1a;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.date_select {
+  background: #1a1a2e;
+  border-color: #2a2a4a;
+  color: #f1f5f9;
+}
+
+.date_select:hover {
+  border-color: #4573df;
+}
+
+.metric_card {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+}
+
+.metric_icon {
+  background: #4573df25;
+  color: #6b9aff;
+}
+
+.metric_title {
+  color: #94a3b8;
+}
+
+.metric_value {
+  color: #f1f5f9;
+}
+
+.trend_up {
+  color: #4ade80;
+}
+
+.trend_down {
+  color: #ff6b6b;
+}
+
+.chart_card {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+}
+
+.chart_title {
+  color: #f1f5f9;
+}
+
+.chart_subtitle {
+  color: #94a3b8;
+}
+
+.bar {
+  background: #4573df;
+}
+
+.bar_value {
+  color: #f1f5f9;
+}
+
+.bar_label {
+  color: #94a3b8;
+}
+
+.stat_label {
+  color: #f1f5f9;
+}
+
+.stat_count {
+  color: #f1f5f9;
+}
+
+.stat_bar_bg {
+  background: #2a2a4a;
+}
+
+.freelancers_section {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+}
+
+.section_title {
+  color: #f1f5f9;
+}
+
+.section_subtitle {
+  color: #94a3b8;
+}
+
+.freelancer_card {
+  background: #2a2a4a;
+  border: 1px solid #3a3a5a;
+}
+
+.freelancer_card:hover {
+  background: #3a3a5a;
+}
+
+.freelancer_avatar {
+  background: #4573df;
+  color: #ffffff;
+}
+
+.freelancer_name {
+  color: #f1f5f9;
+}
+
+.freelancer_role {
+  color: #94a3b8;
+}
+
+.stat_value_sm {
+  color: #f1f5f9;
+}
+
+.stat_label_sm {
+  color: #94a3b8;
+}

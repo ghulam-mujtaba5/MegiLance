@@ -2,15 +2,10 @@
 'use client';
 
 import React from 'react';
-import PlaceholderPage from '@/app/components/PlaceholderPage/PlaceholderPage';
+import Calendar from './Calendar';
 
 const AdminCalendarPage = () => {
-  return (
-    <PlaceholderPage 
-      title="Calendar" 
-      description="Manage your schedule and events." 
-    />
-  );
+  return <Calendar />;
 };
 
 export default AdminCalendarPage;

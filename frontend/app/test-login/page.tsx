@@ -18,7 +18,7 @@ export default function TestLogin() {
         },
         body: JSON.stringify({
           email: 'admin@megilance.com',
-          password: 'Admin@123'
+          password: 'Password123!'
         }),
       });
 

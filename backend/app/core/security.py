@@ -238,3 +238,80 @@ def get_user_by_id(user_id: int) -> Optional[User]:
     except Exception as e:
         print(f"[ERROR] get_user_by_id failed: {e}")
         return None
+
+
+def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> dict:
+    """
+    Get current user as dict from JWT token using Turso ONLY
+    Returns a dict instead of User object for API compatibility
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    if not token:
+        raise credentials_exception
+
+    try:
+        payload = decode_token(token)
+        if payload.get("type") != "access":
+            raise credentials_exception
+        email: Optional[str] = payload.get("sub")
+        user_id = payload.get("user_id")
+        role = payload.get("role")
+        if not email:
+            raise credentials_exception
+        
+        # Return dict directly from token payload for efficiency
+        return {
+            "id": user_id,
+            "email": email,
+            "role": role,
+            "user_id": user_id
+        }
+    except JWTError:
+        raise credentials_exception
+
+
+def get_current_user_from_header(authorization: str = None) -> dict:
+    """
+    Get current user from Authorization header
+    """
+    from fastapi import Header
+    
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    if not authorization:
+        raise credentials_exception
+    
+    # Extract token from "Bearer <token>" format
+    parts = authorization.split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        raise credentials_exception
+    
+    token = parts[1]
+    
+    try:
+        payload = decode_token(token)
+        if payload.get("type") != "access":
+            raise credentials_exception
+        email: Optional[str] = payload.get("sub")
+        user_id = payload.get("user_id")
+        role = payload.get("role")
+        if not email:
+            raise credentials_exception
+        
+        return {
+            "id": user_id,
+            "email": email,
+            "role": role,
+            "user_id": user_id
+        }
+    except JWTError:
+        raise credentials_exception

@@ -3,8 +3,8 @@
     "id": 1,
     "contactName": "John Doe",
     "contactAvatarUrl": "/avatars/avatar-1.png",
-    "lastMessage": "Sounds good, let's proceed.",
-    "lastMessageTimestamp": "10:48 AM",
+    "lastMessage": "Hello! This is a test message to verify the messaging system works correctly.",
+    "lastMessageTimestamp": "05:41 PM",
     "unreadCount": 0,
     "messages": [
       {
@@ -24,6 +24,12 @@
         "text": "Great, I'll take a look now. Sounds good, let's proceed.",
         "timestamp": "10:48 AM",
         "sender": "contact"
+      },
+      {
+        "id": 1764074468430,
+        "text": "Hello! This is a test message to verify the messaging system works correctly.",
+        "timestamp": "05:41 PM",
+        "sender": "user"
       }
     ]
   },
@@ -35,18 +41,18 @@
     "lastMessageTimestamp": "Yesterday",
     "unreadCount": 2,
     "messages": [
-        {
-            "id": 201,
-            "text": "The new landing page mockups are ready for your feedback.",
-            "timestamp": "Yesterday",
-            "sender": "user"
-        },
-        {
-            "id": 202,
-            "text": "Awesome, I'm excited to see them. Can you send over the new designs?",
-            "timestamp": "Yesterday",
-            "sender": "contact"
-        }
+      {
+        "id": 201,
+        "text": "The new landing page mockups are ready for your feedback.",
+        "timestamp": "Yesterday",
+        "sender": "user"
+      },
+      {
+        "id": 202,
+        "text": "Awesome, I'm excited to see them. Can you send over the new designs?",
+        "timestamp": "Yesterday",
+        "sender": "contact"
+      }
     ]
   },
   {
@@ -57,15 +63,15 @@
     "lastMessageTimestamp": "2 days ago",
     "unreadCount": 0,
     "messages": [
-        {
-            "id": 301,
-            "text": "The contract is ready for review.",
-            "timestamp": "2 days ago",
-            "sender": "contact"
-        }
+      {
+        "id": 301,
+        "text": "The contract is ready for review.",
+        "timestamp": "2 days ago",
+        "sender": "contact"
+      }
     ]
   },
-    {
+  {
     "id": 4,
     "contactName": "Emily White",
     "contactAvatarUrl": "/avatars/avatar-4.png",

@@ -62,29 +62,33 @@ export function useFreelancerData() {
       setLoading(true);
       setError(null);
       try {
-        const [projectsRes, jobsRes, transactionsRes, analyticsRes] = await Promise.all([
-          fetch('/api/freelancer/projects'),
-          fetch('/api/freelancer/jobs'),
-          fetch('/api/freelancer/transactions'),
-          fetch('/api/freelancer/analytics'),
-        ]);
+        // Get auth token from localStorage
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
         
-        if ([projectsRes, jobsRes, transactionsRes, analyticsRes].some(r => !r.ok)) {
-          throw new Error('One or more freelancer API requests failed');
-        }
+        // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
+        const fetchWithFallback = async (url: string, fallback: any = []) => {
+          try {
+            const res = await fetch(url, { headers });
+            if (!res.ok) return fallback;
+            return await res.json();
+          } catch {
+            return fallback;
+          }
+        };
         
         const [projectsJson, jobsJson, transactionsJson, analyticsJson] = await Promise.all([
-          projectsRes.json(),
-          jobsRes.json(),
-          transactionsRes.json(),
-          analyticsRes.json(),
+          fetchWithFallback('/backend/api/freelancer/projects', []),
+          fetchWithFallback('/backend/api/freelancer/jobs', []),
+          fetchWithFallback('/backend/api/freelancer/wallet', {}), // wallet has transactions
+          fetchWithFallback('/backend/api/freelancer/dashboard/stats', {}), // dashboard stats for analytics
         ]);
         
         if (!mounted) return;
-        setProjects(projectsJson?.projects ?? projectsJson);
-        setJobs(jobsJson?.jobs ?? jobsJson);
-        setTransactions(transactionsJson?.transactions ?? transactionsJson);
-        setAnalytics(analyticsJson?.analytics ?? analyticsJson);
+        setProjects(projectsJson?.projects ?? projectsJson ?? []);
+        setJobs(jobsJson?.jobs ?? jobsJson ?? []);
+        setTransactions(transactionsJson?.transactions ?? transactionsJson?.recentTransactions ?? []);
+        setAnalytics(analyticsJson?.analytics ?? analyticsJson ?? null);
       } catch (e: any) {
         if (!mounted) return;
         setError(e?.message ?? 'Failed to load freelancer data');

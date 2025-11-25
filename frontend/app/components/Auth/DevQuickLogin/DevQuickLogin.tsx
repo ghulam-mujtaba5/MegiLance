@@ -23,7 +23,7 @@ interface DevCredential {
 const DEV_CREDENTIALS: DevCredential[] = [
   {
     email: 'admin@megilance.com',
-    password: 'Admin@123',
+    password: 'Password123!',
     role: 'admin',
     label: 'Admin',
     icon: FaUserShield,
