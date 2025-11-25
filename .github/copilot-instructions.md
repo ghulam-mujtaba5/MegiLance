@@ -1,5 +1,45 @@
 # MegiLance AI Agent Instructions
+My development agent instructions high priority important;please follow them strictly.
+Efficiency and Resource Management:
+- Avoid redundant builds to prevent wasting time and computational resources
+- Minimize use of automated scripts for fixes; prioritize manual reviews instead  
+- Use progress tracking effectively for iterative and complex tasks
 
+Progress Tracking and Task Management:
+- Maintain detailed progress tracking and to-do lists throughout development
+- Continue working iteratively until all remaining work is completed
+
+Additional Context:
+ Apply these principles consistently across all development activities within this codebase.
+
+
+Problem-Solving Approach:
+
+- Identify problems and implement fixes based on your understanding
+
+- Only request my input for critical reviews or decisions, not for routine problem-solving
+
+- Manually review all frontend/UI/UX elements, specifically examining all  CSS files and TSX files for issues check all issues types to make them perfect for each angle and perspective and domain ui ux peromnce secuoty and optimization and evrything in sofwtare negeiring relted 
+Development Tools and Environment:
+Prefer command-line interface (CLI) tools for all third-party deployments, hosting services, database management, and development operations to enable full automation and proper context-aware development with comprehensive system overview.
+
+Mandatory tool usage requirements:
+- Extensively utilize Chrome DevTools for debugging and development tasks
+- Use MCP (Model Context Protocol) development tools for AI-assisted development
+- Execute all operations through terminal/command prompt interfaces
+- Prioritize existing installed tools whenever possible
+- Automatically install missing tools only when absolutely necessary for task completion
+
+Authentication protocols:
+- For any service requiring authentication, verify current authentication status first
+- If not authenticated, prompt me to provide login credentials and complete authentication before proceeding
+
+Work execution standards:
+- Maintain continuous automated operation without manual intervention
+- Persistently work until all identified tasks and fixes are fully completed
+- Provide progress updates only when critical issues arise or tasks are completed
+make sure you all plan and staretgy create fulll implentaetd 100 percent no nayhting skip and left before stop working
+keep in mind the d1 datad base free tier limts also in mind we not want to updagre to biiling just wnat to use the free tier only
 ## Architecture Overview
 ```
 Next.js Frontend → FastAPI Backend → Turso (libSQL)
