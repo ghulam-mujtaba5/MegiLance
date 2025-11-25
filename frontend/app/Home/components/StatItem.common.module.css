@@ -1,14 +1,13 @@
-/* @AI-HINT: Common styles for the StatItem component. Defines the layout and typography for a single animated statistic. */
+/* @AI-HINT: Premium StatItem styles - Animated counter cards with glassmorphism and sophisticated interactions */
 
 .statItem {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.25rem; /* More compact */
-  border-radius: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(5px);
+  padding: 1.25rem 1rem;
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
 }
@@ -16,60 +15,71 @@
 .statItem::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(69, 115, 223, 0.04), transparent);
-  z-index: -1;
-  border-radius: 1rem;
-  transition: opacity 0.3s ease;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(69, 115, 223, 0.03) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  border-radius: inherit;
 }
 
 .statItem:hover {
-  transform: translateY(-4px) scale(1.02); /* Combined transform */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04); /* Layered shadow */
+  transform: translateY(-6px);
 }
 
 .statItem:hover::before {
-  opacity: 1.5; /* Enhanced gradient on hover */
-}
-
-.statItem:hover .statIcon {
-  transform: scale(1.1) rotate(5deg); /* Playful icon animation */
+  opacity: 1;
 }
 
 .statIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  margin-bottom: 0.875rem; /* Tighter spacing */
-  background: linear-gradient(135deg, var(--primary-4573df), var(--accent-orange-ff9800));
-  box-shadow: 0 3px 10px rgba(69, 115, 223, 0.25);
-  color: white;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  margin-bottom: 0.875rem;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.statItem:hover .statIcon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .statValue {
-  font-size: clamp(1.75rem, 4vw, 2.5rem); /* More restrained max size */
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -0.03em; /* Tighter for numbers */
-  margin-bottom: 0.375rem;
-  background: linear-gradient(120deg, var(--text-primary-23272f), var(--primary-4573df));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.25rem;
+  transition: all 0.3s ease;
 }
 
 .statLabel {
-  font-size: 0.875rem; /* 14px - More refined */
+  font-family: var(--font-family-body);
+  font-size: 0.8125rem;
   font-weight: 500;
-  margin-top: 0.25rem;
-  color: var(--text-secondary-333333);
   line-height: 1.4;
   letter-spacing: 0.01em;
+}
+
+@media (max-width: 768px) {
+  .statItem {
+    padding: 1rem 0.75rem;
+  }
+
+  .statIcon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    margin-bottom: 0.625rem;
+  }
+
+  .statValue {
+    font-size: 1.25rem;
+  }
+
+  .statLabel {
+    font-size: 0.75rem;
+  }
 }

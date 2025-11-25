@@ -1,21 +1,30 @@
-/* @AI-HINT: Light theme styles for the StatItem component. */
+/* @AI-HINT: Light theme for StatItem - Clean glass cards with subtle shadows */
 
 .statItem {
-  background-color: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(224, 224, 224, 0.5);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(229, 231, 235, 0.5);
 }
 
 .statItem:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-color: rgba(69, 115, 223, 0.3);
-  box-shadow: 0 10px 25px rgba(69, 115, 223, 0.15);
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 12px 32px rgba(69, 115, 223, 0.12);
+  border-color: rgba(69, 115, 223, 0.2);
+}
+
+.statIcon {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(99, 102, 241, 0.08));
+  color: #4573df;
+}
+
+.statItem:hover .statIcon {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.15), rgba(99, 102, 241, 0.12));
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.2);
 }
 
 .statValue {
-  color: var(--text-primary-23272f);
+  color: #0f172a;
 }
 
 .statLabel {
-  color: var(--text-secondary-333333);
+  color: #64748b;
 }

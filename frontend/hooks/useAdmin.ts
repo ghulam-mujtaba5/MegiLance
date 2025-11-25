@@ -39,8 +39,8 @@ export function useAdminData() {
       setLoading(true);
       setError(null);
       try {
-        // Get auth token from localStorage
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        // Get auth token from localStorage (stored as access_token during login)
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
         const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
         
         // Use the backend proxy endpoints - fetch each individually and handle failures gracefully

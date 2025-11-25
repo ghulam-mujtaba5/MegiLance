@@ -1,70 +1,194 @@
-/* @AI-HINT: Dark theme styles for the Hero component with enhanced visual effects. */
+/* @AI-HINT: Dark theme for premium Hero - Sophisticated dark aesthetic with glowing accents and deep gradients */
 
 .heroContainer {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(180deg, #0a0f1a 0%, #111827 50%, #1a202e 100%);
 }
 
-.backgroundVisuals {
-  background: radial-gradient(circle at 10% 20%, rgba(69, 115, 223, 0.15) 0%, transparent 20%),
-              radial-gradient(circle at 80% 30%, rgba(255, 152, 0, 0.15) 0%, transparent 20%),
-              radial-gradient(circle at 40% 80%, rgba(69, 115, 223, 0.1) 0%, transparent 20%);
+.meshBackground {
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(69, 115, 223, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+    radial-gradient(ellipse at 40% 80%, rgba(255, 152, 0, 0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 90% 70%, rgba(16, 185, 129, 0.06) 0%, transparent 35%);
 }
 
-.promoBadge {
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  color: #d1d5db;
-  border: 1px solid #374151;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+.orb {
+  opacity: 0.5;
 }
 
-.promoBadge:hover {
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
-  color: #e2e8f0;
+.orb:nth-child(1) {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.4), rgba(99, 102, 241, 0.25));
 }
 
-.promoBadgeHighlight {
-  background: rgba(69, 115, 223, 0.2);
+.orb:nth-child(2) {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(251, 191, 36, 0.2));
+}
+
+.orb:nth-child(3) {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(52, 211, 153, 0.15));
+}
+
+.gridPattern {
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Announcement Badge */
+.announcementBadge {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(17, 24, 39, 0.9));
+  color: #93c5fd;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(69, 115, 223, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.announcementBadge:hover {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 1), rgba(17, 24, 39, 1));
+  box-shadow: 
+    0 8px 30px rgba(0, 0, 0, 0.4),
+    0 0 60px rgba(69, 115, 223, 0.15);
+  border-color: rgba(99, 102, 241, 0.35);
+  color: #bfdbfe;
+}
+
+.badgeIcon {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.25), rgba(99, 102, 241, 0.15));
   color: #93c5fd;
 }
 
+/* Heading */
 .mainHeading {
-  color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: #f8fafc;
+  text-shadow: 0 0 80px rgba(69, 115, 223, 0.3);
+}
+
+.headingGradient {
+  background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.3));
 }
 
 .subheading {
-  color: #e5e7eb;
+  color: #94a3b8;
 }
 
-.featureItem {
-  background: rgba(30, 41, 59, 0.7);
-  color: #cbd5e1;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(55, 65, 81, 0.7);
+/* CTA Buttons */
+.primaryCta {
+  background: linear-gradient(135deg, #4573df 0%, #6366f1 100%);
+  box-shadow: 
+    0 4px 20px rgba(69, 115, 223, 0.4),
+    0 0 40px rgba(99, 102, 241, 0.2);
 }
 
-.featureItem:hover {
-  background: rgba(30, 41, 59, 0.9);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(75, 85, 99, 0.7);
-  color: #f1f5f9;
+.primaryCta:hover {
+  background: linear-gradient(135deg, #5b7de8 0%, #7c7ff8 100%);
+  box-shadow: 
+    0 8px 30px rgba(69, 115, 223, 0.5),
+    0 0 60px rgba(99, 102, 241, 0.3);
 }
 
-.featureItem svg {
+.secondaryCta {
+  background: rgba(30, 41, 59, 0.6);
+  color: #e2e8f0;
+  border: 1.5px solid rgba(71, 85, 105, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.secondaryCta:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.4);
   color: #93c5fd;
 }
 
-.blob1 {
-  background: linear-gradient(135deg, rgba(69, 115, 223, 0.3), rgba(255, 152, 0, 0.25));
+/* Social Proof */
+.avatarStack {
+  background: transparent;
 }
 
-.blob2 {
-  background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(69, 115, 223, 0.25));
+.avatar {
+  background: linear-gradient(135deg, #312e81, #3730a3);
+  color: #c7d2fe;
+  border: 2px solid rgba(30, 41, 59, 0.8);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(99, 102, 241, 0.1);
 }
 
-.floatingElement1, .floatingElement2, .floatingElement3 {
-  background: rgba(30, 41, 59, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(55, 65, 81, 0.7);
+.avatar:nth-child(2) { background: linear-gradient(135deg, #1e3a5f, #1e40af); color: #93c5fd; }
+.avatar:nth-child(3) { background: linear-gradient(135deg, #064e3b, #047857); color: #6ee7b7; }
+.avatar:nth-child(4) { background: linear-gradient(135deg, #78350f, #b45309); color: #fcd34d; }
+.avatar:nth-child(5) { background: linear-gradient(135deg, #831843, #be185d); color: #f9a8d4; }
+
+.proofStars {
+  color: #fbbf24;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));
+}
+
+.ratingText {
+  color: #e2e8f0;
+  margin-left: 0.375rem;
+}
+
+.proofLabel {
+  color: #94a3b8;
+}
+
+/* Feature Pills */
+.featurePill {
+  background: rgba(30, 41, 59, 0.6);
+  color: #cbd5e1;
+  border: 1px solid rgba(71, 85, 105, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.featurePill:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(99, 102, 241, 0.1);
+  color: #f1f5f9;
+}
+
+.featurePill svg {
+  color: #93c5fd;
+}
+
+/* Stats Grid */
+.statsGrid {
+  background: rgba(17, 24, 39, 0.6);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.3),
+    0 0 60px rgba(69, 115, 223, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Trust Badges */
+.trustBadge {
+  background: rgba(30, 41, 59, 0.5);
+  color: #94a3b8;
+  border: 1px solid rgba(55, 65, 81, 0.5);
+}
+
+.trustBadge svg {
+  color: #34d399;
+}
+
+.trustBadge:hover {
+  background: rgba(30, 41, 59, 0.7);
+  color: #cbd5e1;
+  border-color: rgba(71, 85, 105, 0.6);
 }

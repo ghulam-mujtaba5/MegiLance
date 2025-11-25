@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem; /* 16px */
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 2147483647; /* Maximum z-index to ensure it's above Next.js Dev Tools */
 }
 
 .right { right: 1.5rem; }

@@ -1,0 +1,108 @@
+/* @AI-HINT: KeyMetricsGrid dark theme - glassmorphism, glowing accents, premium dark aesthetic */
+
+.grid {
+  /* Dark theme grid */
+}
+
+.card {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.8) 0%,
+    rgba(15, 23, 42, 0.9) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(69, 115, 223, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Color variants for decorative orb - more vibrant in dark mode */
+.success::before {
+  background: var(--color-success, #27AE60);
+  opacity: 0.3;
+}
+
+.primary::before {
+  background: var(--color-primary, #4573df);
+  opacity: 0.3;
+}
+
+.accent::before {
+  background: var(--color-accent, #ff9800);
+  opacity: 0.25;
+}
+
+.warning::before {
+  background: var(--color-warning, #F2C94C);
+  opacity: 0.25;
+}
+
+/* Icon wrapper colors - glowing effect in dark mode */
+.iconWrapper {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.successIcon {
+  background: rgba(39, 174, 96, 0.2);
+  color: #4ade80;
+  box-shadow: 0 0 20px rgba(39, 174, 96, 0.2);
+}
+
+.primaryIcon {
+  background: rgba(69, 115, 223, 0.2);
+  color: #60a5fa;
+  box-shadow: 0 0 20px rgba(69, 115, 223, 0.2);
+}
+
+.accentIcon {
+  background: rgba(255, 152, 0, 0.2);
+  color: #fb923c;
+  box-shadow: 0 0 20px rgba(255, 152, 0, 0.15);
+}
+
+.warningIcon {
+  background: rgba(242, 201, 76, 0.2);
+  color: #fbbf24;
+  box-shadow: 0 0 20px rgba(242, 201, 76, 0.15);
+}
+
+/* Text colors for dark theme */
+.label {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.value {
+  color: #f1f5f9;
+}
+
+.trend {
+  /* Base styles in common, dark overrides */
+}
+
+/* Skeleton dark mode */
+.card.skeleton {
+  background: rgba(30, 41, 59, 0.6);
+}
+
+.card.skeleton .skeletonIcon,
+.card.skeleton .skeletonLabel,
+.card.skeleton .skeletonValue {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+}

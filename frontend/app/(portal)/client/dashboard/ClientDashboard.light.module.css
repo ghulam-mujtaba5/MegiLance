@@ -1,68 +1,83 @@
-/* Client Dashboard Light Theme Styles */
+/* @AI-HINT: Premium Client Dashboard light theme - clean, professional aesthetic */
 
-.page {
-  --dashboard-bg: #f5f7fa;
+.themeWrapper {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+/* Welcome Banner */
+.welcomeBanner {
+  background: linear-gradient(135deg, var(--color-primary, #4573df) 0%, #3b5fd9 50%, #2563eb 100%);
+  box-shadow: 
+    0 4px 20px rgba(69, 115, 223, 0.25),
+    0 8px 40px rgba(69, 115, 223, 0.15);
+}
+
+.welcomeBannerTitle {
+  color: #ffffff;
+}
+
+.welcomeBannerText {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Error Banner */
+.errorBanner {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* Activity Items */
+.activityItem {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.activityItem:hover {
+  background: #f8fafc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* Activity Icon Colors by Type */
+.activityIcon {
+  background: rgba(69, 115, 223, 0.1);
+  color: var(--color-primary, #4573df);
+}
+
+.activityIconProject {
+  background: rgba(69, 115, 223, 0.12);
+  color: #4573df;
+}
+
+.activityIconPayment {
+  background: rgba(39, 174, 96, 0.12);
+  color: #27AE60;
+}
+
+.activityIconProposal {
+  background: rgba(255, 152, 0, 0.12);
+  color: #ff9800;
+}
+
+.activityIconMessage {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8b5cf6;
+}
+
+/* Text Colors */
+.activityTitle {
+  color: #1e293b;
+}
+
+.activityDescription {
+  color: #64748b;
+}
+
+.activityTime {
+  color: #94a3b8;
 }
 
 .subtitle {
   color: #6b7280;
-}
-
-.error {
-  --error-bg: #fef2f2;
-  --error-text: #dc2626;
-  --error-border: #fecaca;
-}
-
-.section {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-}
-
-.section:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
-.emptyState {
-  --surface: #f9fafb;
-}
-
-.cardSkeleton,
-.rowSkeleton {
-  --card-bg: #f9fafb;
-  --card-border: #e5e7eb;
-}
-
-.statCard {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-  --stat-icon-bg: #f0f4ff;
-}
-
-.statCard:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
-.chartCard {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-}
-
-.chartAction {
-  --surface: #f9fafb;
-  --surface-hover: #f3f4f6;
-  --border: #e5e7eb;
-  --text-secondary: #6b7280;
-  --text-primary: #111827;
-}
-
-.activityItem {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-  --surface-hover: #f9fafb;
-}
-
-.activityIcon {
-  --activity-icon-bg: #f0f4ff;
-  --activity-icon-color: #4573df;
 }

@@ -16,7 +16,6 @@
 .page {
   min-height: 100vh;
   padding: 2rem 0;
-  background: var(--dashboard-bg);
 }
 
 .container {
@@ -25,6 +24,196 @@
   padding: 0 1.5rem;
 }
 
+/* Error Banner */
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-4, 16px);
+  border-radius: var(--radius-lg, 12px);
+  font-size: var(--text-sm, 14px);
+  font-weight: 500;
+  margin-bottom: var(--space-5, 20px);
+}
+
+/* Welcome Banner */
+.welcomeBanner {
+  position: relative;
+  border-radius: var(--radius-2xl, 20px);
+  padding: var(--space-6, 24px) var(--space-8, 32px);
+  margin-bottom: var(--space-6, 24px);
+  overflow: hidden;
+}
+
+.welcomeBanner::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  right: -50%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+}
+
+.welcomeBannerContent {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+}
+
+.welcomeBannerTitle {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
+  margin: 0 0 var(--space-2, 8px) 0;
+  line-height: 1.2;
+}
+
+.welcomeBannerText {
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  margin: 0 0 var(--space-5, 20px) 0;
+  line-height: 1.5;
+}
+
+.quickActions {
+  display: flex;
+  gap: var(--space-3, 12px);
+  flex-wrap: wrap;
+}
+
+/* Activity Section */
+.activitySection {
+  grid-column: 1 / -1;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+.activityItem {
+  display: flex;
+  gap: var(--space-4, 16px);
+  padding: var(--space-4, 16px);
+  border-radius: var(--radius-lg, 12px);
+  transition: all 0.2s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1));
+  animation: fadeInUp 0.4s ease-out backwards;
+}
+
+.activityItem:nth-child(1) { animation-delay: 0s; }
+.activityItem:nth-child(2) { animation-delay: 0.05s; }
+.activityItem:nth-child(3) { animation-delay: 0.1s; }
+.activityItem:nth-child(4) { animation-delay: 0.15s; }
+
+.activityItem:hover {
+  transform: translateX(4px);
+}
+
+.activityIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.activityItem:hover .activityIcon {
+  transform: scale(1.1);
+}
+
+.activityContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.activityTitle {
+  font-weight: 600;
+  font-size: var(--text-sm, 14px);
+  margin: 0 0 var(--space-1, 4px) 0;
+}
+
+.activityDescription {
+  font-size: var(--text-sm, 14px);
+  margin: 0 0 var(--space-2, 8px) 0;
+  line-height: 1.4;
+}
+
+.activityTime {
+  font-size: var(--text-xs, 12px);
+  font-weight: 500;
+}
+
+/* Skeleton Loading */
+.activityItemSkeleton {
+  display: flex;
+  gap: var(--space-4, 16px);
+  padding: var(--space-4, 16px);
+  border-radius: var(--radius-lg, 12px);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.skeletonIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 10px);
+  background: linear-gradient(90deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.06) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.skeletonTitle {
+  height: 14px;
+  width: 60%;
+  border-radius: var(--radius-sm, 6px);
+  background: linear-gradient(90deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.06) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonDesc {
+  height: 12px;
+  width: 80%;
+  border-radius: var(--radius-sm, 6px);
+  background: linear-gradient(90deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.06) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+/* Rest of original styles */
 .header {
   margin-bottom: 2.5rem;
   opacity: 0;

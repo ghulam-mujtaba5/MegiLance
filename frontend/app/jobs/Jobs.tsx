@@ -3,6 +3,7 @@
 
 import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import common from './Jobs.common.module.css';
@@ -86,6 +87,7 @@ const mockJobs: Job[] = [
 
 const Jobs: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const themed = resolvedTheme === 'dark' ? dark : light;
 
   const [q, setQ] = useState('');
@@ -195,7 +197,7 @@ const Jobs: React.FC = () => {
               </div>
               <p className={common.cardDesc}>{job.description}</p>
               <div className={common.cardFooter}>
-                <button className={cn(common.cardButton)} aria-label={`View details for ${job.title}`}>View Details</button>
+                <button className={cn(common.cardButton)} onClick={() => router.push(`/jobs/${job.id}`)} aria-label={`View details for ${job.title}`}>View Details</button>
                 <button className={cn(common.cardButton, common.cardButtonSecondary)} aria-label={`Save ${job.title}`}>Save</button>
               </div>
             </article>

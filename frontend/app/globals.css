@@ -1,36 +1,101 @@
-/* Prevent horizontal scroll globally */
-html, body, #__next {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Reserve space for the scrollbar to avoid layout shift on first paint */
-html {
-  scrollbar-gutter: stable both-edges;
-}
-
-/* Ensure the document uses the viewport scrolling, not nested containers */
-body {
-  overflow-y: auto;
-}
-
-/* AI-HINT: This file is the entry point for Tailwind CSS. The directives below inject Tailwind's base styles, component classes, and utility classes into the application. */
+/* @AI-HINT: Global styles entry point. Contains Tailwind directives, base resets, 
+   accessibility utilities, and premium animation keyframes. Component-specific styles 
+   go in CSS Modules. */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Loading spinner animation */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* ============================================= */
+/*   BASE DOCUMENT STYLES                       */
+/* ============================================= */
+html {
+  scrollbar-gutter: stable both-edges;
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Respect user's motion preferences globally */
+html, body, #__next {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-y: auto;
+  font-family: var(--font-family-body);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* ============================================= */
+/*   PREMIUM SELECTION STYLES                   */
+/* ============================================= */
+::selection {
+  background-color: rgba(69, 115, 223, 0.2);
+  color: inherit;
+}
+
+::-moz-selection {
+  background-color: rgba(69, 115, 223, 0.2);
+  color: inherit;
+}
+
+/* ============================================= */
+/*   SCROLLBAR STYLING                          */
+/* ============================================= */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+}
+
+/* ============================================= */
+/*   ACCESSIBILITY                              */
+/* ============================================= */
+:focus-visible {
+  outline: 2.5px solid var(--primary-4573df, #4573df);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  background: var(--primary-4573df, #4573df);
+  color: white;
+  border-radius: 0 0 8px 8px;
+  z-index: 10000;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Respect user's motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -42,17 +107,12 @@ body {
   }
 }
 
-/* Focus visible for accessibility */
-:focus-visible {
-  outline: 2.5px solid var(--primary-4573df, #4573df);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* Ensure smooth theme transitions */
+/* ============================================= */
+/*   SMOOTH THEME TRANSITIONS                   */
+/* ============================================= */
 * {
   transition-property: background-color, border-color, color, fill, stroke;
-  transition-duration: 250ms;
+  transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -62,19 +122,211 @@ body {
   }
 }
 
+/* ============================================= */
+/*   PREMIUM KEYFRAME ANIMATIONS                */
+/* ============================================= */
 
+/* Spinner */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Fade In */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fade In Up */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In Down */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale In */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide In Right */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide In Left */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Pulse Glow */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(69, 115, 223, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(69, 115, 223, 0);
+  }
+}
+
+/* Float */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Shimmer Loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Count Up (for stats) */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gradient Shift */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Ripple Effect */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Bounce Subtle */
+@keyframes bounceSubtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ============================================= */
+/*   UTILITY CLASSES                            */
+/* ============================================= */
+.animate-fadeIn { animation: fadeIn 0.3s ease-out forwards; }
+.animate-fadeInUp { animation: fadeInUp 0.4s ease-out forwards; }
+.animate-fadeInDown { animation: fadeInDown 0.4s ease-out forwards; }
+.animate-scaleIn { animation: scaleIn 0.3s ease-out forwards; }
+.animate-slideInRight { animation: slideInRight 0.4s ease-out forwards; }
+.animate-slideInLeft { animation: slideInLeft 0.4s ease-out forwards; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-shimmer { 
+  animation: shimmer 2s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+}
+.animate-pulseGlow { animation: pulseGlow 2s ease-in-out infinite; }
+
+/* Stagger animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .glass {
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Text gradient utility */
+.text-gradient {
+  background: linear-gradient(135deg, #4573df 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================= */
+/*   COMPONENT-SPECIFIC STYLE WARNING           */
+/* ============================================= */
 /* 
-❌ DO NOT use this file (`global.css`) for any styles.
+❌ DO NOT add component-specific styles here.
 
-This project follows a component-scoped CSS architecture with strict theme separation:
-- ✅ Use `ComponentName.common.css` for shared styles.
-- ✅ Use `ComponentName.light.css` for light theme overrides.
-- ✅ Use `ComponentName.dark.css` for dark theme overrides.
-- ✅ Use `themes/light.css` and `themes/dark.css` for global CSS variables only (if needed).
+This project follows strict CSS Module architecture:
+✅ ComponentName.common.module.css → Layout & structure
+✅ ComponentName.light.module.css  → Light theme colors
+✅ ComponentName.dark.module.css   → Dark theme colors
 
-Reason:
-Using global.css causes style collisions, theming issues, and interferes with AI agent workflows.
-
-⚠️ AI Agents: Avoid writing or modifying styles in this file.
+⚠️ AI Agents: Only modify base styles and utilities here.
 */
 

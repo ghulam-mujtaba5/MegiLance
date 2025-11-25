@@ -1,68 +1,101 @@
-/* Client Dashboard Dark Theme Styles */
+/* @AI-HINT: Premium Client Dashboard dark theme - glassmorphism, glowing accents */
 
-.page {
-  --dashboard-bg: #111827;
+.themeWrapper {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+/* Welcome Banner */
+.welcomeBanner {
+  background: linear-gradient(
+    135deg,
+    rgba(69, 115, 223, 0.9) 0%,
+    rgba(59, 95, 217, 0.85) 50%,
+    rgba(37, 99, 235, 0.9) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(69, 115, 223, 0.3),
+    0 0 60px rgba(69, 115, 223, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.welcomeBannerTitle {
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.welcomeBannerText {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Error Banner */
+.errorBanner {
+  background: rgba(127, 29, 29, 0.3);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+/* Activity Items */
+.activityItem {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.activityItem:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Activity Icon Colors by Type - glowing in dark mode */
+.activityIcon {
+  background: rgba(69, 115, 223, 0.2);
+  color: #60a5fa;
+  box-shadow: 0 0 15px rgba(69, 115, 223, 0.15);
+}
+
+.activityIconProject {
+  background: rgba(69, 115, 223, 0.2);
+  color: #60a5fa;
+  box-shadow: 0 0 15px rgba(69, 115, 223, 0.15);
+}
+
+.activityIconPayment {
+  background: rgba(39, 174, 96, 0.2);
+  color: #4ade80;
+  box-shadow: 0 0 15px rgba(39, 174, 96, 0.15);
+}
+
+.activityIconProposal {
+  background: rgba(255, 152, 0, 0.2);
+  color: #fb923c;
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.15);
+}
+
+.activityIconMessage {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
+}
+
+/* Text Colors */
+.activityTitle {
+  color: #f1f5f9;
+}
+
+.activityDescription {
+  color: #94a3b8;
+}
+
+.activityTime {
+  color: #64748b;
 }
 
 .subtitle {
   color: #d1d5db;
-}
-
-.error {
-  --error-bg: #3a2222;
-  --error-text: #ff8a8a;
-  --error-border: #7a2d2d;
-}
-
-.section {
-  --card-bg: #1f2937;
-  --card-border: #374151;
-}
-
-.section:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-}
-
-.emptyState {
-  --surface: #1f2937;
-}
-
-.cardSkeleton,
-.rowSkeleton {
-  --card-bg: #1f2937;
-  --card-border: #374151;
-}
-
-.statCard {
-  --card-bg: #1f2937;
-  --card-border: #374151;
-  --stat-icon-bg: #2c3a5a;
-}
-
-.statCard:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-}
-
-.chartCard {
-  --card-bg: #1f2937;
-  --card-border: #374151;
-}
-
-.chartAction {
-  --surface: #374151;
-  --surface-hover: #4b5563;
-  --border: #4b5563;
-  --text-secondary: #d1d5db;
-  --text-primary: #f9fafb;
-}
-
-.activityItem {
-  --card-bg: #1f2937;
-  --card-border: #374151;
-  --surface-hover: #374151;
-}
-
-.activityIcon {
-  --activity-icon-bg: #2c3a5a;
-  --activity-icon-color: #608cfb;
 }

@@ -1,4 +1,4 @@
-// @AI-HINT: Client Dashboard component. Theme-aware, accessible dashboard with KPIs, recent projects, and activity feed.
+// @AI-HINT: Client Dashboard component. Theme-aware, accessible dashboard with KPIs, recent projects, and activity feed. All data comes from backend APIs via useClientData hook.
 'use client';
 
 import React, { useMemo, useRef, useState, useEffect } from 'react';
@@ -19,10 +19,10 @@ import {
   FileText, 
   DollarSign, 
   Users, 
-  Bell,
+  AlertCircle,
   Calendar,
   MessageCircle,
-  Eye
+  Award
 } from 'lucide-react';
 import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
@@ -47,22 +47,6 @@ const Trend: React.FC<{ value: number }> = ({ value }) => {
     </span>
   );
 };
-
-const projectStatusData = [
-  { name: 'In Progress', value: 4 },
-  { name: 'Completed', value: 8 },
-  { name: 'Pending', value: 2 },
-  { name: 'Cancelled', value: 1 },
-];
-
-const spendingData = [
-  { name: 'Jan', spending: 4000 },
-  { name: 'Feb', spending: 3000 },
-  { name: 'Mar', spending: 5000 },
-  { name: 'Apr', spending: 4500 },
-  { name: 'May', spending: 6000 },
-  { name: 'Jun', spending: 5500 },
-];
 
 const ClientDashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
@@ -137,13 +121,128 @@ const ClientDashboard: React.FC = () => {
     }));
   }, [payments]);
 
-  // Recent activity data
-  const recentActivity = [
-    { id: '1', title: 'New proposal received', description: 'Freelancer submitted a proposal for your project', time: '2 hours ago', icon: FileText },
-    { id: '2', title: 'Payment processed', description: 'Payment of $1,200 completed for project', time: '5 hours ago', icon: DollarSign },
-    { id: '3', title: 'Project update', description: 'Progress updated to 75% complete', time: '1 day ago', icon: Eye },
-    { id: '4', title: 'Message received', description: 'New message from freelancer', time: '1 day ago', icon: MessageCircle },
-  ];
+  // Generate dynamic project status data from real projects
+  const projectStatusData = useMemo(() => {
+    if (!Array.isArray(projects) || projects.length === 0) {
+      return [
+        { name: 'In Progress', value: 0 },
+        { name: 'Completed', value: 0 },
+        { name: 'Pending', value: 0 },
+        { name: 'Cancelled', value: 0 },
+      ];
+    }
+    
+    const statusCounts = projects.reduce((acc: Record<string, number>, project: any) => {
+      const status = project.status || 'Pending';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+
+    return [
+      { name: 'In Progress', value: statusCounts['In Progress'] || statusCounts['Active'] || 0 },
+      { name: 'Completed', value: statusCounts['Completed'] || statusCounts['Done'] || 0 },
+      { name: 'Pending', value: statusCounts['Pending'] || statusCounts['Open'] || 0 },
+      { name: 'Cancelled', value: statusCounts['Cancelled'] || 0 },
+    ];
+  }, [projects]);
+
+  // Generate dynamic spending data from payments
+  const spendingData = useMemo(() => {
+    if (!Array.isArray(payments) || payments.length === 0) {
+      // Return last 6 months with zero values
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+      return months.map(name => ({ name, spending: 0 }));
+    }
+
+    // Group payments by month
+    const monthlySpending: Record<string, number> = {};
+    payments.forEach((payment: any) => {
+      const date = new Date(payment.date || Date.now());
+      const monthKey = date.toLocaleString('default', { month: 'short' });
+      const amount = parseFloat(String(payment.amount || '0').replace(/[$,+]/g, '')) || 0;
+      monthlySpending[monthKey] = (monthlySpending[monthKey] || 0) + amount;
+    });
+
+    // Get last 6 months
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonth = new Date().getMonth();
+    const last6Months = [];
+    for (let i = 5; i >= 0; i--) {
+      const monthIndex = (currentMonth - i + 12) % 12;
+      last6Months.push(months[monthIndex]);
+    }
+
+    return last6Months.map(name => ({
+      name,
+      spending: monthlySpending[name] || 0,
+    }));
+  }, [payments]);
+
+  // Generate dynamic activity from real data
+  const recentActivity = useMemo(() => {
+    const activities: Array<{
+      id: string;
+      title: string;
+      description: string;
+      time: string;
+      icon: typeof Briefcase;
+      type: 'project' | 'payment' | 'proposal' | 'message';
+    }> = [];
+
+    // Add activities from projects
+    if (Array.isArray(projects) && projects.length > 0) {
+      projects.slice(0, 2).forEach((project: any, index: number) => {
+        activities.push({
+          id: `project-${project.id || index}`,
+          title: project.status === 'Completed' ? 'Project completed' : 'Project update',
+          description: project.title || 'Project activity',
+          time: project.updatedAt || project.updated || 'Recently',
+          icon: Briefcase,
+          type: 'project'
+        });
+      });
+    }
+
+    // Add activities from payments
+    if (Array.isArray(payments) && payments.length > 0) {
+      payments.slice(0, 2).forEach((payment: any, index: number) => {
+        activities.push({
+          id: `payment-${payment.id || index}`,
+          title: payment.status === 'Completed' ? 'Payment completed' : 'Payment pending',
+          description: `${payment.amount} - ${payment.description || 'Transaction'}`,
+          time: payment.date || 'Recently',
+          icon: DollarSign,
+          type: 'payment'
+        });
+      });
+    }
+
+    // Add metric-based activities
+    if (metrics.activeProjects > 0) {
+      activities.push({
+        id: 'active-projects',
+        title: 'Active projects',
+        description: `${metrics.activeProjects} project(s) currently in progress`,
+        time: 'Ongoing',
+        icon: Clock,
+        type: 'project'
+      });
+    }
+
+    // Fallback if no real data
+    if (activities.length === 0) {
+      activities.push({
+        id: 'welcome',
+        title: 'Welcome to MegiLance!',
+        description: 'Start by posting your first project to find talented freelancers',
+        time: 'Just now',
+        icon: Award,
+        type: 'message'
+      });
+    }
+
+    return activities.slice(0, 4);
+  }, [projects, payments, metrics.activeProjects]);
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -152,13 +251,17 @@ const ClientDashboard: React.FC = () => {
       </div>
       <div className={common.container}>
         {/* Welcome Banner */}
-        <div className={common.welcomeBanner}>
+        <div className={cn(common.welcomeBanner, themed.welcomeBanner)}>
           <div className={common.welcomeBannerContent}>
-            <h1 className={common.welcomeBannerTitle}>Welcome back, Client!</h1>
-            <p className={common.welcomeBannerText}>Here&apos;s what&apos;s happening with your projects and freelancers today.</p>
+            <h1 className={cn(common.welcomeBannerTitle, themed.welcomeBannerTitle)}>
+              Welcome back! 👋
+            </h1>
+            <p className={cn(common.welcomeBannerText, themed.welcomeBannerText)}>
+              Here&apos;s what&apos;s happening with your projects and freelancers today.
+            </p>
             <div className={common.quickActions}>
               <Link href="/client/post-job">
-                <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
+                <Button variant="primary" size="md" iconBefore={<Plus size={18} />}>
                   Post New Project
                 </Button>
               </Link>
@@ -171,23 +274,10 @@ const ClientDashboard: React.FC = () => {
           </div>
         </div>
 
-        <header ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)} role="region" aria-label="Dashboard Header">
-          <div>
-            <h1 className={common.title}>Client Dashboard</h1>
-            <p className={cn(common.subtitle, themed.subtitle)}>Manage your projects, track spending, and monitor freelancer performance.</p>
-          </div>
-        </header>
-
-        {loading && (
-          <div className={common.loading} aria-busy="true">
-            <Skeleton width={40} height={40} radius="50%" />
-            <div>Loading dashboard...</div>
-          </div>
-        )}
         {error && (
-          <div className={common.error}>
-            <Bell size={20} />
-            <span>Failed to load dashboard data.</span>
+          <div className={cn(common.errorBanner, themed.errorBanner)}>
+            <AlertCircle size={20} />
+            <span>Unable to load some data. Please refresh the page.</span>
           </div>
         )}
 
@@ -196,40 +286,6 @@ const ClientDashboard: React.FC = () => {
         </div>
 
         <div ref={contentRef} className={cn(common.dashboardGrid, contentVisible ? common.isVisible : common.isNotVisible)}>
-          {/* Stats Grid */}
-          <div className={common.gridSpanFull}>
-            <div className={common.statsGrid}>
-              <Card title="Active Projects" icon={Briefcase}>
-                <div className={common.statValue}>12</div>
-                <div className={cn(common.statTrend, common.positive)}>
-                  <TrendingUp size={16} />
-                  <span>+2 from last month</span>
-                </div>
-              </Card>
-              <Card title="Total Spent" icon={DollarSign}>
-                <div className={common.statValue}>$24,580</div>
-                <div className={cn(common.statTrend, common.positive)}>
-                  <TrendingUp size={16} />
-                  <span>+12% from last month</span>
-                </div>
-              </Card>
-              <Card title="Avg. Project Cost" icon={FileText}>
-                <div className={common.statValue}>$2,048</div>
-                <div className={cn(common.statTrend, common.negative)}>
-                  <TrendingDown size={16} />
-                  <span>-3% from last month</span>
-                </div>
-              </Card>
-              <Card title="Active Freelancers" icon={Users}>
-                <div className={common.statValue}>24</div>
-                <div className={cn(common.statTrend, common.positive)}>
-                  <TrendingUp size={16} />
-                  <span>+5 from last month</span>
-                </div>
-              </Card>
-            </div>
-          </div>
-
           {/* Charts */}
           <div className={common.chartsContainer}>
             <Card title="Spending Overview" icon={DollarSign}>
@@ -241,21 +297,43 @@ const ClientDashboard: React.FC = () => {
           </div>
 
           {/* Recent Activity */}
-          <div className={common.gridSpanFull}>
+          <div className={common.activitySection}>
             <Card title="Recent Activity" icon={Calendar}>
               <div className={common.activityList}>
-                {recentActivity.map(activity => (
-                  <div key={activity.id} className={common.activityItem}>
-                    <div className={common.activityIcon}>
-                      <activity.icon size={20} />
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className={common.activityItemSkeleton}>
+                      <div className={common.skeletonIcon} />
+                      <div className={common.skeletonContent}>
+                        <div className={common.skeletonTitle} />
+                        <div className={common.skeletonDesc} />
+                      </div>
                     </div>
-                    <div className={common.activityContent}>
-                      <h4 className={common.activityTitle}>{activity.title}</h4>
-                      <p className={common.activityDescription}>{activity.description}</p>
-                      <div className={common.activityTime}>{activity.time}</div>
+                  ))
+                ) : (
+                  recentActivity.map(activity => (
+                    <div key={activity.id} className={cn(common.activityItem, themed.activityItem)}>
+                      <div className={cn(
+                        common.activityIcon, 
+                        themed.activityIcon,
+                        themed[`activityIcon${activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}`]
+                      )}>
+                        <activity.icon size={18} />
+                      </div>
+                      <div className={common.activityContent}>
+                        <h4 className={cn(common.activityTitle, themed.activityTitle)}>
+                          {activity.title}
+                        </h4>
+                        <p className={cn(common.activityDescription, themed.activityDescription)}>
+                          {activity.description}
+                        </p>
+                        <span className={cn(common.activityTime, themed.activityTime)}>
+                          {activity.time}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Card>
           </div>
