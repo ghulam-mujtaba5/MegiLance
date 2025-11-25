@@ -63,7 +63,7 @@ export function useFreelancerData() {
       setError(null);
       try {
         // Get auth token from localStorage
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
         const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
         
         // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
@@ -78,10 +78,10 @@ export function useFreelancerData() {
         };
         
         const [projectsJson, jobsJson, transactionsJson, analyticsJson] = await Promise.all([
-          fetchWithFallback('/backend/api/freelancer/projects', []),
-          fetchWithFallback('/backend/api/freelancer/jobs', []),
-          fetchWithFallback('/backend/api/freelancer/wallet', {}), // wallet has transactions
-          fetchWithFallback('/backend/api/freelancer/dashboard/stats', {}), // dashboard stats for analytics
+          fetchWithFallback('/backend/api/portal/freelancer/projects', []),
+          fetchWithFallback('/backend/api/portal/freelancer/jobs', []),
+          fetchWithFallback('/backend/api/portal/freelancer/wallet', {}), // wallet has transactions
+          fetchWithFallback('/backend/api/portal/freelancer/dashboard/stats', {}), // dashboard stats for analytics
         ]);
         
         if (!mounted) return;

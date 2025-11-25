@@ -123,7 +123,7 @@ const PortfolioPage: React.FC = () => {
             <Card key={item.id}>
               <div className="relative">
                 {/* Placeholder image */}
-                <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-t-lg flex items-center justify-center">
+                <div className="h-48 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-t-lg flex items-center justify-center">
                   <FolderOpen className="h-12 w-12 text-gray-400" />
                 </div>
                 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import styles from './TestLogin.module.css';
 
 export default function TestLogin() {
   const [result, setResult] = useState<any>(null);
@@ -41,33 +42,18 @@ export default function TestLogin() {
   };
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'monospace' }}>
-      <h1>Login API Test</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Login API Test</h1>
       <button 
         onClick={testLogin} 
         disabled={loading}
-        style={{
-          padding: '10px 20px',
-          fontSize: '16px',
-          cursor: loading ? 'not-allowed' : 'pointer',
-          backgroundColor: '#4573df',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px'
-        }}
+        className={styles.testButton}
       >
         {loading ? 'Testing...' : 'Test Login'}
       </button>
       
       {result && (
-        <pre style={{
-          marginTop: '20px',
-          padding: '15px',
-          backgroundColor: '#f5f5f5',
-          border: '1px solid #ddd',
-          borderRadius: '5px',
-          overflow: 'auto'
-        }}>
+        <pre className={styles.result}>
           {JSON.stringify(result, null, 2)}
         </pre>
       )}

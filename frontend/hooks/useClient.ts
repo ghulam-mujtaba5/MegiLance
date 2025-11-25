@@ -58,7 +58,7 @@ export function useClientData() {
       setError(null);
       try {
         // Get auth token from localStorage
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
         const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
         
         // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
@@ -75,7 +75,7 @@ export function useClientData() {
         const [projectsJson, paymentsJson, freelancersJson, reviewsJson] = await Promise.all([
           fetchWithFallback('/backend/api/client/projects', []),
           fetchWithFallback('/backend/api/client/payments', []),
-          fetchWithFallback('/backend/api/freelancers', []),
+          fetchWithFallback('/backend/api/portal/freelancers', []),
           fetchWithFallback('/backend/api/reviews', []), // Reviews endpoint
         ]);
         

@@ -1,0 +1,44 @@
+/* @AI-HINT: Styles for test-login debug page */
+
+.container {
+  padding: 20px;
+  font-family: monospace;
+}
+
+.title {
+  margin-bottom: 20px;
+}
+
+.testButton {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4573df;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.testButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .result {
+    background-color: #1a1a2e;
+    border-color: #333;
+    color: #f1f5f9;
+  }
+}

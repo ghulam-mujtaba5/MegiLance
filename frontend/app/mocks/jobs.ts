@@ -44,11 +44,15 @@ export async function submitJob(input: CreateJobInput): Promise<CreateJobResult>
   // Simulate network latency
   await new Promise((r) => setTimeout(r, 600));
   
+  // Get token from localStorage
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  
   // Send the job data to the real backend
   const response = await fetch('/api/client/jobs', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
       title: input.title,
