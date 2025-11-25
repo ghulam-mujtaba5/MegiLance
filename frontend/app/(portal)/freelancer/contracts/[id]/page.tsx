@@ -1,11 +1,11 @@
 // @AI-HINT: This page displays detailed information about a specific contract.
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { FiArrowLeft, FiDownload, FiExternalLink } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiExternalLink, FiLoader } from 'react-icons/fi';
 
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
@@ -15,36 +15,42 @@ import commonStyles from './ContractDetails.common.module.css';
 import lightStyles from './ContractDetails.light.module.css';
 import darkStyles from './ContractDetails.dark.module.css';
 
-// Mock contract data - in a real app, this would come from an API
-const mockContract = {
-  id: 'contract_abc123',
-  projectTitle: 'Build a Decentralized Exchange',
-  clientName: 'DeFi Innovators Inc.',
-  value: 5000, // USDC
-  status: 'Active',
-  contractAddress: '0x123...def',
-  startDate: '2025-06-15',
-  endDate: '2025-09-15',
-  description: 'Develop a full-featured decentralized exchange with automated market maker functionality, liquidity pools, and yield farming capabilities.',
-  milestones: [
-    { id: 1, name: 'Smart Contract Development', status: 'Completed', amount: 2000 },
-    { id: 2, name: 'Frontend Implementation', status: 'In Progress', amount: 1500 },
-    { id: 3, name: 'Security Audit', status: 'Pending', amount: 1000 },
-    { id: 4, name: 'Deployment & Testing', status: 'Pending', amount: 500 },
-  ],
-  terms: {
-    paymentTerms: '50% upfront, 30% at milestone completion, 20% at final delivery',
-    revisionPolicy: 'Up to 3 rounds of revisions included',
-    cancellationPolicy: '7-day cancellation period with 50% refund',
-  },
-};
+interface Milestone {
+  id: number;
+  name: string;
+  status: string;
+  amount: number;
+}
+
+interface Contract {
+  id: string;
+  project_id: number;
+  freelancer_id: number;
+  client_id: number;
+  total_amount: number;
+  status: string;
+  start_date: string;
+  end_date: string;
+  description: string;
+  milestones: string | Milestone[];
+  terms: string;
+  created_at: string;
+  updated_at: string;
+  // Enriched data
+  project_title?: string;
+  client_name?: string;
+}
 
 const getStatusBadgeVariant = (status: string) => {
   switch (status.toLowerCase()) {
-    case 'active': return 'info';
+    case 'active': 
+    case 'in_progress': return 'info';
     case 'completed': return 'success';
     case 'disputed': return 'danger';
-    case 'pending': return 'warning';
+    case 'pending': 
+    case 'negotiation': return 'warning';
+    case 'cancelled':
+    case 'terminated': return 'danger';
     default: return 'secondary';
   }
 };
@@ -52,11 +58,78 @@ const getStatusBadgeVariant = (status: string) => {
 const ContractDetailsPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
+  const params = useParams();
   const toaster = useToaster();
+  const [contract, setContract] = useState<Contract | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
   const styles = useMemo(() => {
     const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
   }, [resolvedTheme]);
+
+  const fetchContract = useCallback(async () => {
+    if (!params.id) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const res = await fetch(`/backend/api/contracts/${params.id}`, {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' },
+      });
+      
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Contract not found');
+        }
+        if (res.status === 403) {
+          throw new Error('You do not have access to this contract');
+        }
+        throw new Error('Failed to load contract');
+      }
+      
+      const contractData: Contract = await res.json();
+      
+      // Try to fetch project details
+      try {
+        const projectRes = await fetch(`/backend/api/projects/${contractData.project_id}`, {
+          credentials: 'include',
+          headers: { 'Accept': 'application/json' },
+        });
+        
+        if (projectRes.ok) {
+          const projectData = await projectRes.json();
+          contractData.project_title = projectData.title;
+          contractData.client_name = projectData.client_name;
+        }
+      } catch {
+        // Ignore project fetch errors
+      }
+      
+      // Parse milestones if it's a string
+      if (typeof contractData.milestones === 'string') {
+        try {
+          contractData.milestones = JSON.parse(contractData.milestones);
+        } catch {
+          contractData.milestones = [];
+        }
+      }
+      
+      setContract(contractData);
+    } catch (err) {
+      console.error('Failed to fetch contract:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load contract');
+    } finally {
+      setLoading(false);
+    }
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchContract();
+  }, [fetchContract]);
 
   const handleBack = () => {
     router.back();
@@ -65,18 +138,57 @@ const ContractDetailsPage: React.FC = () => {
   const handleDownload = () => {
     toaster.notify({ 
       title: 'Download started', 
-      description: `Downloading contract for ${mockContract.projectTitle}`, 
+      description: `Downloading contract details`, 
       variant: 'success' 
     });
   };
 
-  const handleViewOnEtherscan = () => {
-    window.open(`https://etherscan.io/address/${mockContract.contractAddress}`, '_blank');
-  };
+  // Parse milestones
+  const milestones: Milestone[] = useMemo(() => {
+    if (!contract) return [];
+    if (Array.isArray(contract.milestones)) return contract.milestones;
+    return [];
+  }, [contract]);
 
-  const totalMilestones = mockContract.milestones.length;
-  const completedMilestones = mockContract.milestones.filter(m => m.status === 'Completed').length;
+  const totalMilestones = milestones.length;
+  const completedMilestones = milestones.filter(m => m.status?.toLowerCase() === 'completed').length;
   const progressPercentage = totalMilestones > 0 ? (completedMilestones / totalMilestones) * 100 : 0;
+
+  // Parse terms
+  const terms = useMemo(() => {
+    if (!contract?.terms) return null;
+    if (typeof contract.terms === 'string') {
+      try {
+        return JSON.parse(contract.terms);
+      } catch {
+        return { general: contract.terms };
+      }
+    }
+    return contract.terms;
+  }, [contract]);
+
+  if (!resolvedTheme) return null;
+
+  if (loading) {
+    return (
+      <div className={cn(styles.container, styles.loadingState)}>
+        <FiLoader className={styles.spinner} />
+        <p>Loading contract details...</p>
+      </div>
+    );
+  }
+
+  if (error || !contract) {
+    return (
+      <div className={cn(styles.container, styles.errorState)}>
+        <h2>Error Loading Contract</h2>
+        <p>{error || 'Contract not found'}</p>
+        <Button variant="primary" onClick={() => router.push('/portal/freelancer/contracts')}>
+          Back to Contracts
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(styles.container, resolvedTheme && styles[resolvedTheme])}>
@@ -99,106 +211,122 @@ const ContractDetailsPage: React.FC = () => {
           >
             <FiDownload /> Download
           </Button>
-          <Button 
-            variant="primary" 
-            onClick={handleViewOnEtherscan}
-            aria-label="View on Etherscan"
-            title="View on Etherscan"
-          >
-            <FiExternalLink /> View on Etherscan
-          </Button>
         </div>
       </header>
 
       <main className={styles.main}>
         <div className={styles.contractHeader}>
           <div>
-            <h1 className={styles.title}>{mockContract.projectTitle}</h1>
-            <p className={styles.client}>for {mockContract.clientName}</p>
+            <h1 className={styles.title}>{contract.project_title || `Project #${contract.project_id}`}</h1>
+            <p className={styles.client}>for {contract.client_name || `Client #${contract.client_id}`}</p>
           </div>
           <div className={styles.contractMeta}>
             <div className={styles.metaItem}>
               <span className={styles.metaLabel}>Status</span>
-              <Badge variant={getStatusBadgeVariant(mockContract.status)}>
-                {mockContract.status}
+              <Badge variant={getStatusBadgeVariant(contract.status)}>
+                {contract.status.replace('_', ' ')}
               </Badge>
             </div>
             <div className={styles.metaItem}>
               <span className={styles.metaLabel}>Value</span>
-              <span className={styles.metaValue}>{mockContract.value} USDC</span>
+              <span className={styles.metaValue}>${contract.total_amount.toLocaleString()}</span>
             </div>
             <div className={styles.metaItem}>
               <span className={styles.metaLabel}>Contract ID</span>
-              <span className={styles.metaValue}>{mockContract.id}</span>
+              <span className={styles.metaValue}>{contract.id}</span>
             </div>
           </div>
         </div>
 
-        <div className={styles.progressSection}>
-          <div className={styles.progressHeader}>
-            <h2 className={styles.sectionTitle}>Project Progress</h2>
-            <span className={styles.progressText}>{completedMilestones}/{totalMilestones} milestones completed</span>
+        {milestones.length > 0 && (
+          <div className={styles.progressSection}>
+            <div className={styles.progressHeader}>
+              <h2 className={styles.sectionTitle}>Project Progress</h2>
+              <span className={styles.progressText}>{completedMilestones}/{totalMilestones} milestones completed</span>
+            </div>
+            <div className={styles.progressBar}>
+              <div 
+                className={styles.progressFill} 
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
           </div>
-          <div className={styles.progressBar}>
-            <div 
-              className={styles.progressFill} 
-              data-progress={progressPercentage}
-            ></div>
+        )}
+
+        {contract.description && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Project Description</h2>
+            <p className={styles.description}>{contract.description}</p>
           </div>
-        </div>
+        )}
 
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Project Description</h2>
-          <p className={styles.description}>{mockContract.description}</p>
-        </div>
-
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Milestones</h2>
-          <div className={styles.milestones}>
-            {mockContract.milestones.map((milestone) => (
-              <div key={milestone.id} className={styles.milestone}>
-                <div className={styles.milestoneHeader}>
-                  <h3 className={styles.milestoneTitle}>{milestone.name}</h3>
-                  <Badge variant={getStatusBadgeVariant(milestone.status)}>
-                    {milestone.status}
-                  </Badge>
+        {milestones.length > 0 && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Milestones</h2>
+            <div className={styles.milestones}>
+              {milestones.map((milestone, index) => (
+                <div key={milestone.id || index} className={styles.milestone}>
+                  <div className={styles.milestoneHeader}>
+                    <h3 className={styles.milestoneTitle}>{milestone.name}</h3>
+                    <Badge variant={getStatusBadgeVariant(milestone.status)}>
+                      {milestone.status}
+                    </Badge>
+                  </div>
+                  <div className={styles.milestoneAmount}>
+                    ${milestone.amount.toLocaleString()}
+                  </div>
                 </div>
-                <div className={styles.milestoneAmount}>
-                  {milestone.amount} USDC
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Contract Terms</h2>
-          <div className={styles.termsGrid}>
-            <div className={styles.termItem}>
-              <h3 className={styles.termTitle}>Payment Terms</h3>
-              <p className={styles.termDescription}>{mockContract.terms.paymentTerms}</p>
-            </div>
-            <div className={styles.termItem}>
-              <h3 className={styles.termTitle}>Revision Policy</h3>
-              <p className={styles.termDescription}>{mockContract.terms.revisionPolicy}</p>
-            </div>
-            <div className={styles.termItem}>
-              <h3 className={styles.termTitle}>Cancellation Policy</h3>
-              <p className={styles.termDescription}>{mockContract.terms.cancellationPolicy}</p>
+        {terms && (
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Contract Terms</h2>
+            <div className={styles.termsGrid}>
+              {terms.paymentTerms && (
+                <div className={styles.termItem}>
+                  <h3 className={styles.termTitle}>Payment Terms</h3>
+                  <p className={styles.termDescription}>{terms.paymentTerms}</p>
+                </div>
+              )}
+              {terms.revisionPolicy && (
+                <div className={styles.termItem}>
+                  <h3 className={styles.termTitle}>Revision Policy</h3>
+                  <p className={styles.termDescription}>{terms.revisionPolicy}</p>
+                </div>
+              )}
+              {terms.cancellationPolicy && (
+                <div className={styles.termItem}>
+                  <h3 className={styles.termTitle}>Cancellation Policy</h3>
+                  <p className={styles.termDescription}>{terms.cancellationPolicy}</p>
+                </div>
+              )}
+              {terms.general && (
+                <div className={styles.termItem}>
+                  <h3 className={styles.termTitle}>General Terms</h3>
+                  <p className={styles.termDescription}>{terms.general}</p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        )}
 
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Timeline</h2>
           <div className={styles.timeline}>
             <div className={styles.timelineItem}>
               <span className={styles.timelineLabel}>Start Date</span>
-              <span className={styles.timelineValue}>{mockContract.startDate}</span>
+              <span className={styles.timelineValue}>
+                {contract.start_date ? new Date(contract.start_date).toLocaleDateString() : 'Not set'}
+              </span>
             </div>
             <div className={styles.timelineItem}>
               <span className={styles.timelineLabel}>End Date</span>
-              <span className={styles.timelineValue}>{mockContract.endDate}</span>
+              <span className={styles.timelineValue}>
+                {contract.end_date ? new Date(contract.end_date).toLocaleDateString() : 'Not set'}
+              </span>
             </div>
           </div>
         </div>

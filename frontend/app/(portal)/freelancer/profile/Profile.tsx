@@ -1,7 +1,7 @@
 // @AI-HINT: This is the refactored Freelancer Profile page, featuring a premium layout, custom components, and full theme support.
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Button from '@/app/components/Button/Button';
@@ -11,30 +11,92 @@ import commonStyles from './Profile.common.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
 
-// Mock data for the profile page
-const userProfile = {
-  name: 'Alexandria Doe',
-  title: 'Senior AI & Full-Stack Developer',
-  rank: 'Top 5%',
-  bio: '10+ years of experience building scalable web applications and AI-powered solutions. Expert in React, Node.js, Python, and cloud-native architectures. Passionate about creating intuitive user experiences that are both beautiful and functional.',
-  skills: ['React', 'Next.js', 'TypeScript', 'Node.js', 'Python', 'AWS', 'Docker', 'Prisma'],
-  portfolioUrl: 'https://alexandriadoe.dev',
-  hourlyRate: 95,
+// Default profile for initial render and fallback
+const defaultProfile = {
+  name: '',
+  title: '',
+  rank: 'New',
+  bio: '',
+  skills: [] as string[],
+  portfolioUrl: '',
+  hourlyRate: 0,
 };
+
+interface ApiUser {
+  id: number;
+  email: string;
+  full_name?: string;
+  bio?: string;
+  skills?: string[];
+  hourly_rate?: number;
+  profile_picture_url?: string;
+  portfolio_url?: string;
+  title?: string;
+  role?: string;
+}
 
 const Profile: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [name, setName] = useState(userProfile.name);
-  const [title, setTitle] = useState(userProfile.title);
-  const [bio, setBio] = useState(userProfile.bio);
-  const [skills, setSkills] = useState(userProfile.skills.join(', '));
-  const [portfolioUrl, setPortfolioUrl] = useState(userProfile.portfolioUrl);
-  const [hourlyRate, setHourlyRate] = useState<number | string>(userProfile.hourlyRate);
+  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState(defaultProfile.name);
+  const [title, setTitle] = useState(defaultProfile.title);
+  const [bio, setBio] = useState(defaultProfile.bio);
+  const [skills, setSkills] = useState(defaultProfile.skills.join(', '));
+  const [portfolioUrl, setPortfolioUrl] = useState(defaultProfile.portfolioUrl);
+  const [hourlyRate, setHourlyRate] = useState<number | string>(defaultProfile.hourlyRate);
   const [errors, setErrors] = useState<{ portfolioUrl?: string; hourlyRate?: string }>({});
   const [status, setStatus] = useState<string>('');
+  const [rank, setRank] = useState(defaultProfile.rank);
+  const [saving, setSaving] = useState(false);
 
-  // Draft load
+  // Fetch user profile from API
+  const fetchProfile = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setStatus('Please log in to view your profile');
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/backend/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data: ApiUser = await response.json();
+        setName(data.full_name || '');
+        setTitle(data.title || 'Freelancer');
+        setBio(data.bio || '');
+        setSkills(data.skills?.join(', ') || '');
+        setPortfolioUrl(data.portfolio_url || '');
+        setHourlyRate(data.hourly_rate || 0);
+        // Determine rank based on profile completeness or other metrics
+        setRank(data.skills && data.skills.length > 5 ? 'Top 10%' : 'New');
+        setStatus('');
+      } else if (response.status === 401) {
+        setStatus('Session expired. Please log in again.');
+      } else {
+        setStatus('Failed to load profile');
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error);
+      setStatus('Error loading profile');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  // Draft load (after API fetch to allow override)
+  useEffect(() => {
+    if (loading) return;
     try {
       const raw = typeof window !== 'undefined' ? window.localStorage.getItem('freelancer_profile_draft') : null;
       if (raw) {
@@ -45,12 +107,12 @@ const Profile: React.FC = () => {
         if (typeof draft.skills === 'string') setSkills(draft.skills);
         if (draft.portfolioUrl) setPortfolioUrl(draft.portfolioUrl);
         if (draft.hourlyRate !== undefined) setHourlyRate(draft.hourlyRate);
-        setStatus('Loaded draft');
+        setStatus('Draft loaded - save to apply changes');
       }
     } catch {
       // ignore
     }
-  }, []);
+  }, [loading]);
 
   const saveDraft = () => {
     try {
@@ -65,14 +127,12 @@ const Profile: React.FC = () => {
   };
 
   const resetForm = () => {
-    setName(userProfile.name);
-    setTitle(userProfile.title);
-    setBio(userProfile.bio);
-    setSkills(userProfile.skills.join(', '));
-    setPortfolioUrl(userProfile.portfolioUrl);
-    setHourlyRate(userProfile.hourlyRate);
+    fetchProfile();
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('freelancer_profile_draft');
+    }
     setErrors({});
-    setStatus('Reset to defaults');
+    setStatus('Reset to saved profile');
   };
 
   const validate = () => {
@@ -88,24 +148,59 @@ const Profile: React.FC = () => {
     }
     // hourly rate
     const rateNum = Number(hourlyRate);
-    if (Number.isNaN(rateNum) || rateNum <= 0) {
+    if (Number.isNaN(rateNum) || rateNum < 0) {
       next.hourlyRate = 'Hourly rate must be a positive number';
     }
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
       setStatus('Please fix the highlighted fields');
       return;
     }
-    // Simulate save
-    setStatus('Profile saved');
-    // Clear draft after successful save
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem('freelancer_profile_draft');
+
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setStatus('Please log in to save your profile');
+        return;
+      }
+
+      const response = await fetch('/backend/api/auth/me', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          full_name: name,
+          title: title,
+          bio: bio,
+          skills: skills.split(',').map(s => s.trim()).filter(Boolean),
+          portfolio_url: portfolioUrl || null,
+          hourly_rate: Number(hourlyRate) || null,
+        }),
+      });
+
+      if (response.ok) {
+        setStatus('Profile saved successfully!');
+        // Clear draft after successful save
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem('freelancer_profile_draft');
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setStatus(errorData.detail || 'Failed to save profile');
+      }
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+      setStatus('Error saving profile');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -114,14 +209,25 @@ const Profile: React.FC = () => {
     return { ...commonStyles, ...themeStyles };
   }, [resolvedTheme]);
 
+  if (loading) {
+    return (
+      <div className={styles.profileContainer}>
+        <div className={styles.loadingState}>
+          <div className={styles.spinner}></div>
+          <p>Loading your profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.profileContainer}>
       <header className={styles.header}>
         <UserAvatar name={name} size="large" />
         <div className={styles.headerInfo}>
-          <h1 className={styles.name}>{name}</h1>
-          <p className={styles.title}>{title}</p>
-          <span className={styles.rank}>Freelancer Rank: {userProfile.rank}</span>
+          <h1 className={styles.name}>{name || 'Your Name'}</h1>
+          <p className={styles.title}>{title || 'Your Title'}</p>
+          <span className={styles.rank}>Freelancer Rank: {rank}</span>
         </div>
         <div className={styles.headerActions}>
           <Button variant="secondary" type="button" onClick={saveDraft} title="Save profile draft">Save Draft</Button>
@@ -135,14 +241,14 @@ const Profile: React.FC = () => {
           <Input
             label="Full Name"
             type="text"
-            defaultValue={name}
+            value={name}
             title="Enter your full name"
             onChange={(e) => setName(e.target.value)}
           />
           <Input
             label="Professional Title"
             type="text"
-            defaultValue={title}
+            value={title}
             title="Enter your professional headline (publicly visible)"
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -152,7 +258,7 @@ const Profile: React.FC = () => {
           <h2 className={styles.sectionTitle}>About Me</h2>
           <Textarea
             id="bio-textarea"
-            defaultValue={bio}
+            value={bio}
             rows={6}
             label="Profile Bio"
             hideLabel
@@ -166,7 +272,7 @@ const Profile: React.FC = () => {
           <Input
             label="Skills"
             type="text"
-            defaultValue={skills}
+            value={skills}
             hideLabel
             title="Enter comma-separated skills"
             aria-describedby="skills-help"
@@ -179,7 +285,7 @@ const Profile: React.FC = () => {
           <Input
             label="Hourly Rate ($/hr)"
             type="number"
-            defaultValue={hourlyRate}
+            value={hourlyRate}
             aria-invalid={errors.hourlyRate ? 'true' : undefined}
             aria-describedby={errors.hourlyRate ? 'hourlyRate-error' : undefined}
             title="Enter your hourly rate in USD"
@@ -188,7 +294,7 @@ const Profile: React.FC = () => {
           <Input
             label="Portfolio URL"
             type="text"
-            defaultValue={portfolioUrl}
+            value={portfolioUrl}
             aria-invalid={errors.portfolioUrl ? 'true' : undefined}
             aria-describedby={errors.portfolioUrl ? 'portfolioUrl-error' : undefined}
             title="Link to your portfolio or website"
@@ -205,7 +311,9 @@ const Profile: React.FC = () => {
 
         <div className={styles.actions}>
           <Button variant="secondary" type="button" onClick={resetForm} title="Reset to defaults">Reset</Button>
-          <Button variant="primary" type="submit" title="Save profile changes">Save Changes</Button>
+          <Button variant="primary" type="submit" title="Save profile changes" isLoading={saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
         </div>
       </form>
     </div>

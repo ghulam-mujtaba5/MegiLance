@@ -1,18 +1,184 @@
-/* AI-HINT: Light theme overrides for Freelancers page. */
+/* AI-HINT: Light theme overrides for Freelancers page. Premium glassmorphism design. */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
-.subtitle { color: var(--text-secondary); }
+.themeWrapper { 
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  color: var(--text-primary); 
+}
 
-.input, .select { background: var(--surface-elev); border-color: var(--border); color: var(--text-primary); }
-.input::placeholder { color: var(--text-tertiary); }
+/* Header Section */
+.headerBadge {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(69, 115, 223, 0.05));
+  color: var(--primary);
+  border: 1px solid rgba(69, 115, 223, 0.2);
+}
 
-.card { background: var(--surface-elev); border: 1px solid var(--border); }
-.name { color: var(--text-primary); }
-.role { color: var(--text-secondary); }
-.meta { color: var(--text-secondary); }
-.skill { background: var(--surface); border-color: var(--border); color: var(--text-primary); }
+.title {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 
-.button { background: var(--primary); color: var(--text-on-primary); }
-.button:hover { filter: brightness(1.05); }
-.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
-.buttonSecondary:hover { background: var(--surface); }
+.subtitle { 
+  color: var(--text-secondary); 
+}
+
+/* Filters Section */
+.filters {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.label {
+  color: var(--text-secondary);
+}
+
+.input, .select { 
+  background: rgba(255, 255, 255, 0.9); 
+  border: 1px solid var(--border); 
+  color: var(--text-primary); 
+}
+
+.input::placeholder { 
+  color: var(--text-tertiary); 
+}
+
+.input:focus, .select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+  outline: none;
+}
+
+.searchButton {
+  background: linear-gradient(135deg, var(--primary) 0%, #3b5fc9 100%);
+  color: white;
+  box-shadow: 
+    0 4px 14px rgba(69, 115, 223, 0.35),
+    0 2px 4px rgba(69, 115, 223, 0.2);
+}
+
+.searchButton:hover {
+  box-shadow: 
+    0 6px 20px rgba(69, 115, 223, 0.45),
+    0 4px 8px rgba(69, 115, 223, 0.25);
+}
+
+/* Loading State */
+.loadingContainer {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-secondary);
+}
+
+/* Error State */
+.errorContainer {
+  background: rgba(232, 17, 35, 0.05);
+  border: 1px solid rgba(232, 17, 35, 0.2);
+  color: var(--text-primary);
+}
+
+.retryButton {
+  background: var(--primary);
+  color: white;
+}
+
+/* Results Header */
+.resultsHeader {
+  border-bottom-color: var(--border);
+}
+
+.resultsCount {
+  color: var(--text-secondary);
+}
+
+/* Card Styles */
+.card { 
+  background: rgba(255, 255, 255, 0.8); 
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.card:hover {
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.08),
+    0 4px 8px rgba(0, 0, 0, 0.04);
+  border-color: rgba(69, 115, 223, 0.3);
+}
+
+.avatar {
+  border-color: rgba(69, 115, 223, 0.2);
+}
+
+.name { 
+  color: var(--text-primary); 
+}
+
+.role { 
+  color: var(--primary); 
+}
+
+.rateTag {
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(39, 174, 96, 0.05));
+  color: var(--success);
+  border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.meta { 
+  color: var(--text-secondary); 
+}
+
+.metaIcon {
+  stroke: var(--text-secondary);
+}
+
+.bio {
+  color: var(--text-secondary);
+}
+
+.skill { 
+  background: rgba(69, 115, 223, 0.08); 
+  color: var(--primary); 
+  border: 1px solid rgba(69, 115, 223, 0.15);
+}
+
+.actions {
+  border-top-color: var(--border);
+}
+
+.button { 
+  background: linear-gradient(135deg, var(--primary) 0%, #3b5fc9 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.25);
+}
+
+.button:hover { 
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.35);
+}
+
+.buttonSecondary { 
+  color: var(--text-primary); 
+  border: 1px solid var(--border); 
+  background: transparent;
+}
+
+.buttonSecondary:hover { 
+  background: var(--surface); 
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Empty State */
+.emptyState {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text-secondary);
+}
+
+.emptyState h3 {
+  color: var(--text-primary);
+}

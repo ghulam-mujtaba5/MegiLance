@@ -1,7 +1,7 @@
 // @AI-HINT: Portal Search page. Theme-aware, accessible, animated with filters and results list.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -11,22 +11,17 @@ import common from './Search.common.module.css';
 import light from './Search.light.module.css';
 import dark from './Search.dark.module.css';
 
+type ResultType = 'Message' | 'Project' | 'User' | 'Invoice';
+
 type Result = {
   id: string;
   title: string;
   snippet: string;
-  type: 'Message' | 'Project' | 'User' | 'Invoice';
-  date: string; // ISO or human
+  type: ResultType;
+  date: string;
 };
 
-const MOCK_RESULTS: Result[] = [
-  { id: 'r1', title: 'Design review notes', snippet: 'We agreed on updating the spacing tokens…', type: 'Project', date: '2025-08-01' },
-  { id: 'r2', title: 'Chat with Sofia', snippet: 'Pushed latest Next.js optimizations…', type: 'Message', date: '2025-08-06' },
-  { id: 'r3', title: 'Invoice INV-204', snippet: 'Invoice paid successfully — $2,400', type: 'Invoice', date: '2025-07-28' },
-  { id: 'r4', title: 'Hannah Lee', snippet: 'Product Designer — Accessibility, Design Systems', type: 'User', date: '2025-07-20' },
-];
-
-const TYPES = ['All', 'Message', 'Project', 'User', 'Invoice'] as const;
+const TYPES = ['All', 'Project', 'User'] as const;
 const DATES = ['Any time', 'Past week', 'Past month', 'Past year'] as const;
 
 const Search: React.FC = () => {
@@ -37,6 +32,8 @@ const Search: React.FC = () => {
   const [query, setQuery] = useState('');
   const [type, setType] = useState<(typeof TYPES)[number]>('All');
   const [date, setDate] = useState<(typeof DATES)[number]>('Any time');
+  const [results, setResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const resultsRef = useRef<HTMLDivElement | null>(null);
@@ -44,15 +41,66 @@ const Search: React.FC = () => {
   const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
   const resultsVisible = useIntersectionObserver(resultsRef, { threshold: 0.1 });
 
-  const results = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const byQuery = q
-      ? MOCK_RESULTS.filter(
-          (r) => r.title.toLowerCase().includes(q) || r.snippet.toLowerCase().includes(q)
-        )
-      : MOCK_RESULTS;
-    const byType = type === 'All' ? byQuery : byQuery.filter((r) => r.type === type);
+  const searchAPI = useCallback(async (searchQuery: string, searchType: string) => {
+    if (!searchQuery.trim()) {
+      setResults([]);
+      return;
+    }
 
+    setLoading(true);
+    const allResults: Result[] = [];
+
+    try {
+      // Search projects if type is All or Project
+      if (searchType === 'All' || searchType === 'Project') {
+        const projectRes = await fetch(`/backend/api/search/projects?q=${encodeURIComponent(searchQuery)}&limit=10`);
+        if (projectRes.ok) {
+          const projects = await projectRes.json();
+          allResults.push(...projects.map((p: any) => ({
+            id: `project-${p.id}`,
+            title: p.title,
+            snippet: p.description?.substring(0, 100) + '...' || 'No description',
+            type: 'Project' as ResultType,
+            date: p.created_at || new Date().toISOString(),
+          })));
+        }
+      }
+
+      // Search freelancers if type is All or User
+      if (searchType === 'All' || searchType === 'User') {
+        const userRes = await fetch(`/backend/api/search/freelancers?q=${encodeURIComponent(searchQuery)}&limit=10`);
+        if (userRes.ok) {
+          const users = await userRes.json();
+          allResults.push(...users.map((u: any) => ({
+            id: `user-${u.id}`,
+            title: u.full_name || 'Unknown User',
+            snippet: u.bio?.substring(0, 100) || u.skills?.join(', ') || 'Freelancer',
+            type: 'User' as ResultType,
+            date: u.created_at || new Date().toISOString(),
+          })));
+        }
+      }
+
+      setResults(allResults);
+    } catch (error) {
+      console.error('Search error:', error);
+      notify({ title: 'Search Error', description: 'Failed to fetch results. Please try again.', variant: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  }, [notify]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchAPI(query, type);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query, type, searchAPI]);
+
+  // Filter results by date
+  const filteredResults = useMemo(() => {
     const dayMs = 24 * 60 * 60 * 1000;
     const withinDate = (d: string) => {
       if (date === 'Any time') return true;
@@ -64,17 +112,23 @@ const Search: React.FC = () => {
       if (date === 'Past year') return diff <= 365 * dayMs;
       return true;
     };
+    return results.filter((r) => withinDate(r.date));
+  }, [results, date]);
 
-    const byDate = byType.filter((r) => withinDate(r.date));
-    return byDate;
-  }, [query, type, date]);
+  const formatDate = (dateStr: string) => {
+    try {
+      return new Date(dateStr).toLocaleDateString();
+    } catch {
+      return dateStr;
+    }
+  };
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
           <h1 className={common.title}>Search</h1>
-          <p className={common.subtitle}>Find messages, projects, teammates, and invoices across your workspace.</p>
+          <p className={common.subtitle}>Find projects and freelancers across the platform.</p>
         </div>
 
         <div className={cn(common.controls)} role="search" aria-label="Global search controls">
@@ -83,7 +137,7 @@ const Search: React.FC = () => {
             id="q"
             className={common.input}
             type="search"
-            placeholder="Search everything…"
+            placeholder="Search projects and freelancers…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -103,17 +157,31 @@ const Search: React.FC = () => {
           </select>
         </div>
 
-        <div ref={resultsRef} className={cn(common.results, resultsVisible ? common.isVisible : common.isNotVisible)} role="list" aria-label="Search results">
-          {results.map((r) => (
-            <article key={r.id} role="listitem" className={common.card} aria-labelledby={`res-${r.id}-title`}>
-              <h3 id={`res-${r.id}-title`} className={common.cardTitle}>{r.title}</h3>
-              <div className={common.cardMeta}>{r.type} • {r.date}</div>
-              <p>{r.snippet}</p>
-            </article>
-          ))}
-        </div>
+        {loading && (
+          <div className={common.loadingState}>
+            <div className={common.spinner}></div>
+            <p>Searching...</p>
+          </div>
+        )}
 
-        {results.length === 0 && (
+        {!loading && query.trim() && (
+          <div ref={resultsRef} className={cn(common.results, resultsVisible ? common.isVisible : common.isNotVisible)} role="list" aria-label="Search results">
+            {filteredResults.map((r) => (
+              <article key={r.id} role="listitem" className={common.card} aria-labelledby={`res-${r.id}-title`}>
+                <h3 id={`res-${r.id}-title`} className={common.cardTitle}>{r.title}</h3>
+                <div className={common.cardMeta}>
+                  <span className={cn(common.typeBadge, r.type === 'Project' ? common.typeProject : common.typeUser)}>
+                    {r.type}
+                  </span>
+                  <span>{formatDate(r.date)}</span>
+                </div>
+                <p>{r.snippet}</p>
+              </article>
+            ))}
+          </div>
+        )}
+
+        {!loading && query.trim() && filteredResults.length === 0 && (
           <EmptyState
             title="No results found"
             description="Try a different query or adjust filters to broaden your search."
@@ -126,6 +194,13 @@ const Search: React.FC = () => {
                 Get Search Tips
               </button>
             }
+          />
+        )}
+
+        {!loading && !query.trim() && (
+          <EmptyState
+            title="Start Searching"
+            description="Enter keywords to find projects, freelancers, and more."
           />
         )}
       </div>

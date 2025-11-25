@@ -2,15 +2,14 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 import SettingsSection from '../SettingsSection/SettingsSection';
 import Input from '../../../components/Input/Input';
 import Button from '../../../components/Button/Button';
-import Textarea from '../../../components/Textarea/Textarea'; // Import the new Textarea component
-import { mockUserProfile } from './mock-data';
+import Textarea from '../../../components/Textarea/Textarea';
 
 import commonStyles from './ProfileSettings.common.module.css';
 import lightStyles from './ProfileSettings.light.module.css';
@@ -22,26 +21,117 @@ interface UserProfile {
   bio: string;
 }
 
+const defaultProfile: UserProfile = {
+  fullName: '',
+  email: '',
+  bio: '',
+};
+
 const ProfileSettings: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [profile, setProfile] = useState<UserProfile>(mockUserProfile);
+  const [profile, setProfile] = useState<UserProfile>(defaultProfile);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const styles = useMemo(() => {
     const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
   }, [resolvedTheme]);
 
+  const fetchProfile = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setStatus({ type: 'error', message: 'Please log in to view settings' });
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('/backend/api/auth/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setProfile({
+          fullName: data.full_name || '',
+          email: data.email || '',
+          bio: data.bio || '',
+        });
+      } else {
+        setStatus({ type: 'error', message: 'Failed to load profile' });
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+      setStatus({ type: 'error', message: 'Error loading profile' });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
+    // Clear any previous status when user starts editing
+    if (status) setStatus(null);
   };
 
-  const handleSaveChanges = (e: React.FormEvent) => {
+  const handleSaveChanges = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for save logic
-    alert('Saving profile changes...');
-    console.log('Saving profile:', profile);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setStatus({ type: 'error', message: 'Please log in to save changes' });
+        return;
+      }
+
+      const response = await fetch('/backend/api/auth/me', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          full_name: profile.fullName,
+          bio: profile.bio,
+        }),
+      });
+
+      if (response.ok) {
+        setStatus({ type: 'success', message: 'Profile saved successfully!' });
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        setStatus({ type: 'error', message: errorData.detail || 'Failed to save profile' });
+      }
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+      setStatus({ type: 'error', message: 'Error saving profile' });
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <SettingsSection
+        title="Profile Information"
+        description="Update your personal details here."
+      >
+        <div className={styles.loading}>Loading your profile...</div>
+      </SettingsSection>
+    );
+  }
 
   return (
     <SettingsSection
@@ -49,6 +139,11 @@ const ProfileSettings: React.FC = () => {
       description="Update your personal details here. This information will be displayed on your public profile."
     >
       <form className={styles.form} onSubmit={handleSaveChanges}>
+        {status && (
+          <div className={cn(styles.status, status.type === 'error' ? styles.statusError : styles.statusSuccess)}>
+            {status.message}
+          </div>
+        )}
         <div className={styles.fieldWrapper}>
           <Input
             label="Full Name"
@@ -84,7 +179,9 @@ const ProfileSettings: React.FC = () => {
           />
         </div>
         <div className={styles.footer}>
-          <Button type="submit" variant="primary">Save Changes</Button>
+          <Button type="submit" variant="primary" isLoading={saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
         </div>
       </form>
     </SettingsSection>

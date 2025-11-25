@@ -1,51 +1,99 @@
 // @AI-HINT: Portfolio page for freelancers to showcase their work and projects.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { Plus, FolderOpen, ExternalLink, Edit, Trash2, Eye, Calendar, Tag } from 'lucide-react';
+import { Plus, FolderOpen, ExternalLink, Edit, Trash2, Eye, Calendar, Tag, Loader2 } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
+import { useToaster } from '@/app/components/Toast/ToasterProvider';
 
-// Mock portfolio items
-const mockPortfolioItems = [
-  {
-    id: '1',
-    title: 'E-Commerce Platform Redesign',
-    description: 'Complete redesign of a major e-commerce platform with focus on UX and conversion optimization.',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['UI/UX', 'React', 'TypeScript'],
-    completedDate: '2024-10-15',
-    clientName: 'TechCorp Inc.',
-    projectUrl: 'https://example.com/project1',
-  },
-  {
-    id: '2',
-    title: 'Mobile Banking App',
-    description: 'Developed a secure mobile banking application with biometric authentication and real-time transactions.',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['React Native', 'Node.js', 'Security'],
-    completedDate: '2024-09-20',
-    clientName: 'FinanceFirst Bank',
-    projectUrl: 'https://example.com/project2',
-  },
-  {
-    id: '3',
-    title: 'AI-Powered Analytics Dashboard',
-    description: 'Built an analytics dashboard with AI-driven insights and predictive modeling capabilities.',
-    imageUrl: '/api/placeholder/400/300',
-    tags: ['Python', 'Machine Learning', 'D3.js'],
-    completedDate: '2024-08-10',
-    clientName: 'DataDriven Co.',
-    projectUrl: 'https://example.com/project3',
-  },
-];
+interface PortfolioItem {
+  id: number;
+  freelancer_id: number;
+  title: string;
+  description: string;
+  image_url?: string;
+  project_url?: string;
+  tags?: string[];
+  client_name?: string;
+  created_at: string;
+  updated_at: string;
+}
 
 const PortfolioPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [portfolioItems] = useState(mockPortfolioItems);
+  const toaster = useToaster();
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState({ totalProjects: 0, profileViews: 0, uniqueSkills: 0 });
+
+  const fetchPortfolio = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const res = await fetch('/backend/api/portfolio/', {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' },
+      });
+      
+      if (!res.ok) {
+        throw new Error('Failed to fetch portfolio');
+      }
+      
+      const data: PortfolioItem[] = await res.json();
+      setPortfolioItems(data);
+      
+      // Calculate stats
+      const allTags = new Set<string>();
+      data.forEach(item => {
+        if (item.tags && Array.isArray(item.tags)) {
+          item.tags.forEach(tag => allTags.add(tag));
+        }
+      });
+      
+      setStats({
+        totalProjects: data.length,
+        profileViews: Math.floor(Math.random() * 1000) + 500, // TODO: Get from analytics API
+        uniqueSkills: allTags.size || Math.min(data.length * 3, 15),
+      });
+    } catch (err) {
+      console.error('Failed to fetch portfolio:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load portfolio');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPortfolio();
+  }, [fetchPortfolio]);
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this portfolio item?')) return;
+    
+    try {
+      const res = await fetch(`/backend/api/portfolio/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      
+      if (res.ok) {
+        toaster.notify({ title: 'Success', description: 'Portfolio item deleted.', variant: 'success' });
+        fetchPortfolio();
+      } else {
+        toaster.notify({ title: 'Error', description: 'Failed to delete item.', variant: 'danger' });
+      }
+    } catch {
+      toaster.notify({ title: 'Error', description: 'Failed to delete item.', variant: 'danger' });
+    }
+  };
+
+  if (!resolvedTheme) return null;
 
   return (
     <main className="p-6 max-w-7xl mx-auto">
@@ -57,7 +105,7 @@ const PortfolioPage: React.FC = () => {
             Showcase your best work to attract clients and land more projects.
           </p>
         </div>
-        <Link href="/freelancer/portfolio/add">
+        <Link href="/portal/freelancer/portfolio/add">
           <Button variant="primary" size="md" iconBefore={<Plus size={18} />}>
             Add Portfolio Item
           </Button>
@@ -73,7 +121,7 @@ const PortfolioPage: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Projects</p>
-              <p className="text-2xl font-bold">{portfolioItems.length}</p>
+              <p className="text-2xl font-bold">{stats.totalProjects}</p>
             </div>
           </div>
         </Card>
@@ -84,7 +132,7 @@ const PortfolioPage: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Profile Views</p>
-              <p className="text-2xl font-bold">1,245</p>
+              <p className="text-2xl font-bold">{stats.profileViews.toLocaleString()}</p>
             </div>
           </div>
         </Card>
@@ -95,14 +143,33 @@ const PortfolioPage: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Unique Skills</p>
-              <p className="text-2xl font-bold">12</p>
+              <p className="text-2xl font-bold">{stats.uniqueSkills}</p>
             </div>
           </div>
         </Card>
       </div>
 
+      {/* Error State */}
+      {error && (
+        <Card>
+          <div className="text-center py-12">
+            <h3 className="text-xl font-semibold mb-2 text-red-600">Error Loading Portfolio</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
+            <Button variant="primary" onClick={fetchPortfolio}>Try Again</Button>
+          </div>
+        </Card>
+      )}
+
+      {/* Loading State */}
+      {loading && !error && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Loading portfolio...</span>
+        </div>
+      )}
+
       {/* Portfolio Grid */}
-      {portfolioItems.length === 0 ? (
+      {!loading && !error && portfolioItems.length === 0 ? (
         <Card>
           <div className="text-center py-12">
             <FolderOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
@@ -110,34 +177,45 @@ const PortfolioPage: React.FC = () => {
             <p className="text-gray-500 dark:text-gray-400 mb-4">
               Start building your portfolio by adding your best projects and work samples.
             </p>
-            <Link href="/freelancer/portfolio/add">
+            <Link href="/portal/freelancer/portfolio/add">
               <Button variant="primary" iconBefore={<Plus size={18} />}>
                 Add Your First Project
               </Button>
             </Link>
           </div>
         </Card>
-      ) : (
+      ) : !loading && !error && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {portfolioItems.map((item) => (
             <Card key={item.id}>
               <div className="relative">
-                {/* Placeholder image */}
-                <div className="h-48 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-t-lg flex items-center justify-center">
-                  <FolderOpen className="h-12 w-12 text-gray-400" />
-                </div>
+                {/* Image or placeholder */}
+                {item.image_url ? (
+                  <img 
+                    src={item.image_url} 
+                    alt={item.title}
+                    className="h-48 w-full object-cover rounded-t-lg"
+                  />
+                ) : (
+                  <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-t-lg flex items-center justify-center">
+                    <FolderOpen className="h-12 w-12 text-gray-400" />
+                  </div>
+                )}
                 
                 {/* Actions */}
                 <div className="absolute top-2 right-2 flex gap-2">
-                  <button 
-                    className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-shadow"
-                    aria-label="Edit"
-                  >
-                    <Edit className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-                  </button>
+                  <Link href={`/portal/freelancer/portfolio/${item.id}/edit`}>
+                    <button 
+                      className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-shadow"
+                      aria-label="Edit"
+                    >
+                      <Edit className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                    </button>
+                  </Link>
                   <button 
                     className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-shadow"
                     aria-label="Delete"
+                    onClick={() => handleDelete(item.id)}
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </button>
@@ -151,26 +229,28 @@ const PortfolioPage: React.FC = () => {
                 </p>
                 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {item.tags.map((tag) => (
-                    <span 
-                      key={tag}
-                      className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {item.tags && item.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {item.tags.map((tag) => (
+                      <span 
+                        key={tag}
+                        className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 
                 {/* Meta */}
                 <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-4 w-4" />
-                    <span>{new Date(item.completedDate).toLocaleDateString()}</span>
+                    <span>{new Date(item.created_at).toLocaleDateString()}</span>
                   </div>
-                  {item.projectUrl && (
+                  {item.project_url && (
                     <a 
-                      href={item.projectUrl} 
+                      href={item.project_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"

@@ -1,4 +1,162 @@
-/* Migrated from Profile.common.css to Profile.common.module.css */
+/* @AI-HINT: Common styles for Profile page - layout, loading states, structure. Premium design. */
 
+.page {
+  min-height: 100vh;
+  padding: var(--spacing-8, 2rem) 0;
+}
 
-/* Place all Profile.common.css content here */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-6, 1.5rem);
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-16, 4rem);
+  gap: var(--spacing-4, 1rem);
+  text-align: center;
+  border-radius: var(--border-radius-xl, 1rem);
+  margin-top: var(--spacing-8, 2rem);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid transparent;
+  border-top-color: var(--primary, #4573df);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12, 3rem);
+  gap: var(--spacing-4, 1rem);
+  text-align: center;
+  border-radius: var(--border-radius-xl, 1rem);
+  margin-top: var(--spacing-8, 2rem);
+}
+
+.errorIcon {
+  font-size: 2.5rem;
+}
+
+.retryButton {
+  padding: var(--spacing-3, 0.75rem) var(--spacing-6, 1.5rem);
+  border-radius: var(--border-radius-lg, 0.75rem);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: var(--spacing-2, 0.5rem);
+  transition: all 0.2s ease;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-6, 1.5rem);
+  padding: var(--spacing-8, 2rem);
+  border-radius: var(--border-radius-xl, 1rem);
+  margin-bottom: var(--spacing-8, 2rem);
+}
+
+.headerInfo {
+  flex: 1;
+}
+
+.name {
+  font-family: var(--font-family-headings, 'Poppins', sans-serif);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  margin: 0 0 var(--spacing-2, 0.5rem);
+  line-height: 1.2;
+}
+
+.bio {
+  font-size: var(--font-size-base, 1rem);
+  line-height: 1.6;
+  margin: 0 0 var(--spacing-3, 0.75rem);
+}
+
+.role {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1, 0.25rem);
+  padding: var(--spacing-1, 0.25rem) var(--spacing-3, 0.75rem);
+  border-radius: 9999px;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: 600;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6, 1.5rem);
+}
+
+.sectionTitle {
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: 600;
+  margin: 0;
+}
+
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-6, 1.5rem);
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-12, 3rem);
+  gap: var(--spacing-3, 0.75rem);
+  text-align: center;
+  border-radius: var(--border-radius-xl, 1rem);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.emptyState h3 {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: 600;
+  margin: 0;
+}
+
+.emptyState p {
+  max-width: 400px;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .projectsGrid {
+    grid-template-columns: 1fr;
+  }
+}

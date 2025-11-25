@@ -1,7 +1,7 @@
 // @AI-HINT: This component provides a fully theme-aware interface for admins to moderate flagged reviews. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
@@ -11,16 +11,33 @@ import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import StarRating from '@/app/components/StarRating/StarRating';
-import { ThumbsUp, ThumbsDown, Search, MessageSquareQuote, ListFilter } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Search, MessageSquareQuote, ListFilter, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 
 import commonStyles from './FlaggedReviews.common.module.css';
 import lightStyles from './FlaggedReviews.light.module.css';
 import darkStyles from './FlaggedReviews.dark.module.css';
 
+interface APIReview {
+  id: number;
+  contract_id: number;
+  reviewer_id: number;
+  reviewed_user_id: number;
+  rating: number;
+  communication_rating?: number;
+  quality_rating?: number;
+  professionalism_rating?: number;
+  deadline_rating?: number;
+  review_text?: string;
+  response?: string;
+  is_public: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
 interface FlaggedReview {
   id: string;
-  reviewer: { name: string; avatarUrl: string; };
-  reviewee: { name: string; avatarUrl: string; };
+  reviewer: { id: number; name: string; avatarUrl: string; };
+  reviewee: { id: number; name: string; avatarUrl: string; };
   rating: number;
   content: string;
   reason: string;
@@ -28,23 +45,129 @@ interface FlaggedReview {
   status: 'Pending' | 'Kept' | 'Removed';
 }
 
-const mockFlaggedReviews: FlaggedReview[] = [
-  { id: 'rev_001', reviewer: { name: 'Client X', avatarUrl: '/avatars/client_x.png' }, reviewee: { name: 'Freelancer Y', avatarUrl: '/avatars/freelancer_y.png' }, rating: 1, content: 'This freelancer is a scammer, do not hire!', reason: 'Inappropriate Language', dateFlagged: '2025-08-08', status: 'Pending' },
-  { id: 'rev_002', reviewer: { name: 'Freelancer A', avatarUrl: '/avatars/freelancer_a.png' }, reviewee: { name: 'Client B', avatarUrl: '/avatars/client_b.png' }, rating: 2, content: 'The client was unresponsive and changed requirements last minute.', reason: 'Unfair Review', dateFlagged: '2025-08-07', status: 'Pending' },
-  { id: 'rev_003', reviewer: { name: 'Client C', avatarUrl: '/avatars/client_c.png' }, reviewee: { name: 'Freelancer D', avatarUrl: '/avatars/freelancer_d.png' }, rating: 5, content: 'Check out my website for great deals! my-spam-site.com', reason: 'Spam', dateFlagged: '2025-08-06', status: 'Removed' },
-  { id: 'rev_004', reviewer: { name: 'Client Z', avatarUrl: '/avatars/client_z.png' }, reviewee: { name: 'Freelancer W', avatarUrl: '/avatars/freelancer_w.png' }, rating: 4, content: 'Great work, but communication could be better.', reason: 'Unfair Review', dateFlagged: '2025-08-05', status: 'Kept' },
-];
+// Detect flag reasons based on review content
+function detectFlagReason(review: APIReview): { reason: string; shouldFlag: boolean } {
+  const text = (review.review_text || '').toLowerCase();
+  
+  // Spam patterns
+  const spamKeywords = ['http://', 'https://', '.com', 'click here', 'check out', 'discount', 'free'];
+  if (spamKeywords.some(kw => text.includes(kw))) {
+    return { reason: 'Spam', shouldFlag: true };
+  }
+  
+  // Inappropriate language
+  const inappropriateKeywords = ['scam', 'scammer', 'fraud', 'criminal', 'idiot', 'stupid'];
+  if (inappropriateKeywords.some(kw => text.includes(kw))) {
+    return { reason: 'Inappropriate Language', shouldFlag: true };
+  }
+  
+  // Low rating with short review (possibly unfair)
+  if (review.rating <= 2 && (!review.review_text || review.review_text.length < 50)) {
+    return { reason: 'Potentially Unfair Review', shouldFlag: true };
+  }
+  
+  // Very low rating
+  if (review.rating <= 1) {
+    return { reason: 'Very Low Rating', shouldFlag: true };
+  }
+  
+  return { reason: '', shouldFlag: false };
+}
 
 const FlaggedReviews: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [reviews, setReviews] = useState(mockFlaggedReviews);
+  const [reviews, setReviews] = useState<FlaggedReview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Pending');
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  const handleAction = (id: string, newStatus: 'Kept' | 'Removed') => {
-    setReviews(reviews.map(review => (review.id === id ? { ...review, status: newStatus } : review)));
+  // Fetch reviews from API
+  const fetchReviews = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      // Fetch reviews and users in parallel
+      const [reviewsRes, usersRes] = await Promise.all([
+        fetch('/backend/api/reviews/reviews?limit=100', { headers }),
+        fetch('/backend/api/admin/users/list?limit=200', { headers }),
+      ]);
+      
+      if (!reviewsRes.ok) {
+        throw new Error(`Failed to fetch reviews: ${reviewsRes.status}`);
+      }
+      
+      const reviewsData: APIReview[] = await reviewsRes.json();
+      const usersData = usersRes.ok ? await usersRes.json() : { users: [] };
+      
+      const users = usersData.users ?? usersData ?? [];
+      
+      // Create user lookup map
+      const userMap = new Map<number, { name: string; avatar_url?: string }>();
+      users.forEach((u: { id: number; name: string; avatar_url?: string }) => {
+        userMap.set(u.id, { name: u.name || 'Unknown', avatar_url: u.avatar_url });
+      });
+      
+      // Transform and filter flagged reviews
+      const flaggedReviews: FlaggedReview[] = reviewsData
+        .map(review => {
+          const { reason, shouldFlag } = detectFlagReason(review);
+          if (!shouldFlag) return null;
+          
+          const reviewer = userMap.get(review.reviewer_id) || { name: `User #${review.reviewer_id}`, avatar_url: '' };
+          const reviewee = userMap.get(review.reviewed_user_id) || { name: `User #${review.reviewed_user_id}`, avatar_url: '' };
+          
+          return {
+            id: String(review.id),
+            reviewer: { id: review.reviewer_id, name: reviewer.name, avatarUrl: reviewer.avatar_url || '' },
+            reviewee: { id: review.reviewed_user_id, name: reviewee.name, avatarUrl: reviewee.avatar_url || '' },
+            rating: review.rating,
+            content: review.review_text || 'No review text provided.',
+            reason,
+            dateFlagged: review.created_at || new Date().toISOString(),
+            status: 'Pending' as const,
+          };
+        })
+        .filter((r): r is FlaggedReview => r !== null);
+      
+      setReviews(flaggedReviews);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load reviews');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  const handleAction = async (id: string, newStatus: 'Kept' | 'Removed') => {
+    // Optimistic update
+    setReviews(prev => prev.map(review => (review.id === id ? { ...review, status: newStatus } : review)));
+    
+    // If removing, call delete API
+    if (newStatus === 'Removed') {
+      try {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        };
+        
+        await fetch(`/backend/api/reviews/reviews/${id}`, {
+          method: 'DELETE',
+          headers,
+        });
+      } catch (err) {
+        console.error('Error removing review:', err);
+      }
+    }
   };
 
   const filteredReviews = reviews
@@ -63,13 +186,26 @@ const FlaggedReviews: React.FC = () => {
     }
   };
 
+  if (!resolvedTheme) return null;
+
   return (
     <div className={cn(commonStyles.container, themeStyles.container)}>
       <header className={commonStyles.header}>
-        <h2 className={cn(commonStyles.title, themeStyles.title)}>Flagged Review Queue</h2>
-        <p className={cn(commonStyles.description, themeStyles.description)}>
-          Showing {filteredReviews.length} of {reviews.length} flagged reviews.
-        </p>
+        <div className={commonStyles.headerContent}>
+          <h2 className={cn(commonStyles.title, themeStyles.title)}>Flagged Review Queue</h2>
+          <p className={cn(commonStyles.description, themeStyles.description)}>
+            {loading ? 'Loading...' : `Showing ${filteredReviews.length} of ${reviews.length} flagged reviews.`}
+          </p>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={fetchReviews}
+          iconBefore={<RefreshCw size={16} />}
+          aria-label="Refresh reviews"
+        >
+          Refresh
+        </Button>
       </header>
 
       <div className={cn(commonStyles.filterToolbar, themeStyles.filterToolbar)}>
@@ -93,61 +229,79 @@ const FlaggedReviews: React.FC = () => {
         />
       </div>
 
-      <div className={commonStyles.reviewList}>
-        {filteredReviews.map(review => (
-          <Card key={review.id} className={cn(commonStyles.reviewCard, themeStyles.reviewCard)}>
-            <div className={commonStyles.cardHeader}>
-              <div className={commonStyles.userInfo}>
-                <UserAvatar src={review.reviewer.avatarUrl} name={review.reviewer.name} size={40} />
-                <div className={commonStyles.userMeta}>
-                  <span className={commonStyles.userName}>{review.reviewer.name}</span>
-                  <span className={commonStyles.userRole}>Reviewer</span>
+      {loading ? (
+        <div className={cn(commonStyles.loadingState, themeStyles.loadingState)}>
+          <Loader2 className={commonStyles.spinner} size={32} />
+          <p>Loading flagged reviews...</p>
+        </div>
+      ) : error ? (
+        <div className={cn(commonStyles.errorState, themeStyles.errorState)}>
+          <AlertTriangle size={32} />
+          <h3>Failed to load reviews</h3>
+          <p>{error}</p>
+          <Button variant="secondary" size="sm" onClick={fetchReviews}>
+            Try Again
+          </Button>
+        </div>
+      ) : (
+        <div className={commonStyles.reviewList}>
+          {filteredReviews.map(review => (
+            <Card key={review.id} className={cn(commonStyles.reviewCard, themeStyles.reviewCard)}>
+              <div className={commonStyles.cardHeader}>
+                <div className={commonStyles.userInfo}>
+                  <UserAvatar src={review.reviewer.avatarUrl} name={review.reviewer.name} size={40} />
+                  <div className={commonStyles.userMeta}>
+                    <span className={commonStyles.userName}>{review.reviewer.name}</span>
+                    <span className={commonStyles.userRole}>Reviewer</span>
+                  </div>
+                </div>
+                <div className={commonStyles.userInfo}>
+                  <UserAvatar src={review.reviewee.avatarUrl} name={review.reviewee.name} size={40} />
+                  <div className={commonStyles.userMeta}>
+                    <span className={commonStyles.userName}>{review.reviewee.name}</span>
+                    <span className={commonStyles.userRole}>Reviewee</span>
+                  </div>
                 </div>
               </div>
-              <div className={commonStyles.userInfo}>
-                <UserAvatar src={review.reviewee.avatarUrl} name={review.reviewee.name} size={40} />
-                <div className={commonStyles.userMeta}>
-                  <span className={commonStyles.userName}>{review.reviewee.name}</span>
-                  <span className={commonStyles.userRole}>Reviewee</span>
-                </div>
+
+              <div className={commonStyles.reviewContent}>
+                <MessageSquareQuote className={cn(commonStyles.quoteIcon, themeStyles.quoteIcon)} size={20} />
+                <p>{review.content}</p>
               </div>
-            </div>
 
-            <div className={commonStyles.reviewContent}>
-              <MessageSquareQuote className={cn(commonStyles.quoteIcon, themeStyles.quoteIcon)} size={20} />
-              <p>{review.content}</p>
-            </div>
+              <div className={commonStyles.reviewDetails}>
+                <StarRating rating={review.rating} />
+                <Badge variant="default">Reason: {review.reason}</Badge>
+              </div>
 
-            <div className={commonStyles.reviewDetails}>
-              <StarRating rating={review.rating} />
-              <Badge variant="default">Reason: {review.reason}</Badge>
+              <footer className={commonStyles.cardFooter}>
+                <span className={cn(commonStyles.date, themeStyles.date)}>
+                  Flagged: {new Date(review.dateFlagged).toLocaleDateString()}
+                </span>
+                {review.status === 'Pending' ? (
+                  <div className={commonStyles.actions}>
+                    <Button variant="success" size="small" onClick={() => handleAction(review.id, 'Kept')}>
+                      <ThumbsUp size={14} /> Keep Review
+                    </Button>
+                    <Button variant="danger" size="small" onClick={() => handleAction(review.id, 'Removed')}>
+                      <ThumbsDown size={14} /> Remove Review
+                    </Button>
+                  </div>
+                ) : (
+                  <Badge variant={getStatusBadgeVariant(review.status)}>{review.status}</Badge>
+                )}
+              </footer>
+            </Card>
+          ))}
+          {filteredReviews.length === 0 && (
+            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+              <ListFilter size={48} />
+              <h3>No Flagged Reviews</h3>
+              <p>{reviews.length === 0 ? 'No reviews require moderation at this time.' : 'Adjust your filters to see more reviews.'}</p>
             </div>
-
-            <footer className={commonStyles.cardFooter}>
-              <span className={cn(commonStyles.date, themeStyles.date)}>Flagged: {review.dateFlagged}</span>
-              {review.status === 'Pending' ? (
-                <div className={commonStyles.actions}>
-                  <Button variant="success" size="small" onClick={() => handleAction(review.id, 'Kept')}>
-                    <ThumbsUp size={14} /> Keep Review
-                  </Button>
-                  <Button variant="danger" size="small" onClick={() => handleAction(review.id, 'Removed')}>
-                    <ThumbsDown size={14} /> Remove Review
-                  </Button>
-                </div>
-              ) : (
-                <Badge variant={getStatusBadgeVariant(review.status)}>{review.status}</Badge>
-              )}
-            </footer>
-          </Card>
-        ))}
-        {filteredReviews.length === 0 && (
-          <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-            <ListFilter size={48} />
-            <h3>No Matching Reviews</h3>
-            <p>Adjust your filters or clear the search to see more reviews.</p>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -11,12 +11,27 @@
 
 .header {
   margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.headerContent {
+  flex: 1;
 }
 
 .title {
   font-size: 1.75rem; /* 28px */
   font-weight: 700;
   font-family: var(--font-poppins);
+  margin: 0;
+}
+
+.description {
+  font-size: 0.875rem; /* 14px */
+  margin-top: 0.25rem;
+  color: var(--text-secondary);
 }
 
 .subtitle {
@@ -33,6 +48,11 @@
 }
 
 .searchInputWrapper {
+  flex-grow: 1;
+  min-width: 250px;
+}
+
+.searchInput {
   flex-grow: 1;
   min-width: 250px;
 }
@@ -82,6 +102,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 1;
 }
 
 .userName {
@@ -90,6 +111,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 }
 
 .userEmail {
@@ -97,12 +119,20 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin: 0;
 }
 
 .cardBody {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
 }
 
 .infoRow {
@@ -130,6 +160,59 @@
   align-items: center;
 }
 
+/* Loading State */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.loadingState p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  text-align: center;
+  flex-grow: 1;
+  color: var(--error);
+}
+
+.errorState h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.errorState p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Empty State */
 .emptyState {
   display: flex;
   flex-direction: column;
@@ -141,6 +224,21 @@
   height: 100%;
   flex-grow: 1;
   border: 1px dashed;
+  grid-column: 1 / -1;
+}
+
+.emptyState h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  font-family: var(--font-poppins);
+}
+
+.emptyState p {
+  max-width: 400px;
+  font-size: 0.875rem;
+  margin: 0;
+  color: var(--text-secondary);
 }
 
 .emptyIcon {

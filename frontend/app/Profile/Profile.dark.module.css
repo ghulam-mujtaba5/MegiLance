@@ -1,4 +1,68 @@
-/* Migrated from Profile.dark.css to Profile.dark.module.css */
-@import './Profile.common.module.css';
+/* @AI-HINT: Dark theme for Profile page. Premium dark glassmorphism with glow effects. */
 
-/* Place all Profile.dark.css content here */
+.page {
+  background: linear-gradient(135deg, #0a0a0f 0%, #111118 100%);
+}
+
+.loadingContainer {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary, #9ca3af);
+}
+
+.errorContainer {
+  background: rgba(232, 17, 35, 0.1);
+  border: 1px solid rgba(232, 17, 35, 0.3);
+  color: var(--text-primary, #f5f7fa);
+}
+
+.retryButton {
+  background: var(--primary, #4573df);
+  color: white;
+}
+
+.retryButton:hover {
+  box-shadow: 0 0 20px rgba(69, 115, 223, 0.3);
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.name {
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bio {
+  color: var(--text-secondary, #9ca3af);
+}
+
+.role {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.15), rgba(69, 115, 223, 0.05));
+  color: #7fa3f0;
+  border: 1px solid rgba(69, 115, 223, 0.3);
+}
+
+.sectionTitle {
+  color: var(--text-primary, #f5f7fa);
+}
+
+.emptyState {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary, #9ca3af);
+}
+
+.emptyState h3 {
+  color: var(--text-primary, #f5f7fa);
+}

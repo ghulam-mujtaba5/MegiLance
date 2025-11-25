@@ -10,6 +10,13 @@
 
 .header {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.headerContent {
+  display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
@@ -18,6 +25,13 @@
   font-family: var(--font-poppins);
   font-size: 1.75rem;
   font-weight: 600;
+  margin: 0;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 .toolbar {
@@ -57,6 +71,7 @@
   font-family: var(--font-poppins);
   font-size: 1.1rem;
   font-weight: 600;
+  margin: 0;
 }
 
 .cardMeta {
@@ -119,6 +134,57 @@
   flex-grow: 1;
 }
 
+/* Loading State */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loadingState p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--error);
+}
+
+.errorState h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.errorState p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Empty State */
 .emptyState {
   grid-column: 1 / -1;
   display: flex;
@@ -134,10 +200,11 @@
   font-family: var(--font-poppins);
   font-size: 1.25rem;
   font-weight: 600;
-  margin-top: 1.5rem;
+  margin: 1.5rem 0 0 0;
 }
 
 .emptyState p {
-  margin-top: 0.5rem;
+  margin: 0.5rem 0 0 0;
   max-width: 300px;
+  color: var(--text-secondary);
 }

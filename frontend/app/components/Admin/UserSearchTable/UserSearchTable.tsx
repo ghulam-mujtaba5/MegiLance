@@ -1,7 +1,7 @@
 // @AI-HINT: This component provides a premium user management interface. It features a card-based layout, advanced filtering and sorting, and theme-aware styling using per-component CSS modules.
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Badge from '@/app/components/Badge/Badge';
@@ -11,13 +11,27 @@ import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import ActionMenu, { ActionMenuItem } from '@/app/components/ActionMenu/ActionMenu';
-import { MoreHorizontal, Users, Briefcase, Calendar, Search, User, Mail, Phone, Edit, Eye, UserX, Shield, UserCog } from 'lucide-react';
+import { MoreHorizontal, Users, Briefcase, Calendar, Search, User, Mail, Phone, Edit, Eye, UserX, Shield, UserCog, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 
 import commonStyles from './UserSearchTable.common.module.css';
 import lightStyles from './UserSearchTable.light.module.css';
 import darkStyles from './UserSearchTable.dark.module.css';
 
-interface User {
+interface UserData {
+  id: string | number;
+  name: string;
+  email: string;
+  avatar_url?: string;
+  avatarUrl?: string;
+  user_type?: string;
+  role?: 'Admin' | 'Client' | 'Freelancer';
+  is_active?: boolean;
+  status?: 'Active' | 'Inactive' | 'Suspended';
+  joined_at?: string;
+  joinDate?: string;
+}
+
+interface DisplayUser {
   id: string;
   name: string;
   email: string;
@@ -27,33 +41,53 @@ interface User {
   joinDate: string;
 }
 
-const mockUsers: User[] = [
-  { id: 'usr_001', name: 'Alice Johnson', email: 'alice.j@megilance.dev', avatarUrl: '/avatars/alice.png', role: 'Freelancer', status: 'Active', joinDate: '2024-05-15' },
-  { id: 'usr_002', name: 'Bob Williams', email: 'bob.w@megilance.dev', avatarUrl: '/avatars/bob.png', role: 'Client', status: 'Active', joinDate: '2023-11-20' },
-  { id: 'usr_003', name: 'Charlie Brown', email: 'charlie.b@megilance.dev', avatarUrl: '/avatars/charlie.png', role: 'Freelancer', status: 'Suspended', joinDate: '2024-01-10' },
-  { id: 'usr_004', name: 'Diana Prince', email: 'diana.p@megilance.dev', avatarUrl: '/avatars/diana.png', role: 'Admin', status: 'Active', joinDate: '2022-08-01' },
-  { id: 'usr_005', name: 'Ethan Hunt', email: 'ethan.h@megilance.dev', avatarUrl: '/avatars/ethan.png', role: 'Client', status: 'Inactive', joinDate: '2024-03-30' },
-  { id: 'usr_006', name: 'Fiona Glenanne', email: 'fiona.g@megilance.dev', avatarUrl: '/avatars/fiona.png', role: 'Freelancer', status: 'Active', joinDate: '2023-09-05' },
-];
-
 const roleIcons = {
   Admin: <Shield size={14} />,
   Client: <Briefcase size={14} />,
   Freelancer: <UserCog size={14} />,
 };
 
-const statusVariantMap: { [key in User['status']]: 'success' | 'secondary' | 'danger' } = {
+const statusVariantMap: { [key in DisplayUser['status']]: 'success' | 'secondary' | 'danger' } = {
   Active: 'success',
   Inactive: 'secondary',
   Suspended: 'danger',
 };
 
-const UserCard: React.FC<{ user: User; themeStyles: any }> = ({ user, themeStyles }) => {
+// Transform API user to display format
+function transformUser(apiUser: UserData): DisplayUser {
+  const role = apiUser.role || (apiUser.user_type as DisplayUser['role']) || 'Client';
+  const normalizedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+  
+  let status: DisplayUser['status'] = 'Inactive';
+  if (apiUser.status) {
+    status = apiUser.status;
+  } else if (apiUser.is_active === true) {
+    status = 'Active';
+  } else if (apiUser.is_active === false) {
+    status = 'Inactive';
+  }
+  
+  return {
+    id: String(apiUser.id),
+    name: apiUser.name || 'Unknown',
+    email: apiUser.email || '',
+    avatarUrl: apiUser.avatarUrl || apiUser.avatar_url || '',
+    role: normalizedRole as DisplayUser['role'],
+    status,
+    joinDate: apiUser.joinDate || apiUser.joined_at || new Date().toISOString().split('T')[0],
+  };
+}
+
+const UserCard: React.FC<{ user: DisplayUser; themeStyles: typeof lightStyles; onToggleStatus: (id: string) => void }> = ({ user, themeStyles, onToggleStatus }) => {
   const userActions: ActionMenuItem[] = [
-    { label: 'View Profile', icon: Eye, onClick: () => console.log(`Viewing ${user.name}'s profile`) },
-    { label: 'Edit User', icon: Edit, onClick: () => console.log(`Editing ${user.name}`) },
+    { label: 'View Profile', icon: Eye, onClick: () => window.location.href = `/admin/users/${user.id}` },
+    { label: 'Edit User', icon: Edit, onClick: () => window.location.href = `/admin/users/${user.id}/edit` },
     { isSeparator: true },
-    { label: 'Suspend User', icon: UserX, onClick: () => console.log(`Suspending ${user.name}`) },
+    { 
+      label: user.status === 'Suspended' ? 'Activate User' : 'Suspend User', 
+      icon: UserX, 
+      onClick: () => onToggleStatus(user.id) 
+    },
   ];
 
   return (
@@ -73,7 +107,7 @@ const UserCard: React.FC<{ user: User; themeStyles: any }> = ({ user, themeStyle
         </div>
         <div className={cn(commonStyles.metaItem, themeStyles.metaItem)}>
           <Calendar size={14} />
-          <span>Joined {user.joinDate}</span>
+          <span>Joined {new Date(user.joinDate).toLocaleDateString()}</span>
         </div>
       </div>
       <div className={commonStyles.cardFooter}>
@@ -85,14 +119,71 @@ const UserCard: React.FC<{ user: User; themeStyles: any }> = ({ user, themeStyle
 
 const UserSearchTable: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [searchTerm, setSearchTerm] = React.useState('');
-  const [roleFilter, setRoleFilter] = React.useState('All');
-  const [statusFilter, setStatusFilter] = React.useState('All');
-  const [sortOrder, setSortOrder] = React.useState('date-desc');
+  const [users, setUsers] = useState<DisplayUser[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [sortOrder, setSortOrder] = useState('date-desc');
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  const filteredAndSortedUsers = mockUsers
+  // Fetch users from API
+  const fetchUsers = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      const response = await fetch('/backend/api/admin/users/list', { headers });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch users: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const userList = data.users ?? data ?? [];
+      const transformed = userList.map(transformUser);
+      setUsers(transformed);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  // Toggle user status (suspend/activate)
+  const handleToggleStatus = useCallback(async (userId: string) => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      };
+      
+      const response = await fetch(`/backend/api/admin/users/${userId}/toggle-status`, {
+        method: 'POST',
+        headers,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to toggle user status');
+      }
+      
+      // Refresh user list
+      fetchUsers();
+    } catch (err) {
+      console.error('Error toggling user status:', err);
+    }
+  }, [fetchUsers]);
+
+  const filteredAndSortedUsers = users
     .filter(user => {
       const term = searchTerm.toLowerCase();
       return user.name.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
@@ -109,13 +200,26 @@ const UserSearchTable: React.FC = () => {
       }
     });
 
+  if (!resolvedTheme) return null;
+
   return (
     <div className={cn(commonStyles.container, themeStyles.container)}>
       <header className={commonStyles.header}>
-        <h2 className={cn(commonStyles.title, themeStyles.title)}>User Management</h2>
-        <p className={cn(commonStyles.description, themeStyles.description)}>
-          Search, filter, and manage all users in the system.
-        </p>
+        <div className={commonStyles.headerContent}>
+          <h2 className={cn(commonStyles.title, themeStyles.title)}>User Management</h2>
+          <p className={cn(commonStyles.description, themeStyles.description)}>
+            Search, filter, and manage all users in the system.
+          </p>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={fetchUsers}
+          iconBefore={<RefreshCw size={16} />}
+          aria-label="Refresh users"
+        >
+          Refresh
+        </Button>
       </header>
 
       <div className={cn(commonStyles.toolbar, themeStyles.toolbar)}>
@@ -164,19 +268,40 @@ const UserSearchTable: React.FC = () => {
         </div>
       </div>
 
-      <div className={commonStyles.userGrid}>
-        {filteredAndSortedUsers.length > 0 ? (
-          filteredAndSortedUsers.map(user => (
-            <UserCard key={user.id} user={user} themeStyles={themeStyles} />
-          ))
-        ) : (
-          <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-            <Users size={48} />
-            <h3>No Users Found</h3>
-            <p>Adjust your search or filter criteria to find users.</p>
-          </div>
-        )}
-      </div>
+      {loading ? (
+        <div className={cn(commonStyles.loadingState, themeStyles.loadingState)}>
+          <Loader2 className={commonStyles.spinner} size={32} />
+          <p>Loading users...</p>
+        </div>
+      ) : error ? (
+        <div className={cn(commonStyles.errorState, themeStyles.errorState)}>
+          <AlertTriangle size={32} />
+          <h3>Failed to load users</h3>
+          <p>{error}</p>
+          <Button variant="secondary" size="sm" onClick={fetchUsers}>
+            Try Again
+          </Button>
+        </div>
+      ) : (
+        <div className={commonStyles.userGrid}>
+          {filteredAndSortedUsers.length > 0 ? (
+            filteredAndSortedUsers.map(user => (
+              <UserCard 
+                key={user.id} 
+                user={user} 
+                themeStyles={themeStyles}
+                onToggleStatus={handleToggleStatus}
+              />
+            ))
+          ) : (
+            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+              <Users size={48} />
+              <h3>No Users Found</h3>
+              <p>Adjust your search or filter criteria to find users.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

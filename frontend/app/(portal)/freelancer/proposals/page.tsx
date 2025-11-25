@@ -1,7 +1,7 @@
 // @AI-HINT: This is the modernized Freelancer Proposals page. It uses a clean, card-based grid to display proposals and features advanced filtering and sorting capabilities.
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { usePersistedState } from '@/app/lib/hooks/usePersistedState';
@@ -19,15 +19,29 @@ import commonStyles from './Proposals.common.module.css';
 import lightStyles from './Proposals.light.module.css';
 import darkStyles from './Proposals.dark.module.css';
 
-// Mock data for UI development
-const mockProposals: Proposal[] = [
-  { id: 'p1', jobTitle: 'Build Premium Marketing Website', clientName: 'Acme Corp', status: 'Submitted', dateSubmitted: '2025-08-01', bidAmount: 2500 },
-  { id: 'p2', jobTitle: 'AI-Powered Content Generation Platform', clientName: 'ContentAI', status: 'Interview', dateSubmitted: '2025-08-04', bidAmount: 5200 },
-  { id: 'p3', jobTitle: 'Modernize SaaS Dashboard UI/UX', clientName: 'DataViz Ltd', status: 'Rejected', dateSubmitted: '2025-07-26', bidAmount: 1800 },
-  { id: 'p4', jobTitle: 'Cross-Platform Mobile App MVP', clientName: 'StartHub', status: 'Draft', dateSubmitted: '2025-08-08', bidAmount: 8000 },
-  { id: 'p5', jobTitle: 'E-commerce Backend with Stripe Integration', clientName: 'Shopify Plus Experts', status: 'Submitted', dateSubmitted: '2025-08-10', bidAmount: 12500 },
-  { id: 'p6', jobTitle: 'Cloud Data Warehouse Migration', clientName: 'Innovate Inc.', status: 'Submitted', dateSubmitted: '2025-08-11', bidAmount: 9500 },
-];
+// API response type
+interface APIProposal {
+  id: number;
+  project_id: number;
+  freelancer_id: number;
+  cover_letter: string;
+  bid_amount: number;
+  estimated_hours: number;
+  hourly_rate: number;
+  availability: string;
+  attachments: string;
+  status: string;
+  is_draft: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface APIProject {
+  id: number;
+  title: string;
+  client_id: number;
+  client_name?: string;
+}
 
 const sortOptions: SortOption[] = [
   { value: 'dateSubmitted:desc', label: 'Newest' },
@@ -40,6 +54,16 @@ const sortOptions: SortOption[] = [
 
 const allStatuses: Proposal['status'][] = ['Draft', 'Submitted', 'Interview', 'Rejected'];
 
+// Map API status to UI status
+const mapAPIStatus = (status: string, isDraft: boolean): Proposal['status'] => {
+  if (isDraft) return 'Draft';
+  const normalizedStatus = status.toLowerCase();
+  if (normalizedStatus === 'pending' || normalizedStatus === 'submitted') return 'Submitted';
+  if (normalizedStatus === 'interview' || normalizedStatus === 'shortlisted') return 'Interview';
+  if (normalizedStatus === 'rejected' || normalizedStatus === 'declined') return 'Rejected';
+  return 'Submitted';
+};
+
 const ProposalsPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
@@ -51,17 +75,89 @@ const ProposalsPage: React.FC = () => {
   const [page, setPage] = usePersistedState<number>('freelancer:proposals:page', 1);
   const [pageSize, setPageSize] = usePersistedState<number>('freelancer:proposals:pageSize', 6);
   const [statusFilters, setStatusFilters] = usePersistedState<Proposal['status'][]>('freelancer:proposals:statusFilters', []);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [pendingWithdrawId, setPendingWithdrawId] = useState<string | null>(null);
+
+  // Fetch proposals from API
+  const fetchProposals = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Fetch proposals for current freelancer
+      const proposalsRes = await fetch('/backend/api/proposals/', {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' },
+      });
+      
+      if (!proposalsRes.ok) {
+        throw new Error('Failed to fetch proposals');
+      }
+      
+      const apiProposals: APIProposal[] = await proposalsRes.json();
+      
+      // Get unique project IDs to fetch project details
+      const projectIds = [...new Set(apiProposals.map(p => p.project_id))];
+      
+      // Fetch project details for job titles and client names
+      const projectPromises = projectIds.map(async (pid) => {
+        try {
+          const res = await fetch(`/backend/api/projects/${pid}`, {
+            credentials: 'include',
+            headers: { 'Accept': 'application/json' },
+          });
+          if (res.ok) {
+            return await res.json();
+          }
+        } catch {
+          // Ignore individual project fetch errors
+        }
+        return null;
+      });
+      
+      const projectsData = await Promise.all(projectPromises);
+      const projectMap = new Map<number, APIProject>();
+      projectsData.filter(Boolean).forEach((project: APIProject) => {
+        if (project) projectMap.set(project.id, project);
+      });
+      
+      // Transform API data to UI format
+      const transformedProposals: Proposal[] = apiProposals.map((ap) => {
+        const project = projectMap.get(ap.project_id);
+        return {
+          id: String(ap.id),
+          jobTitle: project?.title || `Project #${ap.project_id}`,
+          clientName: project?.client_name || 'Client',
+          status: mapAPIStatus(ap.status, ap.is_draft),
+          dateSubmitted: ap.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+          bidAmount: ap.bid_amount,
+        };
+      });
+      
+      setProposals(transformedProposals);
+    } catch (err) {
+      console.error('Failed to fetch proposals:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load proposals');
+      setProposals([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProposals();
+  }, [fetchProposals]);
 
   // Filtering and Sorting Logic
   const filtered = useMemo(() => {
     const qLower = q.trim().toLowerCase();
     const byQuery = (p: Proposal) => !qLower || p.jobTitle.toLowerCase().includes(qLower) || p.clientName.toLowerCase().includes(qLower);
     const byStatus = (p: Proposal) => statusFilters.length === 0 || statusFilters.includes(p.status);
-    return mockProposals.filter(byQuery).filter(byStatus);
-  }, [q, statusFilters]);
+    return proposals.filter(byQuery).filter(byStatus);
+  }, [q, statusFilters, proposals]);
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -84,30 +180,45 @@ const ProposalsPage: React.FC = () => {
     return sorted.slice(start, start + pageSize);
   }, [sorted, pageSafe, pageSize]);
 
-  // UI Loading Simulation
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 350);
-    return () => clearTimeout(timer);
-  }, [q, sortKey, sortDir, page, pageSize, statusFilters]);
-
   // Action Handlers
   const handleWithdraw = (id: string) => {
     setPendingWithdrawId(id);
     setWithdrawOpen(true);
   };
 
-  const confirmWithdraw = () => {
+  const confirmWithdraw = async () => {
     if (pendingWithdrawId) {
-      toaster.notify({ title: 'Success', description: 'Proposal successfully withdrawn.', variant: 'success' });
+      try {
+        const res = await fetch(`/backend/api/proposals/${pendingWithdrawId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+          headers: { 'Accept': 'application/json' },
+        });
+        
+        if (res.ok) {
+          toaster.notify({ title: 'Success', description: 'Proposal successfully withdrawn.', variant: 'success' });
+          // Refresh proposals list
+          fetchProposals();
+        } else {
+          toaster.notify({ title: 'Error', description: 'Failed to withdraw proposal.', variant: 'danger' });
+        }
+      } catch (err) {
+        toaster.notify({ title: 'Error', description: 'Failed to withdraw proposal.', variant: 'danger' });
+      }
       setWithdrawOpen(false);
       setPendingWithdrawId(null);
-      // In a real app, you would re-fetch or mutate data here.
     }
   };
 
-  const handleView = (id: string) => toaster.notify({ description: `Viewing proposal ${id}`, variant: 'info' });
-  const handleEdit = (id: string) => toaster.notify({ description: `Editing proposal ${id}`, variant: 'info' });
+  const handleView = (id: string) => {
+    window.location.href = `/portal/freelancer/proposals/${id}`;
+  };
+  
+  const handleEdit = (id: string) => {
+    window.location.href = `/portal/freelancer/proposals/${id}/edit`;
+  };
+
+  if (!resolvedTheme) return null;
 
   return (
     <div className={cn(commonStyles.container, styles.container)}>
@@ -116,62 +227,80 @@ const ProposalsPage: React.FC = () => {
         <p className={cn(commonStyles.subtitle, styles.subtitle)}>Track and manage all your job proposals from a centralized dashboard.</p>
       </header>
 
-      <div className={cn(commonStyles.toolbarContainer, styles.toolbarContainer)}>
-        <DataToolbar
-          query={q}
-          onQueryChange={(val) => { setQ(val); setPage(1); }}
-          sortValue={`${sortKey}:${sortDir}`}
-          onSortChange={(val) => {
-            const [k, d] = val.split(':') as [keyof Proposal, 'asc' | 'desc'];
-            setSortKey(k); setSortDir(d); setPage(1);
-          }}
-          pageSize={pageSize}
-          onPageSizeChange={(sz) => { setPageSize(sz); setPage(1); }}
-          sortOptions={sortOptions}
-          searchPlaceholder="Search by job or client..."
-        />
-      </div>
-
-      <div className={cn(commonStyles.filterContainer, styles.filterContainer)}>
-        <StatusFilter
-          allStatuses={allStatuses}
-          selectedStatuses={statusFilters}
-          onChange={(selected) => { setStatusFilters(selected); setPage(1); }}
-        />
-      </div>
-
-      {loading ? (
-        <div className={cn(commonStyles.grid, styles.grid)}>
-            <TableSkeleton rows={pageSize} cols={1} useCards />
-        </div>
-      ) : sorted.length > 0 ? (
-        <div className={cn(commonStyles.grid, styles.grid)}>
-          {paged.map(proposal => (
-            <ProposalCard
-              key={proposal.id}
-              proposal={proposal}
-              onView={handleView}
-              onEdit={handleEdit}
-              onWithdraw={handleWithdraw}
-            />
-          ))}
+      {error ? (
+        <div className={cn(commonStyles.emptyState, styles.emptyState)}>
+          <h3 className={cn(commonStyles.emptyTitle, styles.emptyTitle)}>Error Loading Proposals</h3>
+          <p className={cn(commonStyles.emptyText, styles.emptyText)}>{error}</p>
+          <Button variant="primary" onClick={fetchProposals}>Try Again</Button>
         </div>
       ) : (
-        <div className={cn(commonStyles.emptyState, styles.emptyState)}>
-          <h3 className={cn(commonStyles.emptyTitle, styles.emptyTitle)}>No Proposals Found</h3>
-          <p className={cn(commonStyles.emptyText, styles.emptyText)}>Your search or filter criteria did not match any proposals.</p>
-          <Button variant="secondary" onClick={() => { setQ(''); setStatusFilters([]); }}>Clear All Filters</Button>
-        </div>
-      )}
+        <>
+          <div className={cn(commonStyles.toolbarContainer, styles.toolbarContainer)}>
+            <DataToolbar
+              query={q}
+              onQueryChange={(val) => { setQ(val); setPage(1); }}
+              sortValue={`${sortKey}:${sortDir}`}
+              onSortChange={(val) => {
+                const [k, d] = val.split(':') as [keyof Proposal, 'asc' | 'desc'];
+                setSortKey(k); setSortDir(d); setPage(1);
+              }}
+              pageSize={pageSize}
+              onPageSizeChange={(sz) => { setPageSize(sz); setPage(1); }}
+              sortOptions={sortOptions}
+              searchPlaceholder="Search by job or client..."
+            />
+          </div>
 
-      {sorted.length > 0 && (
-        <PaginationBar
-          currentPage={pageSafe}
-          totalPages={totalPages}
-          totalResults={sorted.length}
-          onPrev={() => setPage(p => Math.max(1, p - 1))}
-          onNext={() => setPage(p => Math.min(totalPages, p + 1))}
-        />
+          <div className={cn(commonStyles.filterContainer, styles.filterContainer)}>
+            <StatusFilter
+              allStatuses={allStatuses}
+              selectedStatuses={statusFilters}
+              onChange={(selected) => { setStatusFilters(selected); setPage(1); }}
+            />
+          </div>
+
+          {loading ? (
+            <div className={cn(commonStyles.grid, styles.grid)}>
+                <TableSkeleton rows={pageSize} cols={1} useCards />
+            </div>
+          ) : sorted.length > 0 ? (
+            <div className={cn(commonStyles.grid, styles.grid)}>
+              {paged.map(proposal => (
+                <ProposalCard
+                  key={proposal.id}
+                  proposal={proposal}
+                  onView={handleView}
+                  onEdit={handleEdit}
+                  onWithdraw={handleWithdraw}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className={cn(commonStyles.emptyState, styles.emptyState)}>
+              <h3 className={cn(commonStyles.emptyTitle, styles.emptyTitle)}>No Proposals Found</h3>
+              <p className={cn(commonStyles.emptyText, styles.emptyText)}>
+                {proposals.length === 0 
+                  ? "You haven't submitted any proposals yet. Browse available jobs to get started!"
+                  : "Your search or filter criteria did not match any proposals."}
+              </p>
+              {proposals.length === 0 ? (
+                <Button variant="primary" onClick={() => window.location.href = '/jobs'}>Browse Jobs</Button>
+              ) : (
+                <Button variant="secondary" onClick={() => { setQ(''); setStatusFilters([]); }}>Clear All Filters</Button>
+              )}
+            </div>
+          )}
+
+          {sorted.length > 0 && (
+            <PaginationBar
+              currentPage={pageSafe}
+              totalPages={totalPages}
+              totalResults={sorted.length}
+              onPrev={() => setPage(p => Math.max(1, p - 1))}
+              onNext={() => setPage(p => Math.min(totalPages, p + 1))}
+            />
+          )}
+        </>
       )}
 
       <Modal isOpen={withdrawOpen} onClose={() => setWithdrawOpen(false)} title="Withdraw Proposal" size="small">

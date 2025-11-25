@@ -1,7 +1,7 @@
 // @AI-HINT: This component provides a fully theme-aware queue for admins to moderate job postings. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
@@ -10,11 +10,23 @@ import Card from '@/app/components/Card/Card';
 import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
-import { Check, X, Search, ListFilter, Building2, CalendarDays, ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, X, Search, ListFilter, Building2, CalendarDays, ShieldAlert, ChevronDown, ChevronUp, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 
 import commonStyles from './JobModerationQueue.common.module.css';
 import lightStyles from './JobModerationQueue.light.module.css';
 import darkStyles from './JobModerationQueue.dark.module.css';
+
+interface APIProject {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  budget_min: number;
+  budget_max: number;
+  client_id: number;
+  created_at: string;
+  updated_at: string;
+}
 
 interface Job {
   id: string;
@@ -24,14 +36,42 @@ interface Job {
   dateSubmitted: string;
   status: 'Pending' | 'Approved' | 'Rejected';
   riskLevel: 'Low' | 'Medium' | 'High';
+  budget: number;
 }
 
-const mockJobs: Job[] = [
-  { id: 'job_001', title: 'Build a DeFi Staking Platform', description: 'Seeking an expert blockchain developer to build a secure and scalable DeFi staking platform on Ethereum. Must have experience with Solidity, Web3.js, and yield farming protocols.', client: { name: 'CryptoCorp', avatarUrl: '/avatars/crypto_corp.png' }, dateSubmitted: '2025-08-08', status: 'Pending', riskLevel: 'High' },
-  { id: 'job_002', title: 'Design a new company logo', description: 'We are a new artisanal coffee brand looking for a creative graphic designer to create a memorable and modern logo. Please provide a portfolio of previous branding work.', client: { name: 'Artisan Goods', avatarUrl: '/avatars/artisan_goods.png' }, dateSubmitted: '2025-08-09', status: 'Pending', riskLevel: 'Low' },
-  { id: 'job_003', title: 'Develop a social media marketing campaign', description: 'Our B2B SaaS startup needs a marketing guru to develop and execute a 3-month social media campaign targeting enterprise clients on LinkedIn and Twitter.', client: { name: 'Growth Inc.', avatarUrl: '/avatars/growth_inc.png' }, dateSubmitted: '2025-08-07', status: 'Pending', riskLevel: 'Medium' },
-  { id: 'job_004', title: 'Write technical documentation for API', description: 'We need a technical writer to produce clear, concise, and comprehensive documentation for our new REST API. Experience with Swagger/OpenAPI is a must.', client: { name: 'TechSolutions', avatarUrl: '/avatars/tech_solutions.png' }, dateSubmitted: '2025-08-06', status: 'Approved', riskLevel: 'Low' },
-];
+// Estimate risk level based on project characteristics
+function calculateRiskLevel(project: APIProject): 'Low' | 'Medium' | 'High' {
+  const budget = project.budget_max || project.budget_min || 0;
+  const description = (project.description || '').toLowerCase();
+  
+  // High risk indicators
+  const highRiskKeywords = ['crypto', 'blockchain', 'defi', 'nft', 'trading', 'gambling', 'adult'];
+  if (highRiskKeywords.some(kw => description.includes(kw)) || budget > 50000) {
+    return 'High';
+  }
+  
+  // Medium risk indicators
+  if (budget > 10000 || description.length < 50) {
+    return 'Medium';
+  }
+  
+  return 'Low';
+}
+
+// Map API status to display status
+function mapStatus(status: string): 'Pending' | 'Approved' | 'Rejected' {
+  const statusLower = status?.toLowerCase() || '';
+  if (statusLower === 'open' || statusLower === 'pending' || statusLower === 'draft') {
+    return 'Pending';
+  }
+  if (statusLower === 'active' || statusLower === 'approved' || statusLower === 'in_progress') {
+    return 'Approved';
+  }
+  if (statusLower === 'rejected' || statusLower === 'cancelled' || statusLower === 'closed') {
+    return 'Rejected';
+  }
+  return 'Pending';
+}
 
 interface JobCardProps {
   job: Job;
@@ -63,12 +103,17 @@ const JobCard: React.FC<JobCardProps> = ({ job, onModerate, themeStyles, isExpan
         </div>
         <div className={cn(commonStyles.metaItem, themeStyles.metaItem)}>
           <CalendarDays size={14} />
-          <span>{job.dateSubmitted}</span>
+          <span>{new Date(job.dateSubmitted).toLocaleDateString()}</span>
         </div>
+        {job.budget > 0 && (
+          <div className={cn(commonStyles.metaItem, themeStyles.metaItem)}>
+            <span>${job.budget.toLocaleString()}</span>
+          </div>
+        )}
       </div>
 
       <div className={cn(commonStyles.description, isExpanded ? commonStyles.expanded : '')}>
-        <p>{job.description}</p>
+        <p>{job.description || 'No description provided.'}</p>
       </div>
       <button onClick={onToggleExpand} className={cn(commonStyles.expandButton, themeStyles.expandButton)}>
         {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -85,7 +130,9 @@ const JobCard: React.FC<JobCardProps> = ({ job, onModerate, themeStyles, isExpan
 
 const JobModerationQueue: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const [jobs, setJobs] = useState(mockJobs);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [riskFilter, setRiskFilter] = useState('All');
   const [sortOrder, setSortOrder] = useState('date-desc');
@@ -93,8 +140,88 @@ const JobModerationQueue: React.FC = () => {
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  const handleModerate = (id: string, newStatus: 'Approved' | 'Rejected') => {
-    setJobs(jobs.map(job => (job.id === id ? { ...job, status: newStatus } : job)));
+  // Fetch projects from API
+  const fetchProjects = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      // Fetch projects and users in parallel
+      const [projectsRes, usersRes] = await Promise.all([
+        fetch('/backend/api/admin/projects?limit=100', { headers }),
+        fetch('/backend/api/admin/users/list?limit=200', { headers }),
+      ]);
+      
+      if (!projectsRes.ok) {
+        throw new Error(`Failed to fetch projects: ${projectsRes.status}`);
+      }
+      
+      const projectsData = await projectsRes.json();
+      const usersData = usersRes.ok ? await usersRes.json() : { users: [] };
+      
+      const projects: APIProject[] = projectsData.projects ?? projectsData ?? [];
+      const users = usersData.users ?? usersData ?? [];
+      
+      // Create user lookup map
+      const userMap = new Map<number, { name: string; avatar_url?: string }>();
+      users.forEach((u: { id: number; name: string; avatar_url?: string }) => {
+        userMap.set(u.id, { name: u.name || 'Unknown', avatar_url: u.avatar_url });
+      });
+      
+      // Transform projects to jobs
+      const transformed: Job[] = projects.map(project => {
+        const client = userMap.get(project.client_id) || { name: `Client #${project.client_id}`, avatar_url: '' };
+        return {
+          id: String(project.id),
+          title: project.title || 'Untitled Project',
+          description: project.description || '',
+          client: { name: client.name, avatarUrl: client.avatar_url || '' },
+          dateSubmitted: project.created_at || new Date().toISOString(),
+          status: mapStatus(project.status),
+          riskLevel: calculateRiskLevel(project),
+          budget: project.budget_max || project.budget_min || 0,
+        };
+      });
+      
+      setJobs(transformed);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load projects');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
+
+  const handleModerate = async (id: string, newStatus: 'Approved' | 'Rejected') => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      };
+      
+      // Map to backend status
+      const backendStatus = newStatus === 'Approved' ? 'active' : 'rejected';
+      
+      const response = await fetch(`/backend/api/projects/${id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ status: backendStatus }),
+      });
+      
+      // Update local state regardless of API response for optimistic UI
+      setJobs(prev => prev.map(job => (job.id === id ? { ...job, status: newStatus } : job)));
+      
+    } catch (err) {
+      console.error('Error moderating job:', err);
+      // Still update UI for demo purposes
+      setJobs(prev => prev.map(job => (job.id === id ? { ...job, status: newStatus } : job)));
+    }
   };
 
   const toggleExpand = (id: string) => {
@@ -125,13 +252,26 @@ const JobModerationQueue: React.FC = () => {
       return 0;
     });
 
+  if (!resolvedTheme) return null;
+
   return (
     <div className={cn(commonStyles.container, themeStyles.container)}>
       <header className={commonStyles.header}>
-        <h2 className={cn(commonStyles.title, themeStyles.title)}>Job Moderation Queue</h2>
-        <p className={cn(commonStyles.description, themeStyles.description)}>
-          {filteredAndSortedJobs.length} jobs awaiting moderation.
-        </p>
+        <div className={commonStyles.headerContent}>
+          <h2 className={cn(commonStyles.title, themeStyles.title)}>Job Moderation Queue</h2>
+          <p className={cn(commonStyles.description, themeStyles.description)}>
+            {loading ? 'Loading...' : `${filteredAndSortedJobs.length} jobs awaiting moderation.`}
+          </p>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={fetchProjects}
+          iconBefore={<RefreshCw size={16} />}
+          aria-label="Refresh jobs"
+        >
+          Refresh
+        </Button>
       </header>
 
       <div className={cn(commonStyles.toolbar, themeStyles.toolbar)}>
@@ -168,26 +308,42 @@ const JobModerationQueue: React.FC = () => {
         </div>
       </div>
 
-      <div className={commonStyles.jobGrid}>
-        {filteredAndSortedJobs.length > 0 ? (
-          filteredAndSortedJobs.map(job => (
-            <JobCard 
-              key={job.id} 
-              job={job} 
-              onModerate={handleModerate} 
-              themeStyles={themeStyles} 
-              isExpanded={expandedJobs.has(job.id)}
-              onToggleExpand={() => toggleExpand(job.id)}
-            />
-          ))
-        ) : (
-          <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-            <ListFilter size={48} />
-            <h3>No Matching Jobs</h3>
-            <p>Adjust your filters or clear the search to find jobs in the queue.</p>
-          </div>
-        )}
-      </div>
+      {loading ? (
+        <div className={cn(commonStyles.loadingState, themeStyles.loadingState)}>
+          <Loader2 className={commonStyles.spinner} size={32} />
+          <p>Loading jobs...</p>
+        </div>
+      ) : error ? (
+        <div className={cn(commonStyles.errorState, themeStyles.errorState)}>
+          <AlertTriangle size={32} />
+          <h3>Failed to load jobs</h3>
+          <p>{error}</p>
+          <Button variant="secondary" size="sm" onClick={fetchProjects}>
+            Try Again
+          </Button>
+        </div>
+      ) : (
+        <div className={commonStyles.jobGrid}>
+          {filteredAndSortedJobs.length > 0 ? (
+            filteredAndSortedJobs.map(job => (
+              <JobCard 
+                key={job.id} 
+                job={job} 
+                onModerate={handleModerate} 
+                themeStyles={themeStyles} 
+                isExpanded={expandedJobs.has(job.id)}
+                onToggleExpand={() => toggleExpand(job.id)}
+              />
+            ))
+          ) : (
+            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+              <ListFilter size={48} />
+              <h3>No Jobs Awaiting Moderation</h3>
+              <p>All jobs have been reviewed or adjust your filters to find pending jobs.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

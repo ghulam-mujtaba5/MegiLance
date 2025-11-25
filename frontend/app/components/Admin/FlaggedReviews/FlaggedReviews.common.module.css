@@ -6,18 +6,28 @@
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
   margin-bottom: 1.5rem;
+}
+
+.headerContent {
+  flex: 1;
 }
 
 .title {
   font-size: 1.75rem;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
+  margin: 0;
 }
 
 .description {
   font-size: 0.9rem;
-  margin-top: 0.25rem;
+  margin: 0.25rem 0 0 0;
+  color: var(--text-secondary);
 }
 
 .filterToolbar {
@@ -114,6 +124,57 @@
   gap: 0.5rem;
 }
 
+/* Loading State */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loadingState p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--error);
+}
+
+.errorState h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.errorState p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Empty State */
 .emptyState {
   grid-column: 1 / -1; /* Span all columns */
   display: flex;
@@ -128,12 +189,12 @@
 .emptyState h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-top: 1rem;
+  margin: 1rem 0 0 0;
   font-family: 'Poppins', sans-serif;
 }
 
 .emptyState p {
-  margin-top: 0.5rem;
+  margin: 0.5rem 0 0 0;
   max-width: 300px;
-  font-style: italic;
+  color: var(--text-secondary);
 }

@@ -1,0 +1,398 @@
+/* @AI-HINT: Common layout and structure styles for Job Detail page - Premium glassmorphism design */
+
+.page {
+  min-height: 100vh;
+  padding: var(--spacing-8) 0 var(--spacing-24);
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-6);
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-24);
+  gap: var(--spacing-4);
+  border-radius: var(--border-radius-xl);
+  text-align: center;
+  min-height: 400px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid transparent;
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Not Found State */
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-24);
+  gap: var(--spacing-4);
+  border-radius: var(--border-radius-xl);
+  min-height: 400px;
+}
+
+.notFoundIcon {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.notFound h1 {
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.notFound p {
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+/* Back Button */
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-2) var(--spacing-3);
+  margin-bottom: var(--spacing-6);
+  border-radius: var(--border-radius-md);
+  transition: all 0.2s ease;
+}
+
+.backIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Header Section */
+.header {
+  padding: var(--spacing-8);
+  border-radius: var(--border-radius-xl);
+  margin-bottom: var(--spacing-6);
+}
+
+.headerTop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+}
+
+.featuredBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.categoryBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+}
+
+.title {
+  font-family: var(--font-family-headings);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-4);
+  letter-spacing: -0.02em;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: var(--font-size-base);
+}
+
+.metaIcon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+}
+
+/* Budget Card */
+.budgetCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-4) var(--spacing-5);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-4);
+}
+
+.budgetContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.budgetLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.budgetValue {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+}
+
+.experienceTag {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.posted {
+  font-size: var(--font-size-sm);
+}
+
+/* Content Section */
+.content {
+  padding: var(--spacing-8);
+  border-radius: var(--border-radius-xl);
+  margin-bottom: var(--spacing-6);
+}
+
+.section {
+  margin-bottom: var(--spacing-8);
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-4);
+}
+
+.sectionIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.descriptionText {
+  font-size: var(--font-size-base);
+  line-height: 1.8;
+}
+
+/* Skills Grid */
+.skillsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.skillTag {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Requirements & Responsibilities List */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  position: relative;
+  padding-left: var(--spacing-7);
+  margin-bottom: var(--spacing-3);
+  line-height: 1.6;
+}
+
+.list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.75rem;
+}
+
+/* Actions Section */
+.actions {
+  margin-top: var(--spacing-8);
+}
+
+.applySection {
+  display: flex;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+}
+
+.saveIcon {
+  width: 18px;
+  height: 18px;
+  margin-right: var(--spacing-2);
+}
+
+/* Proposal Form */
+.proposalForm {
+  padding: var(--spacing-8);
+  border-radius: var(--border-radius-xl);
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-6);
+}
+
+.formGroup {
+  margin-bottom: var(--spacing-5);
+}
+
+.formLabel {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-2);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 150px;
+  line-height: 1.6;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4);
+}
+
+@media (max-width: 640px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.charCount {
+  display: block;
+  margin-top: var(--spacing-2);
+  font-size: var(--font-size-xs);
+}
+
+.formActions {
+  display: flex;
+  gap: var(--spacing-4);
+  justify-content: flex-end;
+  margin-top: var(--spacing-6);
+  padding-top: var(--spacing-6);
+  border-top: 1px solid transparent;
+}
+
+/* Error & Success States */
+.error {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-medium);
+}
+
+.successMessage {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-5);
+  border-radius: var(--border-radius-xl);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.5;
+}
+
+.successIcon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+/* Login Prompt */
+.loginPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-5);
+  border-radius: var(--border-radius-lg);
+  margin: var(--spacing-4) 0;
+}
+
+.promptIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.loginPrompt p {
+  margin-bottom: var(--spacing-2);
+}

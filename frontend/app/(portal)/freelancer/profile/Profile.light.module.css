@@ -1,26 +1,54 @@
-/* @AI-HINT: Light theme styles for the refactored Profile page. */
+/* @AI-HINT: Light theme styles for the refactored Profile page. Premium glassmorphism design. */
+
+.profileContainer {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.loadingState {
+  color: var(--text-secondary, #6b7280);
+}
+
 .header, .actions {
-  border-color: var(--border-light);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .name {
-  color: var(--text-primary-light);
+  color: var(--text-primary, #1f2937);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .title {
-  color: var(--text-secondary-light);
+  color: var(--primary, #4573df);
 }
 
 .rank {
-  background-color: var(--accent-light-translucent);
-  color: var(--accent-light-deep);
-  border-color: var(--accent-light-translucent-heavy);
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(69, 115, 223, 0.05));
+  color: var(--primary, #4573df);
+  border-color: rgba(69, 115, 223, 0.2);
+}
+
+.status {
+  background: rgba(69, 115, 223, 0.08);
+  color: var(--primary, #4573df);
+  border: 1px solid rgba(69, 115, 223, 0.15);
 }
 
 .sectionTitle {
-  color: var(--text-primary-light);
+  color: var(--text-primary, #1f2937);
 }
 
 .skillsInfo {
-  color: var(--text-tertiary-light);
+  color: var(--text-secondary, #6b7280);
+}
+
+.errors {
+  background: rgba(232, 17, 35, 0.08);
+  border: 1px solid rgba(232, 17, 35, 0.2);
+}
+
+.errorText {
+  color: #dc2626;
 }

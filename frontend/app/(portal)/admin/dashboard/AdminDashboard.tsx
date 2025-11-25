@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import { useAdminData } from '@/hooks/useAdmin';
+import { useAdminData, type RecentActivity as ActivityType } from '@/hooks/useAdmin';
 import common from './AdminDashboard.common.module.css';
 import light from './AdminDashboard.light.module.css';
 import dark from './AdminDashboard.dark.module.css';
@@ -31,31 +31,46 @@ import {
   Plus,
   Shield,
   AlertTriangle,
-  BarChart3
+  BarChart3,
+  UserPlus,
+  FileText,
+  CreditCard,
+  Loader2
 } from 'lucide-react';
 
 interface KPI { id: string; label: string; value: string; trend: string; }
 interface UserRow { id: string; name: string; email: string; role: 'Admin' | 'Client' | 'Freelancer'; status: 'Active' | 'Suspended'; joined: string; }
 
-const FALLBACK_KPIS: KPI[] = [
-  { id: 'k1', label: 'Active Users', value: '12,418', trend: '+3.2% WoW' },
-  { id: 'k2', label: 'New Projects', value: '287', trend: '+5.1% WoW' },
-  { id: 'k3', label: 'Revenue', value: '$142k', trend: '+7.8% MoM' },
-  { id: 'k4', label: 'Churn', value: '1.2%', trend: '-0.2% MoM' },
-];
+// Icon mapping for activity types from API
+const activityIcons: Record<string, React.ElementType> = {
+  user_joined: UserPlus,
+  project_posted: FileText,
+  proposal_submitted: Briefcase,
+  payment_made: CreditCard,
+  default: Bell,
+};
 
-const FALLBACK_USERS: UserRow[] = [
-  { id: 'u1', name: 'Alex Carter', email: 'alex@megilance.com', role: 'Admin', status: 'Active', joined: '2024-11-01' },
-  { id: 'u2', name: 'Hannah Lee', email: 'hannah@client.io', role: 'Client', status: 'Active', joined: '2025-02-18' },
-  { id: 'u3', name: 'Sofia Gomez', email: 'sofia@freelance.dev', role: 'Freelancer', status: 'Active', joined: '2025-05-03' },
-  { id: 'u4', name: 'Priya Patel', email: 'priya@client.io', role: 'Client', status: 'Suspended', joined: '2025-06-22' },
-];
+// Format relative time from ISO timestamp
+function formatRelativeTime(timestamp: string): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+  return date.toLocaleDateString();
+}
 
 const AdminDashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
 
-  const { users, kpis, loading, error } = useAdminData();
+  const { users, kpis, systemStats, recentActivity, loading, error } = useAdminData();
   const [role, setRole] = useState<'All' | 'Admin' | 'Client' | 'Freelancer'>('All');
 
   const headerRef = useRef<HTMLDivElement | null>(null);
@@ -67,34 +82,44 @@ const AdminDashboard: React.FC = () => {
   const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
 
   const effectiveKPIs: KPI[] = useMemo(() => {
-    if (!kpis || !Array.isArray(kpis) || kpis.length === 0) return FALLBACK_KPIS;
-    return kpis.map((k, idx) => ({ id: String(k.id ?? idx), label: k.label, value: k.value, trend: (k as any).trend ?? '' }));
+    if (!kpis || !Array.isArray(kpis) || kpis.length === 0) return [];
+    return kpis.map((k, idx) => ({ id: String(k.id ?? idx), label: k.label, value: k.value, trend: (k as KPI).trend ?? '' }));
   }, [kpis]);
 
   const effectiveUsers: UserRow[] = useMemo(() => {
-    const source = users ?? FALLBACK_USERS;
-    return source as UserRow[];
+    if (!users || !Array.isArray(users)) return [];
+    return users as UserRow[];
   }, [users]);
 
   const filteredUsers = useMemo(() => {
     return role === 'All' ? effectiveUsers : effectiveUsers.filter(u => u.role === role);
   }, [effectiveUsers, role]);
 
-  // Recent activity data
-  const recentActivity = [
-    { id: '1', title: 'New user registered', description: 'New freelancer joined the platform', time: '5 minutes ago', icon: Users },
-    { id: '2', title: 'Project flagged', description: 'AI detected potential fraud in project posting', time: '15 minutes ago', icon: AlertTriangle },
-    { id: '3', title: 'Payment processed', description: 'Client payment of $2,400 completed', time: '1 hour ago', icon: DollarSign },
-    { id: '4', title: 'Review flagged', description: 'Negative review requires moderation', time: '2 hours ago', icon: MessageCircle },
-  ];
+  // Transform API recent activity into display format
+  const displayActivity = useMemo(() => {
+    if (!recentActivity || !Array.isArray(recentActivity) || recentActivity.length === 0) return [];
+    return recentActivity.slice(0, 8).map((activity: ActivityType, idx: number) => ({
+      id: String(idx),
+      title: activity.user_name,
+      description: activity.description,
+      time: formatRelativeTime(activity.timestamp),
+      icon: activityIcons[activity.type] || activityIcons.default,
+      amount: activity.amount,
+    }));
+  }, [recentActivity]);
 
-  // Stats data
-  const statsData = [
-    { title: 'Total Users', value: '12,418', icon: Users, trend: '+3.2%', positive: true },
-    { title: 'Active Projects', value: '1,247', icon: Briefcase, trend: '+5.1%', positive: true },
-    { title: 'Monthly Revenue', value: '$142k', icon: DollarSign, trend: '+7.8%', positive: true },
-    { title: 'Flagged Items', value: '24', icon: Shield, trend: '-2', positive: false },
-  ];
+  // Generate stats from systemStats API response
+  const statsData = useMemo(() => {
+    if (!systemStats) return [];
+    return [
+      { title: 'Total Users', value: systemStats.total_users?.toLocaleString() ?? '0', icon: Users, trend: `${systemStats.total_clients} clients`, positive: true },
+      { title: 'Active Projects', value: systemStats.active_projects?.toLocaleString() ?? '0', icon: Briefcase, trend: `${systemStats.total_projects} total`, positive: true },
+      { title: 'Revenue', value: `$${((systemStats.total_revenue ?? 0) / 1000).toFixed(0)}k`, icon: DollarSign, trend: `${systemStats.total_contracts} contracts`, positive: true },
+      { title: 'Pending', value: systemStats.pending_proposals?.toLocaleString() ?? '0', icon: Shield, trend: 'proposals', positive: false },
+    ];
+  }, [systemStats]);
+
+  if (!resolvedTheme) return null;
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
@@ -128,7 +153,7 @@ const AdminDashboard: React.FC = () => {
           </div>
           <div className={common.controls} aria-label="Admin dashboard controls">
             <label className={common.srOnly} htmlFor="role-filter">Filter by role</label>
-            <select id="role-filter" className={cn(common.select, themed.select)} value={role} onChange={(e) => setRole(e.target.value as any)} title="Filter users by role">
+            <select id="role-filter" className={cn(common.select, themed.select)} value={role} onChange={(e) => setRole(e.target.value as 'All' | 'Admin' | 'Client' | 'Freelancer')} title="Filter users by role">
               {['All','Admin','Client','Freelancer'].map(r => <option key={r} value={r}>{r}</option>)}
             </select>
             <Button variant="primary" size="md">
@@ -141,28 +166,59 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className={common.statsGrid}>
-          {statsData.map((stat, index) => (
-            <Card key={index} className={common.statCard}>
-              <div className={common.statHeader}>
-                <div className={common.statIcon}>
-                  <stat.icon size={20} />
+        {loading ? (
+          <div className={common.statsGrid}>
+            {[1,2,3,4].map(i => (
+              <Card key={i} className={common.statCard}>
+                <div className={common.loadingState}>
+                  <Loader2 className={common.spinner} size={24} />
+                  <span>Loading stats...</span>
                 </div>
-                <h3 className={common.statTitle}>{stat.title}</h3>
-              </div>
-              <div className={common.statValue}>{stat.value}</div>
-              <div className={cn(common.statTrend, stat.positive ? common.positive : common.negative)}>
-                {stat.positive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                <span>{stat.trend}</span>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        ) : error ? (
+          <div className={common.errorState}>
+            <AlertTriangle size={32} />
+            <p>Failed to load dashboard data: {error}</p>
+            <Button variant="secondary" size="sm" onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          </div>
+        ) : statsData.length === 0 ? (
+          <div className={common.emptyState}>
+            <BarChart3 size={48} />
+            <p>No dashboard statistics available yet.</p>
+          </div>
+        ) : (
+          <div className={common.statsGrid}>
+            {statsData.map((stat, index) => (
+              <Card key={index} className={common.statCard}>
+                <div className={common.statHeader}>
+                  <div className={common.statIcon}>
+                    <stat.icon size={20} />
+                  </div>
+                  <h3 className={common.statTitle}>{stat.title}</h3>
+                </div>
+                <div className={common.statValue}>{stat.value}</div>
+                <div className={cn(common.statTrend, stat.positive ? common.positive : common.negative)}>
+                  {stat.positive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                  <span>{stat.trend}</span>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         <section ref={kpiRef} className={cn(common.kpis, kpisVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="kpi-section-title">
           <h2 id="kpi-section-title" className={common.srOnly}>Key Performance Indicators</h2>
           {loading && (
             <div className={common.skeletonRow} aria-busy="true" />
+          )}
+          {!loading && effectiveKPIs.length === 0 && !error && (
+            <div className={cn(common.card, themed.card)}>
+              <p className={common.emptyText}>No KPI data available. Connect to the admin API.</p>
+            </div>
           )}
           {!loading && effectiveKPIs.map(k => (
             <div key={k.id} className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby={`kpi-${k.id}-label`}>
@@ -192,18 +248,33 @@ const AdminDashboard: React.FC = () => {
           <div className={common.gridSpanFull}>
             <Card title="Recent Activity" icon={Calendar}>
               <div className={common.activityList}>
-                {recentActivity.map(activity => (
-                  <div key={activity.id} className={common.activityItem}>
-                    <div className={common.activityIcon}>
-                      <activity.icon size={20} />
-                    </div>
-                    <div className={common.activityContent}>
-                      <h4 className={common.activityTitle}>{activity.title}</h4>
-                      <p className={common.activityDescription}>{activity.description}</p>
-                      <div className={common.activityTime}>{activity.time}</div>
-                    </div>
+                {loading ? (
+                  <div className={common.loadingState}>
+                    <Loader2 className={common.spinner} size={24} />
+                    <span>Loading activity...</span>
                   </div>
-                ))}
+                ) : displayActivity.length === 0 ? (
+                  <div className={common.emptyState}>
+                    <Bell size={32} />
+                    <p>No recent activity to display.</p>
+                  </div>
+                ) : (
+                  displayActivity.map(activity => (
+                    <div key={activity.id} className={common.activityItem}>
+                      <div className={common.activityIcon}>
+                        <activity.icon size={20} />
+                      </div>
+                      <div className={common.activityContent}>
+                        <h4 className={common.activityTitle}>{activity.title}</h4>
+                        <p className={common.activityDescription}>
+                          {activity.description}
+                          {activity.amount ? ` - $${activity.amount.toLocaleString()}` : ''}
+                        </p>
+                        <div className={common.activityTime}>{activity.time}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </Card>
           </div>
