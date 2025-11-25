@@ -1,17 +1,21 @@
 import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
 
 // @AI-HINT: Hook to fetch client portal datasets (projects, payments, freelancers, reviews).
 
 export type ClientProject = { 
   id: string; 
   title: string; 
-  status: 'Open' | 'In Progress' | 'Completed'; 
+  status: 'Open' | 'In Progress' | 'Completed' | 'Pending' | 'Cancelled'; 
   budget: string; 
   updatedAt?: string;
   updated?: string;
   description?: string;
   skills?: string[];
   client?: string;
+  progress?: number;
+  paid?: number;
+  freelancers?: any[];
 };
 
 export type ClientPayment = { 
@@ -21,6 +25,9 @@ export type ClientPayment = {
   amount: string; 
   status: 'Completed' | 'Pending' | 'Failed';
   type: 'Payment' | 'Refund';
+  project?: string;
+  freelancer?: string;
+  freelancerAvatarUrl?: string;
 };
 
 export type ClientFreelancer = { 
@@ -32,6 +39,8 @@ export type ClientFreelancer = {
   skills: string[];
   completedProjects: number;
   avatarUrl?: string;
+  location?: string;
+  availability?: string;
 };
 
 export type ClientReview = { 
@@ -59,33 +68,77 @@ export function useClientData() {
       setLoading(true);
       setError(null);
       try {
-        // Get auth token from localStorage
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-        
-        // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
-        const fetchWithFallback = async (url: string, fallback: any = []) => {
+        const fetchWithFallback = async (promise: Promise<any>, fallback: any = []) => {
           try {
-            const res = await fetch(url, { headers });
-            if (!res.ok) return fallback;
-            return await res.json();
+            return await promise;
           } catch {
             return fallback;
           }
         };
         
-        const [projectsJson, paymentsJson, freelancersJson, reviewsJson] = await Promise.all([
-          fetchWithFallback('/backend/api/client/projects', []),
-          fetchWithFallback('/backend/api/client/payments', []),
-          fetchWithFallback('/backend/api/portal/freelancers', []),
-          fetchWithFallback('/backend/api/reviews', []), // Reviews endpoint
+        const [projectsData, paymentsData, freelancersData, reviewsData] = await Promise.all([
+          fetchWithFallback(api.client.getProjects(), []),
+          fetchWithFallback(api.client.getPayments(), []),
+          fetchWithFallback(api.client.getFreelancers(), []),
+          fetchWithFallback(api.client.getReviews(), []),
         ]);
         
         if (!mounted) return;
-        setProjects(projectsJson?.projects ?? projectsJson ?? []);
-        setPayments(paymentsJson?.payments ?? paymentsJson ?? []);
-        setFreelancers(freelancersJson?.freelancers ?? freelancersJson ?? []);
-        setReviews(reviewsJson?.reviews ?? reviewsJson ?? []);
+        
+        // Map projects
+        const mappedProjects: ClientProject[] = (projectsData || []).map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          status: p.status,
+          budget: typeof p.budget === 'number' ? `$${p.budget.toLocaleString()}` : p.budget,
+          updatedAt: p.updatedAt,
+          progress: p.progress,
+          paid: p.paid,
+          freelancers: p.freelancers
+        }));
+        setProjects(mappedProjects);
+
+        // Map payments
+        const mappedPayments: ClientPayment[] = (paymentsData || []).map((p: any) => ({
+          id: p.id,
+          date: p.date,
+          description: p.description,
+          amount: p.amount.startsWith('$') ? p.amount : `$${parseFloat(p.amount).toLocaleString()}`,
+          status: p.status,
+          type: p.type,
+          project: p.project,
+          freelancer: p.freelancer,
+          freelancerAvatarUrl: p.freelancerAvatarUrl
+        }));
+        setPayments(mappedPayments);
+
+        // Map freelancers
+        const mappedFreelancers: ClientFreelancer[] = (freelancersData || []).map((f: any) => ({
+          id: f.id,
+          name: f.name,
+          title: f.title,
+          rating: f.rating,
+          hourlyRate: f.hourlyRate,
+          skills: f.skills,
+          completedProjects: f.completedProjects,
+          avatarUrl: f.avatarUrl,
+          location: f.location,
+          availability: f.availability
+        }));
+        setFreelancers(mappedFreelancers);
+
+        // Map reviews
+        const mappedReviews: ClientReview[] = (reviewsData || []).map((r: any) => ({
+          id: r.id,
+          projectTitle: r.projectTitle,
+          freelancerName: r.freelancerName,
+          rating: r.rating,
+          comment: r.comment,
+          date: r.date,
+          avatarUrl: r.avatarUrl
+        }));
+        setReviews(mappedReviews);
+
       } catch (e: any) {
         if (!mounted) return;
         setError(e?.message ?? 'Failed to load client data');

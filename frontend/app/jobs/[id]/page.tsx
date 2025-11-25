@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
+import { api } from '@/lib/api';
 import commonStyles from './JobDetail.common.module.css';
 import lightStyles from './JobDetail.light.module.css';
 import darkStyles from './JobDetail.dark.module.css';
@@ -174,7 +175,7 @@ export default function JobDetailPage() {
 
   useEffect(() => {
     // Check if user is authenticated
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('auth_token'); // api.ts uses auth_token
     setIsAuthenticated(!!token);
   }, []);
 
@@ -183,32 +184,23 @@ export default function JobDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('access_token');
-      
-      // Try authenticated endpoint first if user is logged in
-      if (token) {
-        const response = await fetch(`/backend/api/projects/${params.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        
-        if (response.ok) {
-          const project: Project = await response.json();
-          setJob(projectToJob(project));
-          return;
-        }
+      // Try authenticated endpoint first
+      try {
+        const project: any = await api.projects.get(Number(params.id));
+        setJob(projectToJob(project));
+        return;
+      } catch (e) {
+        // If auth fails or project not found via authenticated route, try search (public)
       }
       
       // Fallback to search endpoint (public)
-      const searchResponse = await fetch(`/backend/api/search/projects?limit=100`);
-      if (searchResponse.ok) {
-        const projects: Project[] = await searchResponse.json();
-        const foundProject = projects.find(p => String(p.id) === String(params.id));
-        if (foundProject) {
-          setJob(projectToJob(foundProject));
-          return;
-        }
+      const data: any = await api.search.projects('', { limit: 100 });
+      const projects = Array.isArray(data) ? data : (data.items || []);
+      const foundProject = projects.find((p: any) => String(p.id) === String(params.id));
+      
+      if (foundProject) {
+        setJob(projectToJob(foundProject));
+        return;
       }
       
       setError('Project not found');
@@ -230,7 +222,7 @@ export default function JobDetailPage() {
     setSubmitError('');
 
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('auth_token');
       if (!token) {
         router.push('/login?redirect=' + encodeURIComponent(`/jobs/${job?.id}`));
         return;
@@ -249,31 +241,21 @@ export default function JobDetailPage() {
       const bidAmount = parseFloat(proposalData.bidAmount) || (estimatedHours * hourlyRate);
 
       // Submit proposal to backend
-      const response = await fetch('/backend/api/proposals', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          project_id: parseInt(job?.id || '1'),
-          cover_letter: proposalData.coverLetter,
-          bid_amount: bidAmount,
-          estimated_hours: estimatedHours,
-          hourly_rate: hourlyRate,
-          availability: proposalData.deliveryTime || 'flexible',
-        }),
-      });
+      await api.proposals.create({
+        project_id: parseInt(job?.id || '1'),
+        cover_letter: proposalData.coverLetter,
+        bid_amount: bidAmount,
+        estimated_hours: estimatedHours,
+        hourly_rate: hourlyRate,
+        availability: proposalData.deliveryTime || 'flexible',
+        proposed_rate: hourlyRate,
+        estimated_duration: proposalData.deliveryTime || 'flexible'
+      } as any);
 
-      if (response.ok) {
-        setSubmitted(true);
-        setShowProposalForm(false);
-      } else {
-        const data = await response.json();
-        setSubmitError(data.detail || 'Failed to submit proposal');
-      }
-    } catch (err) {
-      setSubmitError('Network error. Please try again.');
+      setSubmitted(true);
+      setShowProposalForm(false);
+    } catch (err: any) {
+      setSubmitError(err.message || 'Failed to submit proposal');
     } finally {
       setSubmitting(false);
     }

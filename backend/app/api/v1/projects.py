@@ -44,10 +44,9 @@ def list_projects(
     limit: int = Query(100, ge=1, le=100),
     status: Optional[str] = Query(None, description="Filter by project status"),
     category: Optional[str] = Query(None, description="Filter by category"),
-    search: Optional[str] = Query(None, description="Search in title and description"),
-    current_user: User = Depends(get_current_active_user)
+    search: Optional[str] = Query(None, description="Search in title and description")
 ):
-    """List projects from Turso database"""
+    """List projects from Turso database (Public)"""
     try:
         turso = get_turso_http()
         
@@ -61,6 +60,10 @@ def list_projects(
         if status:
             sql += " AND status = ?"
             params.append(status)
+        else:
+            # By default only show open projects for public list
+            sql += " AND status = 'open'"
+            
         if category:
             sql += " AND category = ?"
             params.append(category)
@@ -121,10 +124,9 @@ def get_my_projects(
 
 @router.get("/{project_id}", response_model=ProjectRead)
 def get_project(
-    project_id: int,
-    current_user: User = Depends(get_current_active_user)
+    project_id: int
 ):
-    """Get single project from Turso"""
+    """Get single project from Turso (Public)"""
     try:
         turso = get_turso_http()
         row = turso.fetch_one(

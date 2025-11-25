@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './PortfolioUploadWizard.common.module.css';
 import lightStyles from './PortfolioUploadWizard.light.module.css';
@@ -610,16 +611,8 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
         formData.append(`image_${index}_is_cover`, image.isCover.toString());
       });
 
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/portfolio/items', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
-      });
-
-      if (response.ok) {
-        router.push('/freelancer/portfolio');
-      }
+      await api.portfolio.createItem(formData);
+      router.push('/freelancer/portfolio');
     } catch (error) {
       console.error('Error:', error);
       setIsSubmitting(false);

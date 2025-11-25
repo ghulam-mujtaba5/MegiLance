@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { FaStar, FaPaperPlane, FaCheckCircle } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 
@@ -98,24 +99,21 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/reviews', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contractId,
-          revieweeId,
-          ...review,
-        }),
+      await api.reviews.create({
+        contract_id: contractId,
+        reviewed_user_id: revieweeId,
+        rating: review.rating,
+        review_text: review.comment,
+        quality_rating: review.criteria.quality,
+        communication_rating: review.criteria.communication,
+        deadline_rating: review.criteria.timeliness,
+        professionalism_rating: review.criteria.professionalism,
+        would_recommend: review.wouldRecommend,
+        is_public: review.isPublic,
       });
 
-      if (response.ok) {
-        setSubmitted(true);
-        onSubmit?.();
-      }
+      setSubmitted(true);
+      onSubmit?.();
     } catch (error) {
       console.error('Failed to submit review:', error);
       alert('Failed to submit review. Please try again.');

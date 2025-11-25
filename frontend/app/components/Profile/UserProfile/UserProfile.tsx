@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { 
   FaStar, FaMapMarkerAlt, FaClock, FaCheckCircle, FaDollarSign,
   FaLinkedin, FaGithub, FaGlobe, FaEnvelope, FaPhone,
@@ -87,11 +88,23 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
   const loadProfile = async () => {
     try {
-      const response = await fetch(`/backend/api/users/${userId}/profile`);
-      if (response.ok) {
-        const data = await response.json();
-        setProfile(data);
-      }
+      const data = await api.users.get(userId);
+      // Map backend fields to frontend expected format
+      setProfile({
+        ...data,
+        avatarUrl: data.profile_image_url,
+        hourlyRate: data.hourly_rate,
+        joinedAt: data.joined_at,
+        // Use title from profile_data if available, else user_type
+        title: data.title || data.user_type || 'Freelancer',
+        // Ensure skills is an array
+        skills: Array.isArray(data.skills) ? data.skills : (data.skills ? [data.skills] : []),
+        // Map other fields if needed
+        linkedinUrl: data.linkedin_url,
+        githubUrl: data.github_url,
+        websiteUrl: data.website_url,
+        phone: data.phone_number
+      });
     } catch (error) {
       console.error('Failed to load profile:', error);
     } finally {
@@ -101,11 +114,18 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
   const loadPortfolio = async () => {
     try {
-      const response = await fetch(`/backend/api/users/${userId}/portfolio`);
-      if (response.ok) {
-        const data = await response.json();
-        setPortfolio(data);
-      }
+      const data = await api.portfolio.list(userId);
+      // Map backend fields
+      const mappedPortfolio = data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        imageUrl: item.image_url || '/placeholder-project.jpg',
+        projectUrl: item.project_url,
+        tags: item.tags || [],
+        completedAt: item.created_at
+      }));
+      setPortfolio(mappedPortfolio);
     } catch (error) {
       console.error('Failed to load portfolio:', error);
     }
@@ -113,11 +133,24 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
   const loadReviews = async () => {
     try {
-      const response = await fetch(`/backend/api/users/${userId}/reviews`);
-      if (response.ok) {
-        const data = await response.json();
-        setReviews(data);
-      }
+      const data = await api.reviews.list({ user_id: Number(userId) });
+      // Map backend fields
+      const mappedReviews = (data as any[]).map((item: any) => ({
+        id: item.id,
+        reviewerName: item.reviewer_name || 'Anonymous',
+        reviewerAvatar: '/default-avatar.png', // Not returned by API yet
+        rating: item.rating,
+        comment: item.review_text,
+        projectTitle: item.project_title || 'Project',
+        createdAt: item.created_at,
+        criteria: {
+          quality: item.quality_rating || 0,
+          communication: item.communication_rating || 0,
+          timeliness: item.deadline_rating || 0,
+          professionalism: item.professionalism_rating || 0
+        }
+      }));
+      setReviews(mappedReviews);
     } catch (error) {
       console.error('Failed to load reviews:', error);
     }

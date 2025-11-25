@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
 import { Conversation } from '../types';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
@@ -32,14 +33,21 @@ const ConversationList: React.FC<ConversationListProps> = ({
     const fetchConversations = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/messages');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: Conversation[] = await response.json();
-        setConversations(data);
-        if (data.length > 0 && selectedConversationId === null) {
-          onSelectConversation(data[0].id);
+        const data = await api.messages.getConversations();
+        
+        const mappedConversations: Conversation[] = data.map((c: any) => ({
+          id: c.id,
+          contactName: c.contact_name || 'Unknown',
+          avatar: c.avatar || '/default-avatar.png',
+          lastMessage: c.last_message || '',
+          lastMessageTimestamp: c.last_message_at ? new Date(c.last_message_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+          unreadCount: c.unread_count || 0,
+          messages: []
+        }));
+
+        setConversations(mappedConversations);
+        if (mappedConversations.length > 0 && selectedConversationId === null) {
+          onSelectConversation(mappedConversations[0].id);
         }
       } catch (err: any) {
         setError(err.message);

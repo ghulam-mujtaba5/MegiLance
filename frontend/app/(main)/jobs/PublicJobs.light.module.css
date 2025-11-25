@@ -1,0 +1,23 @@
+.page {
+  background-color: #f8f9fa;
+  color: #1a1a1a;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.tag {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.budget {
+    color: #27AE60;
+}

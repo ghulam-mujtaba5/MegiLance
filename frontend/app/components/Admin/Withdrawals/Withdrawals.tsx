@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import clsx from 'clsx';
 import { CheckCircle, XCircle, MoreVertical, Copy, ArrowDownUp, Calendar, Inbox, Search, ChevronDown, Loader2 } from 'lucide-react';
 
+import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
@@ -77,26 +78,9 @@ const Withdrawals: React.FC = () => {
     async function fetchWithdrawals() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Authentication required');
-          setLoading(false);
-          return;
-        }
-
+        
         // Fetch outgoing payments (withdrawals/payouts)
-        const response = await fetch('/backend/api/payments/?limit=50', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch withdrawals: ${response.status}`);
-        }
-
-        const payments: ApiPayment[] = await response.json();
+        const payments: ApiPayment[] = await api.payments.list(50);
 
         // Transform API payments to withdrawal format
         const transformed: WithdrawalRequest[] = payments.map((payment) => ({

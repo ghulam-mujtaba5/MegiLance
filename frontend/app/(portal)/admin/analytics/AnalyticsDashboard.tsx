@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -77,29 +78,39 @@ const AnalyticsDashboard: React.FC = () => {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('access_token');
-      
-      // Fetch dashboard summary
-      const summaryRes = await fetch('/backend/api/analytics/dashboard/summary', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (summaryRes.ok) {
-        const data = await summaryRes.json();
-        setSummary(data);
+      const endDate = new Date().toISOString();
+      const startDate = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+      // Parallel fetch for better performance
+      const [summaryRes, regRes, revRes, userStatsRes, completionRes] = await Promise.allSettled([
+        api.analytics.getDashboardSummary(),
+        api.analytics.getRegistrationTrends(startDate, endDate),
+        api.analytics.getRevenueTrends(startDate, endDate),
+        api.analytics.getActiveUserStats(),
+        api.analytics.getCompletionRate()
+      ]);
+
+      // Process Summary
+      if (summaryRes.status === 'fulfilled' && completionRes.status === 'fulfilled') {
+        const s = summaryRes.value;
+        const c = completionRes.value;
+        setSummary({
+          total_users: s.users?.total_users || 0,
+          active_projects: s.projects?.status_breakdown?.in_progress || 0,
+          total_revenue: s.revenue?.total_revenue || 0,
+          completion_rate: (c.completion_rate || 0) / 100 // Convert 0-100 to 0-1
+        });
       }
 
-      // Fetch registration trends
-      const regRes = await fetch('/backend/api/analytics/registrations/trends?days=30', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (regRes.ok) {
-        const data = await regRes.json();
+      // Process Registration Trends
+      if (regRes.status === 'fulfilled') {
+        const data = regRes.value;
         setRegistrationData({
-          labels: data.dates,
+          labels: Array.isArray(data) ? data.map((d: any) => d.date) : [],
           datasets: [
             {
               label: 'New Registrations',
-              data: data.counts,
+              data: Array.isArray(data) ? data.map((d: any) => d.total) : [],
               borderColor: '#4573df',
               backgroundColor: 'rgba(69, 115, 223, 0.1)',
               fill: true,
@@ -109,18 +120,15 @@ const AnalyticsDashboard: React.FC = () => {
         });
       }
 
-      // Fetch revenue trends
-      const revRes = await fetch('/backend/api/analytics/revenue/trends?days=30', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (revRes.ok) {
-        const data = await revRes.json();
+      // Process Revenue Trends
+      if (revRes.status === 'fulfilled') {
+        const data = revRes.value;
         setRevenueData({
-          labels: data.dates,
+          labels: Array.isArray(data) ? data.map((d: any) => d.date) : [],
           datasets: [
             {
               label: 'Revenue ($)',
-              data: data.amounts,
+              data: Array.isArray(data) ? data.map((d: any) => d.revenue) : [],
               backgroundColor: '#27AE60',
               borderColor: '#27AE60',
               borderWidth: 2,
@@ -129,17 +137,19 @@ const AnalyticsDashboard: React.FC = () => {
         });
       }
 
-      // Fetch user distribution
-      const userRes = await fetch('/backend/api/analytics/users/distribution', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (userRes.ok) {
-        const data = await userRes.json();
+      // Process User Distribution
+      if (userStatsRes.status === 'fulfilled') {
+        const data = userStatsRes.value;
+        const types = data.user_types || {};
         setUserDistribution({
           labels: ['Freelancers', 'Clients', 'Admins'],
           datasets: [
             {
-              data: [data.freelancers, data.clients, data.admins],
+              data: [
+                types.freelancer || 0,
+                types.client || 0,
+                types.admin || 0
+              ],
               backgroundColor: ['#4573df', '#ff9800', '#e81123'],
               borderColor: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff',
               borderWidth: 2,

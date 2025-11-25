@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { 
   FaFileAlt, FaMoneyBillWave, FaUsers, FaCheckCircle,
   FaArrowRight, FaArrowLeft, FaClock 
@@ -164,37 +165,23 @@ const ProjectWizard: React.FC = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/projects', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: projectData.title,
-          description: projectData.description,
-          category: projectData.category,
-          skills: projectData.skills,
-          budget_min: parseFloat(projectData.budgetMin),
-          budget_max: parseFloat(projectData.budgetMax),
-          budget_type: projectData.budgetType,
-          experience_level: projectData.experienceLevel,
-          estimated_duration: projectData.duration,
-          attachments: projectData.attachments,
-          status: 'OPEN',
-        }),
+      const project = await api.projects.create({
+        title: projectData.title,
+        description: projectData.description,
+        category: projectData.category,
+        skills: projectData.skills,
+        budget_min: parseFloat(projectData.budgetMin),
+        budget_max: parseFloat(projectData.budgetMax),
+        budget_type: projectData.budgetType,
+        experience_level: projectData.experienceLevel,
+        estimated_duration: projectData.duration,
+        attachments: projectData.attachments,
+        status: 'OPEN',
       });
 
-      if (response.ok) {
-        const project = await response.json();
-        router.push(`/dashboard/projects?new=${project.id}`);
-      } else {
-        const error = await response.json();
-        setErrors({ general: error.detail || 'Failed to create project' });
-      }
-    } catch (error) {
-      setErrors({ general: 'An error occurred. Please try again.' });
+      router.push(`/dashboard/projects?new=${project.id}`);
+    } catch (error: any) {
+      setErrors({ general: error.message || 'Failed to create project' });
     } finally {
       setLoading(false);
     }

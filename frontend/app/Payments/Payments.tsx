@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import { Loader2 } from 'lucide-react';
+import { api } from '@/lib/api';
 import commonStyles from './Payments.common.module.css';
 import lightStyles from './Payments.light.module.css';
 import darkStyles from './Payments.dark.module.css';
@@ -64,34 +65,15 @@ const Payments: React.FC = () => {
     async function fetchPayments() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Authentication required');
-          setLoading(false);
-          return;
-        }
+        
+        // Fetch user and payments in parallel
+        const [user, paymentsData] = await Promise.all([
+          api.auth.me(),
+          api.payments.list(50)
+        ]);
 
-        const response = await fetch('/backend/api/payments/?limit=50', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch payments: ${response.status}`);
-        }
-
-        const payments: ApiPayment[] = await response.json();
-
-        // Get current user ID from token (simple parsing)
-        let currentUserId: number | null = null;
-        try {
-          const payload = JSON.parse(atob(token.split('.')[1]));
-          currentUserId = payload.sub || payload.user_id;
-        } catch {
-          currentUserId = null;
-        }
+        const payments: ApiPayment[] = Array.isArray(paymentsData) ? paymentsData : (paymentsData as any).items || [];
+        const currentUserId = user.id;
 
         // Transform API payments to transaction format
         const transformed: Transaction[] = payments.map((payment) => {

@@ -1,6 +1,7 @@
 // @AI-HINT: Two-Factor Authentication setup component - enables/disables 2FA with QR code
 'use client';
 
+import api from '@/lib/api';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -60,17 +61,8 @@ const TwoFactorAuth: React.FC = () => {
   const checkTwoFactorStatus = async () => {
     setCheckingStatus(true);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/auth/2fa/status', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setIs2FAEnabled(data.enabled);
-      }
+      const data = await api.auth.get2FAStatus();
+      setIs2FAEnabled(data.enabled);
     } catch (error) {
       console.error('Error checking 2FA status:', error);
     } finally {
@@ -82,25 +74,11 @@ const TwoFactorAuth: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/auth/2fa/enable', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSetupData(data);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.detail || 'Failed to enable 2FA');
-      }
-    } catch (error) {
+      const data = await api.auth.enable2FA();
+      setSetupData(data);
+    } catch (error: any) {
       console.error('Error enabling 2FA:', error);
-      setError('An error occurred while enabling 2FA');
+      setError(error.message || 'Failed to enable 2FA');
     } finally {
       setLoading(false);
     }
@@ -115,28 +93,14 @@ const TwoFactorAuth: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/auth/2fa/verify', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code: verificationCode }),
-      });
-
-      if (response.ok) {
-        setSuccess('Two-Factor Authentication has been successfully enabled!');
-        setIs2FAEnabled(true);
-        setSetupData(null);
-        setVerificationCode('');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.detail || 'Invalid verification code');
-      }
-    } catch (error) {
+      await api.auth.verify2FA(verificationCode);
+      setSuccess('Two-Factor Authentication has been successfully enabled!');
+      setIs2FAEnabled(true);
+      setSetupData(null);
+      setVerificationCode('');
+    } catch (error: any) {
       console.error('Error verifying 2FA:', error);
-      setError('An error occurred while verifying the code');
+      setError(error.message || 'Invalid verification code');
     } finally {
       setLoading(false);
     }
@@ -150,25 +114,12 @@ const TwoFactorAuth: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/auth/2fa/disable', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setSuccess('Two-Factor Authentication has been disabled');
-        setIs2FAEnabled(false);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.detail || 'Failed to disable 2FA');
-      }
-    } catch (error) {
+      await api.auth.disable2FA();
+      setSuccess('Two-Factor Authentication has been disabled');
+      setIs2FAEnabled(false);
+    } catch (error: any) {
       console.error('Error disabling 2FA:', error);
-      setError('An error occurred while disabling 2FA');
+      setError(error.message || 'Failed to disable 2FA');
     } finally {
       setLoading(false);
     }

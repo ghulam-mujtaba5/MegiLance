@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { useRouter } from 'next/navigation';
 import { isPreviewMode } from '@/app/utils/flags';
 
@@ -91,29 +92,18 @@ const Signup: React.FC = () => {
     if (validate()) {
       setLoading(true);
       try {
-        const response = await fetch('/backend/api/auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-            full_name: formData.fullName,
-            role: selectedRole,
-          }),
+        await api.auth.register({
+          email: formData.email,
+          password: formData.password,
+          name: formData.fullName,
+          role: selectedRole,
         });
 
-        if (response.ok) {
-          // Show verification notice
-          router.push('/verify-email?registered=true');
-        } else {
-          const data = await response.json();
-          setErrors({ email: data.detail || 'Registration failed. Please try again.' });
-        }
-      } catch (error) {
+        // Show verification notice
+        router.push('/verify-email?registered=true');
+      } catch (error: any) {
         console.error('Signup error:', error);
-        setErrors({ email: 'An error occurred. Please try again.' });
+        setErrors({ email: error.message || 'Registration failed. Please try again.' });
       } finally {
         setLoading(false);
       }

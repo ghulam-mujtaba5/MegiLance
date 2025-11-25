@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { 
   FaUser, FaBriefcase, FaCertificate, FaFileAlt, 
   FaCheckCircle, FaArrowRight, FaArrowLeft 
@@ -171,24 +172,10 @@ const ProfileWizard: React.FC = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/users/me/complete-profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-      });
-
-      if (response.ok) {
-        router.push('/dashboard?onboarding=complete');
-      } else {
-        const error = await response.json();
-        setErrors({ general: error.detail || 'Failed to save profile' });
-      }
-    } catch (error) {
-      setErrors({ general: 'An error occurred. Please try again.' });
+      await api.users.completeProfile(profileData);
+      router.push('/dashboard?onboarding=complete');
+    } catch (error: any) {
+      setErrors({ general: error.message || 'Failed to save profile' });
     } finally {
       setLoading(false);
     }

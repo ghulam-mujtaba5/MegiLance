@@ -121,9 +121,47 @@ def get_conversations(
         return []
     
     rows = parse_rows(result)
+    conversations = []
+    
     for row in rows:
-        row["is_archived"] = bool(row.get("is_archived"))
-    return rows
+        conv = row
+        conv["is_archived"] = bool(conv.get("is_archived"))
+        
+        # Determine other user ID
+        other_user_id = conv["freelancer_id"] if conv["client_id"] == user_id else conv["client_id"]
+        
+        # Fetch other user details
+        user_res = execute_query("SELECT name, profile_image_url FROM users WHERE id = ?", [other_user_id])
+        if user_res and user_res.get("rows"):
+            u_rows = parse_rows(user_res)
+            if u_rows:
+                conv["contact_name"] = u_rows[0].get("name", "Unknown")
+                conv["avatar"] = u_rows[0].get("profile_image_url")
+        
+        # Fetch last message content
+        msg_res = execute_query(
+            "SELECT content, message_type FROM messages WHERE conversation_id = ? ORDER BY sent_at DESC LIMIT 1",
+            [conv["id"]]
+        )
+        if msg_res and msg_res.get("rows"):
+            m_rows = parse_rows(msg_res)
+            if m_rows:
+                conv["last_message"] = m_rows[0].get("content", "")
+                conv["last_message_type"] = m_rows[0].get("message_type", "text")
+        
+        # Fetch unread count
+        count_res = execute_query(
+            "SELECT COUNT(*) as count FROM messages WHERE conversation_id = ? AND receiver_id = ? AND is_read = 0",
+            [conv["id"], user_id]
+        )
+        if count_res and count_res.get("rows"):
+            c_rows = parse_rows(count_res)
+            if c_rows:
+                conv["unread_count"] = c_rows[0].get("count", 0)
+        
+        conversations.append(conv)
+        
+    return conversations
 
 
 @router.get("/conversations/{conversation_id}", response_model=dict)
@@ -155,6 +193,16 @@ def get_conversation(
         raise HTTPException(status_code=403, detail="Access denied")
     
     conversation["is_archived"] = bool(conversation.get("is_archived"))
+    
+    # Add contact info
+    other_user_id = conversation["freelancer_id"] if conversation["client_id"] == user_id else conversation["client_id"]
+    user_res = execute_query("SELECT name, profile_image_url FROM users WHERE id = ?", [other_user_id])
+    if user_res and user_res.get("rows"):
+        u_rows = parse_rows(user_res)
+        if u_rows:
+            conversation["contact_name"] = u_rows[0].get("name", "Unknown")
+            conversation["avatar"] = u_rows[0].get("profile_image_url")
+            
     return conversation
 
 
@@ -285,7 +333,24 @@ def send_message(
                 id_rows = parse_rows(id_result)
                 if id_rows:
                     conversation_id = id_rows[0].get("id", 0)
+    elif not receiver_id:
+        # Fetch receiver_id from conversation if not provided
+        result = execute_query(
+            "SELECT client_id, freelancer_id FROM conversations WHERE id = ?",
+            [conversation_id]
+        )
+        if result and result.get("rows"):
+            rows = parse_rows(result)
+            if rows:
+                conv = rows[0]
+                if conv["client_id"] == user_id:
+                    receiver_id = conv["freelancer_id"]
+                else:
+                    receiver_id = conv["client_id"]
     
+    if not receiver_id:
+         raise HTTPException(status_code=400, detail="Receiver ID could not be determined")
+
     now = datetime.utcnow().isoformat()
     
     # Create message

@@ -10,6 +10,7 @@ import commonStyles from './RefundRequestWizard.common.module.css';
 import lightStyles from './RefundRequestWizard.light.module.css';
 import darkStyles from './RefundRequestWizard.dark.module.css';
 import { FaUndo, FaExclamationTriangle, FaFileUpload, FaCalculator } from 'react-icons/fa';
+import { api } from '@/lib/api';
 
 interface EvidenceFile {
   id: string;
@@ -447,16 +448,8 @@ export default function RefundRequestWizard({
         formData.append(`evidence_${index}_description`, evidence.description);
       });
 
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/refunds', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData
-      });
-
-      if (response.ok) {
-        router.push('/payments/refunds');
-      }
+      await api.refunds.request(formData);
+      router.push('/payments/refunds');
     } catch (error) {
       console.error('Error:', error);
       setIsSubmitting(false);

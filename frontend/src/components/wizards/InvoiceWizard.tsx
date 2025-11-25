@@ -20,6 +20,7 @@ import {
   FaPaperPlane,
   FaInfoCircle
 } from 'react-icons/fa';
+import api from '@/lib/api';
 
 interface LineItem {
   id: string;
@@ -153,14 +154,8 @@ export default function InvoiceWizard({
 
   const loadClients = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/users/clients', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setClients(data);
-      }
+      const data = await api.users.getClients();
+      setClients(data);
     } catch (error) {
       console.error('Failed to load clients:', error);
     }
@@ -616,8 +611,6 @@ export default function InvoiceWizard({
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('access_token');
-      
       const payload = {
         user_id: userId,
         client_id: invoiceData.clientId,
@@ -637,20 +630,7 @@ export default function InvoiceWizard({
         due_date: invoiceData.dueDate
       };
 
-      const response = await fetch('/backend/api/invoices', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create invoice');
-      }
-
-      const result = await response.json();
+      const result = await api.invoices.create(payload);
 
       localStorage.removeItem('invoice_draft');
       

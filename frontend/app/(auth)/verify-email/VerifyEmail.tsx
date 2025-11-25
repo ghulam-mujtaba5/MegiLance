@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 
@@ -56,24 +57,12 @@ const VerifyEmail: React.FC = () => {
 
   const verifyEmail = async (verificationToken: string) => {
     try {
-      const response = await fetch(`/backend/api/auth/verify-email?token=${verificationToken}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        setStatus('success');
-        setMessage('Your email has been successfully verified! You can now log in to your account.');
-      } else {
-        const data = await response.json();
-        setStatus('error');
-        setMessage(data.detail || 'Invalid or expired verification link.');
-      }
-    } catch (error) {
+      await api.auth.verifyEmail(verificationToken);
+      setStatus('success');
+      setMessage('Your email has been successfully verified! You can now log in to your account.');
+    } catch (error: any) {
       setStatus('error');
-      setMessage('An error occurred while verifying your email. Please try again.');
+      setMessage(error.message || 'Invalid or expired verification link.');
       console.error('Email verification error:', error);
     }
   };

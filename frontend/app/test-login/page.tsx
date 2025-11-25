@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import api from '@/lib/api';
 import styles from './TestLogin.module.css';
 
 export default function TestLogin() {
@@ -12,22 +13,12 @@ export default function TestLogin() {
     setResult(null);
     
     try {
-      const response = await fetch('/backend/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: 'admin@megilance.com',
-          password: 'Password123!'
-        }),
-      });
-
-      const data = await response.json();
+      const data = await api.auth.login('admin@megilance.com', 'Password123!');
+      
       setResult({
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
+        status: 200,
+        statusText: 'OK',
+        ok: true,
         data
       });
     } catch (error: any) {

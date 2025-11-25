@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './PayoutMethodWizard.common.module.css';
 import lightStyles from './PayoutMethodWizard.light.module.css';
@@ -759,24 +760,10 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/payout-methods', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...methodData,
-          user_id: userId
-        })
+      const result = await api.payoutMethods.create({
+        ...methodData,
+        user_id: userId
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to add payout method');
-      }
-
-      const result = await response.json();
 
       // Clear draft
       localStorage.removeItem('payout_method_draft');

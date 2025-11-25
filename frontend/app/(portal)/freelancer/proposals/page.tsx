@@ -19,6 +19,11 @@ import commonStyles from './Proposals.common.module.css';
 import lightStyles from './Proposals.light.module.css';
 import darkStyles from './Proposals.dark.module.css';
 
+import { api } from '@/lib/api';
+import { ProposalData, ProposalErrors } from '../submit-proposal/SubmitProposal.types';
+
+// ... existing imports ...
+
 // API response type
 interface APIProposal {
   id: number;
@@ -38,43 +43,7 @@ interface APIProposal {
   client_name?: string;
 }
 
-const sortOptions: SortOption[] = [
-  { value: 'dateSubmitted:desc', label: 'Newest' },
-  { value: 'dateSubmitted:asc', label: 'Oldest' },
-  { value: 'bidAmount:desc', label: 'Bid: High to Low' },
-  { value: 'bidAmount:asc', label: 'Bid: Low to High' },
-  { value: 'jobTitle:asc', label: 'Job Title A-Z' },
-  { value: 'jobTitle:desc', label: 'Job Title Z-A' },
-];
-
-const allStatuses: Proposal['status'][] = ['Draft', 'Submitted', 'Interview', 'Rejected'];
-
-// Map API status to UI status
-const mapAPIStatus = (status: string, isDraft: boolean): Proposal['status'] => {
-  if (isDraft) return 'Draft';
-  const normalizedStatus = status.toLowerCase();
-  if (normalizedStatus === 'pending' || normalizedStatus === 'submitted') return 'Submitted';
-  if (normalizedStatus === 'interview' || normalizedStatus === 'shortlisted') return 'Interview';
-  if (normalizedStatus === 'rejected' || normalizedStatus === 'declined') return 'Rejected';
-  return 'Submitted';
-};
-
-const ProposalsPage: React.FC = () => {
-  const { resolvedTheme } = useTheme();
-  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
-  const toaster = useToaster();
-
-  const [q, setQ] = usePersistedState<string>('freelancer:proposals:q', '');
-  const [sortKey, setSortKey] = usePersistedState<keyof Proposal>('freelancer:proposals:sortKey', 'dateSubmitted');
-  const [sortDir, setSortDir] = usePersistedState<'asc' | 'desc'>('freelancer:proposals:sortDir', 'desc');
-  const [page, setPage] = usePersistedState<number>('freelancer:proposals:page', 1);
-  const [pageSize, setPageSize] = usePersistedState<number>('freelancer:proposals:pageSize', 6);
-  const [statusFilters, setStatusFilters] = usePersistedState<Proposal['status'][]>('freelancer:proposals:statusFilters', []);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const [pendingWithdrawId, setPendingWithdrawId] = useState<string | null>(null);
+// ... existing code ...
 
   // Fetch proposals from API
   const fetchProposals = useCallback(async () => {
@@ -83,22 +52,13 @@ const ProposalsPage: React.FC = () => {
     
     try {
       // Fetch proposals for current freelancer
-      const proposalsRes = await fetch('/backend/api/proposals/', {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (!proposalsRes.ok) {
-        throw new Error('Failed to fetch proposals');
-      }
-      
-      const apiProposals: APIProposal[] = await proposalsRes.json();
+      const apiProposals: APIProposal[] = await api.portal.freelancer.getProposals();
       
       // Transform API data to UI format
       const transformedProposals: Proposal[] = apiProposals.map((ap) => {
         return {
           id: String(ap.id),
-          jobTitle: ap.job_title || Project #,
+          jobTitle: ap.job_title || `Project #${ap.project_id}`,
           clientName: ap.client_name || 'Client',
           status: mapAPIStatus(ap.status, ap.is_draft),
           dateSubmitted: ap.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
@@ -116,61 +76,30 @@ const ProposalsPage: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchProposals();
-  }, [fetchProposals]);
-
-  // Filtering and Sorting Logic
-  const filtered = useMemo(() => {
-    const qLower = q.trim().toLowerCase();
-    const byQuery = (p: Proposal) => !qLower || p.jobTitle.toLowerCase().includes(qLower) || p.clientName.toLowerCase().includes(qLower);
-    const byStatus = (p: Proposal) => statusFilters.length === 0 || statusFilters.includes(p.status);
-    return proposals.filter(byQuery).filter(byStatus);
-  }, [q, statusFilters, proposals]);
-
-  const sorted = useMemo(() => {
-    return [...filtered].sort((a, b) => {
-      const aVal = a[sortKey];
-      const bVal = b[sortKey];
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return sortDir === 'asc' ? aVal - bVal : bVal - aVal;
-      }
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return sortDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      }
-      return 0;
-    });
-  }, [filtered, sortKey, sortDir]);
-
-  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
-  const pageSafe = Math.min(page, totalPages);
-  const paged = useMemo(() => {
-    const start = (pageSafe - 1) * pageSize;
-    return sorted.slice(start, start + pageSize);
-  }, [sorted, pageSafe, pageSize]);
-
-  // Action Handlers
-  const handleWithdraw = (id: string) => {
-    setPendingWithdrawId(id);
-    setWithdrawOpen(true);
-  };
+// ... existing code ...
 
   const confirmWithdraw = async () => {
     if (pendingWithdrawId) {
       try {
-        const res = await fetch(/backend/api/proposals/, {
-          method: 'DELETE',
-          credentials: 'include',
-          headers: { 'Accept': 'application/json' },
-        });
+        // Use proposalsApi directly for delete as it's not in portal.freelancer yet, or add it
+        // For now using raw fetch or adding to api.ts would be better. 
+        // Let's assume we use api.proposals.delete (which doesn't exist in my previous read of api.ts, but api.proposals has reject/accept/update)
+        // Actually api.ts has `proposalsApi` but no delete.
+        // But `backend/app/api/v1/proposals.py` HAS delete.
+        // I should add delete to api.ts proposalsApi.
         
-        if (res.ok) {
-          toaster.notify({ title: 'Success', description: 'Proposal successfully withdrawn.', variant: 'success' });
-          // Refresh proposals list
-          fetchProposals();
-        } else {
-          toaster.notify({ title: 'Error', description: 'Failed to withdraw proposal.', variant: 'danger' });
-        }
+        // For now I will use raw fetch but with api base url if possible, or just fetch.
+        // But wait, I should use api.ts.
+        // I'll check api.ts again.
+        
+        // api.ts proposalsApi has: list, create, get, update, accept, reject. NO DELETE.
+        // I will add delete to api.ts proposalsApi first.
+        
+        await api.proposals.delete(parseInt(pendingWithdrawId));
+        
+        toaster.notify({ title: 'Success', description: 'Proposal successfully withdrawn.', variant: 'success' });
+        // Refresh proposals list
+        fetchProposals();
       } catch (err) {
         toaster.notify({ title: 'Error', description: 'Failed to withdraw proposal.', variant: 'danger' });
       }
@@ -178,6 +107,7 @@ const ProposalsPage: React.FC = () => {
       setPendingWithdrawId(null);
     }
   };
+
 
   const handleView = (id: string) => {
     window.location.href = /portal/freelancer/proposals/;

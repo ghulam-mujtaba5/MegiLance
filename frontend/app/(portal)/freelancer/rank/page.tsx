@@ -1,6 +1,7 @@
 // @AI-HINT: This is the Freelancer Rank page, showcasing the AI-powered ranking system. It has been fully refactored for a premium, theme-aware, and data-centric design.
 'use client';
 
+import api from '@/lib/api';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 
@@ -29,7 +30,7 @@ interface RankData {
   factors: Array<{ label: string; score: number; description: string }>;
 }
 
-// Calculate rank from review stats
+// Calculate rank from stats
 const calculateRankFromStats = (stats: ReviewStats): RankData => {
   // Calculate overall score (0-100)
   const avgRating = stats.average_rating || 0;
@@ -116,29 +117,15 @@ const RankPage: React.FC = () => {
     
     try {
       // Get current user
-      const meRes = await fetch('/backend/api/auth/me', {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (!meRes.ok) {
-        throw new Error('Please log in to view your rank');
-      }
-      
-      const userData = await meRes.json();
+      const userData = await api.auth.me();
       const userId = userData.id;
       
       // Fetch review stats
-      const statsRes = await fetch(`/backend/api/reviews/reviews/stats/${userId}`, {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (statsRes.ok) {
-        const stats: ReviewStats = await statsRes.json();
-        const calculated = calculateRankFromStats(stats);
+      try {
+        const statsData = await api.reviews.getStats(userId);
+        const calculated = calculateRankFromStats(statsData as ReviewStats);
         setRankData(calculated);
-      } else {
+      } catch (err) {
         // No reviews yet - show default
         setRankData({
           overallRank: 'New Freelancer',

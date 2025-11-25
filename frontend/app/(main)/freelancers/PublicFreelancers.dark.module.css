@@ -1,0 +1,32 @@
+.page {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.title {
+  color: #ffffff;
+}
+
+.subtitle {
+  color: #a0a0a0;
+}
+
+.card {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+  border-color: #4573df;
+}
+
+.skill {
+  background-color: #333;
+  color: #e0e0e0;
+}
+
+.rate {
+  color: #64b5f6;
+}

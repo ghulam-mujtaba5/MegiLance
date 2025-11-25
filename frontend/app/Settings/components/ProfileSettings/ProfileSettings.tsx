@@ -5,6 +5,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
 
 import SettingsSection from '../SettingsSection/SettingsSection';
 import Input from '../../../components/Input/Input';
@@ -41,33 +42,15 @@ const ProfileSettings: React.FC = () => {
 
   const fetchProfile = useCallback(async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setStatus({ type: 'error', message: 'Please log in to view settings' });
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch('/backend/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+      const data = await api.auth.me();
+      setProfile({
+        fullName: data.full_name || '',
+        email: data.email || '',
+        bio: data.bio || '',
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProfile({
-          fullName: data.full_name || '',
-          email: data.email || '',
-          bio: data.bio || '',
-        });
-      } else {
-        setStatus({ type: 'error', message: 'Failed to load profile' });
-      }
     } catch (error) {
       console.error('Failed to fetch profile:', error);
-      setStatus({ type: 'error', message: 'Error loading profile' });
+      setStatus({ type: 'error', message: 'Failed to load profile. Please log in.' });
     } finally {
       setLoading(false);
     }
@@ -90,33 +73,14 @@ const ProfileSettings: React.FC = () => {
     setStatus(null);
 
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setStatus({ type: 'error', message: 'Please log in to save changes' });
-        return;
-      }
-
-      const response = await fetch('/backend/api/auth/me', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          full_name: profile.fullName,
-          bio: profile.bio,
-        }),
+      await api.auth.updateProfile({
+        full_name: profile.fullName,
+        bio: profile.bio,
       });
-
-      if (response.ok) {
-        setStatus({ type: 'success', message: 'Profile saved successfully!' });
-      } else {
-        const errorData = await response.json().catch(() => ({}));
-        setStatus({ type: 'error', message: errorData.detail || 'Failed to save profile' });
-      }
-    } catch (error) {
+      setStatus({ type: 'success', message: 'Profile saved successfully!' });
+    } catch (error: any) {
       console.error('Failed to save profile:', error);
-      setStatus({ type: 'error', message: 'Error saving profile' });
+      setStatus({ type: 'error', message: error.message || 'Failed to save profile' });
     } finally {
       setSaving(false);
     }

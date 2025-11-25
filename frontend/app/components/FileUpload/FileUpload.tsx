@@ -11,6 +11,8 @@ import commonStyles from './FileUpload.common.module.css';
 import lightStyles from './FileUpload.light.module.css';
 import darkStyles from './FileUpload.dark.module.css';
 
+import api from '@/lib/api';
+
 interface FileUploadProps {
   label?: string;
   accept?: string;
@@ -106,37 +108,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
     setUploadProgress(0);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const token = localStorage.getItem('access_token');
-      
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => Math.min(prev + 10, 90));
       }, 200);
 
-      const response = await fetch(`/backend/api/uploads/${uploadType}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const data = await api.uploads.upload(uploadType, file);
 
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      if (response.ok) {
-        const data = await response.json();
-        setUploadedUrl(data.url);
-        onUploadComplete?.(data.url);
-      } else {
-        const error = await response.json();
-        setUploadError(error.detail || 'Upload failed');
-      }
+      setUploadedUrl(data.url);
+      onUploadComplete?.(data.url);
     } catch (err) {
-      setUploadError('An error occurred during upload');
+      setUploadError(err instanceof Error ? err.message : 'An error occurred during upload');
     } finally {
       setUploading(false);
       setTimeout(() => setUploadProgress(0), 1000);

@@ -32,9 +32,12 @@ async function apiFetch<T>(
 ): Promise<T> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string> || {}),
   };
+
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -92,6 +95,24 @@ export const authApi = {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
+
+  get2FAStatus: () => apiFetch<{ enabled: boolean }>('/auth/2fa/status'),
+
+  enable2FA: () => apiFetch<{ secret: string; qr_code_url: string; backup_codes: string[] }>('/auth/2fa/enable', { method: 'POST' }),
+
+  verify2FA: (code: string) => apiFetch('/auth/2fa/verify', { 
+    method: 'POST', 
+    body: JSON.stringify({ code }) 
+  }),
+
+  verify2FALogin: (code: string, tempToken: string) => apiFetch<{ access_token: string }>('/auth/2fa/verify-login', {
+    method: 'POST',
+    body: JSON.stringify({ code, temp_token: tempToken }),
+  }),
+
+  verifyEmail: (token: string) => apiFetch(`/auth/verify-email?token=${token}`),
+
+  disable2FA: () => apiFetch('/auth/2fa/disable', { method: 'POST' }),
 };
 
 // ===========================
@@ -143,14 +164,7 @@ export const timeEntriesApi = {
 // INVOICES
 // ===========================
 export const invoicesApi = {
-  create: (data: {
-    contract_id: number;
-    to_user_id: number;
-    due_date: string;
-    items: Array<{ description: string; amount: number }>;
-    notes?: string;
-    tax_rate?: number;
-  }) =>
+  create: (data: any) =>
     apiFetch('/invoices/', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -313,15 +327,10 @@ export const supportTicketsApi = {
     return apiFetch(`/support-tickets/?${params}`);
   },
 
-  create: (data: {
-    subject: string;
-    description: string;
-    category: 'technical' | 'billing' | 'account' | 'project' | 'other';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-  }) =>
+  create: (data: any) =>
     apiFetch('/support-tickets/', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: data instanceof FormData ? data : JSON.stringify(data),
     }),
 
   get: (ticketId: number) =>
@@ -350,10 +359,10 @@ export const refundsApi = {
     return apiFetch(`/refunds/?${params}`);
   },
 
-  request: (data: { payment_id: number; amount: number; reason: string }) =>
+  request: (data: any) =>
     apiFetch('/refunds/', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: data instanceof FormData ? data : JSON.stringify(data),
     }),
 
   get: (refundId: number) =>
@@ -427,6 +436,9 @@ export const searchApi = {
   autocomplete: (query: string) =>
     apiFetch(`/search/autocomplete?q=${encodeURIComponent(query)}`),
 
+  suggestions: (query: string) =>
+    apiFetch(`/search/suggestions?q=${encodeURIComponent(query)}`),
+
   getTrending: (type: 'projects' | 'freelancers' = 'projects', limit = 10) =>
     apiFetch(`/search/trending?type=${type}&limit=${limit}`),
 };
@@ -454,6 +466,9 @@ export const projectsApi = {
   get: (projectId: number) =>
     apiFetch(`/projects/${projectId}`),
 
+  getMyProjects: () =>
+    apiFetch('/projects/my-projects'),
+
   update: (projectId: number, data: any) =>
     apiFetch(`/projects/${projectId}`, {
       method: 'PUT',
@@ -478,7 +493,7 @@ export const contractsApi = {
     return apiFetch(`/contracts/?${params}`);
   },
 
-  create: (data: { project_id: number; freelancer_id: number; terms: string; budget: number }) =>
+  create: (data: any) =>
     apiFetch('/contracts/', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -524,6 +539,9 @@ export const proposalsApi = {
       page_size: pageSize.toString() 
     })}`),
 
+  getDrafts: (projectId: number) =>
+    apiFetch(`/proposals/drafts?project_id=${projectId}`),
+
   create: (data: {
     project_id: number;
     cover_letter: string;
@@ -549,7 +567,142 @@ export const proposalsApi = {
 
   reject: (proposalId: number) =>
     apiFetch(`/proposals/${proposalId}/reject`, { method: 'POST' }),
+
+  delete: (proposalId: number) =>
+    apiFetch(`/proposals/${proposalId}`, { method: 'DELETE' }),
 };
+
+// ===========================
+// MILESTONES
+// ===========================
+export const milestonesApi = {
+  create: (data: any) =>
+    apiFetch('/milestones/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    
+  list: (projectId: string) => apiFetch(`/milestones/?project_id=${projectId}`),
+  
+  get: (id: string) => apiFetch(`/milestones/${id}`),
+  
+  update: (id: string, data: any) => 
+    apiFetch(`/milestones/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+    
+  delete: (id: string) => 
+    apiFetch(`/milestones/${id}`, { method: 'DELETE' }),
+};
+
+// ===========================
+// MESSAGES
+// ===========================
+export const messagesApi = {
+  createConversation: (data: any) =>
+    apiFetch('/messages/conversations', {
+      method: 'POST',
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    }),
+
+  getConversations: (filters?: { status?: string; archived?: boolean; skip?: number; limit?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/conversations?${params}`);
+  },
+
+  getConversation: (conversationId: number) =>
+    apiFetch(`/conversations/${conversationId}`),
+
+  updateConversation: (conversationId: number, data: { status?: string; is_archived?: boolean }) =>
+    apiFetch(`/conversations/${conversationId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  sendMessage: (data: { conversation_id?: number; receiver_id?: number; project_id?: number; content: string; message_type?: string }) =>
+    apiFetch('/messages', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getMessages: (conversationId: number, skip = 0, limit = 50) =>
+    apiFetch(`/messages?conversation_id=${conversationId}&skip=${skip}&limit=${limit}`),
+
+  getMessage: (messageId: number) =>
+    apiFetch(`/messages/${messageId}`),
+
+  updateMessage: (messageId: number, data: { content?: string; is_read?: boolean }) =>
+    apiFetch(`/messages/${messageId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  deleteMessage: (messageId: number) =>
+    apiFetch(`/messages/${messageId}`, { method: 'DELETE' }),
+
+  getUnreadCount: () =>
+    apiFetch('/messages/unread/count'),
+};
+
+// ===========================
+// NOTIFICATIONS
+// ===========================
+export const notificationsApi = {
+  list: (page = 1, pageSize = 20) =>
+    apiFetch(`/notifications/?page=${page}&page_size=${pageSize}`),
+
+  markAsRead: (notificationId: number) =>
+    apiFetch(`/notifications/${notificationId}/read`, { method: 'POST' }),
+
+  markAllAsRead: () =>
+    apiFetch('/notifications/read-all', { method: 'POST' }),
+
+  delete: (notificationId: number) =>
+    apiFetch(`/notifications/${notificationId}`, { method: 'DELETE' }),
+};
+
+// ===========================
+// PAYMENTS
+// ===========================
+export const paymentsApi = {
+  list: (limit = 50, skip = 0) =>
+    apiFetch(`/payments/?limit=${limit}&skip=${skip}`),
+    
+  get: (paymentId: number) =>
+    apiFetch(`/payments/${paymentId}`),
+
+  addFunds: (data: any) =>
+    apiFetch('/payments/add-funds', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  withdraw: (data: any) =>
+    apiFetch('/withdrawals', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  createIntent: (data: any) =>
+    apiFetch('/payments/create-payment-intent', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
+// ===========================
+// PAYMENT METHODS
+// ===========================
+export const paymentMethodsApi = {
+  list: () => apiFetch('/payment-methods'),
+};
+
 
 // ===========================
 // REVIEWS
@@ -573,17 +726,7 @@ export const reviewsApi = {
     return apiFetch(`/reviews/?${params}`);
   },
 
-  create: (data: {
-    contract_id: number;
-    reviewed_user_id: number;
-    rating: number;
-    review_text: string;
-    communication_rating?: number;
-    quality_rating?: number;
-    professionalism_rating?: number;
-    deadline_rating?: number;
-    is_public?: boolean;
-  }) =>
+  create: (data: any) =>
     apiFetch('/reviews/', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -594,6 +737,9 @@ export const reviewsApi = {
     
   getStats: (userId: number) =>
     apiFetch(`/reviews/stats/${userId}`),
+
+  delete: (reviewId: number) =>
+    apiFetch(`/reviews/${reviewId}`, { method: 'DELETE' }),
 };
 
 // ===========================
@@ -671,6 +817,16 @@ export const portalApi = {
       }
       return apiFetch(`/portal/freelancer/projects?${params}`);
     },
+    getProposals: (filters?: { status?: string; skip?: number; limit?: number }) => {
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined) params.append(key, value.toString());
+        });
+      }
+      // Use the general proposals endpoint which handles freelancer context
+      return apiFetch(`/proposals/?${params}`);
+    },
     submitProposal: (data: {
       project_id: number;
       cover_letter: string;
@@ -698,8 +854,260 @@ export const portalApi = {
   }
 };
 
+// ===========================
+// USERS
+// ===========================
+export const usersApi = {
+  completeOnboarding: (data: any) =>
+    apiFetch('/users/onboarding-complete', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  search: (query: string, type: string) =>
+    apiFetch(`/users/search?q=${query}&type=${type}`),
+
+  getClients: () =>
+    apiFetch('/users/clients'),
+
+  getNotificationPreferences: () =>
+    apiFetch('/users/me/notification-preferences'),
+
+  updateNotificationPreferences: (data: any) =>
+    apiFetch('/users/me/notification-preferences', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  get: (userId: string | number) =>
+    apiFetch(`/users/${userId}`),
+
+  completeProfile: (data: any) =>
+    apiFetch('/users/me/complete-profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+};
+
+// ===========================
+// ADMIN
+// ===========================
+export const adminApi = {
+  getDashboardStats: () => apiFetch('/admin/dashboard/stats'),
+  getUserActivity: () => apiFetch('/admin/dashboard/user-activity'),
+  getProjectMetrics: () => apiFetch('/admin/dashboard/project-metrics'),
+  getFinancialMetrics: () => apiFetch('/admin/dashboard/financial-metrics'),
+  getTopFreelancers: (limit = 10) => apiFetch(`/admin/dashboard/top-freelancers?limit=${limit}`),
+  getTopClients: (limit = 10) => apiFetch(`/admin/dashboard/top-clients?limit=${limit}`),
+  getRecentActivity: (limit = 20) => apiFetch(`/admin/dashboard/recent-activity?limit=${limit}`),
+  
+  getUsers: (filters?: { role?: string; search?: string; skip?: number; limit?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/admin/users?${params}`);
+  },
+  
+  toggleUserStatus: (userId: number) => 
+    apiFetch(`/admin/users/${userId}/toggle-status`, { method: 'POST' }),
+    
+  getProjects: (filters?: { status?: string; skip?: number; limit?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/admin/projects?${params}`);
+  },
+  
+  getPayments: (filters?: { status?: string; skip?: number; limit?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/admin/payments?${params}`);
+  },
+  
+  getAnalytics: () => apiFetch('/admin/analytics/overview'),
+  getSettings: () => apiFetch('/admin/settings'),
+};
+
+// ===========================
+// CLIENT (Direct)
+// ===========================
+export const clientApi = {
+  getProjects: () => apiFetch<any[]>('/client/projects'),
+  getPayments: () => apiFetch<any[]>('/client/payments'),
+  getFreelancers: () => apiFetch<any[]>('/client/freelancers'),
+  getReviews: () => apiFetch<any[]>('/client/reviews'),
+  createJob: (data: any) => apiFetch('/client/jobs', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+};
+
+// ===========================
+// SKILLS
+// ===========================
+export const skillsApi = {
+  getQuestions: (skillId: string, level: string) => apiFetch(`/skills/${skillId}/questions?level=${level}`),
+  submitAssessment: (data: any) => apiFetch('/skills/assessments', { method: 'POST', body: JSON.stringify(data) }),
+};
+
+// ===========================
+// PORTFOLIO
+// ===========================
+export const portfolioApi = {
+  createItem: (data: any) =>
+    apiFetch('/portfolio/items', {
+      method: 'POST',
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    }),
+
+  list: (userId?: string | number) =>
+    apiFetch(`/portfolio${userId ? `?user_id=${userId}` : ''}`),
+
+  get: (id: number) => apiFetch(`/portfolio/${id}`),
+
+  update: (id: number, data: any) =>
+    apiFetch(`/portfolio/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id: number) =>
+    apiFetch(`/portfolio/${id}`, { method: 'DELETE' }),
+};
+
+// ===========================
+// PAYOUT METHODS
+// ===========================
+export const payoutMethodsApi = {
+  create: (data: any) =>
+    apiFetch('/payout-methods/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    
+  list: () => apiFetch('/payout-methods/'),
+  
+  get: (id: string) => apiFetch(`/payout-methods/${id}`),
+  
+  update: (id: string, data: any) => 
+    apiFetch(`/payout-methods/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+    
+  delete: (id: string) => 
+    apiFetch(`/payout-methods/${id}`, { method: 'DELETE' }),
+};
+
+// ===========================
+// DISPUTES
+// ===========================
+export const disputesApi = {
+  create: (data: any) =>
+    apiFetch('/disputes/', {
+      method: 'POST',
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    }),
+
+  list: (filters?: { status?: string; page?: number; page_size?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/disputes/?${params}`);
+  },
+
+  get: (disputeId: number) =>
+    apiFetch(`/disputes/${disputeId}`),
+
+  update: (disputeId: number, data: any) =>
+    apiFetch(`/disputes/${disputeId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+};
+
+// ===========================
+// SAVED SEARCHES
+// ===========================
+export const searchesApi = {
+  getSaved: () => apiFetch('/searches/saved'),
+
+  save: (data: any) =>
+    apiFetch('/searches/save', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  delete: (id: string) =>
+    apiFetch(`/searches/${id}`, { method: 'DELETE' }),
+};
+
+// ===========================
+// UPLOADS
+// ===========================
+export const uploadsApi = {
+  upload: (type: 'avatar' | 'portfolio' | 'document', file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiFetch<{ url: string }>(`/uploads/${type}`, {
+      method: 'POST',
+      body: formData,
+    });
+  },
+};
+
+// ===========================
+// AI
+// ===========================
+export const aiApi = {
+  checkFraud: (userId: number) =>
+    apiFetch<{
+      user_id: number;
+      risk_score: number;
+      risk_level: string;
+      risk_factors: string[];
+      recommendation: string;
+    }>(`/ai/fraud-check/user/${userId}`),
+};
+
+// ===========================
+// ANALYTICS
+// ===========================
+export const analyticsApi = {
+  getDashboardSummary: () => apiFetch('/analytics/dashboard/summary'),
+  
+  getRegistrationTrends: (startDate: string, endDate: string, interval: 'day' | 'week' | 'month' = 'day') => 
+    apiFetch(`/analytics/users/registration-trends?start_date=${startDate}&end_date=${endDate}&interval=${interval}`),
+    
+  getRevenueTrends: (startDate: string, endDate: string, interval: 'day' | 'week' | 'month' = 'day') => 
+    apiFetch(`/analytics/revenue/trends?start_date=${startDate}&end_date=${endDate}&interval=${interval}`),
+    
+  getActiveUserStats: (days: number = 30) => 
+    apiFetch(`/analytics/users/active-stats?days=${days}`),
+    
+  getCompletionRate: () => 
+    apiFetch('/analytics/projects/completion-rate'),
+
+  getUserDistribution: () => 
+    apiFetch('/analytics/users/location-distribution'),
+};
+
 export default {
   auth: authApi,
+  analytics: analyticsApi,
   timeEntries: timeEntriesApi,
   invoices: invoicesApi,
   escrow: escrowApi,
@@ -712,7 +1120,22 @@ export default {
   projects: projectsApi,
   contracts: contractsApi,
   proposals: proposalsApi,
+  messages: messagesApi,
+  notifications: notificationsApi,
+  payments: paymentsApi,
   reviews: reviewsApi,
   jobAlerts: jobAlertsApi,
   portal: portalApi,
+  admin: adminApi,
+  client: clientApi,
+  skills: skillsApi,
+  portfolio: portfolioApi,
+  payoutMethods: payoutMethodsApi,
+  paymentMethods: paymentMethodsApi,
+  users: usersApi,
+  milestones: milestonesApi,
+  disputes: disputesApi,
+  searches: searchesApi,
+  uploads: uploadsApi,
+  ai: aiApi,
 };

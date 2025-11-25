@@ -44,7 +44,7 @@ def _to_str(value) -> Optional[str]:
 
 def _row_to_user_dict(row: list) -> dict:
     """Convert database row to user dict"""
-    return {
+    user_dict = {
         "id": row[0],
         "email": _to_str(row[1]),
         "name": _to_str(row[2]),
@@ -52,8 +52,39 @@ def _row_to_user_dict(row: list) -> dict:
         "is_active": bool(row[4]) if row[4] is not None else True,
         "user_type": _to_str(row[5]),
         "joined_at": _parse_date(row[6]),
-        "created_at": _parse_date(row[7])
+        "created_at": _parse_date(row[7]),
+        "bio": _to_str(row[8]) if len(row) > 8 else None,
+        "skills": _to_str(row[9]) if len(row) > 9 else None,
+        "hourly_rate": row[10] if len(row) > 10 else None,
+        "profile_image_url": _to_str(row[11]) if len(row) > 11 else None,
+        "location": _to_str(row[12]) if len(row) > 12 else None,
     }
+    
+    # Parse profile_data if present
+    if len(row) > 13 and row[13]:
+        try:
+            profile_data = json.loads(_to_str(row[13]))
+            if isinstance(profile_data, dict):
+                user_dict.update(profile_data)
+        except:
+            pass
+            
+    # Parse skills if it looks like a list string
+    if user_dict.get("skills"):
+        try:
+            # If it's a JSON string list
+            if user_dict["skills"].startswith("["):
+                user_dict["skills"] = json.loads(user_dict["skills"])
+            # If it's comma separated
+            elif "," in user_dict["skills"]:
+                user_dict["skills"] = [s.strip() for s in user_dict["skills"].split(",")]
+            # If it's a single string, make it a list
+            elif isinstance(user_dict["skills"], str):
+                user_dict["skills"] = [user_dict["skills"]]
+        except:
+            pass
+            
+    return user_dict
 
 
 @router.get("/", response_model=List[UserRead])
@@ -62,7 +93,9 @@ def list_users():
     try:
         turso = get_turso_http()
         result = turso.execute(
-            "SELECT id, email, name, role, is_active, user_type, joined_at, created_at FROM users"
+            """SELECT id, email, name, role, is_active, user_type, joined_at, created_at,
+                      bio, skills, hourly_rate, profile_image_url, location, profile_data 
+               FROM users"""
         )
         
         users = [_row_to_user_dict(row) for row in result.get("rows", [])]
@@ -82,7 +115,9 @@ def get_user(user_id: int):
     try:
         turso = get_turso_http()
         row = turso.fetch_one(
-            "SELECT id, email, name, role, is_active, user_type, joined_at, created_at FROM users WHERE id = ?",
+            """SELECT id, email, name, role, is_active, user_type, joined_at, created_at,
+                      bio, skills, hourly_rate, profile_image_url, location, profile_data 
+               FROM users WHERE id = ?""",
             [user_id]
         )
         

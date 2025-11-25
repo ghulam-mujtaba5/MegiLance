@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
 
 // @AI-HINT: Hook to fetch admin portal datasets (users, projects, payments, support tickets, AI monitoring, dashboard KPIs, stats, recent activity).
 
@@ -62,37 +63,70 @@ export function useAdminData() {
       setLoading(true);
       setError(null);
       try {
-        // Get auth token from localStorage (stored as access_token during login)
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-        
-        // Use the backend proxy endpoints - fetch each individually and handle failures gracefully
-        const fetchWithFallback = async <T>(url: string, fallback: T): Promise<T> => {
+        // Use the API client methods
+        const fetchWithFallback = async (promise: Promise<any>, fallback: any = []) => {
           try {
-            const res = await fetch(url, { headers });
-            if (!res.ok) return fallback;
-            return await res.json();
+            return await promise;
           } catch {
             return fallback;
           }
         };
         
         const [usersJson, projJson, payJson, supJson, aiJson, dashJson, activityJson] = await Promise.all([
-          fetchWithFallback('/backend/api/admin/users', []),
-          fetchWithFallback('/backend/api/admin/projects', []),
-          fetchWithFallback('/backend/api/admin/payments', []),
-          fetchWithFallback('/backend/api/admin/support/tickets', []),
-          fetchWithFallback('/backend/api/admin/ai/usage', {}),
-          fetchWithFallback<SystemStats | null>('/backend/api/admin/dashboard/stats', null),
-          fetchWithFallback<RecentActivity[]>('/backend/api/admin/dashboard/recent-activity', []),
+          fetchWithFallback(api.admin.getUsers(), { users: [] }),
+          fetchWithFallback(api.admin.getProjects(), { projects: [] }),
+          fetchWithFallback(api.admin.getPayments(), { payments: [] }),
+          fetchWithFallback(api.supportTickets.list(), { tickets: [] }),
+          fetchWithFallback(api.admin.getAnalytics(), {}), // Using analytics as proxy for AI usage for now
+          fetchWithFallback<SystemStats | null>(api.admin.getDashboardStats(), null),
+          fetchWithFallback<RecentActivity[]>(api.admin.getRecentActivity(), []),
         ]);
         
         if (!mounted) return;
-        setUsers(usersJson?.users ?? usersJson ?? []);
-        setProjects(projJson?.projects ?? projJson ?? []);
-        setPayments(payJson?.payments ?? payJson ?? []);
-        setTickets(supJson?.tickets ?? supJson ?? []);
-        setAI(aiJson);
+        
+        // Map users
+        const mappedUsers: AdminUser[] = (usersJson.users || []).map((u: any) => ({
+          id: String(u.id),
+          name: u.name || 'Unknown',
+          email: u.email || '',
+          role: u.user_type || 'User',
+          status: u.is_active ? 'Active' : 'Suspended',
+          joined: u.joined_at || new Date().toISOString()
+        }));
+        setUsers(mappedUsers);
+
+        // Map projects
+        const mappedProjects: AdminProject[] = (projJson.projects || []).map((p: any) => ({
+          id: String(p.id),
+          title: p.title || 'Untitled',
+          client: `Client #${p.client_id}`, // We might need to fetch client name separately or join in backend
+          status: p.status || 'Unknown',
+          budget: `$${p.budget_min} - $${p.budget_max}`,
+          updatedAt: p.updated_at
+        }));
+        setProjects(mappedProjects);
+
+        // Map payments
+        const mappedPayments: AdminPayment[] = (payJson.payments || []).map((p: any) => ({
+          id: String(p.id),
+          date: p.created_at,
+          description: p.description || p.payment_type,
+          amount: `$${p.amount}`,
+          status: p.status
+        }));
+        setPayments(mappedPayments);
+
+        // Map tickets
+        const mappedTickets: AdminSupportTicket[] = (supJson.tickets || []).map((t: any) => ({
+          id: String(t.id),
+          subject: t.subject,
+          status: t.status,
+          createdAt: t.created_at,
+          priority: t.priority
+        }));
+        setTickets(mappedTickets);
+
+        setAI(aiJson); // Placeholder
         setSystemStats(dashJson);
         setRecentActivity(activityJson);
         

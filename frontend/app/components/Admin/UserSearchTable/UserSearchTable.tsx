@@ -4,6 +4,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import Badge from '@/app/components/Badge/Badge';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
@@ -134,16 +135,7 @@ const UserSearchTable: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-      const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-      
-      const response = await fetch('/backend/api/admin/users/list', { headers });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch users: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await api.admin.getUsers();
       const userList = data.users ?? data ?? [];
       const transformed = userList.map(transformUser);
       setUsers(transformed);
@@ -161,20 +153,7 @@ const UserSearchTable: React.FC = () => {
   // Toggle user status (suspend/activate)
   const handleToggleStatus = useCallback(async (userId: string) => {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      };
-      
-      const response = await fetch(`/backend/api/admin/users/${userId}/toggle-status`, {
-        method: 'POST',
-        headers,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to toggle user status');
-      }
+      await api.admin.toggleUserStatus(Number(userId));
       
       // Refresh user list
       fetchUsers();

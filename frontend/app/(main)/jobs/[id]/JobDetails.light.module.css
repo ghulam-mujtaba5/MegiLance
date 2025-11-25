@@ -1,0 +1,13 @@
+.header {
+  border-bottom-color: #e2e8f0;
+}
+
+.sidebarCard {
+  background-color: #f8f9fa;
+  border: 1px solid #e2e8f0;
+}
+
+.skillTag {
+  background-color: #e2e8f0;
+  color: #2d3748;
+}

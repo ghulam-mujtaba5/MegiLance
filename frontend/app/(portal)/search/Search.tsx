@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import api from '@/lib/api';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
@@ -53,31 +54,33 @@ const Search: React.FC = () => {
     try {
       // Search projects if type is All or Project
       if (searchType === 'All' || searchType === 'Project') {
-        const projectRes = await fetch(`/backend/api/search/projects?q=${encodeURIComponent(searchQuery)}&limit=10`);
-        if (projectRes.ok) {
-          const projects = await projectRes.json();
-          allResults.push(...projects.map((p: any) => ({
+        try {
+          const projects = await api.search.projects(searchQuery, { page_size: 10 });
+          allResults.push(...(Array.isArray(projects) ? projects : []).map((p: any) => ({
             id: `project-${p.id}`,
             title: p.title,
             snippet: p.description?.substring(0, 100) + '...' || 'No description',
             type: 'Project' as ResultType,
             date: p.created_at || new Date().toISOString(),
           })));
+        } catch (err) {
+          console.error('Project search failed', err);
         }
       }
 
       // Search freelancers if type is All or User
       if (searchType === 'All' || searchType === 'User') {
-        const userRes = await fetch(`/backend/api/search/freelancers?q=${encodeURIComponent(searchQuery)}&limit=10`);
-        if (userRes.ok) {
-          const users = await userRes.json();
-          allResults.push(...users.map((u: any) => ({
+        try {
+          const users = await api.search.freelancers(searchQuery, { page_size: 10 });
+          allResults.push(...(Array.isArray(users) ? users : []).map((u: any) => ({
             id: `user-${u.id}`,
             title: u.full_name || 'Unknown User',
             snippet: u.bio?.substring(0, 100) || u.skills?.join(', ') || 'Freelancer',
             type: 'User' as ResultType,
             date: u.created_at || new Date().toISOString(),
           })));
+        } catch (err) {
+          console.error('Freelancer search failed', err);
         }
       }
 

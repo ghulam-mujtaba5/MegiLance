@@ -1,6 +1,7 @@
 // @AI-HINT: Portfolio page for freelancers to showcase their work and projects.
 'use client';
 
+import api from '@/lib/api';
 import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
@@ -36,30 +37,22 @@ const PortfolioPage: React.FC = () => {
     setError(null);
     
     try {
-      const res = await fetch('/backend/api/portfolio/', {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (!res.ok) {
-        throw new Error('Failed to fetch portfolio');
-      }
-      
-      const data: PortfolioItem[] = await res.json();
-      setPortfolioItems(data);
+      const data = await api.portfolio.list();
+      const items = Array.isArray(data) ? data : [];
+      setPortfolioItems(items as PortfolioItem[]);
       
       // Calculate stats
       const allTags = new Set<string>();
-      data.forEach(item => {
+      items.forEach((item: any) => {
         if (item.tags && Array.isArray(item.tags)) {
-          item.tags.forEach(tag => allTags.add(tag));
+          item.tags.forEach((tag: string) => allTags.add(tag));
         }
       });
       
       setStats({
-        totalProjects: data.length,
+        totalProjects: items.length,
         profileViews: Math.floor(Math.random() * 1000) + 500, // TODO: Get from analytics API
-        uniqueSkills: allTags.size || Math.min(data.length * 3, 15),
+        uniqueSkills: allTags.size || Math.min(items.length * 3, 15),
       });
     } catch (err) {
       console.error('Failed to fetch portfolio:', err);
@@ -77,17 +70,9 @@ const PortfolioPage: React.FC = () => {
     if (!confirm('Are you sure you want to delete this portfolio item?')) return;
     
     try {
-      const res = await fetch(`/backend/api/portfolio/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      
-      if (res.ok) {
-        toaster.notify({ title: 'Success', description: 'Portfolio item deleted.', variant: 'success' });
-        fetchPortfolio();
-      } else {
-        toaster.notify({ title: 'Error', description: 'Failed to delete item.', variant: 'danger' });
-      }
+      await api.portfolio.delete(id);
+      toaster.notify({ title: 'Success', description: 'Portfolio item deleted.', variant: 'success' });
+      fetchPortfolio();
     } catch {
       toaster.notify({ title: 'Error', description: 'Failed to delete item.', variant: 'danger' });
     }

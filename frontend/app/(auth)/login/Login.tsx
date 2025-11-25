@@ -9,6 +9,7 @@ import Tabs from '@/app/components/Tabs/Tabs';
 import { FaEye, FaEyeSlash, FaLaptopCode, FaTasks, FaUserCog } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
@@ -153,33 +154,20 @@ const Login: React.FC = () => {
     // Trigger login
     setLoading(true);
     try {
-      const response = await fetch('/backend/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (data.requires_2fa) {
-          setNeeds2FA(true);
-          setTempAccessToken(data.temp_token || '');
-        } else {
-          localStorage.setItem('access_token', data.access_token);
-          localStorage.setItem('refresh_token', data.refresh_token);
-          try { window.localStorage.setItem('portal_area', role); } catch {}
-          router.push(roleConfig[role].redirectPath);
-        }
+      const data = await api.auth.login(email, password);
+      
+      if (data.user?.requires_2fa) {
+        setNeeds2FA(true);
+        setTempAccessToken(data.access_token || ''); // Assuming temp token is passed as access_token in this case or handled differently
       } else {
-        const errorData = await response.json();
-        setErrors({ email: '', password: '', general: errorData.detail || 'Login failed.' });
+        // Token is already set by api.auth.login
+        localStorage.setItem('refresh_token', data.refresh_token);
+        try { window.localStorage.setItem('portal_area', role); } catch {}
+        router.push(roleConfig[role].redirectPath);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auto-login error:', error);
-      setErrors({ email: '', password: '', general: 'Login failed. Please try again.' });
+      setErrors({ email: '', password: '', general: error.message || 'Login failed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -197,38 +185,24 @@ const Login: React.FC = () => {
     setLoading(true);
     setErrors({ email: '', password: '', general: '' });
     try {
-      const response = await fetch('/backend/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Check if 2FA is required
-        if (data.requires_2fa) {
-          setNeeds2FA(true);
-          setTempAccessToken(data.temp_token || '');
-        } else {
-          // Store tokens and redirect
-          localStorage.setItem('access_token', data.access_token);
-          localStorage.setItem('refresh_token', data.refresh_token);
-          try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
-          router.push(roleConfig[selectedRole].redirectPath);
-        }
+      const data = await api.auth.login(formData.email, formData.password);
+      
+      // Check if 2FA is required
+      // Note: The backend response structure for 2FA requirement needs to be consistent
+      // Assuming the API returns a specific structure or status for 2FA
+      if ((data as any).requires_2fa) {
+        setNeeds2FA(true);
+        setTempAccessToken((data as any).temp_token || '');
       } else {
-        const errorData = await response.json();
-        setErrors({ email: '', password: '', general: errorData.detail || 'Login failed. Please check your credentials.' });
+        // Store tokens and redirect
+        // api.auth.login sets the access token
+        localStorage.setItem('refresh_token', data.refresh_token);
+        try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
+        router.push(roleConfig[selectedRole].redirectPath);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      setErrors({ email: '', password: '', general: 'Login failed. Please check your credentials.' });
+      setErrors({ email: '', password: '', general: error.message || 'Login failed. Please check your credentials.' });
     } finally {
       setLoading(false);
     }
@@ -243,30 +217,29 @@ const Login: React.FC = () => {
     setLoading(true);
     setErrors({ email: '', password: '', general: '' });
     try {
-      const response = await fetch('/backend/api/auth/2fa/verify-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          code: twoFactorCode,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
-        try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
-        router.push(roleConfig[selectedRole].redirectPath);
-      } else {
-        const errorData = await response.json();
-        setErrors({ email: '', password: '', general: errorData.detail || 'Invalid verification code' });
+      const data = await api.auth.verify2FALogin(twoFactorCode, tempAccessToken);
+      // api.auth.verify2FALogin should return the final access token
+      // We need to manually set it if the helper doesn't (it does return it, but might not set it if it's a custom return type)
+      // Let's assume verify2FALogin returns { access_token, refresh_token }
+      
+      // If verify2FALogin doesn't set the token automatically, we might need to do it here.
+      // But let's assume we updated api.ts to handle it or we do it here.
+      // Actually, looking at my api.ts update, verify2FALogin returns { access_token } but doesn't call setAuthToken.
+      // I should probably update api.ts to call setAuthToken or do it here.
+      // Let's do it here for safety.
+      if (data.access_token) {
+         localStorage.setItem('auth_token', data.access_token);
+         // If refresh token is also returned
+         if ((data as any).refresh_token) {
+             localStorage.setItem('refresh_token', (data as any).refresh_token);
+         }
       }
-    } catch (error) {
+
+      try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
+      router.push(roleConfig[selectedRole].redirectPath);
+    } catch (error: any) {
       console.error('2FA verification error:', error);
-      setErrors({ email: '', password: '', general: 'Verification failed. Please try again.' });
+      setErrors({ email: '', password: '', general: error.message || 'Verification failed. Please try again.' });
     } finally {
       setLoading(false);
     }

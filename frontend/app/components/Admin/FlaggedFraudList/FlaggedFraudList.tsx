@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import Card from '@/app/components/Card/Card';
@@ -59,26 +60,10 @@ const FlaggedFraudList: React.FC = () => {
     async function fetchFlaggedItems() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Authentication required');
-          setLoading(false);
-          return;
-        }
-
+        
         // Fetch users from admin API
-        const usersResponse = await fetch('/backend/api/admin/users/list?limit=50', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!usersResponse.ok) {
-          throw new Error(`Failed to fetch users: ${usersResponse.status}`);
-        }
-
-        const users: ApiUser[] = await usersResponse.json();
+        const usersData = await api.admin.getUsers({ limit: 50 });
+        const users: ApiUser[] = usersData.users ?? usersData ?? [];
 
         // Check fraud risk for each user (in parallel with rate limiting)
         const flaggedItems: FlaggedItem[] = [];
@@ -87,30 +72,21 @@ const FlaggedFraudList: React.FC = () => {
         for (let i = 0; i < Math.min(users.length, 20); i++) {
           const user = users[i];
           try {
-            const fraudResponse = await fetch(`/backend/api/ai/fraud-check/user/${user.id}`, {
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            });
-
-            if (fraudResponse.ok) {
-              const fraudResult: FraudCheckResult = await fraudResponse.json();
+            const fraudResult = await api.ai.checkFraud(user.id);
               
-              // Only add users with elevated risk scores
-              if (fraudResult.risk_score > 20) {
-                flaggedItems.push({
-                  id: `fraud_user_${user.id}`,
-                  type: 'User',
-                  identifier: user.email,
-                  reason: fraudResult.risk_factors.length > 0 
-                    ? fraudResult.risk_factors.join('. ') 
-                    : 'Elevated risk detected by AI analysis',
-                  dateFlagged: user.joined_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-                  status: fraudResult.risk_score > 60 ? 'Pending Review' : 'Pending Review',
-                  riskScore: fraudResult.risk_score,
-                });
-              }
+            // Only add users with elevated risk scores
+            if (fraudResult.risk_score > 20) {
+              flaggedItems.push({
+                id: `fraud_user_${user.id}`,
+                type: 'User',
+                identifier: user.email,
+                reason: fraudResult.risk_factors.length > 0 
+                  ? fraudResult.risk_factors.join('. ') 
+                  : 'Elevated risk detected by AI analysis',
+                dateFlagged: user.joined_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+                status: fraudResult.risk_score > 60 ? 'Pending Review' : 'Pending Review',
+                riskScore: fraudResult.risk_score,
+              });
             }
           } catch (err) {
             // Continue with other users if one fails

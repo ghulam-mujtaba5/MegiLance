@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { api } from '@/lib/api';
 import common from './Freelancers.common.module.css';
 import light from './Freelancers.light.module.css';
 import dark from './Freelancers.dark.module.css';
@@ -119,15 +120,10 @@ const Freelancers: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (keyword) params.append('q', keyword);
-      params.append('limit', '50');
-      
-      const response = await fetch(`/backend/api/search/freelancers?${params.toString()}`);
-      if (!response.ok) throw new Error('Failed to fetch freelancers');
-      
-      const data: ApiFreelancer[] = await response.json();
-      setFreelancers(data.map(apiToFreelancer));
+      const filters: any = { limit: 50 };
+      const data: any = await api.search.freelancers(keyword, filters);
+      const freelancers = Array.isArray(data) ? data : (data.items || []);
+      setFreelancers(freelancers.map(apiToFreelancer));
     } catch (err) {
       console.error('Error fetching freelancers:', err);
       setError('Unable to load freelancers. Please try again later.');

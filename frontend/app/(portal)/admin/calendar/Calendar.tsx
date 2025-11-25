@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { ChevronLeft, ChevronRight, Plus, Clock, Users, Video, DollarSign, FileText, Loader2 } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 
@@ -46,22 +47,10 @@ const Calendar: React.FC = () => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await fetch('/backend/api/admin/dashboard/recent-activity', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const data: RecentActivity[] = await api.admin.getRecentActivity(50);
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch activity');
-        }
-
-        const data: RecentActivity[] = await response.json();
-        
         // Convert activity to calendar events
-        const calendarEvents: CalendarEvent[] = data.map((activity, index) => {
+        const calendarEvents: CalendarEvent[] = (Array.isArray(data) ? data : []).map((activity, index) => {
           const date = activity.timestamp ? new Date(activity.timestamp) : new Date();
           const eventType = mapActivityToType(activity.type);
           

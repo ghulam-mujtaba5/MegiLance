@@ -6,6 +6,7 @@ import { ProjectType } from '../../types';
 import ProjectCard from '../../../components/ProjectCard/ProjectCard';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
+import { api } from '@/lib/api';
 import commonStyles from './ProjectsList.common.module.css';
 import lightStyles from './ProjectsList.light.module.css';
 import darkStyles from './ProjectsList.dark.module.css';
@@ -19,12 +20,7 @@ const ProjectsList: React.FC = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch('/backend/api/projects', {
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-        });
-        if (!res.ok) throw new Error('Failed to fetch projects');
-        const data = await res.json();
+        const data = await api.projects.list();
         const mapped: ProjectType[] = (data.items || data || []).map((p: any) => ({
           id: p.id,
           name: p.title || p.name,

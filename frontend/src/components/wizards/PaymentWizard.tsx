@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './PaymentWizard.common.module.css';
 import lightStyles from './PaymentWizard.light.module.css';
@@ -124,16 +125,8 @@ export default function PaymentWizard({
   useEffect(() => {
     const loadSavedMethods = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        const response = await fetch('/backend/api/payment-methods', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setSavedMethods(data);
-        }
+        const data = await api.paymentMethods.list();
+        setSavedMethods(data);
       } catch (error) {
         console.error('Failed to load saved payment methods:', error);
       }
@@ -1045,27 +1038,18 @@ export default function PaymentWizard({
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('access_token');
-      const endpoint = flowType === 'withdrawal' ? '/backend/api/withdrawals' : '/backend/api/payments/add-funds';
       const data = flowType === 'withdrawal' ? withdrawalData : addFundsData;
+      const payload = {
+        ...data,
+        user_id: userId
+      };
 
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...data,
-          user_id: userId
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Transaction failed');
+      let result;
+      if (flowType === 'withdrawal') {
+        result = await api.payments.withdraw(payload);
+      } else {
+        result = await api.payments.addFunds(payload);
       }
-
-      const result = await response.json();
 
       // Clear draft
       const draftKey = flowType === 'withdrawal' ? 'withdrawal_draft' : 'add_funds_draft';

@@ -11,6 +11,7 @@ import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea';
 import Button from '@/app/components/Button/Button';
 import { FaFileContract, FaDollarSign, FaGavel, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
+import { api } from '@/lib/api';
 
 import commonStyles from './ContractWizard.common.module.css';
 import lightStyles from './ContractWizard.light.module.css';
@@ -219,21 +220,12 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/contracts', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...contractData,
-          deliverables: contractData.deliverables.filter(d => d.trim()),
-        }),
+      const contract: any = await api.contracts.create({
+        ...contractData,
+        deliverables: contractData.deliverables.filter(d => d.trim()),
       });
 
-      if (response.ok) {
-        const contract = await response.json();
+      if (contract && contract.id) {
         router.push(`/contracts/${contract.id}`);
       } else {
         alert('Failed to create contract. Please try again.');

@@ -24,8 +24,8 @@ const transformProjectData = (projects: any[]): ProjectCardProps[] => {
     title: p.title || 'Untitled Project',
     status: p.status || 'Pending',
     progress: p.progress ?? Math.floor(Math.random() * 101),
-    budget: p.budget || 0,
-    paid: p.paid ?? Math.floor(Math.random() * (p.budget || 0)),
+    budget: typeof p.budget === 'number' ? p.budget : parseFloat(String(p.budget).replace(/[$,]/g, '')) || 0,
+    paid: p.paid ?? Math.floor(Math.random() * (parseFloat(String(p.budget).replace(/[$,]/g, '')) || 0)),
     freelancers: p.freelancers || [],
     updatedAt: p.updatedAt || new Date().toLocaleDateString(),
   }));

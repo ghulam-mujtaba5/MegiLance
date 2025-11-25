@@ -10,6 +10,7 @@ import commonStyles from './SkillAssessmentWizard.common.module.css';
 import lightStyles from './SkillAssessmentWizard.light.module.css';
 import darkStyles from './SkillAssessmentWizard.dark.module.css';
 import { FaCode, FaClock, FaCheckCircle, FaTrophy } from 'react-icons/fa';
+import { api } from '@/lib/api';
 
 interface Question {
   id: string;
@@ -74,15 +75,8 @@ export default function SkillAssessmentWizard({
 
   const loadQuestions = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch(
-        `/backend/api/skills/${skillId}/questions?level=${assessmentData.level}`,
-        { headers: { 'Authorization': `Bearer ${token}` } }
-      );
-      if (response.ok) {
-        const questions = await response.json();
-        setAssessmentData(prev => ({ ...prev, questions }));
-      }
+      const questions = await api.skills.getQuestions(skillId, assessmentData.level);
+      setAssessmentData(prev => ({ ...prev, questions }));
     } catch (error) {
       console.error('Failed to load questions:', error);
     }
@@ -298,29 +292,19 @@ export default function SkillAssessmentWizard({
     const { score, passed } = calculateScore();
 
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/skills/assessments', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          skill_id: skillId,
-          level: assessmentData.level,
-          score,
-          passed,
-          time_taken: 1800 - timeRemaining
-        })
+      await api.skills.submitAssessment({
+        user_id: userId,
+        skill_id: skillId,
+        level: assessmentData.level,
+        score,
+        passed,
+        time_taken: 1800 - timeRemaining
       });
 
-      if (response.ok) {
-        if (onComplete) {
-          onComplete({ score, passed });
-        } else {
-          router.push('/freelancer/skills');
-        }
+      if (onComplete) {
+        onComplete({ score, passed });
+      } else {
+        router.push('/freelancer/skills');
       }
     } catch (error) {
       console.error('Error:', error);

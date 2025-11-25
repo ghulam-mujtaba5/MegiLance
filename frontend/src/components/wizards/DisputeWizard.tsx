@@ -20,6 +20,7 @@ import {
   FaTrash,
   FaInfoCircle
 } from 'react-icons/fa';
+import api from '@/lib/api';
 
 type DisputeType = 'payment' | 'quality' | 'deadline' | 'scope' | 'communication' | 'other';
 type ResolutionPreference = 'refund' | 'revision' | 'mediation' | 'partial_refund';
@@ -706,19 +707,7 @@ export default function DisputeWizard({
         formData.append(`evidence_${index}_description`, evidence.description);
       });
 
-      const response = await fetch('/backend/api/disputes', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit dispute');
-      }
-
-      const result = await response.json();
+      const result = await api.disputes.create(formData);
 
       localStorage.removeItem(`dispute_draft_${contractId}`);
       alert('Dispute submitted successfully. Our team will review it within 24 hours.');

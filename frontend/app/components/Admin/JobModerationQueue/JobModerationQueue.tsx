@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import Card from '@/app/components/Card/Card';
@@ -145,21 +146,11 @@ const JobModerationQueue: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-      const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-      
       // Fetch projects and users in parallel
-      const [projectsRes, usersRes] = await Promise.all([
-        fetch('/backend/api/admin/projects?limit=100', { headers }),
-        fetch('/backend/api/admin/users/list?limit=200', { headers }),
+      const [projectsData, usersData] = await Promise.all([
+        api.admin.getProjects({ limit: 100 }),
+        api.admin.getUsers({ limit: 200 }),
       ]);
-      
-      if (!projectsRes.ok) {
-        throw new Error(`Failed to fetch projects: ${projectsRes.status}`);
-      }
-      
-      const projectsData = await projectsRes.json();
-      const usersData = usersRes.ok ? await usersRes.json() : { users: [] };
       
       const projects: APIProject[] = projectsData.projects ?? projectsData ?? [];
       const users = usersData.users ?? usersData ?? [];
@@ -199,20 +190,10 @@ const JobModerationQueue: React.FC = () => {
 
   const handleModerate = async (id: string, newStatus: 'Approved' | 'Rejected') => {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-      };
-      
       // Map to backend status
       const backendStatus = newStatus === 'Approved' ? 'active' : 'rejected';
       
-      const response = await fetch(`/backend/api/projects/${id}`, {
-        method: 'PATCH',
-        headers,
-        body: JSON.stringify({ status: backendStatus }),
-      });
+      await api.projects.update(Number(id), { status: backendStatus });
       
       // Update local state regardless of API response for optimistic UI
       setJobs(prev => prev.map(job => (job.id === id ? { ...job, status: newStatus } : job)));

@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './MessagingWizard.common.module.css';
 import lightStyles from './MessagingWizard.light.module.css';
@@ -170,17 +171,9 @@ export default function MessagingWizard({
 
     setIsSearching(true);
     try {
-      const token = localStorage.getItem('access_token');
       const targetType = userType === 'client' ? 'freelancer' : 'client';
-      
-      const response = await fetch(`/backend/api/users/search?q=${query}&type=${targetType}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (response.ok) {
-        const results = await response.json();
-        setSearchResults(results);
-      }
+      const results = await api.users.search(query, targetType);
+      setSearchResults(results);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
@@ -534,7 +527,6 @@ export default function MessagingWizard({
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('access_token');
       const formData = new FormData();
 
       formData.append('sender_id', userId);
@@ -555,19 +547,7 @@ export default function MessagingWizard({
         formData.append(`attachment_${index}`, attachment.file);
       });
 
-      const response = await fetch('/backend/api/messages/conversations', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
-
-      const result = await response.json();
+      const result = await api.messages.createConversation(formData);
 
       localStorage.removeItem('messaging_draft');
       

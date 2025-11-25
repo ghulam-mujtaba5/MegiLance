@@ -10,6 +10,8 @@ import common from './Wallet.common.module.css';
 import light from './Wallet.light.module.css';
 import dark from './Wallet.dark.module.css';
 
+import api from '@/lib/api';
+
 interface Txn {
   id: string;
   date: string;
@@ -43,19 +45,7 @@ const Wallet: React.FC = () => {
     const fetchTransactions = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await fetch('/backend/api/payments', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch transactions');
-        }
-
-        const data = await response.json();
+        const data = await api.payments.list(100); // Fetch up to 100 transactions
         
         // Transform API data to Txn format
         const transactions: Txn[] = (Array.isArray(data) ? data : []).map((p: any, idx: number) => {

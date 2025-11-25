@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './OnboardingTourWizard.common.module.css';
 import lightStyles from './OnboardingTourWizard.light.module.css';
@@ -473,20 +474,12 @@ export default function OnboardingTourWizard({
   // Handle completion
   const handleComplete = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      await fetch('/backend/api/users/onboarding-complete', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          role: onboardingData.role,
-          interested_features: onboardingData.interestedFeatures,
-          skip_reminder: onboardingData.skipReminder,
-          completed_at: new Date().toISOString()
-        })
+      await api.users.completeOnboarding({
+        user_id: userId,
+        role: onboardingData.role,
+        interested_features: onboardingData.interestedFeatures,
+        skip_reminder: onboardingData.skipReminder,
+        completed_at: new Date().toISOString()
       });
 
       // Mark onboarding as complete in localStorage

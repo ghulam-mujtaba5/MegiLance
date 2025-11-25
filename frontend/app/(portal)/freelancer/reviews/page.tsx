@@ -1,6 +1,7 @@
 // @AI-HINT: This is the Reviews page for freelancers to see client feedback. It has been fully refactored for a premium, theme-aware design.
 'use client';
 
+import api from '@/lib/api';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 
@@ -76,43 +77,23 @@ const ReviewsPage: React.FC = () => {
     
     try {
       // Get current user ID first
-      const meRes = await fetch('/backend/api/auth/me', {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (!meRes.ok) {
-        throw new Error('Please log in to view your reviews');
-      }
-      
-      const userData = await meRes.json();
+      const userData = await api.auth.me();
       const userId = userData.id;
       setCurrentUserId(userId);
       
       // Fetch reviews for this user (as the reviewed person)
-      const reviewsRes = await fetch(`/backend/api/reviews/reviews?reviewed_user_id=${userId}`, {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (reviewsRes.ok) {
-        const reviewsData: Review[] = await reviewsRes.json();
-        setReviews(reviewsData);
-      } else {
+      try {
+        const reviewsData = await api.reviews.list({ user_id: userId });
+        setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+      } catch (err) {
+        console.error('Failed to fetch reviews list:', err);
         setReviews([]);
       }
       
       // Fetch review stats
       try {
-        const statsRes = await fetch(`/backend/api/reviews/reviews/stats/${userId}`, {
-          credentials: 'include',
-          headers: { 'Accept': 'application/json' },
-        });
-        
-        if (statsRes.ok) {
-          const statsData = await statsRes.json();
-          setStats(statsData);
-        }
+        const statsData = await api.reviews.getStats(userId);
+        setStats(statsData as ReviewStats);
       } catch {
         // Stats endpoint might not exist - calculate manually
       }

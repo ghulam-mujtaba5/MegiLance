@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { api } from '@/lib/api';
 import common from './Jobs.common.module.css';
 import light from './Jobs.light.module.css';
 import dark from './Jobs.dark.module.css';
@@ -105,17 +106,16 @@ const Jobs: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (q) params.append('q', q);
-      if (category) params.append('category', category);
-      params.append('status', 'open');
-      params.append('limit', '50');
+      const filters: any = {
+        status: 'open',
+        limit: 50,
+      };
+      if (category) filters.category = category;
       
-      const response = await fetch(`/backend/api/search/projects?${params.toString()}`);
-      if (!response.ok) throw new Error('Failed to fetch projects');
+      const data: any = await api.search.projects(q, filters);
       
-      const data: Project[] = await response.json();
-      setJobs(data.map(projectToJob));
+      const projects = Array.isArray(data) ? data : (data.items || []);
+      setJobs(projects.map(projectToJob));
     } catch (err) {
       console.error('Error fetching jobs:', err);
       setError('Unable to load jobs. Please try again later.');

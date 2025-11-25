@@ -1,6 +1,7 @@
 // @AI-HINT: This page allows freelancers to view their smart contracts for ongoing and completed jobs, now with a premium, theme-aware, and accessible table layout.
 'use client';
 
+import api from '@/lib/api';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
@@ -59,13 +60,9 @@ const ContractsPage: React.FC = () => {
   useEffect(() => {
     const fetchContracts = async () => {
       try {
-        const token = localStorage.getItem('access_token');
-        const res = await fetch('/backend/api/contracts', {
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-        });
-        if (!res.ok) throw new Error('Failed to fetch contracts');
-        const data = await res.json();
-        const mapped: ContractData[] = (data.items || data || []).map((c: any) => ({
+        const data = await api.contracts.list();
+        const items = (data as any).items || (Array.isArray(data) ? data : []);
+        const mapped: ContractData[] = items.map((c: any) => ({
           id: c.id || c.contract_id,
           projectTitle: c.job_title || c.project_title || c.title || 'Untitled',
           clientName: c.client_name || c.client || '—',

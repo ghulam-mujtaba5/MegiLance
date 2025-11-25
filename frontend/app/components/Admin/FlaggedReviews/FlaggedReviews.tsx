@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import Card from '@/app/components/Card/Card';
@@ -89,21 +90,11 @@ const FlaggedReviews: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-      const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-      
       // Fetch reviews and users in parallel
-      const [reviewsRes, usersRes] = await Promise.all([
-        fetch('/backend/api/reviews/reviews?limit=100', { headers }),
-        fetch('/backend/api/admin/users/list?limit=200', { headers }),
+      const [reviewsData, usersData] = await Promise.all([
+        api.reviews.list({ page_size: 100 }),
+        api.admin.getUsers({ limit: 200 }),
       ]);
-      
-      if (!reviewsRes.ok) {
-        throw new Error(`Failed to fetch reviews: ${reviewsRes.status}`);
-      }
-      
-      const reviewsData: APIReview[] = await reviewsRes.json();
-      const usersData = usersRes.ok ? await usersRes.json() : { users: [] };
       
       const users = usersData.users ?? usersData ?? [];
       
@@ -114,7 +105,7 @@ const FlaggedReviews: React.FC = () => {
       });
       
       // Transform and filter flagged reviews
-      const flaggedReviews: FlaggedReview[] = reviewsData
+      const flaggedReviews: FlaggedReview[] = (reviewsData as unknown as APIReview[])
         .map(review => {
           const { reason, shouldFlag } = detectFlagReason(review);
           if (!shouldFlag) return null;
@@ -154,16 +145,7 @@ const FlaggedReviews: React.FC = () => {
     // If removing, call delete API
     if (newStatus === 'Removed') {
       try {
-        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
-        const headers: HeadersInit = {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        };
-        
-        await fetch(`/backend/api/reviews/reviews/${id}`, {
-          method: 'DELETE',
-          headers,
-        });
+        await api.reviews.delete(Number(id));
       } catch (err) {
         console.error('Error removing review:', err);
       }

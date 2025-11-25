@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import { FaCreditCard, FaLock } from 'react-icons/fa';
 
@@ -73,26 +74,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
     try {
       // Create payment intent
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/payments/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount,
-          project_id: projectId,
-          milestone_id: milestoneId,
-          capture_method: milestoneId ? 'manual' : 'automatic', // Escrow for milestones
-        }),
+      const { client_secret } = await api.payments.createIntent({
+        amount,
+        project_id: projectId,
+        milestone_id: milestoneId,
+        capture_method: milestoneId ? 'manual' : 'automatic', // Escrow for milestones
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to create payment intent');
-      }
-
-      const { client_secret } = await response.json();
 
       // Get card element
       const cardElement = elements.getElement(CardElement);

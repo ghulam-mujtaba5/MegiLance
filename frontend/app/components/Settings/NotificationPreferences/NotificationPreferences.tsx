@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { 
   FaBell, FaEnvelope, FaMobileAlt, FaSms,
   FaSave, FaCheckCircle 
@@ -83,13 +84,9 @@ const NotificationPreferences: React.FC = () => {
   const loadPreferences = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/users/me/notification-preferences', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
+      const data = await api.users.getNotificationPreferences();
 
-      if (response.ok) {
-        const data = await response.json();
+      if (data) {
         if (data.preferences) setPreferences(data.preferences);
         if (data.digest) setDigest(data.digest);
       }
@@ -114,20 +111,10 @@ const NotificationPreferences: React.FC = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/users/me/notification-preferences', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ preferences, digest }),
-      });
+      await api.users.updateNotificationPreferences({ preferences, digest });
 
-      if (response.ok) {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
-      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (error) {
       console.error('Failed to save preferences:', error);
     } finally {

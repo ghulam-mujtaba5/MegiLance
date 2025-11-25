@@ -4,6 +4,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import Card from '@/app/components/Card/Card';
 import Badge from '@/app/components/Badge/Badge';
 import Select from '@/app/components/Select/Select';
@@ -70,25 +71,8 @@ const AuditLog: React.FC = () => {
     async function fetchActivityLogs() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Authentication required');
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch('/backend/api/admin/dashboard/recent-activity?limit=100', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch activity logs: ${response.status}`);
-        }
-
-        const activities: ApiActivity[] = await response.json();
+        
+        const activities: ApiActivity[] = await api.admin.getRecentActivity(100);
 
         // Transform API data to LogEntry format
         const transformed: LogEntry[] = activities.map((activity, index) => ({

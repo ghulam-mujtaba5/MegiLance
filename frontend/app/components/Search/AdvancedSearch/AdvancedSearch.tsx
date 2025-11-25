@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { 
   FaSearch, FaFilter, FaStar, FaMapMarkerAlt, FaDollarSign,
   FaClock, FaBookmark, FaSave, FaTimes, FaChevronDown
@@ -116,14 +117,8 @@ const AdvancedSearch: React.FC = () => {
 
   const loadSavedSearches = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/searches/saved', {
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setSavedSearches(data);
-      }
+      const data = await api.searches.getSaved();
+      setSavedSearches(data);
     } catch (error) {
       console.error('Failed to load saved searches:', error);
     }
@@ -131,12 +126,9 @@ const AdvancedSearch: React.FC = () => {
 
   const fetchSuggestions = useCallback(async (query: string) => {
     try {
-      const response = await fetch(`/backend/api/search/suggestions?q=${encodeURIComponent(query)}`);
-      if (response.ok) {
-        const data = await response.json();
-        setSuggestions(data);
-        setShowSuggestions(true);
-      }
+      const data = await api.search.suggestions(query);
+      setSuggestions(data);
+      setShowSuggestions(true);
     } catch (error) {
       console.error('Failed to fetch suggestions:', error);
     }
@@ -175,25 +167,15 @@ const AdvancedSearch: React.FC = () => {
     if (!searchName.trim()) return;
 
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/backend/api/searches/save', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: searchName,
-          filters,
-          alertsEnabled: false,
-        }),
+      await api.searches.save({
+        name: searchName,
+        filters,
+        alertsEnabled: false,
       });
 
-      if (response.ok) {
-        await loadSavedSearches();
-        setShowSaveDialog(false);
-        setSearchName('');
-      }
+      await loadSavedSearches();
+      setShowSaveDialog(false);
+      setSearchName('');
     } catch (error) {
       console.error('Failed to save search:', error);
     }
@@ -206,11 +188,7 @@ const AdvancedSearch: React.FC = () => {
 
   const deleteSavedSearch = async (id: string) => {
     try {
-      const token = localStorage.getItem('access_token');
-      await fetch(`/backend/api/searches/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
+      await api.searches.delete(id);
       await loadSavedSearches();
     } catch (error) {
       console.error('Failed to delete search:', error);

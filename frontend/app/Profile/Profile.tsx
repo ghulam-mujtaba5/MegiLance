@@ -9,6 +9,7 @@ import ProjectCard, { ProjectCardProps } from '../components/ProjectCard/Project
 import commonStyles from './Profile.common.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
+import { api } from '@/lib/api';
 
 interface ApiUser {
   id: number;
@@ -41,64 +42,42 @@ const Profile: React.FC = () => {
 
   const fetchUserProfile = useCallback(async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        setError('Please log in to view your profile');
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch('/backend/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data: ApiUser = await response.json();
-        setUser(data);
-        // Fetch user's projects
-        await fetchUserProjects(token);
-      } else if (response.status === 401) {
+      const data: ApiUser = await api.auth.me();
+      setUser(data);
+      // Fetch user's projects
+      await fetchUserProjects();
+    } catch (err: any) {
+      console.error('Failed to load profile:', err);
+      if (err.message.includes('401')) {
         setError('Session expired. Please log in again.');
       } else {
         setError('Failed to load profile');
       }
-    } catch (err) {
-      console.error('Failed to load profile:', err);
-      setError('Error loading profile');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const fetchUserProjects = async (token: string) => {
+  const fetchUserProjects = async () => {
     try {
-      const response = await fetch('/backend/api/projects/my-projects', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data: ApiProject[] = await response.json();
-        const mappedProjects: ProjectCardProps[] = data.slice(0, 5).map((p) => ({
-          id: String(p.id),
-          title: p.title,
-          status: p.status === 'open' ? 'Open' : p.status === 'in_progress' ? 'In Progress' : 'Completed',
-          progress: p.status === 'completed' ? 100 : p.status === 'in_progress' ? 50 : 0,
-          budget: p.budget_max || p.budget_min || 0,
-          paid: 0,
-          freelancers: [],
-          updatedAt: p.updated_at ? new Date(p.updated_at).toLocaleDateString() : 'Recently',
-          clientName: 'You',
-          postedTime: p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Recently',
-          tags: p.category ? [p.category] : [],
-        }));
-        setProjects(mappedProjects);
-      }
+      const data: any = await api.projects.getMyProjects();
+      // Ensure data is an array
+      const projectsList = Array.isArray(data) ? data : [];
+      
+      const mappedProjects: ProjectCardProps[] = projectsList.slice(0, 5).map((p: ApiProject) => ({
+        id: String(p.id),
+        title: p.title,
+        status: p.status === 'open' ? 'Open' : p.status === 'in_progress' ? 'In Progress' : 'Completed',
+        progress: p.status === 'completed' ? 100 : p.status === 'in_progress' ? 50 : 0,
+        budget: p.budget_max || p.budget_min || 0,
+        paid: 0,
+        freelancers: [],
+        updatedAt: p.updated_at ? new Date(p.updated_at).toLocaleDateString() : 'Recently',
+        clientName: 'You',
+        postedTime: p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Recently',
+        tags: p.category ? [p.category] : [],
+      }));
+      setProjects(mappedProjects);
     } catch (err) {
       console.error('Failed to load projects:', err);
     }

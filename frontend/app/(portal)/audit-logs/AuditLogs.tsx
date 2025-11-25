@@ -4,6 +4,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { Loader2 } from 'lucide-react';
 import common from './AuditLogs.common.module.css';
@@ -46,20 +47,8 @@ const AuditLogs: React.FC = () => {
     const fetchLogs = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await fetch('/backend/api/admin/dashboard/recent-activity', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const data = await api.admin.getRecentActivity(50);
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch audit logs');
-        }
-
-        const data = await response.json();
-        
         // Transform API data to LogItem format
         const logs: LogItem[] = (Array.isArray(data) ? data : []).map((activity: any, idx: number) => {
           const activityType = (activity.type || '').toLowerCase();

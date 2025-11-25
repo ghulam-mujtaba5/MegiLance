@@ -5,6 +5,7 @@
 import React, { useRef, useState } from 'react';
 import { Send, Paperclip } from 'lucide-react';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
+import { api } from '@/lib/api';
 import commonStyles from './MessageInput.common.module.css';
 import lightStyles from './MessageInput.light.module.css';
 import darkStyles from './MessageInput.dark.module.css';
@@ -34,18 +35,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ conversationId, onMessageSe
 
     setIsSending(true);
     try {
-      // Frontend-only demo: call backend endpoint if available; otherwise simulate success
-      const response = await fetch(`/api/messages/${conversationId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ messageText: text.trim() }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
+      await api.messages.sendMessage(conversationId, text.trim());
 
       setText('');
       onMessageSent(); // Notify parent to trigger refresh

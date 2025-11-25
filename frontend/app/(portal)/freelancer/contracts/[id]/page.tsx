@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { useRouter, useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import { FiArrowLeft, FiDownload, FiExternalLink, FiLoader } from 'react-icons/fi';
 
 import Button from '@/app/components/Button/Button';
@@ -76,35 +77,13 @@ const ContractDetailsPage: React.FC = () => {
     setError(null);
     
     try {
-      const res = await fetch(`/backend/api/contracts/${params.id}`, {
-        credentials: 'include',
-        headers: { 'Accept': 'application/json' },
-      });
-      
-      if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error('Contract not found');
-        }
-        if (res.status === 403) {
-          throw new Error('You do not have access to this contract');
-        }
-        throw new Error('Failed to load contract');
-      }
-      
-      const contractData: Contract = await res.json();
+      const contractData: Contract = await api.contracts.get(Number(params.id));
       
       // Try to fetch project details
       try {
-        const projectRes = await fetch(`/backend/api/projects/${contractData.project_id}`, {
-          credentials: 'include',
-          headers: { 'Accept': 'application/json' },
-        });
-        
-        if (projectRes.ok) {
-          const projectData = await projectRes.json();
-          contractData.project_title = projectData.title;
-          contractData.client_name = projectData.client_name;
-        }
+        const projectData = await api.projects.get(contractData.project_id);
+        contractData.project_title = projectData.title;
+        contractData.client_name = projectData.client_name;
       } catch {
         // Ignore project fetch errors
       }

@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './MilestoneWizard.common.module.css';
 import lightStyles from './MilestoneWizard.light.module.css';
@@ -519,8 +520,6 @@ export default function MilestoneWizard({
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('access_token');
-      
       const payload = {
         project_id: projectId,
         user_id: userId,
@@ -537,20 +536,7 @@ export default function MilestoneWizard({
         auto_release_days: milestoneData.autoReleaseDays
       };
 
-      const response = await fetch('/backend/api/milestones', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create milestone');
-      }
-
-      const result = await response.json();
+      const result = await api.milestones.create(payload);
 
       localStorage.removeItem(`milestone_draft_${projectId}`);
       

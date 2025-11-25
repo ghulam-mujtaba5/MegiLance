@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Badge from '@/app/components/Badge/Badge';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 import commonStyles from './ChatInbox.common.module.css';
 import lightStyles from './ChatInbox.light.module.css';
 import darkStyles from './ChatInbox.dark.module.css';
@@ -64,25 +65,8 @@ const ChatInbox: React.FC = () => {
     async function fetchConversations() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setError('Authentication required');
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch('/backend/api/messages/conversations', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch conversations: ${response.status}`);
-        }
-
-        const data: ApiConversation[] = await response.json();
+        
+        const data: ApiConversation[] = await api.messages.getConversations();
         
         // Transform API response to component format
         const transformed: Conversation[] = data.map((conv) => ({

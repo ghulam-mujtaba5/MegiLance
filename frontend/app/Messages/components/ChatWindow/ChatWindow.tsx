@@ -5,6 +5,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
 import { Conversation } from '../types';
 import commonStyles from './ChatWindow.common.module.css';
 import lightStyles from './ChatWindow.light.module.css';
@@ -35,12 +36,29 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, refreshKey }) =
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`/api/messages/${conversationId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch conversation details');
-        }
-        const data: Conversation = await response.json();
-        setConversation(data);
+        
+        const [convData, msgsData, me] = await Promise.all([
+          api.messages.getConversation(conversationId),
+          api.messages.getMessages(conversationId),
+          api.auth.me()
+        ]);
+        
+        const mappedMessages = msgsData.map((m: any) => ({
+          id: m.id,
+          text: m.content,
+          timestamp: new Date(m.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          sender: m.sender_id === me.id ? 'user' : 'contact'
+        }));
+
+        setConversation({
+          id: convData.id,
+          contactName: convData.contact_name || 'Unknown',
+          avatar: convData.avatar || '/default-avatar.png',
+          lastMessage: '',
+          lastMessageTimestamp: '',
+          unreadCount: 0,
+          messages: mappedMessages
+        });
       } catch (err: any) {
         setError(err.message);
       } finally {
