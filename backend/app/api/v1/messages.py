@@ -1,299 +1,539 @@
-"""Messages and conversations API endpoints"""
+# @AI-HINT: Messages and conversations API - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
-from app.db.session import get_db
-from app.models import Message, Conversation, User
-from app.schemas import (
-    Message as MessageSchema,
-    MessageCreate,
-    MessageUpdate,
-    Conversation as ConversationSchema,
-    ConversationCreate,
-    ConversationUpdate,
-)
-from app.core.security import get_current_active_user
+from app.db.turso_http import execute_query, parse_rows
+from app.core.security import get_current_user_from_token
 
 router = APIRouter()
 
 
+def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+    """Get current user from token"""
+    return token_data
+
+
 # Conversation endpoints
-@router.post("/conversations", response_model=ConversationSchema)
+@router.post("/conversations", response_model=dict)
 def create_conversation(
-    conversation: ConversationCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    conversation: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """Create a new conversation"""
-    # Check if conversation already exists between these users for this project
-    existing = db.query(Conversation).filter(
-        Conversation.client_id == conversation.client_id,
-        Conversation.freelancer_id == conversation.freelancer_id,
-        Conversation.project_id == conversation.project_id if conversation.project_id else True,
-    ).first()
+    client_id = conversation.get("client_id")
+    freelancer_id = conversation.get("freelancer_id")
+    project_id = conversation.get("project_id")
     
-    if existing:
-        return existing
+    # Check if conversation already exists
+    if project_id:
+        result = execute_query(
+            """SELECT id, client_id, freelancer_id, project_id, status, is_archived, 
+                      last_message_at, created_at, updated_at
+               FROM conversations
+               WHERE client_id = ? AND freelancer_id = ? AND project_id = ?""",
+            [client_id, freelancer_id, project_id]
+        )
+    else:
+        result = execute_query(
+            """SELECT id, client_id, freelancer_id, project_id, status, is_archived, 
+                      last_message_at, created_at, updated_at
+               FROM conversations
+               WHERE client_id = ? AND freelancer_id = ? AND project_id IS NULL""",
+            [client_id, freelancer_id]
+        )
+    
+    if result and result.get("rows"):
+        rows = parse_rows(result)
+        if rows:
+            existing = rows[0]
+            existing["is_archived"] = bool(existing.get("is_archived"))
+            return existing
+    
+    now = datetime.utcnow().isoformat()
     
     # Create new conversation
-    db_conversation = Conversation(**conversation.dict())
-    db.add(db_conversation)
-    db.commit()
-    db.refresh(db_conversation)
-    return db_conversation
+    result = execute_query(
+        """INSERT INTO conversations (client_id, freelancer_id, project_id, status, is_archived, last_message_at, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        [client_id, freelancer_id, project_id, "active", 0, now, now, now]
+    )
+    
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to create conversation")
+    
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    new_id = 0
+    if id_result and id_result.get("rows"):
+        id_rows = parse_rows(id_result)
+        if id_rows:
+            new_id = id_rows[0].get("id", 0)
+    
+    return {
+        "id": new_id,
+        "client_id": client_id,
+        "freelancer_id": freelancer_id,
+        "project_id": project_id,
+        "status": "active",
+        "is_archived": False,
+        "last_message_at": now,
+        "created_at": now,
+        "updated_at": now
+    }
 
 
-@router.get("/conversations", response_model=List[ConversationSchema])
+@router.get("/conversations", response_model=List[dict])
 def get_conversations(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    status: str = Query(None),
-    archived: bool = Query(None),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    status: Optional[str] = Query(None),
+    archived: Optional[bool] = Query(None),
+    current_user: dict = Depends(get_current_user)
 ):
     """Get all conversations for current user"""
-    query = db.query(Conversation).filter(
-        or_(
-            Conversation.client_id == current_user.id,
-            Conversation.freelancer_id == current_user.id,
-        )
-    )
+    user_id = current_user.get("user_id")
+    
+    where_clauses = ["(client_id = ? OR freelancer_id = ?)"]
+    params = [user_id, user_id]
     
     if status:
-        query = query.filter(Conversation.status == status)
+        where_clauses.append("status = ?")
+        params.append(status)
     
     if archived is not None:
-        query = query.filter(Conversation.is_archived == archived)
+        where_clauses.append("is_archived = ?")
+        params.append(1 if archived else 0)
     
-    conversations = query.order_by(Conversation.last_message_at.desc()).offset(skip).limit(limit).all()
-    return conversations
+    where_sql = " AND ".join(where_clauses)
+    params.extend([limit, skip])
+    
+    result = execute_query(
+        f"""SELECT id, client_id, freelancer_id, project_id, status, is_archived, 
+                   last_message_at, created_at, updated_at
+            FROM conversations
+            WHERE {where_sql}
+            ORDER BY last_message_at DESC
+            LIMIT ? OFFSET ?""",
+        params
+    )
+    
+    if not result:
+        return []
+    
+    rows = parse_rows(result)
+    for row in rows:
+        row["is_archived"] = bool(row.get("is_archived"))
+    return rows
 
 
-@router.get("/conversations/{conversation_id}", response_model=ConversationSchema)
+@router.get("/conversations/{conversation_id}", response_model=dict)
 def get_conversation(
     conversation_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_user)
 ):
     """Get a specific conversation"""
-    conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+    user_id = current_user.get("user_id")
     
-    if not conversation:
+    result = execute_query(
+        """SELECT id, client_id, freelancer_id, project_id, status, is_archived, 
+                  last_message_at, created_at, updated_at
+           FROM conversations WHERE id = ?""",
+        [conversation_id]
+    )
+    
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Conversation not found")
     
+    rows = parse_rows(result)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    
+    conversation = rows[0]
+    
     # Check if user is part of conversation
-    if conversation.client_id != current_user.id and conversation.freelancer_id != current_user.id:
+    if conversation.get("client_id") != user_id and conversation.get("freelancer_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
+    conversation["is_archived"] = bool(conversation.get("is_archived"))
     return conversation
 
 
-@router.patch("/conversations/{conversation_id}", response_model=ConversationSchema)
+@router.patch("/conversations/{conversation_id}", response_model=dict)
 def update_conversation(
     conversation_id: int,
-    conversation_update: ConversationUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    conversation_update: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """Update a conversation"""
-    conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+    user_id = current_user.get("user_id")
     
-    if not conversation:
+    result = execute_query(
+        "SELECT id, client_id, freelancer_id FROM conversations WHERE id = ?",
+        [conversation_id]
+    )
+    
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Conversation not found")
     
+    rows = parse_rows(result)
+    conversation = rows[0]
+    
     # Check if user is part of conversation
-    if conversation.client_id != current_user.id and conversation.freelancer_id != current_user.id:
+    if conversation.get("client_id") != user_id and conversation.get("freelancer_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
-    # Update fields
-    for key, value in conversation_update.dict(exclude_unset=True).items():
-        setattr(conversation, key, value)
+    # Build update query
+    updates = []
+    params = []
     
-    conversation.updated_at = datetime.utcnow()
-    db.commit()
-    db.refresh(conversation)
-    return conversation
+    if "status" in conversation_update:
+        updates.append("status = ?")
+        params.append(conversation_update["status"])
+    
+    if "is_archived" in conversation_update:
+        updates.append("is_archived = ?")
+        params.append(1 if conversation_update["is_archived"] else 0)
+    
+    if updates:
+        updates.append("updated_at = ?")
+        params.append(datetime.utcnow().isoformat())
+        params.append(conversation_id)
+        
+        execute_query(
+            f"UPDATE conversations SET {', '.join(updates)} WHERE id = ?",
+            params
+        )
+    
+    # Fetch updated conversation
+    result = execute_query(
+        """SELECT id, client_id, freelancer_id, project_id, status, is_archived, 
+                  last_message_at, created_at, updated_at
+           FROM conversations WHERE id = ?""",
+        [conversation_id]
+    )
+    
+    rows = parse_rows(result)
+    updated = rows[0] if rows else {}
+    updated["is_archived"] = bool(updated.get("is_archived"))
+    return updated
 
 
 # Message endpoints
-@router.post("/messages", response_model=MessageSchema)
+@router.post("/messages", response_model=dict)
 def send_message(
-    message: MessageCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    message: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """Send a new message"""
+    user_id = current_user.get("user_id")
+    role = current_user.get("role", "")
+    conversation_id = message.get("conversation_id")
+    receiver_id = message.get("receiver_id")
+    project_id = message.get("project_id")
+    content = message.get("content")
+    message_type = message.get("message_type", "text")
+    
     # If conversation_id not provided, create/find conversation
-    if not message.conversation_id:
-        conversation = db.query(Conversation).filter(
-            or_(
-                and_(Conversation.client_id == current_user.id, Conversation.freelancer_id == message.receiver_id),
-                and_(Conversation.freelancer_id == current_user.id, Conversation.client_id == message.receiver_id),
-            ),
-            Conversation.project_id == message.project_id if message.project_id else True,
-        ).first()
+    if not conversation_id:
+        # Try to find existing conversation
+        if project_id:
+            result = execute_query(
+                """SELECT id FROM conversations 
+                   WHERE ((client_id = ? AND freelancer_id = ?) OR (client_id = ? AND freelancer_id = ?))
+                   AND project_id = ?""",
+                [user_id, receiver_id, receiver_id, user_id, project_id]
+            )
+        else:
+            result = execute_query(
+                """SELECT id FROM conversations 
+                   WHERE ((client_id = ? AND freelancer_id = ?) OR (client_id = ? AND freelancer_id = ?))
+                   AND project_id IS NULL""",
+                [user_id, receiver_id, receiver_id, user_id]
+            )
         
-        if not conversation:
-            # Create new conversation
-            receiver = db.query(User).filter(User.id == message.receiver_id).first()
-            if not receiver:
+        if result and result.get("rows"):
+            rows = parse_rows(result)
+            if rows:
+                conversation_id = rows[0].get("id")
+        
+        if not conversation_id:
+            # Verify receiver exists
+            result = execute_query("SELECT id, user_type FROM users WHERE id = ?", [receiver_id])
+            if not result or not result.get("rows"):
                 raise HTTPException(status_code=404, detail="Receiver not found")
             
-            conversation = Conversation(
-                client_id=current_user.id if current_user.user_type == "client" else message.receiver_id,
-                freelancer_id=message.receiver_id if current_user.user_type == "client" else current_user.id,
-                project_id=message.project_id,
+            rows = parse_rows(result)
+            receiver_type = rows[0].get("user_type", "")
+            
+            # Create new conversation
+            now = datetime.utcnow().isoformat()
+            if role.lower() == "client":
+                client_id = user_id
+                freelancer_id = receiver_id
+            else:
+                client_id = receiver_id
+                freelancer_id = user_id
+            
+            execute_query(
+                """INSERT INTO conversations (client_id, freelancer_id, project_id, status, is_archived, last_message_at, created_at, updated_at)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                [client_id, freelancer_id, project_id, "active", 0, now, now, now]
             )
-            db.add(conversation)
-            db.flush()
-        
-        message.conversation_id = conversation.id
+            
+            id_result = execute_query("SELECT last_insert_rowid() as id", [])
+            if id_result and id_result.get("rows"):
+                id_rows = parse_rows(id_result)
+                if id_rows:
+                    conversation_id = id_rows[0].get("id", 0)
+    
+    now = datetime.utcnow().isoformat()
     
     # Create message
-    db_message = Message(
-        **message.dict(),
-        sender_id=current_user.id,
+    result = execute_query(
+        """INSERT INTO messages (conversation_id, sender_id, receiver_id, project_id, content, message_type, 
+                                 is_read, is_deleted, sent_at, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        [conversation_id, user_id, receiver_id, project_id, content, message_type, 0, 0, now, now]
     )
-    db.add(db_message)
+    
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to send message")
     
     # Update conversation last_message_at
-    conversation = db.query(Conversation).filter(Conversation.id == message.conversation_id).first()
-    conversation.last_message_at = datetime.utcnow()
+    execute_query(
+        "UPDATE conversations SET last_message_at = ?, updated_at = ? WHERE id = ?",
+        [now, now, conversation_id]
+    )
     
-    db.commit()
-    db.refresh(db_message)
-    return db_message
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    new_id = 0
+    if id_result and id_result.get("rows"):
+        id_rows = parse_rows(id_result)
+        if id_rows:
+            new_id = id_rows[0].get("id", 0)
+    
+    return {
+        "id": new_id,
+        "conversation_id": conversation_id,
+        "sender_id": user_id,
+        "receiver_id": receiver_id,
+        "project_id": project_id,
+        "content": content,
+        "message_type": message_type,
+        "is_read": False,
+        "is_deleted": False,
+        "sent_at": now,
+        "created_at": now
+    }
 
 
-@router.get("/messages", response_model=List[MessageSchema])
+@router.get("/messages", response_model=List[dict])
 def get_messages(
     conversation_id: int = Query(...),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_user)
 ):
     """Get messages for a conversation"""
+    user_id = current_user.get("user_id")
+    
     # Verify user has access to conversation
-    conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
-    if not conversation:
+    result = execute_query(
+        "SELECT id, client_id, freelancer_id FROM conversations WHERE id = ?",
+        [conversation_id]
+    )
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Conversation not found")
     
-    if conversation.client_id != current_user.id and conversation.freelancer_id != current_user.id:
+    rows = parse_rows(result)
+    conversation = rows[0]
+    
+    if conversation.get("client_id") != user_id and conversation.get("freelancer_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
-    messages = db.query(Message).filter(
-        Message.conversation_id == conversation_id,
-        Message.is_deleted == False,
-    ).order_by(Message.sent_at.desc()).offset(skip).limit(limit).all()
+    result = execute_query(
+        """SELECT id, conversation_id, sender_id, receiver_id, project_id, content, 
+                  message_type, is_read, read_at, is_deleted, sent_at, created_at
+           FROM messages
+           WHERE conversation_id = ? AND is_deleted = 0
+           ORDER BY sent_at DESC
+           LIMIT ? OFFSET ?""",
+        [conversation_id, limit, skip]
+    )
+    
+    if not result:
+        return []
+    
+    messages = parse_rows(result)
+    now = datetime.utcnow().isoformat()
     
     # Mark messages as read
-    unread_messages = [m for m in messages if not m.is_read and m.receiver_id == current_user.id]
-    for msg in unread_messages:
-        msg.is_read = True
-        msg.read_at = datetime.utcnow()
+    unread_ids = []
+    for msg in messages:
+        msg["is_read"] = bool(msg.get("is_read"))
+        msg["is_deleted"] = bool(msg.get("is_deleted"))
+        if not msg.get("is_read") and msg.get("receiver_id") == user_id:
+            unread_ids.append(msg["id"])
     
-    if unread_messages:
-        db.commit()
+    if unread_ids:
+        for msg_id in unread_ids:
+            execute_query(
+                "UPDATE messages SET is_read = 1, read_at = ? WHERE id = ?",
+                [now, msg_id]
+            )
     
+    # Return in chronological order
     return list(reversed(messages))
 
 
-@router.get("/messages/{message_id}", response_model=MessageSchema)
+@router.get("/messages/{message_id}", response_model=dict)
 def get_message(
     message_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_user)
 ):
     """Get a specific message"""
-    message = db.query(Message).filter(Message.id == message_id).first()
+    user_id = current_user.get("user_id")
     
-    if not message:
+    result = execute_query(
+        """SELECT id, conversation_id, sender_id, receiver_id, project_id, content, 
+                  message_type, is_read, read_at, is_deleted, sent_at, created_at
+           FROM messages WHERE id = ?""",
+        [message_id]
+    )
+    
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Message not found")
     
+    rows = parse_rows(result)
+    message = rows[0]
+    
     # Check if user is sender or receiver
-    if message.sender_id != current_user.id and message.receiver_id != current_user.id:
+    if message.get("sender_id") != user_id and message.get("receiver_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     # Mark as read if receiver
-    if message.receiver_id == current_user.id and not message.is_read:
-        message.is_read = True
-        message.read_at = datetime.utcnow()
-        db.commit()
-        db.refresh(message)
+    if message.get("receiver_id") == user_id and not message.get("is_read"):
+        now = datetime.utcnow().isoformat()
+        execute_query(
+            "UPDATE messages SET is_read = 1, read_at = ? WHERE id = ?",
+            [now, message_id]
+        )
+        message["is_read"] = True
+        message["read_at"] = now
     
+    message["is_read"] = bool(message.get("is_read"))
+    message["is_deleted"] = bool(message.get("is_deleted"))
     return message
 
 
-@router.patch("/messages/{message_id}", response_model=MessageSchema)
+@router.patch("/messages/{message_id}", response_model=dict)
 def update_message(
     message_id: int,
-    message_update: MessageUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    message_update: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """Update a message"""
-    message = db.query(Message).filter(Message.id == message_id).first()
+    user_id = current_user.get("user_id")
     
-    if not message:
+    result = execute_query(
+        "SELECT id, sender_id, receiver_id FROM messages WHERE id = ?",
+        [message_id]
+    )
+    
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Message not found")
     
+    rows = parse_rows(result)
+    message = rows[0]
+    
     # Only sender can edit message content
-    if message_update.content and message.sender_id != current_user.id:
+    if "content" in message_update and message.get("sender_id") != user_id:
         raise HTTPException(status_code=403, detail="Only sender can edit message")
     
     # Receiver can mark as read
-    if message_update.is_read is not None and message.receiver_id != current_user.id:
+    if "is_read" in message_update and message.get("receiver_id") != user_id:
         raise HTTPException(status_code=403, detail="Only receiver can mark as read")
     
-    # Update fields
-    for key, value in message_update.dict(exclude_unset=True).items():
-        setattr(message, key, value)
+    updates = []
+    params = []
     
-    if message_update.is_read:
-        message.read_at = datetime.utcnow()
+    if "content" in message_update:
+        updates.append("content = ?")
+        params.append(message_update["content"])
     
-    db.commit()
-    db.refresh(message)
-    return message
+    if "is_read" in message_update:
+        updates.append("is_read = ?")
+        params.append(1 if message_update["is_read"] else 0)
+        if message_update["is_read"]:
+            updates.append("read_at = ?")
+            params.append(datetime.utcnow().isoformat())
+    
+    if updates:
+        params.append(message_id)
+        execute_query(
+            f"UPDATE messages SET {', '.join(updates)} WHERE id = ?",
+            params
+        )
+    
+    # Fetch updated message
+    result = execute_query(
+        """SELECT id, conversation_id, sender_id, receiver_id, project_id, content, 
+                  message_type, is_read, read_at, is_deleted, sent_at, created_at
+           FROM messages WHERE id = ?""",
+        [message_id]
+    )
+    
+    rows = parse_rows(result)
+    updated = rows[0] if rows else {}
+    updated["is_read"] = bool(updated.get("is_read"))
+    updated["is_deleted"] = bool(updated.get("is_deleted"))
+    return updated
 
 
 @router.delete("/messages/{message_id}")
 def delete_message(
     message_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_user)
 ):
     """Soft delete a message"""
-    message = db.query(Message).filter(Message.id == message_id).first()
+    user_id = current_user.get("user_id")
     
-    if not message:
+    result = execute_query(
+        "SELECT id, sender_id FROM messages WHERE id = ?",
+        [message_id]
+    )
+    
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Message not found")
     
+    rows = parse_rows(result)
+    message = rows[0]
+    
     # Only sender can delete
-    if message.sender_id != current_user.id:
+    if message.get("sender_id") != user_id:
         raise HTTPException(status_code=403, detail="Only sender can delete message")
     
-    message.is_deleted = True
-    db.commit()
+    execute_query("UPDATE messages SET is_deleted = 1 WHERE id = ?", [message_id])
     
     return {"message": "Message deleted successfully"}
 
 
 @router.get("/messages/unread/count")
 def get_unread_count(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_user)
 ):
     """Get count of unread messages for current user"""
-    count = db.query(Message).filter(
-        Message.receiver_id == current_user.id,
-        Message.is_read == False,
-        Message.is_deleted == False,
-    ).count()
+    user_id = current_user.get("user_id")
+    
+    result = execute_query(
+        "SELECT COUNT(*) as count FROM messages WHERE receiver_id = ? AND is_read = 0 AND is_deleted = 0",
+        [user_id]
+    )
+    
+    count = 0
+    if result and result.get("rows"):
+        rows = parse_rows(result)
+        if rows:
+            count = rows[0].get("count", 0)
     
     return {"unread_count": count}

@@ -1,3 +1,4 @@
+# @AI-HINT: Skills Management API - Turso-only, no SQLite fallback
 """
 Skills Management API
 
@@ -9,225 +10,276 @@ Handles:
 """
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, func
+from datetime import datetime
 
-from app.db.session import get_db
-from app.core.security import get_current_active_user
-from app.models import User, Skill, UserSkill
-from app.schemas.skill import (
-    Skill as SkillSchema,
-    SkillCreate,
-    SkillUpdate,
-    UserSkill as UserSkillSchema,
-    UserSkillCreate,
-    UserSkillUpdate
-)
+from app.db.turso_http import execute_query, parse_rows
+from app.core.security import get_current_user_from_token
 
 router = APIRouter()
 
 
+def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+    """Get current user from token"""
+    return token_data
+
+
 # ============ Skills Catalog ============
 
-@router.get("/", response_model=List[SkillSchema])
+@router.get("/", response_model=List[dict])
 async def list_skills(
     category: Optional[str] = Query(None, description="Filter by category"),
     search: Optional[str] = Query(None, description="Search in name or description"),
     active_only: bool = Query(True, description="Only active skills"),
     skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=200),
-    db: Session = Depends(get_db)
+    limit: int = Query(100, ge=1, le=200)
 ):
     """
     List all skills in the catalog.
     
     Public endpoint - no authentication required.
     """
-    query = db.query(Skill)
+    where_clauses = []
+    params = []
     
-    # Apply filters
     if active_only:
-        query = query.filter(Skill.is_active == True)
+        where_clauses.append("is_active = 1")
     
     if category:
-        query = query.filter(Skill.category == category)
+        where_clauses.append("category = ?")
+        params.append(category)
     
     if search:
         search_pattern = f"%{search}%"
-        query = query.filter(
-            Skill.name.ilike(search_pattern) | 
-            Skill.description.ilike(search_pattern)
-        )
+        where_clauses.append("(name LIKE ? OR description LIKE ?)")
+        params.extend([search_pattern, search_pattern])
     
-    # Order by category and sort order
-    query = query.order_by(Skill.category.asc(), Skill.sort_order.asc(), Skill.name.asc())
+    where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
+    params.extend([limit, skip])
     
-    skills = query.offset(skip).limit(limit).all()
-    return skills
+    result = execute_query(
+        f"""SELECT id, name, description, category, icon, is_active, sort_order, created_at, updated_at
+            FROM skills
+            WHERE {where_sql}
+            ORDER BY category ASC, sort_order ASC, name ASC
+            LIMIT ? OFFSET ?""",
+        params
+    )
+    
+    if not result:
+        return []
+    
+    rows = parse_rows(result)
+    for row in rows:
+        row["is_active"] = bool(row.get("is_active"))
+    return rows
 
 
 @router.get("/categories")
-async def list_skill_categories(
-    db: Session = Depends(get_db)
-):
+async def list_skill_categories():
     """
     Get list of all skill categories.
     
     Public endpoint.
     """
-    categories = db.query(Skill.category).filter(
-        Skill.is_active == True
-    ).distinct().all()
+    result = execute_query(
+        "SELECT DISTINCT category FROM skills WHERE is_active = 1 AND category IS NOT NULL",
+        []
+    )
     
-    return {"categories": [cat[0] for cat in categories if cat[0]]}
+    categories = []
+    if result and result.get("rows"):
+        rows = parse_rows(result)
+        categories = [row.get("category") for row in rows if row.get("category")]
+    
+    return {"categories": categories}
 
 
-@router.get("/{skill_id}", response_model=SkillSchema)
-async def get_skill(
-    skill_id: int,
-    db: Session = Depends(get_db)
-):
+@router.get("/{skill_id}", response_model=dict)
+async def get_skill(skill_id: int):
     """
     Get a specific skill.
     
     Public endpoint.
     """
-    skill = db.query(Skill).filter(Skill.id == skill_id).first()
-    if not skill:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Skill not found"
-        )
+    result = execute_query(
+        """SELECT id, name, description, category, icon, is_active, sort_order, created_at, updated_at
+           FROM skills WHERE id = ?""",
+        [skill_id]
+    )
     
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Skill not found")
+    
+    rows = parse_rows(result)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    
+    skill = rows[0]
+    skill["is_active"] = bool(skill.get("is_active"))
     return skill
 
 
-@router.post("/", response_model=SkillSchema, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_skill(
-    skill_data: SkillCreate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    skill_data: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Create a new skill (admin only).
     """
-    # Admin check
-    if current_user.user_type.value != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can create skills"
-        )
+    role = current_user.get("role", "")
+    if role.lower() != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can create skills")
+    
+    name = skill_data.get("name", "")
     
     # Check for duplicate name
-    existing_skill = db.query(Skill).filter(
-        func.lower(Skill.name) == skill_data.name.lower()
-    ).first()
-    if existing_skill:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A skill with this name already exists"
-        )
+    result = execute_query(
+        "SELECT id FROM skills WHERE LOWER(name) = LOWER(?)",
+        [name]
+    )
+    if result and result.get("rows"):
+        raise HTTPException(status_code=400, detail="A skill with this name already exists")
     
-    # Create skill
-    skill = Skill(**skill_data.model_dump())
+    now = datetime.utcnow().isoformat()
     
-    db.add(skill)
-    db.commit()
-    db.refresh(skill)
+    result = execute_query(
+        """INSERT INTO skills (name, description, category, icon, is_active, sort_order, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        [
+            name,
+            skill_data.get("description"),
+            skill_data.get("category"),
+            skill_data.get("icon"),
+            1 if skill_data.get("is_active", True) else 0,
+            skill_data.get("sort_order", 0),
+            now,
+            now
+        ]
+    )
     
-    return skill
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to create skill")
+    
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    new_id = 0
+    if id_result and id_result.get("rows"):
+        id_rows = parse_rows(id_result)
+        if id_rows:
+            new_id = id_rows[0].get("id", 0)
+    
+    return {
+        "id": new_id,
+        "name": name,
+        "description": skill_data.get("description"),
+        "category": skill_data.get("category"),
+        "icon": skill_data.get("icon"),
+        "is_active": skill_data.get("is_active", True),
+        "sort_order": skill_data.get("sort_order", 0),
+        "created_at": now,
+        "updated_at": now
+    }
 
 
-@router.patch("/{skill_id}", response_model=SkillSchema)
+@router.patch("/{skill_id}", response_model=dict)
 async def update_skill(
     skill_id: int,
-    skill_data: SkillUpdate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    skill_data: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Update a skill (admin only).
     """
-    # Admin check
-    if current_user.user_type.value != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can update skills"
-        )
+    role = current_user.get("role", "")
+    if role.lower() != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can update skills")
     
-    skill = db.query(Skill).filter(Skill.id == skill_id).first()
-    if not skill:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Skill not found"
-        )
+    result = execute_query("SELECT id FROM skills WHERE id = ?", [skill_id])
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Skill not found")
     
     # Check for duplicate name if updating name
-    update_data = skill_data.model_dump(exclude_unset=True)
-    if "name" in update_data:
-        existing_skill = db.query(Skill).filter(
-            and_(
-                func.lower(Skill.name) == update_data["name"].lower(),
-                Skill.id != skill_id
-            )
-        ).first()
-        if existing_skill:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="A skill with this name already exists"
-            )
+    if "name" in skill_data:
+        result = execute_query(
+            "SELECT id FROM skills WHERE LOWER(name) = LOWER(?) AND id != ?",
+            [skill_data["name"], skill_id]
+        )
+        if result and result.get("rows"):
+            raise HTTPException(status_code=400, detail="A skill with this name already exists")
     
-    # Apply updates
-    for field, value in update_data.items():
-        setattr(skill, field, value)
+    # Build update query
+    updates = []
+    params = []
     
-    db.commit()
-    db.refresh(skill)
+    for field in ["name", "description", "category", "icon", "sort_order"]:
+        if field in skill_data:
+            updates.append(f"{field} = ?")
+            params.append(skill_data[field])
     
+    if "is_active" in skill_data:
+        updates.append("is_active = ?")
+        params.append(1 if skill_data["is_active"] else 0)
+    
+    if updates:
+        updates.append("updated_at = ?")
+        params.append(datetime.utcnow().isoformat())
+        params.append(skill_id)
+        
+        execute_query(
+            f"UPDATE skills SET {', '.join(updates)} WHERE id = ?",
+            params
+        )
+    
+    # Fetch updated skill
+    result = execute_query(
+        """SELECT id, name, description, category, icon, is_active, sort_order, created_at, updated_at
+           FROM skills WHERE id = ?""",
+        [skill_id]
+    )
+    
+    rows = parse_rows(result)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Skill not found")
+    
+    skill = rows[0]
+    skill["is_active"] = bool(skill.get("is_active"))
     return skill
 
 
 @router.delete("/{skill_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_skill(
     skill_id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Delete a skill (admin only).
     
     This is a soft delete - sets is_active to False.
     """
-    # Admin check
-    if current_user.user_type.value != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only admins can delete skills"
-        )
+    role = current_user.get("role", "")
+    if role.lower() != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can delete skills")
     
-    skill = db.query(Skill).filter(Skill.id == skill_id).first()
-    if not skill:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Skill not found"
-        )
+    result = execute_query("SELECT id FROM skills WHERE id = ?", [skill_id])
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Skill not found")
     
     # Soft delete
-    skill.is_active = False
-    
-    db.commit()
+    execute_query(
+        "UPDATE skills SET is_active = 0, updated_at = ? WHERE id = ?",
+        [datetime.utcnow().isoformat(), skill_id]
+    )
 
 
 # ============ User Skills ============
 
-@router.get("/user-skills", response_model=List[UserSkillSchema])
+@router.get("/user-skills", response_model=List[dict])
 async def list_user_skills(
     user_id: Optional[int] = Query(None, description="Filter by user (defaults to current user)"),
     skill_category: Optional[str] = Query(None, description="Filter by skill category"),
     min_proficiency: Optional[int] = Query(None, ge=1, le=5, description="Minimum proficiency level"),
     verified_only: bool = Query(False, description="Only verified skills"),
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     List user skills.
@@ -235,79 +287,114 @@ async def list_user_skills(
     By default shows current user's skills.
     Can view other users' skills by providing user_id.
     """
-    target_user_id = user_id if user_id is not None else current_user.id
+    target_user_id = user_id if user_id is not None else current_user.get("user_id")
     
-    query = db.query(UserSkill).filter(UserSkill.user_id == target_user_id)
+    where_clauses = ["us.user_id = ?"]
+    params = [target_user_id]
     
-    # Apply filters
     if skill_category:
-        query = query.join(Skill).filter(Skill.category == skill_category)
+        where_clauses.append("s.category = ?")
+        params.append(skill_category)
     
     if min_proficiency is not None:
-        query = query.filter(UserSkill.proficiency_level >= min_proficiency)
+        where_clauses.append("us.proficiency_level >= ?")
+        params.append(min_proficiency)
     
     if verified_only:
-        query = query.filter(UserSkill.is_verified == True)
+        where_clauses.append("us.is_verified = 1")
     
-    # Order by proficiency level (descending)
-    query = query.order_by(UserSkill.proficiency_level.desc())
+    where_sql = " AND ".join(where_clauses)
     
-    user_skills = query.all()
-    return user_skills
+    result = execute_query(
+        f"""SELECT us.id, us.user_id, us.skill_id, us.proficiency_level, us.years_experience,
+                   us.is_verified, us.verified_at, us.verified_by, us.created_at, us.updated_at,
+                   s.name as skill_name, s.category as skill_category
+            FROM user_skills us
+            LEFT JOIN skills s ON us.skill_id = s.id
+            WHERE {where_sql}
+            ORDER BY us.proficiency_level DESC""",
+        params
+    )
+    
+    if not result:
+        return []
+    
+    rows = parse_rows(result)
+    for row in rows:
+        row["is_verified"] = bool(row.get("is_verified"))
+    return rows
 
 
-@router.post("/user-skills", response_model=UserSkillSchema, status_code=status.HTTP_201_CREATED)
+@router.post("/user-skills", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def add_user_skill(
-    user_skill_data: UserSkillCreate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    user_skill_data: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Add a skill to current user's profile.
     """
+    user_id = current_user.get("user_id")
+    skill_id = user_skill_data.get("skill_id")
+    
     # Verify skill exists
-    skill = db.query(Skill).filter(
-        and_(Skill.id == user_skill_data.skill_id, Skill.is_active == True)
-    ).first()
-    if not skill:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Skill not found or inactive"
-        )
+    result = execute_query(
+        "SELECT id FROM skills WHERE id = ? AND is_active = 1",
+        [skill_id]
+    )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Skill not found or inactive")
     
     # Check if user already has this skill
-    existing_user_skill = db.query(UserSkill).filter(
-        and_(
-            UserSkill.user_id == current_user.id,
-            UserSkill.skill_id == user_skill_data.skill_id
-        )
-    ).first()
-    if existing_user_skill:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You already have this skill in your profile"
-        )
+    result = execute_query(
+        "SELECT id FROM user_skills WHERE user_id = ? AND skill_id = ?",
+        [user_id, skill_id]
+    )
+    if result and result.get("rows"):
+        raise HTTPException(status_code=400, detail="You already have this skill in your profile")
     
-    # Create user skill
-    user_skill = UserSkill(
-        **user_skill_data.model_dump(),
-        user_id=current_user.id,
-        is_verified=False  # New skills are unverified by default
+    now = datetime.utcnow().isoformat()
+    
+    result = execute_query(
+        """INSERT INTO user_skills (user_id, skill_id, proficiency_level, years_experience, is_verified, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        [
+            user_id,
+            skill_id,
+            user_skill_data.get("proficiency_level", 1),
+            user_skill_data.get("years_experience"),
+            0,  # New skills are unverified by default
+            now,
+            now
+        ]
     )
     
-    db.add(user_skill)
-    db.commit()
-    db.refresh(user_skill)
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to add skill")
     
-    return user_skill
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    new_id = 0
+    if id_result and id_result.get("rows"):
+        id_rows = parse_rows(id_result)
+        if id_rows:
+            new_id = id_rows[0].get("id", 0)
+    
+    return {
+        "id": new_id,
+        "user_id": user_id,
+        "skill_id": skill_id,
+        "proficiency_level": user_skill_data.get("proficiency_level", 1),
+        "years_experience": user_skill_data.get("years_experience"),
+        "is_verified": False,
+        "created_at": now,
+        "updated_at": now
+    }
 
 
-@router.patch("/user-skills/{user_skill_id}", response_model=UserSkillSchema)
+@router.patch("/user-skills/{user_skill_id}", response_model=dict)
 async def update_user_skill(
     user_skill_id: int,
-    user_skill_data: UserSkillUpdate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    user_skill_data: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Update a user skill.
@@ -315,66 +402,103 @@ async def update_user_skill(
     Users can update their own skills.
     Admins can verify skills.
     """
-    user_skill = db.query(UserSkill).filter(UserSkill.id == user_skill_id).first()
-    if not user_skill:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User skill not found"
-        )
+    user_id = current_user.get("user_id")
+    role = current_user.get("role", "")
+    
+    result = execute_query(
+        "SELECT id, user_id FROM user_skills WHERE id = ?",
+        [user_skill_id]
+    )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="User skill not found")
+    
+    rows = parse_rows(result)
+    user_skill = rows[0]
     
     # Permission check
-    update_data = user_skill_data.model_dump(exclude_unset=True)
-    
-    if current_user.user_type.value == "admin":
+    if role.lower() == "admin":
         # Admins can update everything
         pass
-    elif current_user.id == user_skill.user_id:
+    elif user_id == user_skill.get("user_id"):
         # Users can update their own skills but not verification status
-        if "is_verified" in update_data:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You cannot verify your own skills"
-            )
+        if "is_verified" in user_skill_data:
+            raise HTTPException(status_code=403, detail="You cannot verify your own skills")
     else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have permission to update this skill"
+        raise HTTPException(status_code=403, detail="You don't have permission to update this skill")
+    
+    # Build update query
+    updates = []
+    params = []
+    
+    if "proficiency_level" in user_skill_data:
+        updates.append("proficiency_level = ?")
+        params.append(user_skill_data["proficiency_level"])
+    
+    if "years_experience" in user_skill_data:
+        updates.append("years_experience = ?")
+        params.append(user_skill_data["years_experience"])
+    
+    if "is_verified" in user_skill_data and role.lower() == "admin":
+        updates.append("is_verified = ?")
+        params.append(1 if user_skill_data["is_verified"] else 0)
+        if user_skill_data["is_verified"]:
+            updates.append("verified_at = ?")
+            params.append(datetime.utcnow().isoformat())
+            updates.append("verified_by = ?")
+            params.append(user_id)
+    
+    if updates:
+        updates.append("updated_at = ?")
+        params.append(datetime.utcnow().isoformat())
+        params.append(user_skill_id)
+        
+        execute_query(
+            f"UPDATE user_skills SET {', '.join(updates)} WHERE id = ?",
+            params
         )
     
-    # Apply updates
-    for field, value in update_data.items():
-        setattr(user_skill, field, value)
+    # Fetch updated user skill
+    result = execute_query(
+        """SELECT id, user_id, skill_id, proficiency_level, years_experience,
+                  is_verified, verified_at, verified_by, created_at, updated_at
+           FROM user_skills WHERE id = ?""",
+        [user_skill_id]
+    )
     
-    db.commit()
-    db.refresh(user_skill)
+    rows = parse_rows(result)
+    if not rows:
+        raise HTTPException(status_code=404, detail="User skill not found")
     
-    return user_skill
+    updated = rows[0]
+    updated["is_verified"] = bool(updated.get("is_verified"))
+    return updated
 
 
 @router.delete("/user-skills/{user_skill_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_skill(
     user_skill_id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Remove a skill from user's profile.
     
     Users can only remove their own skills.
     """
-    user_skill = db.query(UserSkill).filter(UserSkill.id == user_skill_id).first()
-    if not user_skill:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User skill not found"
-        )
+    user_id = current_user.get("user_id")
+    role = current_user.get("role", "")
+    
+    result = execute_query(
+        "SELECT id, user_id FROM user_skills WHERE id = ?",
+        [user_skill_id]
+    )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="User skill not found")
+    
+    rows = parse_rows(result)
+    user_skill = rows[0]
     
     # Permission check
-    if current_user.id != user_skill.user_id and current_user.user_type.value != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have permission to delete this skill"
-        )
+    if user_id != user_skill.get("user_id") and role.lower() != "admin":
+        raise HTTPException(status_code=403, detail="You don't have permission to delete this skill")
     
-    db.delete(user_skill)
-    db.commit()
+    execute_query("DELETE FROM user_skills WHERE id = ?", [user_skill_id])

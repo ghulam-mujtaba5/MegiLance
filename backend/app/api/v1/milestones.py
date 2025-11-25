@@ -1,21 +1,15 @@
 """
-Milestone Management API
-
-Handles:
-- Milestone CRUD for contracts
-- Freelancer submission workflow
-- Client approval workflow
-- Payment integration on approval
+@AI-HINT: Milestone Management API - Turso HTTP only (NO SQLite fallback)
+Handles milestone CRUD, submissions, approvals, and payment integration.
 """
 from typing import List, Optional
 from datetime import datetime
+import json
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-from sqlalchemy import and_
 
-from app.db.session import get_db
+from app.db.turso_http import execute_query, to_str, parse_date
 from app.core.security import get_current_active_user
-from app.models import User, Milestone, Contract, Payment, MilestoneStatus, PaymentType, PaymentStatus
+from app.models import User
 from app.schemas.milestone import (
     Milestone as MilestoneSchema,
     MilestoneCreate,
@@ -23,57 +17,94 @@ from app.schemas.milestone import (
     MilestoneSubmit,
     MilestoneApprove
 )
-from app.api.v1.notifications import send_notification
 
 router = APIRouter()
+
+
+def _row_to_milestone(row) -> dict:
+    """Convert Turso row to milestone dict"""
+    return {
+        "id": int(row[0].get("value")) if row[0].get("type") != "null" else None,
+        "contract_id": int(row[1].get("value")) if row[1].get("type") != "null" else None,
+        "title": to_str(row[2]),
+        "description": to_str(row[3]),
+        "amount": float(row[4].get("value")) if row[4].get("type") != "null" else 0.0,
+        "due_date": parse_date(row[5]),
+        "status": to_str(row[6]) or "pending",
+        "deliverables": to_str(row[7]),
+        "submission_notes": to_str(row[8]),
+        "approval_notes": to_str(row[9]),
+        "submitted_at": parse_date(row[10]),
+        "approved_at": parse_date(row[11]),
+        "created_at": parse_date(row[12]),
+        "updated_at": parse_date(row[13])
+    }
+
+
+def _send_notification_turso(user_id: int, notification_type: str, title: str, 
+                              content: str, data: dict, priority: str, action_url: str):
+    """Send notification using Turso"""
+    now = datetime.utcnow().isoformat()
+    execute_query("""
+        INSERT INTO notifications (user_id, notification_type, title, content, data, 
+                                   priority, action_url, is_read, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)
+    """, [user_id, notification_type, title, content, json.dumps(data), priority, action_url, now])
 
 
 @router.post("/milestones", response_model=MilestoneSchema, status_code=status.HTTP_201_CREATED)
 async def create_milestone(
     milestone_data: MilestoneCreate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Create a new milestone for a contract.
-    
-    Only the contract client can create milestones.
-    """
+    """Create a new milestone for a contract. Only the contract client can create milestones."""
     # Get contract
-    contract = db.query(Contract).filter(Contract.id == milestone_data.contract_id).first()
-    if not contract:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Contract not found"
-        )
+    result = execute_query("SELECT id, client_id, freelancer_id FROM contracts WHERE id = ?", 
+                          [milestone_data.contract_id])
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
     
-    # Verify user is the client
-    if current_user.id != contract.client_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only the contract client can create milestones"
-        )
+    contract_row = result["rows"][0]
+    client_id = int(contract_row[1].get("value"))
+    freelancer_id = int(contract_row[2].get("value"))
+    
+    if current_user.id != client_id:
+        raise HTTPException(status_code=403, detail="Only the contract client can create milestones")
     
     # Create milestone
-    milestone = Milestone(
-        **milestone_data.model_dump(),
-        status=MilestoneStatus.PENDING
-    )
+    now = datetime.utcnow().isoformat()
+    due_date = milestone_data.due_date.isoformat() if milestone_data.due_date else None
     
-    db.add(milestone)
-    db.commit()
-    db.refresh(milestone)
+    insert_result = execute_query("""
+        INSERT INTO milestones (contract_id, title, description, amount, due_date, status, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, 'pending', ?, ?)
+    """, [milestone_data.contract_id, milestone_data.title, milestone_data.description,
+          milestone_data.amount, due_date, now, now])
+    
+    if not insert_result:
+        raise HTTPException(status_code=500, detail="Failed to create milestone")
+    
+    # Get created milestone
+    milestone_result = execute_query("""
+        SELECT id, contract_id, title, description, amount, due_date, status,
+               deliverables, submission_notes, approval_notes, submitted_at, approved_at, created_at, updated_at
+        FROM milestones WHERE contract_id = ? ORDER BY id DESC LIMIT 1
+    """, [milestone_data.contract_id])
+    
+    if not milestone_result or not milestone_result.get("rows"):
+        raise HTTPException(status_code=500, detail="Failed to retrieve created milestone")
+    
+    milestone = _row_to_milestone(milestone_result["rows"][0])
     
     # Notify freelancer
-    send_notification(
-        db=db,
-        user_id=contract.freelancer_id,
+    _send_notification_turso(
+        user_id=freelancer_id,
         notification_type="milestone",
         title="New Milestone Created",
-        content=f"A new milestone has been created for contract #{contract.id}",
-        data={"milestone_id": milestone.id, "contract_id": contract.id},
+        content=f"A new milestone has been created for contract #{milestone_data.contract_id}",
+        data={"milestone_id": milestone["id"], "contract_id": milestone_data.contract_id},
         priority="medium",
-        action_url=f"/contracts/{contract.id}/milestones"
+        action_url=f"/contracts/{milestone_data.contract_id}/milestones"
     )
     
     return milestone
@@ -82,70 +113,76 @@ async def create_milestone(
 @router.get("/milestones", response_model=List[MilestoneSchema])
 async def list_milestones(
     contract_id: int = Query(..., description="Contract ID (required)"),
-    status: Optional[MilestoneStatus] = Query(None, description="Filter by status"),
+    status_filter: Optional[str] = Query(None, alias="status", description="Filter by status"),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    List milestones for a contract.
-    
-    Only contract parties can view milestones.
-    """
+    """List milestones for a contract. Only contract parties can view milestones."""
     # Get contract
-    contract = db.query(Contract).filter(Contract.id == contract_id).first()
-    if not contract:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Contract not found"
-        )
+    result = execute_query("SELECT id, client_id, freelancer_id FROM contracts WHERE id = ?", [contract_id])
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
     
-    # Access control
-    if current_user.id not in [contract.client_id, contract.freelancer_id]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have permission to view these milestones"
-        )
+    contract_row = result["rows"][0]
+    client_id = int(contract_row[1].get("value"))
+    freelancer_id = int(contract_row[2].get("value"))
     
-    query = db.query(Milestone).filter(Milestone.contract_id == contract_id)
+    if current_user.id not in [client_id, freelancer_id]:
+        raise HTTPException(status_code=403, detail="You don't have permission to view these milestones")
     
-    # Apply filters
-    if status is not None:
-        query = query.filter(Milestone.status == status)
+    # Build query
+    sql = """
+        SELECT id, contract_id, title, description, amount, due_date, status,
+               deliverables, submission_notes, approval_notes, submitted_at, approved_at, created_at, updated_at
+        FROM milestones WHERE contract_id = ?
+    """
+    params = [contract_id]
     
-    # Order by due date
-    query = query.order_by(Milestone.due_date.asc())
+    if status_filter:
+        sql += " AND status = ?"
+        params.append(status_filter)
     
-    milestones = query.offset(skip).limit(limit).all()
+    sql += " ORDER BY due_date ASC LIMIT ? OFFSET ?"
+    params.extend([limit, skip])
+    
+    milestones_result = execute_query(sql, params)
+    
+    milestones = []
+    if milestones_result and milestones_result.get("rows"):
+        for row in milestones_result["rows"]:
+            milestones.append(_row_to_milestone(row))
+    
     return milestones
 
 
 @router.get("/milestones/{milestone_id}", response_model=MilestoneSchema)
 async def get_milestone(
     milestone_id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Get a specific milestone.
+    """Get a specific milestone. Only contract parties can view."""
+    result = execute_query("""
+        SELECT id, contract_id, title, description, amount, due_date, status,
+               deliverables, submission_notes, approval_notes, submitted_at, approved_at, created_at, updated_at
+        FROM milestones WHERE id = ?
+    """, [milestone_id])
     
-    Only contract parties can view.
-    """
-    milestone = db.query(Milestone).filter(Milestone.id == milestone_id).first()
-    if not milestone:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Milestone not found"
-        )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Milestone not found")
     
-    # Access control
-    contract = db.query(Contract).filter(Contract.id == milestone.contract_id).first()
-    if current_user.id not in [contract.client_id, contract.freelancer_id]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have permission to view this milestone"
-        )
+    milestone = _row_to_milestone(result["rows"][0])
+    
+    # Get contract for access control
+    contract_result = execute_query("SELECT client_id, freelancer_id FROM contracts WHERE id = ?", 
+                                   [milestone["contract_id"]])
+    if contract_result and contract_result.get("rows"):
+        contract_row = contract_result["rows"][0]
+        client_id = int(contract_row[0].get("value"))
+        freelancer_id = int(contract_row[1].get("value"))
+        
+        if current_user.id not in [client_id, freelancer_id]:
+            raise HTTPException(status_code=403, detail="You don't have permission to view this milestone")
     
     return milestone
 
@@ -154,286 +191,279 @@ async def get_milestone(
 async def update_milestone(
     milestone_id: int,
     milestone_data: MilestoneUpdate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Update a milestone.
+    """Update a milestone. Only the client can update milestones that aren't submitted yet."""
+    # Get milestone
+    result = execute_query("""
+        SELECT id, contract_id, status FROM milestones WHERE id = ?
+    """, [milestone_id])
     
-    Only the client can update milestones that aren't submitted yet.
-    """
-    milestone = db.query(Milestone).filter(Milestone.id == milestone_id).first()
-    if not milestone:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Milestone not found"
-        )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Milestone not found")
+    
+    row = result["rows"][0]
+    contract_id = int(row[1].get("value"))
+    current_status = to_str(row[2])
     
     # Get contract
-    contract = db.query(Contract).filter(Contract.id == milestone.contract_id).first()
+    contract_result = execute_query("SELECT client_id FROM contracts WHERE id = ?", [contract_id])
+    if not contract_result or not contract_result.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
     
-    # Verify user is the client
-    if current_user.id != contract.client_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only the contract client can update milestones"
-        )
+    client_id = int(contract_result["rows"][0][0].get("value"))
     
-    # Can't update if already submitted or completed
-    if milestone.status in [MilestoneStatus.SUBMITTED, MilestoneStatus.APPROVED]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot update submitted or approved milestones"
-        )
+    if current_user.id != client_id:
+        raise HTTPException(status_code=403, detail="Only the contract client can update milestones")
     
-    # Apply updates
+    if current_status in ["submitted", "approved"]:
+        raise HTTPException(status_code=400, detail="Cannot update submitted or approved milestones")
+    
+    # Build update query
+    update_fields = []
+    params = []
     update_data = milestone_data.model_dump(exclude_unset=True)
+    
     for field, value in update_data.items():
-        setattr(milestone, field, value)
+        if field == "due_date" and value:
+            update_fields.append(f"{field} = ?")
+            params.append(value.isoformat())
+        else:
+            update_fields.append(f"{field} = ?")
+            params.append(value)
     
-    db.commit()
-    db.refresh(milestone)
+    if update_fields:
+        update_fields.append("updated_at = ?")
+        params.append(datetime.utcnow().isoformat())
+        params.append(milestone_id)
+        
+        execute_query(f"UPDATE milestones SET {', '.join(update_fields)} WHERE id = ?", params)
     
-    return milestone
+    # Return updated milestone
+    return await get_milestone(milestone_id, current_user)
 
 
 @router.post("/milestones/{milestone_id}/submit", response_model=MilestoneSchema)
 async def submit_milestone(
     milestone_id: int,
     submission_data: MilestoneSubmit,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Submit a milestone for approval (freelancer action).
+    """Submit a milestone for approval (freelancer action)."""
+    # Get milestone
+    result = execute_query("""
+        SELECT id, contract_id, status FROM milestones WHERE id = ?
+    """, [milestone_id])
     
-    Changes status to SUBMITTED and adds deliverables.
-    """
-    milestone = db.query(Milestone).filter(Milestone.id == milestone_id).first()
-    if not milestone:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Milestone not found"
-        )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Milestone not found")
+    
+    row = result["rows"][0]
+    contract_id = int(row[1].get("value"))
+    current_status = to_str(row[2])
     
     # Get contract
-    contract = db.query(Contract).filter(Contract.id == milestone.contract_id).first()
+    contract_result = execute_query("SELECT client_id, freelancer_id FROM contracts WHERE id = ?", [contract_id])
+    if not contract_result or not contract_result.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
     
-    # Verify user is the freelancer
-    if current_user.id != contract.freelancer_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only the freelancer can submit milestones"
-        )
+    contract_row = contract_result["rows"][0]
+    client_id = int(contract_row[0].get("value"))
+    freelancer_id = int(contract_row[1].get("value"))
     
-    # Verify milestone is in pending status
-    if milestone.status != MilestoneStatus.PENDING:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Milestone is {milestone.status.value}, cannot submit"
-        )
+    if current_user.id != freelancer_id:
+        raise HTTPException(status_code=403, detail="Only the freelancer can submit milestones")
+    
+    if current_status != "pending":
+        raise HTTPException(status_code=400, detail=f"Milestone is {current_status}, cannot submit")
     
     # Update milestone
-    milestone.status = MilestoneStatus.SUBMITTED
-    milestone.deliverables = submission_data.deliverables
-    milestone.submission_notes = submission_data.submission_notes
-    milestone.submitted_at = datetime.utcnow()
-    
-    db.commit()
-    db.refresh(milestone)
+    now = datetime.utcnow().isoformat()
+    execute_query("""
+        UPDATE milestones SET status = 'submitted', deliverables = ?, submission_notes = ?, 
+                              submitted_at = ?, updated_at = ?
+        WHERE id = ?
+    """, [submission_data.deliverables, submission_data.submission_notes, now, now, milestone_id])
     
     # Notify client
-    send_notification(
-        db=db,
-        user_id=contract.client_id,
+    _send_notification_turso(
+        user_id=client_id,
         notification_type="milestone",
         title="Milestone Submitted for Review",
-        content=f"Milestone #{milestone.id} has been submitted for your review",
-        data={"milestone_id": milestone.id, "contract_id": contract.id},
+        content=f"Milestone #{milestone_id} has been submitted for your review",
+        data={"milestone_id": milestone_id, "contract_id": contract_id},
         priority="high",
-        action_url=f"/milestones/{milestone.id}"
+        action_url=f"/milestones/{milestone_id}"
     )
     
-    return milestone
+    return await get_milestone(milestone_id, current_user)
 
 
 @router.post("/milestones/{milestone_id}/approve", response_model=MilestoneSchema)
 async def approve_milestone(
     milestone_id: int,
     approval_data: MilestoneApprove,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Approve a milestone (client action).
+    """Approve a milestone (client action). Triggers payment creation."""
+    # Get milestone
+    result = execute_query("""
+        SELECT id, contract_id, status, amount, title FROM milestones WHERE id = ?
+    """, [milestone_id])
     
-    Changes status to APPROVED and triggers payment.
-    """
-    milestone = db.query(Milestone).filter(Milestone.id == milestone_id).first()
-    if not milestone:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Milestone not found"
-        )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Milestone not found")
+    
+    row = result["rows"][0]
+    contract_id = int(row[1].get("value"))
+    current_status = to_str(row[2])
+    amount = float(row[3].get("value")) if row[3].get("type") != "null" else 0.0
+    title = to_str(row[4])
     
     # Get contract
-    contract = db.query(Contract).filter(Contract.id == milestone.contract_id).first()
+    contract_result = execute_query("SELECT client_id, freelancer_id FROM contracts WHERE id = ?", [contract_id])
+    if not contract_result or not contract_result.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
     
-    # Verify user is the client
-    if current_user.id != contract.client_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only the contract client can approve milestones"
-        )
+    contract_row = contract_result["rows"][0]
+    client_id = int(contract_row[0].get("value"))
+    freelancer_id = int(contract_row[1].get("value"))
     
-    # Verify milestone is submitted
-    if milestone.status != MilestoneStatus.SUBMITTED:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Milestone is {milestone.status.value}, must be submitted to approve"
-        )
+    if current_user.id != client_id:
+        raise HTTPException(status_code=403, detail="Only the contract client can approve milestones")
+    
+    if current_status != "submitted":
+        raise HTTPException(status_code=400, detail=f"Milestone is {current_status}, must be submitted to approve")
+    
+    # Calculate payment amounts
+    platform_fee_percentage = 0.10
+    platform_fee = amount * platform_fee_percentage
+    freelancer_amount = amount - platform_fee
+    
+    now = datetime.utcnow().isoformat()
     
     # Update milestone
-    milestone.status = MilestoneStatus.APPROVED
-    milestone.approval_notes = approval_data.approval_notes
-    milestone.approved_at = datetime.utcnow()
+    execute_query("""
+        UPDATE milestones SET status = 'approved', approval_notes = ?, approved_at = ?, updated_at = ?
+        WHERE id = ?
+    """, [approval_data.approval_notes, now, now, milestone_id])
     
     # Create payment record
-    platform_fee_percentage = 0.10  # 10% platform fee
-    platform_fee = milestone.amount * platform_fee_percentage
-    freelancer_amount = milestone.amount - platform_fee
+    execute_query("""
+        INSERT INTO payments (contract_id, milestone_id, from_user_id, to_user_id, amount, 
+                             platform_fee, freelancer_amount, payment_type, payment_method, 
+                             status, description, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'milestone', 'escrow', 'pending', ?, ?, ?)
+    """, [contract_id, milestone_id, client_id, freelancer_id, amount, platform_fee, 
+          freelancer_amount, f"Payment for milestone: {title}", now, now])
     
-    payment = Payment(
-        contract_id=contract.id,
-        milestone_id=milestone.id,
-        client_id=contract.client_id,
-        freelancer_id=contract.freelancer_id,
-        amount=milestone.amount,
-        platform_fee=platform_fee,
-        freelancer_amount=freelancer_amount,
-        payment_type=PaymentType.MILESTONE,
-        payment_method="escrow",  # Default payment method
-        status=PaymentStatus.PENDING,
-        description=f"Payment for milestone: {milestone.title}"
-    )
+    # Get created payment ID
+    payment_result = execute_query("""
+        SELECT id FROM payments WHERE milestone_id = ? ORDER BY id DESC LIMIT 1
+    """, [milestone_id])
     
-    db.add(payment)
-    db.commit()
-    db.refresh(milestone)
-    db.refresh(payment)
+    payment_id = None
+    if payment_result and payment_result.get("rows"):
+        payment_id = int(payment_result["rows"][0][0].get("value"))
     
     # Notify freelancer
-    send_notification(
-        db=db,
-        user_id=contract.freelancer_id,
+    _send_notification_turso(
+        user_id=freelancer_id,
         notification_type="payment",
         title="Milestone Approved - Payment Processing",
-        content=f"Milestone #{milestone.id} approved. Payment of ${freelancer_amount:.2f} is being processed.",
-        data={
-            "milestone_id": milestone.id,
-            "payment_id": payment.id,
-            "amount": float(freelancer_amount)
-        },
+        content=f"Milestone #{milestone_id} approved. Payment of ${freelancer_amount:.2f} is being processed.",
+        data={"milestone_id": milestone_id, "payment_id": payment_id, "amount": float(freelancer_amount)},
         priority="high",
-        action_url=f"/payments/{payment.id}"
+        action_url=f"/payments/{payment_id}" if payment_id else f"/milestones/{milestone_id}"
     )
     
-    return milestone
+    return await get_milestone(milestone_id, current_user)
 
 
 @router.post("/milestones/{milestone_id}/reject", response_model=MilestoneSchema)
 async def reject_milestone(
     milestone_id: int,
     rejection_notes: str,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Reject a milestone submission (client action).
+    """Reject a milestone submission (client action). Returns milestone to PENDING status."""
+    # Get milestone
+    result = execute_query("""
+        SELECT id, contract_id, status FROM milestones WHERE id = ?
+    """, [milestone_id])
     
-    Returns milestone to PENDING status with feedback.
-    """
-    milestone = db.query(Milestone).filter(Milestone.id == milestone_id).first()
-    if not milestone:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Milestone not found"
-        )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Milestone not found")
+    
+    row = result["rows"][0]
+    contract_id = int(row[1].get("value"))
+    current_status = to_str(row[2])
     
     # Get contract
-    contract = db.query(Contract).filter(Contract.id == milestone.contract_id).first()
+    contract_result = execute_query("SELECT client_id, freelancer_id FROM contracts WHERE id = ?", [contract_id])
+    if not contract_result or not contract_result.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
     
-    # Verify user is the client
-    if current_user.id != contract.client_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only the contract client can reject milestones"
-        )
+    contract_row = contract_result["rows"][0]
+    client_id = int(contract_row[0].get("value"))
+    freelancer_id = int(contract_row[1].get("value"))
     
-    # Verify milestone is submitted
-    if milestone.status != MilestoneStatus.SUBMITTED:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Milestone is {milestone.status.value}, must be submitted to reject"
-        )
+    if current_user.id != client_id:
+        raise HTTPException(status_code=403, detail="Only the contract client can reject milestones")
+    
+    if current_status != "submitted":
+        raise HTTPException(status_code=400, detail=f"Milestone is {current_status}, must be submitted to reject")
     
     # Update milestone
-    milestone.status = MilestoneStatus.PENDING
-    milestone.approval_notes = rejection_notes
-    milestone.submitted_at = None  # Clear submission timestamp
-    
-    db.commit()
-    db.refresh(milestone)
+    now = datetime.utcnow().isoformat()
+    execute_query("""
+        UPDATE milestones SET status = 'pending', approval_notes = ?, submitted_at = NULL, updated_at = ?
+        WHERE id = ?
+    """, [rejection_notes, now, milestone_id])
     
     # Notify freelancer
-    send_notification(
-        db=db,
-        user_id=contract.freelancer_id,
+    _send_notification_turso(
+        user_id=freelancer_id,
         notification_type="milestone",
         title="Milestone Needs Revision",
-        content=f"Milestone #{milestone.id} needs revision. Check feedback from client.",
-        data={"milestone_id": milestone.id, "contract_id": contract.id},
+        content=f"Milestone #{milestone_id} needs revision. Check feedback from client.",
+        data={"milestone_id": milestone_id, "contract_id": contract_id},
         priority="high",
-        action_url=f"/milestones/{milestone.id}"
+        action_url=f"/milestones/{milestone_id}"
     )
     
-    return milestone
+    return await get_milestone(milestone_id, current_user)
 
 
 @router.delete("/milestones/{milestone_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_milestone(
     milestone_id: int,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
+    current_user: User = Depends(get_current_active_user)
 ):
-    """
-    Delete a milestone.
+    """Delete a milestone. Only client can delete, and only if not yet submitted."""
+    # Get milestone
+    result = execute_query("""
+        SELECT id, contract_id, status FROM milestones WHERE id = ?
+    """, [milestone_id])
     
-    Only client can delete, and only if not yet submitted.
-    """
-    milestone = db.query(Milestone).filter(Milestone.id == milestone_id).first()
-    if not milestone:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Milestone not found"
-        )
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Milestone not found")
+    
+    row = result["rows"][0]
+    contract_id = int(row[1].get("value"))
+    current_status = to_str(row[2])
     
     # Get contract
-    contract = db.query(Contract).filter(Contract.id == milestone.contract_id).first()
+    contract_result = execute_query("SELECT client_id FROM contracts WHERE id = ?", [contract_id])
+    if not contract_result or not contract_result.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
     
-    # Verify user is the client
-    if current_user.id != contract.client_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only the contract client can delete milestones"
-        )
+    client_id = int(contract_result["rows"][0][0].get("value"))
     
-    # Can't delete if submitted or approved
-    if milestone.status in [MilestoneStatus.SUBMITTED, MilestoneStatus.APPROVED]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Cannot delete submitted or approved milestones"
-        )
+    if current_user.id != client_id:
+        raise HTTPException(status_code=403, detail="Only the contract client can delete milestones")
     
-    db.delete(milestone)
-    db.commit()
+    if current_status in ["submitted", "approved"]:
+        raise HTTPException(status_code=400, detail="Cannot delete submitted or approved milestones")
+    
+    execute_query("DELETE FROM milestones WHERE id = ?", [milestone_id])

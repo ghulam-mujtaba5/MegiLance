@@ -1,15 +1,12 @@
-# @AI-HINT: WebSocket API endpoints for real-time features status and testing
+# @AI-HINT: WebSocket API endpoints for real-time features status and testing - Turso HTTP only
 # Provides endpoints to check online users, active connections, and WebSocket health
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
-from sqlalchemy.orm import Session
 
 from app.core.security import get_current_active_user
 from app.core.rate_limit import api_rate_limit
 from app.core.websocket import websocket_manager
-from app.db.session import get_db
-from app.models.user import User
 from pydantic import BaseModel
 
 
@@ -41,7 +38,7 @@ class SendNotificationRequest(BaseModel):
 
 @router.get("/status", response_model=WebSocketStatusResponse)
 def get_websocket_status(
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Get WebSocket server status
@@ -59,7 +56,7 @@ def get_websocket_status(
 
 @router.get("/online-users", response_model=OnlineUsersResponse)
 def get_online_users(
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Get list of online users
@@ -77,7 +74,7 @@ def get_online_users(
 @router.get("/user/{user_id}/online")
 def check_user_online(
     user_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Check if a specific user is online
@@ -93,7 +90,7 @@ def check_user_online(
 @router.post("/send-notification")
 async def send_test_notification(
     request: SendNotificationRequest,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Send a test notification to a user (for testing WebSocket)

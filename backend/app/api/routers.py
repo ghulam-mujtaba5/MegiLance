@@ -71,7 +71,7 @@ api_router.include_router(client.router, prefix="/client", tags=["client"])
 api_router.include_router(ai_services.router, prefix="/ai", tags=["ai"])
 
 # Portal endpoints (client and freelancer dashboards)
-api_router.include_router(portal_endpoints.router, prefix="", tags=["portals"])
+api_router.include_router(portal_endpoints.router, prefix="/portal", tags=["portals"])
 
 # Mock endpoints (DISABLED - using real database endpoints)
 # api_router.include_router(mock.router, prefix="", tags=["mock"])

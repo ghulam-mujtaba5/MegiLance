@@ -1,11 +1,11 @@
 {
-  "timestamp": "2025-11-25T01:37:23.672927",
+  "timestamp": "2025-11-25T07:54:49.328749",
   "summary": {
-    "total": 10,
-    "passed": 2,
-    "failed": 8,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
     "skipped": 0,
-    "pass_rate": "20.0%"
+    "pass_rate": "100.0%"
   },
   "details": [
     {
@@ -19,44 +19,74 @@
       "message": ""
     },
     {
-      "status": "FAIL",
+      "status": "PASS",
       "endpoint": "POST /auth/login",
-      "error": "Status: 500"
+      "message": ""
     },
     {
-      "status": "FAIL",
+      "status": "PASS",
       "endpoint": "GET /auth/me",
-      "error": "Login failed: {\"detail\":\"Object of type bytes is not JSON serializable\",\"error_type\":\"TypeError\"}"
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "User endpoints",
-      "error": "Login failed: {\"detail\":\"Object of type bytes is not JSON serializable\",\"error_type\":\"TypeError\"}"
+      "status": "PASS",
+      "endpoint": "GET /users/",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Project endpoints",
-      "error": "Login failed: {\"detail\":\"Object of type bytes is not JSON serializable\",\"error_type\":\"TypeError\"}"
+      "status": "PASS",
+      "endpoint": "GET /users/{id}",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Payment endpoints",
-      "error": "Login failed: {\"detail\":\"Object of type bytes is not JSON serializable\",\"error_type\":\"TypeError\"}"
+      "status": "PASS",
+      "endpoint": "GET /projects/",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Client portal endpoints",
-      "error": "Login failed: {\"detail\":\"Object of type bytes is not JSON serializable\",\"error_type\":\"TypeError\"}"
+      "status": "PASS",
+      "endpoint": "POST /projects/",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Freelancer portal endpoints",
-      "error": "Login failed: {\"detail\":\"Object of type bytes is not JSON serializable\",\"error_type\":\"TypeError\"}"
+      "status": "PASS",
+      "endpoint": "GET /projects/{id}",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Admin endpoints",
-      "error": "Login failed: {\"detail\":\"Object of type bytes is not JSON serializable\",\"error_type\":\"TypeError\"}"
+      "status": "PASS",
+      "endpoint": "GET /payments/",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/client/dashboard/stats",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/client/wallet (pending_payments implemented)",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/freelancer/dashboard/stats (rating system implemented)",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/freelancer/portfolio (portfolio implemented)",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /admin/dashboard/overview",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /admin/dashboard/top-freelancers",
+      "message": ""
     }
   ]
 }

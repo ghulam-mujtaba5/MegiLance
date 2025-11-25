@@ -15,7 +15,7 @@ services:
       - "8000:8000"
     volumes:
       - ./db:/data/db:ro
-      - ./backend/local.db:/app/local.db  # SQLite database file
+      # - ./backend/local.db:/app/local.db  # Not needed with Turso
       - ./uploads:/app/uploads  # File uploads
     env_file:
       - ./backend/.env

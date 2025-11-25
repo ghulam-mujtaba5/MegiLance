@@ -1,5 +1,5 @@
 # @AI-HINT: Two-Factor Authentication service for generating TOTP secrets, QR codes, and backup codes
-# Handles all 2FA operations including setup, verification, and recovery
+# Handles all 2FA operations including setup, verification, and recovery - Turso HTTP compatible
 
 import pyotp
 import qrcode
@@ -7,9 +7,8 @@ import io
 import base64
 import secrets
 import hashlib
-from typing import List, Tuple, Optional
-from sqlalchemy.orm import Session
-from ..models.user import User
+from typing import List, Tuple, Optional, Dict, Any, Union
+from datetime import datetime
 import json
 
 
@@ -145,17 +144,26 @@ class TwoFactorService:
         
         return False, None
     
-    def setup_2fa_for_user(self, db: Session, user: User) -> dict:
+    def setup_2fa_for_user_turso(self, user: Union[Dict[str, Any], Any]) -> dict:
         """
-        Initialize 2FA setup for a user
+        Initialize 2FA setup for a user (Turso HTTP compatible)
         
         Args:
-            db: Database session
-            user: User model instance
+            user: User dict or model instance
         
         Returns:
             dict: Contains secret, qr_code, and backup_codes for user to save
         """
+        from app.db.turso_http import execute_query
+        
+        # Get user email and id
+        if isinstance(user, dict):
+            user_email = user.get('email', '')
+            user_id = user.get('id')
+        else:
+            user_email = user.email
+            user_id = user.id
+        
         # Generate new secret
         secret = self.generate_secret()
         
@@ -163,14 +171,18 @@ class TwoFactorService:
         plain_codes, hashed_codes = self.generate_backup_codes()
         
         # Store secret and backup codes (2FA not enabled yet)
-        user.two_factor_secret = secret
-        user.two_factor_backup_codes = json.dumps(hashed_codes)
-        user.two_factor_enabled = False  # Not enabled until verified
-        
-        db.commit()
+        execute_query(
+            """UPDATE users SET 
+               two_factor_secret = ?,
+               two_factor_backup_codes = ?,
+               two_factor_enabled = 0,
+               updated_at = ?
+               WHERE id = ?""",
+            [secret, json.dumps(hashed_codes), datetime.utcnow().isoformat(), user_id]
+        )
         
         # Generate QR code
-        provisioning_uri = self.generate_provisioning_uri(user.email, secret)
+        provisioning_uri = self.generate_provisioning_uri(user_email, secret)
         qr_code = self.generate_qr_code(provisioning_uri)
         
         return {
@@ -180,87 +192,144 @@ class TwoFactorService:
             "provisioning_uri": provisioning_uri
         }
     
-    def enable_2fa(self, db: Session, user: User, verification_token: str) -> bool:
+    def enable_2fa_turso(self, user: Union[Dict[str, Any], Any], verification_token: str) -> bool:
         """
-        Enable 2FA after user verifies setup with a valid token
+        Enable 2FA after user verifies setup with a valid token (Turso HTTP compatible)
         
         Args:
-            db: Database session
-            user: User model instance
+            user: User dict or model instance
             verification_token: Token from authenticator app to verify setup
         
         Returns:
             bool: True if token verified and 2FA enabled
         """
-        if not user.two_factor_secret:
+        from app.db.turso_http import execute_query, to_str
+        
+        # Get user id
+        if isinstance(user, dict):
+            user_id = user.get('id')
+            two_factor_secret = user.get('two_factor_secret')
+        else:
+            user_id = user.id
+            two_factor_secret = getattr(user, 'two_factor_secret', None)
+        
+        # If secret not in user object, fetch from DB
+        if not two_factor_secret:
+            result = execute_query(
+                "SELECT two_factor_secret FROM users WHERE id = ?",
+                [user_id]
+            )
+            if result and result.get("rows"):
+                two_factor_secret = to_str(result["rows"][0][0])
+        
+        if not two_factor_secret:
             return False
         
         # Verify the token
-        if self.verify_token(user.two_factor_secret, verification_token):
-            user.two_factor_enabled = True
-            db.commit()
+        if self.verify_token(two_factor_secret, verification_token):
+            execute_query(
+                "UPDATE users SET two_factor_enabled = 1, updated_at = ? WHERE id = ?",
+                [datetime.utcnow().isoformat(), user_id]
+            )
             return True
         
         return False
     
-    def disable_2fa(self, db: Session, user: User):
+    def disable_2fa_turso(self, user: Union[Dict[str, Any], Any]):
         """
-        Disable 2FA for a user
+        Disable 2FA for a user (Turso HTTP compatible)
         
         Args:
-            db: Database session
-            user: User model instance
+            user: User dict or model instance
         """
-        user.two_factor_enabled = False
-        user.two_factor_secret = None
-        user.two_factor_backup_codes = None
-        db.commit()
+        from app.db.turso_http import execute_query
+        
+        # Get user id
+        if isinstance(user, dict):
+            user_id = user.get('id')
+        else:
+            user_id = user.id
+        
+        execute_query(
+            """UPDATE users SET 
+               two_factor_enabled = 0,
+               two_factor_secret = NULL,
+               two_factor_backup_codes = NULL,
+               updated_at = ?
+               WHERE id = ?""",
+            [datetime.utcnow().isoformat(), user_id]
+        )
     
-    def verify_2fa_login(
+    def verify_2fa_login_turso(
         self, 
-        user: User, 
+        user: Union[Dict[str, Any], Any], 
         token: str, 
-        db: Session,
         is_backup_code: bool = False
     ) -> bool:
         """
-        Verify 2FA token during login
+        Verify 2FA token during login (Turso HTTP compatible)
         
         Args:
-            user: User attempting to log in
+            user: User dict or model instance
             token: TOTP token or backup code
-            db: Database session
             is_backup_code: Whether token is a backup code (default False)
         
         Returns:
             bool: True if authentication successful
         """
-        if not user.two_factor_enabled:
+        from app.db.turso_http import execute_query, to_str
+        
+        # Get user data
+        if isinstance(user, dict):
+            user_id = user.get('id')
+            two_factor_enabled = user.get('two_factor_enabled', False)
+            two_factor_secret = user.get('two_factor_secret')
+            two_factor_backup_codes = user.get('two_factor_backup_codes')
+        else:
+            user_id = user.id
+            two_factor_enabled = getattr(user, 'two_factor_enabled', False)
+            two_factor_secret = getattr(user, 'two_factor_secret', None)
+            two_factor_backup_codes = getattr(user, 'two_factor_backup_codes', None)
+        
+        if not two_factor_enabled:
             return False
+        
+        # Fetch fresh data from DB if needed
+        if not two_factor_secret or not two_factor_backup_codes:
+            result = execute_query(
+                "SELECT two_factor_secret, two_factor_backup_codes FROM users WHERE id = ?",
+                [user_id]
+            )
+            if result and result.get("rows"):
+                row = result["rows"][0]
+                two_factor_secret = to_str(row[0])
+                two_factor_backup_codes = to_str(row[1])
         
         if is_backup_code:
             # Verify backup code
-            if not user.two_factor_backup_codes:
+            if not two_factor_backup_codes:
                 return False
             
             is_valid, updated_codes = self.verify_backup_code(
-                user.two_factor_backup_codes, 
+                two_factor_backup_codes, 
                 token
             )
             
             if is_valid:
                 # Update stored codes (one-time use)
-                user.two_factor_backup_codes = updated_codes
-                db.commit()
+                execute_query(
+                    "UPDATE users SET two_factor_backup_codes = ?, updated_at = ? WHERE id = ?",
+                    [updated_codes, datetime.utcnow().isoformat(), user_id]
+                )
                 return True
             
             return False
         else:
             # Verify TOTP token
-            if not user.two_factor_secret:
+            if not two_factor_secret:
                 return False
             
-            return self.verify_token(user.two_factor_secret, token)
+            return self.verify_token(two_factor_secret, token)
 
 
 # Singleton instance

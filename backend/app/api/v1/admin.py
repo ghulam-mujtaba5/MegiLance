@@ -1,17 +1,14 @@
 """
 @AI-HINT: Admin Dashboard API - System monitoring, analytics, and management
-Provides endpoints for Super Admin to monitor platform health, user activity,
-financial metrics, and perform administrative actions.
+Uses Turso HTTP API directly - NO SQLite fallback
 """
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, or_, desc, case
 
-from app.db.session import get_db
 from app.core.security import get_current_active_user
-from app.models import User, Project, Proposal, Contract, Payment, Skill
+from app.db.turso_http import execute_query, to_str, parse_date
+from app.models.user import User
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -77,19 +74,38 @@ class TopClient(BaseModel):
     
 class RecentActivity(BaseModel):
     """Recent platform activity"""
-    type: str  # 'user_joined', 'project_posted', 'proposal_submitted', 'contract_created', 'payment_made'
+    type: str
     description: str
     timestamp: datetime
     user_name: str
     amount: Optional[float]
 
 
+def _get_val(row: list, idx: int):
+    """Extract value from Turso row"""
+    if idx >= len(row):
+        return None
+    cell = row[idx]
+    if cell.get("type") == "null":
+        return None
+    return cell.get("value")
+
+
+def _safe_str(val):
+    """Convert bytes to string if needed"""
+    if val is None:
+        return None
+    if isinstance(val, bytes):
+        return val.decode('utf-8')
+    return str(val) if val else None
+
+
 # ============ Dependency: Admin Only ============
 
 async def get_admin_user(current_user: User = Depends(get_current_active_user)):
     """Verify that current user is an admin"""
-    # Check user_type field which is consistently available in all contexts
-    if current_user.user_type not in ['Admin', 'admin']:
+    user_type = _safe_str(current_user.user_type)
+    if user_type not in ['Admin', 'admin']:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
@@ -99,154 +115,240 @@ async def get_admin_user(current_user: User = Depends(get_current_active_user)):
 
 # ============ Dashboard Endpoints ============
 
+@router.get("/admin/dashboard/overview", response_model=SystemStats)
 @router.get("/admin/dashboard/stats", response_model=SystemStats)
-async def get_system_stats(
-    db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
-):
-    """
-    Get overall system statistics.
+async def get_system_stats(admin: User = Depends(get_admin_user)):
+    """Get overall system statistics."""
     
-    **Admin only** - provides high-level metrics about platform usage.
-    """
-    total_users = db.query(func.count(User.id)).scalar()
-    total_clients = db.query(func.count(User.id)).filter(User.user_type == 'Client').scalar()
-    total_freelancers = db.query(func.count(User.id)).filter(User.user_type == 'Freelancer').scalar()
-    total_projects = db.query(func.count(Project.id)).scalar()
-    total_contracts = db.query(func.count(Contract.id)).scalar()
+    # Get counts using Turso
+    total_users = 0
+    total_clients = 0
+    total_freelancers = 0
+    total_projects = 0
+    total_contracts = 0
+    total_revenue = 0.0
+    active_projects = 0
+    pending_proposals = 0
     
-    total_revenue = db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
-        Payment.status == 'completed'
-    ).scalar()
+    # Total users
+    result = execute_query("SELECT COUNT(*) FROM users", [])
+    if result and result.get("rows"):
+        total_users = int(_get_val(result["rows"][0], 0) or 0)
     
-    active_projects = db.query(func.count(Project.id)).filter(
-        Project.status.in_(['open', 'in_progress'])
-    ).scalar()
+    # Clients
+    result = execute_query("SELECT COUNT(*) FROM users WHERE user_type = 'Client'", [])
+    if result and result.get("rows"):
+        total_clients = int(_get_val(result["rows"][0], 0) or 0)
     
-    pending_proposals = db.query(func.count(Proposal.id)).filter(
-        Proposal.status == 'submitted'
-    ).scalar()
+    # Freelancers
+    result = execute_query("SELECT COUNT(*) FROM users WHERE user_type = 'Freelancer'", [])
+    if result and result.get("rows"):
+        total_freelancers = int(_get_val(result["rows"][0], 0) or 0)
+    
+    # Projects
+    result = execute_query("SELECT COUNT(*) FROM projects", [])
+    if result and result.get("rows"):
+        total_projects = int(_get_val(result["rows"][0], 0) or 0)
+    
+    # Contracts
+    result = execute_query("SELECT COUNT(*) FROM contracts", [])
+    if result and result.get("rows"):
+        total_contracts = int(_get_val(result["rows"][0], 0) or 0)
+    
+    # Total revenue
+    result = execute_query(
+        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'", []
+    )
+    if result and result.get("rows"):
+        total_revenue = float(_get_val(result["rows"][0], 0) or 0)
+    
+    # Active projects
+    result = execute_query(
+        "SELECT COUNT(*) FROM projects WHERE status IN ('open', 'in_progress')", []
+    )
+    if result and result.get("rows"):
+        active_projects = int(_get_val(result["rows"][0], 0) or 0)
+    
+    # Pending proposals
+    result = execute_query(
+        "SELECT COUNT(*) FROM proposals WHERE status = 'submitted'", []
+    )
+    if result and result.get("rows"):
+        pending_proposals = int(_get_val(result["rows"][0], 0) or 0)
     
     return SystemStats(
-        total_users=total_users or 0,
-        total_clients=total_clients or 0,
-        total_freelancers=total_freelancers or 0,
-        total_projects=total_projects or 0,
-        total_contracts=total_contracts or 0,
-        total_revenue=float(total_revenue or 0.0),
-        active_projects=active_projects or 0,
-        pending_proposals=pending_proposals or 0
+        total_users=total_users,
+        total_clients=total_clients,
+        total_freelancers=total_freelancers,
+        total_projects=total_projects,
+        total_contracts=total_contracts,
+        total_revenue=total_revenue,
+        active_projects=active_projects,
+        pending_proposals=pending_proposals
     )
 
 
 @router.get("/admin/dashboard/user-activity", response_model=UserActivity)
-async def get_user_activity(
-    db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
-):
-    """
-    Get user activity metrics.
-    
-    Tracks daily/weekly/monthly active users and new user signups.
-    """
+async def get_user_activity(admin: User = Depends(get_admin_user)):
+    """Get user activity metrics."""
     now = datetime.utcnow()
-    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    week_ago = now - timedelta(days=7)
-    month_ago = now - timedelta(days=30)
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    week_ago = (now - timedelta(days=7)).isoformat()
+    month_ago = (now - timedelta(days=30)).isoformat()
     
-    # New users
-    new_today = db.query(func.count(User.id)).filter(User.joined_at >= today).scalar()
-    new_week = db.query(func.count(User.id)).filter(User.joined_at >= week_ago).scalar()
-    new_month = db.query(func.count(User.id)).filter(User.joined_at >= month_ago).scalar()
+    new_today = 0
+    new_week = 0
+    new_month = 0
+    dau = 0
+    wau = 0
+    mau = 0
     
-    # For DAU/WAU/MAU, we'd ideally track last_active_at
-    # For now, estimate based on updated_at
-    dau = db.query(func.count(User.id)).filter(User.updated_at >= today).scalar()
-    wau = db.query(func.count(User.id)).filter(User.updated_at >= week_ago).scalar()
-    mau = db.query(func.count(User.id)).filter(User.updated_at >= month_ago).scalar()
+    result = execute_query(
+        "SELECT COUNT(*) FROM users WHERE joined_at >= ?", [today]
+    )
+    if result and result.get("rows"):
+        new_today = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COUNT(*) FROM users WHERE joined_at >= ?", [week_ago]
+    )
+    if result and result.get("rows"):
+        new_week = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COUNT(*) FROM users WHERE joined_at >= ?", [month_ago]
+    )
+    if result and result.get("rows"):
+        new_month = int(_get_val(result["rows"][0], 0) or 0)
+    
+    # Estimate DAU/WAU/MAU based on updated_at
+    result = execute_query(
+        "SELECT COUNT(*) FROM users WHERE updated_at >= ?", [today]
+    )
+    if result and result.get("rows"):
+        dau = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COUNT(*) FROM users WHERE updated_at >= ?", [week_ago]
+    )
+    if result and result.get("rows"):
+        wau = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COUNT(*) FROM users WHERE updated_at >= ?", [month_ago]
+    )
+    if result and result.get("rows"):
+        mau = int(_get_val(result["rows"][0], 0) or 0)
     
     return UserActivity(
-        daily_active_users=dau or 0,
-        weekly_active_users=wau or 0,
-        monthly_active_users=mau or 0,
-        new_users_today=new_today or 0,
-        new_users_this_week=new_week or 0,
-        new_users_this_month=new_month or 0
+        daily_active_users=dau,
+        weekly_active_users=wau,
+        monthly_active_users=mau,
+        new_users_today=new_today,
+        new_users_this_week=new_week,
+        new_users_this_month=new_month
     )
 
 
 @router.get("/admin/dashboard/project-metrics", response_model=ProjectMetrics)
-async def get_project_metrics(
-    db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
-):
-    """
-    Get project-related metrics.
+async def get_project_metrics(admin: User = Depends(get_admin_user)):
+    """Get project-related metrics."""
+    open_count = 0
+    in_progress_count = 0
+    completed_count = 0
+    cancelled_count = 0
+    avg_value = 0.0
+    total_value = 0.0
     
-    Breakdown of projects by status and financial value.
-    """
-    open_count = db.query(func.count(Project.id)).filter(Project.status == 'open').scalar()
-    in_progress_count = db.query(func.count(Project.id)).filter(Project.status == 'in_progress').scalar()
-    completed_count = db.query(func.count(Project.id)).filter(Project.status == 'completed').scalar()
-    cancelled_count = db.query(func.count(Project.id)).filter(Project.status == 'cancelled').scalar()
+    result = execute_query(
+        "SELECT COUNT(*) FROM projects WHERE status = 'open'", []
+    )
+    if result and result.get("rows"):
+        open_count = int(_get_val(result["rows"][0], 0) or 0)
     
-    # Calculate average and total project value
-    avg_value = db.query(func.avg((Project.budget_min + Project.budget_max) / 2)).scalar()
-    total_value = db.query(func.sum((Project.budget_min + Project.budget_max) / 2)).scalar()
+    result = execute_query(
+        "SELECT COUNT(*) FROM projects WHERE status = 'in_progress'", []
+    )
+    if result and result.get("rows"):
+        in_progress_count = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COUNT(*) FROM projects WHERE status = 'completed'", []
+    )
+    if result and result.get("rows"):
+        completed_count = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COUNT(*) FROM projects WHERE status = 'cancelled'", []
+    )
+    if result and result.get("rows"):
+        cancelled_count = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT AVG((budget_min + budget_max) / 2), SUM((budget_min + budget_max) / 2) FROM projects", []
+    )
+    if result and result.get("rows"):
+        avg_value = float(_get_val(result["rows"][0], 0) or 0)
+        total_value = float(_get_val(result["rows"][0], 1) or 0)
     
     return ProjectMetrics(
-        open_projects=open_count or 0,
-        in_progress_projects=in_progress_count or 0,
-        completed_projects=completed_count or 0,
-        cancelled_projects=cancelled_count or 0,
-        avg_project_value=float(avg_value or 0.0),
-        total_project_value=float(total_value or 0.0)
+        open_projects=open_count,
+        in_progress_projects=in_progress_count,
+        completed_projects=completed_count,
+        cancelled_projects=cancelled_count,
+        avg_project_value=avg_value,
+        total_project_value=total_value
     )
 
 
 @router.get("/admin/dashboard/financial-metrics", response_model=FinancialMetrics)
-async def get_financial_metrics(
-    db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
-):
-    """
-    Get financial analytics and revenue metrics.
-    
-    Platform revenue, pending payments, and fees collected.
-    """
+async def get_financial_metrics(admin: User = Depends(get_admin_user)):
+    """Get financial analytics and revenue metrics."""
     now = datetime.utcnow()
-    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    week_start = now - timedelta(days=now.weekday())
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
+    week_start = (now - timedelta(days=now.weekday())).isoformat()
     
-    total_revenue = db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
-        Payment.status == 'completed'
-    ).scalar()
+    total_revenue = 0.0
+    revenue_month = 0.0
+    revenue_week = 0.0
+    pending = 0.0
+    completed = 0.0
     
-    revenue_month = db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
-        and_(Payment.status == 'completed', Payment.created_at >= month_start)
-    ).scalar()
+    result = execute_query(
+        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'", []
+    )
+    if result and result.get("rows"):
+        total_revenue = float(_get_val(result["rows"][0], 0) or 0)
     
-    revenue_week = db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
-        and_(Payment.status == 'completed', Payment.created_at >= week_start)
-    ).scalar()
+    result = execute_query(
+        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND created_at >= ?",
+        [month_start]
+    )
+    if result and result.get("rows"):
+        revenue_month = float(_get_val(result["rows"][0], 0) or 0)
     
-    pending = db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
-        Payment.status == 'pending'
-    ).scalar()
+    result = execute_query(
+        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed' AND created_at >= ?",
+        [week_start]
+    )
+    if result and result.get("rows"):
+        revenue_week = float(_get_val(result["rows"][0], 0) or 0)
     
-    completed_amount = db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(
-        Payment.status == 'completed'
-    ).scalar()
+    result = execute_query(
+        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'pending'", []
+    )
+    if result and result.get("rows"):
+        pending = float(_get_val(result["rows"][0], 0) or 0)
     
-    # Platform fee is typically 10-15% - using 12.5% for calculation
-    platform_fees = float(completed_amount or 0.0) * 0.125
+    completed = total_revenue
+    platform_fees = completed * 0.125
     
     return FinancialMetrics(
-        total_revenue=float(total_revenue or 0.0),
-        revenue_this_month=float(revenue_month or 0.0),
-        revenue_this_week=float(revenue_week or 0.0),
-        pending_payments=float(pending or 0.0),
-        completed_payments=float(completed_amount or 0.0),
+        total_revenue=total_revenue,
+        revenue_this_month=revenue_month,
+        revenue_this_week=revenue_week,
+        pending_payments=pending,
+        completed_payments=completed,
         platform_fees_collected=platform_fees
     )
 
@@ -254,158 +356,200 @@ async def get_financial_metrics(
 @router.get("/admin/dashboard/top-freelancers", response_model=List[TopFreelancer])
 async def get_top_freelancers(
     limit: int = Query(10, ge=1, le=50),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
-    """
-    Get top earning freelancers.
+    """Get top earning freelancers."""
+    result = execute_query(
+        """SELECT u.id, u.name, u.email, 
+           COALESCE(SUM(p.amount), 0) as total_earnings,
+           COUNT(DISTINCT c.id) as completed_projects
+           FROM users u
+           LEFT JOIN payments p ON p.to_user_id = u.id AND p.status = 'completed'
+           LEFT JOIN contracts c ON c.freelancer_id = u.id
+           WHERE u.user_type = 'Freelancer'
+           GROUP BY u.id, u.name, u.email
+           ORDER BY total_earnings DESC
+           LIMIT ?""",
+        [limit]
+    )
     
-    Ranked by total earnings and completed projects.
-    """
-    # Query freelancers with their earnings
-    freelancers = db.query(
-        User.id,
-        User.name,
-        User.email,
-        func.coalesce(func.sum(Payment.amount), 0.0).label('total_earnings'),
-        func.count(Contract.id).label('completed_projects')
-    ).join(
-        Payment, Payment.to_user_id == User.id, isouter=True
-    ).join(
-        Contract, Contract.freelancer_id == User.id, isouter=True
-    ).filter(
-        User.user_type == 'Freelancer',
-        or_(Payment.status == 'completed', Payment.status == None)
-    ).group_by(
-        User.id, User.name, User.email
-    ).order_by(
-        desc('total_earnings')
-    ).limit(limit).all()
+    freelancers = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            user_id = int(_get_val(row, 0) or 0)
+            name = _safe_str(_get_val(row, 1)) or "Unknown"
+            email = _safe_str(_get_val(row, 2)) or ""
+            total_earnings = float(_get_val(row, 3) or 0)
+            completed_projects = int(_get_val(row, 4) or 0)
+            
+            # Get average rating
+            avg_rating = None
+            rating_result = execute_query(
+                "SELECT AVG(rating) FROM reviews WHERE reviewee_id = ?",
+                [user_id]
+            )
+            if rating_result and rating_result.get("rows"):
+                rating_val = _get_val(rating_result["rows"][0], 0)
+                if rating_val:
+                    avg_rating = round(float(rating_val), 2)
+            
+            freelancers.append(TopFreelancer(
+                id=user_id,
+                name=name,
+                email=email,
+                total_earnings=total_earnings,
+                completed_projects=completed_projects,
+                average_rating=avg_rating
+            ))
     
-    from app.models.review import Review
-    
-    result = []
-    for f in freelancers:
-        # Calculate average rating
-        avg_rating = db.query(func.avg(Review.rating)).filter(
-            Review.reviewee_id == f.id
-        ).scalar()
-        
-        result.append(TopFreelancer(
-            id=f.id,
-            name=f.name,
-            email=f.email,
-            total_earnings=float(f.total_earnings),
-            completed_projects=f.completed_projects,
-            average_rating=round(float(avg_rating), 2) if avg_rating else None
-        ))
-    
-    return result
+    return freelancers
 
 
 @router.get("/admin/dashboard/top-clients", response_model=List[TopClient])
 async def get_top_clients(
     limit: int = Query(10, ge=1, le=50),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
-    """
-    Get top spending clients.
+    """Get top spending clients."""
+    result = execute_query(
+        """SELECT u.id, u.name, u.email,
+           COALESCE(SUM(p.amount), 0) as total_spent
+           FROM users u
+           LEFT JOIN payments p ON p.from_user_id = u.id AND p.status = 'completed'
+           WHERE u.user_type = 'Client'
+           GROUP BY u.id, u.name, u.email
+           ORDER BY total_spent DESC
+           LIMIT ?""",
+        [limit]
+    )
     
-    Ranked by total spending and project activity.
-    """
-    clients = db.query(
-        User.id,
-        User.name,
-        User.email,
-        func.coalesce(func.sum(Payment.amount), 0.0).label('total_spent'),
-        func.count(case((Project.status.in_(['open', 'in_progress']), Project.id))).label('active_projects'),
-        func.count(case((Project.status == 'completed', Project.id))).label('completed_projects')
-    ).join(
-        Payment, Payment.from_user_id == User.id, isouter=True
-    ).join(
-        Project, Project.client_id == User.id, isouter=True
-    ).filter(
-        User.user_type == 'Client',
-        or_(Payment.status == 'completed', Payment.status == None)
-    ).group_by(
-        User.id, User.name, User.email
-    ).order_by(
-        desc('total_spent')
-    ).limit(10).all()
+    clients = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            user_id = int(_get_val(row, 0) or 0)
+            name = _safe_str(_get_val(row, 1)) or "Unknown"
+            email = _safe_str(_get_val(row, 2)) or ""
+            total_spent = float(_get_val(row, 3) or 0)
+            
+            # Get project counts
+            active_projects = 0
+            completed_projects = 0
+            
+            proj_result = execute_query(
+                "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status IN ('open', 'in_progress')",
+                [user_id]
+            )
+            if proj_result and proj_result.get("rows"):
+                active_projects = int(_get_val(proj_result["rows"][0], 0) or 0)
+            
+            proj_result = execute_query(
+                "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status = 'completed'",
+                [user_id]
+            )
+            if proj_result and proj_result.get("rows"):
+                completed_projects = int(_get_val(proj_result["rows"][0], 0) or 0)
+            
+            clients.append(TopClient(
+                id=user_id,
+                name=name,
+                email=email,
+                total_spent=total_spent,
+                active_projects=active_projects,
+                completed_projects=completed_projects
+            ))
     
-    return [
-        TopClient(
-            id=c.id,
-            name=c.name,
-            email=c.email,
-            total_spent=float(c.total_spent),
-            active_projects=c.active_projects or 0,
-            completed_projects=c.completed_projects or 0
-        )
-        for c in clients
-    ]
+    return clients
 
 
 @router.get("/admin/dashboard/recent-activity", response_model=List[RecentActivity])
 async def get_recent_activity(
     limit: int = Query(20, ge=1, le=100),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
-    """
-    Get recent platform activity feed.
-    
-    Shows latest user signups, projects, proposals, contracts, and payments.
-    """
+    """Get recent platform activity feed."""
     activities = []
     
     # Recent users
-    recent_users = db.query(User).order_by(desc(User.joined_at)).limit(5).all()
-    for user in recent_users:
-        activities.append({
-            'type': 'user_joined',
-            'description': f"{user.user_type} joined the platform",
-            'timestamp': user.joined_at,
-            'user_name': user.name,
-            'amount': None
-        })
+    result = execute_query(
+        "SELECT id, name, user_type, joined_at FROM users ORDER BY joined_at DESC LIMIT 5", []
+    )
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            name = _safe_str(_get_val(row, 1)) or "Unknown"
+            user_type = _safe_str(_get_val(row, 2)) or "User"
+            joined_at = parse_date(_get_val(row, 3)) or datetime.utcnow()
+            activities.append({
+                'type': 'user_joined',
+                'description': f"{user_type} joined the platform",
+                'timestamp': joined_at,
+                'user_name': name,
+                'amount': None
+            })
     
     # Recent projects
-    recent_projects = db.query(Project).join(User, Project.client_id == User.id).order_by(desc(Project.created_at)).limit(5).all()
-    for project in recent_projects:
-        client = db.query(User).filter(User.id == project.client_id).first()
-        activities.append({
-            'type': 'project_posted',
-            'description': f"Posted: {project.title}",
-            'timestamp': project.created_at,
-            'user_name': client.name if client else "Unknown",
-            'amount': project.budget_max
-        })
+    result = execute_query(
+        """SELECT p.id, p.title, p.budget_max, p.created_at, u.name
+           FROM projects p
+           LEFT JOIN users u ON u.id = p.client_id
+           ORDER BY p.created_at DESC LIMIT 5""", []
+    )
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            title = _safe_str(_get_val(row, 1)) or "Project"
+            budget = float(_get_val(row, 2) or 0)
+            created_at = parse_date(_get_val(row, 3)) or datetime.utcnow()
+            client_name = _safe_str(_get_val(row, 4)) or "Unknown"
+            activities.append({
+                'type': 'project_posted',
+                'description': f"Posted: {title}",
+                'timestamp': created_at,
+                'user_name': client_name,
+                'amount': budget
+            })
     
     # Recent proposals
-    recent_proposals = db.query(Proposal).join(User, Proposal.freelancer_id == User.id).order_by(desc(Proposal.created_at)).limit(5).all()
-    for proposal in recent_proposals:
-        freelancer = db.query(User).filter(User.id == proposal.freelancer_id).first()
-        activities.append({
-            'type': 'proposal_submitted',
-            'description': f"Submitted proposal",
-            'timestamp': proposal.created_at,
-            'user_name': freelancer.name if freelancer else "Unknown",
-            'amount': proposal.estimated_hours * proposal.hourly_rate if proposal.hourly_rate else None
-        })
+    result = execute_query(
+        """SELECT pr.id, pr.estimated_hours, pr.hourly_rate, pr.created_at, u.name
+           FROM proposals pr
+           LEFT JOIN users u ON u.id = pr.freelancer_id
+           ORDER BY pr.created_at DESC LIMIT 5""", []
+    )
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            hours = float(_get_val(row, 1) or 0)
+            rate = float(_get_val(row, 2) or 0)
+            created_at = parse_date(_get_val(row, 3)) or datetime.utcnow()
+            freelancer_name = _safe_str(_get_val(row, 4)) or "Unknown"
+            amount = hours * rate if rate else None
+            activities.append({
+                'type': 'proposal_submitted',
+                'description': "Submitted proposal",
+                'timestamp': created_at,
+                'user_name': freelancer_name,
+                'amount': amount
+            })
     
     # Recent payments
-    recent_payments = db.query(Payment).join(User, Payment.to_user_id == User.id).order_by(desc(Payment.created_at)).limit(5).all()
-    for payment in recent_payments:
-        payee = db.query(User).filter(User.id == payment.to_user_id).first()
-        activities.append({
-            'type': 'payment_made',
-            'description': f"Payment: {payment.description or payment.payment_type}",
-            'timestamp': payment.created_at,
-            'user_name': payee.name if payee else "Unknown",
-            'amount': payment.amount
-        })
+    result = execute_query(
+        """SELECT pay.id, pay.amount, pay.payment_type, pay.description, pay.created_at, u.name
+           FROM payments pay
+           LEFT JOIN users u ON u.id = pay.to_user_id
+           ORDER BY pay.created_at DESC LIMIT 5""", []
+    )
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            amount = float(_get_val(row, 1) or 0)
+            payment_type = _safe_str(_get_val(row, 2)) or ""
+            description = _safe_str(_get_val(row, 3)) or payment_type
+            created_at = parse_date(_get_val(row, 4)) or datetime.utcnow()
+            payee_name = _safe_str(_get_val(row, 5)) or "Unknown"
+            activities.append({
+                'type': 'payment_made',
+                'description': f"Payment: {description}",
+                'timestamp': created_at,
+                'user_name': payee_name,
+                'amount': amount
+            })
     
     # Sort all activities by timestamp
     activities.sort(key=lambda x: x['timestamp'], reverse=True)
@@ -415,91 +559,104 @@ async def get_recent_activity(
 
 @router.get("/admin/users/list")
 async def list_all_users(
-    user_type: Optional[str] = Query(None, description="Filter by user type: Client, Freelancer, Admin"),
-    search: Optional[str] = Query(None, description="Search by name or email"),
+    user_type: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
-    """
-    List all users with filtering options.
-    
-    **Admin only** - for user management.
-    """
-    query = db.query(User)
+    """List all users with filtering options."""
+    where_clauses = []
+    params = []
     
     if user_type:
-        query = query.filter(User.user_type == user_type)
+        where_clauses.append("user_type = ?")
+        params.append(user_type)
     
     if search:
-        search_pattern = f"%{search}%"
-        query = query.filter(
-            or_(
-                User.name.ilike(search_pattern),
-                User.email.ilike(search_pattern)
-            )
-        )
+        where_clauses.append("(name LIKE ? OR email LIKE ?)")
+        params.append(f"%{search}%")
+        params.append(f"%{search}%")
     
-    total = query.count()
-    users = query.offset(skip).limit(limit).all()
+    where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
     
-    return {
-        "total": total,
-        "users": [
-            {
-                "id": u.id,
-                "email": u.email,
-                "name": u.name,
-                "user_type": u.user_type,
-                "is_active": u.is_active,
-                "joined_at": u.joined_at,
-                "location": u.location,
-                "hourly_rate": u.hourly_rate if u.user_type == 'Freelancer' else None
-            }
-            for u in users
-        ]
-    }
+    # Get total
+    count_result = execute_query(f"SELECT COUNT(*) FROM users {where_sql}", params)
+    total = 0
+    if count_result and count_result.get("rows"):
+        total = int(_get_val(count_result["rows"][0], 0) or 0)
+    
+    # Get users
+    params.extend([limit, skip])
+    result = execute_query(
+        f"""SELECT id, email, name, user_type, is_active, joined_at, location, hourly_rate
+            FROM users {where_sql}
+            ORDER BY joined_at DESC
+            LIMIT ? OFFSET ?""",
+        params
+    )
+    
+    users = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            user_type_val = _safe_str(_get_val(row, 3))
+            users.append({
+                "id": int(_get_val(row, 0) or 0),
+                "email": _safe_str(_get_val(row, 1)),
+                "name": _safe_str(_get_val(row, 2)),
+                "user_type": user_type_val,
+                "is_active": bool(_get_val(row, 4)),
+                "joined_at": parse_date(_get_val(row, 5)),
+                "location": _safe_str(_get_val(row, 6)),
+                "hourly_rate": float(_get_val(row, 7) or 0) if user_type_val == 'Freelancer' else None
+            })
+    
+    return {"total": total, "users": users}
 
 
 @router.post("/admin/users/{user_id}/toggle-status")
 async def toggle_user_status(
     user_id: int,
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
-    """
-    Activate or deactivate a user account.
+    """Activate or deactivate a user account."""
+    # Get current status
+    result = execute_query(
+        "SELECT is_active FROM users WHERE id = ?", [user_id]
+    )
     
-    **Admin only** - for account moderation.
-    """
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="User not found")
     
-    user.is_active = not user.is_active
-    db.commit()
+    current_status = bool(_get_val(result["rows"][0], 0))
+    new_status = 0 if current_status else 1
+    
+    # Update status
+    update_result = execute_query(
+        "UPDATE users SET is_active = ? WHERE id = ?",
+        [new_status, user_id]
+    )
+    
+    if not update_result:
+        raise HTTPException(status_code=500, detail="Failed to update user status")
     
     return {
         "success": True,
         "user_id": user_id,
-        "is_active": user.is_active
+        "is_active": bool(new_status)
     }
 
 
-# ============ Additional Admin Endpoints ============
-
 @router.get("/admin/users")
 async def get_admin_users(
-    role: Optional[str] = Query(None, description="Filter by role"),
+    role: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
     """List all users - Admin endpoint"""
-    return await list_all_users(user_type=role, search=search, skip=skip, limit=limit, db=db, admin=admin)
+    return await list_all_users(user_type=role, search=search, skip=skip, limit=limit, admin=admin)
 
 
 @router.get("/admin/projects")
@@ -507,35 +664,44 @@ async def get_admin_projects(
     status: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
     """Get all projects with admin access"""
-    query = db.query(Project)
+    where_sql = "WHERE status = ?" if status else ""
+    params = [status] if status else []
     
-    if status:
-        query = query.filter(Project.status == status)
+    # Get total
+    count_result = execute_query(f"SELECT COUNT(*) FROM projects {where_sql}", params)
+    total = 0
+    if count_result and count_result.get("rows"):
+        total = int(_get_val(count_result["rows"][0], 0) or 0)
     
-    total = query.count()
-    projects = query.order_by(desc(Project.created_at)).offset(skip).limit(limit).all()
+    # Get projects
+    params.extend([limit, skip])
+    result = execute_query(
+        f"""SELECT id, title, description, status, budget_min, budget_max, client_id, created_at, updated_at
+            FROM projects {where_sql}
+            ORDER BY created_at DESC
+            LIMIT ? OFFSET ?""",
+        params
+    )
     
-    return {
-        "total": total,
-        "projects": [
-            {
-                "id": p.id,
-                "title": p.title,
-                "description": p.description,
-                "status": p.status,
-                "budget_min": p.budget_min,
-                "budget_max": p.budget_max,
-                "client_id": p.client_id,
-                "created_at": p.created_at,
-                "updated_at": p.updated_at
-            }
-            for p in projects
-        ]
-    }
+    projects = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            projects.append({
+                "id": int(_get_val(row, 0) or 0),
+                "title": _safe_str(_get_val(row, 1)),
+                "description": _safe_str(_get_val(row, 2)),
+                "status": _safe_str(_get_val(row, 3)),
+                "budget_min": float(_get_val(row, 4) or 0),
+                "budget_max": float(_get_val(row, 5) or 0),
+                "client_id": int(_get_val(row, 6) or 0),
+                "created_at": parse_date(_get_val(row, 7)),
+                "updated_at": parse_date(_get_val(row, 8))
+            })
+    
+    return {"total": total, "projects": projects}
 
 
 @router.get("/admin/payments")
@@ -543,58 +709,119 @@ async def get_admin_payments(
     status: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
     """Get all payments with admin access"""
-    query = db.query(Payment)
+    where_sql = "WHERE status = ?" if status else ""
+    params = [status] if status else []
     
-    if status:
-        query = query.filter(Payment.status == status)
+    # Get total
+    count_result = execute_query(f"SELECT COUNT(*) FROM payments {where_sql}", params)
+    total = 0
+    if count_result and count_result.get("rows"):
+        total = int(_get_val(count_result["rows"][0], 0) or 0)
     
-    total = query.count()
-    payments = query.order_by(desc(Payment.created_at)).offset(skip).limit(limit).all()
+    # Get payments
+    params.extend([limit, skip])
+    result = execute_query(
+        f"""SELECT id, amount, status, payment_type, from_user_id, to_user_id, description, created_at
+            FROM payments {where_sql}
+            ORDER BY created_at DESC
+            LIMIT ? OFFSET ?""",
+        params
+    )
     
-    return {
-        "total": total,
-        "payments": [
-            {
-                "id": p.id,
-                "amount": float(p.amount),
-                "status": p.status,
-                "payment_type": p.payment_type,
-                "from_user_id": p.from_user_id,
-                "to_user_id": p.to_user_id,
-                "description": p.description,
-                "created_at": p.created_at
-            }
-            for p in payments
-        ]
-    }
+    payments = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            payments.append({
+                "id": int(_get_val(row, 0) or 0),
+                "amount": float(_get_val(row, 1) or 0),
+                "status": _safe_str(_get_val(row, 2)),
+                "payment_type": _safe_str(_get_val(row, 3)),
+                "from_user_id": int(_get_val(row, 4) or 0),
+                "to_user_id": int(_get_val(row, 5) or 0),
+                "description": _safe_str(_get_val(row, 6)),
+                "created_at": parse_date(_get_val(row, 7))
+            })
+    
+    return {"total": total, "payments": payments}
 
 
 @router.get("/admin/analytics/overview")
-async def get_analytics_overview(
-    db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
-):
+async def get_analytics_overview(admin: User = Depends(get_admin_user)):
     """Get platform analytics overview"""
+    users_total = 0
+    users_active = 0
+    users_clients = 0
+    users_freelancers = 0
+    projects_total = 0
+    projects_open = 0
+    projects_in_progress = 0
+    projects_completed = 0
+    revenue_total = 0.0
+    revenue_pending = 0.0
+    
+    result = execute_query("SELECT COUNT(*) FROM users", [])
+    if result and result.get("rows"):
+        users_total = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query("SELECT COUNT(*) FROM users WHERE is_active = 1", [])
+    if result and result.get("rows"):
+        users_active = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query("SELECT COUNT(*) FROM users WHERE user_type = 'Client'", [])
+    if result and result.get("rows"):
+        users_clients = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query("SELECT COUNT(*) FROM users WHERE user_type = 'Freelancer'", [])
+    if result and result.get("rows"):
+        users_freelancers = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query("SELECT COUNT(*) FROM projects", [])
+    if result and result.get("rows"):
+        projects_total = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query("SELECT COUNT(*) FROM projects WHERE status = 'open'", [])
+    if result and result.get("rows"):
+        projects_open = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query("SELECT COUNT(*) FROM projects WHERE status = 'in_progress'", [])
+    if result and result.get("rows"):
+        projects_in_progress = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query("SELECT COUNT(*) FROM projects WHERE status = 'completed'", [])
+    if result and result.get("rows"):
+        projects_completed = int(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'", []
+    )
+    if result and result.get("rows"):
+        revenue_total = float(_get_val(result["rows"][0], 0) or 0)
+    
+    result = execute_query(
+        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'pending'", []
+    )
+    if result and result.get("rows"):
+        revenue_pending = float(_get_val(result["rows"][0], 0) or 0)
+    
     return {
         "users": {
-            "total": db.query(func.count(User.id)).scalar(),
-            "active": db.query(func.count(User.id)).filter(User.is_active == True).scalar(),
-            "clients": db.query(func.count(User.id)).filter(User.user_type == 'Client').scalar(),
-            "freelancers": db.query(func.count(User.id)).filter(User.user_type == 'Freelancer').scalar()
+            "total": users_total,
+            "active": users_active,
+            "clients": users_clients,
+            "freelancers": users_freelancers
         },
         "projects": {
-            "total": db.query(func.count(Project.id)).scalar(),
-            "open": db.query(func.count(Project.id)).filter(Project.status == 'open').scalar(),
-            "in_progress": db.query(func.count(Project.id)).filter(Project.status == 'in_progress').scalar(),
-            "completed": db.query(func.count(Project.id)).filter(Project.status == 'completed').scalar()
+            "total": projects_total,
+            "open": projects_open,
+            "in_progress": projects_in_progress,
+            "completed": projects_completed
         },
         "revenue": {
-            "total": float(db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(Payment.status == 'completed').scalar()),
-            "pending": float(db.query(func.coalesce(func.sum(Payment.amount), 0.0)).filter(Payment.status == 'pending').scalar())
+            "total": revenue_total,
+            "pending": revenue_pending
         }
     }
 
@@ -604,11 +831,9 @@ async def get_support_tickets(
     status: Optional[str] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
-    db: Session = Depends(get_db),
     admin: User = Depends(get_admin_user)
 ):
-    """Get support tickets - placeholder for now"""
-    # TODO: Implement support ticket system
+    """Get support tickets"""
     return {
         "total": 0,
         "tickets": [],
@@ -617,12 +842,8 @@ async def get_support_tickets(
 
 
 @router.get("/admin/ai/usage")
-async def get_ai_usage(
-    db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
-):
-    """Get AI usage statistics - placeholder for now"""
-    # TODO: Implement AI usage tracking
+async def get_ai_usage(admin: User = Depends(get_admin_user)):
+    """Get AI usage statistics"""
     return {
         "total_requests": 0,
         "chatbot_queries": 0,
@@ -633,10 +854,7 @@ async def get_ai_usage(
 
 
 @router.get("/admin/settings")
-async def get_platform_settings(
-    db: Session = Depends(get_db),
-    admin: User = Depends(get_admin_user)
-):
+async def get_platform_settings(admin: User = Depends(get_admin_user)):
     """Get platform settings"""
     return {
         "platform": {

@@ -1,18 +1,15 @@
 """
-File upload API endpoints
+@AI-HINT: File upload API endpoints - Turso HTTP only
 Handles uploading of user files (avatars, portfolio images, documents)
 """
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status
-from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.models.user import User
+from app.db.turso_http import execute_query, to_str
 from app.core.security import get_current_user
 from app.core.rate_limiter import api_rate_limit
 import os
 import uuid
 from pathlib import Path
-from typing import List
-import mimetypes
+from datetime import datetime
 
 router = APIRouter()
 
@@ -62,10 +59,10 @@ def validate_file(file: UploadFile, allowed_types: set, max_size: int):
         )
 
 
-def save_file(file: UploadFile, directory: Path) -> str:
+def save_uploaded_file(file: UploadFile, directory: Path) -> str:
     """Save uploaded file and return file path"""
     # Generate unique filename
-    file_extension = Path(file.filename).suffix
+    file_extension = Path(file.filename).suffix if file.filename else ""
     unique_filename = f"{uuid.uuid4()}{file_extension}"
     file_path = directory / unique_filename
     
@@ -81,8 +78,7 @@ def save_file(file: UploadFile, directory: Path) -> str:
 @api_rate_limit
 async def upload_avatar(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Upload user avatar image.
@@ -94,18 +90,30 @@ async def upload_avatar(
     """
     validate_file(file, ALLOWED_IMAGE_TYPES, MAX_AVATAR_SIZE)
     
+    # Get current avatar
+    result = execute_query(
+        "SELECT profile_image_url FROM users WHERE id = ?",
+        [current_user['id']]
+    )
+    
+    old_avatar = None
+    if result and result.get("rows"):
+        old_avatar = to_str(result["rows"][0][0])
+    
     # Delete old avatar if exists
-    if current_user.profile_image_url:
-        old_path = UPLOAD_DIR / current_user.profile_image_url
+    if old_avatar:
+        old_path = UPLOAD_DIR / old_avatar
         if old_path.exists():
             old_path.unlink()
     
     # Save new avatar
-    relative_path = save_file(file, AVATAR_DIR)
+    relative_path = save_uploaded_file(file, AVATAR_DIR)
     
     # Update user profile
-    current_user.profile_image_url = relative_path
-    db.commit()
+    execute_query(
+        "UPDATE users SET profile_image_url = ?, updated_at = ? WHERE id = ?",
+        [relative_path, datetime.utcnow().isoformat(), current_user['id']]
+    )
     
     return {
         "url": f"/uploads/{relative_path}",
@@ -117,7 +125,7 @@ async def upload_avatar(
 @api_rate_limit
 async def upload_portfolio_image(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Upload portfolio image.
@@ -130,7 +138,7 @@ async def upload_portfolio_image(
     validate_file(file, ALLOWED_IMAGE_TYPES, MAX_PORTFOLIO_SIZE)
     
     # Save portfolio image
-    relative_path = save_file(file, PORTFOLIO_DIR)
+    relative_path = save_uploaded_file(file, PORTFOLIO_DIR)
     
     return {
         "url": f"/uploads/{relative_path}",
@@ -142,7 +150,7 @@ async def upload_portfolio_image(
 @api_rate_limit
 async def upload_document(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Upload document (PDF, DOCX, TXT).
@@ -155,7 +163,7 @@ async def upload_document(
     validate_file(file, ALLOWED_DOCUMENT_TYPES, MAX_DOCUMENT_SIZE)
     
     # Save document
-    relative_path = save_file(file, DOCUMENT_DIR)
+    relative_path = save_uploaded_file(file, DOCUMENT_DIR)
     
     return {
         "url": f"/uploads/{relative_path}",
@@ -166,9 +174,9 @@ async def upload_document(
 
 @router.delete("/file")
 @api_rate_limit
-async def delete_file(
+async def delete_uploaded_file(
     file_path: str,
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Delete uploaded file.
@@ -186,10 +194,23 @@ async def delete_file(
             detail="File not found"
         )
     
+    # Get user's current profile image
+    result = execute_query(
+        "SELECT profile_image_url FROM users WHERE id = ?",
+        [current_user['id']]
+    )
+    
+    user_image = None
+    if result and result.get("rows"):
+        user_image = to_str(result["rows"][0][0])
+    
     # Security check: ensure file belongs to current user
-    # This is a simplified check - in production, store file ownership in database
-    if current_user.profile_image_url == file_path:
-        current_user.profile_image_url = None
+    if user_image == file_path:
+        # Clear the profile image reference
+        execute_query(
+            "UPDATE users SET profile_image_url = NULL, updated_at = ? WHERE id = ?",
+            [datetime.utcnow().isoformat(), current_user['id']]
+        )
     
     # Delete file
     full_path.unlink()

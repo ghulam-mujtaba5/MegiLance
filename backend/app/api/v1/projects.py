@@ -1,16 +1,42 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_
-from typing import List, Optional
+"""
+@AI-HINT: Projects API endpoints using Turso remote database ONLY
+No local SQLite fallback - all queries go directly to Turso
+"""
 
-from app.db.session import get_db
-from app.models.project import Project
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from typing import List, Optional
+from datetime import datetime
+
 from app.models.user import User
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.core.security import get_current_active_user
-from app.services.ai_service import ai_service
+from app.db.turso_http import get_turso_http
 
 router = APIRouter()
+
+
+def _row_to_project(row: list, columns: list = None) -> dict:
+    """Convert database row to project dict"""
+    # Default column order from our SELECT queries
+    if columns is None:
+        columns = ["id", "title", "description", "category", "budget_type", 
+                   "budget_min", "budget_max", "experience_level", "estimated_duration",
+                   "skills", "client_id", "status", "created_at", "updated_at"]
+    
+    project = {}
+    for i, col in enumerate(columns):
+        if i < len(row):
+            val = row[i]
+            if col == "skills" and isinstance(val, str):
+                project[col] = val.split(",") if val else []
+            elif col in ["budget_min", "budget_max"] and val is not None:
+                project[col] = float(val)
+            else:
+                project[col] = val
+        else:
+            project[col] = None
+    return project
+
 
 @router.get("/", response_model=List[ProjectRead])
 def list_projects(
@@ -19,43 +45,80 @@ def list_projects(
     status: Optional[str] = Query(None, description="Filter by project status"),
     category: Optional[str] = Query(None, description="Filter by category"),
     search: Optional[str] = Query(None, description="Search in title and description"),
-    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    query = db.query(Project)
-    
-    # Apply filters
-    if status:
-        query = query.filter(Project.status == status)
-    if category:
-        query = query.filter(Project.category == category)
-    if search:
-        search_filter = or_(
-            Project.title.ilike(f"%{search}%"),
-            Project.description.ilike(f"%{search}%")
+    """List projects from Turso database"""
+    try:
+        turso = get_turso_http()
+        
+        # Build query with optional filters
+        sql = """SELECT id, title, description, category, budget_type, 
+                        budget_min, budget_max, experience_level, estimated_duration,
+                        skills, client_id, status, created_at, updated_at 
+                 FROM projects WHERE 1=1"""
+        params = []
+        
+        if status:
+            sql += " AND status = ?"
+            params.append(status)
+        if category:
+            sql += " AND category = ?"
+            params.append(category)
+        if search:
+            sql += " AND (title LIKE ? OR description LIKE ?)"
+            params.extend([f"%{search}%", f"%{search}%"])
+        
+        sql += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
+        
+        result = turso.execute(sql, params)
+        projects = [_row_to_project(row) for row in result.get("rows", [])]
+        return projects
+        
+    except Exception as e:
+        print(f"[ERROR] list_projects: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database unavailable: {str(e)}"
         )
-        query = query.filter(search_filter)
-    
-    projects = query.offset(skip).limit(limit).all()
-    return projects
+
 
 @router.get("/{project_id}", response_model=ProjectRead)
 def get_project(
     project_id: int,
-    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    project = db.query(Project).filter(Project.id == project_id).first()
-    if not project:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-    return project
+    """Get single project from Turso"""
+    try:
+        turso = get_turso_http()
+        row = turso.fetch_one(
+            """SELECT id, title, description, category, budget_type, 
+                      budget_min, budget_max, experience_level, estimated_duration,
+                      skills, client_id, status, created_at, updated_at 
+               FROM projects WHERE id = ?""",
+            [project_id]
+        )
+        
+        if not row:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+        
+        return _row_to_project(row)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] get_project: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database unavailable: {str(e)}"
+        )
+
 
 @router.post("/", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
 def create_project(
     project: ProjectCreate,
-    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
+    """Create new project in Turso"""
     # Only clients can create projects
     if not current_user.user_type or current_user.user_type.lower() != "client":
         raise HTTPException(
@@ -63,73 +126,129 @@ def create_project(
             detail="Only clients can create projects"
         )
     
-    # AI price estimation disabled temporarily
-    # TODO: Re-enable AI price estimation when ai_service is stable
-    
-    db_project = Project(
-        title=project.title,
-        description=project.description,
-        category=project.category,
-        budget_type=project.budget_type,
-        budget_min=project.budget_min,
-        budget_max=project.budget_max,
-        experience_level=project.experience_level,
-        estimated_duration=project.estimated_duration,
-        skills=",".join(project.skills) if project.skills else "",
-        client_id=current_user.id,
-        status=project.status or "open"
-    )
-    db.add(db_project)
-    db.commit()
-    db.refresh(db_project)
-    return db_project
+    try:
+        turso = get_turso_http()
+        now = datetime.utcnow().isoformat()
+        skills_str = ",".join(project.skills) if project.skills else ""
+        
+        # Insert project
+        turso.execute(
+            """INSERT INTO projects (title, description, category, budget_type, 
+                                     budget_min, budget_max, experience_level, estimated_duration,
+                                     skills, client_id, status, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            [project.title, project.description, project.category, project.budget_type,
+             project.budget_min, project.budget_max, project.experience_level, 
+             project.estimated_duration, skills_str, current_user.id,
+             project.status or "open", now, now]
+        )
+        
+        # Get the created project
+        row = turso.fetch_one(
+            """SELECT id, title, description, category, budget_type, 
+                      budget_min, budget_max, experience_level, estimated_duration,
+                      skills, client_id, status, created_at, updated_at 
+               FROM projects WHERE client_id = ? ORDER BY id DESC LIMIT 1""",
+            [current_user.id]
+        )
+        
+        if not row:
+            raise HTTPException(status_code=500, detail="Project created but not found")
+        
+        return _row_to_project(row)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] create_project: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database unavailable: {str(e)}"
+        )
+
 
 @router.put("/{project_id}", response_model=ProjectRead)
 def update_project(
     project_id: int,
-    project: ProjectUpdate,
-    db: Session = Depends(get_db),
+    project_update: ProjectUpdate,
     current_user: User = Depends(get_current_active_user)
 ):
-    db_project = db.query(Project).filter(Project.id == project_id).first()
-    if not db_project:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-    
-    # Check if user is the owner of the project
-    if db_project.client_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to update this project"
+    """Update project in Turso"""
+    try:
+        turso = get_turso_http()
+        
+        # Check project exists and user owns it
+        existing = turso.fetch_one("SELECT client_id FROM projects WHERE id = ?", [project_id])
+        if not existing:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+        if existing[0] != current_user.id and current_user.role != "Admin":
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        
+        # Build update query
+        updates = []
+        params = []
+        
+        update_data = project_update.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            if key == "skills" and value is not None:
+                value = ",".join(value) if value else ""
+            updates.append(f"{key} = ?")
+            params.append(value)
+        
+        if updates:
+            updates.append("updated_at = ?")
+            params.append(datetime.utcnow().isoformat())
+            params.append(project_id)
+            
+            turso.execute(
+                f"UPDATE projects SET {', '.join(updates)} WHERE id = ?",
+                params
+            )
+        
+        # Return updated project
+        row = turso.fetch_one(
+            """SELECT id, title, description, category, budget_type, 
+                      budget_min, budget_max, experience_level, estimated_duration,
+                      skills, client_id, status, created_at, updated_at 
+               FROM projects WHERE id = ?""",
+            [project_id]
         )
-    
-    update_data = project.model_dump(exclude_unset=True, exclude_none=True)
-    if "skills" in update_data and update_data["skills"]:
-        update_data["skills"] = ",".join(update_data["skills"])
-    
-    for key, value in update_data.items():
-        setattr(db_project, key, value)
-    
-    db.commit()
-    db.refresh(db_project)
-    return db_project
+        return _row_to_project(row)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] update_project: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database unavailable: {str(e)}"
+        )
+
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_project(
     project_id: int,
-    db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
 ):
-    db_project = db.query(Project).filter(Project.id == project_id).first()
-    if not db_project:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-    
-    # Check if user is the owner of the project
-    if db_project.client_id != current_user.id:
+    """Delete project from Turso"""
+    try:
+        turso = get_turso_http()
+        
+        # Check project exists and user owns it
+        existing = turso.fetch_one("SELECT client_id FROM projects WHERE id = ?", [project_id])
+        if not existing:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+        if existing[0] != current_user.id and current_user.role != "Admin":
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        
+        turso.execute("DELETE FROM projects WHERE id = ?", [project_id])
+        return None
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] delete_project: {e}")
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to delete this project"
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database unavailable: {str(e)}"
         )
-    
-    db.delete(db_project)
-    db.commit()
-    return

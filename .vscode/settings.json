@@ -103,5 +103,9 @@
         "eval": false,
         "Invoke-Expression": false,
         "iex": false
-    }
+    },
+    "chat.useClaudeSkills": true,
+    "chat.useNestedAgentsMdFiles": true,
+    "inlineChat.enableV2": true,
+    "chat.signInWithAlternateScopes": false
 }

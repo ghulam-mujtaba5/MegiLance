@@ -1,19 +1,17 @@
 """
-@AI-HINT: File upload endpoints using local file storage.
+@AI-HINT: File upload endpoints using local file storage - Turso HTTP only
 Supports profile images, portfolio images, proposal attachments, and project files.
 Can be easily upgraded to cloud storage (S3/R2/Cloudflare) later.
 """
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, status
-from sqlalchemy.orm import Session
 import uuid
 import os
 
 from app.core.security import get_current_active_user
 from app.core.storage import save_file, delete_file, get_file_url
-from app.core.config import get_settings
-from app.db.session import get_db
-from app.models.user import User
+from app.db.turso_http import execute_query, to_str
+from datetime import datetime
 
 router = APIRouter()
 
@@ -50,8 +48,7 @@ def validate_file(file: UploadFile, allowed_extensions: set) -> None:
 @router.post("/profile-image", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def upload_profile_image(
     file: UploadFile = File(..., description="Profile image file"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Upload user profile image
@@ -62,26 +59,37 @@ async def upload_profile_image(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    file_path = f"profile-images/{current_user.id}/{uuid.uuid4()}{ext}"
+    file_path = f"profile-images/{current_user['id']}/{uuid.uuid4()}{ext}"
     
     # Save to local storage
     file_content = await file.read()
     saved_path = save_file(file_content, file_path)
     file_url = get_file_url(saved_path)
     
+    # Get current profile image
+    result = execute_query(
+        "SELECT profile_image FROM users WHERE id = ?",
+        [current_user['id']]
+    )
+    
+    old_image = None
+    if result and result.get("rows"):
+        old_image = to_str(result["rows"][0][0])
+    
     # Delete old profile image if exists
-    if current_user.profile_image:
+    if old_image:
         try:
-            delete_file(current_user.profile_image)
-            print(f"[UPLOAD] Deleted old profile image: {current_user.profile_image}")
+            delete_file(old_image)
+            print(f"[UPLOAD] Deleted old profile image: {old_image}")
         except Exception as e:
             print(f"[WARNING] Failed to delete old profile image: {str(e)}")
     
     # Update user.profile_image in database
-    current_user.profile_image = saved_path
-    db.commit()
-    db.refresh(current_user)
-    print(f"[UPLOAD] Updated profile image for user {current_user.id}")
+    execute_query(
+        "UPDATE users SET profile_image = ?, updated_at = ? WHERE id = ?",
+        [saved_path, datetime.utcnow().isoformat(), current_user['id']]
+    )
+    print(f"[UPLOAD] Updated profile image for user {current_user['id']}")
     
     return {
         "message": "Profile image uploaded successfully",
@@ -95,14 +103,14 @@ async def upload_profile_image(
 async def upload_portfolio_image(
     file: UploadFile = File(..., description="Portfolio image file"),
     portfolio_item_id: Optional[str] = Form(None),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Upload portfolio item image
     Freelancers only
     """
-    if not current_user.user_type or current_user.user_type.lower() != "freelancer":
+    user_type = current_user.get("user_type", "").lower()
+    if user_type != "freelancer":
         raise HTTPException(status_code=403, detail="Only freelancers can upload portfolio images")
     
     validate_file(file, ALLOWED_IMAGE_EXTENSIONS)
@@ -110,7 +118,7 @@ async def upload_portfolio_image(
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    portfolio_path = f"portfolio/{current_user.id}"
+    portfolio_path = f"portfolio/{current_user['id']}"
     if portfolio_item_id:
         portfolio_path += f"/{portfolio_item_id}"
     file_path = f"{portfolio_path}/{uuid.uuid4()}{ext}"
@@ -132,14 +140,14 @@ async def upload_portfolio_image(
 async def upload_proposal_attachment(
     file: UploadFile = File(..., description="Proposal attachment"),
     proposal_id: str = Form(..., description="Proposal ID"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Upload proposal attachment (PDF, documents)
     Freelancers only
     """
-    if not current_user.user_type or current_user.user_type.lower() != "freelancer":
+    user_type = current_user.get("user_type", "").lower()
+    if user_type != "freelancer":
         raise HTTPException(status_code=403, detail="Only freelancers can upload proposal attachments")
     
     validate_file(file, ALLOWED_DOCUMENT_EXTENSIONS)
@@ -154,26 +162,35 @@ async def upload_proposal_attachment(
     saved_path = save_file(file_content, file_path)
     file_url = get_file_url(saved_path)
     
-    # Add attachment to proposal.attachments JSON field
-    from app.models.proposal import Proposal
+    # Check proposal exists and belongs to user
     import json
     
-    proposal = db.query(Proposal).filter(Proposal.id == int(proposal_id)).first()
-    if proposal:
-        # Verify user owns this proposal
-        if proposal.freelancer_id != current_user.id:
+    proposal_result = execute_query(
+        "SELECT id, freelancer_id, attachments FROM proposals WHERE id = ?",
+        [int(proposal_id)]
+    )
+    
+    if proposal_result and proposal_result.get("rows"):
+        row = proposal_result["rows"][0]
+        freelancer_id = row[1].get("value") if row[1].get("type") != "null" else None
+        
+        if freelancer_id != current_user['id']:
             raise HTTPException(status_code=403, detail="Not authorized to upload attachments to this proposal")
         
         # Parse existing attachments or initialize empty list
-        attachments = json.loads(proposal.attachments) if proposal.attachments else []
+        attachments_str = to_str(row[2])
+        attachments = json.loads(attachments_str) if attachments_str else []
         attachments.append({
             "filename": file.filename,
             "url": file_url,
             "file_path": saved_path,
-            "uploaded_at": str(uuid.uuid4())
+            "uploaded_at": datetime.utcnow().isoformat()
         })
-        proposal.attachments = json.dumps(attachments)
-        db.commit()
+        
+        execute_query(
+            "UPDATE proposals SET attachments = ? WHERE id = ?",
+            [json.dumps(attachments), int(proposal_id)]
+        )
         print(f"[UPLOAD] Added attachment to proposal {proposal_id}")
     else:
         print(f"[WARNING] Proposal {proposal_id} not found, attachment saved but not linked")
@@ -190,8 +207,7 @@ async def upload_proposal_attachment(
 async def upload_project_file(
     file: UploadFile = File(..., description="Project file"),
     project_id: str = Form(..., description="Project ID"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Upload project-related files
@@ -199,29 +215,37 @@ async def upload_project_file(
     """
     validate_file(file, ALLOWED_EXTENSIONS)
     
-    # Verify user is part of the project (client or accepted freelancer)
-    from app.models.project import Project
-    from app.models.proposal import Proposal
+    # Verify user is part of the project
+    project_result = execute_query(
+        "SELECT id, client_id FROM projects WHERE id = ?",
+        [int(project_id)]
+    )
     
-    project = db.query(Project).filter(Project.id == int(project_id)).first()
-    if not project:
+    if not project_result or not project_result.get("rows"):
         raise HTTPException(status_code=404, detail="Project not found")
     
-    # Check if user is client or accepted freelancer
-    is_client = project.client_id == current_user.id
-    is_accepted_freelancer = db.query(Proposal).filter(
-        Proposal.project_id == int(project_id),
-        Proposal.freelancer_id == current_user.id,
-        Proposal.status == "accepted"
-    ).first() is not None
+    project_row = project_result["rows"][0]
+    client_id = project_row[1].get("value") if project_row[1].get("type") != "null" else None
     
-    if not is_client and not is_accepted_freelancer and current_user.user_type != "Admin":
+    is_client = client_id == current_user['id']
+    
+    # Check if accepted freelancer
+    proposal_result = execute_query(
+        "SELECT id FROM proposals WHERE project_id = ? AND freelancer_id = ? AND status = 'accepted'",
+        [int(project_id), current_user['id']]
+    )
+    is_accepted_freelancer = bool(proposal_result and proposal_result.get("rows"))
+    
+    user_type = current_user.get("user_type", "").lower()
+    is_admin = user_type == "admin"
+    
+    if not is_client and not is_accepted_freelancer and not is_admin:
         raise HTTPException(status_code=403, detail="Not authorized to upload files to this project")
     
     # Generate unique filename
     filename: str = file.filename or ""
     ext = os.path.splitext(filename)[1]
-    file_path = f"projects/{project_id}/files/{current_user.id}/{uuid.uuid4()}{ext}"
+    file_path = f"projects/{project_id}/files/{current_user['id']}/{uuid.uuid4()}{ext}"
     
     # Save to local storage
     file_content = await file.read()
@@ -241,8 +265,7 @@ async def upload_multiple_files(
     files: List[UploadFile] = File(..., description="Multiple files"),
     file_type: str = Form(..., description="Type: profile, portfolio, proposal, project"),
     reference_id: Optional[str] = Form(None, description="Related entity ID"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Upload multiple files at once
@@ -263,7 +286,7 @@ async def upload_multiple_files(
 
         filename: str = file.filename or ""
         ext = os.path.splitext(filename)[1]
-        file_path = f"{file_type}/{current_user.id}"
+        file_path = f"{file_type}/{current_user['id']}"
         if reference_id:
             file_path += f"/{reference_id}"
         file_path += f"/{uuid.uuid4()}{ext}"
@@ -287,15 +310,17 @@ async def upload_multiple_files(
 @router.delete("/file", response_model=dict)
 async def delete_uploaded_file(
     file_path: str = Query(..., description="File path to delete"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Delete a file from local storage
     Users can only delete their own files
     """
+    user_type = current_user.get("user_type", "").lower()
+    is_admin = user_type == "admin"
+    
     # Verify the file belongs to the current user
-    if f"/{current_user.id}/" not in file_path and current_user.user_type != "Admin":
+    if f"/{current_user['id']}/" not in file_path and not is_admin:
         raise HTTPException(status_code=403, detail="Not authorized to delete this file")
     
     success = delete_file(file_path)
@@ -312,8 +337,7 @@ async def delete_uploaded_file(
 @router.get("/file-url", response_model=dict)
 async def get_file_access_url(
     file_path: str = Query(..., description="File path"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user)
 ):
     """
     Get file URL for secure file access

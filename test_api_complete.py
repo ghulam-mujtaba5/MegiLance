@@ -89,7 +89,7 @@ def test_health_endpoints(result: TestResult):
     print(f"{'='*60}")
     
     try:
-        response = requests.get(f"{BASE_URL}/health/live", timeout=3)
+        response = requests.get(f"{BASE_URL}/health/live", timeout=30)
         if response.status_code == 200 and response.json().get("status") == "ok":
             result.add_pass("GET /health/live")
         else:
@@ -98,7 +98,7 @@ def test_health_endpoints(result: TestResult):
         result.add_fail("GET /health/live", e)
     
     try:
-        response = requests.get(f"{BASE_URL}/health/ready", timeout=3)
+        response = requests.get(f"{BASE_URL}/health/ready", timeout=30)
         if response.status_code == 200:
             result.add_pass("GET /health/ready")
         else:
@@ -120,7 +120,7 @@ def test_auth_endpoints(result: TestResult):
                 "email": ADMIN_CREDS["email"],
                 "password": ADMIN_CREDS["password"]
             },
-            timeout=5
+            timeout=30
         )
         if response.status_code == 200 and "access_token" in response.json():
             result.add_pass("POST /auth/login")
@@ -135,7 +135,7 @@ def test_auth_endpoints(result: TestResult):
         response = requests.get(
             f"{BASE_URL}/auth/me",
             headers={"Authorization": f"Bearer {token}"},
-            timeout=5
+            timeout=30
         )
         if response.status_code == 200:
             result.add_pass("GET /auth/me")
@@ -155,14 +155,14 @@ def test_user_endpoints(result: TestResult):
         headers = {"Authorization": f"Bearer {token}"}
         
         # Get users list
-        response = requests.get(f"{BASE_URL}/users/", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/users/", headers=headers, timeout=30)
         if response.status_code == 200:
             result.add_pass("GET /users/")
         else:
             result.add_fail("GET /users/", f"Status: {response.status_code}")
         
         # Get specific user
-        response = requests.get(f"{BASE_URL}/users/1", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/users/1", headers=headers, timeout=30)
         if response.status_code == 200:
             result.add_pass("GET /users/{id}")
         else:
@@ -182,7 +182,7 @@ def test_project_endpoints(result: TestResult):
         headers = {"Authorization": f"Bearer {token}"}
         
         # Get projects
-        response = requests.get(f"{BASE_URL}/projects/", timeout=5)
+        response = requests.get(f"{BASE_URL}/projects/", headers=headers, timeout=30)
         if response.status_code == 200:
             result.add_pass("GET /projects/")
         else:
@@ -192,24 +192,26 @@ def test_project_endpoints(result: TestResult):
         project_data = {
             "title": "Test Project API",
             "description": "Testing project creation",
+            "budget_type": "fixed",
             "budget_min": 100,
             "budget_max": 500,
-            "deadline": "2025-12-31",
+            "experience_level": "intermediate",
+            "estimated_duration": "1-3 months",
             "category": "Web Development",
-            "required_skills": ["Python", "FastAPI"]
+            "skills": ["Python", "FastAPI"]
         }
         response = requests.post(
             f"{BASE_URL}/projects/",
             headers=headers,
             json=project_data,
-            timeout=5
+            timeout=30
         )
         if response.status_code in [200, 201]:
             result.add_pass("POST /projects/")
             project_id = response.json().get("id")
             
-            # Get specific project
-            response = requests.get(f"{BASE_URL}/projects/{project_id}", timeout=5)
+            # Get specific project (with auth headers)
+            response = requests.get(f"{BASE_URL}/projects/{project_id}", headers=headers, timeout=30)
             if response.status_code == 200:
                 result.add_pass("GET /projects/{id}")
             else:
@@ -231,7 +233,7 @@ def test_payment_endpoints(result: TestResult):
         headers = {"Authorization": f"Bearer {token}"}
         
         # Get payments
-        response = requests.get(f"{BASE_URL}/payments/", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/payments/", headers=headers, timeout=30)
         if response.status_code == 200:
             result.add_pass("GET /payments/")
         else:
@@ -251,13 +253,13 @@ def test_portal_endpoints(result: TestResult):
         token = login(CLIENT_CREDS)
         headers = {"Authorization": f"Bearer {token}"}
         
-        response = requests.get(f"{BASE_URL}/portal/client/dashboard/stats", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/portal/client/dashboard/stats", headers=headers, timeout=30)
         if response.status_code == 200:
             result.add_pass("GET /portal/client/dashboard/stats")
         else:
             result.add_fail("GET /portal/client/dashboard/stats", f"Status: {response.status_code}")
         
-        response = requests.get(f"{BASE_URL}/portal/client/wallet", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/portal/client/wallet", headers=headers, timeout=30)
         if response.status_code == 200:
             data = response.json()
             if "pending_payments" in data:
@@ -275,7 +277,7 @@ def test_portal_endpoints(result: TestResult):
         token = login(FREELANCER_CREDS)
         headers = {"Authorization": f"Bearer {token}"}
         
-        response = requests.get(f"{BASE_URL}/portal/freelancer/dashboard/stats", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/portal/freelancer/dashboard/stats", headers=headers, timeout=30)
         if response.status_code == 200:
             data = response.json()
             if "average_rating" in data:
@@ -285,7 +287,7 @@ def test_portal_endpoints(result: TestResult):
         else:
             result.add_fail("GET /portal/freelancer/dashboard/stats", f"Status: {response.status_code}")
         
-        response = requests.get(f"{BASE_URL}/portal/freelancer/portfolio", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/portal/freelancer/portfolio", headers=headers, timeout=30)
         if response.status_code == 200:
             data = response.json()
             if "portfolio_items" in data and not data.get("message"):
@@ -308,13 +310,13 @@ def test_admin_endpoints(result: TestResult):
         token = login(ADMIN_CREDS)
         headers = {"Authorization": f"Bearer {token}"}
         
-        response = requests.get(f"{BASE_URL}/admin/dashboard/overview", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/admin/dashboard/overview", headers=headers, timeout=30)
         if response.status_code == 200:
             result.add_pass("GET /admin/dashboard/overview")
         else:
             result.add_fail("GET /admin/dashboard/overview", f"Status: {response.status_code}")
         
-        response = requests.get(f"{BASE_URL}/admin/dashboard/top-freelancers", headers=headers, timeout=5)
+        response = requests.get(f"{BASE_URL}/admin/dashboard/top-freelancers", headers=headers, timeout=30)
         if response.status_code == 200:
             data = response.json()
             if len(data) > 0 and "average_rating" in data[0]:

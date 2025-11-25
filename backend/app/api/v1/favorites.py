@@ -1,157 +1,203 @@
-# @AI-HINT: Favorites API endpoints for user bookmarking
+# @AI-HINT: Favorites API endpoints - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import and_
-from typing import List, Literal
+from typing import List, Literal, Optional
+from datetime import datetime
 
-from app.db.session import get_db
-from app.models import Favorite, User, Project
-from app.schemas.favorite import FavoriteCreate, FavoriteRead, FavoriteDelete
-from app.core.security import get_current_user
+from app.db.turso_http import execute_query, parse_rows
+from app.core.security import get_current_user_from_token
 
 router = APIRouter(prefix="/favorites", tags=["favorites"])
 
-@router.post("/", response_model=FavoriteRead, status_code=status.HTTP_201_CREATED)
+
+def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+    """Get current user from token"""
+    return token_data
+
+
+@router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_favorite(
-    favorite: FavoriteCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    favorite: dict,
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Add item to favorites
     - Users can favorite projects or freelancers
     - Prevents duplicate favorites
     """
-    # Check if already favorited
-    existing = db.query(Favorite).filter(
-        and_(
-            Favorite.user_id == current_user.id,
-            Favorite.target_type == favorite.target_type,
-            Favorite.target_id == favorite.target_id
-        )
-    ).first()
+    user_id = current_user.get("user_id")
+    target_type = favorite.get("target_type")
+    target_id = favorite.get("target_id")
     
-    if existing:
+    # Check if already favorited
+    result = execute_query(
+        "SELECT id FROM favorites WHERE user_id = ? AND target_type = ? AND target_id = ?",
+        [user_id, target_type, target_id]
+    )
+    
+    if result and result.get("rows"):
         raise HTTPException(status_code=400, detail="Already in favorites")
     
     # Verify target exists
-    if favorite.target_type == "project":
-        project = db.query(Project).filter(Project.id == favorite.target_id).first()
-        if not project:
+    if target_type == "project":
+        result = execute_query("SELECT id FROM projects WHERE id = ?", [target_id])
+        if not result or not result.get("rows"):
             raise HTTPException(status_code=404, detail="Project not found")
-    elif favorite.target_type == "freelancer":
-        freelancer = db.query(User).filter(
-            and_(
-                User.id == favorite.target_id,
-                User.user_type == "freelancer"
-            )
-        ).first()
-        if not freelancer:
+    elif target_type == "freelancer":
+        result = execute_query(
+            "SELECT id FROM users WHERE id = ? AND LOWER(user_type) = 'freelancer'",
+            [target_id]
+        )
+        if not result or not result.get("rows"):
             raise HTTPException(status_code=404, detail="Freelancer not found")
     
     # Create favorite
-    db_favorite = Favorite(
-        user_id=current_user.id,
-        target_type=favorite.target_type,
-        target_id=favorite.target_id
+    now = datetime.utcnow().isoformat()
+    result = execute_query(
+        "INSERT INTO favorites (user_id, target_type, target_id, created_at) VALUES (?, ?, ?, ?)",
+        [user_id, target_type, target_id, now]
     )
     
-    db.add(db_favorite)
-    db.commit()
-    db.refresh(db_favorite)
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to create favorite")
     
-    return db_favorite
+    # Get the new favorite ID
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    new_id = 0
+    if id_result and id_result.get("rows"):
+        id_rows = parse_rows(id_result)
+        if id_rows:
+            new_id = id_rows[0].get("id", 0)
+    
+    return {
+        "id": new_id,
+        "user_id": user_id,
+        "target_type": target_type,
+        "target_id": target_id,
+        "created_at": now
+    }
 
-@router.get("/", response_model=List[FavoriteRead])
+
+@router.get("/", response_model=List[dict])
 async def list_favorites(
-    target_type: Literal["project", "freelancer", None] = Query(None, description="Filter by type"),
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    target_type: Optional[Literal["project", "freelancer"]] = Query(None, description="Filter by type"),
+    current_user: dict = Depends(get_current_user)
 ):
     """
     List user's favorites
     - Returns user's bookmarked items
     - Can filter by type (project/freelancer)
     """
-    query = db.query(Favorite).filter(Favorite.user_id == current_user.id)
+    user_id = current_user.get("user_id")
     
     if target_type:
-        query = query.filter(Favorite.target_type == target_type)
+        result = execute_query(
+            """SELECT id, user_id, target_type, target_id, created_at
+               FROM favorites WHERE user_id = ? AND target_type = ?
+               ORDER BY created_at DESC""",
+            [user_id, target_type]
+        )
+    else:
+        result = execute_query(
+            """SELECT id, user_id, target_type, target_id, created_at
+               FROM favorites WHERE user_id = ?
+               ORDER BY created_at DESC""",
+            [user_id]
+        )
     
-    favorites = query.order_by(Favorite.created_at.desc()).all()
-    return favorites
+    if not result:
+        return []
+    
+    return parse_rows(result)
 
-@router.delete("/{favorite_id}", response_model=FavoriteDelete)
+
+@router.delete("/{favorite_id}", response_model=dict)
 async def delete_favorite(
     favorite_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """Remove item from favorites"""
-    favorite = db.query(Favorite).filter(Favorite.id == favorite_id).first()
-    if not favorite:
+    user_id = current_user.get("user_id")
+    
+    result = execute_query(
+        "SELECT id, user_id, target_type, target_id FROM favorites WHERE id = ?",
+        [favorite_id]
+    )
+    
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Favorite not found")
     
-    if favorite.user_id != current_user.id:
+    rows = parse_rows(result)
+    if not rows:
+        raise HTTPException(status_code=404, detail="Favorite not found")
+    
+    favorite = rows[0]
+    if favorite.get("user_id") != user_id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    target_type = favorite.target_type
-    target_id = favorite.target_id
+    target_type = favorite.get("target_type")
+    target_id = favorite.get("target_id")
     
-    db.delete(favorite)
-    db.commit()
+    execute_query("DELETE FROM favorites WHERE id = ?", [favorite_id])
     
-    return FavoriteDelete(
-        message="Removed from favorites",
-        target_type=target_type,
-        target_id=target_id
-    )
+    return {
+        "message": "Removed from favorites",
+        "target_type": target_type,
+        "target_id": target_id
+    }
 
-@router.delete("/remove/{target_type}/{target_id}", response_model=FavoriteDelete)
+
+@router.delete("/remove/{target_type}/{target_id}", response_model=dict)
 async def remove_favorite_by_target(
     target_type: Literal["project", "freelancer"],
     target_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """Remove item from favorites by type and ID"""
-    favorite = db.query(Favorite).filter(
-        and_(
-            Favorite.user_id == current_user.id,
-            Favorite.target_type == target_type,
-            Favorite.target_id == target_id
-        )
-    ).first()
+    user_id = current_user.get("user_id")
     
-    if not favorite:
+    result = execute_query(
+        "SELECT id FROM favorites WHERE user_id = ? AND target_type = ? AND target_id = ?",
+        [user_id, target_type, target_id]
+    )
+    
+    if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Not in favorites")
     
-    db.delete(favorite)
-    db.commit()
-    
-    return FavoriteDelete(
-        message="Removed from favorites",
-        target_type=target_type,
-        target_id=target_id
+    execute_query(
+        "DELETE FROM favorites WHERE user_id = ? AND target_type = ? AND target_id = ?",
+        [user_id, target_type, target_id]
     )
+    
+    return {
+        "message": "Removed from favorites",
+        "target_type": target_type,
+        "target_id": target_id
+    }
+
 
 @router.get("/check/{target_type}/{target_id}")
 async def check_favorite(
     target_type: Literal["project", "freelancer"],
     target_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """Check if item is favorited"""
-    favorite = db.query(Favorite).filter(
-        and_(
-            Favorite.user_id == current_user.id,
-            Favorite.target_type == target_type,
-            Favorite.target_id == target_id
-        )
-    ).first()
+    user_id = current_user.get("user_id")
+    
+    result = execute_query(
+        "SELECT id FROM favorites WHERE user_id = ? AND target_type = ? AND target_id = ?",
+        [user_id, target_type, target_id]
+    )
+    
+    is_favorited = result and result.get("rows") and len(result["rows"]) > 0
+    favorite_id = None
+    
+    if is_favorited:
+        rows = parse_rows(result)
+        if rows:
+            favorite_id = rows[0].get("id")
     
     return {
-        "is_favorited": favorite is not None,
-        "favorite_id": favorite.id if favorite else None
+        "is_favorited": is_favorited,
+        "favorite_id": favorite_id
     }

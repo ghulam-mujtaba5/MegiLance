@@ -1,11 +1,11 @@
 {
-  "timestamp": "2025-11-25T01:48:34.522594",
+  "timestamp": "2025-11-25T02:49:59.654329",
   "summary": {
-    "total": 10,
-    "passed": 2,
-    "failed": 8,
+    "total": 16,
+    "passed": 16,
+    "failed": 0,
     "skipped": 0,
-    "pass_rate": "20.0%"
+    "pass_rate": "100.0%"
   },
   "details": [
     {
@@ -19,44 +19,74 @@
       "message": ""
     },
     {
-      "status": "FAIL",
+      "status": "PASS",
       "endpoint": "POST /auth/login",
-      "error": "Status: 401"
+      "message": ""
     },
     {
-      "status": "FAIL",
+      "status": "PASS",
       "endpoint": "GET /auth/me",
-      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "User endpoints",
-      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+      "status": "PASS",
+      "endpoint": "GET /users/",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Project endpoints",
-      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+      "status": "PASS",
+      "endpoint": "GET /users/{id}",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Payment endpoints",
-      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+      "status": "PASS",
+      "endpoint": "GET /projects/",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Client portal endpoints",
-      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+      "status": "PASS",
+      "endpoint": "POST /projects/",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Freelancer portal endpoints",
-      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+      "status": "PASS",
+      "endpoint": "GET /projects/{id}",
+      "message": ""
     },
     {
-      "status": "FAIL",
-      "endpoint": "Admin endpoints",
-      "error": "Login failed: {\"detail\":\"Incorrect email or password\"}"
+      "status": "PASS",
+      "endpoint": "GET /payments/",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/client/dashboard/stats",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/client/wallet (pending_payments implemented)",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/freelancer/dashboard/stats (rating system implemented)",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /portal/freelancer/portfolio (portfolio implemented)",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /admin/dashboard/overview",
+      "message": ""
+    },
+    {
+      "status": "PASS",
+      "endpoint": "GET /admin/dashboard/top-freelancers",
+      "message": ""
     }
   ]
 }

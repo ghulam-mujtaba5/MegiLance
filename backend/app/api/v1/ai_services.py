@@ -1,19 +1,14 @@
 """
-AI-powered services API endpoints
+@AI-HINT: AI-powered services API endpoints - Turso HTTP only
 Price estimation, freelancer matching, fraud detection
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from app.db.session import get_db
+from app.db.turso_http import execute_query, to_str
 from app.core.security import get_current_user
-from app.models.user import User
 from app.models.project import ProjectCategory
-from app.services.ai_matching import get_project_matches
-from app.services.price_estimation import estimate_project, estimate_freelancer_rate_quick
-from app.services.fraud_detection import FraudDetectionService
 
 router = APIRouter(tags=["AI Services"])  # Prefix is added in routers.py
 
@@ -23,7 +18,6 @@ router = APIRouter(tags=["AI Services"])  # Prefix is added in routers.py
 @router.post("/chat")
 async def ai_chatbot(
     message: str,
-    db: Session = Depends(get_db)
 ):
     """
     AI Chatbot endpoint - responds to user queries
@@ -65,7 +59,6 @@ async def ai_chatbot(
 @router.post("/fraud-check")
 async def fraud_detection(
     text: str,
-    db: Session = Depends(get_db)
 ):
     """
     AI Fraud Detection - analyzes text for potential fraud indicators
@@ -100,8 +93,7 @@ async def fraud_detection(
 async def match_freelancers_to_project(
     project_id: int,
     limit: int = 10,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Get AI-powered freelancer matches for a project
@@ -110,12 +102,81 @@ async def match_freelancers_to_project(
     - **limit**: Maximum number of matches to return
     """
     try:
-        matches = await get_project_matches(db, project_id, limit)
+        # Get project details
+        project_result = execute_query(
+            "SELECT id, title, skills_required, category FROM projects WHERE id = ?",
+            [project_id]
+        )
+        
+        if not project_result or not project_result.get("rows"):
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        project_row = project_result["rows"][0]
+        skills_str = to_str(project_row[2]) or ""
+        category = to_str(project_row[3])
+        
+        # Parse skills
+        import json
+        try:
+            required_skills = json.loads(skills_str) if skills_str else []
+        except:
+            required_skills = skills_str.split(",") if skills_str else []
+        
+        # Find freelancers with matching skills
+        freelancers_result = execute_query(
+            """SELECT u.id, u.full_name, u.email, u.skills, u.hourly_rate, u.rating,
+                      u.profile_image, u.bio, u.completed_projects
+               FROM users u
+               WHERE u.user_type = 'Freelancer' AND u.is_active = 1
+               LIMIT ?""",
+            [limit * 3]  # Get more to score and filter
+        )
+        
+        matches = []
+        if freelancers_result and freelancers_result.get("rows"):
+            for row in freelancers_result["rows"]:
+                freelancer_id = row[0].get("value") if row[0].get("type") != "null" else None
+                freelancer_skills_str = to_str(row[3]) or ""
+                
+                try:
+                    freelancer_skills = json.loads(freelancer_skills_str) if freelancer_skills_str else []
+                except:
+                    freelancer_skills = freelancer_skills_str.split(",") if freelancer_skills_str else []
+                
+                # Calculate match score based on skill overlap
+                if isinstance(freelancer_skills, list) and isinstance(required_skills, list):
+                    matching_skills = set([s.lower() for s in freelancer_skills]) & set([s.lower() for s in required_skills])
+                    score = len(matching_skills) / max(len(required_skills), 1)
+                else:
+                    score = 0.5  # Default score
+                
+                rating = row[5].get("value") if row[5].get("type") != "null" else 0
+                
+                matches.append({
+                    "freelancer_id": freelancer_id,
+                    "name": to_str(row[1]),
+                    "email": to_str(row[2]),
+                    "skills": freelancer_skills,
+                    "hourly_rate": row[4].get("value") if row[4].get("type") != "null" else None,
+                    "rating": rating,
+                    "profile_image": to_str(row[6]),
+                    "bio": to_str(row[7]),
+                    "completed_projects": row[8].get("value") if row[8].get("type") != "null" else 0,
+                    "match_score": round(score * 100, 2),
+                    "match_reason": f"Matched {len(matching_skills) if isinstance(required_skills, list) else 0} skills"
+                })
+        
+        # Sort by match score and limit
+        matches.sort(key=lambda x: x["match_score"], reverse=True)
+        matches = matches[:limit]
+        
         return {
             "project_id": project_id,
             "matches": matches,
             "total_matches": len(matches)
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -130,8 +191,7 @@ async def estimate_project_price(
     description: str = "",
     estimated_hours: Optional[int] = None,
     complexity: str = "moderate",
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Get AI-powered price estimation for a project
@@ -143,10 +203,70 @@ async def estimate_project_price(
     - **complexity**: simple, moderate, complex, or expert
     """
     try:
-        estimation = await estimate_project(
-            db, category, skills_required, description, estimated_hours, complexity
+        # Base rates by complexity
+        complexity_multipliers = {
+            "simple": 0.7,
+            "moderate": 1.0,
+            "complex": 1.4,
+            "expert": 2.0
+        }
+        multiplier = complexity_multipliers.get(complexity.lower(), 1.0)
+        
+        # Get average rates for the category
+        result = execute_query(
+            """SELECT AVG(budget) as avg_budget, COUNT(*) as project_count
+               FROM projects
+               WHERE category = ? AND status IN ('completed', 'in_progress')""",
+            [category.value if hasattr(category, 'value') else str(category)]
         )
-        return estimation
+        
+        avg_budget = 500  # Default
+        if result and result.get("rows"):
+            row = result["rows"][0]
+            if row[0].get("type") != "null" and row[0].get("value"):
+                avg_budget = float(row[0].get("value"))
+        
+        # Get average hourly rates for freelancers with matching skills
+        skills_pattern = "%".join(skills_required[:3]) if skills_required else "%"
+        rate_result = execute_query(
+            """SELECT AVG(hourly_rate) as avg_rate
+               FROM users
+               WHERE user_type = 'Freelancer' 
+               AND hourly_rate IS NOT NULL
+               AND skills LIKE ?""",
+            [f"%{skills_pattern}%"]
+        )
+        
+        avg_hourly = 35  # Default
+        if rate_result and rate_result.get("rows"):
+            row = rate_result["rows"][0]
+            if row[0].get("type") != "null" and row[0].get("value"):
+                avg_hourly = float(row[0].get("value"))
+        
+        # Calculate estimates
+        hours = estimated_hours or 40
+        hourly_estimate = avg_hourly * multiplier
+        total_estimate = hourly_estimate * hours
+        
+        # Adjust based on category average
+        if avg_budget > 0:
+            total_estimate = (total_estimate + avg_budget) / 2
+        
+        return {
+            "estimated_hourly_rate": round(hourly_estimate, 2),
+            "estimated_total": round(total_estimate, 2),
+            "estimated_hours": hours,
+            "low_estimate": round(total_estimate * 0.7, 2),
+            "high_estimate": round(total_estimate * 1.4, 2),
+            "complexity": complexity,
+            "category": category.value if hasattr(category, 'value') else str(category),
+            "confidence": 0.75,
+            "factors": [
+                f"Based on {len(skills_required)} required skills",
+                f"Complexity: {complexity}",
+                f"Category average: ${avg_budget:.2f}"
+            ]
+        }
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -161,8 +281,7 @@ async def estimate_freelancer_hourly_rate(
     skills: Optional[List[str]] = None,
     completed_projects: Optional[int] = None,
     average_rating: Optional[float] = None,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Get AI-powered rate estimation for a freelancer
@@ -174,14 +293,59 @@ async def estimate_freelancer_hourly_rate(
     - **average_rating**: Average client rating
     """
     try:
-        estimation = await estimate_freelancer_rate_quick(
-            db, freelancer_id,
-            years_experience=years_experience,
-            skills=skills,
-            completed_projects=completed_projects,
-            average_rating=average_rating
+        # Get freelancer data
+        result = execute_query(
+            """SELECT id, full_name, skills, hourly_rate, rating, completed_projects,
+                      years_experience
+               FROM users
+               WHERE id = ? AND user_type = 'Freelancer'""",
+            [freelancer_id]
         )
-        return estimation
+        
+        if not result or not result.get("rows"):
+            raise HTTPException(status_code=404, detail="Freelancer not found")
+        
+        row = result["rows"][0]
+        current_rate = row[3].get("value") if row[3].get("type") != "null" else None
+        db_rating = row[4].get("value") if row[4].get("type") != "null" else 0
+        db_completed = row[5].get("value") if row[5].get("type") != "null" else 0
+        db_experience = row[6].get("value") if row[6].get("type") != "null" else 0
+        
+        # Use provided or database values
+        actual_rating = average_rating or db_rating or 0
+        actual_completed = completed_projects or db_completed or 0
+        actual_experience = years_experience or db_experience or 0
+        
+        # Base rate calculation
+        base_rate = 25  # Minimum rate
+        
+        # Experience factor (+$5 per year, max +$50)
+        experience_bonus = min(actual_experience * 5, 50)
+        
+        # Project completion bonus (+$2 per 10 projects, max +$30)
+        project_bonus = min((actual_completed // 10) * 2, 30)
+        
+        # Rating bonus (+$10 for each star above 3)
+        rating_bonus = max(0, (actual_rating - 3) * 10)
+        
+        estimated_rate = base_rate + experience_bonus + project_bonus + rating_bonus
+        
+        return {
+            "freelancer_id": freelancer_id,
+            "current_rate": current_rate,
+            "estimated_rate": round(estimated_rate, 2),
+            "low_estimate": round(estimated_rate * 0.8, 2),
+            "high_estimate": round(estimated_rate * 1.3, 2),
+            "factors": {
+                "base_rate": base_rate,
+                "experience_bonus": experience_bonus,
+                "project_bonus": project_bonus,
+                "rating_bonus": rating_bonus
+            },
+            "confidence": 0.7
+        }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -192,8 +356,7 @@ async def estimate_freelancer_hourly_rate(
 @router.get("/fraud-check/user/{user_id}")
 async def check_user_fraud_risk(
     user_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Analyze user for fraudulent behavior
@@ -202,17 +365,78 @@ async def check_user_fraud_risk(
     
     Requires admin privileges or own user
     """
+    user_type = current_user.get("user_type", "").lower()
+    is_admin = user_type == "admin"
+    
     # Only allow admins or self
-    if current_user.id != user_id and not current_user.is_admin:
+    if current_user['id'] != user_id and not is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to check this user"
         )
     
     try:
-        fraud_service = FraudDetectionService(db)
-        analysis = await fraud_service.analyze_user(user_id)
-        return analysis
+        # Get user data
+        result = execute_query(
+            """SELECT id, email, full_name, created_at, is_active, is_verified,
+                      user_type, bio
+               FROM users WHERE id = ?""",
+            [user_id]
+        )
+        
+        if not result or not result.get("rows"):
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        row = result["rows"][0]
+        email = to_str(row[1]) or ""
+        bio = to_str(row[7]) or ""
+        is_verified = row[5].get("value") if row[5].get("type") != "null" else False
+        
+        risk_factors = []
+        risk_score = 0
+        
+        # Check for suspicious email domains
+        suspicious_domains = ["tempmail", "guerrilla", "10minute", "throwaway"]
+        for domain in suspicious_domains:
+            if domain in email.lower():
+                risk_factors.append("Suspicious email domain")
+                risk_score += 30
+                break
+        
+        # Check if unverified
+        if not is_verified:
+            risk_factors.append("Unverified account")
+            risk_score += 20
+        
+        # Check bio for fraud keywords
+        fraud_keywords = ["guaranteed", "risk free", "wire transfer", "western union"]
+        for keyword in fraud_keywords:
+            if keyword.lower() in bio.lower():
+                risk_factors.append(f"Suspicious term in bio: {keyword}")
+                risk_score += 15
+        
+        # Check complaint history
+        complaint_result = execute_query(
+            "SELECT COUNT(*) FROM support_tickets WHERE user_id = ? AND priority = 'urgent'",
+            [user_id]
+        )
+        if complaint_result and complaint_result.get("rows"):
+            complaints = complaint_result["rows"][0][0].get("value") or 0
+            if complaints > 3:
+                risk_factors.append(f"High complaint count: {complaints}")
+                risk_score += complaints * 5
+        
+        risk_score = min(risk_score, 100)
+        
+        return {
+            "user_id": user_id,
+            "risk_score": risk_score,
+            "risk_level": "high" if risk_score > 60 else "medium" if risk_score > 30 else "low",
+            "risk_factors": risk_factors,
+            "recommendation": "Review account" if risk_score > 60 else "Monitor" if risk_score > 30 else "No action needed"
+        }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -223,8 +447,7 @@ async def check_user_fraud_risk(
 @router.get("/fraud-check/project/{project_id}")
 async def check_project_fraud_risk(
     project_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Analyze project for fraudulent characteristics
@@ -232,9 +455,58 @@ async def check_project_fraud_risk(
     - **project_id**: ID of the project to analyze
     """
     try:
-        fraud_service = FraudDetectionService(db)
-        analysis = await fraud_service.analyze_project(project_id)
-        return analysis
+        result = execute_query(
+            """SELECT id, title, description, budget, client_id
+               FROM projects WHERE id = ?""",
+            [project_id]
+        )
+        
+        if not result or not result.get("rows"):
+            raise HTTPException(status_code=404, detail="Project not found")
+        
+        row = result["rows"][0]
+        title = to_str(row[1]) or ""
+        description = to_str(row[2]) or ""
+        budget = row[3].get("value") if row[3].get("type") != "null" else 0
+        
+        risk_factors = []
+        risk_score = 0
+        
+        # Check for fraud keywords in title/description
+        fraud_keywords = ["guaranteed income", "easy money", "wire transfer", 
+                         "western union", "personal information", "advance payment"]
+        
+        text_to_check = f"{title} {description}".lower()
+        for keyword in fraud_keywords:
+            if keyword in text_to_check:
+                risk_factors.append(f"Suspicious term: {keyword}")
+                risk_score += 20
+        
+        # Unusually high or low budget
+        if budget and (budget > 100000 or budget < 5):
+            risk_factors.append(f"Unusual budget: ${budget}")
+            risk_score += 15
+        
+        # Check for contact info in description
+        import re
+        if re.search(r'\b[\w.-]+@[\w.-]+\.\w+\b', description):
+            risk_factors.append("Email address in description")
+            risk_score += 25
+        if re.search(r'\b\d{10,}\b', description):
+            risk_factors.append("Possible phone number in description")
+            risk_score += 20
+        
+        risk_score = min(risk_score, 100)
+        
+        return {
+            "project_id": project_id,
+            "risk_score": risk_score,
+            "risk_level": "high" if risk_score > 60 else "medium" if risk_score > 30 else "low",
+            "risk_factors": risk_factors,
+            "recommendation": "Manual review required" if risk_score > 60 else "Monitor" if risk_score > 30 else "Approved"
+        }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -245,8 +517,7 @@ async def check_project_fraud_risk(
 @router.get("/fraud-check/proposal/{proposal_id}")
 async def check_proposal_fraud_risk(
     proposal_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """
     Analyze proposal for suspicious activity
@@ -254,9 +525,61 @@ async def check_proposal_fraud_risk(
     - **proposal_id**: ID of the proposal to analyze
     """
     try:
-        fraud_service = FraudDetectionService(db)
-        analysis = await fraud_service.analyze_proposal(proposal_id)
-        return analysis
+        result = execute_query(
+            """SELECT id, cover_letter, bid_amount, freelancer_id
+               FROM proposals WHERE id = ?""",
+            [proposal_id]
+        )
+        
+        if not result or not result.get("rows"):
+            raise HTTPException(status_code=404, detail="Proposal not found")
+        
+        row = result["rows"][0]
+        cover_letter = to_str(row[1]) or ""
+        bid_amount = row[2].get("value") if row[2].get("type") != "null" else 0
+        
+        risk_factors = []
+        risk_score = 0
+        
+        # Check for fraud keywords
+        fraud_keywords = ["guaranteed", "outside platform", "direct payment",
+                         "personal email", "whatsapp", "telegram"]
+        
+        for keyword in fraud_keywords:
+            if keyword.lower() in cover_letter.lower():
+                risk_factors.append(f"Suspicious term: {keyword}")
+                risk_score += 20
+        
+        # Check for contact info
+        import re
+        if re.search(r'\b[\w.-]+@[\w.-]+\.\w+\b', cover_letter):
+            risk_factors.append("Email address in cover letter")
+            risk_score += 30
+        if re.search(r'\b\d{10,}\b', cover_letter):
+            risk_factors.append("Possible phone number in cover letter")
+            risk_score += 25
+        
+        # Very low bid (possible bait)
+        if bid_amount and bid_amount < 10:
+            risk_factors.append(f"Very low bid: ${bid_amount}")
+            risk_score += 15
+        
+        # Very short cover letter
+        if len(cover_letter) < 50:
+            risk_factors.append("Very short cover letter")
+            risk_score += 10
+        
+        risk_score = min(risk_score, 100)
+        
+        return {
+            "proposal_id": proposal_id,
+            "risk_score": risk_score,
+            "risk_level": "high" if risk_score > 60 else "medium" if risk_score > 30 else "low",
+            "risk_factors": risk_factors,
+            "recommendation": "Reject" if risk_score > 60 else "Review" if risk_score > 30 else "Approved"
+        }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -1,17 +1,50 @@
-# @AI-HINT: Advanced Search API for projects, freelancers, and global search
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
-from sqlalchemy import and_, or_, func
+# @AI-HINT: Advanced Search API for projects, freelancers, and global search - Turso HTTP only
+from fastapi import APIRouter, Depends, Query
 from typing import List, Optional, Literal
-from datetime import datetime
 
-from app.db.session import get_db
-from app.models import Project, User, Skill, UserSkill, ProjectTag, Tag
+from app.db.turso_http import execute_query, to_str, parse_date
 from app.schemas.project import ProjectRead
 from app.schemas.user import UserRead
-from app.core.security import get_current_user
 
 router = APIRouter(prefix="/search", tags=["search"])
+
+
+def row_to_project(row: list) -> dict:
+    """Convert a database row to a project dict"""
+    return {
+        "id": row[0].get("value") if row[0].get("type") != "null" else None,
+        "title": to_str(row[1]),
+        "description": to_str(row[2]),
+        "category": to_str(row[3]),
+        "budget_type": to_str(row[4]),
+        "budget_min": float(row[5].get("value")) if row[5].get("type") != "null" else None,
+        "budget_max": float(row[6].get("value")) if row[6].get("type") != "null" else None,
+        "experience_level": to_str(row[7]),
+        "status": to_str(row[8]),
+        "skills": to_str(row[9]),
+        "client_id": row[10].get("value") if row[10].get("type") != "null" else None,
+        "created_at": parse_date(row[11]),
+        "updated_at": parse_date(row[12])
+    }
+
+
+def row_to_user(row: list) -> dict:
+    """Convert a database row to a user dict"""
+    return {
+        "id": row[0].get("value") if row[0].get("type") != "null" else None,
+        "email": to_str(row[1]),
+        "name": to_str(row[2]),
+        "first_name": to_str(row[3]),
+        "last_name": to_str(row[4]),
+        "bio": to_str(row[5]),
+        "hourly_rate": float(row[6].get("value")) if row[6].get("type") != "null" else None,
+        "location": to_str(row[7]),
+        "skills": to_str(row[8]),
+        "user_type": to_str(row[9]),
+        "is_active": bool(row[10].get("value")) if row[10].get("type") != "null" else True,
+        "created_at": parse_date(row[11])
+    }
+
 
 @router.get("/projects", response_model=List[ProjectRead])
 async def search_projects(
@@ -24,8 +57,7 @@ async def search_projects(
     experience_level: Optional[Literal["entry", "intermediate", "expert"]] = Query(None),
     status: Optional[str] = Query("open", description="Project status"),
     limit: int = Query(20, ge=1, le=100),
-    offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db)
+    offset: int = Query(0, ge=0)
 ):
     """
     Advanced project search
@@ -33,52 +65,67 @@ async def search_projects(
     - Filter by skills, category, budget range, experience level
     - Public endpoint
     """
-    query = db.query(Project)
+    conditions = []
+    params = []
     
     # Text search
     if q:
+        conditions.append("(title LIKE ? OR description LIKE ?)")
         search_term = f"%{q}%"
-        query = query.filter(
-            or_(
-                Project.title.ilike(search_term),
-                Project.description.ilike(search_term)
-            )
-        )
+        params.extend([search_term, search_term])
     
     # Filter by status
     if status:
-        query = query.filter(Project.status == status)
+        conditions.append("status = ?")
+        params.append(status)
     
     # Filter by category
     if category:
-        query = query.filter(Project.category.ilike(f"%{category}%"))
+        conditions.append("category LIKE ?")
+        params.append(f"%{category}%")
     
     # Filter by budget range
     if budget_min is not None:
-        query = query.filter(Project.budget_min >= budget_min)
+        conditions.append("budget_min >= ?")
+        params.append(budget_min)
     if budget_max is not None:
-        query = query.filter(Project.budget_max <= budget_max)
+        conditions.append("budget_max <= ?")
+        params.append(budget_max)
     
     # Filter by budget type
     if budget_type:
-        query = query.filter(Project.budget_type == budget_type)
+        conditions.append("budget_type = ?")
+        params.append(budget_type)
     
     # Filter by experience level
     if experience_level:
-        query = query.filter(Project.experience_level == experience_level)
+        conditions.append("experience_level = ?")
+        params.append(experience_level)
     
-    # Filter by skills (if project's skills JSON contains any of the search skills)
+    # Filter by skills (search in skills text field)
     if skills:
         skill_list = [s.strip().lower() for s in skills.split(',')]
-        # Generic DB text search fallback (JSON search enhancements future)
         for skill in skill_list:
-            query = query.filter(Project.skills.ilike(f"%{skill}%"))
+            conditions.append("LOWER(skills) LIKE ?")
+            params.append(f"%{skill}%")
     
-    # Order by most recent first
-    query = query.order_by(Project.created_at.desc())
+    where_clause = " AND ".join(conditions) if conditions else "1=1"
+    params.extend([limit, offset])
     
-    projects = query.offset(offset).limit(limit).all()
-    return projects
+    result = execute_query(
+        f"""SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, status, skills, client_id, created_at, updated_at
+            FROM projects
+            WHERE {where_clause}
+            ORDER BY created_at DESC
+            LIMIT ? OFFSET ?""",
+        params
+    )
+    
+    if not result or not result.get("rows"):
+        return []
+    
+    return [row_to_project(row) for row in result["rows"]]
+
 
 @router.get("/freelancers", response_model=List[UserRead])
 async def search_freelancers(
@@ -88,8 +135,7 @@ async def search_freelancers(
     max_rate: Optional[float] = Query(None, ge=0, description="Maximum hourly rate"),
     location: Optional[str] = Query(None, description="Location filter"),
     limit: int = Query(20, ge=1, le=100),
-    offset: int = Query(0, ge=0),
-    db: Session = Depends(get_db)
+    offset: int = Query(0, ge=0)
 ):
     """
     Advanced freelancer search
@@ -97,48 +143,57 @@ async def search_freelancers(
     - Filter by skills, hourly rate, location
     - Public endpoint
     """
-    query = db.query(User).filter(User.user_type == "freelancer", User.is_active == True)
+    conditions = ["LOWER(user_type) = 'freelancer'", "is_active = 1"]
+    params = []
     
     # Text search
     if q:
+        conditions.append("(name LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR bio LIKE ?)")
         search_term = f"%{q}%"
-        query = query.filter(
-            or_(
-                User.name.ilike(search_term),
-                User.first_name.ilike(search_term),
-                User.last_name.ilike(search_term),
-                User.bio.ilike(search_term)
-            )
-        )
+        params.extend([search_term, search_term, search_term, search_term])
     
     # Filter by hourly rate range
     if min_rate is not None:
-        query = query.filter(User.hourly_rate >= min_rate)
+        conditions.append("hourly_rate >= ?")
+        params.append(min_rate)
     if max_rate is not None:
-        query = query.filter(User.hourly_rate <= max_rate)
+        conditions.append("hourly_rate <= ?")
+        params.append(max_rate)
     
     # Filter by location
     if location:
-        query = query.filter(User.location.ilike(f"%{location}%"))
+        conditions.append("location LIKE ?")
+        params.append(f"%{location}%")
     
     # Filter by skills
     if skills:
         skill_list = [s.strip().lower() for s in skills.split(',')]
-        # Get users with matching skills
         for skill in skill_list:
-            query = query.filter(User.skills.ilike(f"%{skill}%"))
+            conditions.append("LOWER(skills) LIKE ?")
+            params.append(f"%{skill}%")
     
-    # Order by most recent first
-    query = query.order_by(User.created_at.desc())
+    where_clause = " AND ".join(conditions)
+    params.extend([limit, offset])
     
-    freelancers = query.offset(offset).limit(limit).all()
-    return freelancers
+    result = execute_query(
+        f"""SELECT id, email, name, first_name, last_name, bio, hourly_rate, location, skills, user_type, is_active, created_at
+            FROM users
+            WHERE {where_clause}
+            ORDER BY created_at DESC
+            LIMIT ? OFFSET ?""",
+        params
+    )
+    
+    if not result or not result.get("rows"):
+        return []
+    
+    return [row_to_user(row) for row in result["rows"]]
+
 
 @router.get("/global")
 async def global_search(
     q: str = Query(..., min_length=2, description="Search query"),
-    limit: int = Query(10, ge=1, le=50),
-    db: Session = Depends(get_db)
+    limit: int = Query(10, ge=1, le=50)
 ):
     """
     Global search across projects, freelancers, and skills
@@ -148,90 +203,105 @@ async def global_search(
     search_term = f"%{q}%"
     
     # Search projects
-    projects = db.query(Project).filter(
-        or_(
-            Project.title.ilike(search_term),
-            Project.description.ilike(search_term)
-        ),
-        Project.status == "open"
-    ).limit(limit).all()
+    projects_result = execute_query(
+        """SELECT id, title, description, budget_type, status
+           FROM projects
+           WHERE (title LIKE ? OR description LIKE ?) AND status = 'open'
+           LIMIT ?""",
+        [search_term, search_term, limit]
+    )
+    
+    projects = []
+    if projects_result and projects_result.get("rows"):
+        for row in projects_result["rows"]:
+            desc = to_str(row[2])
+            projects.append({
+                "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                "type": "project",
+                "title": to_str(row[1]),
+                "description": desc[:200] if desc else None,
+                "budget_type": to_str(row[3]),
+                "status": to_str(row[4])
+            })
     
     # Search freelancers
-    freelancers = db.query(User).filter(
-        or_(
-            User.name.ilike(search_term),
-            User.first_name.ilike(search_term),
-            User.last_name.ilike(search_term),
-            User.bio.ilike(search_term)
-        ),
-        User.user_type == "freelancer",
-        User.is_active == True
-    ).limit(limit).all()
+    freelancers_result = execute_query(
+        """SELECT id, name, first_name, last_name, bio, hourly_rate, location
+           FROM users
+           WHERE (name LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR bio LIKE ?)
+             AND LOWER(user_type) = 'freelancer' AND is_active = 1
+           LIMIT ?""",
+        [search_term, search_term, search_term, search_term, limit]
+    )
+    
+    freelancers = []
+    if freelancers_result and freelancers_result.get("rows"):
+        for row in freelancers_result["rows"]:
+            name = to_str(row[1])
+            if not name:
+                first = to_str(row[2]) or ""
+                last = to_str(row[3]) or ""
+                name = f"{first} {last}".strip()
+            bio = to_str(row[4])
+            freelancers.append({
+                "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                "type": "freelancer",
+                "name": name,
+                "bio": bio[:200] if bio else None,
+                "hourly_rate": float(row[5].get("value")) if row[5].get("type") != "null" else None,
+                "location": to_str(row[6])
+            })
     
     # Search skills
-    skills = db.query(Skill).filter(
-        Skill.name.ilike(search_term)
-    ).limit(limit).all()
+    skills_result = execute_query(
+        """SELECT id, name, category FROM skills WHERE name LIKE ? LIMIT ?""",
+        [search_term, limit]
+    )
+    
+    skills = []
+    if skills_result and skills_result.get("rows"):
+        for row in skills_result["rows"]:
+            skills.append({
+                "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                "type": "skill",
+                "name": to_str(row[1]),
+                "category": to_str(row[2])
+            })
     
     # Search tags
-    tags = db.query(Tag).filter(
-        Tag.name.ilike(search_term)
-    ).limit(limit).all()
+    tags_result = execute_query(
+        """SELECT id, name, slug, usage_count FROM tags WHERE name LIKE ? LIMIT ?""",
+        [search_term, limit]
+    )
+    
+    tags = []
+    if tags_result and tags_result.get("rows"):
+        for row in tags_result["rows"]:
+            tags.append({
+                "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                "type": "tag",
+                "name": to_str(row[1]),
+                "slug": to_str(row[2]),
+                "usage_count": row[3].get("value") if row[3].get("type") != "null" else 0
+            })
     
     return {
         "query": q,
         "results": {
-            "projects": [
-                {
-                    "id": p.id,
-                    "type": "project",
-                    "title": p.title,
-                    "description": p.description[:200] if p.description else None,
-                    "budget_type": p.budget_type,
-                    "status": p.status
-                }
-                for p in projects
-            ],
-            "freelancers": [
-                {
-                    "id": f.id,
-                    "type": "freelancer",
-                    "name": f.name or f"{f.first_name} {f.last_name}",
-                    "bio": f.bio[:200] if f.bio else None,
-                    "hourly_rate": f.hourly_rate,
-                    "location": f.location
-                }
-                for f in freelancers
-            ],
-            "skills": [
-                {
-                    "id": s.id,
-                    "type": "skill",
-                    "name": s.name,
-                    "category": s.category
-                }
-                for s in skills
-            ],
-            "tags": [
-                {
-                    "id": t.id,
-                    "type": "tag",
-                    "name": t.name,
-                    "slug": t.slug,
-                    "usage_count": t.usage_count
-                }
-                for t in tags
-            ]
+            "projects": projects,
+            "freelancers": freelancers,
+            "skills": skills,
+            "tags": tags
         },
         "total_results": len(projects) + len(freelancers) + len(skills) + len(tags)
     }
+
 
 @router.get("/autocomplete")
 async def search_autocomplete(
     q: str = Query(..., min_length=2, description="Search query"),
     type: Optional[Literal["project", "freelancer", "skill", "tag"]] = Query(None),
-    limit: int = Query(10, ge=1, le=50),
-    db: Session = Depends(get_db)
+    limit: int = Query(10, ge=1, le=50)
 ):
     """
     Autocomplete suggestions for search
@@ -242,62 +312,75 @@ async def search_autocomplete(
     suggestions = []
     
     if type is None or type == "project":
-        projects = db.query(Project.id, Project.title).filter(
-            Project.title.ilike(search_term),
-            Project.status == "open"
-        ).limit(limit).all()
-        suggestions.extend([
-            {"id": p.id, "type": "project", "text": p.title}
-            for p in projects
-        ])
+        projects_result = execute_query(
+            """SELECT id, title FROM projects WHERE title LIKE ? AND status = 'open' LIMIT ?""",
+            [search_term, limit]
+        )
+        if projects_result and projects_result.get("rows"):
+            for row in projects_result["rows"]:
+                suggestions.append({
+                    "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                    "type": "project",
+                    "text": to_str(row[1])
+                })
     
     if type is None or type == "freelancer":
-        freelancers = db.query(User.id, User.name, User.first_name, User.last_name).filter(
-            or_(
-                User.name.ilike(search_term),
-                User.first_name.ilike(search_term),
-                User.last_name.ilike(search_term)
-            ),
-            User.user_type == "freelancer",
-            User.is_active == True
-        ).limit(limit).all()
-        suggestions.extend([
-            {
-                "id": f.id,
-                "type": "freelancer",
-                "text": f.name or f"{f.first_name} {f.last_name}"
-            }
-            for f in freelancers
-        ])
+        freelancers_result = execute_query(
+            """SELECT id, name, first_name, last_name FROM users
+               WHERE (name LIKE ? OR first_name LIKE ? OR last_name LIKE ?)
+                 AND LOWER(user_type) = 'freelancer' AND is_active = 1
+               LIMIT ?""",
+            [search_term, search_term, search_term, limit]
+        )
+        if freelancers_result and freelancers_result.get("rows"):
+            for row in freelancers_result["rows"]:
+                name = to_str(row[1])
+                if not name:
+                    first = to_str(row[2]) or ""
+                    last = to_str(row[3]) or ""
+                    name = f"{first} {last}".strip()
+                suggestions.append({
+                    "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                    "type": "freelancer",
+                    "text": name
+                })
     
     if type is None or type == "skill":
-        skills = db.query(Skill.id, Skill.name).filter(
-            Skill.name.ilike(search_term)
-        ).limit(limit).all()
-        suggestions.extend([
-            {"id": s.id, "type": "skill", "text": s.name}
-            for s in skills
-        ])
+        skills_result = execute_query(
+            """SELECT id, name FROM skills WHERE name LIKE ? LIMIT ?""",
+            [search_term, limit]
+        )
+        if skills_result and skills_result.get("rows"):
+            for row in skills_result["rows"]:
+                suggestions.append({
+                    "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                    "type": "skill",
+                    "text": to_str(row[1])
+                })
     
     if type is None or type == "tag":
-        tags = db.query(Tag.id, Tag.name).filter(
-            Tag.name.ilike(search_term)
-        ).limit(limit).all()
-        suggestions.extend([
-            {"id": t.id, "type": "tag", "text": t.name}
-            for t in tags
-        ])
+        tags_result = execute_query(
+            """SELECT id, name FROM tags WHERE name LIKE ? LIMIT ?""",
+            [search_term, limit]
+        )
+        if tags_result and tags_result.get("rows"):
+            for row in tags_result["rows"]:
+                suggestions.append({
+                    "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                    "type": "tag",
+                    "text": to_str(row[1])
+                })
     
     return {
         "query": q,
         "suggestions": suggestions[:limit]
     }
 
+
 @router.get("/trending")
 async def get_trending(
     type: Literal["projects", "freelancers", "skills", "tags"] = Query("projects"),
-    limit: int = Query(10, ge=1, le=50),
-    db: Session = Depends(get_db)
+    limit: int = Query(10, ge=1, le=50)
 ):
     """
     Get trending items
@@ -306,55 +389,68 @@ async def get_trending(
     - Most used skills/tags
     """
     if type == "projects":
-        # Most recent open projects (could add view_count for better trending)
-        projects = db.query(Project).filter(
-            Project.status == "open"
-        ).order_by(Project.created_at.desc()).limit(limit).all()
+        result = execute_query(
+            """SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, status, skills, client_id, created_at, updated_at
+               FROM projects
+               WHERE status = 'open'
+               ORDER BY created_at DESC
+               LIMIT ?""",
+            [limit]
+        )
         
-        return {
-            "type": "projects",
-            "items": [ProjectRead.model_validate(p) for p in projects]
-        }
+        items = []
+        if result and result.get("rows"):
+            items = [row_to_project(row) for row in result["rows"]]
+        
+        return {"type": "projects", "items": items}
     
     elif type == "freelancers":
-        # Most recently active freelancers
-        freelancers = db.query(User).filter(
-            User.user_type == "freelancer",
-            User.is_active == True
-        ).order_by(User.created_at.desc()).limit(limit).all()
+        result = execute_query(
+            """SELECT id, email, name, first_name, last_name, bio, hourly_rate, location, skills, user_type, is_active, created_at
+               FROM users
+               WHERE LOWER(user_type) = 'freelancer' AND is_active = 1
+               ORDER BY created_at DESC
+               LIMIT ?""",
+            [limit]
+        )
         
-        return {
-            "type": "freelancers",
-            "items": [UserRead.model_validate(f) for f in freelancers]
-        }
+        items = []
+        if result and result.get("rows"):
+            items = [row_to_user(row) for row in result["rows"]]
+        
+        return {"type": "freelancers", "items": items}
     
     elif type == "skills":
-        # Most used skills (by user_skill count)
-        skills = db.query(Skill).order_by(Skill.created_at.desc()).limit(limit).all()
+        result = execute_query(
+            """SELECT id, name, category, created_at FROM skills ORDER BY created_at DESC LIMIT ?""",
+            [limit]
+        )
         
-        return {
-            "type": "skills",
-            "items": [
-                {"id": s.id, "name": s.name, "category": s.category}
-                for s in skills
-            ]
-        }
+        items = []
+        if result and result.get("rows"):
+            for row in result["rows"]:
+                items.append({
+                    "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                    "name": to_str(row[1]),
+                    "category": to_str(row[2])
+                })
+        
+        return {"type": "skills", "items": items}
     
     elif type == "tags":
-        # Most used tags
-        tags = db.query(Tag).filter(
-            Tag.usage_count > 0
-        ).order_by(Tag.usage_count.desc()).limit(limit).all()
+        result = execute_query(
+            """SELECT id, name, slug, usage_count FROM tags WHERE usage_count > 0 ORDER BY usage_count DESC LIMIT ?""",
+            [limit]
+        )
         
-        return {
-            "type": "tags",
-            "items": [
-                {
-                    "id": t.id,
-                    "name": t.name,
-                    "slug": t.slug,
-                    "usage_count": t.usage_count
-                }
-                for t in tags
-            ]
-        }
+        items = []
+        if result and result.get("rows"):
+            for row in result["rows"]:
+                items.append({
+                    "id": row[0].get("value") if row[0].get("type") != "null" else None,
+                    "name": to_str(row[1]),
+                    "slug": to_str(row[2]),
+                    "usage_count": row[3].get("value") if row[3].get("type") != "null" else 0
+                })
+        
+        return {"type": "tags", "items": items}

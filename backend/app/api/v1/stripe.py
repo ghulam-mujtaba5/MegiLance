@@ -1,15 +1,13 @@
-# @AI-HINT: Stripe payment API endpoints for payment processing, refunds, and webhooks
+# @AI-HINT: Stripe payment API endpoints for payment processing, refunds, and webhooks - Turso HTTP only
 # Handles payment intents, customer management, subscriptions, and Stripe webhook events
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
-from sqlalchemy.orm import Session
 from typing import Optional
 import stripe
 
 from app.core.security import get_current_active_user
 from app.core.rate_limit import api_rate_limit, strict_rate_limit
-from app.db.session import get_db
-from app.models.user import User
+from app.db.turso_http import execute_query
 from app.schemas.stripe_schemas import (
     StripeCustomerCreate,
     StripeCustomerResponse,
@@ -40,8 +38,7 @@ router = APIRouter()
 def create_stripe_customer(
     request: Request,
     payload: StripeCustomerCreate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Create a Stripe customer
@@ -52,7 +49,7 @@ def create_stripe_customer(
     try:
         # Add user_id to metadata
         metadata = payload.metadata or {}
-        metadata["user_id"] = str(current_user.id)
+        metadata["user_id"] = str(current_user['id'])
         
         customer = stripe_service.create_customer(
             email=payload.email,
@@ -78,7 +75,7 @@ def create_stripe_customer(
 def get_stripe_customer(
     request: Request,
     customer_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Get Stripe customer details"""
     try:
@@ -104,8 +101,7 @@ def get_stripe_customer(
 def create_payment_intent(
     request: Request,
     payload: PaymentIntentCreate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Create a payment intent
@@ -116,7 +112,7 @@ def create_payment_intent(
     try:
         # Add user_id to metadata
         metadata = payload.metadata or {}
-        metadata["user_id"] = str(current_user.id)
+        metadata["user_id"] = str(current_user['id'])
         
         payment_intent = stripe_service.create_payment_intent(
             amount=payload.amount,
@@ -147,7 +143,7 @@ def create_payment_intent(
 def get_payment_intent(
     request: Request,
     payment_intent_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Get payment intent details"""
     try:
@@ -173,7 +169,7 @@ def confirm_payment_intent(
     request: Request,
     payment_intent_id: str,
     payload: PaymentIntentConfirm,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Confirm a payment intent"""
     try:
@@ -202,7 +198,7 @@ def capture_payment_intent(
     request: Request,
     payment_intent_id: str,
     payload: PaymentIntentCapture,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Capture a payment intent (release escrow)
@@ -239,7 +235,7 @@ def capture_payment_intent(
 def cancel_payment_intent(
     request: Request,
     payment_intent_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Cancel a payment intent"""
     try:
@@ -266,8 +262,7 @@ def cancel_payment_intent(
 def create_refund(
     request: Request,
     payload: RefundCreate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """
     Create a refund
@@ -276,7 +271,7 @@ def create_refund(
     """
     try:
         metadata = payload.metadata or {}
-        metadata["refunded_by"] = str(current_user.id)
+        metadata["refunded_by"] = str(current_user['id'])
         
         refund = stripe_service.create_refund(
             payment_intent_id=payload.payment_intent_id,
@@ -303,7 +298,7 @@ def create_refund(
 def get_refund(
     request: Request,
     refund_id: str,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Get refund details"""
     try:
@@ -330,7 +325,7 @@ def attach_payment_method(
     request: Request,
     customer_id: str,
     payload: PaymentMethodAttach,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Attach a payment method to a customer"""
     try:
@@ -358,13 +353,12 @@ def attach_payment_method(
 def create_subscription(
     request: Request,
     payload: SubscriptionCreate,
-    current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Create a subscription for platform fees"""
     try:
         metadata = payload.metadata or {}
-        metadata["user_id"] = str(current_user.id)
+        metadata["user_id"] = str(current_user['id'])
         
         subscription = stripe_service.create_subscription(
             customer_id=payload.customer_id,
@@ -392,7 +386,7 @@ def cancel_subscription(
     request: Request,
     subscription_id: str,
     at_period_end: bool = True,
-    current_user: User = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
 ):
     """Cancel a subscription"""
     try:
@@ -420,7 +414,6 @@ def cancel_subscription(
 async def stripe_webhook(
     request: Request,
     stripe_signature: str = Header(..., alias="stripe-signature"),
-    db: Session = Depends(get_db),
 ):
     """
     Handle Stripe webhook events
@@ -448,13 +441,53 @@ async def stripe_webhook(
             webhook_secret
         )
         
-        # Handle the event
-        result = stripe_service.handle_webhook_event(event, db)
+        # Handle the event - process directly with Turso
+        event_type = event.get("type", "unknown")
+        event_data = event.get("data", {}).get("object", {})
+        
+        # Log webhook event
+        print(f"[STRIPE WEBHOOK] Received event: {event_type}")
+        
+        # Handle specific events
+        if event_type == "payment_intent.succeeded":
+            payment_intent_id = event_data.get("id")
+            amount = event_data.get("amount", 0) / 100  # Convert cents to dollars
+            metadata = event_data.get("metadata", {})
+            
+            # Update payment record if exists
+            if metadata.get("payment_id"):
+                execute_query(
+                    "UPDATE payments SET status = 'completed', updated_at = datetime('now') WHERE id = ?",
+                    [int(metadata["payment_id"])]
+                )
+                print(f"[STRIPE WEBHOOK] Payment {metadata['payment_id']} marked as completed")
+        
+        elif event_type == "payment_intent.payment_failed":
+            payment_intent_id = event_data.get("id")
+            metadata = event_data.get("metadata", {})
+            
+            if metadata.get("payment_id"):
+                execute_query(
+                    "UPDATE payments SET status = 'failed', updated_at = datetime('now') WHERE id = ?",
+                    [int(metadata["payment_id"])]
+                )
+                print(f"[STRIPE WEBHOOK] Payment {metadata['payment_id']} marked as failed")
+        
+        elif event_type == "charge.refunded":
+            refund_id = event_data.get("id")
+            metadata = event_data.get("metadata", {})
+            
+            if metadata.get("refund_id"):
+                execute_query(
+                    "UPDATE refunds SET status = 'completed', processed_at = datetime('now') WHERE id = ?",
+                    [int(metadata["refund_id"])]
+                )
+                print(f"[STRIPE WEBHOOK] Refund {metadata['refund_id']} completed")
         
         return WebhookResponse(
-            status=result.get("status", "success"),
-            event_type=event["type"],
-            message=f"Webhook processed: {event['type']}"
+            status="success",
+            event_type=event_type,
+            message=f"Webhook processed: {event_type}"
         )
     
     except stripe.error.SignatureVerificationError as e:
