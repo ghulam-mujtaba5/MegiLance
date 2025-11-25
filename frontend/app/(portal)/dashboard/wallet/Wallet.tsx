@@ -1,29 +1,22 @@
-// @AI-HINT: Portal Wallet page. Theme-aware, accessible, animated balance and transactions with filters, export, and toasts.
+// @AI-HINT: Portal Wallet page. Theme-aware, accessible, animated balance and transactions. Fetches from payments API.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { Loader2 } from 'lucide-react';
 import common from './Wallet.common.module.css';
 import light from './Wallet.light.module.css';
 import dark from './Wallet.dark.module.css';
 
 interface Txn {
   id: string;
-  date: string; // ISO-like
+  date: string;
   description: string;
   type: 'Payout' | 'Payment' | 'Refund' | 'Fee';
-  amount: number; // positive for credit, negative for debit
+  amount: number;
 }
-
-const MOCK_TXNS: Txn[] = [
-  { id: 't1', date: '2025-08-06', description: 'Client payment — INV-204', type: 'Payment', amount: 2400 },
-  { id: 't2', date: '2025-08-03', description: 'Platform fee', type: 'Fee', amount: -48 },
-  { id: 't3', date: '2025-07-29', description: 'Payout to bank', type: 'Payout', amount: -1200 },
-  { id: 't4', date: '2025-07-22', description: 'Refund to client — INV-199', type: 'Refund', amount: -200 },
-  { id: 't5', date: '2025-07-20', description: 'Client payment — INV-198', type: 'Payment', amount: 1500 },
-];
 
 const TYPES = ['All', 'Payment', 'Payout', 'Refund', 'Fee'] as const;
 const RANGES = ['Any time', 'Past week', 'Past month', 'Past year'] as const;
@@ -32,6 +25,9 @@ const Wallet: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
 
+  const [allTxns, setAllTxns] = useState<Txn[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [type, setType] = useState<(typeof TYPES)[number]>('All');
   const [range, setRange] = useState<(typeof RANGES)[number]>('Past month');
   const [toast, setToast] = useState<{ kind: 'success' | 'error'; msg: string } | null>(null);
@@ -42,10 +38,66 @@ const Wallet: React.FC = () => {
   const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
   const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
 
-  const balance = useMemo(() => 48895, []);
+  // Fetch transactions from API
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        const response = await fetch('/backend/api/payments', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch transactions');
+        }
+
+        const data = await response.json();
+        
+        // Transform API data to Txn format
+        const transactions: Txn[] = (Array.isArray(data) ? data : []).map((p: any, idx: number) => {
+          const amountStr = String(p.amount || '0');
+          const isCredit = amountStr.startsWith('+') || p.direction === 'credit';
+          const numericValue = parseFloat(amountStr.replace(/[$,+\-]/g, '') || '0');
+          const amount = isCredit ? numericValue : -numericValue;
+          
+          let txnType: Txn['type'] = 'Payment';
+          const desc = (p.description || '').toLowerCase();
+          if (desc.includes('payout') || desc.includes('withdraw')) txnType = 'Payout';
+          else if (desc.includes('refund')) txnType = 'Refund';
+          else if (desc.includes('fee')) txnType = 'Fee';
+          
+          return {
+            id: String(p.id || idx),
+            date: p.date || new Date().toISOString().split('T')[0],
+            description: p.description || 'Transaction',
+            type: txnType,
+            amount,
+          };
+        });
+
+        setAllTxns(transactions);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load transactions');
+        setAllTxns([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  const balance = useMemo(() => {
+    return allTxns.reduce((sum, t) => sum + t.amount, 0);
+  }, [allTxns]);
 
   const txns = useMemo(() => {
-    const byType = type === 'All' ? MOCK_TXNS : MOCK_TXNS.filter(t => t.type === type);
+    const byType = type === 'All' ? allTxns : allTxns.filter(t => t.type === type);
     const dayMs = 24 * 60 * 60 * 1000;
     const within = (d: string) => {
       if (range === 'Any time') return true;
@@ -58,7 +110,7 @@ const Wallet: React.FC = () => {
       return true;
     };
     return byType.filter(t => within(t.date));
-  }, [type, range]);
+  }, [type, range, allTxns]);
 
   const exportCSV = () => {
     try {
@@ -80,9 +132,29 @@ const Wallet: React.FC = () => {
     }
   };
 
+  if (!resolvedTheme) return null;
+
+  if (loading) {
+    return (
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <div className={common.loadingState}>
+            <Loader2 className={common.spinner} size={32} />
+            <span>Loading wallet...</span>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
+        {error && (
+          <div className={cn(common.errorBanner, themed.errorBanner)}>
+            {error}
+          </div>
+        )}
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
           <div>
             <h1 className={common.title}>Wallet</h1>

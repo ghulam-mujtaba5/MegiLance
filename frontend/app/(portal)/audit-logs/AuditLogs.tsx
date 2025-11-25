@@ -1,39 +1,35 @@
-// @AI-HINT: Audit Logs page. Theme-aware, accessible, animated table with filters and row details.
+// @AI-HINT: Audit Logs page. Theme-aware, accessible, animated table with filters. Fetches from admin activity API.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { Loader2 } from 'lucide-react';
 import common from './AuditLogs.common.module.css';
 import light from './AuditLogs.light.module.css';
 import dark from './AuditLogs.dark.module.css';
 
 interface LogItem {
   id: string;
-  time: string; // ISO-like
+  time: string;
   actor: string;
-  action: 'Login' | 'Logout' | 'Role Change' | 'Password Reset' | 'Project Update' | 'Invoice Paid';
+  action: 'Login' | 'Logout' | 'Role Change' | 'Password Reset' | 'Project Update' | 'Invoice Paid' | 'Other';
   resource: string;
   ip: string;
   meta?: Record<string, string>;
 }
 
-const MOCK_LOGS: LogItem[] = [
-  { id: 'a1', time: '2025-08-08T05:10:00Z', actor: 'alex@megilance.com', action: 'Login', resource: 'Portal', ip: '203.0.113.5' },
-  { id: 'a2', time: '2025-08-07T15:44:00Z', actor: 'sofia@megilance.com', action: 'Project Update', resource: 'E-commerce Redesign', ip: '198.51.100.21', meta: { field: 'status', from: 'In Progress', to: 'Review' } },
-  { id: 'a3', time: '2025-08-06T12:30:00Z', actor: 'admin@megilance.com', action: 'Role Change', resource: 'User: hannah', ip: '192.0.2.11', meta: { role: 'Freelancer -> Admin' } },
-  { id: 'a4', time: '2025-08-05T09:20:00Z', actor: 'hannah@megilance.com', action: 'Password Reset', resource: 'Account', ip: '203.0.113.18' },
-  { id: 'a5', time: '2025-08-03T20:10:00Z', actor: 'finance@megilance.com', action: 'Invoice Paid', resource: 'INV-204', ip: '198.51.100.77' },
-];
-
-const ACTIONS = ['All', 'Login', 'Logout', 'Role Change', 'Password Reset', 'Project Update', 'Invoice Paid'] as const;
+const ACTIONS = ['All', 'Login', 'Logout', 'Role Change', 'Password Reset', 'Project Update', 'Invoice Paid', 'Other'] as const;
 const RANGES = ['Any time', 'Past week', 'Past month', 'Past year'] as const;
 
 const AuditLogs: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
 
+  const [allLogs, setAllLogs] = useState<LogItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [action, setAction] = useState<(typeof ACTIONS)[number]>('All');
   const [range, setRange] = useState<(typeof RANGES)[number]>('Past month');
   const [actor, setActor] = useState('');
@@ -45,8 +41,63 @@ const AuditLogs: React.FC = () => {
   const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
   const tableVisible = useIntersectionObserver(tableRef, { threshold: 0.1 });
 
+  // Fetch audit logs from API
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        const response = await fetch('/backend/api/admin/dashboard/recent-activity', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch audit logs');
+        }
+
+        const data = await response.json();
+        
+        // Transform API data to LogItem format
+        const logs: LogItem[] = (Array.isArray(data) ? data : []).map((activity: any, idx: number) => {
+          const activityType = (activity.type || '').toLowerCase();
+          let actionType: LogItem['action'] = 'Other';
+          
+          if (activityType.includes('login')) actionType = 'Login';
+          else if (activityType.includes('logout')) actionType = 'Logout';
+          else if (activityType.includes('role')) actionType = 'Role Change';
+          else if (activityType.includes('password')) actionType = 'Password Reset';
+          else if (activityType.includes('project') || activityType.includes('job')) actionType = 'Project Update';
+          else if (activityType.includes('payment') || activityType.includes('invoice')) actionType = 'Invoice Paid';
+          
+          return {
+            id: `log-${idx}`,
+            time: activity.timestamp || new Date().toISOString(),
+            actor: activity.user_name || activity.user_email || 'System',
+            action: actionType,
+            resource: activity.description || activity.type || 'Platform',
+            ip: activity.ip_address || '0.0.0.0',
+            meta: activity.amount ? { amount: `$${activity.amount}` } : undefined,
+          };
+        });
+
+        setAllLogs(logs);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load audit logs');
+        setAllLogs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLogs();
+  }, []);
+
   const logs = useMemo(() => {
-    const byAction = action === 'All' ? MOCK_LOGS : MOCK_LOGS.filter(l => l.action === action);
+    const byAction = action === 'All' ? allLogs : allLogs.filter(l => l.action === action);
     const byActor = actor.trim() ? byAction.filter(l => l.actor.toLowerCase().includes(actor.trim().toLowerCase())) : byAction;
     const dayMs = 24 * 60 * 60 * 1000;
     const within = (d: string) => {
@@ -60,13 +111,33 @@ const AuditLogs: React.FC = () => {
       return true;
     };
     return byActor.filter(l => within(l.time));
-  }, [action, actor, range]);
+  }, [action, actor, range, allLogs]);
 
-  const selected = logs.find(l => l.id === selectedId) || MOCK_LOGS.find(l => l.id === selectedId) || null;
+  const selected = logs.find(l => l.id === selectedId) || null;
+
+  if (!resolvedTheme) return null;
+
+  if (loading) {
+    return (
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <div className={common.loadingState}>
+            <Loader2 className={common.spinner} size={32} />
+            <span>Loading audit logs...</span>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
+        {error && (
+          <div className={cn(common.errorBanner, themed.errorBanner)}>
+            {error}
+          </div>
+        )}
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
           <div>
             <h1 className={common.title}>Audit Logs</h1>

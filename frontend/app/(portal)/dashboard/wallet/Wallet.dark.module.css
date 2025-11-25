@@ -17,3 +17,14 @@
 .toast { background: var(--surface-elev); border: 1px solid var(--border); color: var(--text-primary); box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
 .toastSuccess { border-left: 4px solid var(--success); }
 .toastError { border-left: 4px solid var(--error); }
+
+/* Loading and Error States */
+.loadingState {
+  color: #6b9aff;
+}
+
+.errorBanner {
+  background: #2d1b1b;
+  border: 1px solid #5c2626;
+  color: #fca5a5;
+}

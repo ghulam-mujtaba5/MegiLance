@@ -1,10 +1,12 @@
-// @AI-HINT: Portal Projects page. Theme-aware, accessible, animated grid of project cards with filters.
+// @AI-HINT: Portal Projects page. Theme-aware, accessible, animated grid of project cards. Fetches from dashboard API.
 'use client';
 
 import React, { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { useDashboardData } from '@/hooks/useDashboardData';
+import { Loader2 } from 'lucide-react';
 import common from './Projects.common.module.css';
 import light from './Projects.light.module.css';
 import dark from './Projects.dark.module.css';
@@ -18,20 +20,12 @@ interface Project {
   budget: string;
 }
 
-const MOCK_PROJECTS: Project[] = [
-  { id: 'p1', title: 'E-commerce Redesign', client: 'Shopify Masters', status: 'In Progress', progress: 64, budget: '$25,000' },
-  { id: 'p2', title: 'Mobile App (iOS/Android)', client: 'Appify Solutions', status: 'Review', progress: 92, budget: '$30,000' },
-  { id: 'p3', title: 'Analytics Dashboard', client: 'DataDriven Co.', status: 'Completed', progress: 100, budget: '$18,500' },
-  { id: 'p4', title: 'Marketing Landing Pages', client: 'Innovate Inc.', status: 'Overdue', progress: 58, budget: '$8,500' },
-  { id: 'p5', title: 'Design System Tokens', client: 'Figma Pros', status: 'In Progress', progress: 41, budget: '$12,000' },
-  { id: 'p6', title: 'Realtime Chat Module', client: 'CommsHub', status: 'In Progress', progress: 73, budget: '$16,200' },
-];
-
 const STATUSES = ['All', 'In Progress', 'Review', 'Completed', 'Overdue'] as const;
 
 const Projects: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
+  const { data, loading, error } = useDashboardData();
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
@@ -42,18 +36,51 @@ const Projects: React.FC = () => {
   const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
   const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
 
+  // Transform API data to Project interface
+  const allProjects = useMemo<Project[]>(() => {
+    if (!data?.recentProjects) return [];
+    return data.recentProjects.map((p) => ({
+      id: String(p.id),
+      title: p.title,
+      client: p.client,
+      status: p.status,
+      progress: p.progress,
+      budget: p.budget || '$0',
+    }));
+  }, [data]);
+
   const projects = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const filtered = MOCK_PROJECTS.filter(p =>
+    const filtered = allProjects.filter(p =>
       (status === 'All' || p.status === status) &&
       (!q || p.title.toLowerCase().includes(q) || p.client.toLowerCase().includes(q))
     );
     return filtered;
-  }, [query, status]);
+  }, [query, status, allProjects]);
+
+  if (!resolvedTheme) return null;
+
+  if (loading) {
+    return (
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <div className={common.loadingState}>
+            <Loader2 className={common.spinner} size={32} />
+            <span>Loading projects...</span>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
+        {error && (
+          <div className={cn(common.errorBanner, themed.errorBanner)}>
+            {error}
+          </div>
+        )}
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
           <div>
             <h1 className={common.title}>Projects</h1>

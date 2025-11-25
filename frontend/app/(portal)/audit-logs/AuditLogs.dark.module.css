@@ -14,3 +14,14 @@
 
 .details { background: var(--surface-elev); border: 1px solid var(--border); }
 .kv { color: var(--text-primary); }
+
+/* Loading and Error States */
+.loadingState {
+  color: #6b9aff;
+}
+
+.errorBanner {
+  background: #2d1b1b;
+  border: 1px solid #5c2626;
+  color: #fca5a5;
+}
