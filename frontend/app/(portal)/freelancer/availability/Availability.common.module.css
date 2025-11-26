@@ -1,0 +1,367 @@
+/* @AI-HINT: Availability calendar common styles - layout, structure */
+
+.container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 1.125rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.subtitle {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Stats Row */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 12px;
+}
+
+.statIcon {
+  font-size: 2rem;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.statInfo strong {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.statInfo span {
+  font-size: 0.875rem;
+}
+
+/* Tab Content */
+.tabContent {
+  margin-top: 1.5rem;
+}
+
+/* Week Grid */
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  overflow-x: auto;
+}
+
+.dayColumn {
+  min-width: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dayHeader {
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.daySlots {
+  padding: 0.5rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.noSlots {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.slotItem {
+  padding: 0.5rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  position: relative;
+}
+
+.slotItem.available {
+  border-left: 3px solid #27ae60;
+}
+
+.slotTime {
+  font-weight: 600;
+}
+
+.recurringBadge {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  font-size: 0.625rem;
+}
+
+.slotActions {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.slotBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.125rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.slotBtn:hover {
+  opacity: 1;
+}
+
+/* Bookings Section */
+.bookingsSection {
+  max-width: 800px;
+}
+
+.emptyCard {
+  padding: 3rem;
+  text-align: center;
+  border-radius: 16px;
+}
+
+.emptyCard span {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.emptyCard h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.emptyCard p {
+  margin: 0;
+}
+
+.bookingsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bookingCard {
+  padding: 1.5rem;
+  border-radius: 16px;
+}
+
+.bookingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.bookingHeader h3 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.projectTitle {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.875rem;
+}
+
+.statusBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.bookingDetails {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detailItem span {
+  font-size: 1.25rem;
+}
+
+.bookingNotes {
+  font-size: 0.875rem;
+  margin: 0 0 1rem 0;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+.bookingActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Settings Section */
+.settingsSection {
+  max-width: 600px;
+}
+
+.settingsCard {
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+.settingsCard h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+}
+
+.settingGroup {
+  margin-bottom: 1.5rem;
+}
+
+.settingGroup label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  border: 1px solid;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkboxLabel input {
+  width: 18px;
+  height: 18px;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 90%;
+  max-width: 500px;
+  padding: 2rem;
+  border-radius: 16px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+}
+
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .weekGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bookingDetails {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

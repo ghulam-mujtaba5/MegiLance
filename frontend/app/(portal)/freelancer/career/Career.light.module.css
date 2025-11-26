@@ -1,0 +1,171 @@
+/* @AI-HINT: Career page light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Stats */
+.statCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.statInfo strong {
+  color: #4573df;
+}
+
+.statInfo span {
+  color: #64748b;
+}
+
+/* Skills */
+.skillCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.skillHeader h3 {
+  color: #0f172a;
+}
+
+.skillStats {
+  border-color: #e2e8f0;
+}
+
+.skillStats strong {
+  color: #4573df;
+}
+
+.skillStats span {
+  color: #64748b;
+}
+
+/* Recommendations */
+.recsCard {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f4f8 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.recsCard h3 {
+  color: #0f172a;
+}
+
+.recSection h4 {
+  color: #475569;
+}
+
+.recItem {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.recItem strong {
+  color: #0f172a;
+}
+
+.recReason {
+  color: #27ae60;
+}
+
+.recProvider {
+  color: #64748b;
+}
+
+/* Paths */
+.pathCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.pathName {
+  color: #0f172a;
+}
+
+.pathDesc {
+  color: #64748b;
+}
+
+.pathMetaItem {
+  color: #475569;
+}
+
+.pathOutlook {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.skillTag {
+  background: #f0f4ff;
+  color: #4573df;
+}
+
+/* Goals */
+.emptyCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.emptyCard h3 {
+  color: #0f172a;
+}
+
+.emptyCard p {
+  color: #64748b;
+}
+
+.goalCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.goalHeader h3 {
+  color: #0f172a;
+}
+
+.goalMeta {
+  color: #64748b;
+}
+
+/* Mentors */
+.mentorCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.mentorAvatar {
+  background: linear-gradient(135deg, #4573df 0%, #6366f1 100%);
+  color: #ffffff;
+}
+
+.mentorName {
+  color: #0f172a;
+}
+
+.mentorRating {
+  color: #f59e0b;
+}
+
+.mentorExpertise span {
+  background: #f0f4ff;
+  color: #4573df;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+}
+
+.mentorMeta {
+  color: #64748b;
+}
+
+.mentorRate {
+  color: #27ae60;
+}

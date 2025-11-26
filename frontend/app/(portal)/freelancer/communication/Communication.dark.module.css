@@ -1,0 +1,270 @@
+/* @AI-HINT: Communication center dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Search */
+.searchInput {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+/* Tabs */
+.tabs {
+  border-color: #334155;
+}
+
+.tab {
+  color: #94a3b8;
+}
+
+.tab:hover {
+  color: #f8fafc;
+}
+
+.tabActive {
+  color: #4573df;
+}
+
+.badge {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* Empty State */
+.emptyState {
+  color: #94a3b8;
+}
+
+/* Message List */
+.messageList {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.messageItem {
+  border-color: #334155;
+}
+
+.messageItem:hover {
+  background-color: #0f172a;
+}
+
+.unread {
+  background-color: rgba(69, 115, 223, 0.1);
+}
+
+.selected {
+  background-color: rgba(69, 115, 223, 0.15);
+}
+
+.avatar {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.senderName {
+  color: #f8fafc;
+}
+
+.messageDate {
+  color: #64748b;
+}
+
+.starBtn {
+  color: #fbbf24;
+}
+
+.messageSubject {
+  color: #f8fafc;
+}
+
+.messagePreview {
+  color: #94a3b8;
+}
+
+/* Message Detail */
+.messageDetail {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.detailHeader {
+  border-color: #334155;
+}
+
+.detailHeader h2 {
+  color: #f8fafc;
+}
+
+.detailMeta {
+  color: #94a3b8;
+}
+
+.detailContent {
+  color: #e2e8f0;
+}
+
+.detailActions {
+  border-color: #334155;
+}
+
+.noSelection {
+  color: #64748b;
+}
+
+/* Notifications */
+.notificationItem {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.notificationItem:hover {
+  background-color: #0f172a;
+}
+
+.notifSuccess .notifIcon {
+  background: rgba(22, 163, 74, 0.2);
+  color: #4ade80;
+}
+
+.notifInfo .notifIcon {
+  background: rgba(37, 99, 235, 0.2);
+  color: #60a5fa;
+}
+
+.notifWarning .notifIcon {
+  background: rgba(217, 119, 6, 0.2);
+  color: #fbbf24;
+}
+
+.notifError .notifIcon {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+}
+
+.notifTitle {
+  color: #f8fafc;
+}
+
+.notifMessage {
+  color: #94a3b8;
+}
+
+.notifDate {
+  color: #64748b;
+}
+
+/* Announcements */
+.announcementItem {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.priorityLow {
+  border-left-color: #64748b;
+}
+
+.priorityNormal {
+  border-left-color: #4573df;
+}
+
+.priorityHigh {
+  border-left-color: #f59e0b;
+}
+
+.priorityUrgent {
+  border-left-color: #ef4444;
+}
+
+.announcementTitle {
+  color: #f8fafc;
+}
+
+.announcementContent {
+  color: #cbd5e1;
+}
+
+.announcementMeta {
+  color: #64748b;
+}
+
+.badgeLow {
+  background: #334155;
+  color: #94a3b8;
+}
+
+.badgeNormal {
+  background: rgba(69, 115, 223, 0.2);
+  color: #60a5fa;
+}
+
+.badgeHigh {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.badgeUrgent {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* Modal */
+.modal {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.modalContent {
+  background: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  border-color: #334155;
+}
+
+.modalHeader h2 {
+  color: #f8fafc;
+}
+
+.closeBtn {
+  color: #94a3b8;
+}
+
+.closeBtn:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+
+.formGroup label {
+  color: #cbd5e1;
+}
+
+.input,
+.textarea {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #4573df;
+  outline: none;
+}

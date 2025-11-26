@@ -1,0 +1,180 @@
+/* @AI-HINT: Admin data export light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Tabs */
+.tabs {
+  border-color: #e2e8f0;
+}
+
+.tab {
+  color: #64748b;
+}
+
+.tab:hover {
+  color: #0f172a;
+}
+
+.tabActive {
+  color: #4573df;
+}
+
+.badge {
+  background: #4573df;
+  color: #ffffff;
+}
+
+/* Section */
+.section {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.sectionTitle {
+  color: #0f172a;
+}
+
+/* Templates */
+.templateCard {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.templateCard:hover {
+  border-color: #4573df;
+  background: #eff6ff;
+}
+
+.templateCard h4 {
+  color: #0f172a;
+}
+
+.templateCard p {
+  color: #64748b;
+}
+
+.defaultBadge {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* Form */
+.label {
+  color: #374151;
+}
+
+.input,
+.select {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.input:focus,
+.select:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.dateRange span {
+  color: #64748b;
+}
+
+/* Fields */
+.textBtn {
+  color: #4573df;
+}
+
+.textBtn:hover {
+  text-decoration: underline;
+}
+
+.fieldOption {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.fieldOption:hover {
+  border-color: #cbd5e1;
+}
+
+.fieldSelected {
+  background: #eff6ff;
+  border-color: #4573df;
+  color: #1e40af;
+}
+
+/* Checkbox */
+.checkbox {
+  color: #475569;
+}
+
+/* History */
+.historyView {
+  background: transparent;
+}
+
+.emptyState {
+  color: #64748b;
+}
+
+.jobCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.jobName {
+  color: #0f172a;
+}
+
+.statusPending {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.statusProcessing {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.statusCompleted {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.statusFailed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.jobMeta {
+  color: #64748b;
+}
+
+.jobDates {
+  color: #94a3b8;
+}
+
+.progressBar {
+  background: #e2e8f0;
+}
+
+.progressFill {
+  background: #4573df;
+}
+
+.progressText {
+  color: #64748b;
+}

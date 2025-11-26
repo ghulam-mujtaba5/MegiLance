@@ -275,6 +275,34 @@ def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> dict:
         raise credentials_exception
 
 
+def get_current_user_optional(token: str = Depends(oauth2_scheme)) -> Optional[dict]:
+    """
+    Get current user if authenticated, return None if not.
+    Use this for endpoints that work for both authenticated and anonymous users.
+    """
+    if not token:
+        return None
+    
+    try:
+        payload = decode_token(token)
+        if payload.get("type") != "access":
+            return None
+        email: Optional[str] = payload.get("sub")
+        user_id = payload.get("user_id")
+        role = payload.get("role")
+        if not email:
+            return None
+        
+        return {
+            "id": user_id,
+            "email": email,
+            "role": role,
+            "user_id": user_id
+        }
+    except JWTError:
+        return None
+
+
 def get_current_user_from_header(authorization: str = None) -> dict:
     """
     Get current user from Authorization header
@@ -315,3 +343,5 @@ def get_current_user_from_header(authorization: str = None) -> dict:
         }
     except JWTError:
         raise credentials_exception
+
+

@@ -1,0 +1,472 @@
+// @AI-HINT: Custom branding page for admin to configure white-label settings
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import { brandingApi } from '@/lib/api';
+import Button from '@/app/components/Button/Button';
+import Tabs from '@/app/components/Tabs/Tabs';
+import commonStyles from './Branding.common.module.css';
+import lightStyles from './Branding.light.module.css';
+import darkStyles from './Branding.dark.module.css';
+
+interface BrandingSettings {
+  company_name: string;
+  tagline: string;
+  logo_url: string;
+  logo_dark_url: string;
+  favicon_url: string;
+  primary_color: string;
+  secondary_color: string;
+  accent_color: string;
+  font_family: string;
+  custom_css: string;
+  footer_text: string;
+  support_email: string;
+  terms_url: string;
+  privacy_url: string;
+  social_links: {
+    twitter?: string;
+    linkedin?: string;
+    facebook?: string;
+    instagram?: string;
+  };
+}
+
+const DEFAULT_SETTINGS: BrandingSettings = {
+  company_name: 'MegiLance',
+  tagline: 'AI-Powered Freelancing Platform',
+  logo_url: '',
+  logo_dark_url: '',
+  favicon_url: '',
+  primary_color: '#4573df',
+  secondary_color: '#27ae60',
+  accent_color: '#ff9800',
+  font_family: 'Inter',
+  custom_css: '',
+  footer_text: '© 2025 MegiLance. All rights reserved.',
+  support_email: 'support@megilance.com',
+  terms_url: '/terms',
+  privacy_url: '/privacy',
+  social_links: {}
+};
+
+const FONT_OPTIONS = [
+  'Inter',
+  'Poppins',
+  'Roboto',
+  'Open Sans',
+  'Montserrat',
+  'Lato',
+  'Source Sans Pro'
+];
+
+export default function BrandingPage() {
+  const { resolvedTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState('general');
+  const [settings, setSettings] = useState<BrandingSettings>(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true);
+      const data = await brandingApi.getSettings();
+      if (data) {
+        setSettings({ ...DEFAULT_SETTINGS, ...data });
+      }
+    } catch (err) {
+      console.error('Failed to load branding settings:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      await brandingApi.updateSettings(settings);
+      setHasChanges(false);
+      alert('Branding settings saved!');
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+      alert('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleReset = () => {
+    if (!confirm('Reset all branding settings to defaults?')) return;
+    setSettings(DEFAULT_SETTINGS);
+    setHasChanges(true);
+  };
+
+  const updateField = (field: keyof BrandingSettings, value: any) => {
+    setSettings(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  const updateSocialLink = (platform: string, url: string) => {
+    setSettings(prev => ({
+      ...prev,
+      social_links: { ...prev.social_links, [platform]: url }
+    }));
+    setHasChanges(true);
+  };
+
+  if (!resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
+
+  const tabs = [
+    { id: 'general', label: '📝 General' },
+    { id: 'colors', label: '🎨 Colors' },
+    { id: 'logos', label: '🖼️ Logos' },
+    { id: 'typography', label: '🔤 Typography' },
+    { id: 'links', label: '🔗 Links & Social' },
+    { id: 'advanced', label: '⚙️ Advanced' }
+  ];
+
+  if (loading) {
+    return (
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <div className={commonStyles.loading}>Loading branding settings...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn(commonStyles.container, themeStyles.container)}>
+      <header className={commonStyles.header}>
+        <div>
+          <h1 className={cn(commonStyles.title, themeStyles.title)}>Custom Branding</h1>
+          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+            Customize the platform appearance and branding
+          </p>
+        </div>
+        <div className={commonStyles.headerActions}>
+          <Button variant="secondary" onClick={handleReset}>
+            Reset Defaults
+          </Button>
+          <Button variant="primary" onClick={handleSave} disabled={!hasChanges || saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
+      </header>
+
+      {/* Preview Card */}
+      <div className={cn(commonStyles.previewCard, themeStyles.previewCard)}>
+        <div className={commonStyles.previewHeader}>
+          <h3>Live Preview</h3>
+        </div>
+        <div
+          className={commonStyles.previewContent}
+          style={{
+            '--preview-primary': settings.primary_color,
+            '--preview-secondary': settings.secondary_color,
+            '--preview-accent': settings.accent_color,
+            '--preview-font': settings.font_family
+          } as React.CSSProperties}
+        >
+          <div className={commonStyles.mockHeader}>
+            {settings.logo_url ? (
+              <img src={settings.logo_url} alt="Logo" className={commonStyles.mockLogo} />
+            ) : (
+              <span className={commonStyles.mockLogoText}>{settings.company_name}</span>
+            )}
+            <div className={commonStyles.mockNav}>
+              <span>Find Work</span>
+              <span>Find Talent</span>
+              <button style={{ backgroundColor: settings.primary_color }}>Sign Up</button>
+            </div>
+          </div>
+          <div className={commonStyles.mockHero}>
+            <h2 style={{ fontFamily: settings.font_family }}>{settings.company_name}</h2>
+            <p>{settings.tagline}</p>
+            <button style={{ backgroundColor: settings.primary_color }}>Get Started</button>
+          </div>
+        </div>
+      </div>
+
+      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <div className={commonStyles.tabContent}>
+        {activeTab === 'general' && (
+          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+            <div className={commonStyles.formGroup}>
+              <label>Company Name</label>
+              <input
+                type="text"
+                value={settings.company_name}
+                onChange={e => updateField('company_name', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+              />
+            </div>
+            <div className={commonStyles.formGroup}>
+              <label>Tagline</label>
+              <input
+                type="text"
+                value={settings.tagline}
+                onChange={e => updateField('tagline', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+              />
+            </div>
+            <div className={commonStyles.formGroup}>
+              <label>Support Email</label>
+              <input
+                type="email"
+                value={settings.support_email}
+                onChange={e => updateField('support_email', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+              />
+            </div>
+            <div className={commonStyles.formGroup}>
+              <label>Footer Text</label>
+              <input
+                type="text"
+                value={settings.footer_text}
+                onChange={e => updateField('footer_text', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'colors' && (
+          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+            <div className={commonStyles.colorGrid}>
+              <div className={commonStyles.colorGroup}>
+                <label>Primary Color</label>
+                <div className={commonStyles.colorInput}>
+                  <input
+                    type="color"
+                    value={settings.primary_color}
+                    onChange={e => updateField('primary_color', e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    value={settings.primary_color}
+                    onChange={e => updateField('primary_color', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <span className={commonStyles.colorHint}>Buttons, links, active states</span>
+              </div>
+              <div className={commonStyles.colorGroup}>
+                <label>Secondary Color</label>
+                <div className={commonStyles.colorInput}>
+                  <input
+                    type="color"
+                    value={settings.secondary_color}
+                    onChange={e => updateField('secondary_color', e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    value={settings.secondary_color}
+                    onChange={e => updateField('secondary_color', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <span className={commonStyles.colorHint}>Success states, positive actions</span>
+              </div>
+              <div className={commonStyles.colorGroup}>
+                <label>Accent Color</label>
+                <div className={commonStyles.colorInput}>
+                  <input
+                    type="color"
+                    value={settings.accent_color}
+                    onChange={e => updateField('accent_color', e.target.value)}
+                  />
+                  <input
+                    type="text"
+                    value={settings.accent_color}
+                    onChange={e => updateField('accent_color', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <span className={commonStyles.colorHint}>Highlights, notifications</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'logos' && (
+          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+            <div className={commonStyles.formGroup}>
+              <label>Logo (Light Mode)</label>
+              <input
+                type="url"
+                value={settings.logo_url}
+                onChange={e => updateField('logo_url', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+                placeholder="https://... (image URL)"
+              />
+              {settings.logo_url && (
+                <div className={commonStyles.logoPreview}>
+                  <img src={settings.logo_url} alt="Logo preview" />
+                </div>
+              )}
+            </div>
+            <div className={commonStyles.formGroup}>
+              <label>Logo (Dark Mode)</label>
+              <input
+                type="url"
+                value={settings.logo_dark_url}
+                onChange={e => updateField('logo_dark_url', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+                placeholder="https://... (image URL)"
+              />
+              {settings.logo_dark_url && (
+                <div className={cn(commonStyles.logoPreview, commonStyles.darkPreview)}>
+                  <img src={settings.logo_dark_url} alt="Dark logo preview" />
+                </div>
+              )}
+            </div>
+            <div className={commonStyles.formGroup}>
+              <label>Favicon</label>
+              <input
+                type="url"
+                value={settings.favicon_url}
+                onChange={e => updateField('favicon_url', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+                placeholder="https://... (32x32 icon URL)"
+              />
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'typography' && (
+          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+            <div className={commonStyles.formGroup}>
+              <label>Font Family</label>
+              <select
+                value={settings.font_family}
+                onChange={e => updateField('font_family', e.target.value)}
+                className={cn(commonStyles.input, themeStyles.input)}
+              >
+                {FONT_OPTIONS.map(font => (
+                  <option key={font} value={font}>{font}</option>
+                ))}
+              </select>
+            </div>
+            <div className={cn(commonStyles.fontPreview, themeStyles.fontPreview)}>
+              <h3 style={{ fontFamily: settings.font_family }}>
+                The quick brown fox jumps over the lazy dog
+              </h3>
+              <p style={{ fontFamily: settings.font_family }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'links' && (
+          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+            <h3>Legal Pages</h3>
+            <div className={commonStyles.formRow}>
+              <div className={commonStyles.formGroup}>
+                <label>Terms of Service URL</label>
+                <input
+                  type="text"
+                  value={settings.terms_url}
+                  onChange={e => updateField('terms_url', e.target.value)}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                />
+              </div>
+              <div className={commonStyles.formGroup}>
+                <label>Privacy Policy URL</label>
+                <input
+                  type="text"
+                  value={settings.privacy_url}
+                  onChange={e => updateField('privacy_url', e.target.value)}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                />
+              </div>
+            </div>
+
+            <h3>Social Links</h3>
+            <div className={commonStyles.formRow}>
+              <div className={commonStyles.formGroup}>
+                <label>🐦 Twitter</label>
+                <input
+                  type="url"
+                  value={settings.social_links.twitter || ''}
+                  onChange={e => updateSocialLink('twitter', e.target.value)}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="https://twitter.com/..."
+                />
+              </div>
+              <div className={commonStyles.formGroup}>
+                <label>💼 LinkedIn</label>
+                <input
+                  type="url"
+                  value={settings.social_links.linkedin || ''}
+                  onChange={e => updateSocialLink('linkedin', e.target.value)}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="https://linkedin.com/company/..."
+                />
+              </div>
+            </div>
+            <div className={commonStyles.formRow}>
+              <div className={commonStyles.formGroup}>
+                <label>📘 Facebook</label>
+                <input
+                  type="url"
+                  value={settings.social_links.facebook || ''}
+                  onChange={e => updateSocialLink('facebook', e.target.value)}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="https://facebook.com/..."
+                />
+              </div>
+              <div className={commonStyles.formGroup}>
+                <label>📷 Instagram</label>
+                <input
+                  type="url"
+                  value={settings.social_links.instagram || ''}
+                  onChange={e => updateSocialLink('instagram', e.target.value)}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="https://instagram.com/..."
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'advanced' && (
+          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+            <div className={commonStyles.formGroup}>
+              <label>Custom CSS</label>
+              <p className={commonStyles.hint}>
+                Add custom CSS to override default styles. Use with caution.
+              </p>
+              <textarea
+                value={settings.custom_css}
+                onChange={e => updateField('custom_css', e.target.value)}
+                className={cn(commonStyles.textarea, themeStyles.input)}
+                rows={12}
+                placeholder="/* Custom CSS rules */"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Unsaved Banner */}
+      {hasChanges && (
+        <div className={cn(commonStyles.unsavedBanner, themeStyles.unsavedBanner)}>
+          <span>⚠️ You have unsaved changes</span>
+          <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving...' : 'Save Now'}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}

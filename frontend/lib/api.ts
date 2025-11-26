@@ -1105,6 +1105,832 @@ export const analyticsApi = {
     apiFetch('/analytics/users/location-distribution'),
 };
 
+// ===========================
+// GAMIFICATION
+// ===========================
+export const gamificationApi = {
+  getProfile: () => apiFetch('/gamification/profile'),
+  getUserProfile: (userId: number) => apiFetch(`/gamification/profile/${userId}`),
+  getBadges: () => apiFetch('/gamification/badges'),
+  getBadgeInfo: (badgeType: string) => apiFetch(`/gamification/badges/${badgeType}`),
+  getLeaderboard: (category = 'all', period = 'all_time', limit = 50) =>
+    apiFetch(`/gamification/leaderboard?category=${category}&period=${period}&limit=${limit}`),
+  getMyRank: () => apiFetch('/gamification/rank'),
+  getStreak: () => apiFetch('/gamification/streak'),
+  checkIn: () => apiFetch('/gamification/streak/check-in', { method: 'POST' }),
+  getLevels: () => apiFetch('/gamification/levels'),
+  getActivityLog: (limit = 20) => apiFetch(`/gamification/activity?limit=${limit}`),
+  adminAwardPoints: (userId: number, points: number, reason: string) =>
+    apiFetch('/gamification/admin/award-points', {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId, points, reason }),
+    }),
+  adminAwardBadge: (userId: number, badgeType: string, reason?: string) =>
+    apiFetch('/gamification/admin/award-badge', {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId, badge_type: badgeType, reason }),
+    }),
+};
+
+// ===========================
+// REFERRAL PROGRAM
+// ===========================
+export const referralApi = {
+  getMyCode: () => apiFetch('/referral-program/my-code'),
+  generateCode: () => apiFetch('/referral-program/generate-code', { method: 'POST' }),
+  validateCode: (code: string) => apiFetch(`/referral-program/validate/${code}`),
+  applyCode: (code: string) => apiFetch(`/referral-program/apply/${code}`, { method: 'POST' }),
+  getMyReferrals: (status?: string, skip = 0, limit = 50) => {
+    const params = new URLSearchParams({ skip: skip.toString(), limit: limit.toString() });
+    if (status) params.append('status', status);
+    return apiFetch(`/referral-program/my-referrals?${params}`);
+  },
+  getStats: () => apiFetch('/referral-program/stats'),
+  getRewards: (status?: string) => {
+    const params = status ? `?status=${status}` : '';
+    return apiFetch(`/referral-program/rewards${params}`);
+  },
+  withdrawRewards: (amount: number) =>
+    apiFetch(`/referral-program/withdraw-rewards?amount=${amount}`, { method: 'POST' }),
+  getLeaderboard: (period = 'monthly', limit = 10) =>
+    apiFetch(`/referral-program/leaderboard?period=${period}&limit=${limit}`),
+  getCampaigns: () => apiFetch('/referral-program/campaigns'),
+  sendInvite: (email: string, message?: string) =>
+    apiFetch('/referral-program/invite/email', {
+      method: 'POST',
+      body: JSON.stringify({ email, message }),
+    }),
+  sendBulkInvites: (emails: string[]) =>
+    apiFetch('/referral-program/invite/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ emails }),
+    }),
+  getShareLinks: () => apiFetch('/referral-program/share-links'),
+  getMilestones: () => apiFetch('/referral-program/milestones'),
+};
+
+// ===========================
+// CAREER DEVELOPMENT
+// ===========================
+export const careerApi = {
+  getPaths: (category?: string) => {
+    const params = category ? `?category=${category}` : '';
+    return apiFetch(`/career/paths${params}`);
+  },
+  getPath: (pathId: string) => apiFetch(`/career/paths/${pathId}`),
+  getMyProgress: () => apiFetch('/career/my-progress'),
+  createGoal: (data: { title: string; target_skill: string; target_level: string; deadline?: string }) =>
+    apiFetch('/career/goals', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getGoals: (status?: string) => {
+    const params = status ? `?status=${status}` : '';
+    return apiFetch(`/career/goals${params}`);
+  },
+  updateGoal: (goalId: string, data: { progress?: number; status?: string }) =>
+    apiFetch(`/career/goals/${goalId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deleteGoal: (goalId: string) => apiFetch(`/career/goals/${goalId}`, { method: 'DELETE' }),
+  findMentors: (skill?: string, minExperience = 0) => {
+    const params = new URLSearchParams({ min_experience: minExperience.toString() });
+    if (skill) params.append('skill', skill);
+    return apiFetch(`/career/mentors?${params}`);
+  },
+  requestMentorship: (mentorId: string, message: string, goals: string[]) =>
+    apiFetch('/career/mentorship/request', {
+      method: 'POST',
+      body: JSON.stringify({ mentor_id: mentorId, message, goals }),
+    }),
+  getMentorshipRequests: () => apiFetch('/career/mentorship/requests'),
+  respondToMentorship: (requestId: string, action: 'accept' | 'reject') =>
+    apiFetch(`/career/mentorship/requests/${requestId}?action=${action}`, { method: 'PUT' }),
+  getRecommendations: () => apiFetch('/career/recommendations'),
+  analyzeSkillGaps: (targetRole: string) =>
+    apiFetch(`/career/skill-gap-analysis?target_role=${encodeURIComponent(targetRole)}`),
+  startAssessment: (skill: string) =>
+    apiFetch('/career/skill-assessment', {
+      method: 'POST',
+      body: JSON.stringify({ skill }),
+    }),
+  getCertifications: () => apiFetch('/career/certifications'),
+};
+
+// ===========================
+// AVAILABILITY CALENDAR
+// ===========================
+export const availabilityApi = {
+  getSchedule: (startDate: string, endDate: string) =>
+    apiFetch(`/availability/schedule?start_date=${startDate}&end_date=${endDate}`),
+  getWeeklyPattern: () => apiFetch('/availability/weekly-pattern'),
+  updateWeeklyPattern: (pattern: any[]) =>
+    apiFetch('/availability/weekly-pattern', {
+      method: 'PUT',
+      body: JSON.stringify(pattern),
+    }),
+  createBlock: (data: {
+    start_datetime: string;
+    end_datetime: string;
+    status: string;
+    title?: string;
+    is_recurring?: boolean;
+  }) =>
+    apiFetch('/availability/blocks', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getBlocks: (startDate?: string, endDate?: string) => {
+    const params = new URLSearchParams();
+    if (startDate) params.append('start_date', startDate);
+    if (endDate) params.append('end_date', endDate);
+    return apiFetch(`/availability/blocks?${params}`);
+  },
+  updateBlock: (blockId: string, data: any) =>
+    apiFetch(`/availability/blocks/${blockId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deleteBlock: (blockId: string) => apiFetch(`/availability/blocks/${blockId}`, { method: 'DELETE' }),
+  getUserAvailableSlots: (userId: string, date: string, durationMinutes = 60) =>
+    apiFetch(`/availability/user/${userId}/available-slots?date=${date}&duration_minutes=${durationMinutes}`),
+  createBooking: (data: {
+    freelancer_id: string;
+    start_datetime: string;
+    end_datetime: string;
+    title: string;
+  }) =>
+    apiFetch('/availability/bookings', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getBookings: (status?: string, startDate?: string, endDate?: string) => {
+    const params = new URLSearchParams();
+    if (status) params.append('status', status);
+    if (startDate) params.append('start_date', startDate);
+    if (endDate) params.append('end_date', endDate);
+    return apiFetch(`/availability/bookings?${params}`);
+  },
+  updateBooking: (bookingId: string, data: any) =>
+    apiFetch(`/availability/bookings/${bookingId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  cancelBooking: (bookingId: string) =>
+    apiFetch(`/availability/bookings/${bookingId}`, { method: 'DELETE' }),
+  getSettings: () => apiFetch('/availability/settings'),
+  updateSettings: (settings: any) =>
+    apiFetch('/availability/settings', {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    }),
+  getSyncStatus: () => apiFetch('/availability/sync-status'),
+  syncCalendar: (provider: 'google' | 'outlook' | 'apple') =>
+    apiFetch(`/availability/sync/${provider}`, { method: 'POST' }),
+};
+
+// ===========================
+// RATE CARDS
+// ===========================
+export const rateCardsApi = {
+  getMyCards: () => apiFetch('/rate-cards/my-cards'),
+  create: (data: {
+    name: string;
+    rate_type: string;
+    base_rate: number;
+    currency?: string;
+    description?: string;
+  }) =>
+    apiFetch('/rate-cards/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  get: (rateCardId: string) => apiFetch(`/rate-cards/${rateCardId}`),
+  update: (rateCardId: string, data: any) =>
+    apiFetch(`/rate-cards/${rateCardId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (rateCardId: string) => apiFetch(`/rate-cards/${rateCardId}`, { method: 'DELETE' }),
+  getPackages: (rateCardId: string) => apiFetch(`/rate-cards/${rateCardId}/packages`),
+  createPackage: (rateCardId: string, data: {
+    name: string;
+    description: string;
+    price: number;
+    deliverables: string[];
+    estimated_duration: string;
+    revisions?: number;
+  }) =>
+    apiFetch(`/rate-cards/${rateCardId}/packages`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updatePackage: (packageId: string, data: any) =>
+    apiFetch(`/rate-cards/packages/${packageId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  deletePackage: (packageId: string) =>
+    apiFetch(`/rate-cards/packages/${packageId}`, { method: 'DELETE' }),
+  getModifiers: (rateCardId: string) => apiFetch(`/rate-cards/${rateCardId}/modifiers`),
+  createModifier: (rateCardId: string, data: any) =>
+    apiFetch(`/rate-cards/${rateCardId}/modifiers`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getUserRateCards: (userId: string) => apiFetch(`/rate-cards/user/${userId}`),
+  calculate: (data: { rate_card_id: string; hours?: number; package_id?: string; modifiers?: string[] }) =>
+    apiFetch('/rate-cards/calculate', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
+// ===========================
+// PROPOSAL TEMPLATES
+// ===========================
+export const proposalTemplatesApi = {
+  getMyTemplates: (tag?: string, skip = 0, limit = 20) => {
+    const params = new URLSearchParams({ skip: skip.toString(), limit: limit.toString() });
+    if (tag) params.append('tag', tag);
+    return apiFetch(`/proposal-templates/?${params}`);
+  },
+  create: (data: {
+    name: string;
+    cover_letter: string;
+    description?: string;
+    milestones_template?: any[];
+    default_rate?: number;
+    tags?: string[];
+  }) =>
+    apiFetch('/proposal-templates/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  get: (templateId: string) => apiFetch(`/proposal-templates/${templateId}`),
+  update: (templateId: string, data: any) =>
+    apiFetch(`/proposal-templates/${templateId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (templateId: string) => apiFetch(`/proposal-templates/${templateId}`, { method: 'DELETE' }),
+  duplicate: (templateId: string, newName?: string) =>
+    apiFetch(`/proposal-templates/${templateId}/duplicate`, {
+      method: 'POST',
+      body: JSON.stringify({ new_name: newName }),
+    }),
+  browsePublic: (category?: string, search?: string, skip = 0, limit = 20) => {
+    const params = new URLSearchParams({ skip: skip.toString(), limit: limit.toString() });
+    if (category) params.append('category', category);
+    if (search) params.append('search', search);
+    return apiFetch(`/proposal-templates/public/browse?${params}`);
+  },
+  usePublicTemplate: (templateId: string) =>
+    apiFetch(`/proposal-templates/public/${templateId}/use`, { method: 'POST' }),
+  getVariables: () => apiFetch('/proposal-templates/variables'),
+  preview: (templateId: string, variables: Record<string, string>) =>
+    apiFetch(`/proposal-templates/${templateId}/preview`, {
+      method: 'POST',
+      body: JSON.stringify(variables),
+    }),
+  getAnalytics: () => apiFetch('/proposal-templates/analytics'),
+  generate: (templateId: string, projectId: string, variables?: Record<string, string>) =>
+    apiFetch(`/proposal-templates/${templateId}/generate`, {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId, variables }),
+    }),
+};
+
+// ===========================
+// AUDIT TRAIL
+// ===========================
+export const auditTrailApi = {
+  getEvents: (filters?: {
+    event_type?: string;
+    actor_id?: string;
+    resource_type?: string;
+    start_date?: string;
+    end_date?: string;
+    skip?: number;
+    limit?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/audit-trail/events?${params}`);
+  },
+  getEvent: (eventId: string) => apiFetch(`/audit-trail/events/${eventId}`),
+  createEvent: (data: {
+    event_type: string;
+    resource_type: string;
+    resource_id: string;
+    action: string;
+    details?: any;
+  }) =>
+    apiFetch('/audit-trail/events', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getSummary: (days = 30) => apiFetch(`/audit-trail/summary?days=${days}`),
+  getUserActivity: (userId: string, skip = 0, limit = 50) =>
+    apiFetch(`/audit-trail/user/${userId}/activity?skip=${skip}&limit=${limit}`),
+  getResourceHistory: (resourceType: string, resourceId: string) =>
+    apiFetch(`/audit-trail/resource/${resourceType}/${resourceId}/history`),
+  exportLogs: (filters: any, format = 'csv') =>
+    apiFetch('/audit-trail/export', {
+      method: 'POST',
+      body: JSON.stringify({ filter: filters, format }),
+    }),
+  getExportStatus: (exportId: string) => apiFetch(`/audit-trail/export/${exportId}/status`),
+  getComplianceReport: (startDate: string, endDate: string) =>
+    apiFetch(`/audit-trail/compliance/report?start_date=${startDate}&end_date=${endDate}`),
+  getRetentionPolicy: () => apiFetch('/audit-trail/retention/policy'),
+  updateRetentionPolicy: (retentionDays: number) =>
+    apiFetch(`/audit-trail/retention/policy?retention_days=${retentionDays}`, { method: 'PUT' }),
+};
+
+// ===========================
+// CUSTOM BRANDING
+// ===========================
+export const brandingApi = {
+  getConfig: (organizationId: string) => apiFetch(`/branding/config/${organizationId}`),
+  createConfig: (config: {
+    organization_id: string;
+    primary_color?: string;
+    secondary_color?: string;
+    accent_color?: string;
+  }) =>
+    apiFetch('/branding/config', {
+      method: 'POST',
+      body: JSON.stringify(config),
+    }),
+  updateConfig: (organizationId: string, update: {
+    primary_color?: string;
+    secondary_color?: string;
+    accent_color?: string;
+    logo_url?: string;
+    custom_css?: string;
+  }) =>
+    apiFetch(`/branding/config/${organizationId}`, {
+      method: 'PUT',
+      body: JSON.stringify(update),
+    }),
+  uploadLogo: (organizationId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiFetch(`/branding/config/${organizationId}/logo`, {
+      method: 'POST',
+      body: formData,
+    });
+  },
+  uploadFavicon: (organizationId: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiFetch(`/branding/config/${organizationId}/favicon`, {
+      method: 'POST',
+      body: formData,
+    });
+  },
+  getPresets: () => apiFetch('/branding/presets'),
+  applyPreset: (organizationId: string, presetId: string) =>
+    apiFetch(`/branding/config/${organizationId}/apply-preset?preset_id=${presetId}`, { method: 'POST' }),
+  previewBranding: (organizationId: string) => apiFetch(`/branding/config/${organizationId}/preview`),
+  setupCustomDomain: (organizationId: string, domain: string) =>
+    apiFetch(`/branding/config/${organizationId}/custom-domain?domain=${encodeURIComponent(domain)}`, { method: 'POST' }),
+  checkDomainStatus: (organizationId: string) => apiFetch(`/branding/config/${organizationId}/domain-status`),
+  deleteConfig: (organizationId: string) => apiFetch(`/branding/config/${organizationId}`, { method: 'DELETE' }),
+};
+
+// ===========================
+// COMMUNICATION CENTER
+// ===========================
+export const communicationApi = {
+  sendSMS: (phoneNumber: string, message: string) =>
+    apiFetch('/communication/sms/send', {
+      method: 'POST',
+      body: JSON.stringify({ phone_number: phoneNumber, message }),
+    }),
+  sendEmail: (to: string, subject: string, body: string, template?: string) =>
+    apiFetch('/communication/email/send', {
+      method: 'POST',
+      body: JSON.stringify({ to, subject, body, template }),
+    }),
+  sendPush: (userId: string, title: string, body: string, data?: any) =>
+    apiFetch('/communication/push/send', {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId, title, body, data }),
+    }),
+  getHistory: (channel?: string, skip = 0, limit = 50) => {
+    const params = new URLSearchParams({ skip: skip.toString(), limit: limit.toString() });
+    if (channel) params.append('channel', channel);
+    return apiFetch(`/communication/history?${params}`);
+  },
+  getPreferences: () => apiFetch('/communication/preferences'),
+  updatePreferences: (preferences: any) =>
+    apiFetch('/communication/preferences', {
+      method: 'PUT',
+      body: JSON.stringify(preferences),
+    }),
+};
+
+// ===========================
+// METRICS DASHBOARD
+// ===========================
+export const metricsApi = {
+  getRealtime: () => apiFetch('/metrics/realtime'),
+  getOverview: (period = '30d') => apiFetch(`/metrics/overview?period=${period}`),
+  getRevenue: (startDate: string, endDate: string, interval = 'day') =>
+    apiFetch(`/metrics/revenue?start_date=${startDate}&end_date=${endDate}&interval=${interval}`),
+  getUsers: (period = '30d') => apiFetch(`/metrics/users?period=${period}`),
+  getProjects: (period = '30d') => apiFetch(`/metrics/projects?period=${period}`),
+  getConversions: (period = '30d') => apiFetch(`/metrics/conversions?period=${period}`),
+  getCustom: (metricId: string, filters?: any) => {
+    const params = filters ? `?${new URLSearchParams(filters)}` : '';
+    return apiFetch(`/metrics/custom/${metricId}${params}`);
+  },
+};
+
+// ===========================
+// SEARCH ANALYTICS
+// ===========================
+export const searchAnalyticsApi = {
+  getOverview: (period = '30d') => apiFetch(`/search-analytics/overview?period=${period}`),
+  getTopQueries: (limit = 20) => apiFetch(`/search-analytics/top-queries?limit=${limit}`),
+  getZeroResults: (limit = 20) => apiFetch(`/search-analytics/zero-results?limit=${limit}`),
+  getClickThrough: (period = '30d') => apiFetch(`/search-analytics/click-through?period=${period}`),
+  getTrends: (query: string, period = '30d') =>
+    apiFetch(`/search-analytics/trends?query=${encodeURIComponent(query)}&period=${period}`),
+};
+
+// ===========================
+// PLATFORM COMPLIANCE
+// ===========================
+export const complianceApi = {
+  getStatus: () => apiFetch('/compliance/status'),
+  getGDPRStatus: () => apiFetch('/compliance/gdpr'),
+  requestDataExport: () => apiFetch('/compliance/gdpr/export', { method: 'POST' }),
+  requestDataDeletion: (reason: string) =>
+    apiFetch('/compliance/gdpr/delete', {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    }),
+  getConsents: () => apiFetch('/compliance/consents'),
+  updateConsent: (consentType: string, granted: boolean) =>
+    apiFetch(`/compliance/consents/${consentType}`, {
+      method: 'PUT',
+      body: JSON.stringify({ granted }),
+    }),
+  getAuditReport: (reportType: string) => apiFetch(`/compliance/reports/${reportType}`),
+};
+
+// ===========================
+// ADVANCED GAMIFICATION
+// ===========================
+export const advancedGamificationApi = {
+  getAchievements: () => apiFetch('/advanced-gamification/achievements'),
+  getAchievementProgress: (achievementId: string) =>
+    apiFetch(`/advanced-gamification/achievements/${achievementId}/progress`),
+  getChallenges: (status?: string) => {
+    const params = status ? `?status=${status}` : '';
+    return apiFetch(`/advanced-gamification/challenges${params}`);
+  },
+  joinChallenge: (challengeId: string) =>
+    apiFetch(`/advanced-gamification/challenges/${challengeId}/join`, { method: 'POST' }),
+  getSeasons: () => apiFetch('/advanced-gamification/seasons'),
+  getSeasonProgress: (seasonId: string) => apiFetch(`/advanced-gamification/seasons/${seasonId}/progress`),
+  getRewards: () => apiFetch('/advanced-gamification/rewards'),
+  claimReward: (rewardId: string) =>
+    apiFetch(`/advanced-gamification/rewards/${rewardId}/claim`, { method: 'POST' }),
+};
+
+// ===========================
+// TWO-FACTOR AUTH
+// ===========================
+export const twoFactorApi = {
+  getStatus: () => apiFetch('/2fa/status'),
+  enable: () => apiFetch('/2fa/enable', { method: 'POST' }),
+  verify: (code: string) =>
+    apiFetch('/2fa/verify', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    }),
+  disable: () => apiFetch('/2fa/disable', { method: 'POST' }),
+  getBackupCodes: () => apiFetch('/2fa/backup-codes'),
+  regenerateBackupCodes: () => apiFetch('/2fa/backup-codes/regenerate', { method: 'POST' }),
+  verifyBackupCode: (code: string) =>
+    apiFetch('/2fa/verify-backup', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    }),
+};
+
+// ===========================
+// WEBHOOKS
+// ===========================
+export const webhooksApi = {
+  list: () => apiFetch('/webhooks/'),
+  create: (data: { url: string; events: string[]; secret?: string }) =>
+    apiFetch('/webhooks/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  get: (webhookId: string) => apiFetch(`/webhooks/${webhookId}`),
+  update: (webhookId: string, data: any) =>
+    apiFetch(`/webhooks/${webhookId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (webhookId: string) => apiFetch(`/webhooks/${webhookId}`, { method: 'DELETE' }),
+  test: (webhookId: string) => apiFetch(`/webhooks/${webhookId}/test`, { method: 'POST' }),
+  getLogs: (webhookId: string) => apiFetch(`/webhooks/${webhookId}/logs`),
+  getEvents: () => apiFetch('/webhooks/events'),
+};
+
+// ===========================
+// API KEYS
+// ===========================
+export const apiKeysApi = {
+  list: () => apiFetch('/api-keys/'),
+  create: (data: { name: string; scopes: string[]; expires_at?: string }) =>
+    apiFetch('/api-keys/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  get: (keyId: string) => apiFetch(`/api-keys/${keyId}`),
+  revoke: (keyId: string) => apiFetch(`/api-keys/${keyId}`, { method: 'DELETE' }),
+  getUsage: (keyId: string) => apiFetch(`/api-keys/${keyId}/usage`),
+};
+
+// ===========================
+// TEAMS
+// ===========================
+export const teamsApi = {
+  list: () => apiFetch('/teams/'),
+  create: (data: { name: string; description?: string }) =>
+    apiFetch('/teams/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  get: (teamId: string) => apiFetch(`/teams/${teamId}`),
+  update: (teamId: string, data: any) =>
+    apiFetch(`/teams/${teamId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (teamId: string) => apiFetch(`/teams/${teamId}`, { method: 'DELETE' }),
+  getMembers: (teamId: string) => apiFetch(`/teams/${teamId}/members`),
+  addMember: (teamId: string, userId: string, role = 'member') =>
+    apiFetch(`/teams/${teamId}/members`, {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId, role }),
+    }),
+  removeMember: (teamId: string, userId: string) =>
+    apiFetch(`/teams/${teamId}/members/${userId}`, { method: 'DELETE' }),
+  updateMemberRole: (teamId: string, userId: string, role: string) =>
+    apiFetch(`/teams/${teamId}/members/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ role }),
+    }),
+};
+
+// ===========================
+// WORKFLOW AUTOMATION
+// ===========================
+export const workflowApi = {
+  list: () => apiFetch('/workflows/'),
+  create: (data: { name: string; trigger: string; actions: any[] }) =>
+    apiFetch('/workflows/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  get: (workflowId: string) => apiFetch(`/workflows/${workflowId}`),
+  update: (workflowId: string, data: any) =>
+    apiFetch(`/workflows/${workflowId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  delete: (workflowId: string) => apiFetch(`/workflows/${workflowId}`, { method: 'DELETE' }),
+  enable: (workflowId: string) => apiFetch(`/workflows/${workflowId}/enable`, { method: 'POST' }),
+  disable: (workflowId: string) => apiFetch(`/workflows/${workflowId}/disable`, { method: 'POST' }),
+  getLogs: (workflowId: string) => apiFetch(`/workflows/${workflowId}/logs`),
+  getTriggers: () => apiFetch('/workflows/triggers'),
+  getActions: () => apiFetch('/workflows/actions'),
+};
+
+// ===========================
+// KNOWLEDGE BASE
+// ===========================
+export const knowledgeBaseApi = {
+  getCategories: () => apiFetch('/knowledge-base/categories'),
+  getArticles: (categoryId?: string, search?: string) => {
+    const params = new URLSearchParams();
+    if (categoryId) params.append('category_id', categoryId);
+    if (search) params.append('search', search);
+    return apiFetch(`/knowledge-base/articles?${params}`);
+  },
+  getArticle: (articleId: string) => apiFetch(`/knowledge-base/articles/${articleId}`),
+  searchArticles: (query: string) =>
+    apiFetch(`/knowledge-base/search?q=${encodeURIComponent(query)}`),
+  getPopular: () => apiFetch('/knowledge-base/popular'),
+  rateArticle: (articleId: string, helpful: boolean) =>
+    apiFetch(`/knowledge-base/articles/${articleId}/rate`, {
+      method: 'POST',
+      body: JSON.stringify({ helpful }),
+    }),
+};
+
+// ===========================
+// FILE VERSIONS
+// ===========================
+export const fileVersionsApi = {
+  getVersions: (fileId: string) => apiFetch(`/file-versions/${fileId}`),
+  uploadVersion: (fileId: string, file: File, notes?: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (notes) formData.append('notes', notes);
+    return apiFetch(`/file-versions/${fileId}`, {
+      method: 'POST',
+      body: formData,
+    });
+  },
+  getVersion: (fileId: string, versionId: string) =>
+    apiFetch(`/file-versions/${fileId}/versions/${versionId}`),
+  restoreVersion: (fileId: string, versionId: string) =>
+    apiFetch(`/file-versions/${fileId}/versions/${versionId}/restore`, { method: 'POST' }),
+  deleteVersion: (fileId: string, versionId: string) =>
+    apiFetch(`/file-versions/${fileId}/versions/${versionId}`, { method: 'DELETE' }),
+  compare: (fileId: string, versionA: string, versionB: string) =>
+    apiFetch(`/file-versions/${fileId}/compare?version_a=${versionA}&version_b=${versionB}`),
+};
+
+// ===========================
+// MULTI-CURRENCY
+// ===========================
+export const multiCurrencyApi = {
+  getSupportedCurrencies: () => apiFetch('/multi-currency/currencies'),
+  getExchangeRates: (baseCurrency = 'USD') =>
+    apiFetch(`/multi-currency/rates?base=${baseCurrency}`),
+  convert: (amount: number, from: string, to: string) =>
+    apiFetch(`/multi-currency/convert?amount=${amount}&from=${from}&to=${to}`),
+  getPreferredCurrency: () => apiFetch('/multi-currency/preference'),
+  setPreferredCurrency: (currency: string) =>
+    apiFetch('/multi-currency/preference', {
+      method: 'PUT',
+      body: JSON.stringify({ currency }),
+    }),
+};
+
+// ===========================
+// SMART MATCHING
+// ===========================
+export const matchingApi = {
+  findFreelancers: (projectId: number, limit = 20) =>
+    apiFetch(`/matching/project/${projectId}/freelancers?limit=${limit}`),
+  findJobs: (limit = 20) => apiFetch(`/matching/jobs?limit=${limit}`),
+  getMatchScore: (projectId: number, freelancerId: number) =>
+    apiFetch(`/matching/score?project_id=${projectId}&freelancer_id=${freelancerId}`),
+  getRecommendations: () => apiFetch('/matching/recommendations'),
+  updatePreferences: (preferences: any) =>
+    apiFetch('/matching/preferences', {
+      method: 'PUT',
+      body: JSON.stringify(preferences),
+    }),
+};
+
+// ===========================
+// FRAUD DETECTION
+// ===========================
+export const fraudDetectionApi = {
+  checkUser: (userId: number) => apiFetch(`/fraud-detection/user/${userId}`),
+  checkTransaction: (transactionId: string) =>
+    apiFetch(`/fraud-detection/transaction/${transactionId}`),
+  reportSuspicious: (data: { type: string; target_id: string; reason: string; details?: string }) =>
+    apiFetch('/fraud-detection/report', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getAlerts: () => apiFetch('/fraud-detection/alerts'),
+  dismissAlert: (alertId: string) =>
+    apiFetch(`/fraud-detection/alerts/${alertId}/dismiss`, { method: 'POST' }),
+};
+
+// ===========================
+// VIDEO CALLS
+// ===========================
+export const videoCallsApi = {
+  createRoom: (data: { participant_ids: string[]; scheduled_at?: string }) =>
+    apiFetch('/video-calls/rooms', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getRoom: (roomId: string) => apiFetch(`/video-calls/rooms/${roomId}`),
+  joinRoom: (roomId: string) => apiFetch(`/video-calls/rooms/${roomId}/join`, { method: 'POST' }),
+  leaveRoom: (roomId: string) => apiFetch(`/video-calls/rooms/${roomId}/leave`, { method: 'POST' }),
+  endCall: (roomId: string) => apiFetch(`/video-calls/rooms/${roomId}/end`, { method: 'POST' }),
+  getHistory: () => apiFetch('/video-calls/history'),
+  getRecording: (roomId: string) => apiFetch(`/video-calls/rooms/${roomId}/recording`),
+};
+
+// ===========================
+// LEGAL DOCUMENTS
+// ===========================
+export const legalDocsApi = {
+  getDocuments: () => apiFetch('/legal-documents/'),
+  getDocument: (docType: string) => apiFetch(`/legal-documents/${docType}`),
+  getVersion: (docType: string, version: string) =>
+    apiFetch(`/legal-documents/${docType}/versions/${version}`),
+  acceptDocument: (docType: string) =>
+    apiFetch(`/legal-documents/${docType}/accept`, { method: 'POST' }),
+  getAcceptanceHistory: () => apiFetch('/legal-documents/acceptance-history'),
+};
+
+// ===========================
+// PORTFOLIO SHOWCASE
+// ===========================
+export const portfolioShowcaseApi = {
+  getShowcase: (userId: string) => apiFetch(`/portfolio-showcase/user/${userId}`),
+  updateLayout: (layout: any) =>
+    apiFetch('/portfolio-showcase/layout', {
+      method: 'PUT',
+      body: JSON.stringify(layout),
+    }),
+  getTemplates: () => apiFetch('/portfolio-showcase/templates'),
+  applyTemplate: (templateId: string) =>
+    apiFetch(`/portfolio-showcase/templates/${templateId}/apply`, { method: 'POST' }),
+  getAnalytics: () => apiFetch('/portfolio-showcase/analytics'),
+  togglePublic: (isPublic: boolean) =>
+    apiFetch('/portfolio-showcase/visibility', {
+      method: 'PUT',
+      body: JSON.stringify({ is_public: isPublic }),
+    }),
+};
+
+// ===========================
+// SKILL TAXONOMY
+// ===========================
+export const skillTaxonomyApi = {
+  getCategories: () => apiFetch('/skill-taxonomy/categories'),
+  getSkills: (categoryId?: string) => {
+    const params = categoryId ? `?category_id=${categoryId}` : '';
+    return apiFetch(`/skill-taxonomy/skills${params}`);
+  },
+  getSkill: (skillId: string) => apiFetch(`/skill-taxonomy/skills/${skillId}`),
+  getRelated: (skillId: string) => apiFetch(`/skill-taxonomy/skills/${skillId}/related`),
+  search: (query: string) => apiFetch(`/skill-taxonomy/search?q=${encodeURIComponent(query)}`),
+  getTrending: () => apiFetch('/skill-taxonomy/trending'),
+};
+
+// ===========================
+// NOTES & TAGS
+// ===========================
+export const notesTagsApi = {
+  getNotes: (resourceType: string, resourceId: string) =>
+    apiFetch(`/notes-tags/notes/${resourceType}/${resourceId}`),
+  createNote: (resourceType: string, resourceId: string, content: string) =>
+    apiFetch(`/notes-tags/notes/${resourceType}/${resourceId}`, {
+      method: 'POST',
+      body: JSON.stringify({ content }),
+    }),
+  updateNote: (noteId: string, content: string) =>
+    apiFetch(`/notes-tags/notes/${noteId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ content }),
+    }),
+  deleteNote: (noteId: string) => apiFetch(`/notes-tags/notes/${noteId}`, { method: 'DELETE' }),
+  getTags: (resourceType: string, resourceId: string) =>
+    apiFetch(`/notes-tags/tags/${resourceType}/${resourceId}`),
+  addTag: (resourceType: string, resourceId: string, tag: string) =>
+    apiFetch(`/notes-tags/tags/${resourceType}/${resourceId}`, {
+      method: 'POST',
+      body: JSON.stringify({ tag }),
+    }),
+  removeTag: (resourceType: string, resourceId: string, tag: string) =>
+    apiFetch(`/notes-tags/tags/${resourceType}/${resourceId}/${encodeURIComponent(tag)}`, { method: 'DELETE' }),
+};
+
+// ===========================
+// REVIEW RESPONSES
+// ===========================
+export const reviewResponsesApi = {
+  getResponse: (reviewId: number) => apiFetch(`/review-responses/${reviewId}`),
+  createResponse: (reviewId: number, response: string) =>
+    apiFetch(`/review-responses/${reviewId}`, {
+      method: 'POST',
+      body: JSON.stringify({ response }),
+    }),
+  updateResponse: (reviewId: number, response: string) =>
+    apiFetch(`/review-responses/${reviewId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ response }),
+    }),
+  deleteResponse: (reviewId: number) =>
+    apiFetch(`/review-responses/${reviewId}`, { method: 'DELETE' }),
+};
+
 export default {
   auth: authApi,
   analytics: analyticsApi,
@@ -1138,4 +1964,34 @@ export default {
   searches: searchesApi,
   uploads: uploadsApi,
   ai: aiApi,
+  // New API integrations
+  gamification: gamificationApi,
+  referral: referralApi,
+  career: careerApi,
+  availability: availabilityApi,
+  rateCards: rateCardsApi,
+  proposalTemplates: proposalTemplatesApi,
+  auditTrail: auditTrailApi,
+  branding: brandingApi,
+  communication: communicationApi,
+  metrics: metricsApi,
+  searchAnalytics: searchAnalyticsApi,
+  compliance: complianceApi,
+  advancedGamification: advancedGamificationApi,
+  twoFactor: twoFactorApi,
+  webhooks: webhooksApi,
+  apiKeys: apiKeysApi,
+  teams: teamsApi,
+  workflow: workflowApi,
+  knowledgeBase: knowledgeBaseApi,
+  fileVersions: fileVersionsApi,
+  multiCurrency: multiCurrencyApi,
+  matching: matchingApi,
+  fraudDetection: fraudDetectionApi,
+  videoCalls: videoCallsApi,
+  legalDocs: legalDocsApi,
+  portfolioShowcase: portfolioShowcaseApi,
+  skillTaxonomy: skillTaxonomyApi,
+  notesTags: notesTagsApi,
+  reviewResponses: reviewResponsesApi,
 };

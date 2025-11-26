@@ -1,0 +1,199 @@
+/* @AI-HINT: Referral page light theme colors */
+
+.container {
+  background-color: #f8fafc;
+}
+
+.title {
+  color: #1a202c;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.codeCard {
+  background: linear-gradient(135deg, #4573df, #3b5fc7);
+  color: white;
+}
+
+.codeLeft h3 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.code {
+  color: white;
+}
+
+.copyBtn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.copyBtn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.codeHint {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.usageNumber {
+  color: white;
+}
+
+.usageLabel {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.statCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.statValue {
+  color: #1a202c;
+}
+
+.statLabel {
+  color: #64748b;
+}
+
+.milestoneCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.milestoneHeader h3 {
+  color: #1a202c;
+}
+
+.milestoneProgress span {
+  color: #64748b;
+}
+
+.milestoneItem {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.milestoneAchieved {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.shareCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.shareTitle {
+  color: #1a202c;
+}
+
+.shareInput {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #1a202c;
+}
+
+.copyLinkBtn {
+  background-color: #4573df;
+  color: white;
+}
+
+.copyLinkBtn:hover {
+  background-color: #3b5fc7;
+}
+
+.twitter {
+  background-color: #1da1f2;
+  color: white;
+}
+
+.facebook {
+  background-color: #4267b2;
+  color: white;
+}
+
+.linkedin {
+  background-color: #0077b5;
+  color: white;
+}
+
+.whatsapp {
+  background-color: #25d366;
+  color: white;
+}
+
+.howItWorks {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.howItWorks h3 {
+  color: #1a202c;
+}
+
+.stepNumber {
+  background-color: #4573df;
+  color: white;
+}
+
+.step h4 {
+  color: #1a202c;
+}
+
+.step p {
+  color: #64748b;
+}
+
+.referralsCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.referralsCard h3 {
+  color: #1a202c;
+}
+
+.emptyState {
+  color: #94a3b8;
+}
+
+.referralItem {
+  background-color: #f8fafc;
+}
+
+.referralEmail {
+  color: #1a202c;
+}
+
+.referralDate {
+  color: #94a3b8;
+}
+
+.rewardPaid {
+  color: #22c55e;
+}
+
+.rewardsCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.rewardTotal span, .rewardPending span {
+  color: #64748b;
+}
+
+.rewardTotal strong {
+  color: #22c55e;
+}
+
+.rewardPending strong {
+  color: #f59e0b;
+}
+
+.inviteForm {
+  color: #1a202c;
+}

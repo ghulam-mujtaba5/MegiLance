@@ -1,0 +1,135 @@
+/* @AI-HINT: Proposal templates dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Stats */
+.statCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.statInfo strong {
+  color: #60a5fa;
+}
+
+.statInfo span {
+  color: #94a3b8;
+}
+
+/* Empty */
+.emptyCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.emptyCard h3 {
+  color: #f8fafc;
+}
+
+.emptyCard p {
+  color: #94a3b8;
+}
+
+/* Template Cards */
+.templateCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.templateCard.defaultCard {
+  border-color: #fbbf24;
+}
+
+.defaultBadge {
+  background: #fbbf24;
+  color: #1e293b;
+}
+
+.cardHeader h3 {
+  color: #f8fafc;
+}
+
+.useCount {
+  background: #334155;
+  color: #94a3b8;
+}
+
+.cardDesc {
+  color: #94a3b8;
+}
+
+.coverPreview {
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+.coverPreview h4 {
+  color: #94a3b8;
+}
+
+.coverPreview p {
+  color: #cbd5e1;
+}
+
+.tag {
+  background: rgba(96, 165, 250, 0.2);
+  color: #60a5fa;
+}
+
+.cardActions {
+  border-color: #334155;
+}
+
+/* Modal */
+.modal {
+  background: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modal h2 {
+  color: #f8fafc;
+}
+
+.input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.input:focus {
+  border-color: #60a5fa;
+  outline: none;
+}
+
+/* Preview */
+.previewContent {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}
+
+.previewMilestone {
+  background: #334155;
+}
+
+.previewMilestone strong {
+  color: #f8fafc;
+}
+
+.previewMilestone span {
+  color: #60a5fa;
+  font-weight: 600;
+}

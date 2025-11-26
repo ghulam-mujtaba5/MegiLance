@@ -1,0 +1,222 @@
+/* @AI-HINT: Admin compliance management light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Stats */
+.statCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.statValue {
+  color: #0f172a;
+}
+
+.statLabel {
+  color: #64748b;
+}
+
+.statWarning {
+  border-color: #fbbf24;
+}
+
+.statWarning .statValue {
+  color: #d97706;
+}
+
+/* Tabs */
+.tabs {
+  border-color: #e2e8f0;
+}
+
+.tab {
+  color: #64748b;
+}
+
+.tab:hover {
+  color: #0f172a;
+}
+
+.tabActive {
+  color: #4573df;
+}
+
+/* Filter */
+.filterBar {
+  background: transparent;
+}
+
+.select {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.select:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+/* Rules */
+.ruleCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.ruleName {
+  color: #0f172a;
+}
+
+.categoryBadge {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.statusCompliant {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.statusNonCompliant {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.statusReview {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.statusNA {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.ruleDesc {
+  color: #475569;
+}
+
+.ruleNotes {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.ruleMeta {
+  color: #94a3b8;
+}
+
+.automatedTag {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+/* Policies */
+.policyCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.policyName {
+  color: #0f172a;
+}
+
+.policyActive {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.policyInactive {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.policyDetails {
+  color: #475569;
+}
+
+.detailLabel {
+  color: #64748b;
+}
+
+/* Requests */
+.requestCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.typeAccess {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.typeDeletion {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.typePortability {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.typeRectification {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.statusPending {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.statusInprogress {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.statusCompleted {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.statusRejected {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.requestEmail {
+  color: #0f172a;
+}
+
+.requestMeta {
+  color: #94a3b8;
+}
+
+/* Reports */
+.reportCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.reportName {
+  color: #0f172a;
+}
+
+.reportDate {
+  color: #64748b;
+}
+
+.generating {
+  color: #64748b;
+}

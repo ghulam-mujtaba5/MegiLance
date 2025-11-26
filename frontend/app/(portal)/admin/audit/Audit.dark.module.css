@@ -1,0 +1,115 @@
+/* @AI-HINT: Admin audit trail dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Stats */
+.statCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.statInfo strong {
+  color: #60a5fa;
+}
+
+.statInfo span {
+  color: #94a3b8;
+}
+
+/* Filters */
+.filtersCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.filterGroup label {
+  color: #94a3b8;
+}
+
+.input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.input:focus {
+  border-color: #60a5fa;
+  outline: none;
+}
+
+/* Logs Table */
+.logsCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.logsTable th {
+  background: #0f172a;
+  color: #94a3b8;
+  border-bottom: 1px solid #334155;
+}
+
+.logRow {
+  border-bottom: 1px solid #334155;
+}
+
+.logRow:hover {
+  background: #0f172a;
+}
+
+.userRole {
+  color: #94a3b8;
+}
+
+.resourceBadge {
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.resourceId {
+  color: #94a3b8;
+}
+
+.ipCell {
+  color: #94a3b8;
+}
+
+/* Modal */
+.modal {
+  background: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modal h2 {
+  color: #f8fafc;
+}
+
+.detailSection h3 {
+  color: #f8fafc;
+}
+
+.detailGrid label {
+  color: #94a3b8;
+}
+
+.detailGrid span {
+  color: #e2e8f0;
+}
+
+.jsonBlock {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+}

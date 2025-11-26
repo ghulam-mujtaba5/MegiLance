@@ -273,3 +273,35 @@ class FraudDetectionService:
             recommendations.append('Escalate to fraud team immediately')
         
         return recommendations
+
+
+# Enum types for the API
+from enum import Enum
+
+class RiskLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class FraudType(str, Enum):
+    PAYMENT = "payment"
+    IDENTITY = "identity"
+    ACCOUNT_TAKEOVER = "account_takeover"
+    FAKE_REVIEW = "fake_review"
+    MANIPULATION = "manipulation"
+    SPAM = "spam"
+    PHISHING = "phishing"
+
+
+class AlertStatus(str, Enum):
+    OPEN = "open"
+    INVESTIGATING = "investigating"
+    RESOLVED = "resolved"
+    FALSE_POSITIVE = "false_positive"
+
+
+def get_fraud_detection_service(db: Session) -> FraudDetectionService:
+    """Get fraud detection service instance"""
+    return FraudDetectionService(db)

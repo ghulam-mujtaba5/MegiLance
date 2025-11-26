@@ -1,0 +1,123 @@
+/* @AI-HINT: Availability calendar light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Stats */
+.statCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.statInfo strong {
+  color: #4573df;
+}
+
+.statInfo span {
+  color: #64748b;
+}
+
+/* Week Grid */
+.weekGrid {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.dayColumn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.dayHeader {
+  background: #4573df;
+  color: #ffffff;
+}
+
+.noSlots {
+  color: #94a3b8;
+}
+
+.slotItem {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.slotTime {
+  color: #0f172a;
+}
+
+/* Bookings */
+.emptyCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.emptyCard h3 {
+  color: #0f172a;
+}
+
+.emptyCard p {
+  color: #64748b;
+}
+
+.bookingCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.bookingHeader h3 {
+  color: #0f172a;
+}
+
+.projectTitle {
+  color: #64748b;
+}
+
+.bookingNotes {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* Settings */
+.settingsCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.settingsCard h3 {
+  color: #0f172a;
+}
+
+.input {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.input:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+/* Modal */
+.modal {
+  background: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal h2 {
+  color: #0f172a;
+}

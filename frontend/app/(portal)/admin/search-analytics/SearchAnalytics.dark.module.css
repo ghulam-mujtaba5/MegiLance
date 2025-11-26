@@ -1,0 +1,114 @@
+/* @AI-HINT: Search analytics dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.select {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+/* Stats */
+.statCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.statInfo strong {
+  color: #60a5fa;
+}
+
+.statInfo span {
+  color: #94a3b8;
+}
+
+/* Cards */
+.card {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.card h3 {
+  color: #f8fafc;
+}
+
+.termItem {
+  background: #0f172a;
+}
+
+.rank {
+  color: #60a5fa;
+  font-weight: 700;
+}
+
+.termText {
+  color: #f8fafc;
+}
+
+.count {
+  color: #94a3b8;
+}
+
+/* Table */
+.tableCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.table th {
+  background: #0f172a;
+  color: #94a3b8;
+  border-bottom: 1px solid #334155;
+}
+
+.table td {
+  border-bottom: 1px solid #334155;
+}
+
+.table tbody tr:hover {
+  background: #0f172a;
+}
+
+/* Trend Cards */
+.trendCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.trendCard h3 {
+  color: #f8fafc;
+}
+
+.trendRank {
+  color: #94a3b8;
+}
+
+.trendStats strong {
+  color: #60a5fa;
+}
+
+.trendStats span {
+  color: #94a3b8;
+}
+
+/* Alert */
+.alertCard {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+}
+
+.alertCard h3 {
+  color: #fcd34d;
+}

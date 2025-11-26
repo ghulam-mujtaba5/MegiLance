@@ -1,0 +1,160 @@
+/* @AI-HINT: Admin metrics dashboard light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.autoRefresh {
+  color: #64748b;
+}
+
+/* Time Range */
+.timeRangeSelector {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.rangeBtn {
+  color: #64748b;
+}
+
+.rangeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.rangeBtnActive {
+  background: #4573df;
+  color: #ffffff;
+}
+
+/* Metric Cards */
+.metricCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.metricTitle {
+  color: #64748b;
+}
+
+.metricValue {
+  color: #0f172a;
+}
+
+.changeUp {
+  color: #16a34a;
+}
+
+.changeDown {
+  color: #dc2626;
+}
+
+.changePeriod {
+  color: #94a3b8;
+}
+
+/* Charts */
+.chartCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.chartTitle {
+  color: #0f172a;
+}
+
+.bar {
+  background: linear-gradient(180deg, #4573df 0%, #3b63c4 100%);
+}
+
+.barValue {
+  color: #64748b;
+}
+
+.barLabel {
+  color: #94a3b8;
+}
+
+.point {
+  background: #4573df;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pointLabel {
+  color: #94a3b8;
+}
+
+.pointValue {
+  color: #64748b;
+}
+
+/* Health Card */
+.healthCard,
+.activityCard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.cardTitle {
+  color: #0f172a;
+}
+
+.healthItem {
+  background: #f8fafc;
+}
+
+.statusHealthy {
+  background: #16a34a;
+}
+
+.statusDegraded {
+  background: #f59e0b;
+}
+
+.statusDown {
+  background: #dc2626;
+}
+
+.serviceName {
+  color: #0f172a;
+}
+
+.latency {
+  color: #64748b;
+}
+
+.uptime {
+  color: #16a34a;
+}
+
+/* Activity */
+.activityItem {
+  background: #f8fafc;
+}
+
+.activityDot {
+  background: #4573df;
+}
+
+.activityDesc {
+  color: #1e293b;
+}
+
+.activityUser {
+  color: #4573df;
+}
+
+.activityTime {
+  color: #94a3b8;
+}

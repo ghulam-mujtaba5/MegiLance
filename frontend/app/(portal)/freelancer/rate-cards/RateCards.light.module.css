@@ -1,0 +1,109 @@
+/* @AI-HINT: Rate cards light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Stats */
+.statCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.statInfo strong {
+  color: #4573df;
+}
+
+.statInfo span {
+  color: #64748b;
+}
+
+/* Empty */
+.emptyCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.emptyCard h3 {
+  color: #0f172a;
+}
+
+.emptyCard p {
+  color: #64748b;
+}
+
+/* Rate Cards */
+.rateCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.rateCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rateCard.featured {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 1px #f59e0b;
+}
+
+.featuredBadge {
+  background: #f59e0b;
+  color: #ffffff;
+}
+
+.cardHeader h3 {
+  color: #0f172a;
+}
+
+.rateType {
+  color: #64748b;
+}
+
+.rateAmount {
+  color: #27ae60;
+}
+
+.cardDesc {
+  color: #64748b;
+}
+
+.featuresList h4 {
+  color: #475569;
+}
+
+.cardActions {
+  border-color: #e2e8f0;
+}
+
+/* Modal */
+.modal {
+  background: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal h2 {
+  color: #0f172a;
+}
+
+.input {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.input:focus {
+  border-color: #4573df;
+  outline: none;
+}

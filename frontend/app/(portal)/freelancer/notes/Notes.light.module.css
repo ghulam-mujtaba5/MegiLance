@@ -1,0 +1,183 @@
+/* @AI-HINT: Notes and tags light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Filter */
+.searchInput {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.checkbox {
+  color: #475569;
+}
+
+/* Tags Filter */
+.tagsFilter {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.filterLabel {
+  color: #64748b;
+}
+
+.tagButton {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.tagButton:hover {
+  background: #f1f5f9;
+}
+
+.tagSelected {
+  background: #eff6ff;
+}
+
+.clearTags {
+  color: #4573df;
+}
+
+/* Notes */
+.sectionTitle {
+  color: #0f172a;
+}
+
+.noteCard {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.noteCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.projectTitle {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.noteContent {
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.noteTag {
+  background: rgba(0, 0, 0, 0.1);
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.noteMeta {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+/* Empty State */
+.emptyState {
+  color: #64748b;
+}
+
+/* Modal */
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modalContent {
+  background: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  border-color: #e2e8f0;
+}
+
+.modalHeader h2 {
+  color: #0f172a;
+}
+
+.closeBtn {
+  color: #64748b;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.formGroup label {
+  color: #374151;
+}
+
+.textarea,
+.input {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.textarea:focus,
+.input:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+/* Tags */
+.tagOption {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.tagOption:hover {
+  background: #f1f5f9;
+}
+
+.tagOptionSelected {
+  background: #eff6ff;
+  border-color: #4573df;
+  color: #1e40af;
+}
+
+.privateCheck {
+  color: #475569;
+}
+
+.modalFooter {
+  border-color: #e2e8f0;
+}
+
+/* Tag Manager */
+.tagManagerItem {
+  background: #f8fafc;
+}
+
+.tagName {
+  color: #0f172a;
+}
+
+.tagCount {
+  color: #94a3b8;
+}
+
+.deleteTagBtn {
+  color: #dc2626;
+}
+
+.deleteTagBtn:hover {
+  background: #fee2e2;
+}

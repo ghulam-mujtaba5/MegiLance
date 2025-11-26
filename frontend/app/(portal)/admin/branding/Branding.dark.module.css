@@ -1,0 +1,97 @@
+/* @AI-HINT: Admin branding dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Preview */
+.previewCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.previewHeader {
+  background: #0f172a;
+  border-bottom: 1px solid #334155;
+}
+
+.previewHeader h3 {
+  color: #94a3b8;
+}
+
+.previewContent {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+/* Settings */
+.settingsCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.settingsCard h3 {
+  color: #f8fafc;
+}
+
+.formGroup label {
+  color: #cbd5e1;
+}
+
+.input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.input:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.hint {
+  color: #94a3b8;
+}
+
+.colorHint {
+  color: #94a3b8;
+}
+
+/* Logo Preview */
+.logoPreview {
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+/* Font Preview */
+.fontPreview {
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+.fontPreview h3 {
+  color: #f8fafc;
+}
+
+.fontPreview p {
+  color: #94a3b8;
+}
+
+/* Unsaved Banner */
+.unsavedBanner {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.unsavedBanner span {
+  color: #fbbf24;
+}

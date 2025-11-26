@@ -1,0 +1,180 @@
+/* @AI-HINT: Admin data export dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.title {
+  color: #f8fafc;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Tabs */
+.tabs {
+  border-color: #334155;
+}
+
+.tab {
+  color: #94a3b8;
+}
+
+.tab:hover {
+  color: #f8fafc;
+}
+
+.tabActive {
+  color: #4573df;
+}
+
+.badge {
+  background: #4573df;
+  color: #ffffff;
+}
+
+/* Section */
+.section {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.sectionTitle {
+  color: #f8fafc;
+}
+
+/* Templates */
+.templateCard {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.templateCard:hover {
+  border-color: #4573df;
+  background: rgba(69, 115, 223, 0.1);
+}
+
+.templateCard h4 {
+  color: #f8fafc;
+}
+
+.templateCard p {
+  color: #94a3b8;
+}
+
+.defaultBadge {
+  background: rgba(69, 115, 223, 0.2);
+  color: #60a5fa;
+}
+
+/* Form */
+.label {
+  color: #cbd5e1;
+}
+
+.input,
+.select {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.input:focus,
+.select:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.dateRange span {
+  color: #94a3b8;
+}
+
+/* Fields */
+.textBtn {
+  color: #60a5fa;
+}
+
+.textBtn:hover {
+  text-decoration: underline;
+}
+
+.fieldOption {
+  background: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.fieldOption:hover {
+  border-color: #475569;
+}
+
+.fieldSelected {
+  background: rgba(69, 115, 223, 0.15);
+  border-color: #4573df;
+  color: #60a5fa;
+}
+
+/* Checkbox */
+.checkbox {
+  color: #cbd5e1;
+}
+
+/* History */
+.historyView {
+  background: transparent;
+}
+
+.emptyState {
+  color: #94a3b8;
+}
+
+.jobCard {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.jobName {
+  color: #f8fafc;
+}
+
+.statusPending {
+  background: #334155;
+  color: #94a3b8;
+}
+
+.statusProcessing {
+  background: rgba(37, 99, 235, 0.2);
+  color: #60a5fa;
+}
+
+.statusCompleted {
+  background: rgba(22, 163, 74, 0.2);
+  color: #4ade80;
+}
+
+.statusFailed {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+}
+
+.jobMeta {
+  color: #94a3b8;
+}
+
+.jobDates {
+  color: #64748b;
+}
+
+.progressBar {
+  background: #334155;
+}
+
+.progressFill {
+  background: #4573df;
+}
+
+.progressText {
+  color: #94a3b8;
+}

@@ -1,0 +1,217 @@
+/* @AI-HINT: Gamification page light theme colors */
+
+.container {
+  background-color: #f8fafc;
+}
+
+.title {
+  color: #1a202c;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.checkInBtn {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: white;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+}
+
+.checkInBtn:hover {
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+}
+
+.statCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.statValue {
+  color: #1a202c;
+}
+
+.statLabel {
+  color: #64748b;
+}
+
+.levelCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.levelHeader {
+  color: #1a202c;
+}
+
+.levelHint {
+  color: #64748b;
+}
+
+.sectionCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sectionTitle {
+  color: #1a202c;
+}
+
+.badgeItem {
+  background-color: #f1f5f9;
+}
+
+.badgeIcon {
+  background-color: #e2e8f0;
+}
+
+.badgeName {
+  color: #475569;
+}
+
+.emptyText {
+  color: #94a3b8;
+}
+
+.leaderItem {
+  background-color: #f8fafc;
+}
+
+.leaderRank {
+  color: #64748b;
+}
+
+.rank1 {
+  color: #eab308;
+}
+
+.rank2 {
+  color: #94a3b8;
+}
+
+.rank3 {
+  color: #cd7f32;
+}
+
+.leaderName {
+  color: #1a202c;
+}
+
+.leaderPoints {
+  color: #4573df;
+}
+
+.yourRank {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.tierTitle {
+  color: #1a202c;
+}
+
+.tiergold {
+  border-color: #eab308;
+}
+
+.tiersilver {
+  border-color: #94a3b8;
+}
+
+.tierbronze {
+  border-color: #cd7f32;
+}
+
+.tierplatinum {
+  border-color: #a855f7;
+}
+
+.badgeCard {
+  background-color: white;
+  border: 1px solid #e2e8f0;
+}
+
+.badgeEarned {
+  border-color: #22c55e;
+  background-color: #f0fdf4;
+}
+
+.badgeIconLarge {
+  background-color: #f1f5f9;
+}
+
+.badgegold {
+  background: linear-gradient(135deg, #fef3c7, #fcd34d);
+}
+
+.badgesilver {
+  background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
+}
+
+.badgebronze {
+  background: linear-gradient(135deg, #fed7aa, #fdba74);
+}
+
+.badgeplatinum {
+  background: linear-gradient(135deg, #f3e8ff, #d8b4fe);
+}
+
+.badgeCardName {
+  color: #1a202c;
+}
+
+.badgeDescription {
+  color: #64748b;
+}
+
+.badgePoints {
+  color: #22c55e;
+}
+
+.leaderboardCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.leaderboardHeader h3 {
+  color: #1a202c;
+}
+
+.periodSelect {
+  background-color: white;
+  border-color: #e2e8f0;
+  color: #1a202c;
+}
+
+.leaderboardHeaderRow {
+  background-color: #f8fafc;
+  color: #64748b;
+}
+
+.leaderboardRow {
+  background-color: white;
+  border: 1px solid #f1f5f9;
+}
+
+.leaderboardRow:hover {
+  background-color: #f8fafc;
+}
+
+.yourRow {
+  background-color: #eff6ff !important;
+  border-color: #3b82f6 !important;
+}
+
+.userAvatar {
+  background-color: #4573df;
+  color: white;
+}
+
+.pointsCell {
+  color: #4573df;
+}
+
+.activityCard {
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
