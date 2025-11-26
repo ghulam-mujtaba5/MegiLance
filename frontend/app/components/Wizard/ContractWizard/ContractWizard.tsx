@@ -108,6 +108,21 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
     signatureBox: cn(commonStyles.signatureBox, themeStyles.signatureBox),
     reviewSection: cn(commonStyles.reviewSection, themeStyles.reviewSection),
     sectionTitle: cn(commonStyles.sectionTitle, themeStyles.sectionTitle),
+    textSmallMuted: cn(commonStyles.textSmall, commonStyles.textMuted),
+    gridCols2: commonStyles.gridCols2,
+    gridCols2Small: commonStyles.gridCols2Small,
+    flexBetween: commonStyles.flexBetween,
+    milestoneHeader: commonStyles.milestoneHeader,
+    milestoneTitle: commonStyles.milestoneTitle,
+    mb3: commonStyles.mb3,
+    mb4: commonStyles.mb4,
+    mt1: commonStyles.mt1,
+    mt2: commonStyles.mt2,
+    mr2: commonStyles.mr2,
+    checkboxContainer: commonStyles.checkboxContainer,
+    checkbox: commonStyles.checkbox,
+    listDisc: commonStyles.listDisc,
+    inlineIcon: commonStyles.inlineIcon,
   };
 
   const addDeliverable = () => {
@@ -238,6 +253,8 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
     }
   };
 
+  if (!resolvedTheme) return null;
+
   // Step 1: Contract Terms
   const Step1Terms = (
     <div className={styles.stepContent}>
@@ -284,7 +301,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
           rows={6}
           required
         />
-        <span className="text-sm opacity-75">{contractData.scope.length}/500 characters</span>
+        <span className={styles.textSmallMuted}>{contractData.scope.length}/500 characters</span>
       </div>
 
       <div className={styles.formGroup}>
@@ -308,12 +325,12 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
           ))}
         </div>
         <Button variant="outline" onClick={addDeliverable}>
-          <FaPlus className="mr-2" />
+          <FaPlus className={styles.mr2} />
           Add Deliverable
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className={styles.gridCols2}>
         <Input
           id="startDate"
           type="date"
@@ -368,8 +385,8 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
             <label className={styles.label}>Payment Milestones</label>
             {contractData.milestones.map((milestone) => (
               <div key={milestone.id} className={styles.milestoneCard}>
-                <div className="flex justify-between items-start mb-3">
-                  <h4 className="font-semibold">Milestone</h4>
+                <div className={styles.milestoneHeader}>
+                  <h4 className={styles.milestoneTitle}>Milestone</h4>
                   <Button
                     variant="danger"
                     size="sm"
@@ -391,7 +408,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
                   placeholder="Deliverables for this milestone..."
                   rows={3}
                 />
-                <div className="grid grid-cols-2 gap-3">
+                <div className={styles.gridCols2Small}>
                   <Input
                     type="number"
                     label="Amount (USD)"
@@ -409,13 +426,13 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
               </div>
             ))}
             <Button variant="outline" onClick={addMilestone}>
-              <FaPlus className="mr-2" />
+              <FaPlus className={styles.mr2} />
               Add Milestone
             </Button>
           </div>
         </>
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className={styles.gridCols2}>
           <Input
             id="hourlyRate"
             type="number"
@@ -457,16 +474,16 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
       </div>
 
       <div className={styles.formGroup}>
-        <label className="flex items-center gap-2">
+        <label className={styles.checkboxContainer}>
           <input
             type="checkbox"
             checked={contractData.confidentiality}
             onChange={(e) => setContractData(prev => ({ ...prev, confidentiality: e.target.checked }))}
-            className="w-5 h-5"
+            className={styles.checkbox}
           />
           <span>Include Confidentiality Agreement (NDA)</span>
         </label>
-        <p className="text-sm opacity-75 mt-2">
+        <p className={cn(styles.textSmallMuted, styles.mt2)}>
           Both parties agree to keep project information confidential
         </p>
       </div>
@@ -481,7 +498,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
           placeholder="14"
           required
         />
-        <p className="text-sm opacity-75 mt-1">
+        <p className={cn(styles.textSmallMuted, styles.mt1)}>
           Either party can terminate with this notice period
         </p>
       </div>
@@ -506,30 +523,30 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
       <div className={styles.reviewSection}>
         <h3 className={styles.sectionTitle}>Contract Summary</h3>
         
-        <div className="mb-4">
+        <div className={styles.mb4}>
           <strong>Title:</strong> {contractData.title}
         </div>
-        <div className="mb-4">
+        <div className={styles.mb4}>
           <strong>Duration:</strong> {contractData.startDate} to {contractData.endDate}
         </div>
-        <div className="mb-4">
+        <div className={styles.mb4}>
           <strong>Payment:</strong>{' '}
           {contractData.paymentType === 'fixed' 
             ? `$${contractData.totalAmount} (Fixed)` 
             : `$${contractData.hourlyRate}/hr (Estimated ${contractData.estimatedHours} hours)`}
         </div>
-        <div className="mb-4">
+        <div className={styles.mb4}>
           <strong>Deliverables:</strong>
-          <ul className="list-disc ml-6 mt-2">
+          <ul className={styles.listDisc}>
             {contractData.deliverables.filter(d => d.trim()).map((d, i) => (
               <li key={i}>{d}</li>
             ))}
           </ul>
         </div>
-        <div className="mb-4">
+        <div className={styles.mb4}>
           <strong>IP Rights:</strong> {contractData.ipRights === 'client' ? 'Client owns all IP' : contractData.ipRights === 'freelancer' ? 'Freelancer retains IP' : 'Shared ownership'}
         </div>
-        <div className="mb-4">
+        <div className={styles.mb4}>
           <strong>NDA:</strong> {contractData.confidentiality ? 'Yes' : 'No'}
         </div>
       </div>
@@ -544,8 +561,8 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
             placeholder="Type your full name to sign"
             required
           />
-          <p className="text-sm opacity-75 mt-2">
-            <FaCheckCircle className="inline mr-1" />
+          <p className={cn(styles.textSmallMuted, styles.mt2)}>
+            <FaCheckCircle className={styles.inlineIcon} />
             By signing, you agree to all terms and conditions
           </p>
         </div>

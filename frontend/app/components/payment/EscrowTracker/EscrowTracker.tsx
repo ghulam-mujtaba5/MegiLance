@@ -65,6 +65,11 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
     milestoneDetails: cn(commonStyles.milestoneDetails, themeStyles.milestoneDetails),
     milestoneActions: cn(commonStyles.milestoneActions, themeStyles.milestoneActions),
     statusBadge: cn(commonStyles.statusBadge, themeStyles.statusBadge),
+    progressWrapper: cn(commonStyles.progressWrapper, themeStyles.progressWrapper),
+    progressBar: cn(commonStyles.progressBar, themeStyles.progressBar),
+    progressText: cn(commonStyles.progressText, themeStyles.progressText),
+    valueGreen: themeStyles.valueGreen,
+    iconInline: commonStyles.iconInline,
   };
 
   const getStatusIcon = (status: Milestone['status']) => {
@@ -72,36 +77,36 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
       case 'pending':
         return <FaClock />;
       case 'in_progress':
-        return <FaClock className="text-blue-500" />;
+        return <FaClock className={themeStyles.iconBlue} />;
       case 'submitted':
-        return <FaLock className="text-yellow-500" />;
+        return <FaLock className={themeStyles.iconYellow} />;
       case 'approved':
-        return <FaUnlock className="text-green-500" />;
+        return <FaUnlock className={themeStyles.iconGreen} />;
       case 'paid':
-        return <FaCheckCircle className="text-green-500" />;
+        return <FaCheckCircle className={themeStyles.iconGreen} />;
       case 'disputed':
-        return <FaExclamationTriangle className="text-red-500" />;
+        return <FaExclamationTriangle className={themeStyles.iconRed} />;
       default:
         return <FaClock />;
     }
   };
 
-  const getStatusColor = (status: Milestone['status']) => {
+  const getStatusBadgeClass = (status: Milestone['status']) => {
     switch (status) {
       case 'pending':
-        return 'bg-gray-100 text-gray-700';
+        return commonStyles.badgePending;
       case 'in_progress':
-        return 'bg-blue-100 text-blue-700';
+        return commonStyles.badgeInProgress;
       case 'submitted':
-        return 'bg-yellow-100 text-yellow-700';
+        return commonStyles.badgeSubmitted;
       case 'approved':
-        return 'bg-green-100 text-green-700';
+        return commonStyles.badgeApproved;
       case 'paid':
-        return 'bg-green-100 text-green-700';
+        return commonStyles.badgePaid;
       case 'disputed':
-        return 'bg-red-100 text-red-700';
+        return commonStyles.badgeDisputed;
       default:
-        return 'bg-gray-100 text-gray-700';
+        return commonStyles.badgePending;
     }
   };
 
@@ -124,6 +129,8 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
     });
   };
 
+  if (!resolvedTheme) return null;
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -135,7 +142,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
           </div>
           <div className={styles.summaryItem}>
             <span className="label">Paid</span>
-            <span className="value text-green-600">
+            <span className={cn('value', styles.valueGreen)}>
               {formatCurrency(milestones.filter(m => m.status === 'paid').reduce((sum, m) => sum + m.amount, 0))}
             </span>
           </div>
@@ -148,13 +155,13 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
         </div>
         
         {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-3 mt-4">
+        <div className={styles.progressWrapper}>
           <div 
-            className="bg-green-500 h-3 rounded-full transition-all duration-500"
+            className={styles.progressBar}
             style={{ width: `${calculateProgress()}%` }}
           />
         </div>
-        <p className="text-sm text-center mt-2">{calculateProgress().toFixed(0)}% Complete</p>
+        <p className={styles.progressText}>{calculateProgress().toFixed(0)}% Complete</p>
       </div>
 
       <div className={styles.timeline}>
@@ -176,7 +183,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                 <h3 className={styles.milestoneTitle}>
                   Milestone {index + 1}: {milestone.description}
                 </h3>
-                <span className={cn(styles.statusBadge, getStatusColor(milestone.status))}>
+                <span className={cn(styles.statusBadge, getStatusBadgeClass(milestone.status))}>
                   {milestone.status.replace('_', ' ').toUpperCase()}
                 </span>
               </div>
@@ -208,7 +215,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onReleaseFunds?.(milestone.id)}
                     >
-                      <FaUnlock className="mr-2" />
+                      <FaUnlock className={styles.iconInline} />
                       Release Funds
                     </Button>
                   )}
@@ -219,7 +226,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onDispute?.(milestone.id)}
                     >
-                      <FaExclamationTriangle className="mr-2" />
+                      <FaExclamationTriangle className={styles.iconInline} />
                       Request Payment
                     </Button>
                   )}
@@ -230,7 +237,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onDownloadInvoice?.(milestone.id)}
                     >
-                      <FaDownload className="mr-2" />
+                      <FaDownload className={styles.iconInline} />
                       Download Invoice
                     </Button>
                   )}
@@ -243,7 +250,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onDispute?.(milestone.id)}
                     >
-                      <FaExclamationTriangle className="mr-2" />
+                      <FaExclamationTriangle className={styles.iconInline} />
                       Raise Dispute
                     </Button>
                   )}

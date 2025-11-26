@@ -120,7 +120,7 @@ const WizardContainer: React.FC<WizardContainerProps> = ({
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
-        <span className="text-sm font-medium">
+        <span className={commonStyles.progressText}>
           Step {currentStep + 1} of {steps.length}
         </span>
       </div>
@@ -153,7 +153,7 @@ const WizardContainer: React.FC<WizardContainerProps> = ({
                 )}
               </div>
               <div className={styles.stepLabel}>
-                <div className="font-semibold">{step.title}</div>
+                <div className={commonStyles.stepLabelTitle}>{step.title}</div>
                 {step.description && (
                   <div className={styles.stepDescription}>{step.description}</div>
                 )}

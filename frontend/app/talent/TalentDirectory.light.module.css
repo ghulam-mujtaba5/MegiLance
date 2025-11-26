@@ -1,0 +1,64 @@
+/* @AI-HINT: Public talent directory - light theme */
+
+.main {
+  background-color: #ffffff;
+}
+
+.title {
+  color: #1e293b;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.searchInput {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 2px rgba(69, 115, 223, 0.2);
+}
+
+.card {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.name {
+  color: #1e293b;
+}
+
+.role {
+  color: #64748b;
+}
+
+.rankBadge {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.skillTag {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.viewProfileBtn {
+  color: #4573df;
+}
+
+.emptyState {
+  color: #64748b;
+}

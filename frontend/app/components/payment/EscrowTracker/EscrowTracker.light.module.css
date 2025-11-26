@@ -53,3 +53,38 @@
 .milestoneActions {
   border-top-color: #e2e8f0;
 }
+
+/* Progress bar light */
+.progressWrapper {
+  background-color: #e5e7eb;
+}
+
+.progressBar {
+  background-color: #22c55e;
+}
+
+.progressText {
+  color: #64748b;
+}
+
+/* Status icon colors */
+.iconBlue {
+  color: #3b82f6;
+}
+
+.iconYellow {
+  color: #eab308;
+}
+
+.iconGreen {
+  color: #22c55e;
+}
+
+.iconRed {
+  color: #ef4444;
+}
+
+/* Value colors */
+.valueGreen {
+  color: #16a34a;
+}

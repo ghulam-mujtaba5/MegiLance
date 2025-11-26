@@ -101,10 +101,20 @@
   font-size: 0.875rem;
 }
 
+.stepLabelTitle {
+  font-weight: 600;
+}
+
 .stepDescription {
   font-size: 0.75rem;
   opacity: 0.6;
   margin-top: 0.25rem;
+}
+
+/* Progress text */
+.progressText {
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .contentArea {

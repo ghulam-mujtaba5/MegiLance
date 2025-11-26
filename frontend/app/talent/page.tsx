@@ -5,6 +5,10 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
+import commonStyles from './TalentDirectory.common.module.css';
+import lightStyles from './TalentDirectory.light.module.css';
+import darkStyles from './TalentDirectory.dark.module.css';
+
 interface TalentProfile { id: string; name: string; role: string; rank: number; skills: string[]; avatar: string; }
 
 const mock: TalentProfile[] = Array.from({ length: 8 }).map((_, i) => ({
@@ -19,41 +23,66 @@ const mock: TalentProfile[] = Array.from({ length: 8 }).map((_, i) => ({
 const TalentDirectoryPage = () => {
   const { resolvedTheme } = useTheme();
   const [q, setQ] = useState('');
+  
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const styles = {
+    main: cn(commonStyles.main, themeStyles.main),
+    header: commonStyles.header,
+    title: cn(commonStyles.title, themeStyles.title),
+    subtitle: cn(commonStyles.subtitle, themeStyles.subtitle),
+    searchWrapper: commonStyles.searchWrapper,
+    searchInput: cn(commonStyles.searchInput, themeStyles.searchInput),
+    grid: commonStyles.grid,
+    card: cn(commonStyles.card, themeStyles.card),
+    cardHeader: commonStyles.cardHeader,
+    avatar: commonStyles.avatar,
+    profileInfo: commonStyles.profileInfo,
+    name: cn(commonStyles.name, themeStyles.name),
+    role: cn(commonStyles.role, themeStyles.role),
+    rankBadge: cn(commonStyles.rankBadge, themeStyles.rankBadge),
+    skillsWrapper: commonStyles.skillsWrapper,
+    skillTag: cn(commonStyles.skillTag, themeStyles.skillTag),
+    viewProfileBtn: cn(commonStyles.viewProfileBtn, themeStyles.viewProfileBtn),
+    emptyState: cn(commonStyles.emptyState, themeStyles.emptyState),
+  };
+  
   const filtered = mock.filter(m => !q || m.name.toLowerCase().includes(q.toLowerCase()) || m.skills.some(s => s.toLowerCase().includes(q.toLowerCase())));
 
+  if (!resolvedTheme) return null;
+
   return (
-    <main className="max-w-6xl mx-auto px-6 py-16">
-      <header className="mb-10 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">Explore Top Talent</h1>
-        <p className="mt-2 opacity-80">Preview a slice of our AI-ranked freelancer pool.</p>
-        <div className="mt-6 flex justify-center">
+    <main className={styles.main}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>Explore Top Talent</h1>
+        <p className={styles.subtitle}>Preview a slice of our AI-ranked freelancer pool.</p>
+        <div className={styles.searchWrapper}>
           <input
             value={q}
             onChange={e=>setQ(e.target.value)}
             placeholder="Search by name or skill..."
-            className="w-full max-w-md rounded-md border px-4 py-2 bg-[var(--surface-elev)] border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+            className={styles.searchInput}
             aria-label="Search talent"
           />
         </div>
       </header>
-      <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" role="list">
+      <ul className={styles.grid} role="list">
         {filtered.map(p => (
-          <li key={p.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-elev)] p-5 flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <Image src={p.avatar} alt={p.name} className="w-14 h-14 rounded-full object-cover" width={56} height={56} />
-              <div>
-                <h3 className="font-semibold leading-tight">{p.name}</h3>
-                <p className="text-sm opacity-75">{p.role}</p>
+          <li key={p.id} className={styles.card}>
+            <div className={styles.cardHeader}>
+              <Image src={p.avatar} alt={p.name} className={styles.avatar} width={56} height={56} />
+              <div className={styles.profileInfo}>
+                <h3 className={styles.name}>{p.name}</h3>
+                <p className={styles.role}>{p.role}</p>
               </div>
-              <span className="ml-auto text-xs font-medium bg-[var(--primary)] text-[var(--text-on-primary)] px-2 py-1 rounded-md">Rank {p.rank}</span>
+              <span className={styles.rankBadge}>Rank {p.rank}</span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {p.skills.map(s => <span key={s} className="text-xs rounded-md bg-[var(--surface)] border border-[var(--border)] px-2 py-1">{s}</span>)}
+            <div className={styles.skillsWrapper}>
+              {p.skills.map(s => <span key={s} className={styles.skillTag}>{s}</span>)}
             </div>
-            <button className="mt-auto text-sm font-medium text-[var(--primary)] hover:underline self-start">View Profile</button>
+            <button className={styles.viewProfileBtn}>View Profile</button>
           </li>
         ))}
-        {filtered.length === 0 && <li className="col-span-full text-center opacity-70">No matches.</li>}
+        {filtered.length === 0 && <li className={styles.emptyState}>No matches.</li>}
       </ul>
     </main>
   );
