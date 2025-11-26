@@ -1,0 +1,196 @@
+/* @AI-HINT: Video calls page - dark theme colors */
+
+.container {
+  background-color: #0f172a;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Quick Actions */
+.quickAction {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.quickAction:hover {
+  background-color: #334155;
+  border-color: #4573df;
+}
+
+/* Tabs */
+.tabs {
+  background-color: #1e293b;
+}
+
+.tab {
+  color: #94a3b8;
+}
+
+.tab:hover {
+  color: #e2e8f0;
+}
+
+.activeTab {
+  background-color: #334155;
+  color: #60a5fa;
+}
+
+/* Empty State */
+.emptyState {
+  background-color: #1e293b;
+  color: #94a3b8;
+}
+
+/* Call Card */
+.callCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.callCard:hover {
+  border-color: #475569;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.callTitle {
+  color: #f1f5f9;
+}
+
+.roomCode {
+  color: #64748b;
+}
+
+/* Status badges */
+.statusScheduled {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.statusIn_progress,
+.statusInprogress {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.statusCompleted {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.statusCancelled {
+  background-color: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+}
+
+/* Participants */
+.participantsLabel {
+  color: #94a3b8;
+}
+
+.participant {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.callMeta {
+  color: #94a3b8;
+}
+
+/* Buttons */
+.primaryButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.primaryButton:hover {
+  background-color: #5b85e8;
+}
+
+.secondaryButton {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.secondaryButton:hover {
+  background-color: #475569;
+}
+
+.joinButton {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+.joinButton:hover {
+  background-color: #4ade80;
+}
+
+.endButton {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.endButton:hover {
+  background-color: #f87171;
+}
+
+.actionButton {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.actionButton:hover {
+  background-color: #475569;
+}
+
+/* Modal */
+.modal {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modalContent {
+  background-color: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  border-bottom-color: #334155;
+}
+
+.modalFooter {
+  border-top-color: #334155;
+}
+
+.closeButton {
+  color: #94a3b8;
+}
+
+/* Form */
+.input {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.input:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+.input::placeholder {
+  color: #64748b;
+}
+
+.hint {
+  color: #64748b;
+}

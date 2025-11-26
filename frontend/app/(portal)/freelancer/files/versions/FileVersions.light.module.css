@@ -1,0 +1,172 @@
+/* @AI-HINT: File Versions page - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.loading {
+  color: #64748b;
+}
+
+.backButton {
+  color: #3b82f6;
+}
+
+.backButton:hover {
+  color: #2563eb;
+}
+
+/* Empty State */
+.emptyIcon {
+  color: #94a3b8;
+}
+
+.emptyState h2 {
+  color: #1e293b;
+}
+
+.emptyState p {
+  color: #64748b;
+}
+
+.browseButton {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.browseButton:hover {
+  background-color: #2563eb;
+}
+
+/* File Info Card */
+.fileInfoCard {
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.fileIcon {
+  color: #3b82f6;
+}
+
+.fileName {
+  color: #1e293b;
+}
+
+.projectName {
+  color: #64748b;
+}
+
+.fileMeta {
+  color: #94a3b8;
+}
+
+/* Compare Bar */
+.compareBar {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.clearButton {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.clearButton:hover {
+  background-color: #e2e8f0;
+}
+
+.compareButton {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.compareButton:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+/* Version Timeline */
+.versionDot {
+  background-color: #fff;
+  border-color: #94a3b8;
+}
+
+.dotCurrent {
+  border-color: #16a34a;
+  background-color: #16a34a;
+}
+
+.versionLine {
+  background-color: #e2e8f0;
+}
+
+.versionContent {
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+}
+
+.currentVersion .versionContent {
+  border-color: #16a34a;
+  background-color: #f0fdf4;
+}
+
+.selectedVersion .versionContent {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.versionNumber {
+  color: #1e293b;
+}
+
+.versionDate {
+  color: #64748b;
+}
+
+.checkmark {
+  border-color: #cbd5e1;
+  background-color: #fff;
+}
+
+.checkbox input:checked ~ .checkmark {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+.changeNote {
+  color: #475569;
+}
+
+.versionMeta {
+  color: #94a3b8;
+}
+
+.downloadButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.downloadButton:hover {
+  background-color: #e2e8f0;
+}
+
+.restoreButton {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.restoreButton:hover {
+  background-color: #fde68a;
+}
+
+.previewButton {
+  background-color: #eff6ff;
+  color: #3b82f6;
+}
+
+.previewButton:hover {
+  background-color: #dbeafe;
+}

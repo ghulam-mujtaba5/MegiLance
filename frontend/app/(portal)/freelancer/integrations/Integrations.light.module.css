@@ -1,0 +1,179 @@
+/* @AI-HINT: Integrations page - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.categories {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.categoryBtn {
+  background-color: transparent;
+  color: #64748b;
+}
+
+.categoryBtn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.categoryActive {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.categoryActive:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.loading {
+  color: #64748b;
+}
+
+/* Card */
+.integrationCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.integrationCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.connected {
+  border-color: #22c55e;
+}
+
+.integrationName {
+  color: #0f172a;
+}
+
+.integrationDesc {
+  color: #64748b;
+}
+
+.scope {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.syncInfo {
+  background-color: #f0fdf4;
+}
+
+.syncLabel {
+  color: #166534;
+}
+
+.lastSync {
+  color: #16a34a;
+}
+
+.connectBtn {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.connectBtn:hover {
+  background-color: #2563eb;
+}
+
+.syncBtn {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.syncBtn:hover {
+  background-color: #e2e8f0;
+}
+
+.settingsBtn {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.settingsBtn:hover {
+  background-color: #e2e8f0;
+}
+
+.disconnectBtn {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.disconnectBtn:hover {
+  background-color: #fee2e2;
+}
+
+/* Modal */
+.modal {
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  border-color: #e2e8f0;
+}
+
+.modalTitle {
+  color: #0f172a;
+}
+
+.closeButton {
+  color: #64748b;
+}
+
+.closeButton:hover {
+  background-color: #f1f5f9;
+}
+
+.sectionTitle {
+  color: #64748b;
+}
+
+.permissionItem {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.infoGrid {
+  background-color: transparent;
+}
+
+.infoItem {
+  background-color: #f8fafc;
+}
+
+.infoLabel {
+  color: #64748b;
+}
+
+.infoValue {
+  color: #0f172a;
+}
+
+.modalFooter {
+  border-color: #e2e8f0;
+}
+
+.closeBtn {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.closeBtn:hover {
+  background-color: #e2e8f0;
+}

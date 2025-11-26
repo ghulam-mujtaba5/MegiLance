@@ -1,0 +1,151 @@
+/* @AI-HINT: Currency Settings page - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+}
+
+.loading {
+  color: #64748b;
+}
+
+.title {
+  color: #1e293b;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Panels */
+.settingsPanel,
+.converterPanel {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.ratesPanel {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.sectionTitle {
+  color: #1e293b;
+}
+
+/* Form */
+.hint {
+  color: #94a3b8;
+}
+
+.select,
+.input {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.select:focus,
+.input:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.selectSmall {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+/* Toggle */
+.toggleSlider {
+  background-color: #cbd5e1;
+}
+
+.toggle input:checked + .toggleSlider {
+  background-color: #4573df;
+}
+
+.toggleLabel {
+  color: #1e293b;
+}
+
+.toggleHint {
+  color: #64748b;
+}
+
+/* Save Button */
+.saveButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.saveButton:hover {
+  background-color: #3b62c4;
+}
+
+/* Converter */
+.swapButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.swapButton:hover {
+  background-color: #e2e8f0;
+}
+
+.rateInfo {
+  color: #64748b;
+}
+
+/* Rates */
+.searchInput {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.ratesSubtitle {
+  color: #94a3b8;
+}
+
+.tableHeader {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.tableRow {
+  border-color: #e2e8f0;
+}
+
+.tableRow:hover {
+  background-color: #f8fafc;
+}
+
+.currencySymbol {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.currencyCode {
+  color: #1e293b;
+}
+
+.currencyName {
+  color: #64748b;
+}
+
+.rate {
+  color: #1e293b;
+}
+
+.converted {
+  color: #64748b;
+}

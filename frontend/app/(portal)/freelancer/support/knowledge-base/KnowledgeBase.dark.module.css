@@ -1,0 +1,250 @@
+/* @AI-HINT: Knowledge base dark theme */
+
+.container {
+  background-color: #0f172a;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+}
+
+.heroTitle {
+  color: #ffffff;
+}
+
+.heroSubtitle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Search */
+.searchInput {
+  background-color: #1e293b;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+}
+
+.searchInput::placeholder {
+  color: #64748b;
+}
+
+.searchInput:focus {
+  border-color: #60a5fa;
+}
+
+.searchButton {
+  background-color: #60a5fa;
+  color: #0f172a;
+}
+
+.searchButton:hover {
+  background-color: #93c5fd;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  color: #94a3b8;
+}
+
+.breadcrumbLink {
+  color: #60a5fa;
+}
+
+.breadcrumbLink:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+  color: #475569;
+}
+
+.breadcrumbCurrent {
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+.breadcrumbActive {
+  color: #60a5fa;
+}
+
+/* Section Title */
+.sectionTitle {
+  color: #f1f5f9;
+}
+
+/* Category Card */
+.categoryCard {
+  background-color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.categoryCard:hover {
+  background-color: #334155;
+  transform: translateY(-2px);
+}
+
+.categoryName {
+  color: #f1f5f9;
+}
+
+.categoryDescription {
+  color: #94a3b8;
+}
+
+.articleCount {
+  color: #60a5fa;
+}
+
+/* Popular Item */
+.popularItem {
+  background-color: #1e293b;
+}
+
+.popularItem:hover {
+  background-color: #334155;
+}
+
+.popularRank {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.popularTitle {
+  color: #f1f5f9;
+}
+
+.popularExcerpt {
+  color: #94a3b8;
+}
+
+.popularViews {
+  color: #64748b;
+}
+
+/* Support Section */
+.supportSection {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+.supportSection h2 {
+  color: #f1f5f9;
+}
+
+.supportSection p {
+  color: #94a3b8;
+}
+
+.supportButton {
+  background-color: #4573df;
+  color: #ffffff;
+  border: none;
+}
+
+.supportButton:hover {
+  background-color: #5b8bef;
+}
+
+.supportButtonSecondary {
+  background-color: transparent;
+  color: #60a5fa;
+  border: 2px solid #60a5fa;
+}
+
+.supportButtonSecondary:hover {
+  background-color: rgba(96, 165, 250, 0.1);
+}
+
+/* Article Card */
+.articleCard {
+  background-color: #1e293b;
+}
+
+.articleCard:hover {
+  background-color: #334155;
+}
+
+.articleCardTitle {
+  color: #f1f5f9;
+}
+
+.articleCardExcerpt {
+  color: #94a3b8;
+}
+
+.articleCardMeta {
+  color: #64748b;
+}
+
+/* No Results */
+.noResults {
+  color: #94a3b8;
+}
+
+.clearButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.clearButton:hover {
+  background-color: #5b8bef;
+}
+
+/* Article View */
+.backButton {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.backButton:hover {
+  background-color: #475569;
+}
+
+.article {
+  background-color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.articleHeader {
+  border-color: #334155;
+}
+
+.articleTitle {
+  color: #f1f5f9;
+}
+
+.articleMeta {
+  color: #94a3b8;
+}
+
+.articleContent {
+  color: #e2e8f0;
+}
+
+.articleFooter {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+.articleFooter p {
+  color: #94a3b8;
+}
+
+.feedbackButton {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.feedbackButton:hover {
+  background-color: #334155;
+  border-color: #60a5fa;
+  color: #60a5fa;
+}
+
+.helpfulCount {
+  color: #64748b;
+}

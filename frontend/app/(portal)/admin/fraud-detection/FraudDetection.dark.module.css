@@ -1,0 +1,239 @@
+/* @AI-HINT: Fraud Detection Dashboard - dark theme colors */
+
+.container {
+  background-color: #0f172a;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Stats */
+.statCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.statValue {
+  color: #f1f5f9;
+}
+
+.statLabel {
+  color: #94a3b8;
+}
+
+/* Tabs */
+.tabs {
+  border-color: #334155;
+}
+
+.tab {
+  color: #94a3b8;
+}
+
+.tab:hover {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+.tabActive {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+/* Panel */
+.panel {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+/* Filters */
+.select {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.select:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+/* Transaction Card */
+.transactionCard {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+}
+
+.transactionCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.transactionType {
+  color: #94a3b8;
+}
+
+.transactionAmount {
+  color: #f1f5f9;
+}
+
+.transactionUser {
+  color: #cbd5e1;
+}
+
+.flag {
+  background-color: #422006;
+  color: #fcd34d;
+}
+
+.transactionFooter {
+  color: #64748b;
+}
+
+/* Alerts */
+.alertCard {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+}
+
+.alertMessage {
+  color: #f1f5f9;
+}
+
+.alertMeta {
+  color: #94a3b8;
+}
+
+.resolveButton {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.resolveButton:hover {
+  background-color: #22c55e;
+}
+
+.dismissButton {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.dismissButton:hover {
+  background-color: #475569;
+}
+
+/* Rules */
+.rulesHeader {
+  border-bottom: 1px solid #334155;
+  padding-bottom: 1rem;
+}
+
+.sectionTitle {
+  color: #f1f5f9;
+}
+
+.addRuleButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.addRuleButton:hover {
+  background-color: #5b84e9;
+}
+
+.ruleCard {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+}
+
+.ruleName {
+  color: #f1f5f9;
+}
+
+.ruleCondition,
+.ruleAction {
+  color: #94a3b8;
+}
+
+/* Toggle */
+.toggleSlider {
+  background-color: #475569;
+}
+
+.toggle input:checked + .toggleSlider {
+  background-color: #4573df;
+}
+
+/* Modal */
+.modal {
+  background-color: #1e293b;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.modalHeader {
+  border-color: #334155;
+}
+
+.modalTitle {
+  color: #f1f5f9;
+}
+
+.closeButton {
+  color: #94a3b8;
+}
+
+.closeButton:hover {
+  background-color: #334155;
+}
+
+.detailLabel {
+  color: #64748b;
+}
+
+.detailValue {
+  color: #f1f5f9;
+}
+
+.flagLarge {
+  background-color: #422006;
+  color: #fcd34d;
+}
+
+.modalActions {
+  border-color: #334155;
+}
+
+.clearButton {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.clearButton:hover {
+  background-color: #22c55e;
+}
+
+.blockButton {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.blockButton:hover {
+  background-color: #ef4444;
+}
+
+.reviewButton {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.reviewButton:hover {
+  background-color: #475569;
+}

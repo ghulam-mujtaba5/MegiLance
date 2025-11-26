@@ -1,0 +1,253 @@
+/* @AI-HINT: Workflow Automation page - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+}
+
+.loading {
+  color: #64748b;
+}
+
+.title {
+  color: #1e293b;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.createButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.createButton:hover {
+  background-color: #3b62c4;
+}
+
+/* Tabs */
+.tabs {
+  border-color: #e2e8f0;
+}
+
+.tab {
+  color: #64748b;
+}
+
+.tab:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.tabActive {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+/* Empty State */
+.emptyState {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.emptyState h3 {
+  color: #1e293b;
+}
+
+.emptyState p {
+  color: #64748b;
+}
+
+/* Workflow Card */
+.workflowCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.workflowCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.workflowName {
+  color: #1e293b;
+}
+
+.workflowDesc {
+  color: #64748b;
+}
+
+/* Toggle */
+.toggleSlider {
+  background-color: #cbd5e1;
+}
+
+.toggle input:checked + .toggleSlider {
+  background-color: #4573df;
+}
+
+.trigger {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.actionCount {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.workflowStats {
+  color: #94a3b8;
+}
+
+.editButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.editButton:hover {
+  background-color: #e2e8f0;
+}
+
+.testButton {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.testButton:hover {
+  background-color: #bfdbfe;
+}
+
+.deleteButton {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.deleteButton:hover {
+  background-color: #fecaca;
+}
+
+/* Template Card */
+.templateCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.templateCategory {
+  color: #4573df;
+}
+
+.templateName {
+  color: #1e293b;
+}
+
+.templateDesc {
+  color: #64748b;
+}
+
+.templateTrigger {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.templatePopularity {
+  color: #ca8a04;
+}
+
+.useButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.useButton:hover {
+  background-color: #3b62c4;
+}
+
+/* Logs */
+.logsPanel {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.logItem {
+  border-color: #e2e8f0;
+}
+
+.logWorkflow {
+  color: #1e293b;
+}
+
+.logTime {
+  color: #94a3b8;
+}
+
+.viewLogButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.viewLogButton:hover {
+  background-color: #e2e8f0;
+}
+
+/* Modal */
+.modal {
+  background-color: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modalHeader {
+  border-color: #e2e8f0;
+}
+
+.modalTitle {
+  color: #1e293b;
+}
+
+.closeButton {
+  color: #64748b;
+}
+
+.closeButton:hover {
+  background-color: #f1f5f9;
+}
+
+.label {
+  color: #1e293b;
+}
+
+.input,
+.select,
+.textarea {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.modalActions {
+  border-color: #e2e8f0;
+}
+
+.cancelButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.cancelButton:hover {
+  background-color: #e2e8f0;
+}
+
+.saveButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: #3b62c4;
+}

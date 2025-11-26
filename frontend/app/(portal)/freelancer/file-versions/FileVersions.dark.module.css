@@ -1,0 +1,187 @@
+/* @AI-HINT: File Versions page - dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Controls */
+.searchBox {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.searchInput {
+  color: #f1f5f9;
+}
+
+.searchInput::placeholder {
+  color: #64748b;
+}
+
+.sortSelect {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+/* Empty State */
+.emptyState {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.emptyTitle {
+  color: #f1f5f9;
+}
+
+.emptyDesc {
+  color: #94a3b8;
+}
+
+/* File Card */
+.fileCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.fileCard:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.fileName {
+  color: #f1f5f9;
+}
+
+.projectName {
+  color: #60a5fa;
+}
+
+.versionCount {
+  color: #94a3b8;
+}
+
+.modifiedTime {
+  color: #64748b;
+}
+
+/* Modal */
+.modal {
+  background-color: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  border-color: #334155;
+}
+
+.modalTitle {
+  color: #f1f5f9;
+}
+
+.modalSubtitle {
+  color: #94a3b8;
+}
+
+.closeButton {
+  color: #94a3b8;
+}
+
+.closeButton:hover {
+  background-color: #334155;
+}
+
+/* Timeline */
+.versionItem {
+  border-bottom: 1px solid #334155;
+}
+
+.currentVersion {
+  background-color: rgba(34, 197, 94, 0.1);
+  margin: -0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.versionDot {
+  background-color: #475569;
+}
+
+.currentVersion .versionDot {
+  background-color: #22c55e;
+}
+
+.versionLine {
+  background-color: #334155;
+}
+
+.versionNumber {
+  color: #f1f5f9;
+}
+
+.currentBadge {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+.versionDate {
+  color: #64748b;
+}
+
+.uploaderAvatar {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.uploaderName {
+  color: #cbd5e1;
+}
+
+.versionSize {
+  color: #64748b;
+}
+
+.versionChanges {
+  background-color: #0f172a;
+  color: #94a3b8;
+}
+
+.downloadBtn {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.downloadBtn:hover {
+  background-color: #475569;
+}
+
+.restoreBtn {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.restoreBtn:hover {
+  background-color: rgba(59, 130, 246, 0.25);
+}
+
+.deleteBtn {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.deleteBtn:hover {
+  background-color: rgba(239, 68, 68, 0.25);
+}

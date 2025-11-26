@@ -1,0 +1,201 @@
+/* @AI-HINT: User Feedback page - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.submitButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.submitButton:hover {
+  background-color: #2563eb;
+}
+
+.filters {
+  background-color: transparent;
+}
+
+.filterButton {
+  background-color: #ffffff;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.filterButton:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.filterActive {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.sortSelect {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.loading {
+  color: #64748b;
+}
+
+/* Empty State */
+.emptyState {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.emptyTitle {
+  color: #0f172a;
+}
+
+.emptyDesc {
+  color: #64748b;
+}
+
+/* Feedback Card */
+.feedbackCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.feedbackCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.voteButton {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.voteButton:hover {
+  background-color: #e2e8f0;
+  color: #3b82f6;
+}
+
+.voted {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.voteCount {
+  color: #0f172a;
+}
+
+.category {
+  color: #64748b;
+}
+
+.feedbackTitle {
+  color: #0f172a;
+}
+
+.feedbackDesc {
+  color: #64748b;
+}
+
+.commentCount {
+  color: #3b82f6;
+}
+
+.date {
+  color: #94a3b8;
+}
+
+/* Modal */
+.modal {
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  border-color: #e2e8f0;
+}
+
+.modalTitle {
+  color: #0f172a;
+}
+
+.closeButton {
+  color: #64748b;
+}
+
+.closeButton:hover {
+  background-color: #f1f5f9;
+}
+
+.label {
+  color: #0f172a;
+}
+
+.typeOption {
+  background-color: #f8fafc;
+  color: #475569;
+}
+
+.typeOption:hover {
+  background-color: #f1f5f9;
+}
+
+.typeSelected {
+  background-color: #eff6ff;
+  color: #0f172a;
+}
+
+.input,
+.select,
+.textarea {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #94a3b8;
+}
+
+.modalFooter {
+  border-color: #e2e8f0;
+}
+
+.cancelBtn {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.cancelBtn:hover {
+  background-color: #e2e8f0;
+}
+
+.submitBtn {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.submitBtn:hover {
+  background-color: #2563eb;
+}

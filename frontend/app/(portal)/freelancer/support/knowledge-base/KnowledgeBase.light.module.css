@@ -1,0 +1,253 @@
+/* @AI-HINT: Knowledge base light theme */
+
+.container {
+  background-color: #f8fafc;
+}
+
+.loading {
+  color: #64748b;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #4573df 0%, #3b5fc9 100%);
+}
+
+.heroTitle {
+  color: #ffffff;
+}
+
+.heroSubtitle {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Search */
+.searchInput {
+  background-color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #0f172a;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.searchInput:focus {
+  border-color: #ffffff;
+}
+
+.searchButton {
+  background-color: #ffffff;
+  color: #4573df;
+}
+
+.searchButton:hover {
+  background-color: #f1f5f9;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  color: #64748b;
+}
+
+.breadcrumbLink {
+  color: #4573df;
+}
+
+.breadcrumbLink:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbSeparator {
+  color: #cbd5e1;
+}
+
+.breadcrumbCurrent {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.breadcrumbActive {
+  color: #4573df;
+}
+
+/* Section Title */
+.sectionTitle {
+  color: #0f172a;
+}
+
+/* Category Card */
+.categoryCard {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.categoryCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.categoryName {
+  color: #0f172a;
+}
+
+.categoryDescription {
+  color: #64748b;
+}
+
+.articleCount {
+  color: #4573df;
+}
+
+/* Popular Item */
+.popularItem {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.popularItem:hover {
+  background-color: #f8fafc;
+}
+
+.popularRank {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.popularTitle {
+  color: #0f172a;
+}
+
+.popularExcerpt {
+  color: #64748b;
+}
+
+.popularViews {
+  color: #94a3b8;
+}
+
+/* Support Section */
+.supportSection {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.supportSection h2 {
+  color: #0f172a;
+}
+
+.supportSection p {
+  color: #475569;
+}
+
+.supportButton {
+  background-color: #4573df;
+  color: #ffffff;
+  border: none;
+}
+
+.supportButton:hover {
+  background-color: #3b5fc9;
+}
+
+.supportButtonSecondary {
+  background-color: #ffffff;
+  color: #4573df;
+  border: 2px solid #4573df;
+}
+
+.supportButtonSecondary:hover {
+  background-color: #eff6ff;
+}
+
+/* Article Card */
+.articleCard {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.articleCard:hover {
+  background-color: #f8fafc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.articleCardTitle {
+  color: #0f172a;
+}
+
+.articleCardExcerpt {
+  color: #64748b;
+}
+
+.articleCardMeta {
+  color: #94a3b8;
+}
+
+/* No Results */
+.noResults {
+  color: #64748b;
+}
+
+.clearButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.clearButton:hover {
+  background-color: #3b5fc9;
+}
+
+/* Article View */
+.backButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.backButton:hover {
+  background-color: #e2e8f0;
+}
+
+.article {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.articleHeader {
+  border-color: #e2e8f0;
+}
+
+.articleTitle {
+  color: #0f172a;
+}
+
+.articleMeta {
+  color: #64748b;
+}
+
+.articleContent {
+  color: #374151;
+}
+
+.articleFooter {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.articleFooter p {
+  color: #475569;
+}
+
+.feedbackButton {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.feedbackButton:hover {
+  background-color: #f1f5f9;
+  border-color: #4573df;
+  color: #4573df;
+}
+
+.helpfulCount {
+  color: #94a3b8;
+}

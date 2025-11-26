@@ -1,0 +1,305 @@
+/* @AI-HINT: Invoice management dark theme */
+
+.container {
+  background-color: #0f172a;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.createButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.createButton:hover {
+  background-color: #5b8bef;
+}
+
+/* Stats */
+.statCard {
+  background-color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.statLabel {
+  color: #94a3b8;
+}
+
+.statValue {
+  color: #f1f5f9;
+}
+
+.statValuePaid {
+  color: #4ade80;
+}
+
+.statValuePending {
+  color: #fbbf24;
+}
+
+.statValueOverdue {
+  color: #f87171;
+}
+
+/* Filters */
+.filters {
+  background-color: #1e293b;
+  padding: 0.5rem;
+  border-radius: 12px;
+}
+
+.filterButton {
+  border-color: transparent;
+  color: #94a3b8;
+  background-color: transparent;
+}
+
+.filterButton:hover {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+.filterActive {
+  background-color: #4573df;
+  color: #ffffff;
+  border-color: #4573df;
+}
+
+.filterActive:hover {
+  background-color: #5b8bef;
+  color: #ffffff;
+}
+
+/* Invoice Card */
+.invoiceCard {
+  background-color: #1e293b;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.invoiceCard:hover {
+  background-color: #334155;
+}
+
+.invoiceNumber {
+  color: #f1f5f9;
+}
+
+.invoiceAmount {
+  color: #f1f5f9;
+}
+
+.clientName {
+  color: #e2e8f0;
+}
+
+.projectTitle {
+  color: #94a3b8;
+}
+
+.invoiceDates {
+  color: #64748b;
+}
+
+/* Status */
+.statusPaid {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.statusSent {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.statusOverdue {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.statusDraft {
+  background-color: rgba(100, 116, 139, 0.2);
+  color: #94a3b8;
+}
+
+.statusCancelled {
+  background-color: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+/* Action Buttons */
+.actionButton {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.actionButton:hover {
+  background-color: #475569;
+}
+
+.actionButtonPrimary {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.actionButtonPrimary:hover {
+  background-color: #5b8bef;
+}
+
+.actionButtonDanger {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.actionButtonDanger:hover {
+  background-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Empty State */
+.emptyState {
+  color: #94a3b8;
+}
+
+/* Modal */
+.modal {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modalContent {
+  background-color: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  border-color: #334155;
+}
+
+.modalHeader h2 {
+  color: #f1f5f9;
+}
+
+.closeButton {
+  background-color: #334155;
+  color: #94a3b8;
+}
+
+.closeButton:hover {
+  background-color: #475569;
+  color: #f1f5f9;
+}
+
+.modalFooter {
+  border-color: #334155;
+}
+
+/* Form */
+.formGroup label {
+  color: #e2e8f0;
+}
+
+.input, .textarea {
+  background-color: #0f172a;
+  border-color: #475569;
+  color: #f1f5f9;
+}
+
+.input:focus, .textarea:focus {
+  border-color: #60a5fa;
+}
+
+/* Items */
+.itemsHeader {
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+.itemAmount {
+  color: #f1f5f9;
+}
+
+.removeButton {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.removeButton:hover:not(:disabled) {
+  background-color: rgba(239, 68, 68, 0.3);
+}
+
+.addItemButton {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.addItemButton:hover {
+  background-color: #334155;
+  border-color: #60a5fa;
+  color: #60a5fa;
+}
+
+.totalSection {
+  background-color: #0f172a;
+}
+
+.totalAmount {
+  color: #f1f5f9;
+}
+
+/* Buttons */
+.primaryButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background-color: #5b8bef;
+}
+
+.secondaryButton {
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.secondaryButton:hover {
+  background-color: #334155;
+}
+
+/* Invoice Detail */
+.detailClientName {
+  color: #f1f5f9;
+}
+
+.detailClientEmail {
+  color: #94a3b8;
+}
+
+.detailMeta {
+  background-color: #0f172a;
+}
+
+.detailLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.detailItems th {
+  color: #94a3b8;
+}
+
+.detailItems th,
+.detailItems td {
+  border-color: #334155;
+}
+
+.detailItems tfoot td {
+  border-color: #475569;
+}

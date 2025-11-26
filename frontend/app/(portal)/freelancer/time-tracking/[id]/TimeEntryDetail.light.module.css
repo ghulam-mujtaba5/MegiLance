@@ -1,0 +1,165 @@
+/* @AI-HINT: Time Entry Detail page - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+}
+
+.loading,
+.notFound {
+  color: #64748b;
+}
+
+.backButton {
+  color: #4573df;
+}
+
+.backButton:hover {
+  color: #3b62c4;
+}
+
+.submitButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.submitButton:hover {
+  background-color: #3b62c4;
+}
+
+.downloadButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.downloadButton:hover {
+  background-color: #e2e8f0;
+}
+
+/* Main Card */
+.mainCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.projectName {
+  color: #1e293b;
+}
+
+.clientName {
+  color: #64748b;
+}
+
+.taskDescription {
+  background-color: #f8fafc;
+  color: #475569;
+}
+
+.timeLabel {
+  color: #94a3b8;
+}
+
+.timeValue {
+  color: #1e293b;
+}
+
+/* Stats */
+.statCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.statIcon {
+  color: #64748b;
+}
+
+.statLabel {
+  color: #64748b;
+}
+
+.statValue {
+  color: #1e293b;
+}
+
+/* Notes */
+.notesCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.sectionTitle {
+  color: #1e293b;
+}
+
+.editButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.editButton:hover {
+  background-color: #e2e8f0;
+}
+
+.notesText {
+  color: #475569;
+}
+
+.textarea {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.textarea:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.cancelButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.cancelButton:hover {
+  background-color: #e2e8f0;
+}
+
+.saveButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.saveButton:hover {
+  background-color: #3b62c4;
+}
+
+/* Screenshots */
+.screenshotsCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.screenshotItem {
+  color: #64748b;
+}
+
+.screenshotPlaceholder {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.screenshotTime {
+  color: #94a3b8;
+}
+
+/* Meta */
+.metaCard {
+  background-color: #f8fafc;
+}
+
+.metaLabel {
+  color: #94a3b8;
+}
+
+.metaValue {
+  color: #475569;
+}

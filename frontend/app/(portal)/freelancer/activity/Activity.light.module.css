@@ -1,0 +1,129 @@
+/* @AI-HINT: Activity Feed - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.markAllButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.markAllButton:hover {
+  background-color: #2563eb;
+}
+
+.filters {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.filterButton {
+  background-color: transparent;
+  color: #64748b;
+}
+
+.filterButton:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.filterActive {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.filterActive:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.loading {
+  color: #64748b;
+}
+
+/* Empty State */
+.emptyState {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.emptyTitle {
+  color: #0f172a;
+}
+
+.emptyDesc {
+  color: #64748b;
+}
+
+/* Timeline */
+.dateHeader {
+  color: #64748b;
+}
+
+/* Activity Card */
+.activityCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.activityCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.unread {
+  border-left-color: #3b82f6;
+  background-color: #f0f9ff;
+}
+
+.activityIcon {
+  background-color: #f1f5f9;
+}
+
+.activityAction {
+  color: #3b82f6;
+}
+
+.activityTime {
+  color: #94a3b8;
+}
+
+.activityTitle {
+  color: #0f172a;
+}
+
+.activityDesc {
+  color: #64748b;
+}
+
+.relatedLink {
+  color: #3b82f6;
+}
+
+.relatedLink:hover {
+  color: #2563eb;
+}
+
+.unreadDot {
+  background-color: #3b82f6;
+}
+
+/* Load More */
+.loadMoreButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.loadMoreButton:hover {
+  background-color: #e2e8f0;
+}

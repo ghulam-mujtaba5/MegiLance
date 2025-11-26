@@ -1,0 +1,201 @@
+/* @AI-HINT: User Feedback page - dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.submitButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.submitButton:hover {
+  background-color: #2563eb;
+}
+
+.filters {
+  background-color: transparent;
+}
+
+.filterButton {
+  background-color: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+}
+
+.filterButton:hover {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+.filterActive {
+  background-color: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.sortSelect {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+/* Empty State */
+.emptyState {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.emptyTitle {
+  color: #f1f5f9;
+}
+
+.emptyDesc {
+  color: #94a3b8;
+}
+
+/* Feedback Card */
+.feedbackCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.feedbackCard:hover {
+  border-color: #475569;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.voteButton {
+  background-color: #334155;
+  color: #94a3b8;
+}
+
+.voteButton:hover {
+  background-color: #475569;
+  color: #60a5fa;
+}
+
+.voted {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.voteCount {
+  color: #f1f5f9;
+}
+
+.category {
+  color: #94a3b8;
+}
+
+.feedbackTitle {
+  color: #f1f5f9;
+}
+
+.feedbackDesc {
+  color: #94a3b8;
+}
+
+.commentCount {
+  color: #60a5fa;
+}
+
+.date {
+  color: #64748b;
+}
+
+/* Modal */
+.modal {
+  background-color: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  border-color: #334155;
+}
+
+.modalTitle {
+  color: #f1f5f9;
+}
+
+.closeButton {
+  color: #94a3b8;
+}
+
+.closeButton:hover {
+  background-color: #334155;
+}
+
+.label {
+  color: #f1f5f9;
+}
+
+.typeOption {
+  background-color: #0f172a;
+  color: #cbd5e1;
+}
+
+.typeOption:hover {
+  background-color: #334155;
+}
+
+.typeSelected {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #f1f5f9;
+}
+
+.input,
+.select,
+.textarea {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #64748b;
+}
+
+.modalFooter {
+  border-color: #334155;
+}
+
+.cancelBtn {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.cancelBtn:hover {
+  background-color: #475569;
+}
+
+.submitBtn {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.submitBtn:hover {
+  background-color: #2563eb;
+}

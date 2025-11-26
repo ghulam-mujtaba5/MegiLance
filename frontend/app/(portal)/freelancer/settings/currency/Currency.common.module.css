@@ -1,0 +1,355 @@
+/* @AI-HINT: Currency Settings page - common layout styles */
+
+.container {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1rem;
+}
+
+/* Header */
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* Content Layout */
+.content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Panels */
+.settingsPanel,
+.converterPanel,
+.ratesPanel {
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+/* Form Elements */
+.formGroup {
+  margin-bottom: 1.25rem;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.hint {
+  font-size: 0.75rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.select,
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border: 1px solid;
+  transition: border-color 0.2s;
+}
+
+.select:focus,
+.input:focus {
+  outline: none;
+}
+
+/* Toggle */
+.toggleGroup {
+  margin-bottom: 1rem;
+}
+
+.toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggleSlider {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  position: relative;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.toggleSlider::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s;
+}
+
+.toggle input:checked + .toggleSlider::after {
+  transform: translateX(20px);
+}
+
+.toggleLabel {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.toggleHint {
+  display: block;
+  font-size: 0.75rem;
+}
+
+/* Save Button */
+.saveButton {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.saveButton:hover {
+  transform: translateY(-1px);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Converter */
+.converter {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.converterInput {
+  flex: 1;
+}
+
+.converterInput label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.inputWithSelect {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inputWithSelect .input {
+  flex: 1;
+}
+
+.selectSmall {
+  width: 80px;
+  padding: 0.75rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border: 1px solid;
+}
+
+.inputReadonly {
+  cursor: default;
+}
+
+.swapButton {
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.swapButton:hover {
+  transform: scale(1.1);
+}
+
+.rateInfo {
+  text-align: center;
+  font-size: 0.8rem;
+  margin: 1rem 0 0 0;
+}
+
+/* Rates Panel */
+.ratesHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.ratesHeader .sectionTitle {
+  margin: 0;
+}
+
+.searchInput {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  border: 1px solid;
+  width: 200px;
+}
+
+.ratesSubtitle {
+  font-size: 0.8rem;
+  margin: 0 0 1rem 0;
+}
+
+/* Rates Table */
+.ratesTable {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid;
+  align-items: center;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.currencyInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.currencySymbol {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.currencyCode {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.currencyName {
+  display: block;
+  font-size: 0.75rem;
+}
+
+.rate {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+}
+
+.converted {
+  font-size: 0.9rem;
+}
+
+.hideOnMobile {
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .converter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .swapButton {
+    align-self: center;
+    transform: rotate(90deg);
+  }
+
+  .swapButton:hover {
+    transform: rotate(90deg) scale(1.1);
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .hideOnMobile {
+    display: none;
+  }
+
+  .ratesHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+}

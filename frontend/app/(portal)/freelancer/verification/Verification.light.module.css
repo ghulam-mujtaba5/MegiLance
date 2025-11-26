@@ -1,0 +1,185 @@
+/* @AI-HINT: Verification Center - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.loading {
+  color: #64748b;
+}
+
+/* Progress Card */
+.progressCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.progressTitle {
+  color: #0f172a;
+}
+
+.progressSubtitle {
+  color: #64748b;
+}
+
+.progressBar {
+  background-color: #e2e8f0;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+.nextTierHint {
+  color: #64748b;
+}
+
+/* Tiers */
+.sectionTitle {
+  color: #0f172a;
+}
+
+.tierCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.tierAchieved {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tierName {
+  color: #0f172a;
+}
+
+.tierBenefit {
+  color: #64748b;
+}
+
+/* Verification Cards */
+.verificationCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.verificationCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.verificationName {
+  color: #0f172a;
+}
+
+.verificationDesc {
+  color: #64748b;
+}
+
+.verifiedDate {
+  color: #94a3b8;
+}
+
+.verifyButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.verifyButton:hover {
+  background-color: #2563eb;
+}
+
+.retryButton {
+  background-color: #f59e0b;
+  color: #ffffff;
+}
+
+.retryButton:hover {
+  background-color: #d97706;
+}
+
+.pendingLabel {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Modal */
+.modal {
+  background-color: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  border-color: #e2e8f0;
+}
+
+.modalTitle {
+  color: #0f172a;
+}
+
+.closeButton {
+  color: #64748b;
+}
+
+.closeButton:hover {
+  background-color: #f1f5f9;
+}
+
+.modalDesc {
+  color: #475569;
+}
+
+.uploadArea {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.uploadArea:hover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+.uploadPlaceholder {
+  color: #64748b;
+}
+
+.uploadHint {
+  color: #94a3b8;
+}
+
+.securityNote {
+  background-color: #f0fdf4;
+  color: #166534;
+}
+
+.modalActions {
+  border-color: #e2e8f0;
+}
+
+.cancelButton {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.cancelButton:hover {
+  background-color: #e2e8f0;
+}
+
+.submitButton {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.submitButton:hover {
+  background-color: #2563eb;
+}

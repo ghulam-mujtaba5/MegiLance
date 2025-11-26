@@ -1,0 +1,157 @@
+/* @AI-HINT: Admin feedback page - light theme colors */
+
+.container {
+  background-color: #f8fafc;
+}
+
+.loading {
+  color: #64748b;
+}
+
+.title {
+  color: #1e293b;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+.exportButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.exportButton:hover {
+  background-color: #3b62c4;
+}
+
+/* Stats */
+.statCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.statValue {
+  color: #1e293b;
+}
+
+.statLabel {
+  color: #64748b;
+}
+
+/* Tabs */
+.tab {
+  color: #64748b;
+}
+
+.tab:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+.tabActive {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.select {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+/* Feedback Card */
+.feedbackCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.feedbackCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.typeBadge {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.feedbackSubject {
+  color: #1e293b;
+}
+
+.feedbackMessage {
+  color: #475569;
+}
+
+.userName {
+  color: #1e293b;
+}
+
+.userType {
+  color: #94a3b8;
+}
+
+.feedbackDate {
+  color: #94a3b8;
+}
+
+/* Modal */
+.modal {
+  background-color: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modalHeader {
+  border-color: #e2e8f0;
+}
+
+.modalTitle {
+  color: #1e293b;
+}
+
+.closeButton {
+  color: #64748b;
+}
+
+.closeButton:hover {
+  background-color: #f1f5f9;
+}
+
+.detailLabel {
+  color: #64748b;
+}
+
+.detailValue {
+  color: #1e293b;
+}
+
+.messageBox {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+}
+
+.responseBox {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.textarea {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.textarea:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.respondButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.respondButton:hover:not(:disabled) {
+  background-color: #3b62c4;
+}

@@ -1,0 +1,473 @@
+/* @AI-HINT: Knowledge base common styles - layout, structure */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 3rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  font-size: 1.125rem;
+}
+
+/* Hero */
+.hero {
+  padding: 3rem 2rem;
+  text-align: center;
+  border-radius: 0 0 24px 24px;
+  margin-bottom: 2rem;
+}
+
+.heroTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.heroSubtitle {
+  font-size: 1.125rem;
+  margin: 0 0 2rem 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Search */
+.searchContainer {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border: 2px solid;
+  border-radius: 12px;
+  outline: none;
+}
+
+.searchButton {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.breadcrumb button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Main Content */
+.mainContent {
+  padding: 0 2rem;
+}
+
+/* Section Title */
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Categories Grid */
+.categoriesSection {
+  margin-bottom: 3rem;
+}
+
+.categoriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.categoryCard {
+  padding: 1.5rem;
+  border-radius: 16px;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.categoryIcon {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.categoryName {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.categoryDescription {
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.articleCount {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+/* Popular Section */
+.popularSection {
+  margin-bottom: 3rem;
+}
+
+.popularList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.popularItem {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.popularRank {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.popularInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.popularTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.popularExcerpt {
+  font-size: 0.875rem;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popularViews {
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Support Section */
+.supportSection {
+  padding: 2.5rem;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.supportContent h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.supportContent p {
+  font-size: 1rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.supportActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.supportButton,
+.supportButtonSecondary {
+  padding: 0.875rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+/* Category Articles View */
+.categoryArticles {
+  padding: 0 2rem;
+}
+
+.articlesList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.articleCard {
+  display: block;
+  width: 100%;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.articleCardTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.articleCardExcerpt {
+  font-size: 0.9375rem;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.5;
+}
+
+.articleCardMeta {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Search Results */
+.searchResults {
+  padding: 0 2rem;
+}
+
+.noResults {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.noResults p {
+  font-size: 1.125rem;
+  margin: 0 0 1.5rem 0;
+}
+
+.clearButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Article View */
+.articleView {
+  padding: 0 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.article {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.articleHeader {
+  padding: 2rem;
+  border-bottom: 1px solid;
+}
+
+.articleTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.articleMeta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.articleContent {
+  padding: 2rem;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.articleContent h1,
+.articleContent h2,
+.articleContent h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.articleContent h2 {
+  font-size: 1.5rem;
+}
+
+.articleContent h3 {
+  font-size: 1.25rem;
+}
+
+.articleContent p {
+  margin-bottom: 1rem;
+}
+
+.articleContent ul,
+.articleContent ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.articleContent li {
+  margin-bottom: 0.5rem;
+}
+
+.articleFooter {
+  padding: 2rem;
+  text-align: center;
+  border-top: 1px solid;
+}
+
+.articleFooter > p:first-child {
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+}
+
+.feedbackButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.feedbackButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 2px solid;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.helpfulCount {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 2rem 1rem;
+  }
+
+  .heroTitle {
+    font-size: 1.75rem;
+  }
+
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
+  .searchContainer {
+    flex-direction: column;
+  }
+
+  .breadcrumb {
+    padding: 0 1rem;
+    flex-wrap: wrap;
+  }
+
+  .mainContent,
+  .categoryArticles,
+  .searchResults,
+  .articleView {
+    padding: 0 1rem;
+  }
+
+  .categoriesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .popularItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .popularViews {
+    align-self: flex-end;
+  }
+
+  .supportActions {
+    flex-direction: column;
+  }
+
+  .articleTitle {
+    font-size: 1.5rem;
+  }
+
+  .articleHeader,
+  .articleContent,
+  .articleFooter {
+    padding: 1.5rem;
+  }
+}

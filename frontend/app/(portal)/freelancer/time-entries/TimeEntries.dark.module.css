@@ -1,0 +1,242 @@
+/* @AI-HINT: Time Entries page - dark theme colors */
+
+.container {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.startButton {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+.startButton:hover {
+  background-color: #16a34a;
+}
+
+/* Summary */
+.summaryGrid {
+  background-color: transparent;
+}
+
+.summaryCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.summaryLabel {
+  color: #94a3b8;
+}
+
+.summaryValue {
+  color: #f1f5f9;
+}
+
+/* Active Timer */
+.activeTimer {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+}
+
+.timerProject {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.timerTask {
+  color: #ffffff;
+}
+
+.pauseBtn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.pauseBtn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.resumeBtn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.resumeBtn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.stopBtn {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.stopBtn:hover {
+  background-color: #dc2626;
+}
+
+/* Filters */
+.filterSelect {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+/* Empty State */
+.emptyState {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.emptyTitle {
+  color: #f1f5f9;
+}
+
+.emptyDesc {
+  color: #94a3b8;
+}
+
+/* Entries */
+.dateHeader {
+  color: #f1f5f9;
+}
+
+.dateDuration {
+  color: #94a3b8;
+}
+
+.entryCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.entryCard:hover {
+  border-color: #475569;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.timeRange {
+  color: #94a3b8;
+}
+
+.duration {
+  color: #f1f5f9;
+}
+
+.projectName {
+  color: #60a5fa;
+}
+
+.taskDesc {
+  color: #f1f5f9;
+}
+
+.tag {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.billable {
+  color: #4ade80;
+}
+
+.deleteBtn {
+  color: #94a3b8;
+}
+
+/* Modal */
+.modal {
+  background-color: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+  border-color: #334155;
+}
+
+.modalTitle {
+  color: #f1f5f9;
+}
+
+.closeButton {
+  color: #94a3b8;
+}
+
+.closeButton:hover {
+  background-color: #334155;
+}
+
+.label {
+  color: #f1f5f9;
+}
+
+.input,
+.select,
+.textarea {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #22c55e;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #64748b;
+}
+
+.addTagBtn {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.addTagBtn:hover {
+  background-color: #475569;
+}
+
+.selectedTag {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.checkboxText {
+  color: #f1f5f9;
+}
+
+.modalFooter {
+  border-color: #334155;
+}
+
+.cancelBtn {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+.cancelBtn:hover {
+  background-color: #475569;
+}
+
+.startTimerBtn {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+.startTimerBtn:hover {
+  background-color: #16a34a;
+}

@@ -1,0 +1,209 @@
+/* @AI-HINT: Admin billing page - dark theme colors */
+
+.container {
+  background-color: #0f172a;
+}
+
+.loading {
+  color: #94a3b8;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.exportButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.exportButton:hover {
+  background-color: #5b84e9;
+}
+
+/* Stats */
+.statCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.statLabel {
+  color: #94a3b8;
+}
+
+.statValue {
+  color: #f1f5f9;
+}
+
+/* Tabs */
+.tabs {
+  border-color: #334155;
+}
+
+.tab {
+  color: #94a3b8;
+}
+
+.tab:hover {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+.tabActive {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+/* Charts */
+.chartCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.cardTitle {
+  color: #f1f5f9;
+}
+
+.chartBar {
+  background-color: #4573df;
+}
+
+.chartLabels {
+  color: #64748b;
+}
+
+.planName {
+  color: #f1f5f9;
+}
+
+.planCount {
+  color: #60a5fa;
+}
+
+.planBarTrack {
+  background-color: #334155;
+}
+
+.planBarFill {
+  background-color: #4573df;
+}
+
+/* Panel */
+.panel {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+/* Filters */
+.searchInput {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #64748b;
+}
+
+.select {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+/* Table */
+.tableHeader {
+  background-color: #0f172a;
+  color: #94a3b8;
+}
+
+.tableRow {
+  border-bottom: 1px solid #334155;
+}
+
+.tableRow:hover {
+  background-color: #1e293b;
+}
+
+.userName {
+  color: #f1f5f9;
+}
+
+.userEmail {
+  color: #94a3b8;
+}
+
+.planBadge {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.amount {
+  color: #f1f5f9;
+}
+
+.date {
+  color: #94a3b8;
+}
+
+.actionButton {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.actionButton:hover {
+  background-color: #475569;
+}
+
+/* Plans */
+.planCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.planTitle {
+  color: #f1f5f9;
+}
+
+.priceAmount {
+  color: #f1f5f9;
+}
+
+.pricePeriod {
+  color: #94a3b8;
+}
+
+.subscribers {
+  color: #94a3b8;
+}
+
+.feature {
+  color: #cbd5e1;
+}
+
+.editPlanButton {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.editPlanButton:hover {
+  background-color: #475569;
+}
+
+/* Empty */
+.emptyState {
+  color: #94a3b8;
+}
+
+.emptyState h3 {
+  color: #f1f5f9;
+}
