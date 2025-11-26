@@ -1,0 +1,112 @@
+/* @AI-HINT: Common layout/structure styles for FraudCheck component */
+.container {
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.innerContainer {
+  width: 100%;
+  max-width: 800px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.form {
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+}
+
+.textarea {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid;
+  padding: 1rem;
+  font-size: 1rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+  font-family: inherit;
+}
+
+.textarea:focus {
+  outline: none;
+}
+
+.result {
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+.resultTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.resultSummary {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.resultScore {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.resultLevel {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.resultWarnings h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.resultWarnings ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.resultWarnings li {
+  margin-bottom: 0.25rem;
+}
+
+.riskLow .resultScore,
+.riskLow .resultLevel {
+  color: #16a34a;
+}
+
+.riskMedium .resultScore,
+.riskMedium .resultLevel {
+  color: #f59e0b;
+}
+
+.riskHigh .resultScore,
+.riskHigh .resultLevel {
+  color: #dc2626;
+}
+
+.riskCritical .resultScore,
+.riskCritical .resultLevel {
+  color: #7f1d1d;
+}

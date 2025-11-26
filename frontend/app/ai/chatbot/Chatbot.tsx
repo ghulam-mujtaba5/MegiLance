@@ -2,15 +2,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import Button from '@/app/components/Button/Button';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
-import './Chatbot.common.css';
-import './Chatbot.light.css';
-import './Chatbot.dark.css';
 
-interface ChatbotProps {
-  theme?: 'light' | 'dark';
-}
+import commonStyles from './Chatbot.common.module.css';
+import lightStyles from './Chatbot.light.module.css';
+import darkStyles from './Chatbot.dark.module.css';
 
 interface Message {
   id: number;
@@ -18,18 +17,23 @@ interface Message {
   sender: 'user' | 'bot';
 }
 
-const Chatbot: React.FC<ChatbotProps> = ({ theme = 'light' }) => {
+const Chatbot: React.FC = () => {
+  const { resolvedTheme } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
     { id: 1, text: 'Hello! How can I help you today?', sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  if (!resolvedTheme) return null;
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,25 +51,36 @@ const Chatbot: React.FC<ChatbotProps> = ({ theme = 'light' }) => {
   };
 
   return (
-    <div className={`Chatbot Chatbot--${theme}`}>
-      <div className={`Chatbot-container Card--${theme}`}>
-        <header className="Chatbot-header">
-          <h2>AI Assistant</h2>
-          <div className="status-indicator">● Online</div>
+    <div className={cn(commonStyles.container, themeStyles.container)}>
+      <div className={cn(commonStyles.chatContainer, themeStyles.chatContainer)}>
+        <header className={cn(commonStyles.header, themeStyles.header)}>
+          <h2 className={commonStyles.headerTitle}>AI Assistant</h2>
+          <div className={cn(commonStyles.statusIndicator, themeStyles.statusIndicator)}>● Online</div>
         </header>
-        <div className="Chatbot-messages">
+        <div className={commonStyles.messages}>
           {messages.map(msg => (
-            <div key={msg.id} className={`Message Message--${msg.sender} Message--${theme}`}>
+            <div 
+              key={msg.id} 
+              className={cn(
+                commonStyles.message,
+                msg.sender === 'user' ? commonStyles.messageUser : commonStyles.messageBot
+              )}
+            >
               {msg.sender === 'bot' && <UserAvatar name="AI Assistant" src="/ai-avatar.png" size="small" />}
-              <div className="Message-bubble">{msg.text}</div>
+              <div className={cn(
+                commonStyles.messageBubble,
+                msg.sender === 'user' ? themeStyles.messageBubbleUser : themeStyles.messageBubbleBot
+              )}>
+                {msg.text}
+              </div>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <form className="Chatbot-input-form" onSubmit={handleSend}>
+        <form className={cn(commonStyles.inputForm, themeStyles.inputForm)} onSubmit={handleSend}>
           <input
             type="text"
-            className={`Chatbot-input Chatbot-input--${theme}`}
+            className={cn(commonStyles.input, themeStyles.input)}
             placeholder="Ask a question..."
             value={input}
             onChange={e => setInput(e.target.value)}

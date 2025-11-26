@@ -2,16 +2,20 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import './Install.common.css';
-import './Install.light.css';
-import './Install.dark.css';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import Button from '@/app/components/Button/Button';
 
-interface InstallProps {
-  theme?: 'light' | 'dark';
-}
+import commonStyles from './Install.common.module.css';
+import lightStyles from './Install.light.module.css';
+import darkStyles from './Install.dark.module.css';
 
-const Install: React.FC<InstallProps> = ({ theme = 'light' }) => {
+const Install: React.FC = () => {
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  if (!resolvedTheme) return null;
+
   // In a real implementation, we would check if the app can be installed
   // and handle the beforeinstallprompt event.
   const handleInstallClick = () => {
@@ -19,25 +23,25 @@ const Install: React.FC<InstallProps> = ({ theme = 'light' }) => {
   };
 
   return (
-    <div className={`Install Install--${theme}`}>
-      <div className="Install-container">
-        <header className="Install-header">
-          <h1>Install MegiLance</h1>
-          <p>Get the best experience by installing the MegiLance app on your device.</p>
+    <div className={cn(commonStyles.container, themeStyles.container)}>
+      <div className={commonStyles.innerContainer}>
+        <header className={commonStyles.header}>
+          <h1 className={cn(commonStyles.title, themeStyles.title)}>Install MegiLance</h1>
+          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>Get the best experience by installing the MegiLance app on your device.</p>
         </header>
 
-        <div className="Install-features">
-          <div className="Install-feature">
-            <h3>Faster Access</h3>
-            <p>Launch the app directly from your home screen.</p>
+        <div className={commonStyles.features}>
+          <div className={cn(commonStyles.feature, themeStyles.feature)}>
+            <h3 className={cn(commonStyles.featureTitle, themeStyles.featureTitle)}>Faster Access</h3>
+            <p className={cn(commonStyles.featureDescription, themeStyles.featureDescription)}>Launch the app directly from your home screen.</p>
           </div>
-          <div className="Install-feature">
-            <h3>Offline Capabilities</h3>
-            <p>Access key features even without an internet connection.</p>
+          <div className={cn(commonStyles.feature, themeStyles.feature)}>
+            <h3 className={cn(commonStyles.featureTitle, themeStyles.featureTitle)}>Offline Capabilities</h3>
+            <p className={cn(commonStyles.featureDescription, themeStyles.featureDescription)}>Access key features even without an internet connection.</p>
           </div>
-          <div className="Install-feature">
-            <h3>Push Notifications</h3>
-            <p>Stay updated on project updates and messages.</p>
+          <div className={cn(commonStyles.feature, themeStyles.feature)}>
+            <h3 className={cn(commonStyles.featureTitle, themeStyles.featureTitle)}>Push Notifications</h3>
+            <p className={cn(commonStyles.featureDescription, themeStyles.featureDescription)}>Stay updated on project updates and messages.</p>
           </div>
         </div>
 

@@ -1,0 +1,11 @@
+/* @AI-HINT: Common/layout styles for DashboardLayout - sidebar + main content structure */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main {
+  flex-grow: 1;
+  overflow-y: auto;
+}

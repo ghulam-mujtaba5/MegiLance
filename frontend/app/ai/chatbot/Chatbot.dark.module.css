@@ -1,0 +1,42 @@
+/* @AI-HINT: Dark theme colors for Chatbot component */
+.container {
+  background-color: #111827;
+}
+
+.chatContainer {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+.header {
+  border-bottom-color: #374151;
+}
+
+.statusIndicator {
+  color: #4ade80;
+}
+
+.messageBubbleUser {
+  background-color: #6366f1;
+  color: #ffffff;
+}
+
+.messageBubbleBot {
+  background-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.inputForm {
+  border-top-color: #374151;
+}
+
+.input {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}

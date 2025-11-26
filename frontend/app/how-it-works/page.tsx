@@ -6,9 +6,9 @@ import { useTheme } from 'next-themes';
 import { FileText, Handshake, CheckCircle, UserCircle, Briefcase, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import StepCard from '@/app/components/Public/StepCard/StepCard';
-import './HowItWorksPage.common.css';
-import './HowItWorksPage.light.css';
-import './HowItWorksPage.dark.css';
+import commonStyles from './HowItWorksPage.common.module.css';
+import lightStyles from './HowItWorksPage.light.module.css';
+import darkStyles from './HowItWorksPage.dark.module.css';
 
 const clientSteps = [
   {
@@ -54,26 +54,28 @@ const freelancerSteps = [
 
 const HowItWorksPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const themeClass = resolvedTheme === 'dark' ? 'dark' : 'light';
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  if (!resolvedTheme) return null;
 
   return (
-    <main id="main-content" role="main" className={cn('HowItWorksPage-container', themeClass)}>
-      <header className="HowItWorksPage-header">
-        <h1 className="HowItWorksPage-title">How MegiLance Works</h1>
-        <p className="HowItWorksPage-subtitle">A simple, secure, and decentralized way to get work done.</p>
+    <main id="main-content" role="main" className={cn(commonStyles.container, themeStyles.container)}>
+      <header className={commonStyles.header}>
+        <h1 className={cn(commonStyles.title, themeStyles.title)}>How MegiLance Works</h1>
+        <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>A simple, secure, and decentralized way to get work done.</p>
       </header>
 
-      <section className="HowItWorksPage-main" aria-label="Process overview">
-        <section className="HowItWorksPage-section" aria-labelledby="howitworks-clients">
-          <h2 id="howitworks-clients" className="HowItWorksPage-section-title">For Clients</h2>
-          <div className="HowItWorksPage-grid">
+      <section className={commonStyles.main} aria-label="Process overview">
+        <section className={commonStyles.section} aria-labelledby="howitworks-clients">
+          <h2 id="howitworks-clients" className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>For Clients</h2>
+          <div className={commonStyles.grid}>
             {clientSteps.map(step => <StepCard key={step.stepNumber} {...step} />)}
           </div>
         </section>
 
-        <section className="HowItWorksPage-section" aria-labelledby="howitworks-freelancers">
-          <h2 id="howitworks-freelancers" className="HowItWorksPage-section-title">For Freelancers</h2>
-          <div className="HowItWorksPage-grid">
+        <section className={commonStyles.section} aria-labelledby="howitworks-freelancers">
+          <h2 id="howitworks-freelancers" className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>For Freelancers</h2>
+          <div className={commonStyles.grid}>
             {freelancerSteps.map(step => <StepCard key={step.stepNumber} {...step} />)}
           </div>
         </section>

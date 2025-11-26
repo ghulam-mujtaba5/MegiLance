@@ -1,0 +1,25 @@
+/* @AI-HINT: Dark theme colors for Install component */
+.container {
+  background-color: #111827;
+}
+
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.feature {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+.featureTitle {
+  color: #f9fafb;
+}
+
+.featureDescription {
+  color: #9ca3af;
+}

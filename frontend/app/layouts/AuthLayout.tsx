@@ -3,9 +3,10 @@
 
 import React from 'react';
 import { useTheme } from 'next-themes';
-import './AuthLayout.common.css';
-import './AuthLayout.light.css';
-import './AuthLayout.dark.css';
+import { cn } from '@/lib/utils';
+import commonStyles from './AuthLayout.common.module.css';
+import lightStyles from './AuthLayout.light.module.css';
+import darkStyles from './AuthLayout.dark.module.css';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -13,10 +14,13 @@ interface AuthLayoutProps {
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  if (!resolvedTheme) return null;
 
   return (
-    <div className={`AuthLayout AuthLayout--${resolvedTheme}`}>
-      <main className="AuthLayout-main">
+    <div className={cn(commonStyles.layout, themeStyles.layout)}>
+      <main className={commonStyles.main}>
         {children}
       </main>
     </div>

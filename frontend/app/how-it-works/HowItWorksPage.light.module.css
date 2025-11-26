@@ -1,0 +1,18 @@
+/* @AI-HINT: Light theme colors for How It Works page */
+
+.container {
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  color: #1a1a1a;
+}
+
+.title {
+  color: #1a1a1a;
+}
+
+.subtitle {
+  color: #666666;
+}
+
+.sectionTitle {
+  color: #1a1a1a;
+}

@@ -1,0 +1,39 @@
+/* @AI-HINT: Light theme colors for FraudCheck component */
+.container {
+  background-color: #f3f4f6;
+}
+
+.title {
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+.form {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.textarea {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.result {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.resultTitle {
+  color: #111827;
+}

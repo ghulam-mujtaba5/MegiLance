@@ -2,12 +2,13 @@
 'use client';
 
 import React from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import Header from '@/app/components/Header/Header';
 import Footer from '@/app/components/Footer/Footer';
-import { useTheme } from 'next-themes';
-import './DefaultLayout.common.css';
-import './DefaultLayout.light.css';
-import './DefaultLayout.dark.css';
+import commonStyles from './DefaultLayout.common.module.css';
+import lightStyles from './DefaultLayout.light.module.css';
+import darkStyles from './DefaultLayout.dark.module.css';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -15,11 +16,14 @@ interface DefaultLayoutProps {
 
 const DefaultLayout: React.FC<DefaultLayoutProps> = ({ children }) => {
   const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  if (!resolvedTheme) return null;
 
   return (
-    <div className={`DefaultLayout DefaultLayout--${resolvedTheme}`}>
+    <div className={cn(commonStyles.layout, themeStyles.layout)}>
       <Header />
-      <main className="DefaultLayout-main">
+      <main className={commonStyles.main}>
         {children}
       </main>
       <Footer />

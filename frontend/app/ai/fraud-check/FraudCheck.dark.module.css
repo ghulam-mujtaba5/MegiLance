@@ -1,0 +1,37 @@
+/* @AI-HINT: Dark theme colors for FraudCheck component */
+.container {
+  background-color: #111827;
+}
+
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.form {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+.textarea {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+}
+
+.result {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+.resultTitle {
+  color: #f9fafb;
+}

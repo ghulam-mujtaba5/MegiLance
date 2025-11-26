@@ -1,0 +1,26 @@
+/* @AI-HINT: Light theme colors for Install component */
+.container {
+  background-color: #f3f4f6;
+}
+
+.title {
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+.feature {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.featureTitle {
+  color: #111827;
+}
+
+.featureDescription {
+  color: #6b7280;
+}

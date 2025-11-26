@@ -1,0 +1,52 @@
+/* @AI-HINT: Common layout/structure styles for Install component */
+.container {
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.innerContainer {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.features {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.feature {
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.featureTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.featureDescription {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}

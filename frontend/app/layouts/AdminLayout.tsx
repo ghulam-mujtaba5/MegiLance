@@ -2,11 +2,12 @@
 'use client';
 
 import React from 'react';
-import SidebarNav from '@/app/components/SidebarNav/SidebarNav';
 import { useTheme } from 'next-themes';
-import './DashboardLayout.common.css'; // Reusing dashboard layout styles
-import './DashboardLayout.light.css';
-import './DashboardLayout.dark.css';
+import { cn } from '@/lib/utils';
+import SidebarNav from '@/app/components/SidebarNav/SidebarNav';
+import commonStyles from './DashboardLayout.common.module.css';
+import lightStyles from './DashboardLayout.light.module.css';
+import darkStyles from './DashboardLayout.dark.module.css';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -14,11 +15,14 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  if (!resolvedTheme) return null;
 
   return (
-    <div className={`DashboardLayout DashboardLayout--${resolvedTheme}`}>
+    <div className={cn(commonStyles.layout, themeStyles.layout)}>
       <SidebarNav theme={resolvedTheme} userType="admin" />
-      <main className="DashboardLayout-main">
+      <main className={commonStyles.main}>
         {children}
       </main>
     </div>

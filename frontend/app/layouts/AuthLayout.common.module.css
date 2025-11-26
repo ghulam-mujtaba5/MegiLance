@@ -1,0 +1,14 @@
+/* @AI-HINT: Common/layout styles for AuthLayout - centering, structure */
+
+.layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.main {
+  width: 100%;
+  max-width: 450px;
+}

@@ -1,0 +1,20 @@
+/* @AI-HINT: Dark theme colors for Onboarding component */
+.container {
+  background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+}
+
+.stepTitle {
+  color: #f9fafb;
+}
+
+.stepDescription {
+  color: #9ca3af;
+}
+
+.progressDot {
+  background-color: #4b5563;
+}
+
+.progressDotActive {
+  background-color: #6366f1;
+}
