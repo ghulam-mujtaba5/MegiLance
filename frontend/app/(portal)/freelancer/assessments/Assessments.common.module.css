@@ -1,0 +1,257 @@
+/* @AI-HINT: Common layout styles for Assessments page */
+
+.page {
+  padding: 1.5rem;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.75;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+.statIcon {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statIcon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Assessment List */
+.assessmentList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.assessmentCard {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .assessmentCard {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.assessmentInfo {
+  flex: 1;
+}
+
+.assessmentHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.assessmentTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+}
+
+.statusBadge svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.assessmentDescription {
+  font-size: 0.875rem;
+  opacity: 0.75;
+  margin-bottom: 0.75rem;
+}
+
+.assessmentMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.metaItem svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.difficultyBadge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.categoryBadge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+
+/* Assessment Actions */
+.assessmentActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.scoreDisplay {
+  text-align: right;
+}
+
+.scoreLabel {
+  font-size: 0.875rem;
+  opacity: 0.7;
+}
+
+.scoreValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.badgeEarned {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+.badgeEarned svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Loading & Empty States */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem;
+  opacity: 0.7;
+}
+
+.errorState {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
+
+/* Screen reader only */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

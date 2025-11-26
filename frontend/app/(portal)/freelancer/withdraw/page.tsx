@@ -1,23 +1,34 @@
 // @AI-HINT: Freelancer withdrawal page - route for withdrawing funds from MegiLance wallet
-import { Metadata } from 'next';
-import PaymentWizard from '@/src/components/wizards/PaymentWizard';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Withdraw Funds - MegiLance',
-  description: 'Withdraw your earnings from MegiLance to your preferred payment method'
-};
+import { Metadata } from 'next';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import PaymentWizard from '@/src/components/wizards/PaymentWizard';
+import { useFreelancerData } from '@/hooks/useFreelancer';
+
+import common from './Withdraw.common.module.css';
+import light from './Withdraw.light.module.css';
+import dark from './Withdraw.dark.module.css';
 
 export default function WithdrawPage() {
-  // In a real app, get user ID from session/auth
-  const userId = 'current-user-id'; // Replace with actual auth
-  const availableBalance = 2500.00; // Replace with actual balance from API
+  const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
+  const { analytics, loading } = useFreelancerData();
+  
+  // Parse balance from analytics
+  const availableBalance = parseFloat(
+    analytics?.walletBalance?.replace(/[$,]/g, '') || '0'
+  );
+
+  if (!resolvedTheme) return null;
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
+    <div className={cn(common.container, themed.container)}>
       <PaymentWizard 
         flowType="withdrawal"
         availableBalance={availableBalance}
-        userId={userId}
+        userId="current-user"
       />
     </div>
   );
