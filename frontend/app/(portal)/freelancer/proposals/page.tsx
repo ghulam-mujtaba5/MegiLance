@@ -100,7 +100,7 @@ const ProposalsPage: React.FC = () => {
       const apiProposals: APIProposal[] = await proposalsRes.json();
       
       // Get unique project IDs to fetch project details
-      const projectIds = [...new Set(apiProposals.map(p => p.project_id))];
+      const projectIds = Array.from(new Set(apiProposals.map(p => p.project_id)));
       
       // Fetch project details for job titles and client names
       const projectPromises = projectIds.map(async (pid) => {

@@ -247,13 +247,13 @@ const Reviews: React.FC = () => {
               <div style={{ marginBottom: '1rem' }}>
                 <label className={common.ratingLabel} style={{ display: 'block', marginBottom: '0.5rem' }}>Select Contract to Review:</label>
                 <Select
+                  id="contract-select"
                   options={eligibleContracts.map(c => ({ 
                     value: String(c.id), 
                     label: `${c.job_title} - ${c.client_name || 'Freelancer'}` 
                   }))}
                   value={selectedContractId}
-                  onChange={(val) => setSelectedContractId(val)}
-                  placeholder="Select a completed contract..."
+                  onChange={(e) => setSelectedContractId(e.target.value)}
                 />
               </div>
             ) : (

@@ -126,6 +126,7 @@ const AuditLog: React.FC = () => {
         if (typeof aVal === 'string' && typeof bVal === 'string') {
           return sort.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
         }
+        if (aVal == null || bVal == null) return 0;
         if (aVal < bVal) return sort.direction === 'asc' ? -1 : 1;
         if (aVal > bVal) return sort.direction === 'asc' ? 1 : -1;
         return 0;

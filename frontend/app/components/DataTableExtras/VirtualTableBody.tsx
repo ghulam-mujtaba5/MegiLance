@@ -13,7 +13,7 @@ export interface VirtualTableBodyProps<T> {
   // Optional overscan rows above and below the viewport
   overscan?: number;
   // The scrollable container that wraps the table (with sticky header)
-  containerRef: React.RefObject<HTMLElement>;
+  containerRef: React.RefObject<HTMLElement | null>;
   // Optional empty state row when there are no items
   renderEmpty?: () => React.ReactElement | null;
 }

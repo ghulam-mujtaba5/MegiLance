@@ -9,7 +9,7 @@ import ProjectCard, { ProjectCardProps } from '../components/ProjectCard/Project
 import commonStyles from './Profile.common.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 interface ApiUser {
   id: number;
@@ -67,7 +67,7 @@ const Profile: React.FC = () => {
       const mappedProjects: ProjectCardProps[] = projectsList.slice(0, 5).map((p: ApiProject) => ({
         id: String(p.id),
         title: p.title,
-        status: p.status === 'open' ? 'Open' : p.status === 'in_progress' ? 'In Progress' : 'Completed',
+        status: p.status === 'open' ? 'Pending' : p.status === 'in_progress' ? 'In Progress' : 'Completed',
         progress: p.status === 'completed' ? 100 : p.status === 'in_progress' ? 50 : 0,
         budget: p.budget_max || p.budget_min || 0,
         paid: 0,

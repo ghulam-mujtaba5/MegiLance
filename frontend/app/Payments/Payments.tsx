@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import { Loader2 } from 'lucide-react';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import commonStyles from './Payments.common.module.css';
 import lightStyles from './Payments.light.module.css';
 import darkStyles from './Payments.dark.module.css';

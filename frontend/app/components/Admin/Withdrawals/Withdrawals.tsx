@@ -3,7 +3,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import clsx from 'clsx';
+import { cn } from '@/lib/utils';
 import { CheckCircle, XCircle, MoreVertical, Copy, ArrowDownUp, Calendar, Inbox, Search, ChevronDown, Loader2 } from 'lucide-react';
 
 import api from '@/lib/api';
@@ -16,7 +16,7 @@ import lightStyles from './Withdrawals.light.module.css';
 import darkStyles from './Withdrawals.dark.module.css';
 
 // Types
-type Status = 'Pending' | 'Approved' | 'Rejected' | 'completed' | 'pending' | 'failed';
+type Status = 'Pending' | 'Approved' | 'Rejected';
 type SortBy = 'date' | 'amount';
 
 interface WithdrawalRequest {
@@ -57,11 +57,12 @@ function normalizeStatus(status: string): Status {
 
 const StatusBadge = ({ status }: { status: Status }) => {
   const normalizedStatus = normalizeStatus(status);
-  const variant = {
+  const variantMap: Record<Status, 'warning' | 'success' | 'danger'> = {
     Pending: 'warning',
     Approved: 'success',
     Rejected: 'danger',
-  }[normalizedStatus] as 'warning' | 'success' | 'danger';
+  };
+  const variant = variantMap[normalizedStatus];
 
   return <Badge variant={variant}>{normalizedStatus}</Badge>;
 };
@@ -150,7 +151,7 @@ const Withdrawals: React.FC = () => {
 
   if (loading) {
     return (
-      <div className={clsx(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
+      <div className={cn(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
         <div className={styles.header}>
           <h1 className={styles.headerTitle}>Withdrawal Requests</h1>
         </div>
@@ -164,7 +165,7 @@ const Withdrawals: React.FC = () => {
 
   if (error) {
     return (
-      <div className={clsx(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
+      <div className={cn(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
         <div className={styles.header}>
           <h1 className={styles.headerTitle}>Withdrawal Requests</h1>
         </div>
@@ -179,7 +180,7 @@ const Withdrawals: React.FC = () => {
     requests.filter(r => normalizeStatus(r.status) === status).length;
 
   return (
-    <div className={clsx(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
+    <div className={cn(styles.pageContainer, resolvedTheme === 'dark' ? styles.dark : styles.light)}>
       <div className={styles.header}>
         <h1 className={styles.headerTitle}>Withdrawal Requests</h1>
         <div className={styles.headerActions}>
@@ -190,7 +191,7 @@ const Withdrawals: React.FC = () => {
 
       <div className={styles.filterTabs}>
         {(['Pending', 'Approved', 'Rejected', 'All'] as const).map(status => (
-          <button key={status} onClick={() => setFilter(status)} className={clsx(styles.filterTab, { [styles.activeTab]: filter === status })}>
+          <button key={status} onClick={() => setFilter(status)} className={cn(styles.filterTab, { [styles.activeTab]: filter === status })}>
             {status} <Badge variant="info">{status === 'All' ? requests.length : countByStatus(status)}</Badge>
           </button>
         ))}

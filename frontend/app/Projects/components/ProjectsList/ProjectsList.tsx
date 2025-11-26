@@ -6,7 +6,7 @@ import { ProjectType } from '../../types';
 import ProjectCard from '../../../components/ProjectCard/ProjectCard';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import commonStyles from './ProjectsList.common.module.css';
 import lightStyles from './ProjectsList.light.module.css';
 import darkStyles from './ProjectsList.dark.module.css';

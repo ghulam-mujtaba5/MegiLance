@@ -3,7 +3,7 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';

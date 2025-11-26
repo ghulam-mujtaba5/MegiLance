@@ -136,7 +136,7 @@ const PublicJobs: React.FC = () => {
             placeholder="Search for jobs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            icon={<FaSearch />}
+            iconBefore={<FaSearch />}
             fullWidth
           />
         </div>

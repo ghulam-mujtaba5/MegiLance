@@ -69,7 +69,9 @@ const ProjectDetail: React.FC = () => {
       <main className={cn(common.page, themed.themeWrapper)}>
         <div className={common.container}>
            <Skeleton height={100} width='100%' />
-           <Skeleton height={200} width='100%' style={{ marginTop: '2rem' }} />
+           <div style={{ marginTop: '2rem' }}>
+             <Skeleton height={200} width='100%' />
+           </div>
         </div>
       </main>
     );

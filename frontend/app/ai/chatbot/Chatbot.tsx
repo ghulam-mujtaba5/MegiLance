@@ -1,11 +1,11 @@
-// @AI-HINT: This is the AI Chatbot page, providing an interactive assistant. All styles are per-component only.
+// @AI-HINT: Premium AI Chatbot page with billion-dollar quality UI/UX. Features glass morphism, typing indicators, suggestions, and smooth animations.
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { Send, Sparkles, MoreVertical, Trash2, Settings, Paperclip } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
-import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 
 import commonStyles from './Chatbot.common.module.css';
 import lightStyles from './Chatbot.light.module.css';
@@ -15,49 +15,140 @@ interface Message {
   id: number;
   text: string;
   sender: 'user' | 'bot';
+  timestamp: Date;
 }
+
+const SUGGESTIONS = [
+  'How do I find freelancers?',
+  'What are payment methods?',
+  'How to post a project?',
+  'Explain escrow protection',
+];
 
 const Chatbot: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: 'Hello! How can I help you today?', sender: 'bot' },
+    { 
+      id: 1, 
+      text: 'Hello! I\'m MegiLance AI, your intelligent assistant. How can I help you today?', 
+      sender: 'bot',
+      timestamp: new Date()
+    },
   ]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
-  useEffect(scrollToBottom, [messages]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping, scrollToBottom]);
 
   if (!resolvedTheme) return null;
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  };
 
-    const userMessage: Message = { id: Date.now(), text: input, sender: 'user' };
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedInput = input.trim();
+    if (trimmedInput === '') return;
+
+    const userMessage: Message = { 
+      id: Date.now(), 
+      text: trimmedInput, 
+      sender: 'user',
+      timestamp: new Date()
+    };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setShowSuggestions(false);
+    setIsTyping(true);
 
-    // Mock bot response
+    // Simulate AI thinking time
+    const thinkingTime = Math.random() * 1500 + 1000;
+    
     setTimeout(() => {
-      const botResponse: Message = { id: Date.now() + 1, text: 'Thanks for your message! I am a demo chatbot. I will be able to answer your questions soon.', sender: 'bot' };
+      setIsTyping(false);
+      const responses = [
+        'I understand your question. Let me help you with that. MegiLance offers a comprehensive platform for both freelancers and clients.',
+        'That\'s a great question! Our platform provides secure escrow payments, verified freelancer profiles, and AI-powered matching.',
+        'I\'d be happy to assist you with that. You can navigate to your dashboard to access all project management features.',
+        'Based on your query, I recommend checking out our Help Center for detailed guides, or I can walk you through the process step by step.',
+        'Thanks for reaching out! Our team has designed the platform to make your freelancing or hiring experience as smooth as possible.',
+      ];
+      
+      const botResponse: Message = { 
+        id: Date.now() + 1, 
+        text: responses[Math.floor(Math.random() * responses.length)], 
+        sender: 'bot',
+        timestamp: new Date()
+      };
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+    }, thinkingTime);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    inputRef.current?.focus();
+  };
+
+  const handleClearChat = () => {
+    setMessages([{
+      id: Date.now(),
+      text: 'Chat cleared. How can I help you today?',
+      sender: 'bot',
+      timestamp: new Date()
+    }]);
+    setShowSuggestions(true);
   };
 
   return (
     <div className={cn(commonStyles.container, themeStyles.container)}>
       <div className={cn(commonStyles.chatContainer, themeStyles.chatContainer)}>
+        {/* Header */}
         <header className={cn(commonStyles.header, themeStyles.header)}>
-          <h2 className={commonStyles.headerTitle}>AI Assistant</h2>
-          <div className={cn(commonStyles.statusIndicator, themeStyles.statusIndicator)}>● Online</div>
+          <div className={commonStyles.headerLeft}>
+            <div className={cn(commonStyles.aiAvatar, themeStyles.aiAvatar)}>
+              <Sparkles size={24} />
+            </div>
+            <div className={commonStyles.headerInfo}>
+              <h2>MegiLance AI</h2>
+              <p className={cn(commonStyles.headerSubtext, themeStyles.headerSubtext)}>
+                <span className={cn(commonStyles.statusDot, themeStyles.statusDot)} />
+                Online • Ready to help
+              </p>
+            </div>
+          </div>
+          <div className={commonStyles.headerActions}>
+            <button 
+              className={cn(commonStyles.iconButton, themeStyles.iconButton)}
+              onClick={handleClearChat}
+              title="Clear chat"
+              aria-label="Clear chat history"
+            >
+              <Trash2 size={18} />
+            </button>
+            <button 
+              className={cn(commonStyles.iconButton, themeStyles.iconButton)}
+              title="Settings"
+              aria-label="Chat settings"
+            >
+              <MoreVertical size={18} />
+            </button>
+          </div>
         </header>
-        <div className={commonStyles.messages}>
+
+        {/* Messages */}
+        <div className={commonStyles.messages} role="log" aria-live="polite" aria-label="Chat messages">
           {messages.map(msg => (
             <div 
               key={msg.id} 
@@ -66,26 +157,82 @@ const Chatbot: React.FC = () => {
                 msg.sender === 'user' ? commonStyles.messageUser : commonStyles.messageBot
               )}
             >
-              {msg.sender === 'bot' && <UserAvatar name="AI Assistant" src="/ai-avatar.png" size="small" />}
-              <div className={cn(
-                commonStyles.messageBubble,
-                msg.sender === 'user' ? themeStyles.messageBubbleUser : themeStyles.messageBubbleBot
-              )}>
-                {msg.text}
+              {msg.sender === 'bot' && (
+                <div className={cn(commonStyles.messageAvatar, themeStyles.messageAvatar)}>
+                  <Sparkles size={16} />
+                </div>
+              )}
+              <div>
+                <div className={cn(
+                  commonStyles.messageBubble,
+                  msg.sender === 'user' ? themeStyles.messageBubbleUser : themeStyles.messageBubbleBot
+                )}>
+                  {msg.text}
+                </div>
+                <span className={cn(commonStyles.messageTime, themeStyles.messageTime)}>
+                  {formatTime(msg.timestamp)}
+                </span>
               </div>
             </div>
           ))}
+          
+          {/* Typing Indicator */}
+          {isTyping && (
+            <div className={cn(commonStyles.message, commonStyles.messageBot)}>
+              <div className={cn(commonStyles.messageAvatar, themeStyles.messageAvatar)}>
+                <Sparkles size={16} />
+              </div>
+              <div className={cn(commonStyles.typingIndicator, themeStyles.typingIndicator)}>
+                <div className={commonStyles.typingDots}>
+                  <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                  <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                  <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
-        <form className={cn(commonStyles.inputForm, themeStyles.inputForm)} onSubmit={handleSend}>
+
+        {/* Suggestions */}
+        {showSuggestions && messages.length <= 2 && (
+          <div className={commonStyles.suggestions}>
+            {SUGGESTIONS.map((suggestion, index) => (
+              <button
+                key={index}
+                className={cn(commonStyles.suggestionChip, themeStyles.suggestionChip)}
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Input Form */}
+        <form 
+          className={cn(commonStyles.inputForm, themeStyles.inputForm)} 
+          onSubmit={handleSend}
+        >
           <input
+            ref={inputRef}
             type="text"
             className={cn(commonStyles.input, themeStyles.input)}
-            placeholder="Ask a question..."
+            placeholder="Ask me anything about MegiLance..."
             value={input}
             onChange={e => setInput(e.target.value)}
+            disabled={isTyping}
+            aria-label="Type your message"
           />
-          <Button variant="primary" type="submit">Send</Button>
+          <button 
+            type="submit" 
+            className={cn(commonStyles.sendButton, themeStyles.sendButton)}
+            disabled={!input.trim() || isTyping}
+            aria-label="Send message"
+          >
+            <Send size={20} />
+          </button>
         </form>
       </div>
     </div>

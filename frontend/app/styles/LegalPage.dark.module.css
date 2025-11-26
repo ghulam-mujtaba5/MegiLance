@@ -1,2 +1,3 @@
-.LegalPage--dark { background: var(--background); color: var(--text-primary); }
-.LegalPage--dark a { color: var(--primary); }
+/* @AI-HINT: Dark theme colors for legal pages */
+.page { background: var(--background); color: var(--text-primary); }
+.page a { color: var(--primary); }

@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
 import { Search, MapPin, Star } from 'lucide-react';
@@ -38,10 +38,10 @@ const PublicFreelancers: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.search.freelancers(query);
+      const res = await api.search.freelancers(query) as { freelancers?: any[] } | any[];
       // Map response to Freelancer interface
       // Assuming API returns { freelancers: [...] } or [...]
-      const data = Array.isArray(res) ? res : (res.freelancers || []);
+      const data = Array.isArray(res) ? res : ((res as { freelancers?: any[] }).freelancers || []);
       
       const mapped: Freelancer[] = data.map((f: any) => ({
         id: String(f.id),

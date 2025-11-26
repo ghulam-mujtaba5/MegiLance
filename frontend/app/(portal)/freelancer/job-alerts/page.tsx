@@ -144,7 +144,7 @@ const JobAlertsPage: React.FC = () => {
                     value={keywords}
                     onChange={(e) => setKeywords(e.target.value)}
                     fullWidth
-                    helperText="Separate multiple keywords with commas."
+                    helpText="Separate multiple keywords with commas."
                   />
                 </div>
                 
@@ -155,7 +155,7 @@ const JobAlertsPage: React.FC = () => {
                       label="Frequency"
                       options={frequencyOptions}
                       value={frequency}
-                      onChange={(val) => setFrequency(val)}
+                      onChange={(e) => setFrequency(e.target.value)}
                     />
                   </div>
                 </div>
@@ -193,9 +193,12 @@ const JobAlertsPage: React.FC = () => {
               <EmptyState
                 title="No alerts yet"
                 description="Create your first job alert to start receiving notifications about new opportunities."
-                icon={Bell}
-                actionLabel="Create Alert Above"
-                onAction={() => document.getElementById('alert-keywords')?.focus()}
+                icon={<Bell size={48} />}
+                action={
+                  <Button variant="primary" onClick={() => document.getElementById('alert-keywords')?.focus()}>
+                    Create Alert Above
+                  </Button>
+                }
               />
             ) : (
               <div className={styles.alertList}>

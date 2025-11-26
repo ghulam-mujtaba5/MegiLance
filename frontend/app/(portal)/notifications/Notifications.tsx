@@ -8,7 +8,7 @@ import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import { Loader2 } from 'lucide-react';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import common from './Notifications.common.module.css';
 import light from './Notifications.light.module.css';
 import dark from './Notifications.dark.module.css';
@@ -40,7 +40,7 @@ const Notifications: React.FC = () => {
     const fetchNotifications = async () => {
       try {
         setLoading(true);
-        const data = await api.notifications.getAll();
+        const data = await api.notifications.list();
         
         // Transform API data to NotificationItem format
         const notifications: NotificationItem[] = (Array.isArray(data) ? data : []).map((n: any, idx: number) => {
@@ -106,7 +106,7 @@ const Notifications: React.FC = () => {
 
   const markAllRead = async () => {
     try {
-      await api.notifications.markAllRead();
+      await api.notifications.markAllAsRead();
     } catch (e) {
       // Continue with local update even if API fails
     }
@@ -117,7 +117,8 @@ const Notifications: React.FC = () => {
 
   const clearAll = async () => {
     try {
-      await api.notifications.clearAll();
+      // API doesn't have clearAll, notifications will be removed locally
+      // await api.notifications.clearAll();
     } catch (e) {
       // Continue with local update
     }
@@ -128,7 +129,7 @@ const Notifications: React.FC = () => {
 
   const markRead = async (id: string) => {
     try {
-      await api.notifications.markRead(id);
+      await api.notifications.markAsRead(parseInt(id));
     } catch (e) {
       // Continue with local update
     }
@@ -140,7 +141,7 @@ const Notifications: React.FC = () => {
 
   const archive = async (id: string) => {
     try {
-      await api.notifications.delete(id);
+      await api.notifications.delete(parseInt(id));
     } catch (e) {
       // Continue with local update
     }

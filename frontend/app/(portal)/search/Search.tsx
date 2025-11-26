@@ -87,7 +87,7 @@ const Search: React.FC = () => {
       setResults(allResults);
     } catch (error) {
       console.error('Search error:', error);
-      notify({ title: 'Search Error', description: 'Failed to fetch results. Please try again.', variant: 'error' });
+      notify({ title: 'Search Error', description: 'Failed to fetch results. Please try again.', variant: 'danger' });
     } finally {
       setLoading(false);
     }

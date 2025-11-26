@@ -9,7 +9,7 @@ interface IntersectionObserverOptions {
 }
 
 const useIntersectionObserver = (
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<HTMLElement | null>,
   options: IntersectionObserverOptions = { threshold: 0.1 }
 ): boolean => {
   const [isIntersecting, setIsIntersecting] = useState(false);

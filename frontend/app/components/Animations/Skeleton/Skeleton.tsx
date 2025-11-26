@@ -2,7 +2,8 @@
 'use client';
 
 import React from 'react';
-import clsx from 'clsx';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import styles from './Skeleton.common.module.css';
 import light from './Skeleton.light.module.css';
 import dark from './Skeleton.dark.module.css';
@@ -17,13 +18,15 @@ export type SkeletonProps = {
   className?: string;
 };
 
-export default function Skeleton({ width, height = 14, radius = 8, lines = 1, inline = false, theme, className }: SkeletonProps) {
-  const themeClass = theme === 'dark' ? dark.theme : theme === 'light' ? light.theme : '';
+export default function Skeleton({ width, height = 14, radius = 8, lines = 1, inline = false, theme: themeProp, className }: SkeletonProps) {
+  const { resolvedTheme } = useTheme();
+  const currentTheme = themeProp || resolvedTheme;
+  const themeClass = currentTheme === 'dark' ? dark.theme : light.theme;
 
   const items = Array.from({ length: Math.max(1, lines) });
 
   return (
-    <div className={clsx(styles.container, themeClass, inline && styles.inline, className)} aria-hidden>
+    <div className={cn(styles.container, themeClass, inline && styles.inline, className)} aria-hidden>
       {items.map((_, i) => (
         <div 
           key={i} 

@@ -10,7 +10,7 @@ import commonStyles from './SkillAssessmentWizard.common.module.css';
 import lightStyles from './SkillAssessmentWizard.light.module.css';
 import darkStyles from './SkillAssessmentWizard.dark.module.css';
 import { FaCode, FaClock, FaCheckCircle, FaTrophy } from 'react-icons/fa';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 interface Question {
   id: string;

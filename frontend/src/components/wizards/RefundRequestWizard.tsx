@@ -10,7 +10,7 @@ import commonStyles from './RefundRequestWizard.common.module.css';
 import lightStyles from './RefundRequestWizard.light.module.css';
 import darkStyles from './RefundRequestWizard.dark.module.css';
 import { FaUndo, FaExclamationTriangle, FaFileUpload, FaCalculator } from 'react-icons/fa';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 interface EvidenceFile {
   id: string;

@@ -55,7 +55,7 @@ const AccountSettingsPage = () => {
         // Set other settings if available in user object
       } catch (error) {
         console.error('Failed to fetch profile', error);
-        toaster.notify({ title: 'Error', description: 'Failed to load profile', variant: 'error' });
+        toaster.notify({ title: 'Error', description: 'Failed to load profile', variant: 'danger' });
       }
     };
     fetchProfile();
@@ -78,7 +78,7 @@ const AccountSettingsPage = () => {
         toaster.notify({ title: 'Saved', description: `${section} settings updated successfully!`, variant: 'success' });
     } catch (error) {
         console.error('Failed to update profile', error);
-        toaster.notify({ title: 'Error', description: 'Failed to update settings', variant: 'error' });
+        toaster.notify({ title: 'Error', description: 'Failed to update settings', variant: 'danger' });
     } finally {
         setIsSaving(false);
     }

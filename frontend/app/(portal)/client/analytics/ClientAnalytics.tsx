@@ -55,7 +55,7 @@ const ClientAnalytics: React.FC = () => {
       ? payments.reduce((sum, p) => sum + parseFloat(p.amount?.replace(/[$,]/g, '') || '0'), 0)
       : 0;
     const activeProjects = Array.isArray(projects) 
-      ? projects.filter(p => p.status === 'In Progress' || p.status === 'Active').length
+      ? projects.filter(p => p.status === 'In Progress' || p.status === 'Open').length
       : 0;
     const freelancersHired = Array.isArray(freelancers) ? freelancers.length : 0;
 

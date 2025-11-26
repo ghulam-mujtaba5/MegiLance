@@ -15,7 +15,7 @@ const useAnimatedCounter = (
   target: number,
   duration: number = 2000,
   decimals: number = 0,
-  ref: React.RefObject<HTMLElement>
+  ref: React.RefObject<HTMLElement | null>
 ): string => {
   const [count, setCount] = useState(0);
   const hasAnimated = useRef(false);

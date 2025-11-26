@@ -11,7 +11,7 @@ import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea';
 import Button from '@/app/components/Button/Button';
 import { FaFileContract, FaDollarSign, FaGavel, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 import commonStyles from './ContractWizard.common.module.css';
 import lightStyles from './ContractWizard.light.module.css';

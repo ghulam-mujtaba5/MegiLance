@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 // @AI-HINT: Hook to fetch client portal datasets (projects, payments, freelancers, reviews).
 

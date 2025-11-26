@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import { ProposalData, ProposalErrors } from './SubmitProposal.types';
 
 import Button from '@/app/components/Button/Button';

@@ -8,7 +8,7 @@ export interface VirtualListProps<T> {
   itemHeight: number;
   renderItem: (item: T, index: number) => React.ReactElement;
   overscan?: number;
-  containerRef: React.RefObject<HTMLElement>;
+  containerRef: React.RefObject<HTMLElement | null>;
   renderEmpty?: () => React.ReactElement | null;
 }
 

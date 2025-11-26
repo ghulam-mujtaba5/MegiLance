@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import common from './Freelancers.common.module.css';
 import light from './Freelancers.light.module.css';
 import dark from './Freelancers.dark.module.css';

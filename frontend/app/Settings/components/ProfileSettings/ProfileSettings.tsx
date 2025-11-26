@@ -5,7 +5,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 import SettingsSection from '../SettingsSection/SettingsSection';
 import Input from '../../../components/Input/Input';

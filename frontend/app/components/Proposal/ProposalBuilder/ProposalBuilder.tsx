@@ -14,7 +14,7 @@ import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea';
 import Select from '@/app/components/Select/Select';
 import FileUpload from '@/app/components/FileUpload/FileUpload';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 import commonStyles from './ProposalBuilder.common.module.css';
 import lightStyles from './ProposalBuilder.light.module.css';

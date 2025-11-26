@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import common from './Jobs.common.module.css';
 import light from './Jobs.light.module.css';
 import dark from './Jobs.dark.module.css';

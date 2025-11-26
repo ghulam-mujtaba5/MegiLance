@@ -1,62 +1,329 @@
-/* @AI-HINT: Light theme colors for PriceEstimator component */
+/* @AI-HINT: Light theme colors for PriceEstimator component - Premium design system */
+
+/* ===== Page Background ===== */
 .container {
-  background-color: #f3f4f6;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+}
+
+/* ===== Header ===== */
+.headerIcon {
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  box-shadow: 
+    0 4px 20px rgba(79, 70, 229, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.headerIcon svg {
+  color: #4f46e5;
 }
 
 .title {
-  color: #111827;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
-  color: #6b7280;
+  color: #64748b;
 }
 
-.form {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+/* ===== Form Card ===== */
+.formCard {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.formHeader {
+  border-color: #f1f5f9;
+}
+
+.formIconWrapper {
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+
+.formIconWrapper svg {
+  color: #4f46e5;
+}
+
+.formTitle {
+  color: #1e293b;
+}
+
+.formSubtitle {
+  color: #64748b;
 }
 
 .label {
   color: #374151;
 }
 
+.label svg {
+  color: #6b7280;
+}
+
+.labelOptional {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* ===== Form Inputs ===== */
 .textarea {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: #111827;
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
 }
 
 .textarea:focus {
   border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+  box-shadow: 
+    0 0 0 3px rgba(79, 70, 229, 0.1),
+    0 2px 8px rgba(79, 70, 229, 0.1);
+}
+
+.textarea::placeholder {
+  color: #94a3b8;
 }
 
 .select {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: #111827;
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #1e293b;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
 }
 
 .select:focus {
   border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+  box-shadow: 
+    0 0 0 3px rgba(79, 70, 229, 0.1),
+    0 2px 8px rgba(79, 70, 229, 0.1);
 }
 
-.result {
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+/* ===== Submit Section ===== */
+.submitSection {
+  border-color: #f1f5f9;
 }
 
-.resultTitle {
-  color: #111827;
+.submitButton {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  box-shadow: 
+    0 4px 16px rgba(79, 70, 229, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.price {
+.submitButton:disabled {
+  background: #cbd5e1;
+  box-shadow: none;
+}
+
+.privacyNote {
+  color: #64748b;
+}
+
+.privacyNote svg {
+  color: #10b981;
+}
+
+/* ===== Results Panel ===== */
+.resultsPanel {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* ===== Empty State ===== */
+.emptyStateIcon {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+}
+
+.emptyStateIcon::before {
+  border-color: #cbd5e1;
+}
+
+.emptyStateIcon svg {
+  color: #94a3b8;
+}
+
+.emptyStateTitle {
+  color: #374151;
+}
+
+.emptyStateText {
+  color: #64748b;
+}
+
+/* ===== Loading State ===== */
+.loadingOrb {
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+
+.loadingOrb::before,
+.loadingOrb::after {
+  border-top-color: #4f46e5;
+  border-bottom-color: #4f46e5;
+}
+
+.loadingOrbInner {
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+}
+
+.loadingOrbInner svg {
   color: #4f46e5;
 }
 
+.loadingTitle {
+  color: #1e293b;
+}
+
+.loadingText {
+  color: #64748b;
+}
+
+.loadingStep {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.loadingStep.active {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.loadingStep.completed {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.loadingStepCheck {
+  color: #10b981;
+}
+
+/* ===== Price Display ===== */
+.priceHeader {
+  border-color: #f1f5f9;
+}
+
+.priceLabel {
+  color: #64748b;
+}
+
+.priceValue {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.priceDivider {
+  color: #cbd5e1;
+}
+
+.priceConfidence {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.priceConfidence svg {
+  color: #10b981;
+}
+
+/* ===== Breakdown ===== */
+.breakdownTitle {
+  color: #374151;
+}
+
+.breakdownTitle svg {
+  color: #4f46e5;
+}
+
+.breakdownItem {
+  background: #f8fafc;
+}
+
+.breakdownItem:hover {
+  background: #f1f5f9;
+}
+
+.breakdownItemIcon {
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+
+.breakdownItemIcon svg {
+  color: #4f46e5;
+}
+
+.breakdownItemLabel {
+  color: #475569;
+}
+
+.breakdownItemValue {
+  color: #1e293b;
+}
+
+/* ===== Factors ===== */
+.factorsTitle {
+  color: #374151;
+}
+
+.factorsTitle svg {
+  color: #f59e0b;
+}
+
+.factorCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.factorCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.factorValue {
+  color: #1e293b;
+}
+
+.factorLabel {
+  color: #64748b;
+}
+
+/* ===== Actions ===== */
+.actionsSection {
+  border-color: #f1f5f9;
+}
+
+.actionButton {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+.actionButton:hover {
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+}
+
+.actionButton.secondary {
+  background: #f1f5f9;
+  color: #374151;
+  box-shadow: none;
+}
+
+.actionButton.secondary:hover {
+  background: #e2e8f0;
+}
+
 .disclaimer {
-  color: #6b7280;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.disclaimer svg {
+  color: #f59e0b;
 }

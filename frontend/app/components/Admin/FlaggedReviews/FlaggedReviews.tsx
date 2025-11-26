@@ -124,7 +124,7 @@ const FlaggedReviews: React.FC = () => {
             status: 'Pending' as const,
           };
         })
-        .filter((r): r is FlaggedReview => r !== null);
+        .filter((r) => r !== null) as FlaggedReview[];
       
       setReviews(flaggedReviews);
     } catch (err) {

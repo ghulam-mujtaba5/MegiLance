@@ -1,37 +1,157 @@
-/* @AI-HINT: Dark theme colors for FraudCheck component */
+/* @AI-HINT: Dark theme colors for premium Fraud Check - Billion-dollar quality */
+
 .container {
-  background-color: #111827;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+.headerIcon {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+  color: #f87171;
 }
 
 .title {
-  color: #f9fafb;
+  color: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .form {
-  background-color: #1f2937;
-  border: 1px solid #374151;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.2),
+    0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.formLabel {
+  color: #94a3b8;
 }
 
 .textarea {
-  background-color: #374151;
-  border-color: #4b5563;
-  color: #f9fafb;
+  background: rgba(51, 65, 85, 0.6);
+  border-color: transparent;
+  color: #f8fafc;
+}
+
+.textarea::placeholder {
+  color: #64748b;
 }
 
 .textarea:focus {
+  background: rgba(51, 65, 85, 0.9);
   border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
 }
 
+.sampleButton {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.sampleButton:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+
+/* Loading State */
+.loadingSpinner {
+  border-color: rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
+}
+
+.loadingText {
+  color: #f8fafc;
+}
+
+.loadingSubtext {
+  color: #94a3b8;
+}
+
+/* Result Card */
 .result {
-  background-color: #1f2937;
-  border: 1px solid #374151;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 4px 6px -1px rgba(0, 0, 0, 0.2),
+    0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.resultHeader {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.resultIcon {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+  color: #a5b4fc;
 }
 
 .resultTitle {
-  color: #f9fafb;
+  color: #f8fafc;
+}
+
+.resultSubtitle {
+  color: #94a3b8;
+}
+
+/* Score Ring */
+.scoreRingBg {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.scoreLabel {
+  color: #94a3b8;
+}
+
+.riskDescription {
+  color: #cbd5e1;
+}
+
+/* Risk Level Colors */
+.riskLow .scoreRingProgress { stroke: #4ade80; }
+.riskLow .resultIcon { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+.riskLow .riskBadge { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+
+.riskMedium .scoreRingProgress { stroke: #fbbf24; }
+.riskMedium .resultIcon { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.riskMedium .riskBadge { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+
+.riskHigh .scoreRingProgress { stroke: #f87171; }
+.riskHigh .resultIcon { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+.riskHigh .riskBadge { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+
+.riskCritical .scoreRingProgress { stroke: #ef4444; }
+.riskCritical .resultIcon { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.riskCritical .riskBadge { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+/* Warnings */
+.resultWarnings {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+}
+
+.resultWarnings h3 {
+  color: #f87171;
+}
+
+.warningItem {
+  background: rgba(0, 0, 0, 0.2);
+  color: #e2e8f0;
+}
+
+.warningIcon {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+/* Actions */
+.resultActions {
+  border-top-color: rgba(255, 255, 255, 0.06);
 }

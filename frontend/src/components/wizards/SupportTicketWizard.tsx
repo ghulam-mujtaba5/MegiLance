@@ -10,7 +10,7 @@ import commonStyles from './SupportTicketWizard.common.module.css';
 import lightStyles from './SupportTicketWizard.light.module.css';
 import darkStyles from './SupportTicketWizard.dark.module.css';
 import { FaLifeRing, FaTag, FaFileUpload, FaCheckCircle } from 'react-icons/fa';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 interface Attachment {
   id: string;
@@ -489,50 +489,6 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
       setIsSubmitting(false);
     }
   };
-
-  const steps = [
-    {
-      id: 'category',
-      title: 'Category',
-      description: 'Select issue type',
-      component: <Step1Category />,
-      validate: validateStep1
-    },
-    {
-      id: 'details',
-      title: 'Details',
-      description: 'Describe issue',
-      component: <Step2Details />,
-      validate: validateStep2
-    },
-    {
-      id: 'attachments',
-      title: 'Attachments',
-      description: 'Add files',
-      component: <Step3Attachments />
-    },
-    {
-      id: 'review',
-      title: 'Review',
-      description: 'Confirm & submit',
-      component: <Step4Review />
-    }
-  ];
-
-  return (
-    <WizardContainer
-      title="Create Support Ticket"
-      subtitle="Get help from our support team"
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      isLoading={isSubmitting}
-      completeBtnText="Submit Ticket"
-    />
-  );
-}
-
 
   const steps = [
     {

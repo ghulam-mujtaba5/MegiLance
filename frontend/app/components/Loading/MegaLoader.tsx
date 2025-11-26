@@ -1,11 +1,14 @@
 /* AI-HINT: Premium, investor-grade loading component. Per-component CSS only, with .common/.light/.dark modules. Brand-aligned, accessible, responsive. */
+'use client';
+
 import React from 'react';
+import { useTheme } from 'next-themes';
 import styles from './MegaLoader.common.module.css';
 import light from './MegaLoader.light.module.css';
 import dark from './MegaLoader.dark.module.css';
 
 // AI-HINT: Theme prop allows explicit control if you ever need to force a theme.
-// Otherwise, the component uses prefers-color-scheme to auto-apply.
+// Otherwise, the component uses useTheme() to auto-apply.
 export type MegaLoaderProps = {
   theme?: 'light' | 'dark';
   message?: string;
@@ -13,8 +16,10 @@ export type MegaLoaderProps = {
 };
 
 // AI-HINT: Keep this component free of side effects; pure CSS animations for performance.
-export default function MegaLoader({ theme, message, subMessage }: MegaLoaderProps) {
-  const themeClass = theme === 'dark' ? dark.theme : theme === 'light' ? light.theme : '';
+export default function MegaLoader({ theme: themeProp, message, subMessage }: MegaLoaderProps) {
+  const { resolvedTheme } = useTheme();
+  const currentTheme = themeProp || resolvedTheme;
+  const themeClass = currentTheme === 'dark' ? dark.theme : light.theme;
 
   return (
     <div className={[styles.backdrop, themeClass].join(' ')} role="status" aria-live="polite">

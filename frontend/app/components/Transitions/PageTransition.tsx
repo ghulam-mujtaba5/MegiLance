@@ -1,6 +1,8 @@
 /* AI-HINT: Premium page transition wrapper. Per-component CSS (common/light/dark). Animates route changes subtly and efficiently. */
+'use client';
 
 import React from 'react';
+import { useTheme } from 'next-themes';
 import styles from './PageTransition.common.module.css';
 import light from './PageTransition.light.module.css';
 import dark from './PageTransition.dark.module.css';
@@ -12,7 +14,9 @@ export type PageTransitionProps = {
 };
 
 // Separate client component for the logic that uses hooks
-const PageTransitionClient: React.FC<PageTransitionProps> = ({ children, theme, variant = 'fade' }) => {
+const PageTransitionClient: React.FC<PageTransitionProps> = ({ children, theme: themeProp, variant = 'fade' }) => {
+  const { resolvedTheme } = useTheme();
+  const currentTheme = themeProp || resolvedTheme;
   const [pathname, setPathname] = React.useState<string | null>(null);
   
   React.useEffect(() => {
@@ -20,7 +24,7 @@ const PageTransitionClient: React.FC<PageTransitionProps> = ({ children, theme, 
     setPathname(window.location.pathname);
   }, []);
 
-  const themeClass = theme === 'dark' ? dark.theme : theme === 'light' ? light.theme : '';
+  const themeClass = currentTheme === 'dark' ? dark.theme : light.theme;
 
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {

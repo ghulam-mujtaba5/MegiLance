@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 // @AI-HINT: Hook to fetch admin portal datasets (users, projects, payments, support tickets, AI monitoring, dashboard KPIs, stats, recent activity).
 
@@ -64,9 +64,9 @@ export function useAdminData() {
       setError(null);
       try {
         // Use the API client methods
-        const fetchWithFallback = async (promise: Promise<any>, fallback: any = []) => {
+        const fetchWithFallback = async <T>(promise: Promise<unknown>, fallback: T): Promise<T> => {
           try {
-            return await promise;
+            return await promise as T;
           } catch {
             return fallback;
           }
@@ -126,7 +126,7 @@ export function useAdminData() {
         }));
         setTickets(mappedTickets);
 
-        setAI(aiJson); // Placeholder
+        setAI(aiJson && Object.keys(aiJson).length > 0 ? aiJson as AdminAIMetric : null); // Placeholder
         setSystemStats(dashJson);
         setRecentActivity(activityJson);
         

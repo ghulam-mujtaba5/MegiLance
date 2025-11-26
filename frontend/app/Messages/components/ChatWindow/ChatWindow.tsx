@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import { Conversation } from '../types';
 import commonStyles from './ChatWindow.common.module.css';
 import lightStyles from './ChatWindow.light.module.css';

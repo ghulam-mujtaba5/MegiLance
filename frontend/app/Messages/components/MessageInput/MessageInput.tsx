@@ -5,7 +5,7 @@
 import React, { useRef, useState } from 'react';
 import { Send, Paperclip } from 'lucide-react';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import commonStyles from './MessageInput.common.module.css';
 import lightStyles from './MessageInput.light.module.css';
 import darkStyles from './MessageInput.dark.module.css';
@@ -35,7 +35,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ conversationId, onMessageSe
 
     setIsSending(true);
     try {
-      await api.messages.sendMessage(conversationId, text.trim());
+      await api.messages.sendMessage({ conversation_id: conversationId, content: text.trim() });
 
       setText('');
       onMessageSent(); // Notify parent to trigger refresh

@@ -4,7 +4,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import PaginatedJobGrid from './components/PaginatedJobGrid/PaginatedJobGrid';
 import { JobStatusCardProps } from './components/JobStatusCard/JobStatusCard';
 import { SortOption } from '@/app/components/DataToolbar/DataToolbar';

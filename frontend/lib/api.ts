@@ -26,7 +26,7 @@ export function getAuthToken(): string | null {
 }
 
 // Generic fetch wrapper with auth
-async function apiFetch<T>(
+async function apiFetch<T = any>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {

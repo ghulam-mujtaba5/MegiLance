@@ -165,10 +165,10 @@ const ContractsPage: React.FC = () => {
   };
 
   // Row actions
-  const viewContract = (c: typeof mockContracts[number]) => {
+  const viewContract = (c: ContractData) => {
     toaster.notify({ title: 'Open contract', description: `Opening ${c.projectTitle}`, variant: 'info' });
   };
-  const downloadContract = (c: typeof mockContracts[number]) => {
+  const downloadContract = (c: ContractData) => {
     toaster.notify({ title: 'Download', description: `Downloading ${c.projectTitle} PDF…`, variant: 'success' });
   };
   const openExtend = (id: string) => { setActionType('extend'); setActionTargetId(id); setActionOpen(true); };

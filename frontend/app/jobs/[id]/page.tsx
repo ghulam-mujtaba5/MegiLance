@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import commonStyles from './JobDetail.common.module.css';
 import lightStyles from './JobDetail.light.module.css';
 import darkStyles from './JobDetail.dark.module.css';
@@ -194,7 +194,7 @@ export default function JobDetailPage() {
       }
       
       // Fallback to search endpoint (public)
-      const data: any = await api.search.projects('', { limit: 100 });
+      const data: any = await api.search.projects('', { page_size: 100 });
       const projects = Array.isArray(data) ? data : (data.items || []);
       const foundProject = projects.find((p: any) => String(p.id) === String(params.id));
       

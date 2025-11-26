@@ -3,7 +3,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Button from '@/app/components/Button/Button';
 import { useFreelancerData } from '@/hooks/useFreelancer';
