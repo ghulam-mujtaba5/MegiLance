@@ -1,53 +1,103 @@
+/* @AI-HINT: Premium light theme for Modal with glassmorphism and gradient effects */
+
 .modalOverlay {
-  /* Fallback */
-  background-color: rgba(255, 255, 255, 0.8);
-  /* Enhanced */
-  @supports (background-color: color-mix(in oklab, white 70%, transparent)) {
-    background-color: color-mix(in oklab, var(--surface) 70%, transparent);
-  }
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(
+    135deg,
+    rgba(248, 250, 252, 0.8) 0%,
+    rgba(226, 232, 240, 0.75) 50%,
+    rgba(241, 245, 249, 0.85) 100%
+  );
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
 }
 
 .modalContent {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-xl, 0 20px 40px rgba(0,0,0,0.12));
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.92) 50%,
+    rgba(255, 255, 255, 0.98) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 30px 60px -12px rgba(0, 0, 0, 0.15),
+    0 18px 36px -18px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 0 80px -20px rgba(69, 115, 223, 0.15);
+}
+
+.modalContent::before {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(69, 115, 223, 0.2) 25%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(69, 115, 223, 0.15) 75%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
 }
 
 .modalHeader {
-  border-bottom: 1px solid var(--border);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(248, 250, 252, 0.4) 100%
+  );
+}
+
+.modalHeader::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(69, 115, 223, 0.4),
+    rgba(255, 153, 0, 0.3),
+    transparent
+  );
 }
 
 .modalTitle {
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #111827 0%, #4573df 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .closeButton {
-  color: var(--text-secondary);
-  transition: var(--transition-all-fast, all 160ms ease);
+  color: #6b7280;
 }
 
 .closeButton:hover {
-  background-color: var(--surface-alt);
-  color: var(--text-primary);
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(69, 115, 223, 0.05));
+  color: #4573df;
+  box-shadow: 0 0 20px rgba(69, 115, 223, 0.2);
 }
 
 .closeButton:focus-visible {
   outline: none;
-  /* Fallback ring */
-  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.3);
-}
-@supports (color: color-mix(in oklab, white, black)) {
-  .closeButton:focus-visible {
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 30%, transparent);
-  }
+  box-shadow: 
+    0 0 0 3px rgba(69, 115, 223, 0.3),
+    0 0 20px rgba(69, 115, 223, 0.15);
 }
 
 .modalBody {
-  color: var(--text-secondary);
+  color: #374151;
 }
 
 .modalFooter {
-  border-top: 1px solid var(--border);
+  background: linear-gradient(
+    0deg,
+    rgba(248, 250, 252, 0.6) 0%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
+}
+
+.modalFooter::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(69, 115, 223, 0.3),
+    rgba(255, 153, 0, 0.2),
+    transparent
+  );
 }

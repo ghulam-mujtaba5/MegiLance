@@ -1,0 +1,1271 @@
+/* @AI-HINT: Premium 3D CSS Module - Billionaire-grade visual effects with Apple/Stripe-level polish */
+
+/* ==========================================
+   PREMIUM CSS VARIABLES
+   ========================================== */
+:root {
+  --3d-primary: #4573df;
+  --3d-secondary: #8b5cf6;
+  --3d-accent: #f59e0b;
+  --3d-success: #10b981;
+  --3d-glow-intensity: 1;
+  --3d-animation-speed: 1;
+  --3d-blur-strength: 20px;
+}
+
+/* ==========================================
+   3D CUBE - Liquid Metal Effect
+   ========================================== */
+.cube {
+  position: relative;
+  transform-style: preserve-3d;
+  animation: rotateCube calc(12s / var(--3d-animation-speed)) ease-in-out infinite;
+  filter: drop-shadow(0 20px 40px rgba(69, 115, 223, 0.3));
+}
+
+.cube::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle, rgba(69, 115, 223, 0.2), transparent 60%);
+  animation: cubeGlow 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes cubeGlow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.cubeFace {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  opacity: 0.9;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+/* Liquid metal reflection on faces */
+.cubeFace::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    transparent 30%,
+    transparent 70%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  animation: liquidShine 4s ease-in-out infinite;
+}
+
+@keyframes liquidShine {
+  0%, 100% { opacity: 0.5; transform: translateX(-100%) rotate(45deg); }
+  50% { opacity: 1; transform: translateX(100%) rotate(45deg); }
+}
+
+.front { 
+  transform: translateZ(var(--cube-size, 30px)); 
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #4facfe 100%); 
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+.back { 
+  transform: rotateY(180deg) translateZ(var(--cube-size, 30px)); 
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ff6b6b 100%); 
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+.right { 
+  transform: rotateY(90deg) translateZ(var(--cube-size, 30px)); 
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #00d4ff 100%); 
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+.left { 
+  transform: rotateY(-90deg) translateZ(var(--cube-size, 30px)); 
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 50%, #00d9ff 100%); 
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+.top { 
+  transform: rotateX(90deg) translateZ(var(--cube-size, 30px)); 
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 50%, #ffd700 100%); 
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+.bottom { 
+  transform: rotateX(-90deg) translateZ(var(--cube-size, 30px)); 
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #ffecd2 100%); 
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes rotateCube {
+  0% { transform: rotateX(-20deg) rotateY(0deg) rotateZ(0deg); }
+  25% { transform: rotateX(-25deg) rotateY(90deg) rotateZ(5deg); }
+  50% { transform: rotateX(-15deg) rotateY(180deg) rotateZ(0deg); }
+  75% { transform: rotateX(-25deg) rotateY(270deg) rotateZ(-5deg); }
+  100% { transform: rotateX(-20deg) rotateY(360deg) rotateZ(0deg); }
+}
+
+/* ==========================================
+   3D SPHERE - Aurora Holographic Effect
+   ========================================== */
+.sphere {
+  border-radius: 50%;
+  position: relative;
+  animation: floatSphere 6s ease-in-out infinite, sphereAurora 8s linear infinite;
+  box-shadow: 
+    inset -15px -15px 40px rgba(0, 0, 0, 0.4),
+    inset 15px 15px 40px rgba(255, 255, 255, 0.25),
+    0 30px 80px rgba(0, 0, 0, 0.35),
+    0 0 60px rgba(79, 172, 254, 0.3);
+  overflow: hidden;
+}
+
+/* Main highlight */
+.sphere::before {
+  content: '';
+  position: absolute;
+  top: 8%;
+  left: 15%;
+  width: 35%;
+  height: 25%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2) 50%, transparent);
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: highlightPulse 4s ease-in-out infinite;
+}
+
+/* Aurora overlay */
+.sphere::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(79, 172, 254, 0.3) 60deg,
+    transparent 120deg,
+    rgba(139, 92, 246, 0.3) 180deg,
+    transparent 240deg,
+    rgba(245, 158, 11, 0.2) 300deg,
+    transparent 360deg
+  );
+  animation: sphereAurora 6s linear infinite;
+  mix-blend-mode: overlay;
+}
+
+@keyframes highlightPulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes sphereAurora {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.sphereBlue {
+  background: radial-gradient(circle at 30% 30%, #4facfe, #00f2fe, #007cf0, #0052d4);
+}
+
+.spherePurple {
+  background: radial-gradient(circle at 30% 30%, #a855f7, #8b5cf6, #7c3aed, #5b21b6);
+}
+
+.sphereOrange {
+  background: radial-gradient(circle at 30% 30%, #fbbf24, #f59e0b, #d97706, #b45309);
+}
+
+.sphereGradient {
+  background: radial-gradient(circle at 30% 30%, #ec4899, #8b5cf6, #3b82f6, #06b6d4);
+}
+
+@keyframes floatSphere {
+  0%, 100% { transform: translateY(0) scale(1) rotateX(0deg); }
+  25% { transform: translateY(-10px) scale(1.01) rotateX(2deg); }
+  50% { transform: translateY(-20px) scale(1.03) rotateX(0deg); }
+  75% { transform: translateY(-10px) scale(1.01) rotateX(-2deg); }
+}
+
+/* ==========================================
+   3D RING - Neon Plasma Effect
+   ========================================== */
+.ring {
+  border-radius: 50%;
+  border-style: solid;
+  border-color: transparent #4facfe transparent #8b5cf6;
+  animation: rotateRing 4s linear infinite;
+  box-shadow: 
+    0 0 30px rgba(79, 172, 254, 0.5),
+    0 0 60px rgba(79, 172, 254, 0.3),
+    0 0 90px rgba(139, 92, 246, 0.2),
+    inset 0 0 30px rgba(139, 92, 246, 0.4);
+  position: relative;
+}
+
+/* Plasma trail effect */
+.ring::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(79, 172, 254, 0.8),
+    transparent 30%,
+    transparent 70%,
+    rgba(139, 92, 246, 0.8),
+    transparent
+  ) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: plasmaRotate 2s linear infinite;
+}
+
+/* Outer glow ring */
+.ring::after {
+  content: '';
+  position: absolute;
+  inset: -15px;
+  border-radius: 50%;
+  border: 1px solid rgba(79, 172, 254, 0.2);
+  animation: pulseRing 2s ease-in-out infinite;
+}
+
+@keyframes plasmaRotate {
+  0% { transform: rotateZ(0deg); }
+  100% { transform: rotateZ(-360deg); }
+}
+
+@keyframes pulseRing {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes rotateRing {
+  0% { transform: rotateX(65deg) rotateZ(0deg); }
+  100% { transform: rotateX(65deg) rotateZ(360deg); }
+}
+
+/* ==========================================
+   3D TORUS - Donut shape
+   ========================================== */
+.torus {
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #f5576c, #667eea);
+  position: relative;
+  animation: rotateTorus 8s linear infinite;
+  box-shadow: 0 0 40px rgba(102, 126, 234, 0.4);
+}
+
+.torus::before {
+  content: '';
+  position: absolute;
+  top: 30%;
+  left: 30%;
+  width: 40%;
+  height: 40%;
+  background: var(--bg-primary, #fff);
+  border-radius: 50%;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes rotateTorus {
+  0% { transform: rotateX(45deg) rotateZ(0deg); }
+  100% { transform: rotateX(45deg) rotateZ(360deg); }
+}
+
+/* ==========================================
+   ANIMATED ORB - Background decoration
+   ========================================== */
+.orb {
+  border-radius: 50%;
+  position: absolute;
+  animation: orbFloat 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.orbBlue {
+  background: radial-gradient(circle, rgba(79, 172, 254, 0.8), rgba(0, 242, 254, 0.4), transparent);
+}
+
+.orbPurple {
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.4), transparent);
+}
+
+.orbOrange {
+  background: radial-gradient(circle, rgba(245, 175, 25, 0.8), rgba(241, 39, 17, 0.4), transparent);
+}
+
+.orbGradient {
+  background: radial-gradient(circle, rgba(240, 147, 251, 0.8), rgba(245, 87, 108, 0.4), transparent);
+}
+
+.orbTopRight {
+  top: -10%;
+  right: -10%;
+  animation-delay: 0s;
+}
+
+.orbBottomLeft {
+  bottom: -15%;
+  left: -10%;
+  animation-delay: -2s;
+}
+
+.orbCenter {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -4s;
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* ==========================================
+   PARTICLES SYSTEM
+   ========================================== */
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  border-radius: 50%;
+  animation: particleFloat 10s ease-in-out infinite;
+  opacity: 0.6;
+  box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+}
+
+.particle:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { top: 20%; left: 80%; animation-delay: -1s; background: linear-gradient(135deg, #667eea, #764ba2); }
+.particle:nth-child(3) { top: 40%; left: 30%; animation-delay: -2s; }
+.particle:nth-child(4) { top: 60%; left: 70%; animation-delay: -3s; background: linear-gradient(135deg, #f093fb, #f5576c); }
+.particle:nth-child(5) { top: 80%; left: 20%; animation-delay: -4s; }
+.particle:nth-child(6) { top: 30%; left: 90%; animation-delay: -5s; background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.particle:nth-child(7) { top: 70%; left: 50%; animation-delay: -6s; }
+.particle:nth-child(8) { top: 90%; left: 85%; animation-delay: -7s; background: linear-gradient(135deg, #fa709a, #fee140); }
+.particle:nth-child(9) { top: 15%; left: 55%; animation-delay: -8s; }
+.particle:nth-child(10) { top: 55%; left: 15%; animation-delay: -9s; background: linear-gradient(135deg, #a8edea, #fed6e3); }
+.particle:nth-child(11) { top: 45%; left: 45%; animation-delay: -10s; }
+.particle:nth-child(12) { top: 75%; left: 75%; animation-delay: -11s; background: linear-gradient(135deg, #667eea, #4facfe); }
+
+@keyframes particleFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  25% { transform: translate(20px, -30px) scale(1.2); opacity: 0.8; }
+  50% { transform: translate(-15px, 15px) scale(0.8); opacity: 0.4; }
+  75% { transform: translate(25px, 10px) scale(1.1); opacity: 0.7; }
+}
+
+/* ==========================================
+   ORBITING ELEMENTS
+   ========================================== */
+.orbitContainer {
+  position: relative;
+  animation: orbitContainerRotate 20s linear infinite;
+}
+
+.orbitElement {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, #4facfe, #764ba2);
+  border-radius: 50%;
+  animation: orbitElement 8s linear infinite;
+  box-shadow: 0 0 15px rgba(79, 172, 254, 0.6);
+}
+
+.orbitElement:nth-child(1) { animation-delay: 0s; }
+.orbitElement:nth-child(2) { animation-delay: -2s; }
+.orbitElement:nth-child(3) { animation-delay: -4s; }
+.orbitElement:nth-child(4) { animation-delay: -6s; }
+
+@keyframes orbitContainerRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes orbitElement {
+  0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+}
+
+/* ==========================================
+   3D HOVER CARD - Magnetic Cursor Effect
+   ========================================== */
+.hoverCard3D {
+  transition: transform 0.1s ease-out, box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+  will-change: transform;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Gradient border on hover */
+.hoverCard3D::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(79, 172, 254, 0.5),
+    rgba(139, 92, 246, 0.5),
+    rgba(245, 158, 11, 0.3)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Spotlight effect that follows cursor */
+.hoverCard3D::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(79, 172, 254, 0.15),
+    transparent 40%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.hoverCard3D:hover::before {
+  opacity: 1;
+}
+
+.hoverCard3D:hover::after {
+  opacity: 1;
+}
+
+.hoverCard3D:hover {
+  box-shadow: 
+    0 35px 70px -15px rgba(0, 0, 0, 0.25),
+    0 0 50px rgba(79, 172, 254, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================
+   FLIP CARD
+   ========================================== */
+.flipContainer {
+  perspective: 1000px;
+  width: 100%;
+  height: 100%;
+}
+
+.flipper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.flipContainer:hover .flipper {
+  transform: rotateY(180deg);
+}
+
+.flipFront,
+.flipBack {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.flipFront {
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(118, 75, 162, 0.2));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.flipBack {
+  transform: rotateY(180deg);
+  background: linear-gradient(135deg, rgba(118, 75, 162, 0.3), rgba(245, 87, 108, 0.2));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================
+   GLASS CARD - Premium Frosted Glass
+   ========================================== */
+.glassCard {
+  position: relative;
+  border-radius: 24px;
+  padding: 28px;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+}
+
+.glassCard.light {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.4)
+  );
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.08),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+}
+
+.glassCard.dark {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.7),
+    rgba(15, 23, 42, 0.5)
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Premium shine sweep */
+.glassCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 80%
+  );
+  transition: left 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+  transform: skewX(-20deg);
+}
+
+/* Subtle noise texture */
+.glassCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.glassCard:hover::before {
+  left: 150%;
+}
+
+.glassCard:hover {
+  transform: translateY(-6px) scale(1.01);
+}
+
+.glassCard.light:hover {
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.12),
+    0 15px 35px rgba(0, 0, 0, 0.08),
+    0 0 50px rgba(79, 172, 254, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.glassCard.dark:hover {
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.45),
+    0 15px 35px rgba(0, 0, 0, 0.25),
+    0 0 50px rgba(79, 172, 254, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ==========================================
+   3D BADGE
+   ========================================== */
+.badge3D {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 13px;
+  animation: badgeFloat 3s ease-in-out infinite;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.badge3D:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.badgePrimary {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: white;
+}
+
+.badgeSuccess {
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+  color: white;
+}
+
+.badgeWarning {
+  background: linear-gradient(135deg, #f5af19, #f12711);
+  color: white;
+}
+
+.badgeGradient {
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  color: white;
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* ==========================================
+   3D ICON CONTAINER
+   ========================================== */
+.icon3D {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(118, 75, 162, 0.2));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  animation: iconPulse 4s ease-in-out infinite;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.icon3D::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.icon3D:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
+}
+
+.icon3D:hover::before {
+  transform: translateX(100%);
+}
+
+@keyframes iconPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(79, 172, 254, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(79, 172, 254, 0.4); }
+}
+
+/* ==========================================
+   3D BUTTON - Premium Depth Effect
+   ========================================== */
+.button3D {
+  position: relative;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+  transform: perspective(500px) translateZ(0);
+}
+
+/* Top shine layer */
+.button3D::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.1) 40%,
+    transparent 60%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Sweep shine effect */
+.button3D::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: skewX(-25deg);
+}
+
+.button3D:hover::after {
+  left: 150%;
+}
+
+.button3D:hover {
+  transform: perspective(500px) translateY(-4px) translateZ(10px);
+}
+
+.button3D:active {
+  transform: perspective(500px) translateY(2px) translateZ(-5px);
+  transition-duration: 0.1s;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: white;
+  box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+}
+
+.btnPrimary:hover {
+  box-shadow: 0 12px 30px rgba(79, 172, 254, 0.5);
+}
+
+.btnSecondary {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btnSecondary:hover {
+  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+}
+
+.btnSuccess {
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
+  color: white;
+  box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
+}
+
+.btnSuccess:hover {
+  box-shadow: 0 12px 30px rgba(67, 233, 123, 0.5);
+}
+
+.btnDanger {
+  background: linear-gradient(135deg, #f5576c, #f093fb);
+  color: white;
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+}
+
+.btnDanger:hover {
+  box-shadow: 0 12px 30px rgba(245, 87, 108, 0.5);
+}
+
+/* ==========================================
+   BACKGROUND SCENE
+   ========================================== */
+.backgroundScene {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.grid3D {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(79, 172, 254, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 172, 254, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: center top;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 50px; }
+}
+
+/* ==========================================
+   STATS CARD 3D
+   ========================================== */
+.statsCard3D {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.statsCard3D::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.statsCard3D:hover::before {
+  left: 100%;
+}
+
+.statsCard3D:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.statsIcon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.2), rgba(118, 75, 162, 0.2));
+  font-size: 24px;
+}
+
+.statsContent {
+  flex: 1;
+}
+
+.statsValue {
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statsLabel {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.statsTrend {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.statsTrend.positive {
+  color: #43e97b;
+}
+
+.statsTrend.negative {
+  color: #f5576c;
+}
+
+/* ==========================================
+   SECTION DIVIDER
+   ========================================== */
+.sectionDivider {
+  height: 2px;
+  margin: 40px 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(79, 172, 254, 0.3),
+    rgba(118, 75, 162, 0.5),
+    rgba(245, 87, 108, 0.3),
+    transparent
+  );
+  border-radius: 2px;
+  position: relative;
+}
+
+.sectionDivider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, #4facfe, #764ba2);
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
+  animation: dividerPulse 2s ease-in-out infinite;
+}
+
+@keyframes dividerPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.5; }
+}
+
+/* ==========================================
+   MAGNETIC ELEMENT - BILLIONAIRE LEVEL
+   ========================================== */
+.magneticElement {
+  display: inline-block;
+  will-change: transform;
+  cursor: pointer;
+}
+
+.magneticActive {
+  z-index: 10;
+}
+
+/* ==========================================
+   AURORA WRAPPER - BILLIONAIRE LEVEL
+   ========================================== */
+.auroraWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+.auroraBackground {
+  position: absolute;
+  inset: -50%;
+  background: 
+    conic-gradient(from 0deg at 50% 50%, 
+      rgba(69, 115, 223, 0.4) 0deg,
+      rgba(139, 92, 246, 0.4) 60deg,
+      rgba(16, 185, 129, 0.3) 120deg,
+      rgba(245, 158, 11, 0.3) 180deg,
+      rgba(236, 72, 153, 0.4) 240deg,
+      rgba(99, 102, 241, 0.4) 300deg,
+      rgba(69, 115, 223, 0.4) 360deg
+    );
+  filter: blur(60px);
+  animation: auroraRotate 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes auroraRotate {
+  from { transform: rotate(0deg) scale(1.5); }
+  to { transform: rotate(360deg) scale(1.5); }
+}
+
+.auroraContent {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================
+   LIQUID METAL CARD - BILLIONAIRE LEVEL
+   ========================================== */
+.liquidMetalCard {
+  position: relative;
+  border-radius: 24px;
+  padding: 32px;
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.liquidMetal {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(192, 192, 192, 0.15) 0%,
+    rgba(255, 255, 255, 0.2) 25%,
+    rgba(169, 169, 169, 0.1) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    rgba(192, 192, 192, 0.15) 100%
+  );
+  background-size: 400% 400%;
+  animation: liquidMetalFlow 8s ease infinite;
+  pointer-events: none;
+}
+
+@keyframes liquidMetalFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.liquidMetalContent {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================
+   HOLOGRAPHIC BADGE - BILLIONAIRE LEVEL
+   ========================================== */
+.holographicBadge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  border-radius: 100px;
+  overflow: hidden;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.holoDefault {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #8b5cf6;
+}
+
+.holoPremium {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.2));
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.holoExclusive {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(244, 114, 182, 0.2));
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  color: #ec4899;
+}
+
+.holoShimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: holoShimmerMove 3s ease infinite;
+}
+
+@keyframes holoShimmerMove {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+.holoBadgeContent {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================
+   DEPTH PARALLAX - BILLIONAIRE LEVEL
+   ========================================== */
+.depthParallax {
+  position: relative;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.parallaxLayer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(79, 172, 254, 0.05),
+    transparent 50%
+  );
+  border-radius: 50%;
+  transition: transform 0.1s ease-out;
+  pointer-events: none;
+}
+
+.parallaxContent {
+  position: relative;
+  z-index: 10;
+  transform-style: preserve-3d;
+}
+
+/* ==========================================
+   GLOW BUTTON - BILLIONAIRE LEVEL
+   ========================================== */
+.glowButton3D {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 40px;
+  border: none;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform: perspective(500px) translateZ(0);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.glowPrimary {
+  background: linear-gradient(135deg, #4573df, #6366f1);
+  color: white;
+  box-shadow: 
+    0 8px 32px rgba(69, 115, 223, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.glowSecondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.glowPremium {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+  background-size: 200% 200%;
+  animation: premiumShimmer 3s ease infinite;
+  color: #1a1a2e;
+  box-shadow: 
+    0 8px 32px rgba(245, 158, 11, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+@keyframes premiumShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.glowButtonInner {
+  position: relative;
+  z-index: 2;
+}
+
+.glowButtonShine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+
+.glowButton3D:hover .glowButtonShine {
+  left: 150%;
+}
+
+.glowButtonRing {
+  position: absolute;
+  inset: -4px;
+  border-radius: 20px;
+  background: transparent;
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.glowPrimary:hover .glowButtonRing {
+  box-shadow: 0 0 40px rgba(69, 115, 223, 0.6);
+  opacity: 1;
+}
+
+.glowPremium:hover .glowButtonRing {
+  box-shadow: 0 0 40px rgba(245, 158, 11, 0.6);
+  opacity: 1;
+}
+
+.glowButton3D:hover {
+  transform: perspective(500px) translateZ(10px) translateY(-2px);
+}
+
+.glowButton3D:active {
+  transform: perspective(500px) translateZ(5px) translateY(0);
+}
+
+/* ==========================================
+   REDUCED MOTION SUPPORT
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .cube,
+  .sphere,
+  .ring,
+  .torus,
+  .orb,
+  .particle,
+  .orbitContainer,
+  .orbitElement,
+  .badge3D,
+  .icon3D,
+  .grid3D,
+  .sectionDivider::before,
+  .auroraBackground,
+  .liquidMetal,
+  .holoShimmer,
+  .glowButtonShine {
+    animation: none;
+  }
+  
+  .hoverCard3D,
+  .glassCard,
+  .button3D,
+  .statsCard3D,
+  .magneticElement,
+  .glowButton3D {
+    transition: none;
+  }
+}

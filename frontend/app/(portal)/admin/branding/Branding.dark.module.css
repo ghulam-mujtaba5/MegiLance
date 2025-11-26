@@ -1,27 +1,39 @@
-/* @AI-HINT: Admin branding dark theme colors */
+/* @AI-HINT: Admin branding dark theme - Premium 2025 Glassmorphism & Gradients */
 
 .container {
-  background-color: #0f172a;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
   color: #e2e8f0;
 }
 
 .title {
-  color: #f8fafc;
+  color: transparent; /* Uses gradient from common */
 }
 
 .subtitle {
   color: #94a3b8;
 }
 
-/* Preview */
+/* Preview Card - Dark Glass */
 .previewCard {
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.previewCard:hover {
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(69, 115, 223, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .previewHeader {
-  background: #0f172a;
-  border-bottom: 1px solid #334155;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.9) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .previewHeader h3 {
@@ -29,33 +41,60 @@
 }
 
 .previewContent {
-  background: #1e293b;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
   color: #e2e8f0;
 }
 
-/* Settings */
+/* Settings Card - Dark Glass */
 .settingsCard {
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.settingsCard:hover {
+  box-shadow: 
+    0 8px 40px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(69, 115, 223, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 .settingsCard h3 {
   color: #f8fafc;
+  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.settingsCard h3:not(:first-child) {
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .formGroup label {
   color: #cbd5e1;
 }
 
+/* Inputs - Dark Premium */
 .input {
-  background: #0f172a;
-  border-color: #334155;
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.08);
   color: #f8fafc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .input:focus {
   border-color: #4573df;
-  outline: none;
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 
+    0 0 0 4px rgba(69, 115, 223, 0.2),
+    0 4px 20px rgba(69, 115, 223, 0.15);
+}
+
+.input::placeholder {
+  color: #64748b;
 }
 
 .hint {
@@ -66,16 +105,35 @@
   color: #94a3b8;
 }
 
-/* Logo Preview */
-.logoPreview {
-  background: #0f172a;
-  border: 1px solid #334155;
+/* Color Group - Dark */
+.colorGroup {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Font Preview */
+.colorGroup:hover {
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.2),
+    0 0 20px rgba(69, 115, 223, 0.05);
+}
+
+/* Logo Preview - Dark */
+.logoPreview {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.logoPreview:hover {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-color: #4573df;
+  box-shadow: 0 4px 20px rgba(69, 115, 223, 0.15);
+}
+
+/* Font Preview - Dark */
 .fontPreview {
-  background: #0f172a;
-  border: 1px solid #334155;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
 .fontPreview h3 {
@@ -86,12 +144,25 @@
   color: #94a3b8;
 }
 
-/* Unsaved Banner */
+/* Unsaved Banner - Dark Glass */
 .unsavedBanner {
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(69, 115, 223, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .unsavedBanner span {
   color: #fbbf24;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Loading State */
+.loading {
+  color: #94a3b8;
 }

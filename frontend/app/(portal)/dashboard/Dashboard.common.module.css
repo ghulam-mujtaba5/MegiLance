@@ -1,17 +1,298 @@
-/* AI-HINT: Common styles for Portal Dashboard: header, metrics grid, and two-column content layout. */
+/* @AI-HINT: Premium 2025 Portal Dashboard - Billionaire-grade UI with glassmorphism, 3D effects, micro-interactions */
 
-.page { padding: var(--spacing-8); }
-.container { max-width: 1200px; margin: 0 auto; display: grid; gap: var(--spacing-6); }
-
-.header { margin-bottom: var(--spacing-2); }
-.metrics { margin-top: var(--spacing-2); }
-.contentGrid { display: grid; grid-template-columns: 2fr 1.2fr; gap: var(--spacing-5); }
-.recentProjects { min-height: 200px; }
-.activityFeed { min-height: 200px; }
-
-@media (max-width: 980px) {
-  .contentGrid { grid-template-columns: 1fr; }
+/* ==========================================
+   PAGE LAYOUT - Premium Structure
+   ========================================== */
+.page { 
+  padding: var(--spacing-8, 2rem); 
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
 }
 
-.isNotVisible { opacity: 0; transform: translateY(16px); }
-.isVisible { opacity: 1; transform: translateY(0); transition: opacity .6s ease-out, transform .6s ease-out; }
+/* Premium Background Mesh */
+.page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 0%, rgba(69, 115, 223, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(155, 89, 182, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 80%, rgba(39, 174, 96, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 90%, rgba(255, 152, 0, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: meshFloat 30s ease-in-out infinite;
+}
+
+@keyframes meshFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(1%, -1%) scale(1.02); }
+  50% { transform: translate(-1%, 1%) scale(1); }
+  75% { transform: translate(1%, 1%) scale(1.01); }
+}
+
+/* ==========================================
+   3D BACKGROUND DECORATIONS
+   ========================================== */
+.backgroundDecor {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.orbTopRight {
+  position: absolute;
+  top: -100px;
+  right: -100px;
+}
+
+.orbBottomLeft {
+  position: absolute;
+  bottom: -80px;
+  left: -80px;
+}
+
+.particlesBg {
+  position: absolute;
+  inset: 0;
+}
+
+/* ==========================================
+   FLOATING 3D ELEMENTS
+   ========================================== */
+.floating3DElements {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.floatingElement {
+  position: absolute;
+  animation: float3D 10s ease-in-out infinite;
+}
+
+.floatingElement:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.floatingElement:nth-child(2) {
+  animation-delay: -3s;
+}
+
+.floatingElement:nth-child(3) {
+  animation-delay: -6s;
+}
+
+@keyframes float3D {
+  0%, 100% { 
+    transform: translateY(0) translateX(0) rotate3d(1, 1, 0, 0deg); 
+  }
+  25% { 
+    transform: translateY(-20px) translateX(10px) rotate3d(1, 1, 0, 5deg); 
+  }
+  50% { 
+    transform: translateY(-30px) translateX(0) rotate3d(1, 1, 0, 10deg); 
+  }
+  75% { 
+    transform: translateY(-15px) translateX(-10px) rotate3d(1, 1, 0, 5deg); 
+  }
+}
+
+/* Hide 3D elements on smaller screens */
+@media (max-width: 1024px) {
+  .floating3DElements {
+    display: none;
+  }
+  
+  .backgroundDecor {
+    opacity: 0.5;
+  }
+}
+
+.container { 
+  max-width: 1400px; 
+  margin: 0 auto; 
+  display: grid; 
+  gap: var(--spacing-8, 2rem); 
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================
+   HEADER SECTION
+   ========================================== */
+.header { 
+  margin-bottom: var(--spacing-4, 1rem);
+  animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ==========================================
+   METRICS SECTION - Premium Cards
+   ========================================== */
+.metrics { 
+  margin-top: var(--spacing-4, 1rem);
+  animation: slideUpFade 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  opacity: 0;
+}
+
+/* ==========================================
+   CONTENT GRID - Two Column Layout
+   ========================================== */
+.contentGrid { 
+  display: grid; 
+  grid-template-columns: 2fr 1.2fr; 
+  gap: var(--spacing-6, 1.5rem);
+}
+
+.recentProjects { 
+  min-height: 200px;
+  animation: slideInLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+  opacity: 0;
+}
+
+.activityFeed { 
+  min-height: 200px;
+  animation: slideInRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+@media (max-width: 1200px) {
+  .contentGrid { 
+    grid-template-columns: 1.5fr 1fr; 
+  }
+}
+
+@media (max-width: 980px) {
+  .contentGrid { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .recentProjects,
+  .activityFeed {
+    animation-name: slideUpFade;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: var(--spacing-4, 1rem);
+  }
+  
+  .container {
+    gap: var(--spacing-4, 1rem);
+  }
+}
+
+/* ==========================================
+   VISIBILITY ANIMATIONS - Intersection Observer
+   ========================================== */
+.isNotVisible { 
+  opacity: 0; 
+  transform: translateY(24px); 
+}
+
+.isVisible { 
+  opacity: 1; 
+  transform: translateY(0); 
+  transition: 
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), 
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================
+   ENTRY ANIMATIONS
+   ========================================== */
+@keyframes slideUpFade {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* ==========================================
+   PREMIUM CARD STYLES (Applied via parent)
+   ========================================== */
+
+/* Card Hover 3D Effect */
+.card3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.card3d:hover {
+  transform: translateY(-6px) rotateX(2deg) rotateY(-2deg);
+}
+
+/* Glassmorphism Card */
+.glassCard {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: 
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.glassCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 0 40px rgba(69, 115, 223, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ==========================================
+   REDUCED MOTION SUPPORT
+   ========================================== */
+@media (prefers-reduced-motion: reduce) {
+  .page::before {
+    animation: none;
+  }
+  
+  .header,
+  .metrics,
+  .recentProjects,
+  .activityFeed,
+  .isVisible {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

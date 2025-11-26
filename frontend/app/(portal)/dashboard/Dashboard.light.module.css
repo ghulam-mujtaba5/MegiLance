@@ -1,3 +1,15 @@
-/* AI-HINT: Light theme wrapper for Portal Dashboard. */
+/* @AI-HINT: Premium 2025 Portal Dashboard - Light theme with glassmorphism gradients */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.themeWrapper { 
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 30%, #f1f5f9 70%, #f8fafc 100%);
+  color: var(--text-primary, #1e293b); 
+}
+
+/* Override page mesh for light theme */
+.page::before {
+  background: 
+    radial-gradient(ellipse at 20% 0%, rgba(69, 115, 223, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(155, 89, 182, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 40% 80%, rgba(39, 174, 96, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 90%, rgba(255, 152, 0, 0.05) 0%, transparent 50%);
+}

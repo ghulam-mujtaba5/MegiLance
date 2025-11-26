@@ -152,6 +152,60 @@
   z-index: 1;
 }
 
+/* Parallax Background Orbs */
+.parallaxBackground {
+  pointer-events: none;
+  z-index: 0;
+}
+
+.gradientOrb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  animation: orbDrift 25s ease-in-out infinite;
+  will-change: transform;
+}
+
+.orb1 {
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  right: -100px;
+  animation-delay: 0s;
+}
+
+.orb2 {
+  width: 500px;
+  height: 500px;
+  bottom: 20%;
+  left: -150px;
+  animation-delay: -8s;
+}
+
+.orb3 {
+  width: 400px;
+  height: 400px;
+  top: 50%;
+  right: 10%;
+  animation-delay: -15s;
+}
+
+@keyframes orbDrift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -40px) scale(1.05);
+  }
+  50% {
+    transform: translate(-20px, 30px) scale(0.95);
+  }
+  75% {
+    transform: translate(40px, 20px) scale(1.02);
+  }
+}
+
 /* Hide scrollbar for webkit browsers (Chrome, Safari, Edge) */
 .homePage::-webkit-scrollbar {
   display: none;

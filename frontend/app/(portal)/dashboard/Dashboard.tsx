@@ -1,4 +1,4 @@
-// @AI-HINT: Portal Dashboard page. Reuses premium dashboard components from (auth)/dashboard with theme-aware styles.
+// @AI-HINT: Portal Dashboard page. Premium billionaire-grade dashboard with 3D floating elements, glassmorphism, and advanced micro-interactions.
 'use client';
 
 import React, { useMemo, useRef } from 'react';
@@ -6,6 +6,14 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useUser } from '@/hooks/useUser';
+
+// Premium 3D components
+import { 
+  FloatingCube, 
+  FloatingSphere, 
+  AnimatedOrb,
+  ParticlesSystem 
+} from '@/app/components/3D';
 
 // Reuse existing dashboard components and types
 import DashboardHeader from '@/app/(auth)/auth-dashboard/components/DashboardHeader/DashboardHeader';
@@ -52,6 +60,26 @@ const Dashboard: React.FC = () => {
 
   return (
     <main className={cn(common.page, themed.themeWrapper)}>
+      {/* Stunning 3D Background Elements */}
+      <div className={common.backgroundDecor}>
+        <AnimatedOrb variant="blue" size={300} blur={60} opacity={0.4} className={common.orbTopRight} />
+        <AnimatedOrb variant="purple" size={250} blur={50} opacity={0.3} className={common.orbBottomLeft} />
+        <ParticlesSystem count={8} className={common.particlesBg} />
+      </div>
+      
+      {/* Floating 3D Objects */}
+      <div className={common.floating3DElements}>
+        <div className={common.floatingElement} style={{ top: '10%', right: '5%' }}>
+          <FloatingCube size={40} />
+        </div>
+        <div className={common.floatingElement} style={{ bottom: '15%', left: '3%' }}>
+          <FloatingSphere size={50} variant="gradient" />
+        </div>
+        <div className={common.floatingElement} style={{ top: '50%', right: '8%' }}>
+          <FloatingSphere size={35} variant="purple" />
+        </div>
+      </div>
+      
       <div className={common.container}>
         <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
           <DashboardHeader userRole="client" user={displayUser} styles={headerStyles} />

@@ -24,9 +24,26 @@
   50% { transform: translateY(-20px) rotate(3deg); }
 }
 
+@keyframes float3D {
+  0%, 100% { transform: translateY(0) translateX(0) rotate3d(1, 1, 0, 0deg); }
+  25% { transform: translateY(-15px) translateX(10px) rotate3d(1, 1, 0, 5deg); }
+  50% { transform: translateY(-25px) translateX(0) rotate3d(1, 1, 0, 10deg); }
+  75% { transform: translateY(-15px) translateX(-10px) rotate3d(1, 1, 0, 5deg); }
+}
+
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+}
+
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 0.5; }
   50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes pulse3D {
+  0%, 100% { transform: scale3d(1, 1, 1); filter: brightness(1); }
+  50% { transform: scale3d(1.05, 1.05, 1.05); filter: brightness(1.2); }
 }
 
 @keyframes meshMove {
@@ -40,9 +57,133 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(79, 172, 254, 0.3), 0 0 40px rgba(118, 75, 162, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(79, 172, 254, 0.5), 0 0 80px rgba(118, 75, 162, 0.3); }
+}
+
+/* BILLIONAIRE LEVEL - Aurora Rotation */
+@keyframes auroraRotate {
+  from { transform: rotate(0deg) scale(1.5); }
+  to { transform: rotate(360deg) scale(1.5); }
+}
+
+/* BILLIONAIRE LEVEL - Liquid Metal Shimmer */
+@keyframes liquidMetalShimmer {
+  0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+  50% { background-position: 100% 50%; filter: hue-rotate(15deg); }
+  100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+}
+
+/* BILLIONAIRE LEVEL - Premium Glow Pulse */
+@keyframes premiumGlowPulse {
+  0%, 100% { 
+    filter: drop-shadow(0 0 30px rgba(79, 172, 254, 0.4));
+    transform: scale(1);
+  }
+  50% { 
+    filter: drop-shadow(0 0 50px rgba(79, 172, 254, 0.6));
+    transform: scale(1.02);
+  }
+}
+
+/* BILLIONAIRE LEVEL - Text Gradient Animation */
+@keyframes textGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* BILLIONAIRE LEVEL - Floating Depth */
+@keyframes floatDepth {
+  0%, 100% { 
+    transform: translateY(0) translateZ(0) rotateX(0deg); 
+    filter: brightness(1);
+  }
+  25% { 
+    transform: translateY(-20px) translateZ(30px) rotateX(2deg); 
+    filter: brightness(1.1);
+  }
+  50% { 
+    transform: translateY(-30px) translateZ(50px) rotateX(0deg); 
+    filter: brightness(1.15);
+  }
+  75% { 
+    transform: translateY(-20px) translateZ(30px) rotateX(-2deg); 
+    filter: brightness(1.1);
+  }
+}
+
 .fadeInUp {
   animation: fadeInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   opacity: 0;
+}
+
+/* ============================================= */
+/*   3D FLOATING ELEMENTS                       */
+/* ============================================= */
+.floating3D {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  animation: float3D 8s ease-in-out infinite;
+  /* BILLIONAIRE LEVEL - GPU Optimization */
+  will-change: transform;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.floating3DTopLeft {
+  top: 15%;
+  left: 8%;
+  animation-delay: 0s;
+}
+
+.floating3DTopRight {
+  top: 20%;
+  right: 10%;
+  animation-delay: -2s;
+}
+
+.floating3DBottomLeft {
+  bottom: 25%;
+  left: 5%;
+  animation-delay: -4s;
+}
+
+.floating3DBottomRight {
+  bottom: 20%;
+  right: 8%;
+  animation-delay: -6s;
+}
+
+.floating3DCenterRight {
+  top: 50%;
+  right: 15%;
+  animation-delay: -3s;
+}
+
+.floating3DCenterLeft {
+  top: 40%;
+  left: 3%;
+  animation-delay: -1s;
+}
+
+.particlesLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Hide 3D elements on mobile for performance */
+@media (max-width: 768px) {
+  .floating3D {
+    display: none;
+  }
+  
+  .particlesLayer {
+    opacity: 0.5;
+  }
 }
 
 /* ============================================= */
@@ -65,7 +206,7 @@
 }
 
 /* ============================================= */
-/*   HERO CONTAINER                             */
+/*   HERO CONTAINER - BILLIONAIRE LEVEL         */
 /* ============================================= */
 .heroContainer {
   position: relative;
@@ -75,6 +216,30 @@
   justify-content: center;
   overflow: hidden;
   padding: 7rem 1.5rem 5rem;
+  /* BILLIONAIRE LEVEL - 3D Context */
+  perspective: 2000px;
+  transform-style: preserve-3d;
+}
+
+/* BILLIONAIRE LEVEL - Aurora Overlay */
+.heroContainer::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: 
+    conic-gradient(from 0deg at 50% 50%, 
+      rgba(69, 115, 223, 0.08) 0deg,
+      rgba(139, 92, 246, 0.08) 60deg,
+      rgba(16, 185, 129, 0.05) 120deg,
+      rgba(245, 158, 11, 0.05) 180deg,
+      rgba(236, 72, 153, 0.08) 240deg,
+      rgba(99, 102, 241, 0.08) 300deg,
+      rgba(69, 115, 223, 0.08) 360deg
+    );
+  filter: blur(80px);
+  animation: auroraRotate 40s linear infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
 @media (min-width: 768px) {
@@ -101,7 +266,7 @@
 }
 
 /* ============================================= */
-/*   FLOATING ORBS                              */
+/*   FLOATING ORBS - BILLIONAIRE LEVEL          */
 /* ============================================= */
 .floatingOrbs {
   position: absolute;
@@ -109,6 +274,8 @@
   z-index: 1;
   pointer-events: none;
   transition: transform 0.3s ease-out;
+  /* BILLIONAIRE LEVEL - 3D Transform */
+  transform-style: preserve-3d;
 }
 
 .orb {
@@ -116,6 +283,9 @@
   border-radius: 50%;
   filter: blur(60px);
   animation: pulse 8s ease-in-out infinite;
+  /* BILLIONAIRE LEVEL - Improved Performance */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
 .orb1 {
@@ -175,10 +345,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* BILLIONAIRE LEVEL - 3D Context */
+  transform-style: preserve-3d;
 }
 
 /* ============================================= */
-/*   ANNOUNCEMENT BADGE                         */
+/*   ANNOUNCEMENT BADGE - BILLIONAIRE LEVEL     */
 /* ============================================= */
 .announcementBadge {
   display: inline-flex;
@@ -191,11 +363,14 @@
   font-family: var(--font-family-body);
   margin-bottom: 2rem;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  /* BILLIONAIRE LEVEL - 3D Transform */
+  transform: perspective(500px) translateZ(0);
+  will-change: transform;
 }
 
 .announcementBadge:hover {
-  transform: translateY(-2px);
+  transform: perspective(500px) translateZ(10px) translateY(-2px);
 }
 
 .badgeIcon {
@@ -205,11 +380,12 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  transition: transform 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .announcementBadge:hover .badgeIcon {
   transform: rotate(15deg) scale(1.1);
+  filter: brightness(1.2);
 }
 
 .badgeText {
@@ -225,7 +401,7 @@
 }
 
 /* ============================================= */
-/*   MAIN HEADING                               */
+/*   MAIN HEADING - BILLIONAIRE LEVEL           */
 /* ============================================= */
 .mainHeading {
   font-family: var(--font-family-heading);
@@ -237,18 +413,28 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  /* BILLIONAIRE LEVEL - 3D Depth */
+  transform: perspective(1000px) translateZ(0);
+  transform-style: preserve-3d;
 }
 
 .headingLine {
   display: block;
+  /* BILLIONAIRE LEVEL - Subtle 3D Shadow */
+  text-shadow: 
+    0 1px 0 rgba(0, 0, 0, 0.1),
+    0 2px 0 rgba(0, 0, 0, 0.05),
+    0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .headingGradient {
   display: block;
-  background-size: 200% auto;
+  background-size: 300% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  /* BILLIONAIRE LEVEL - Animated Gradient */
+  animation: textGradientShift 8s ease infinite;
 }
 
 /* ============================================= */
@@ -264,7 +450,7 @@
 }
 
 /* ============================================= */
-/*   CTA BUTTONS                                */
+/*   CTA BUTTONS - BILLIONAIRE LEVEL            */
 /* ============================================= */
 .ctaGroup {
   display: flex;
@@ -273,6 +459,8 @@
   margin-bottom: 2.5rem;
   width: 100%;
   max-width: 500px;
+  /* BILLIONAIRE LEVEL - 3D Context */
+  transform-style: preserve-3d;
 }
 
 @media (min-width: 640px) {
@@ -292,6 +480,17 @@
 .secondaryCta {
   width: 100%;
   justify-content: center;
+  /* BILLIONAIRE LEVEL - 3D Button Transform */
+  transform: perspective(500px) translateZ(0);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.primaryCta:hover {
+  transform: perspective(500px) translateZ(15px) translateY(-3px);
+}
+
+.secondaryCta:hover {
+  transform: perspective(500px) translateZ(10px) translateY(-2px);
 }
 
 @media (min-width: 640px) {
@@ -325,6 +524,9 @@
 .avatarStack {
   display: flex;
   margin-right: 0.5rem;
+  /* BILLIONAIRE LEVEL - 3D Stack Effect */
+  transform-style: preserve-3d;
+  perspective: 500px;
 }
 
 .avatar {
@@ -337,7 +539,9 @@
   font-size: 0.75rem;
   font-weight: 600;
   margin-left: -8px;
-  transition: transform 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  /* BILLIONAIRE LEVEL - 3D Transform */
+  transform: perspective(500px) translateZ(0);
 }
 
 .avatar:first-child {
@@ -345,7 +549,7 @@
 }
 
 .avatar:hover {
-  transform: translateY(-2px) scale(1.1);
+  transform: perspective(500px) translateZ(20px) translateY(-4px) scale(1.15);
   z-index: 10;
 }
 
@@ -367,6 +571,8 @@
 .proofStars svg {
   width: 14px;
   height: 14px;
+  /* BILLIONAIRE LEVEL - Gold Star Glow */
+  filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.5));
 }
 
 .proofLabel {
@@ -375,7 +581,7 @@
 }
 
 /* ============================================= */
-/*   FEATURE PILLS                              */
+/*   FEATURE PILLS - BILLIONAIRE LEVEL          */
 /* ============================================= */
 .featurePills {
   display: flex;
@@ -383,6 +589,9 @@
   justify-content: center;
   gap: 0.75rem;
   margin-bottom: 3rem;
+  /* BILLIONAIRE LEVEL - 3D Context */
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .featurePill {
@@ -394,30 +603,37 @@
   font-size: 0.8125rem;
   font-weight: 500;
   font-family: var(--font-family-body);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  /* BILLIONAIRE LEVEL - 3D Transform */
+  transform: perspective(500px) translateZ(0);
+  will-change: transform;
 }
 
 .featurePill:hover {
-  transform: translateY(-2px);
+  transform: perspective(500px) translateZ(15px) translateY(-3px);
 }
 
 .featurePill svg {
   width: 16px;
   height: 16px;
-  transition: transform 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .featurePill:hover svg {
-  transform: scale(1.15);
+  transform: scale(1.2) rotate(5deg);
+  filter: drop-shadow(0 0 4px currentColor);
 }
 
 /* ============================================= */
-/*   STATS CONTAINER                            */
+/*   STATS CONTAINER - BILLIONAIRE LEVEL        */
 /* ============================================= */
 .statsContainer {
   width: 100%;
   max-width: 900px;
   margin-bottom: 2.5rem;
+  /* BILLIONAIRE LEVEL - 3D Container */
+  transform: perspective(1000px) translateZ(0);
+  transform-style: preserve-3d;
 }
 
 .statsGrid {
@@ -426,6 +642,9 @@
   gap: 1rem;
   padding: 1.5rem;
   border-radius: 20px;
+  /* BILLIONAIRE LEVEL - Glassmorphism Enhancement */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 @media (min-width: 768px) {
@@ -437,13 +656,16 @@
 }
 
 /* ============================================= */
-/*   TRUST BADGES                               */
+/*   TRUST BADGES - BILLIONAIRE LEVEL           */
 /* ============================================= */
 .trustBadges {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
+  /* BILLIONAIRE LEVEL - 3D Context */
+  transform-style: preserve-3d;
+  perspective: 800px;
 }
 
 .trustBadge {
@@ -455,16 +677,23 @@
   font-size: 0.75rem;
   font-weight: 500;
   font-family: var(--font-family-body);
-  transition: all 0.2s ease;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  /* BILLIONAIRE LEVEL - 3D Transform */
+  transform: perspective(500px) translateZ(0);
 }
 
 .trustBadge svg {
   width: 14px;
   height: 14px;
+  transition: all 0.3s ease;
 }
 
 .trustBadge:hover {
-  transform: translateY(-1px);
+  transform: perspective(500px) translateZ(10px) translateY(-2px);
+}
+
+.trustBadge:hover svg {
+  transform: scale(1.15);
 }
 
 /* ============================================= */
@@ -474,6 +703,12 @@
   .heroContainer {
     padding: 6rem 1rem 4rem;
     min-height: auto;
+  }
+
+  /* Disable aurora on mobile for performance */
+  .heroContainer::before {
+    animation: none;
+    opacity: 0.5;
   }
 
   .announcementBadge {
@@ -489,6 +724,11 @@
 
   .mainHeading {
     font-size: 2rem;
+  }
+
+  /* Disable gradient animation on mobile */
+  .headingGradient {
+    animation: none;
   }
 
   .subheading {
@@ -527,5 +767,27 @@
   .trustBadge {
     font-size: 0.6875rem;
     padding: 0.25rem 0.5rem;
+  }
+}
+
+/* ============================================= */
+/*   REDUCED MOTION - ACCESSIBILITY             */
+/* ============================================= */
+@media (prefers-reduced-motion: reduce) {
+  .heroContainer::before,
+  .headingGradient,
+  .floating3D,
+  .orb,
+  .meshBackground {
+    animation: none;
+  }
+  
+  .announcementBadge,
+  .featurePill,
+  .avatar,
+  .trustBadge,
+  .primaryCta,
+  .secondaryCta {
+    transition: none;
   }
 }

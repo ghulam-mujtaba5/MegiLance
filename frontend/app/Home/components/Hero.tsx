@@ -23,6 +23,13 @@ import {
 
 import Button from '@/app/components/Button/Button';
 import StatItem from './StatItem';
+import { 
+  FloatingCube, 
+  FloatingSphere, 
+  FloatingRing, 
+  ParticlesSystem,
+  OrbitingElements 
+} from '@/app/components/3D';
 
 import commonStyles from './Hero.common.module.css';
 import lightStyles from './Hero.light.module.css';
@@ -73,6 +80,29 @@ const Hero: React.FC = () => {
     >
       {/* Premium animated mesh gradient background */}
       <div className={cn(commonStyles.meshBackground, styles.meshBackground)} />
+      
+      {/* Stunning 3D floating objects */}
+      <div className={cn(commonStyles.floating3D, commonStyles.floating3DTopLeft)}>
+        <FloatingCube size={50} />
+      </div>
+      <div className={cn(commonStyles.floating3D, commonStyles.floating3DTopRight)}>
+        <FloatingSphere size={70} variant="purple" />
+      </div>
+      <div className={cn(commonStyles.floating3D, commonStyles.floating3DBottomLeft)}>
+        <FloatingRing size={80} thickness={6} />
+      </div>
+      <div className={cn(commonStyles.floating3D, commonStyles.floating3DBottomRight)}>
+        <FloatingSphere size={55} variant="orange" />
+      </div>
+      <div className={cn(commonStyles.floating3D, commonStyles.floating3DCenterRight)}>
+        <FloatingCube size={35} />
+      </div>
+      <div className={cn(commonStyles.floating3D, commonStyles.floating3DCenterLeft)}>
+        <OrbitingElements count={4} size={120} />
+      </div>
+      
+      {/* Background particles */}
+      <ParticlesSystem count={10} className={commonStyles.particlesLayer} />
       
       {/* Floating orbs with parallax */}
       <div 

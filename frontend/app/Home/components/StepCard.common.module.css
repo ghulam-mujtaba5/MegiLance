@@ -1,24 +1,43 @@
-/* @AI-HINT: Common styles for the StepCard. Defines the core layout, typography, and structure for a premium, modern step card. */
+/* @AI-HINT: Common styles for the StepCard. Defines the core layout, typography, and structure for a premium, modern step card with 3D effects. */
 
 .stepCard {
   padding: 2rem;
   position: relative;
   width: 50%;
   box-sizing: border-box;
-  border-radius: 12px;
+  border-radius: 16px;
   margin-bottom: 3rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.stepCard:hover {
+  transform: translateZ(20px) scale(1.02);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(69, 115, 223, 0.1);
 }
 
 /* Position cards on alternating sides */
 .freelancer {
   left: 0;
   padding-right: 40px;
+  transform-origin: right center;
+}
+
+.freelancer:hover {
+  transform: perspective(1000px) rotateY(-3deg) translateZ(20px) scale(1.02);
 }
 
 .client {
   left: 50%;
   padding-left: 40px;
+  transform-origin: left center;
+}
+
+.client:hover {
+  transform: perspective(1000px) rotateY(3deg) translateZ(20px) scale(1.02);
 }
 
 /* Arrow pointing to the timeline */

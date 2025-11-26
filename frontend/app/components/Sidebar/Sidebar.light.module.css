@@ -1,37 +1,99 @@
-/* @AI-HINT: Defines the light theme styles for the main Sidebar component. */
+/* @AI-HINT: Premium light theme for Sidebar with glassmorphism and gradient effects */
 
 .sidebar {
-  background-color: rgba(255, 255, 255, 0.85);
-  border-right: 1px solid #e5e7eb;
-  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.92) 50%,
+    rgba(255, 255, 255, 0.98) 100%
+  );
+  border-right: none;
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 
+    0 0 40px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 0 40px rgba(69, 115, 223, 0.03),
+    0 4px 20px rgba(69, 115, 223, 0.05);
+}
+
+.sidebar:hover {
+  box-shadow: 
+    0 0 60px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    inset 0 0 60px rgba(69, 115, 223, 0.05),
+    0 8px 30px rgba(69, 115, 223, 0.08);
 }
 
 .sidebarHeader {
-  background: linear-gradient(90deg, #f8fafc, #f1f5f9);
-  border-bottom-color: #e5e7eb;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(248, 250, 252, 0.6) 100%
+  );
 }
 
 .logoText {
-  color: #111827;
+  background: linear-gradient(
+    135deg,
+    #111827 0%,
+    #4573df 50%,
+    #ff9800 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .toggleButton {
   color: #6b7280;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .toggleButton:hover {
-  background-color: #f3f4f6;
-  color: #111827;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(255, 153, 0, 0.05));
+  color: #4573df;
+  box-shadow: 
+    0 4px 16px rgba(69, 115, 223, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .sidebarFooter {
-  border-top-color: #e5e7eb;
+  border-top-color: rgba(69, 115, 223, 0.1);
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.8) 0%,
+    rgba(255, 255, 255, 0.95) 100%
+  );
 }
 
 .userInfo {
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(69, 115, 223, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 250, 252, 0.85) 100%
+  );
+  box-shadow: 
+    0 2px 10px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.userInfo:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(240, 249, 255, 0.95) 0%,
+    rgba(224, 242, 254, 0.9) 100%
+  );
+  border-color: rgba(69, 115, 223, 0.3);
+  box-shadow: 
+    0 8px 24px rgba(69, 115, 223, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 40px rgba(69, 115, 223, 0.08);
 }
 
 .userName {
@@ -40,61 +102,72 @@
 
 .userRole {
   color: #6b7280;
+  background: linear-gradient(90deg, #6b7280, #4573df);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .divider {
-  background: #e5e7eb;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(69, 115, 223, 0.2),
+    transparent
+  );
 }
 
 /* Scrollbar styles */
 @supports (scrollbar-width: thin) {
   .sidebarNavContainer {
     scrollbar-width: thin;
-    scrollbar-color: #d1d5db #f3f4f6;
+    scrollbar-color: rgba(69, 115, 223, 0.3) transparent;
   }
 }
 
 .sidebarNavContainer::-webkit-scrollbar-track {
-  background: #f3f4f6;
+  background: transparent;
 }
 
 .sidebarNavContainer::-webkit-scrollbar-thumb {
-  background-color: #d1d5db;
-  border-color: #f3f4f6;
+  background: linear-gradient(180deg, rgba(69, 115, 223, 0.3), rgba(69, 115, 223, 0.2));
 }
 
-/* Enhanced hover states for light theme */
-.sidebar:hover {
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+.sidebarNavContainer::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(69, 115, 223, 0.5), rgba(69, 115, 223, 0.4));
 }
 
-.userInfo:hover {
-  background: linear-gradient(90deg, #f0f9ff, #e0f2fe);
-  border-color: #bae6fd;
-}
-
-.toggleButton:hover {
-  background-color: #eff6ff;
-  color: #3b82f6;
-}
-
-/* Micro-interactions for light theme */
+/* Gradient accents */
 .sidebarHeader::after {
-  background: linear-gradient(90deg, #3b82f6, #4573df);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #4573df,
+    #ff9800,
+    transparent
+  );
 }
 
 .logoText::after {
-  background: linear-gradient(90deg, #3b82f6, #4573df);
+  background: linear-gradient(90deg, #4573df, #ff9800);
 }
 
 .userName::after {
-  background: linear-gradient(90deg, #3b82f6, #4573df);
+  background: linear-gradient(90deg, #4573df, #ff9800);
 }
 
 .divider::after {
-  background: linear-gradient(90deg, #3b82f6, #4573df);
+  background: linear-gradient(90deg, #4573df, #ff9800, #4573df);
 }
 
-.avatar::after {
-  background: linear-gradient(45deg, #3b82f6, #4573df);
+.avatar {
+  border: 2px solid rgba(69, 115, 223, 0.2);
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.15);
+}
+
+.userInfo:hover .avatar {
+  border-color: rgba(69, 115, 223, 0.4);
+  box-shadow: 
+    0 6px 16px rgba(69, 115, 223, 0.2),
+    0 0 20px rgba(69, 115, 223, 0.15);
 }

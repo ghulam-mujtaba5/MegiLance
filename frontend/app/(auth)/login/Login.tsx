@@ -15,6 +15,7 @@ import Input from '@/app/components/Input/Input';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
 import DevQuickLogin from '@/app/components/Auth/DevQuickLogin/DevQuickLogin';
+import { FloatingCube, FloatingSphere, ParticlesSystem, AnimatedOrb } from '@/app/components/3D';
 import commonStyles from './Login.common.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
@@ -271,6 +272,26 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.loginPage}>
+      {/* Stunning 3D Background Elements */}
+      <div className={commonStyles.backgroundDecor}>
+        <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
+        <AnimatedOrb variant="purple" size={280} blur={60} opacity={0.25} className={commonStyles.orbBottomLeft} />
+        <ParticlesSystem count={6} className={commonStyles.particlesBg} />
+      </div>
+      
+      {/* Floating 3D Objects */}
+      <div className={commonStyles.floating3DElements}>
+        <div className={commonStyles.floatingElement} style={{ top: '15%', right: '8%' }}>
+          <FloatingCube size={35} />
+        </div>
+        <div className={commonStyles.floatingElement} style={{ bottom: '20%', left: '5%' }}>
+          <FloatingSphere size={45} variant="gradient" />
+        </div>
+        <div className={commonStyles.floatingElement} style={{ top: '60%', right: '12%' }}>
+          <FloatingSphere size={30} variant="purple" />
+        </div>
+      </div>
+      
       <div className={styles.brandingSlot}>
         <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
       </div>

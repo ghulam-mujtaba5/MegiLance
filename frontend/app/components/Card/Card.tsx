@@ -1,8 +1,8 @@
-// @AI-HINT: This is a versatile and reusable Card component. It serves as a container for content sections and is fully theme-aware, adapting its styles based on the global theme context.
+// @AI-HINT: Premium Card component with 3D hover effects, glassmorphism, and billionaire-grade styling. Supports multiple variants for stunning UI.
 
 'use client';
 
-import React from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
@@ -15,9 +15,11 @@ export interface CardProps {
   icon?: React.ElementType;
   children: React.ReactNode;
   className?: string;
-  variant?: 'default' | 'elevated' | 'outline' | 'filled';
+  variant?: 'default' | 'elevated' | 'outline' | 'filled' | 'glass' | 'premium' | 'holographic';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
+  enable3D?: boolean;
+  intensity3D?: number;
 }
 
 const Card: React.FC<CardProps> = ({ 
@@ -27,25 +29,71 @@ const Card: React.FC<CardProps> = ({
   className = '',
   variant = 'default',
   size = 'md',
-  loading = false
+  loading = false,
+  enable3D = false,
+  intensity3D = 10
 }) => {
   const { resolvedTheme } = useTheme();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transform, setTransform] = useState('');
+  const [shine, setShine] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current || !enable3D) return;
+    
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const rotateX = ((y - centerY) / centerY) * -intensity3D;
+    const rotateY = ((x - centerX) / centerX) * intensity3D;
+    
+    setTransform(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`);
+    setShine({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 });
+  }, [enable3D, intensity3D]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (!enable3D) return;
+    setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)');
+    setShine({ x: 50, y: 50 });
+  }, [enable3D]);
 
   if (!resolvedTheme) {
     return null; // Don't render until theme is resolved to prevent flash
   }
 
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
+  const is3DEnabled = enable3D || variant === 'premium' || variant === 'holographic';
 
   return (
-    <div className={cn(
-      commonStyles.card,
-      themeStyles.card,
-      commonStyles[`variant-${variant}`],
-      commonStyles[`size-${size}`],
-      loading && commonStyles.loading,
-      className
-    )}>
+    <div 
+      ref={cardRef}
+      className={cn(
+        commonStyles.card,
+        themeStyles.card,
+        commonStyles[`variant-${variant}`],
+        themeStyles[`variant-${variant}`],
+        commonStyles[`size-${size}`],
+        loading && commonStyles.loading,
+        is3DEnabled && commonStyles.card3D,
+        className
+      )}
+      style={is3DEnabled ? { transform } : undefined}
+      onMouseMove={is3DEnabled ? handleMouseMove : undefined}
+      onMouseLeave={is3DEnabled ? handleMouseLeave : undefined}
+    >
+      {/* Premium shine overlay for 3D effect */}
+      {is3DEnabled && (
+        <div 
+          className={commonStyles.shineOverlay}
+          style={{
+            background: `radial-gradient(circle at ${shine.x}% ${shine.y}%, rgba(255, 255, 255, 0.15), transparent 50%)`
+          }}
+        />
+      )}
+      
       {title && (
         <div className={cn(commonStyles.cardHeader, themeStyles.cardHeader)}>
           {Icon && <Icon className={cn(commonStyles.cardIcon, themeStyles.cardIcon)} size={24} />}

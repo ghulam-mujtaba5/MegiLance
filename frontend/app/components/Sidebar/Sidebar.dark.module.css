@@ -1,39 +1,102 @@
-/* @AI-HINT: Defines the dark theme styles for the main Sidebar component. */
+/* @AI-HINT: Premium dark theme for Sidebar with glassmorphism, aurora effects and gradients */
 
 .sidebar {
-  background-color: rgba(17, 24, 39, 0.85);
-  border-right: 1px solid #374151;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    180deg,
+    rgba(17, 24, 39, 0.95) 0%,
+    rgba(30, 41, 59, 0.92) 50%,
+    rgba(17, 24, 39, 0.98) 100%
+  );
+  border-right: none;
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(40px) saturate(180%);
+  box-shadow: 
+    0 0 60px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 0 60px rgba(96, 165, 250, 0.03),
+    0 4px 30px rgba(96, 165, 250, 0.08);
+}
+
+.sidebar:hover {
+  box-shadow: 
+    0 0 80px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 80px rgba(96, 165, 250, 0.05),
+    0 8px 40px rgba(96, 165, 250, 0.12),
+    0 0 100px rgba(139, 92, 246, 0.08);
 }
 
 .sidebarHeader {
-  background: linear-gradient(90deg, #1e293b, #1f2937);
-  border-bottom-color: #374151;
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.8) 0%,
+    rgba(17, 24, 39, 0.6) 100%
+  );
 }
 
 .logoText {
-  color: #f9fafb;
+  background: linear-gradient(
+    135deg,
+    #f9fafb 0%,
+    #60a5fa 50%,
+    #ff9800 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .toggleButton {
   color: #d1d5db;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  background: rgba(30, 41, 59, 0.5);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .toggleButton:hover {
-  background-color: #1f2937;
-  color: #f9fafb;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(139, 92, 246, 0.15));
+  color: #60a5fa;
+  box-shadow: 
+    0 4px 20px rgba(96, 165, 250, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 30px rgba(139, 92, 246, 0.15);
 }
 
 .sidebarFooter {
-  border-top-color: #374151;
+  border-top-color: rgba(96, 165, 250, 0.1);
+  background: linear-gradient(
+    180deg,
+    rgba(30, 41, 59, 0.6) 0%,
+    rgba(17, 24, 39, 0.8) 100%
+  );
 }
 
 .userInfo {
-  border: 1px solid #374151;
-  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(96, 165, 250, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.8) 0%,
+    rgba(17, 24, 39, 0.75) 100%
+  );
+  box-shadow: 
+    0 2px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.userInfo:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 58, 138, 0.5) 0%,
+    rgba(30, 64, 175, 0.4) 100%
+  );
+  border-color: rgba(96, 165, 250, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(96, 165, 250, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 50px rgba(96, 165, 250, 0.1),
+    0 0 30px rgba(139, 92, 246, 0.08);
 }
 
 .userName {
@@ -41,62 +104,77 @@
 }
 
 .userRole {
-  color: #d1d5db;
+  color: #9ca3af;
+  background: linear-gradient(90deg, #9ca3af, #60a5fa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .divider {
-  background: #374151;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(96, 165, 250, 0.2),
+    transparent
+  );
 }
 
 /* Scrollbar styles */
 @supports (scrollbar-width: thin) {
   .sidebarNavContainer {
     scrollbar-width: thin;
-    scrollbar-color: #4b5563 #1f2937;
+    scrollbar-color: rgba(96, 165, 250, 0.3) transparent;
   }
 }
 
 .sidebarNavContainer::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: transparent;
 }
 
 .sidebarNavContainer::-webkit-scrollbar-thumb {
-  background-color: #4b5563;
-  border-color: #1f2937;
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.4), rgba(139, 92, 246, 0.3));
 }
 
-/* Enhanced hover states for dark theme */
-.sidebar:hover {
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+.sidebarNavContainer::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.6), rgba(139, 92, 246, 0.5));
 }
 
-.userInfo:hover {
-  background: linear-gradient(90deg, #1e3a8a, #1e40af);
-  border-color: #3b82f6;
-}
-
-.toggleButton:hover {
-  background-color: #1e3a8a;
-  color: #bfdbfe;
-}
-
-/* Micro-interactions for dark theme */
+/* Aurora gradient accents */
 .sidebarHeader::after {
-  background: linear-gradient(90deg, #60a5fa, #4573df);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #60a5fa,
+    #a78bfa,
+    #ff9800,
+    transparent
+  );
 }
 
 .logoText::after {
-  background: linear-gradient(90deg, #60a5fa, #4573df);
+  background: linear-gradient(90deg, #60a5fa, #a78bfa, #ff9800);
 }
 
 .userName::after {
-  background: linear-gradient(90deg, #60a5fa, #4573df);
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
 }
 
 .divider::after {
-  background: linear-gradient(90deg, #60a5fa, #4573df);
+  background: linear-gradient(90deg, #60a5fa, #a78bfa, #60a5fa);
 }
 
-.avatar::after {
-  background: linear-gradient(45deg, #60a5fa, #4573df);
+.avatar {
+  border: 2px solid rgba(96, 165, 250, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(96, 165, 250, 0.2),
+    0 0 20px rgba(139, 92, 246, 0.1);
+}
+
+.userInfo:hover .avatar {
+  border-color: rgba(96, 165, 250, 0.5);
+  box-shadow: 
+    0 6px 20px rgba(96, 165, 250, 0.3),
+    0 0 30px rgba(139, 92, 246, 0.2),
+    0 0 40px rgba(96, 165, 250, 0.15);
 }

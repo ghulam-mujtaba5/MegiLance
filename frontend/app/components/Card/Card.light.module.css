@@ -1,30 +1,82 @@
-/* @AI-HINT: Light theme styles for the Card component. */
+/* @AI-HINT: Premium 2025 Card component - Light theme with glassmorphism */
 
 .card {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-  --card-header-border: #f3f4f6;
-  --card-icon-color: #4b5563;
-  --card-title-color: #111827;
-  --card-content-color: #374151;
-  --card-filled-bg: #f9fafb;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(226, 232, 240, 0.6);
+  --card-header-border: rgba(241, 245, 249, 0.8);
+  --card-icon-color: #4573df;
+  --card-title-color: #0f172a;
+  --card-content-color: #475569;
+  --card-filled-bg: rgba(248, 250, 252, 0.9);
 }
 
 .card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 250, 252, 0.8) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  transform: translateY(-2px);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.9) 100%
+  );
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.1),
+    0 8px 20px rgba(0, 0, 0, 0.06),
+    0 0 40px rgba(69, 115, 223, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
 .cardTitle {
-  color: var(--text-primary);
+  color: var(--text-primary, #0f172a);
+  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .cardIcon {
-  color: var(--primary);
+  color: var(--primary, #4573df);
+  filter: drop-shadow(0 2px 4px rgba(69, 115, 223, 0.2));
+}
+
+.card:hover .cardIcon {
+  filter: drop-shadow(0 4px 8px rgba(69, 115, 223, 0.3));
+}
+
+/* Glass variant - Light */
+.card.variant-glass {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.card.variant-glass:hover {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+/* Gradient variant - Light */
+.card.variant-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(69, 115, 223, 0.08) 0%,
+    rgba(155, 89, 182, 0.05) 50%,
+    rgba(240, 147, 251, 0.08) 100%
+  );
+}
+
+/* Selected state - Light */
+.card.selected {
+  border-color: #4573df;
+  box-shadow: 
+    0 0 0 2px #4573df,
+    0 8px 24px rgba(69, 115, 223, 0.15);
 }
