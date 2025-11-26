@@ -1,4 +1,4 @@
-// @AI-HINT: This is the comprehensive Home page showcasing MegiLance's AI-powered freelancing platform with blockchain integration. Maximum scope implementation with premium sections and Dora-style 3D scroll animations.
+// @AI-HINT: This is the comprehensive Home page showcasing MegiLance's AI-powered freelancing platform with blockchain integration. Maximum scope implementation with premium sections.
 
 'use client';
 
@@ -20,15 +20,6 @@ import GlobalImpact from './components/GlobalImpact';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
 
-// Import 3D Scroll Scene components for Dora-style animations
-import {
-  ScrollScene3D,
-  ScrollReveal3D,
-  SectionDivider3D,
-  ScrollProgressIndicator,
-  ParallaxLayer,
-} from '@/app/components/3D';
-
 import commonStyles from './Home.common.module.css';
 import lightStyles from './Home.light.module.css';
 import darkStyles from './Home.dark.module.css';
@@ -38,134 +29,94 @@ const Home: React.FC = () => {
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <ScrollScene3D className={cn(commonStyles.homePage, themeStyles.homePage)}>
-      {/* Scroll Progress Indicator */}
-      <ScrollProgressIndicator position="right" />
-
+    <div className={cn(commonStyles.homePage, themeStyles.homePage)}>
       {/* Background Parallax Layers */}
-      <ParallaxLayer depth={3} className={commonStyles.parallaxBackground}>
+      <div className={commonStyles.parallaxBackground}>
         <div className={cn(commonStyles.gradientOrb, commonStyles.orb1, themeStyles.gradientOrb)} />
         <div className={cn(commonStyles.gradientOrb, commonStyles.orb2, themeStyles.gradientOrb)} />
         <div className={cn(commonStyles.gradientOrb, commonStyles.orb3, themeStyles.gradientOrb)} />
-      </ParallaxLayer>
+      </div>
 
       <div className={commonStyles.pageContent}>
-        {/* Hero Section - No wrapper needed, has its own 3D */}
+        {/* Hero Section */}
         <Hero />
 
-        {/* Trust Indicators with slide-up reveal */}
-        <ScrollReveal3D animation="slideUp" delay={0.1}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <TrustIndicators />
-            </div>
+        {/* Trust Indicators */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <TrustIndicators />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Section Divider */}
-        <SectionDivider3D variant="wave" />
+        {/* Why MegiLance */}
+        <div className={commonStyles.homeSection}>
+          <WhyMegiLance />
+        </div>
 
-        {/* Why MegiLance with scale reveal */}
-        <ScrollReveal3D animation="scale" delay={0.15}>
-          <div className={commonStyles.homeSection}>
-            <WhyMegiLance />
+        {/* Features */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <Features />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Features with fade-in */}
-        <ScrollReveal3D animation="fadeIn" delay={0.1}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <Features />
-            </div>
+        {/* How It Works */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <HowItWorks />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Section Divider */}
-        <SectionDivider3D variant="gradient" />
-
-        {/* How It Works with slide-left */}
-        <ScrollReveal3D animation="slideLeft" delay={0.1}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <HowItWorks />
-            </div>
+        {/* AI Showcase */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <AIShowcase />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* AI Showcase with rotate reveal */}
-        <ScrollReveal3D animation="rotate" delay={0.15}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <AIShowcase />
-            </div>
+        {/* Powered By AI */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <PoweredByAI />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Section Divider */}
-        <SectionDivider3D variant="dots" />
-
-        {/* Powered By AI with scale */}
-        <ScrollReveal3D animation="scale" delay={0.1}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <PoweredByAI />
-            </div>
+        {/* Blockchain Showcase */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <BlockchainShowcase />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Blockchain Showcase with flip */}
-        <ScrollReveal3D animation="flip" delay={0.15}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <BlockchainShowcase />
-            </div>
+        {/* Product Screenshots */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <ProductScreenshots />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Section Divider */}
-        <SectionDivider3D variant="wave" />
-
-        {/* Product Screenshots with slide-up */}
-        <ScrollReveal3D animation="slideUp" delay={0.1}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <ProductScreenshots />
-            </div>
+        {/* Global Impact */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <GlobalImpact />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Global Impact with fade-in */}
-        <ScrollReveal3D animation="fadeIn" delay={0.15}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <GlobalImpact />
-            </div>
+        {/* Testimonials */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <Testimonials />
           </div>
-        </ScrollReveal3D>
+        </div>
 
-        {/* Section Divider */}
-        <SectionDivider3D variant="gradient" />
-
-        {/* Testimonials with scale */}
-        <ScrollReveal3D animation="scale" delay={0.1}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <Testimonials />
-            </div>
+        {/* CTA */}
+        <div className={commonStyles.homeSection}>
+          <div className={commonStyles.sectionContainer}>
+            <CTA />
           </div>
-        </ScrollReveal3D>
-
-        {/* CTA with slide-up */}
-        <ScrollReveal3D animation="slideUp" delay={0.1}>
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <CTA />
-            </div>
-          </div>
-        </ScrollReveal3D>
+        </div>
       </div>
-    </ScrollScene3D>
+    </div>
   );
 };
 

@@ -1,5 +1,5 @@
 # @AI-HINT: Availability calendar API - Freelancer scheduling and booking
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Path
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -333,7 +333,7 @@ async def get_calendar_sync_status(
 
 @router.post("/sync/{provider}")
 async def sync_calendar(
-    provider: str = Query(..., enum=["google", "outlook", "apple"]),
+    provider: str = Path(..., enum=["google", "outlook", "apple"]),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):

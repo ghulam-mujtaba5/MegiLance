@@ -14,22 +14,15 @@ export {
 
 // Scroll-triggered 3D Components (Dora/Linear-style)
 export {
-  useScrollAnimation,
-  ScrollScene3D,
-  ParallaxLayer,
-  ScrollReveal3D,
-  Floating3DObject,
-  ScrollProgressIndicator,
-  SectionDivider3D,
-  HeroScrollScene,
-  FeatureScrollCard,
-  TestimonialCarousel3D,
   FloatingDevice3D,
+  ParallaxLayers3D,
   CardStack3D,
-  RotatingShowcase,
+  RotatingShowcase3D,
   TextReveal3D,
   IconOrbit3D,
   Timeline3D,
   HeroScene3D,
   BentoGrid3D,
 } from './ScrollScene3D';
+
+export { default as ScrollScene3D } from './ScrollScene3D';
