@@ -156,13 +156,13 @@ export const quickAccessLinks = {
     { label: 'Find Jobs', href: '/jobs' },
     { label: 'My Proposals', href: '/freelancer/my-jobs' },
     { label: 'Earnings', href: '/freelancer/wallet' },
-    { label: 'Messages', href: '/messages' },
+    { label: 'Messages', href: '/freelancer/messages' },
   ],
   client: [
     { label: 'Post a Job', href: '/client/post-job' },
     { label: 'Find Freelancers', href: '/freelancers' },
     { label: 'My Projects', href: '/client/projects' },
-    { label: 'Messages', href: '/messages' },
+    { label: 'Messages', href: '/client/messages' },
   ],
   admin: [
     { label: 'User Management', href: '/admin/users' },

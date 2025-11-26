@@ -96,17 +96,17 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
           case 'client':
             return [
               { href: '/client/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-              { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7' },
+              { href: '/client/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7' },
               { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} /> },
               { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} /> },
               { href: '/client/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
-              { href: '/help', label: 'Help', icon: <HelpCircle size={18} /> },
+              { href: '/client/help', label: 'Help', icon: <HelpCircle size={18} /> },
               { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
           case 'freelancer':
             return [
               { href: '/freelancer/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-              { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '2' },
+              { href: '/freelancer/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '2' },
               { href: '/freelancer/projects', label: 'Projects', icon: <Briefcase size={18} /> },
               { href: '/freelancer/wallet', label: 'Wallet', icon: <Wallet size={18} /> },
               { href: '/freelancer/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
@@ -114,7 +114,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
               { href: '/freelancer/portfolio', label: 'Portfolio', icon: <User size={18} /> },
               { href: '/freelancer/reviews', label: 'Reviews', icon: <Star size={18} /> },
               { href: '/freelancer/rank', label: 'Rank', icon: <TrendingUp size={18} /> },
-              { href: '/help', label: 'Help', icon: <HelpCircle size={18} /> },
+              { href: '/freelancer/help', label: 'Help', icon: <HelpCircle size={18} /> },
               { href: '/freelancer/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
             ];
           default:
