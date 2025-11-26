@@ -1,7 +1,7 @@
 .appLayout {
-  background-color: #0A0A0A; /* A very dark background for a premium feel */
+  background-color: #0f172a;
 }
 
-.appLayout::before {
-  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(255, 152, 0, 0.1));
+.pageContent {
+  background-color: #0f172a;
 }

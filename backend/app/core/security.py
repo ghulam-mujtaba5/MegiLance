@@ -7,7 +7,7 @@ All database queries use synchronous HTTP to avoid event loop issues
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -303,12 +303,10 @@ def get_current_user_optional(token: str = Depends(oauth2_scheme)) -> Optional[d
         return None
 
 
-def get_current_user_from_header(authorization: str = None) -> dict:
+def get_current_user_from_header(authorization: str = Header(None, alias="Authorization")) -> dict:
     """
     Get current user from Authorization header
     """
-    from fastapi import Header
-    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

@@ -4,52 +4,9 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.db.turso_http import execute_query, to_str, parse_date
-from app.core.security import get_current_user
+from app.core.security import get_current_user_from_header
 
 router = APIRouter()
-
-
-def get_current_user_from_header(authorization: Optional[str] = Header(None)):
-    """Extract and validate the current user from the Authorization header"""
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Authorization header missing")
-    
-    # Extract token from "Bearer <token>" format
-    if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Invalid authorization header format")
-    
-    token = authorization[7:]  # Remove "Bearer " prefix
-    
-    # Use the existing get_current_user function with the token
-    from app.core.security import decode_access_token
-    payload = decode_access_token(token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    
-    user_id = payload.get("user_id")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token payload")
-    
-    # Fetch user from Turso
-    result = execute_query(
-        "SELECT id, email, name, first_name, last_name, user_type, role, is_active FROM users WHERE id = ?",
-        [user_id]
-    )
-    
-    if not result or not result.get("rows"):
-        raise HTTPException(status_code=401, detail="User not found")
-    
-    row = result["rows"][0]
-    return {
-        "id": row[0].get("value") if row[0].get("type") != "null" else None,
-        "email": to_str(row[1]),
-        "name": to_str(row[2]),
-        "first_name": to_str(row[3]),
-        "last_name": to_str(row[4]),
-        "user_type": to_str(row[5]),
-        "role": to_str(row[6]),
-        "is_active": bool(row[7].get("value")) if row[7].get("type") != "null" else True
-    }
 
 
 @router.get("/projects", response_model=List[dict])

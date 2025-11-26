@@ -96,7 +96,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
       <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={area === 'general' ? undefined : area} />
-      <div className={cn(commonStyles.mainContent)}>
+      <div className={cn(commonStyles.mainContent, isCollapsed && commonStyles.sidebarCollapsed)}>
 
 
         <ErrorBoundary>

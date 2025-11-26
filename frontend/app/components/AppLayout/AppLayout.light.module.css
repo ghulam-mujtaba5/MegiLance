@@ -1,11 +1,7 @@
 .appLayout {
-  background-color: #f4f7fa; /* A light, neutral background */
+  background-color: #f8fafc;
 }
 
 .pageContent {
-  /* No specific background needed, will inherit from appLayout or be white by default */
-}
-
-.appLayout::before {
-  background: linear-gradient(135deg, rgba(69, 115, 223, 0.05), rgba(255, 152, 0, 0.05));
+  background-color: #f8fafc;
 }

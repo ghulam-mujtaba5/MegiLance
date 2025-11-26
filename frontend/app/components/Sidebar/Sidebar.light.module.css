@@ -1,99 +1,69 @@
-/* @AI-HINT: Premium light theme for Sidebar with glassmorphism and gradient effects */
+/* @AI-HINT: Clean light theme for Sidebar - solid colors, excellent readability */
 
 .sidebar {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(248, 250, 252, 0.92) 50%,
-    rgba(255, 255, 255, 0.98) 100%
-  );
-  border-right: none;
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  backdrop-filter: blur(40px) saturate(180%);
+  background-color: #ffffff;
+  border-right-color: #e5e7eb;
   box-shadow: 
-    0 0 40px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.5),
-    inset 0 0 40px rgba(69, 115, 223, 0.03),
-    0 4px 20px rgba(69, 115, 223, 0.05);
-}
-
-.sidebar:hover {
-  box-shadow: 
-    0 0 60px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.6),
-    inset 0 0 60px rgba(69, 115, 223, 0.05),
-    0 8px 30px rgba(69, 115, 223, 0.08);
+    2px 0 8px rgba(0, 0, 0, 0.04),
+    1px 0 2px rgba(0, 0, 0, 0.02);
 }
 
 .sidebarHeader {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(248, 250, 252, 0.6) 100%
-  );
+  background-color: #ffffff;
+  border-bottom-color: #f3f4f6;
 }
 
 .logoText {
-  background: linear-gradient(
-    135deg,
-    #111827 0%,
-    #4573df 50%,
-    #ff9800 100%
-  );
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #111827;
 }
 
 .toggleButton {
   color: #6b7280;
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
 }
 
 .toggleButton:hover {
-  background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(255, 153, 0, 0.05));
+  background-color: #f3f4f6;
   color: #4573df;
-  box-shadow: 
-    0 4px 16px rgba(69, 115, 223, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-color: #4573df;
+}
+
+.sidebarNavContainer {
+  background-color: #ffffff;
+}
+
+.sidebarNavContainer::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+}
+
+.sidebarNavContainer::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+.divider {
+  background-color: #f3f4f6;
 }
 
 .sidebarFooter {
-  border-top-color: rgba(69, 115, 223, 0.1);
-  background: linear-gradient(
-    180deg,
-    rgba(248, 250, 252, 0.8) 0%,
-    rgba(255, 255, 255, 0.95) 100%
-  );
+  background-color: #fafafa;
+  border-top-color: #f3f4f6;
 }
 
 .userInfo {
-  border: 1px solid rgba(69, 115, 223, 0.1);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(248, 250, 252, 0.85) 100%
-  );
-  box-shadow: 
-    0 2px 10px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
 }
 
 .userInfo:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(240, 249, 255, 0.95) 0%,
-    rgba(224, 242, 254, 0.9) 100%
-  );
-  border-color: rgba(69, 115, 223, 0.3);
-  box-shadow: 
-    0 8px 24px rgba(69, 115, 223, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 0 40px rgba(69, 115, 223, 0.08);
+  background-color: #f0f9ff;
+  border-color: #bfdbfe;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.1);
+}
+
+.avatar {
+  border-color: #e5e7eb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .userName {
@@ -102,72 +72,4 @@
 
 .userRole {
   color: #6b7280;
-  background: linear-gradient(90deg, #6b7280, #4573df);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.divider {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(69, 115, 223, 0.2),
-    transparent
-  );
-}
-
-/* Scrollbar styles */
-@supports (scrollbar-width: thin) {
-  .sidebarNavContainer {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(69, 115, 223, 0.3) transparent;
-  }
-}
-
-.sidebarNavContainer::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebarNavContainer::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(69, 115, 223, 0.3), rgba(69, 115, 223, 0.2));
-}
-
-.sidebarNavContainer::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, rgba(69, 115, 223, 0.5), rgba(69, 115, 223, 0.4));
-}
-
-/* Gradient accents */
-.sidebarHeader::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #4573df,
-    #ff9800,
-    transparent
-  );
-}
-
-.logoText::after {
-  background: linear-gradient(90deg, #4573df, #ff9800);
-}
-
-.userName::after {
-  background: linear-gradient(90deg, #4573df, #ff9800);
-}
-
-.divider::after {
-  background: linear-gradient(90deg, #4573df, #ff9800, #4573df);
-}
-
-.avatar {
-  border: 2px solid rgba(69, 115, 223, 0.2);
-  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.15);
-}
-
-.userInfo:hover .avatar {
-  border-color: rgba(69, 115, 223, 0.4);
-  box-shadow: 
-    0 6px 16px rgba(69, 115, 223, 0.2),
-    0 0 20px rgba(69, 115, 223, 0.15);
 }

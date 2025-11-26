@@ -1,70 +1,49 @@
-/* @AI-HINT: Defines the light theme styles for the SidebarNav component. */
+/* @AI-HINT: Light theme styles for SidebarNav - clean, readable design */
 
 .navLinkInactive {
-  color: #4b5563; /* text-secondary */
+  color: #4b5563;
   background-color: transparent;
 }
 
 .navLinkInactive:hover {
-  background-color: #f9fafb; /* surface-alt */
-  color: #111827; /* text-primary */
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 .navLinkActive {
-  background: linear-gradient(90deg, #4573df, #3b82f6); /* primary gradient */
-  color: #ffffff; /* text-on-primary */
-  box-shadow: 0 4px 12px -1px rgba(69, 115, 223, 0.3);
+  background-color: #4573df;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.25);
 }
 
 .navLinkActive:hover {
-  background: linear-gradient(90deg, #3b66c4, #2563eb); /* darker gradient */
-  box-shadow: 0 6px 16px -1px rgba(69, 115, 223, 0.4);
+  background-color: #3b66c4;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
 }
 
 .badge {
   background-color: #e5e7eb;
-  color: #4b5563;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #374151;
 }
 
 .navLinkActive .badge {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-/* Enhanced hover states for light theme */
-.navLinkInactive:hover {
-  background: linear-gradient(90deg, #f0f9ff, #e0f2fe);
-  border: 1px solid #bae6fd;
-  transform: translateX(4px);
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
 }
 
 .sidebarNavSubLink {
-  background-color: rgba(241, 245, 249, 0.5);
+  background-color: #f9fafb;
   border-left-color: #93c5fd;
+  color: #4b5563;
 }
 
 .sidebarNavSubLink:hover {
-  background-color: rgba(224, 242, 254, 0.7);
+  background-color: #f0f9ff;
+  color: #111827;
 }
 
-/* Micro-interactions for light theme */
-.sidebarNavItem::before {
-  background: linear-gradient(to bottom, #3b82f6, #4573df);
-}
-
-.sidebarNavLabel::after {
-  background: linear-gradient(90deg, #3b82f6, #4573df);
-}
-
-.sidebarNavIcon::after {
-  background: #3b82f6;
-}
-
-.sidebarNavSubItem::before {
-  background: linear-gradient(to bottom, #93c5fd, #3b82f6);
-}
-
-.sidebarNavSubLink::after {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.05), rgba(59, 130, 246, 0));
+.sidebarNavSubLink.navLinkActive {
+  background-color: #dbeafe;
+  border-left-color: #4573df;
+  color: #1e40af;
 }

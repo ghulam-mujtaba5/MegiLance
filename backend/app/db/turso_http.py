@@ -244,9 +244,16 @@ def parse_rows(result: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def to_str(value: Any) -> Optional[str]:
-    """Convert value to string, handling bytes"""
+    """Convert value to string, handling bytes and Turso dict format"""
     if value is None:
         return None
+    # Handle Turso format: {"type": "text", "value": "..."}
+    if isinstance(value, dict):
+        if value.get("type") == "null":
+            return None
+        value = value.get("value")
+        if value is None:
+            return None
     if isinstance(value, bytes):
         return value.decode('utf-8')
     return str(value)
@@ -256,6 +263,13 @@ def parse_date(value: Any) -> Optional[Any]:
     """Parse date value safely"""
     if value is None:
         return None
+    # Handle Turso format: {"type": "text", "value": "..."}
+    if isinstance(value, dict):
+        if value.get("type") == "null":
+            return None
+        value = value.get("value")
+        if value is None:
+            return None
     if isinstance(value, bytes):
         value = value.decode('utf-8')
     # Try to parse as datetime if it's a string
