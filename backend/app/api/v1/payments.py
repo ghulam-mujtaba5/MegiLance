@@ -5,6 +5,7 @@ No local SQLite fallback - all queries go directly to Turso
 
 from typing import List, Optional
 from datetime import datetime
+from decimal import Decimal, InvalidOperation
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -14,6 +15,36 @@ from app.schemas.payment import PaymentCreate, PaymentRead, PaymentUpdate
 from app.db.turso_http import get_turso_http
 
 router = APIRouter()
+
+# Validation constants
+ALLOWED_PAYMENT_STATUSES = {"pending", "processing", "completed", "failed", "refunded", "cancelled"}
+ALLOWED_CURRENCIES = {"USDC", "USDT", "ETH", "BTC", "USD"}
+ALLOWED_PAYMENT_TYPES = {"milestone", "full", "hourly", "escrow", "refund", "bonus"}
+ALLOWED_DIRECTIONS = {"incoming", "outgoing"}
+MAX_AMOUNT = Decimal("1000000")  # 1 million max per transaction
+MIN_AMOUNT = Decimal("0.01")
+
+
+def validate_amount(amount: float) -> Decimal:
+    """Validate and convert payment amount."""
+    try:
+        decimal_amount = Decimal(str(amount))
+        if decimal_amount < MIN_AMOUNT:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Amount must be at least {MIN_AMOUNT}"
+            )
+        if decimal_amount > MAX_AMOUNT:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Amount cannot exceed {MAX_AMOUNT}"
+            )
+        return decimal_amount
+    except InvalidOperation:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid amount format"
+        )
 
 
 def _row_to_payment(row: list) -> dict:
@@ -37,14 +68,26 @@ def _row_to_payment(row: list) -> dict:
 
 @router.get("/", response_model=List[PaymentRead])
 def list_payments(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
-    contract_id: Optional[str] = Query(None, description="Filter by contract"),
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(20, ge=1, le=100, description="Max records to return"),
+    contract_id: Optional[str] = Query(None, max_length=50, description="Filter by contract"),
     payment_status: Optional[str] = Query(None, alias="status", description="Filter by payment status"),
     direction: Optional[str] = Query(None, description="incoming or outgoing"),
     current_user: User = Depends(get_current_active_user)
 ):
     """List payments for the authenticated user with optional filters."""
+    # Validate filter values
+    if payment_status and payment_status.lower() not in ALLOWED_PAYMENT_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Allowed: {', '.join(ALLOWED_PAYMENT_STATUSES)}"
+        )
+    if direction and direction.lower() not in ALLOWED_DIRECTIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid direction. Allowed: {', '.join(ALLOWED_DIRECTIONS)}"
+        )
+    
     try:
         turso = get_turso_http()
         
@@ -71,7 +114,7 @@ def list_payments(
             params.append(contract_id)
         if payment_status:
             sql += " AND status = ?"
-            params.append(payment_status)
+            params.append(payment_status.lower())
         
         sql += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
         
@@ -79,11 +122,13 @@ def list_payments(
         payments = [_row_to_payment(row) for row in result.get("rows", [])]
         return payments
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"[ERROR] list_payments: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -125,15 +170,74 @@ def get_payment(
         )
 
 
+def validate_payment_input(payment: PaymentCreate) -> None:
+    """Validate payment creation input."""
+    # Validate amount
+    validate_amount(payment.amount)
+    
+    # Validate currency
+    currency = (payment.currency or "USDC").upper()
+    if currency not in ALLOWED_CURRENCIES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid currency. Allowed: {', '.join(ALLOWED_CURRENCIES)}"
+        )
+    
+    # Validate payment type
+    payment_type = (payment.payment_type or "milestone").lower()
+    if payment_type not in ALLOWED_PAYMENT_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid payment type. Allowed: {', '.join(ALLOWED_PAYMENT_TYPES)}"
+        )
+    
+    # Validate description length
+    if payment.description and len(payment.description) > 1000:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Description cannot exceed 1000 characters"
+        )
+
+
 @router.post("/", response_model=PaymentRead, status_code=status.HTTP_201_CREATED)
 def create_payment(
     payment: PaymentCreate,
     current_user: User = Depends(get_current_active_user)
 ):
     """Create a new payment record."""
+    # Validate input
+    validate_payment_input(payment)
+    
+    # Prevent self-payment
+    if payment.to_user_id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot send payment to yourself"
+        )
+    
     try:
         turso = get_turso_http()
+        
+        # Verify recipient exists
+        recipient = turso.fetch_one(
+            "SELECT id, is_active FROM users WHERE id = ?",
+            [payment.to_user_id]
+        )
+        if not recipient:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Recipient user not found"
+            )
+        if not recipient[1]:  # is_active
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Recipient account is not active"
+            )
+        
         now = datetime.utcnow().isoformat()
+        currency = (payment.currency or "USDC").upper()
+        payment_type = (payment.payment_type or "milestone").lower()
+        description = (payment.description or "")[:1000]  # Truncate to limit
         
         turso.execute(
             """INSERT INTO payments (contract_id, from_user_id, to_user_id, amount,
@@ -141,8 +245,7 @@ def create_payment(
                                      created_at, updated_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [payment.contract_id, current_user.id, payment.to_user_id, payment.amount,
-             payment.currency or "USDC", "pending", payment.payment_type or "milestone",
-             payment.description, now, now]
+             currency, "pending", payment_type, description, now, now]
         )
         
         # Get created payment
@@ -175,7 +278,10 @@ def update_payment(
         turso = get_turso_http()
         
         # Check payment exists
-        existing = turso.fetch_one("SELECT from_user_id FROM payments WHERE id = ?", [payment_id])
+        existing = turso.fetch_one(
+            "SELECT from_user_id, status FROM payments WHERE id = ?",
+            [payment_id]
+        )
         if not existing:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
         
@@ -183,12 +289,51 @@ def update_payment(
         if current_user.role != "Admin" and existing[0] != current_user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
         
+        # Prevent modification of completed/refunded payments
+        current_status = existing[1] if len(existing) > 1 else None
+        if current_status in ("completed", "refunded"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot modify a {current_status} payment"
+            )
+        
         # Build update
         updates = []
         params = []
         update_data = payment_update.dict(exclude_unset=True)
         
         for key, value in update_data.items():
+            # Validate status
+            if key == "status" and value:
+                if value.lower() not in ALLOWED_PAYMENT_STATUSES:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Invalid status. Allowed: {', '.join(ALLOWED_PAYMENT_STATUSES)}"
+                    )
+                value = value.lower()
+            # Validate currency
+            if key == "currency" and value:
+                if value.upper() not in ALLOWED_CURRENCIES:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Invalid currency. Allowed: {', '.join(ALLOWED_CURRENCIES)}"
+                    )
+                value = value.upper()
+            # Validate payment_type
+            if key == "payment_type" and value:
+                if value.lower() not in ALLOWED_PAYMENT_TYPES:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Invalid payment type. Allowed: {', '.join(ALLOWED_PAYMENT_TYPES)}"
+                    )
+                value = value.lower()
+            # Validate description length
+            if key == "description" and value:
+                value = value[:1000]
+            # Validate amount
+            if key == "amount" and value is not None:
+                validate_amount(value)
+            
             updates.append(f"{key} = ?")
             params.append(value)
         

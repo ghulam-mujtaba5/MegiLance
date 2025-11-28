@@ -1,1 +1,40 @@
-.container{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem}.spinner{animation:spin 1s linear infinite}.text{margin-top:1rem;font-size:0.875rem}@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* @AI-HINT: LoadingSpinner common styles with accessibility support */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.text {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+/* Screen reader only text */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

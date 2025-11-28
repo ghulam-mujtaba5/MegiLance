@@ -3,7 +3,7 @@
 // including testing different variants, interactions, and accessibility.
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Button from '@/app/components/Button/Button';
 

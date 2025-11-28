@@ -1,12 +1,14 @@
 """
 @AI-HINT: Users API endpoints using Turso remote database ONLY
 No local SQLite fallback - all queries go directly to Turso
+Enhanced with input validation and security measures
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
 from datetime import datetime
 import json
+import re
 
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate, ProfileCompleteUpdate
@@ -14,6 +16,53 @@ from app.core.security import get_password_hash, get_current_user
 from app.db.turso_http import get_turso_http
 
 router = APIRouter()
+
+# === Input Validation Constants ===
+MAX_BIO_LENGTH = 2000
+MAX_NAME_LENGTH = 100
+MAX_SKILLS_LENGTH = 1000
+MAX_LOCATION_LENGTH = 200
+MAX_URL_LENGTH = 500
+MAX_PHONE_LENGTH = 20
+VALID_USER_TYPES = {"client", "freelancer", "both"}
+VALID_DIGEST_FREQUENCIES = {"realtime", "daily", "weekly", "never"}
+
+# Validation patterns
+EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+URL_PATTERN = re.compile(r'^https?://[a-zA-Z0-9.-]+(?:/[^\s]*)?$')
+PHONE_PATTERN = re.compile(r'^[\d\s\+\-\(\)\.]+$')
+TIME_PATTERN = re.compile(r'^([01]?[0-9]|2[0-3]):[0-5][0-9]$')
+
+
+def _validate_url(url: Optional[str], field_name: str) -> Optional[str]:
+    """Validate URL format"""
+    if not url:
+        return None
+    url = url.strip()
+    if len(url) > MAX_URL_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"{field_name} URL exceeds maximum length of {MAX_URL_LENGTH} characters"
+        )
+    if not URL_PATTERN.match(url):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid {field_name} URL format"
+        )
+    return url
+
+
+def _validate_string(value: Optional[str], field_name: str, max_length: int) -> Optional[str]:
+    """Validate and sanitize string input"""
+    if not value:
+        return None
+    value = value.strip()
+    if len(value) > max_length:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"{field_name} exceeds maximum length of {max_length} characters"
+        )
+    return value
 
 
 def _parse_date(value) -> datetime:
@@ -196,53 +245,123 @@ def complete_user_profile(
         updates = []
         params = []
         
-        # Build name from first/last
+        # Validate and build name from first/last
         if profile_data.firstName and profile_data.lastName:
-            updates.append("name = ?")
-            params.append(f"{profile_data.firstName} {profile_data.lastName}")
+            first_name = _validate_string(profile_data.firstName, "First name", 50)
+            last_name = _validate_string(profile_data.lastName, "Last name", 50)
+            if first_name and last_name:
+                updates.append("name = ?")
+                params.append(f"{first_name} {last_name}")
         
         if profile_data.bio:
-            updates.append("bio = ?")
-            params.append(profile_data.bio)
+            bio = _validate_string(profile_data.bio, "Bio", MAX_BIO_LENGTH)
+            if bio:
+                updates.append("bio = ?")
+                params.append(bio)
         
         if profile_data.location:
-            updates.append("location = ?")
-            params.append(profile_data.location)
+            location = _validate_string(profile_data.location, "Location", MAX_LOCATION_LENGTH)
+            if location:
+                updates.append("location = ?")
+                params.append(location)
         
         if profile_data.skills:
-            updates.append("skills = ?")
-            params.append(profile_data.skills)
+            skills = _validate_string(profile_data.skills, "Skills", MAX_SKILLS_LENGTH)
+            if skills:
+                updates.append("skills = ?")
+                params.append(skills)
         
         if profile_data.hourlyRate:
-            updates.append("hourly_rate = ?")
-            params.append(float(profile_data.hourlyRate))
+            # Validate hourly rate is reasonable
+            try:
+                rate = float(profile_data.hourlyRate)
+                if rate < 0 or rate > 10000:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Hourly rate must be between 0 and 10000"
+                    )
+                updates.append("hourly_rate = ?")
+                params.append(rate)
+            except (ValueError, TypeError):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid hourly rate format"
+                )
         
-        # Build profile_data JSON
+        # Build profile_data JSON with validation
         extra_data = {}
         if profile_data.title:
-            extra_data['title'] = profile_data.title
+            title = _validate_string(profile_data.title, "Title", 100)
+            if title:
+                extra_data['title'] = title
         if profile_data.timezone:
-            extra_data['timezone'] = profile_data.timezone
+            timezone = _validate_string(profile_data.timezone, "Timezone", 100)
+            if timezone:
+                extra_data['timezone'] = timezone
         if profile_data.experienceLevel:
+            valid_levels = {"entry", "intermediate", "expert", "junior", "mid", "senior"}
+            if profile_data.experienceLevel.lower() not in valid_levels:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid experience level. Must be one of: {', '.join(valid_levels)}"
+                )
             extra_data['experience_level'] = profile_data.experienceLevel
         if profile_data.availability:
+            valid_availability = {"full_time", "part_time", "contract", "hourly", "not_available"}
+            if profile_data.availability.lower().replace("-", "_") not in valid_availability:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid availability. Must be one of: {', '.join(valid_availability)}"
+                )
             extra_data['availability'] = profile_data.availability
         if profile_data.languages:
-            extra_data['languages'] = profile_data.languages
+            languages = _validate_string(profile_data.languages, "Languages", 500)
+            if languages:
+                extra_data['languages'] = languages
         if profile_data.portfolioItems:
-            extra_data['portfolio_items'] = [
-                {'title': item.title, 'description': item.description, 
-                 'url': item.url, 'imageUrl': item.imageUrl, 'tags': item.tags}
-                for item in profile_data.portfolioItems
-            ]
+            # Validate portfolio items
+            validated_items = []
+            for idx, item in enumerate(profile_data.portfolioItems[:10]):  # Max 10 items
+                validated_item = {
+                    'title': _validate_string(item.title, f"Portfolio item {idx+1} title", 200),
+                    'description': _validate_string(item.description, f"Portfolio item {idx+1} description", 1000),
+                    'url': _validate_url(item.url, f"Portfolio item {idx+1}"),
+                    'imageUrl': _validate_url(item.imageUrl, f"Portfolio item {idx+1} image"),
+                    'tags': item.tags[:20] if item.tags else []  # Max 20 tags
+                }
+                validated_items.append(validated_item)
+            extra_data['portfolio_items'] = validated_items
         if profile_data.phoneNumber:
-            extra_data['phone_number'] = profile_data.phoneNumber
+            phone = profile_data.phoneNumber.strip()
+            if len(phone) > MAX_PHONE_LENGTH:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Phone number exceeds maximum length of {MAX_PHONE_LENGTH} characters"
+                )
+            if not PHONE_PATTERN.match(phone):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid phone number format"
+                )
+            extra_data['phone_number'] = phone
         if profile_data.linkedinUrl:
-            extra_data['linkedin_url'] = profile_data.linkedinUrl
+            linkedin = _validate_url(profile_data.linkedinUrl, "LinkedIn")
+            if linkedin and "linkedin.com" not in linkedin.lower():
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="LinkedIn URL must be a valid LinkedIn profile URL"
+                )
+            extra_data['linkedin_url'] = linkedin
         if profile_data.githubUrl:
-            extra_data['github_url'] = profile_data.githubUrl
+            github = _validate_url(profile_data.githubUrl, "GitHub")
+            if github and "github.com" not in github.lower():
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="GitHub URL must be a valid GitHub profile URL"
+                )
+            extra_data['github_url'] = github
         if profile_data.websiteUrl:
-            extra_data['website_url'] = profile_data.websiteUrl
+            extra_data['website_url'] = _validate_url(profile_data.websiteUrl, "Website")
         
         extra_data['profile_completed'] = True
         
@@ -320,11 +439,69 @@ def update_notification_preferences(
 ):
     """Update the current user's notification preferences"""
     try:
+        # Validate preferences structure
         if "preferences" not in preferences or "digest" not in preferences:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid preferences structure. Must include 'preferences' and 'digest' keys."
             )
+        
+        # Validate preferences object
+        prefs = preferences.get("preferences", {})
+        if not isinstance(prefs, dict):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="'preferences' must be an object"
+            )
+        
+        valid_channels = {"email", "push", "sms", "inApp"}
+        valid_categories = {"projectUpdates", "proposals", "messages", "payments", "reviews", "marketing"}
+        
+        for category, settings in prefs.items():
+            if category not in valid_categories:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid preference category: {category}"
+                )
+            if not isinstance(settings, dict):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Settings for '{category}' must be an object"
+                )
+            for channel, value in settings.items():
+                if channel not in valid_channels:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Invalid channel '{channel}' in category '{category}'"
+                    )
+                if not isinstance(value, bool):
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Channel value for '{channel}' in '{category}' must be boolean"
+                    )
+        
+        # Validate digest settings
+        digest = preferences.get("digest", {})
+        if not isinstance(digest, dict):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="'digest' must be an object"
+            )
+        
+        if "frequency" in digest:
+            if digest["frequency"] not in VALID_DIGEST_FREQUENCIES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid digest frequency. Must be one of: {', '.join(VALID_DIGEST_FREQUENCIES)}"
+                )
+        
+        for time_field in ["quietHoursStart", "quietHoursEnd"]:
+            if time_field in digest:
+                if not TIME_PATTERN.match(str(digest[time_field])):
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Invalid time format for {time_field}. Use HH:MM format."
+                    )
         
         turso = get_turso_http()
         turso.execute(

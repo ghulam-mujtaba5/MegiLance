@@ -1,0 +1,186 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "retry": "Intentar de nuevo",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "clear": "Limpiar",
+    "submit": "Enviar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "yes": "Sí",
+    "no": "No",
+    "confirm": "Confirmar",
+    "viewAll": "Ver todo",
+    "learnMore": "Más información",
+    "getStarted": "Comenzar"
+  },
+  "nav": {
+    "home": "Inicio",
+    "browseProjects": "Explorar proyectos",
+    "browseFreelancers": "Buscar freelancers",
+    "howItWorks": "Cómo funciona",
+    "pricing": "Precios",
+    "about": "Nosotros",
+    "contact": "Contacto",
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "dashboard": "Panel",
+    "messages": "Mensajes",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": {
+      "title": "Bienvenido de nuevo",
+      "subtitle": "Inicia sesión para continuar",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "rememberMe": "Recordarme",
+      "forgotPassword": "¿Olvidaste tu contraseña?",
+      "signIn": "Iniciar sesión",
+      "noAccount": "¿No tienes cuenta?",
+      "signUp": "Regístrate",
+      "orContinueWith": "O continúa con"
+    },
+    "signup": {
+      "title": "Crea tu cuenta",
+      "subtitle": "Únete a la red de talento y clientes de primer nivel",
+      "fullName": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "agreeToTerms": "Acepto los Términos y la Política de Privacidad",
+      "createAccount": "Crear cuenta",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "signIn": "Inicia sesión"
+    },
+    "forgotPassword": {
+      "title": "¿Olvidaste tu contraseña?",
+      "subtitle": "Ingresa tu correo y te enviaremos un enlace de recuperación",
+      "email": "Correo electrónico",
+      "sendLink": "Enviar enlace",
+      "backToLogin": "Volver al inicio de sesión"
+    },
+    "errors": {
+      "invalidEmail": "Por favor ingresa un correo electrónico válido",
+      "invalidPassword": "La contraseña debe tener al menos 8 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "invalidCredentials": "Correo o contraseña incorrectos",
+      "accountExists": "Ya existe una cuenta con este correo"
+    }
+  },
+  "dashboard": {
+    "welcome": "¡Bienvenido de nuevo, {{name}}!",
+    "overview": "Resumen",
+    "recentActivity": "Actividad reciente",
+    "quickActions": "Acciones rápidas",
+    "stats": {
+      "activeProjects": "Proyectos activos",
+      "completedProjects": "Completados",
+      "totalEarnings": "Ganancias totales",
+      "pendingPayments": "Pagos pendientes"
+    }
+  },
+  "projects": {
+    "title": "Proyectos",
+    "browse": "Explorar proyectos",
+    "myProjects": "Mis proyectos",
+    "create": "Crear proyecto",
+    "details": "Detalles del proyecto",
+    "proposals": "Propuestas",
+    "milestones": "Hitos",
+    "status": {
+      "open": "Abierto",
+      "inProgress": "En progreso",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "budget": "Presupuesto",
+    "duration": "Duración",
+    "skills": "Habilidades requeridas",
+    "apply": "Enviar propuesta",
+    "hire": "Contratar"
+  },
+  "freelancers": {
+    "title": "Freelancers",
+    "browse": "Buscar freelancers",
+    "profile": "Perfil",
+    "skills": "Habilidades",
+    "experience": "Experiencia",
+    "rating": "Calificación",
+    "hourlyRate": "Tarifa por hora",
+    "availability": "Disponibilidad",
+    "portfolio": "Portafolio",
+    "reviews": "Reseñas",
+    "hire": "Contratar ahora",
+    "message": "Enviar mensaje"
+  },
+  "payments": {
+    "title": "Pagos",
+    "history": "Historial de pagos",
+    "pending": "Pendientes",
+    "completed": "Completados",
+    "methods": "Métodos de pago",
+    "addMethod": "Agregar método de pago",
+    "withdraw": "Retirar",
+    "deposit": "Agregar fondos"
+  },
+  "messages": {
+    "title": "Mensajes",
+    "inbox": "Bandeja de entrada",
+    "sent": "Enviados",
+    "compose": "Nuevo mensaje",
+    "noMessages": "Aún no hay mensajes",
+    "typeMessage": "Escribe un mensaje..."
+  },
+  "settings": {
+    "title": "Configuración",
+    "profile": "Perfil",
+    "account": "Cuenta",
+    "notifications": "Notificaciones",
+    "security": "Seguridad",
+    "billing": "Facturación",
+    "preferences": "Preferencias"
+  },
+  "footer": {
+    "company": "Empresa",
+    "about": "Nosotros",
+    "careers": "Carreras",
+    "blog": "Blog",
+    "press": "Prensa",
+    "support": "Soporte",
+    "helpCenter": "Centro de ayuda",
+    "contact": "Contáctanos",
+    "faq": "Preguntas frecuentes",
+    "legal": "Legal",
+    "terms": "Términos de servicio",
+    "privacy": "Política de privacidad",
+    "cookies": "Política de cookies",
+    "copyright": "© {{year}} MegiLance. Todos los derechos reservados."
+  },
+  "errors": {
+    "404": {
+      "title": "Página no encontrada",
+      "message": "La página que buscas no existe o ha sido movida."
+    },
+    "500": {
+      "title": "Algo salió mal",
+      "message": "Disculpa las molestias. Por favor intenta de nuevo más tarde."
+    },
+    "network": {
+      "title": "Error de conexión",
+      "message": "Por favor verifica tu conexión a internet e intenta de nuevo."
+    }
+  }
+}

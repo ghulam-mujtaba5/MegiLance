@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -56,7 +56,13 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const [selectedDate, setSelectedDate] = useState<Date | null>(value);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState<{ hours: number; minutes: number }>({ hours: 12, minutes: 0 });
+  const [focusedDate, setFocusedDate] = useState<Date | null>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
+  const calendarGridRef = useRef<HTMLDivElement>(null);
+  const uniqueId = useId();
+  const labelId = `${uniqueId}-label`;
+  const calendarId = `${uniqueId}-calendar`;
+  const errorId = `${uniqueId}-error`;
 
   if (!resolvedTheme) {
     return null; // Don't render until theme is resolved
@@ -214,6 +220,85 @@ const DatePicker: React.FC<DatePickerProps> = ({
     setIsOpen(false);
   };
 
+  // Handle keyboard navigation in calendar
+  const handleCalendarKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!focusedDate) {
+      setFocusedDate(selectedDate || new Date());
+      return;
+    }
+
+    let newDate = new Date(focusedDate);
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        newDate.setDate(newDate.getDate() - 1);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        newDate.setDate(newDate.getDate() + 1);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        newDate.setDate(newDate.getDate() - 7);
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        newDate.setDate(newDate.getDate() + 7);
+        break;
+      case 'Home':
+        e.preventDefault();
+        newDate.setDate(1);
+        break;
+      case 'End':
+        e.preventDefault();
+        newDate = new Date(newDate.getFullYear(), newDate.getMonth() + 1, 0);
+        break;
+      case 'PageUp':
+        e.preventDefault();
+        if (e.shiftKey) {
+          newDate.setFullYear(newDate.getFullYear() - 1);
+        } else {
+          newDate.setMonth(newDate.getMonth() - 1);
+        }
+        break;
+      case 'PageDown':
+        e.preventDefault();
+        if (e.shiftKey) {
+          newDate.setFullYear(newDate.getFullYear() + 1);
+        } else {
+          newDate.setMonth(newDate.getMonth() + 1);
+        }
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (isDateSelectable(newDate)) {
+          handleDateSelect(newDate);
+        }
+        return;
+      case 'Escape':
+        e.preventDefault();
+        setIsOpen(false);
+        return;
+      default:
+        return;
+    }
+
+    // Update focused date and current month if needed
+    setFocusedDate(newDate);
+    if (newDate.getMonth() !== currentMonth.getMonth() || newDate.getFullYear() !== currentMonth.getFullYear()) {
+      setCurrentMonth(new Date(newDate.getFullYear(), newDate.getMonth(), 1));
+    }
+  }, [focusedDate, selectedDate, currentMonth, isDateSelectable, handleDateSelect]);
+
+  // Initialize focusedDate when calendar opens
+  useEffect(() => {
+    if (isOpen) {
+      setFocusedDate(selectedDate || new Date());
+    }
+  }, [isOpen, selectedDate]);
+
   // Render time selector
   const renderTimeSelector = () => {
     if (!showTimeSelect) return null;
@@ -316,19 +401,27 @@ const DatePicker: React.FC<DatePickerProps> = ({
     const days = generateCalendarDays();
     
     return (
-      <div className={cn(commonStyles.calendarGrid, themeStyles.calendarGrid)}>
+      <div
+        ref={calendarGridRef}
+        role="grid"
+        aria-label="Calendar"
+        className={cn(commonStyles.calendarGrid, themeStyles.calendarGrid)}
+      >
         {days.map((dayObj, index) => {
           const { date, isCurrentMonth } = dayObj;
           const isSelected = isDateSelected(date);
           const isSelectable = isDateSelectable(date);
           const today = isToday(date);
+          const isFocused = focusedDate && date.toDateString() === focusedDate.toDateString();
           
           return (
             <button
               key={index}
               type="button"
+              role="gridcell"
               onClick={() => handleDateSelect(date)}
               disabled={!isSelectable}
+              tabIndex={isFocused ? 0 : -1}
               className={cn(
                 commonStyles.calendarDay,
                 themeStyles.calendarDay,
@@ -338,11 +431,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
                 isSelected && themeStyles.selected,
                 today && commonStyles.today,
                 today && themeStyles.today,
+                isFocused && commonStyles.focused,
+                isFocused && themeStyles.focused,
                 !isSelectable && commonStyles.disabled,
                 !isSelectable && themeStyles.disabled
               )}
-              aria-label={date.toDateString()}
-              aria-pressed={isSelected ? 'true' : 'false'}
+              aria-label={date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              aria-selected={isSelected}
+              aria-current={today ? 'date' : undefined}
             >
               {date.getDate()}
             </button>
@@ -378,12 +474,19 @@ const DatePicker: React.FC<DatePickerProps> = ({
       )}
     >
       {label && (
-        <label className={cn(commonStyles.label, themeStyles.label)}>
+        <label id={labelId} className={cn(commonStyles.label, themeStyles.label)}>
           {label} {required && <span className={cn(commonStyles.required, themeStyles.required)}>*</span>}
         </label>
       )}
       
       <div
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-haspopup="dialog"
+        aria-labelledby={label ? labelId : undefined}
+        aria-describedby={hasError ? errorId : undefined}
+        aria-disabled={disabled}
+        tabIndex={disabled ? -1 : 0}
         className={cn(
           commonStyles.inputContainer,
           themeStyles.inputContainer,
@@ -396,6 +499,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
           className
         )}
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        onKeyDown={(e) => {
+          if (disabled) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          } else if (e.key === 'Escape' && isOpen) {
+            e.preventDefault();
+            setIsOpen(false);
+          }
+        }}
       >
         <div className={cn(commonStyles.inputContent, themeStyles.inputContent)}>
           <Calendar size={16} className={cn(commonStyles.inputIcon, themeStyles.inputIcon)} />
@@ -423,7 +536,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
         </div>
         
         {isOpen && (
-          <div className={cn(commonStyles.calendarContainer, themeStyles.calendarContainer)}>
+          <div
+            id={calendarId}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Choose date${label ? ` for ${label}` : ''}`}
+            className={cn(commonStyles.calendarContainer, themeStyles.calendarContainer)}
+            onKeyDown={handleCalendarKeyDown}
+          >
             {renderPresets()}
             {renderCalendarHeader()}
             {renderDayNames()}
@@ -434,7 +554,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       </div>
       
       {hasError && (
-        <p className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>
+        <p id={errorId} role="alert" className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>
           {error}
         </p>
       )}

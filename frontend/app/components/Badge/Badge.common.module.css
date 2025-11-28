@@ -1,3 +1,4 @@
+/* @AI-HINT: Common styles for Badge component - status indicators and labels */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -12,6 +13,7 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Subtle depth */
   letter-spacing: 0.01em;
+  border: none;
 }
 
 .small {
@@ -24,10 +26,15 @@
   font-size: 0.8125rem; /* 13px */
 }
 
+.pill {
+  border-radius: 9999px;
+}
+
 .badgeIcon {
   display: inline-flex;
   align-items: center;
   font-size: 1.1em;
+  flex-shrink: 0;
 }
 
 .badgeIconBefore {
@@ -48,19 +55,34 @@
 .danger { --_alias: 1; }
 .info { --_alias: 1; }
 
-/* Micro-interactions */
-.badge:hover {
+/* Non-interactive badge hover (decorative only) */
+.badge:not(.interactive):hover {
+  filter: brightness(1.05) saturate(1.05);
+}
+
+/* Interactive badge styles */
+.interactive {
+  cursor: pointer;
+}
+
+.interactive:hover {
   filter: brightness(1.05) saturate(1.05);
   transform: translateY(-1px); /* Subtle lift */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Enhanced shadow */
 }
 
-.badge:active {
+.interactive:active {
   transform: translateY(0) scale(0.98); /* Press feedback */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.badge:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25), 0 2px 4px rgba(0, 0, 0, 0.1);
+.interactive:focus {
+  outline: 2px solid var(--color-primary, #4573df);
+  outline-offset: 2px;
+}
+
+.interactive:focus-visible {
+  outline: 2px solid var(--color-primary, #4573df);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(69, 115, 223, 0.2);
 }

@@ -1,7 +1,7 @@
 // @AI-HINT: This is the UserAvatar component. It displays an image if a `src` is provided, otherwise it displays the user's initials derived from the `name` prop.
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -14,15 +14,22 @@ export interface UserAvatarProps {
   src?: string; // Optional image source
   size?: 'small' | 'medium' | 'large' | number;
   className?: string;
+  /** Optional click handler for interactive avatars */
+  onClick?: () => void;
+  /** Whether this avatar represents the current user */
+  isCurrentUser?: boolean;
 }
 
-  const UserAvatar: React.FC<UserAvatarProps> = ({
+const UserAvatar: React.FC<UserAvatarProps> = ({
   name,
   src,
   size = 'medium',
   className,
+  onClick,
+  isCurrentUser = false,
 }) => {
   const { resolvedTheme } = useTheme();
+  const [imageError, setImageError] = useState(false);
 
   if (!resolvedTheme) {
     return null; // Avoid hydration mismatch
@@ -46,46 +53,76 @@ export interface UserAvatarProps {
     imageSize = sizeMap[size].size;
   }
 
-  const getInitials = (name: string) => {
-    const names = name.split(' ');
-    if (names.length > 1 && names[1]) {
+  const getInitials = (fullName: string): string => {
+    if (!fullName || typeof fullName !== 'string') return '?';
+    const trimmedName = fullName.trim();
+    if (!trimmedName) return '?';
+    
+    const names = trimmedName.split(/\s+/).filter(Boolean);
+    if (names.length > 1 && names[names.length - 1]) {
       return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
     }
-    return name.substring(0, 2).toUpperCase();
+    return trimmedName.substring(0, 2).toUpperCase();
   };
 
   const avatarClasses = cn(
     commonStyles.userAvatar,
     themeStyles.userAvatar,
     sizeClass,
+    onClick && commonStyles.userAvatarClickable,
     className
   );
 
-  if (src) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  const interactiveProps = onClick
+    ? {
+        role: 'button' as const,
+        tabIndex: 0,
+        onClick,
+        onKeyDown: handleKeyDown,
+        'aria-label': `${name}'s avatar${isCurrentUser ? ' (you)' : ''}`,
+      }
+    : {
+        'aria-label': `${name}'s avatar${isCurrentUser ? ' (you)' : ''}`,
+      };
+
+  // Show initials if no src or if image failed to load
+  if (!src || imageError) {
     return (
-      <div className={avatarClasses} data-custom-size={sizeAttr}>
-        <Image
-          src={src}
-          alt={name}
-          className={commonStyles.userAvatarImage}
-          width={imageSize}
-          height={imageSize}
-          quality={85}
-          placeholder="blur"
-          blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=="
-          loading="lazy"
-          onError={(e) => {
-            // Fallback to initials if image fails to load
-            e.currentTarget.style.display = 'none';
-          }}
-        />
+      <div 
+        className={avatarClasses} 
+        data-custom-size={sizeAttr}
+        {...interactiveProps}
+      >
+        <span aria-hidden="true">{getInitials(name)}</span>
       </div>
     );
   }
 
   return (
-    <div className={avatarClasses} data-custom-size={sizeAttr}>
-      <span>{getInitials(name)}</span>
+    <div 
+      className={avatarClasses} 
+      data-custom-size={sizeAttr}
+      {...interactiveProps}
+    >
+      <Image
+        src={src}
+        alt={`${name}'s avatar`}
+        className={commonStyles.userAvatarImage}
+        width={imageSize}
+        height={imageSize}
+        quality={85}
+        placeholder="blur"
+        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjwvc3ZnPg=="
+        loading="lazy"
+        onError={() => setImageError(true)}
+      />
     </div>
   );
 };

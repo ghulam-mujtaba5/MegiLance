@@ -1,12 +1,37 @@
 # @AI-HINT: Messages and conversations API - Turso-only, no SQLite fallback
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
 from datetime import datetime
+from pydantic import BaseModel, Field, field_validator
+import re
+import logging
 
 from app.db.turso_http import execute_query, parse_rows
 from app.core.security import get_current_user_from_token
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+# Validation constants
+MAX_MESSAGE_LENGTH = 10000
+MAX_CONTENT_LENGTH = 50000
+VALID_MESSAGE_TYPES = {"text", "file", "image", "system"}
+VALID_CONVERSATION_STATUSES = {"active", "closed", "blocked"}
+
+# Regex for HTML/script injection detection
+SCRIPT_PATTERN = re.compile(r'(javascript:|on\w+=|<script)', re.IGNORECASE)
+
+
+def sanitize_content(content: Optional[str], max_length: int = MAX_MESSAGE_LENGTH) -> Optional[str]:
+    """Sanitize message content to prevent XSS"""
+    if content is None:
+        return None
+    content = content.strip()
+    if len(content) > max_length:
+        content = content[:max_length]
+    # Remove potential script injections
+    content = SCRIPT_PATTERN.sub('', content)
+    return content
 
 
 def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
@@ -14,16 +39,92 @@ def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
     return token_data
 
 
+# Pydantic models for request validation
+class ConversationCreate(BaseModel):
+    client_id: int = Field(..., gt=0)
+    freelancer_id: int = Field(..., gt=0)
+    project_id: Optional[int] = Field(None, gt=0)
+
+
+class ConversationUpdate(BaseModel):
+    status: Optional[str] = Field(None, pattern=r'^(active|closed|blocked)$')
+    is_archived: Optional[bool] = None
+
+
+class MessageCreate(BaseModel):
+    conversation_id: Optional[int] = Field(None, gt=0)
+    receiver_id: Optional[int] = Field(None, gt=0)
+    project_id: Optional[int] = Field(None, gt=0)
+    content: str = Field(..., min_length=1, max_length=MAX_MESSAGE_LENGTH)
+    message_type: str = Field("text", pattern=r'^(text|file|image|system)$')
+    
+    @field_validator('content')
+    @classmethod
+    def sanitize_message_content(cls, v: str) -> str:
+        if SCRIPT_PATTERN.search(v):
+            raise ValueError("Invalid characters in message content")
+        return v.strip()
+
+
+class MessageUpdate(BaseModel):
+    content: Optional[str] = Field(None, max_length=MAX_MESSAGE_LENGTH)
+    is_read: Optional[bool] = None
+    
+    @field_validator('content')
+    @classmethod
+    def sanitize_update_content(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        if SCRIPT_PATTERN.search(v):
+            raise ValueError("Invalid characters in message content")
+        return v.strip()
+
+
 # Conversation endpoints
-@router.post("/conversations", response_model=dict)
+@router.post("/conversations", response_model=dict, status_code=status.HTTP_201_CREATED)
 def create_conversation(
-    conversation: dict,
+    conversation: ConversationCreate,
     current_user: dict = Depends(get_current_user)
 ):
     """Create a new conversation"""
-    client_id = conversation.get("client_id")
-    freelancer_id = conversation.get("freelancer_id")
-    project_id = conversation.get("project_id")
+    user_id = current_user.get("user_id")
+    client_id = conversation.client_id
+    freelancer_id = conversation.freelancer_id
+    project_id = conversation.project_id
+    
+    # Verify the current user is one of the participants
+    if user_id not in (client_id, freelancer_id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cannot create conversation for other users"
+        )
+    
+    # Prevent self-conversation
+    if client_id == freelancer_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot create conversation with yourself"
+        )
+    
+    # Verify both users exist and have correct roles
+    for uid, expected_role in [(client_id, "client"), (freelancer_id, "freelancer")]:
+        result = execute_query(
+            "SELECT id, user_type, is_active FROM users WHERE id = ?",
+            [uid]
+        )
+        if not result or not result.get("rows"):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User {uid} not found"
+            )
+        rows = parse_rows(result)
+        user_type = rows[0].get("user_type", "").lower()
+        is_active = rows[0].get("is_active", False)
+        if not is_active:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"User {uid} is not active"
+            )
     
     # Check if conversation already exists
     if project_id:
@@ -52,53 +153,69 @@ def create_conversation(
     
     now = datetime.utcnow().isoformat()
     
-    # Create new conversation
-    result = execute_query(
-        """INSERT INTO conversations (client_id, freelancer_id, project_id, status, is_archived, last_message_at, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-        [client_id, freelancer_id, project_id, "active", 0, now, now, now]
-    )
-    
-    if not result:
+    try:
+        # Create new conversation
+        result = execute_query(
+            """INSERT INTO conversations (client_id, freelancer_id, project_id, status, is_archived, last_message_at, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            [client_id, freelancer_id, project_id, "active", 0, now, now, now]
+        )
+        
+        if not result:
+            raise HTTPException(status_code=500, detail="Failed to create conversation")
+        
+        id_result = execute_query("SELECT last_insert_rowid() as id", [])
+        new_id = 0
+        if id_result and id_result.get("rows"):
+            id_rows = parse_rows(id_result)
+            if id_rows:
+                new_id = id_rows[0].get("id", 0)
+        
+        logger.info(f"Conversation {new_id} created between client {client_id} and freelancer {freelancer_id}")
+        
+        return {
+            "id": new_id,
+            "client_id": client_id,
+            "freelancer_id": freelancer_id,
+            "project_id": project_id,
+            "status": "active",
+            "is_archived": False,
+            "last_message_at": now,
+            "created_at": now,
+            "updated_at": now
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to create conversation: {e}")
         raise HTTPException(status_code=500, detail="Failed to create conversation")
-    
-    id_result = execute_query("SELECT last_insert_rowid() as id", [])
-    new_id = 0
-    if id_result and id_result.get("rows"):
-        id_rows = parse_rows(id_result)
-        if id_rows:
-            new_id = id_rows[0].get("id", 0)
-    
-    return {
-        "id": new_id,
-        "client_id": client_id,
-        "freelancer_id": freelancer_id,
-        "project_id": project_id,
-        "status": "active",
-        "is_archived": False,
-        "last_message_at": now,
-        "created_at": now,
-        "updated_at": now
-    }
 
 
 @router.get("/conversations", response_model=List[dict])
 def get_conversations(
-    skip: int = Query(0, ge=0),
+    skip: int = Query(0, ge=0, le=10000),
     limit: int = Query(20, ge=1, le=100),
-    status: Optional[str] = Query(None),
+    status: Optional[str] = Query(None, pattern=r'^(active|closed|blocked)$'),
     archived: Optional[bool] = Query(None),
     current_user: dict = Depends(get_current_user)
 ):
     """Get all conversations for current user"""
     user_id = current_user.get("user_id")
     
+    if not user_id:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
+    
     where_clauses = ["(client_id = ? OR freelancer_id = ?)"]
     params = [user_id, user_id]
     
     if status:
+        if status.lower() not in VALID_CONVERSATION_STATUSES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid status. Must be one of: {', '.join(VALID_CONVERSATION_STATUSES)}"
+            )
         where_clauses.append("status = ?")
-        params.append(status)
+        params.append(status.lower())
     
     if archived is not None:
         where_clauses.append("is_archived = ?")
@@ -130,28 +247,30 @@ def get_conversations(
         # Determine other user ID
         other_user_id = conv["freelancer_id"] if conv["client_id"] == user_id else conv["client_id"]
         
-        # Fetch other user details
-        user_res = execute_query("SELECT name, profile_image_url FROM users WHERE id = ?", [other_user_id])
+        # Fetch other user details (only public info)
+        user_res = execute_query("SELECT full_name, profile_image_url FROM users WHERE id = ?", [other_user_id])
         if user_res and user_res.get("rows"):
             u_rows = parse_rows(user_res)
             if u_rows:
-                conv["contact_name"] = u_rows[0].get("name", "Unknown")
+                conv["contact_name"] = u_rows[0].get("full_name", "Unknown")
                 conv["avatar"] = u_rows[0].get("profile_image_url")
         
-        # Fetch last message content
+        # Fetch last message content (truncate for preview)
         msg_res = execute_query(
-            "SELECT content, message_type FROM messages WHERE conversation_id = ? ORDER BY sent_at DESC LIMIT 1",
+            "SELECT content, message_type FROM messages WHERE conversation_id = ? AND is_deleted = 0 ORDER BY sent_at DESC LIMIT 1",
             [conv["id"]]
         )
         if msg_res and msg_res.get("rows"):
             m_rows = parse_rows(msg_res)
             if m_rows:
-                conv["last_message"] = m_rows[0].get("content", "")
+                content = m_rows[0].get("content", "")
+                # Truncate for preview
+                conv["last_message"] = content[:100] + "..." if len(content) > 100 else content
                 conv["last_message_type"] = m_rows[0].get("message_type", "text")
         
         # Fetch unread count
         count_res = execute_query(
-            "SELECT COUNT(*) as count FROM messages WHERE conversation_id = ? AND receiver_id = ? AND is_read = 0",
+            "SELECT COUNT(*) as count FROM messages WHERE conversation_id = ? AND receiver_id = ? AND is_read = 0 AND is_deleted = 0",
             [conv["id"], user_id]
         )
         if count_res and count_res.get("rows"):
@@ -172,6 +291,9 @@ def get_conversation(
     """Get a specific conversation"""
     user_id = current_user.get("user_id")
     
+    if conversation_id <= 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid conversation ID")
+    
     result = execute_query(
         """SELECT id, client_id, freelancer_id, project_id, status, is_archived, 
                   last_message_at, created_at, updated_at
@@ -180,27 +302,28 @@ def get_conversation(
     )
     
     if not result or not result.get("rows"):
-        raise HTTPException(status_code=404, detail="Conversation not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
     
     rows = parse_rows(result)
     if not rows:
-        raise HTTPException(status_code=404, detail="Conversation not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
     
     conversation = rows[0]
     
     # Check if user is part of conversation
     if conversation.get("client_id") != user_id and conversation.get("freelancer_id") != user_id:
-        raise HTTPException(status_code=403, detail="Access denied")
+        logger.warning(f"Unauthorized access attempt to conversation {conversation_id} by user {user_id}")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     
     conversation["is_archived"] = bool(conversation.get("is_archived"))
     
     # Add contact info
     other_user_id = conversation["freelancer_id"] if conversation["client_id"] == user_id else conversation["client_id"]
-    user_res = execute_query("SELECT name, profile_image_url FROM users WHERE id = ?", [other_user_id])
+    user_res = execute_query("SELECT full_name, profile_image_url FROM users WHERE id = ?", [other_user_id])
     if user_res and user_res.get("rows"):
         u_rows = parse_rows(user_res)
         if u_rows:
-            conversation["contact_name"] = u_rows[0].get("name", "Unknown")
+            conversation["contact_name"] = u_rows[0].get("full_name", "Unknown")
             conversation["avatar"] = u_rows[0].get("profile_image_url")
             
     return conversation
@@ -209,11 +332,14 @@ def get_conversation(
 @router.patch("/conversations/{conversation_id}", response_model=dict)
 def update_conversation(
     conversation_id: int,
-    conversation_update: dict,
+    conversation_update: ConversationUpdate,
     current_user: dict = Depends(get_current_user)
 ):
     """Update a conversation"""
     user_id = current_user.get("user_id")
+    
+    if conversation_id <= 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid conversation ID")
     
     result = execute_query(
         "SELECT id, client_id, freelancer_id FROM conversations WHERE id = ?",
@@ -221,68 +347,93 @@ def update_conversation(
     )
     
     if not result or not result.get("rows"):
-        raise HTTPException(status_code=404, detail="Conversation not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
     
     rows = parse_rows(result)
     conversation = rows[0]
     
     # Check if user is part of conversation
     if conversation.get("client_id") != user_id and conversation.get("freelancer_id") != user_id:
-        raise HTTPException(status_code=403, detail="Access denied")
+        logger.warning(f"Unauthorized update attempt on conversation {conversation_id} by user {user_id}")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     
     # Build update query
+    update_data = conversation_update.model_dump(exclude_unset=True, exclude_none=True)
+    
+    if not update_data:
+        return get_conversation(conversation_id, current_user)
+    
     updates = []
     params = []
     
-    if "status" in conversation_update:
+    if "status" in update_data:
+        if update_data["status"].lower() not in VALID_CONVERSATION_STATUSES:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid status. Must be one of: {', '.join(VALID_CONVERSATION_STATUSES)}"
+            )
         updates.append("status = ?")
-        params.append(conversation_update["status"])
+        params.append(update_data["status"].lower())
     
-    if "is_archived" in conversation_update:
+    if "is_archived" in update_data:
         updates.append("is_archived = ?")
-        params.append(1 if conversation_update["is_archived"] else 0)
+        params.append(1 if update_data["is_archived"] else 0)
     
     if updates:
         updates.append("updated_at = ?")
         params.append(datetime.utcnow().isoformat())
         params.append(conversation_id)
         
-        execute_query(
-            f"UPDATE conversations SET {', '.join(updates)} WHERE id = ?",
-            params
-        )
+        try:
+            execute_query(
+                f"UPDATE conversations SET {', '.join(updates)} WHERE id = ?",
+                params
+            )
+            logger.info(f"Conversation {conversation_id} updated by user {user_id}")
+        except Exception as e:
+            logger.error(f"Failed to update conversation {conversation_id}: {e}")
+            raise HTTPException(status_code=500, detail="Failed to update conversation")
     
     # Fetch updated conversation
-    result = execute_query(
-        """SELECT id, client_id, freelancer_id, project_id, status, is_archived, 
-                  last_message_at, created_at, updated_at
-           FROM conversations WHERE id = ?""",
-        [conversation_id]
-    )
-    
-    rows = parse_rows(result)
-    updated = rows[0] if rows else {}
-    updated["is_archived"] = bool(updated.get("is_archived"))
-    return updated
+    return get_conversation(conversation_id, current_user)
 
 
 # Message endpoints
-@router.post("/messages", response_model=dict)
+@router.post("/messages", response_model=dict, status_code=status.HTTP_201_CREATED)
 def send_message(
-    message: dict,
+    message: MessageCreate,
     current_user: dict = Depends(get_current_user)
 ):
     """Send a new message"""
     user_id = current_user.get("user_id")
     role = current_user.get("role", "")
-    conversation_id = message.get("conversation_id")
-    receiver_id = message.get("receiver_id")
-    project_id = message.get("project_id")
-    content = message.get("content")
-    message_type = message.get("message_type", "text")
+    conversation_id = message.conversation_id
+    receiver_id = message.receiver_id
+    project_id = message.project_id
+    content = sanitize_content(message.content)
+    message_type = message.message_type
+    
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Message content cannot be empty"
+        )
     
     # If conversation_id not provided, create/find conversation
     if not conversation_id:
+        if not receiver_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Either conversation_id or receiver_id must be provided"
+            )
+        
+        # Prevent messaging yourself
+        if receiver_id == user_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot send message to yourself"
+            )
+        
         # Try to find existing conversation
         if project_id:
             result = execute_query(
@@ -305,12 +456,18 @@ def send_message(
                 conversation_id = rows[0].get("id")
         
         if not conversation_id:
-            # Verify receiver exists
-            result = execute_query("SELECT id, user_type FROM users WHERE id = ?", [receiver_id])
+            # Verify receiver exists and is active
+            result = execute_query("SELECT id, user_type, is_active FROM users WHERE id = ?", [receiver_id])
             if not result or not result.get("rows"):
-                raise HTTPException(status_code=404, detail="Receiver not found")
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Receiver not found")
             
             rows = parse_rows(result)
+            if not rows[0].get("is_active"):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Cannot message inactive user"
+                )
+            
             receiver_type = rows[0].get("user_type", "")
             
             # Create new conversation
@@ -333,63 +490,86 @@ def send_message(
                 id_rows = parse_rows(id_result)
                 if id_rows:
                     conversation_id = id_rows[0].get("id", 0)
-    elif not receiver_id:
-        # Fetch receiver_id from conversation if not provided
+    else:
+        # Verify user has access to conversation
         result = execute_query(
-            "SELECT client_id, freelancer_id FROM conversations WHERE id = ?",
+            "SELECT client_id, freelancer_id, status FROM conversations WHERE id = ?",
             [conversation_id]
         )
-        if result and result.get("rows"):
-            rows = parse_rows(result)
-            if rows:
-                conv = rows[0]
-                if conv["client_id"] == user_id:
-                    receiver_id = conv["freelancer_id"]
-                else:
-                    receiver_id = conv["client_id"]
+        if not result or not result.get("rows"):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
+        
+        rows = parse_rows(result)
+        conv = rows[0]
+        
+        if conv["client_id"] != user_id and conv["freelancer_id"] != user_id:
+            logger.warning(f"Unauthorized message attempt in conversation {conversation_id} by user {user_id}")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+        
+        # Check if conversation is blocked
+        if conv.get("status") == "blocked":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot send messages in a blocked conversation"
+            )
+        
+        if not receiver_id:
+            # Fetch receiver_id from conversation
+            if conv["client_id"] == user_id:
+                receiver_id = conv["freelancer_id"]
+            else:
+                receiver_id = conv["client_id"]
     
     if not receiver_id:
-         raise HTTPException(status_code=400, detail="Receiver ID could not be determined")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Receiver ID could not be determined")
 
     now = datetime.utcnow().isoformat()
     
-    # Create message
-    result = execute_query(
-        """INSERT INTO messages (conversation_id, sender_id, receiver_id, project_id, content, message_type, 
-                                 is_read, is_deleted, sent_at, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [conversation_id, user_id, receiver_id, project_id, content, message_type, 0, 0, now, now]
-    )
-    
-    if not result:
+    try:
+        # Create message
+        result = execute_query(
+            """INSERT INTO messages (conversation_id, sender_id, receiver_id, project_id, content, message_type, 
+                                     is_read, is_deleted, sent_at, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            [conversation_id, user_id, receiver_id, project_id, content, message_type, 0, 0, now, now]
+        )
+        
+        if not result:
+            raise HTTPException(status_code=500, detail="Failed to send message")
+        
+        # Update conversation last_message_at
+        execute_query(
+            "UPDATE conversations SET last_message_at = ?, updated_at = ? WHERE id = ?",
+            [now, now, conversation_id]
+        )
+        
+        id_result = execute_query("SELECT last_insert_rowid() as id", [])
+        new_id = 0
+        if id_result and id_result.get("rows"):
+            id_rows = parse_rows(id_result)
+            if id_rows:
+                new_id = id_rows[0].get("id", 0)
+        
+        logger.info(f"Message {new_id} sent from user {user_id} to user {receiver_id} in conversation {conversation_id}")
+        
+        return {
+            "id": new_id,
+            "conversation_id": conversation_id,
+            "sender_id": user_id,
+            "receiver_id": receiver_id,
+            "project_id": project_id,
+            "content": content,
+            "message_type": message_type,
+            "is_read": False,
+            "is_deleted": False,
+            "sent_at": now,
+            "created_at": now
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to send message: {e}")
         raise HTTPException(status_code=500, detail="Failed to send message")
-    
-    # Update conversation last_message_at
-    execute_query(
-        "UPDATE conversations SET last_message_at = ?, updated_at = ? WHERE id = ?",
-        [now, now, conversation_id]
-    )
-    
-    id_result = execute_query("SELECT last_insert_rowid() as id", [])
-    new_id = 0
-    if id_result and id_result.get("rows"):
-        id_rows = parse_rows(id_result)
-        if id_rows:
-            new_id = id_rows[0].get("id", 0)
-    
-    return {
-        "id": new_id,
-        "conversation_id": conversation_id,
-        "sender_id": user_id,
-        "receiver_id": receiver_id,
-        "project_id": project_id,
-        "content": content,
-        "message_type": message_type,
-        "is_read": False,
-        "is_deleted": False,
-        "sent_at": now,
-        "created_at": now
-    }
 
 
 @router.get("/messages", response_model=List[dict])

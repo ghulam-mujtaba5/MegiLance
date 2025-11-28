@@ -61,13 +61,54 @@ const Signup: React.FC = () => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required.';
-    if (!formData.email) newErrors.email = 'Email is required.';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email address is invalid.';
-    if (!formData.password) newErrors.password = 'Password is required.';
-    else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters.';
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match.';
-    if (!formData.agreedToTerms) newErrors.agreedToTerms = 'You must agree to the terms and conditions.';
+    const trimmedName = formData.fullName.trim();
+    const trimmedEmail = formData.email.trim().toLowerCase();
+    
+    // Name validation
+    if (!trimmedName) {
+      newErrors.fullName = 'Full name is required.';
+    } else if (trimmedName.length < 2) {
+      newErrors.fullName = 'Name must be at least 2 characters.';
+    } else if (trimmedName.length > 100) {
+      newErrors.fullName = 'Name is too long (max 100 characters).';
+    } else if (!/^[a-zA-Z\s\-'\.]+$/.test(trimmedName)) {
+      newErrors.fullName = 'Name contains invalid characters.';
+    }
+    
+    // Email validation
+    if (!trimmedEmail) {
+      newErrors.email = 'Email is required.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      newErrors.email = 'Please enter a valid email address.';
+    } else if (trimmedEmail.length > 254) {
+      newErrors.email = 'Email address is too long.';
+    }
+    
+    // Password strength validation
+    if (!formData.password) {
+      newErrors.password = 'Password is required.';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters.';
+    } else if (formData.password.length > 128) {
+      newErrors.password = 'Password is too long (max 128 characters).';
+    } else if (!/(?=.*[a-z])/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one lowercase letter.';
+    } else if (!/(?=.*[A-Z])/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter.';
+    } else if (!/(?=.*\d)/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one number.';
+    }
+    
+    // Confirm password
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match.';
+    }
+    
+    // Terms agreement
+    if (!formData.agreedToTerms) {
+      newErrors.agreedToTerms = 'You must agree to the terms and conditions.';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

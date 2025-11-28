@@ -1,7 +1,7 @@
 // @AI-HINT: This is a reusable accordion component for displaying collapsible content, like FAQs.
 'use client';
 
-import React, { useState, useContext, createContext, useId } from 'react';
+import React, { useState, useContext, createContext, useId, useRef, useCallback, KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,8 @@ interface AccordionContextType {
   openItems: string[];
   toggleItem: (id: string) => void;
   type: 'single' | 'multiple';
+  registerItem: (id: string, ref: HTMLButtonElement | null) => void;
+  navigateItems: (direction: 'next' | 'prev' | 'first' | 'last', currentId: string) => void;
 }
 
 const AccordionContext = createContext<AccordionContextType | null>(null);
@@ -28,28 +30,74 @@ const useAccordion = () => {
 };
 
 interface AccordionItemProps {
-  value: string; // Unique value for this item
+  /** Unique value for this item */
+  value: string;
+  /** Title displayed in the header */
   title: string;
+  /** Content to display when expanded */
   children: React.ReactNode;
+  /** Disabled state */
+  disabled?: boolean;
 }
 
-export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, children }) => {
-  const { openItems, toggleItem } = useAccordion();
+export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, children, disabled = false }) => {
+  const { openItems, toggleItem, registerItem, navigateItems } = useAccordion();
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const contentId = useId();
   const buttonId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const isOpen = openItems.includes(value);
 
+  // Register this item with the accordion context
+  React.useEffect(() => {
+    registerItem(value, buttonRef.current);
+    return () => registerItem(value, null);
+  }, [value, registerItem]);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLButtonElement>) => {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        navigateItems('next', value);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        navigateItems('prev', value);
+        break;
+      case 'Home':
+        e.preventDefault();
+        navigateItems('first', value);
+        break;
+      case 'End':
+        e.preventDefault();
+        navigateItems('last', value);
+        break;
+    }
+  }, [navigateItems, value]);
+
   return (
-    <div className={cn(commonStyles.accordionItem, themeStyles.accordionItem, isOpen && commonStyles.open)}>
-      <h3>
-                <button
+    <div 
+      className={cn(
+        commonStyles.accordionItem, 
+        themeStyles.accordionItem, 
+        isOpen && commonStyles.open,
+        disabled && commonStyles.disabled
+      )}
+      data-state={isOpen ? 'open' : 'closed'}
+    >
+      <h3 className={commonStyles.accordionHeader}>
+        <button
+          ref={buttonRef}
           id={buttonId}
-          onClick={() => toggleItem(value)}
-          aria-expanded={isOpen ? 'true' : 'false'}
+          type="button"
+          onClick={() => !disabled && toggleItem(value)}
+          onKeyDown={handleKeyDown}
+          aria-expanded={isOpen}
           aria-controls={contentId}
+          aria-disabled={disabled}
+          disabled={disabled}
           className={cn(commonStyles.accordionTrigger, themeStyles.accordionTrigger)}
         >
           <span className={commonStyles.accordionTitle}>{title}</span>
@@ -61,7 +109,7 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, chil
           />
         </button>
       </h3>
-            <AnimatePresence initial={false}>
+      <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
             id={contentId}
@@ -86,17 +134,24 @@ export const AccordionItem: React.FC<AccordionItemProps> = ({ value, title, chil
 };
 
 interface AccordionProps {
+  /** Accordion items */
   children: React.ReactNode;
+  /** Single or multiple items can be open */
   type?: 'single' | 'multiple';
+  /** Default open item(s) */
   defaultValue?: string | string[];
+  /** Additional CSS classes */
   className?: string;
+  /** Callback when items change */
+  onValueChange?: (value: string[]) => void;
 }
 
 const Accordion: React.FC<AccordionProps> = ({ 
   children, 
   type = 'single', 
   defaultValue, 
-  className 
+  className,
+  onValueChange,
 }) => {
   const [openItems, setOpenItems] = useState<string[]>(() => {
     if (defaultValue) {
@@ -105,21 +160,68 @@ const Accordion: React.FC<AccordionProps> = ({
     return [];
   });
 
-  const toggleItem = (id: string) => {
-    if (type === 'single') {
-      setOpenItems(openItems.includes(id) ? [] : [id]);
+  const itemRefs = useRef<Map<string, HTMLButtonElement | null>>(new Map());
+  const itemOrder = useRef<string[]>([]);
+
+  const registerItem = useCallback((id: string, ref: HTMLButtonElement | null) => {
+    if (ref) {
+      itemRefs.current.set(id, ref);
+      if (!itemOrder.current.includes(id)) {
+        itemOrder.current.push(id);
+      }
     } else {
-      setOpenItems(prev => 
-        prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-      );
+      itemRefs.current.delete(id);
+      itemOrder.current = itemOrder.current.filter(item => item !== id);
     }
-  };
+  }, []);
+
+  const navigateItems = useCallback((direction: 'next' | 'prev' | 'first' | 'last', currentId: string) => {
+    const items = itemOrder.current;
+    const currentIndex = items.indexOf(currentId);
+    
+    let targetIndex: number;
+    switch (direction) {
+      case 'next':
+        targetIndex = (currentIndex + 1) % items.length;
+        break;
+      case 'prev':
+        targetIndex = (currentIndex - 1 + items.length) % items.length;
+        break;
+      case 'first':
+        targetIndex = 0;
+        break;
+      case 'last':
+        targetIndex = items.length - 1;
+        break;
+    }
+
+    const targetId = items[targetIndex];
+    const targetRef = itemRefs.current.get(targetId);
+    targetRef?.focus();
+  }, []);
+
+  const toggleItem = useCallback((id: string) => {
+    let newOpenItems: string[];
+    if (type === 'single') {
+      newOpenItems = openItems.includes(id) ? [] : [id];
+    } else {
+      newOpenItems = openItems.includes(id) 
+        ? openItems.filter(item => item !== id) 
+        : [...openItems, id];
+    }
+    setOpenItems(newOpenItems);
+    onValueChange?.(newOpenItems);
+  }, [type, openItems, onValueChange]);
 
   const { resolvedTheme } = useTheme();
+  
+  // Don't render until theme is resolved
+  if (!resolvedTheme) return null;
+  
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <AccordionContext.Provider value={{ openItems, toggleItem, type }}>
+    <AccordionContext.Provider value={{ openItems, toggleItem, type, registerItem, navigateItems }}>
       <div className={cn(commonStyles.accordionRoot, themeStyles.accordionRoot, className)}>
         {children}
       </div>

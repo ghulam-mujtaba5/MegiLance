@@ -1,7 +1,7 @@
-// @AI-HINT: FileUpload component for drag-and-drop file uploads with progress tracking
+// @AI-HINT: FileUpload component for drag-and-drop file uploads with progress tracking, security validation, and accessibility
 'use client';
 
-import { useState, useRef, DragEvent, ChangeEvent } from 'react';
+import { useState, useRef, useId, DragEvent, ChangeEvent, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { FaCloudUploadAlt, FaTimes, FaCheckCircle, FaSpinner } from 'react-icons/fa';
@@ -13,14 +13,42 @@ import darkStyles from './FileUpload.dark.module.css';
 
 import api from '@/lib/api';
 
+// Security: Define allowed MIME types explicitly
+const ALLOWED_MIME_TYPES: Record<string, string[]> = {
+  'image/*': ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+  'application/pdf': ['application/pdf'],
+  'document': ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+};
+
+// Security: Dangerous file extensions that should never be allowed
+const DANGEROUS_EXTENSIONS = [
+  '.exe', '.bat', '.cmd', '.com', '.pif', '.scr', '.js', '.jse', '.vbs', '.vbe',
+  '.ws', '.wsf', '.wsc', '.wsh', '.ps1', '.ps1xml', '.ps2', '.ps2xml', '.psc1', '.psc2',
+  '.msh', '.msh1', '.msh2', '.mshxml', '.msh1xml', '.msh2xml', '.scf', '.lnk', '.inf',
+  '.reg', '.dll', '.cpl', '.msc', '.jar', '.hta', '.htm', '.html', '.php', '.asp', '.aspx',
+];
+
 interface FileUploadProps {
+  /** Label for the upload field */
   label?: string;
+  /** Accepted file types (MIME pattern) */
   accept?: string;
-  maxSize?: number; // in MB
+  /** Maximum file size in MB */
+  maxSize?: number;
+  /** Type of upload for API endpoint */
   uploadType: 'avatar' | 'portfolio' | 'document';
+  /** Callback when upload completes successfully */
   onUploadComplete?: (url: string) => void;
+  /** External error message */
   error?: string;
+  /** Additional CSS classes */
   className?: string;
+  /** Whether multiple files are allowed */
+  multiple?: boolean;
+  /** Required field */
+  required?: boolean;
+  /** Disabled state */
+  disabled?: boolean;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -31,7 +59,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
   onUploadComplete,
   error,
   className,
+  multiple = false,
+  required = false,
+  disabled = false,
 }) => {
+  const componentId = useId();
+  const inputId = `${componentId}-input`;
+  const errorId = `${componentId}-error`;
   const { resolvedTheme } = useTheme();
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -41,6 +75,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  
+  const hasError = !!(error || uploadError);
+
   const styles = {
     container: cn(commonStyles.container, themeStyles.container, className),
     label: cn(commonStyles.label, themeStyles.label),
@@ -49,8 +86,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
       themeStyles.dropzone,
       isDragging && commonStyles.dropzoneDragging,
       isDragging && themeStyles.dropzoneDragging,
-      (error || uploadError) && commonStyles.dropzoneError,
-      (error || uploadError) && themeStyles.dropzoneError
+      hasError && commonStyles.dropzoneError,
+      hasError && themeStyles.dropzoneError,
+      disabled && commonStyles.dropzoneDisabled
     ),
     icon: cn(commonStyles.icon, themeStyles.icon),
     text: cn(commonStyles.text, themeStyles.text),
@@ -62,9 +100,52 @@ const FileUpload: React.FC<FileUploadProps> = ({
     preview: cn(commonStyles.preview, themeStyles.preview),
   };
 
+  // Security: Validate file type and extension
+  const validateFile = useCallback((file: File): string | null => {
+    // Check file size
+    const fileSizeMB = file.size / (1024 * 1024);
+    if (fileSizeMB > maxSize) {
+      return `File size exceeds ${maxSize}MB limit`;
+    }
+
+    // Security: Check for dangerous extensions
+    const fileName = file.name.toLowerCase();
+    const hasDangerousExtension = DANGEROUS_EXTENSIONS.some(ext => fileName.endsWith(ext));
+    if (hasDangerousExtension) {
+      return 'This file type is not allowed for security reasons';
+    }
+
+    // Security: Validate MIME type against allowed types
+    const allowedMimes = ALLOWED_MIME_TYPES[accept] || [];
+    if (allowedMimes.length > 0 && !allowedMimes.includes(file.type)) {
+      // Also check if it matches the pattern (e.g., image/*)
+      const mimePattern = accept.replace('*', '');
+      if (!file.type.startsWith(mimePattern)) {
+        return `Invalid file type. Please upload ${accept}`;
+      }
+    }
+
+    // Security: Double-check file extension matches MIME type
+    const extension = fileName.substring(fileName.lastIndexOf('.'));
+    const mimeToExtension: Record<string, string[]> = {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+      'image/webp': ['.webp'],
+      'application/pdf': ['.pdf'],
+    };
+    
+    const expectedExtensions = mimeToExtension[file.type];
+    if (expectedExtensions && !expectedExtensions.includes(extension)) {
+      return 'File extension does not match file type';
+    }
+
+    return null; // Valid
+  }, [accept, maxSize]);
+
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setIsDragging(true);
+    if (!disabled) setIsDragging(true);
   };
 
   const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
@@ -75,6 +156,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
+    
+    if (disabled) return;
     
     const files = e.dataTransfer.files;
     if (files.length > 0) {
@@ -90,16 +173,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   const handleUpload = async (file: File) => {
-    // Validate file size
-    const fileSizeMB = file.size / (1024 * 1024);
-    if (fileSizeMB > maxSize) {
-      setUploadError(`File size exceeds ${maxSize}MB limit`);
-      return;
-    }
-
-    // Validate file type
-    if (accept && !file.type.match(accept.replace('*', '.*'))) {
-      setUploadError(`Invalid file type. Please upload ${accept}`);
+    // Validate file
+    const validationError = validateFile(file);
+    if (validationError) {
+      setUploadError(validationError);
       return;
     }
 
@@ -121,7 +198,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
       setUploadedUrl(data.url);
       onUploadComplete?.(data.url);
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : 'An error occurred during upload');
+      // Security: Don't expose internal error details
+      const message = err instanceof Error ? err.message : 'An error occurred during upload';
+      setUploadError(message.includes('network') ? 'Network error. Please try again.' : 'Upload failed. Please try again.');
     } finally {
       setUploading(false);
       setTimeout(() => setUploadProgress(0), 1000);
@@ -136,9 +215,23 @@ const FileUpload: React.FC<FileUploadProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if ((e.key === 'Enter' || e.key === ' ') && !disabled) {
+      e.preventDefault();
+      fileInputRef.current?.click();
+    }
+  };
+
+  if (!resolvedTheme) return null;
+
   return (
     <div className={styles.container}>
-      {label && <label className={styles.label}>{label}</label>}
+      {label && (
+        <label htmlFor={inputId} className={styles.label}>
+          {label}
+          {required && <span className={commonStyles.required} aria-hidden="true"> *</span>}
+        </label>
+      )}
       
       {!uploadedUrl ? (
         <div
@@ -146,20 +239,31 @@ const FileUpload: React.FC<FileUploadProps> = ({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => !disabled && fileInputRef.current?.click()}
+          onKeyDown={handleKeyDown}
+          role="button"
+          tabIndex={disabled ? -1 : 0}
+          aria-label={`Upload ${uploadType}. ${accept} files up to ${maxSize}MB`}
+          aria-describedby={hasError ? errorId : undefined}
+          aria-disabled={disabled}
+          aria-busy={uploading}
         >
           <input
             ref={fileInputRef}
+            id={inputId}
             type="file"
             accept={accept}
             onChange={handleFileSelect}
+            multiple={multiple}
+            required={required}
+            disabled={disabled}
             style={{ display: 'none' }}
-            aria-label="Upload file"
+            aria-label={`Upload ${uploadType} file`}
           />
           
           {uploading ? (
-            <div className={styles.progress}>
-              <FaSpinner className="animate-spin" size={48} />
+            <div className={styles.progress} role="progressbar" aria-valuenow={uploadProgress} aria-valuemin={0} aria-valuemax={100}>
+              <FaSpinner className="animate-spin" size={48} aria-hidden="true" />
               <div className={styles.progressBar}>
                 <div style={{ width: `${uploadProgress}%` }} />
               </div>
@@ -167,7 +271,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             </div>
           ) : (
             <>
-              <FaCloudUploadAlt className={styles.icon} size={48} />
+              <FaCloudUploadAlt className={styles.icon} size={48} aria-hidden="true" />
               <p className={styles.text}>
                 Drag and drop your file here, or click to browse
               </p>
@@ -178,22 +282,24 @@ const FileUpload: React.FC<FileUploadProps> = ({
           )}
         </div>
       ) : (
-        <div className={styles.success}>
-          <FaCheckCircle size={24} className="text-green-500" />
+        <div className={styles.success} role="status" aria-live="polite">
+          <FaCheckCircle size={24} className="text-green-500" aria-hidden="true" />
           <span>File uploaded successfully!</span>
-          <Button variant="danger" size="sm" onClick={handleRemove}>
-            <FaTimes /> Remove
+          <Button variant="danger" size="sm" onClick={handleRemove} aria-label="Remove uploaded file">
+            <FaTimes aria-hidden="true" /> Remove
           </Button>
           {uploadType !== 'document' && (
             <div className={styles.preview}>
-              <img src={uploadedUrl} alt="Uploaded file" />
+              <img src={uploadedUrl} alt="Uploaded file preview" />
             </div>
           )}
         </div>
       )}
 
-      {(error || uploadError) && (
-        <div className={styles.error}>{error || uploadError}</div>
+      {hasError && (
+        <div id={errorId} className={styles.error} role="alert" aria-live="assertive">
+          {error || uploadError}
+        </div>
       )}
     </div>
   );

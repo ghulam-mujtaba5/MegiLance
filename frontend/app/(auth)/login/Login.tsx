@@ -115,20 +115,30 @@ const Login: React.FC = () => {
   const validate = () => {
     const newErrors = { email: '', password: '', general: '' };
     let isValid = true;
-    if (!formData.email) {
+    const email = formData.email.trim().toLowerCase();
+    
+    if (!email) {
       newErrors.email = 'Email is required.';
       isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email address is invalid.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Please enter a valid email address.';
+      isValid = false;
+    } else if (email.length > 254) {
+      newErrors.email = 'Email address is too long.';
       isValid = false;
     }
+    
     if (!formData.password) {
       newErrors.password = 'Password is required.';
       isValid = false;
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters.';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters.';
+      isValid = false;
+    } else if (formData.password.length > 128) {
+      newErrors.password = 'Password is too long.';
       isValid = false;
     }
+    
     setErrors(newErrors);
     return isValid;
   };
@@ -163,6 +173,8 @@ const Login: React.FC = () => {
       } else {
         // Token is already set by api.auth.login
         localStorage.setItem('refresh_token', data.refresh_token);
+        // Set auth token as cookie for middleware access
+        document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         try { window.localStorage.setItem('portal_area', role); } catch {}
         router.push(roleConfig[role].redirectPath);
       }
@@ -198,6 +210,8 @@ const Login: React.FC = () => {
         // Store tokens and redirect
         // api.auth.login sets the access token
         localStorage.setItem('refresh_token', data.refresh_token);
+        // Set auth token as cookie for middleware access
+        document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
         router.push(roleConfig[selectedRole].redirectPath);
       }
@@ -230,6 +244,8 @@ const Login: React.FC = () => {
       // Let's do it here for safety.
       if (data.access_token) {
          localStorage.setItem('auth_token', data.access_token);
+         // Set auth token as cookie for middleware access
+         document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
          // If refresh token is also returned
          if ((data as any).refresh_token) {
              localStorage.setItem('refresh_token', (data as any).refresh_token);

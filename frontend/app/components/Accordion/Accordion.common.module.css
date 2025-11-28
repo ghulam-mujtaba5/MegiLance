@@ -11,6 +11,14 @@
   border-bottom: 1px solid;
 }
 
+.accordionItem.disabled {
+  opacity: 0.6;
+}
+
+.accordionHeader {
+  margin: 0;
+}
+
 .accordionTrigger {
   display: flex;
   align-items: center;
@@ -26,6 +34,19 @@
   transition: background-color 0.2s ease-in-out;
 }
 
+.accordionTrigger:focus {
+  outline: none;
+}
+
+.accordionTrigger:focus-visible {
+  outline: 2px solid var(--color-primary, #4573df);
+  outline-offset: -2px;
+}
+
+.accordionTrigger:disabled {
+  cursor: not-allowed;
+}
+
 .accordionTitle {
   flex-grow: 1;
 }
@@ -37,6 +58,7 @@
   height: 0.75rem; /* 12px */
   margin-left: 1rem; /* 16px */
   transition: transform 0.3s cubic-bezier(0.87, 0, 0.13, 1);
+  flex-shrink: 0;
 }
 
 .accordionIcon::before {

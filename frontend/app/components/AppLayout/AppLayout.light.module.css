@@ -1,7 +1,19 @@
+/* @AI-HINT: AppLayout light theme styles */
+
 .appLayout {
   background-color: #f8fafc;
 }
 
 .pageContent {
   background-color: #f8fafc;
+}
+
+.skipLink {
+  background-color: #4573df;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.skipLink:hover {
+  background-color: #3562ce;
 }

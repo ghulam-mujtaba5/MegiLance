@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     app_name: str = "MegiLance API"
     environment: str = "development"
-    backend_cors_origins: list[str] = ["*"]
+    backend_cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     # Database - Turso (libSQL) Database as a Service
     # Format: libsql://your-database.turso.io?authToken=your-token
@@ -20,15 +20,30 @@ class Settings(BaseSettings):
     # Path to mounted JSON data directory (for mock/admin/demo endpoints)
     json_data_dir: str = "/data/db"
     
-    # Security & JWT
-    secret_key: str = "megilance_secret_key_for_jwt_tokens"
+    # Security & JWT - IMPORTANT: Override in production via environment variables!
+    # WARNING: Never use default secret_key in production
+    secret_key: str = "CHANGE_ME_IN_PRODUCTION_megilance_dev_only_secret"
     access_token_expire_minutes: int = 30
     refresh_token_expire_minutes: int = 60 * 24 * 7  # 7 days
     jwt_algorithm: str = "HS256"
     
+    # Password Policy
+    password_min_length: int = 8
+    password_max_length: int = 128
+    password_require_uppercase: bool = True
+    password_require_lowercase: bool = True
+    password_require_digit: bool = True
+    password_require_special: bool = False  # Recommended for better UX
+    
+    # Rate Limiting
+    rate_limit_requests_per_minute: int = 60
+    rate_limit_login_attempts: int = 5  # Failed login attempts before temporary lockout
+    rate_limit_lockout_minutes: int = 15
+    
     # File Storage (Simple local storage or can be upgraded to cloud storage like S3/Cloudflare R2)
     upload_dir: str = "./uploads"
     max_upload_size: int = 10 * 1024 * 1024  # 10MB
+    allowed_upload_extensions: list[str] = [".jpg", ".jpeg", ".png", ".gif", ".pdf", ".doc", ".docx"]
     
     # AI Service
     ai_service_url: Optional[str] = "http://localhost:8001"
@@ -82,6 +97,37 @@ class Settings(BaseSettings):
         extra = "ignore"  # Ignore extra fields from .env
 
 
+def validate_production_settings(settings: Settings) -> None:
+    """Validate critical security settings for production environment."""
+    import warnings
+    
+    if settings.environment == "production":
+        # Check for default/weak secret key
+        if "CHANGE_ME" in settings.secret_key or len(settings.secret_key) < 32:
+            raise ValueError(
+                "CRITICAL: Production environment detected with insecure SECRET_KEY. "
+                "Set a strong, random SECRET_KEY environment variable (at least 32 characters)."
+            )
+        
+        # Check CORS wildcard in production
+        if "*" in settings.backend_cors_origins:
+            warnings.warn(
+                "WARNING: CORS wildcard (*) detected in production. "
+                "Consider restricting to specific origins.",
+                RuntimeWarning
+            )
+        
+        # Check database configuration
+        if not settings.turso_database_url or not settings.turso_auth_token:
+            warnings.warn(
+                "WARNING: Production environment without Turso configuration. "
+                "Ensure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set.",
+                RuntimeWarning
+            )
+
+
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    settings = Settings()
+    validate_production_settings(settings)
+    return settings

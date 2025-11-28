@@ -1,6 +1,6 @@
 /* @AI-HINT: Light theme variables for the Pagination component. */
-.themeWrapper {
-  --pagination-button-bg: var(--surface-primary);
+.pagination {
+  background-color: transparent;
 }
 
 .paginationButton {
@@ -11,18 +11,42 @@
 
 .paginationButton:hover:not(:disabled) {
   background-color: #f9fafb;
+  border-color: #9ca3af;
 }
 
 .paginationButton:disabled {
   background-color: #f3f4f6;
-  color: #6b7280;
+  color: #9ca3af;
   border-color: #e5e7eb;
 }
 
 .paginationButton:focus {
-  outline: 2px solid #4573df;
+  outline-color: #4573df;
+}
+
+.pageList {
+  background-color: transparent;
+}
+
+.pageButton {
+  background-color: transparent;
+  color: #374151;
+}
+
+.pageButton:hover:not(:disabled):not(.active) {
+  background-color: #f3f4f6;
+}
+
+.pageButton.active {
+  background-color: #4573df;
+  color: #ffffff;
+  border-color: #4573df;
+}
+
+.pageButton:focus {
+  outline-color: #4573df;
 }
 
 .paginationInfo {
-  color: #4b5563;
+  color: #6b7280;
 }

@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './PieChart.common.module.css';
@@ -38,8 +38,12 @@ const PieChart: React.FC<PieChartProps> = ({
 }) => {
   const { resolvedTheme } = useTheme();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const chartRef = useRef<HTMLDivElement>(null);
+  const uniqueId = useId();
+  const chartTitleId = `${uniqueId}-title`;
+  const chartDescId = `${uniqueId}-desc`;
   
   if (!resolvedTheme) {
     return null; // Don't render until theme is resolved
@@ -76,6 +80,52 @@ const PieChart: React.FC<PieChartProps> = ({
   const handleMouseLeave = () => {
     setHoveredIndex(null);
   };
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (data.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        setFocusedIndex(prev => {
+          const next = prev === null ? 0 : (prev + 1) % data.length;
+          return next;
+        });
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        setFocusedIndex(prev => {
+          const next = prev === null ? data.length - 1 : (prev - 1 + data.length) % data.length;
+          return next;
+        });
+        break;
+      case 'Home':
+        e.preventDefault();
+        setFocusedIndex(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        setFocusedIndex(data.length - 1);
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setFocusedIndex(null);
+        setHoveredIndex(null);
+        break;
+      default:
+        break;
+    }
+  }, [data.length]);
+
+  // Show tooltip for focused item
+  useEffect(() => {
+    if (focusedIndex !== null) {
+      setHoveredIndex(focusedIndex);
+    }
+  }, [focusedIndex]);
   
   // Render pie slices
   const renderPieSlices = () => {
@@ -149,17 +199,32 @@ const PieChart: React.FC<PieChartProps> = ({
     if (!showLegend) return null;
     
     return (
-      <div className={cn(commonStyles.legend, themeStyles.legend)}>
+      <div 
+        className={cn(commonStyles.legend, themeStyles.legend)}
+        role="list"
+        aria-label="Chart legend"
+      >
         {chartData.map((item, index) => (
           <div 
             key={index}
-            className={cn(commonStyles.legendItem, themeStyles.legendItem)}
-            onMouseMove={(e) => handleMouseMove(e, index)}
+            role="listitem"
+            className={cn(
+              commonStyles.legendItem, 
+              themeStyles.legendItem,
+              focusedIndex === index && commonStyles.legendItemFocused,
+              focusedIndex === index && themeStyles.legendItemFocused
+            )}
+            onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={handleMouseLeave}
+            onFocus={() => setFocusedIndex(index)}
+            onBlur={() => setFocusedIndex(null)}
+            tabIndex={0}
+            aria-label={`${item.label}: ${item.value} (${item.percentage.toFixed(1)}%)`}
           >
             <div 
               className={cn(commonStyles.legendColor, themeStyles.legendColor)}
-              data-color-index={index}
+              style={{ backgroundColor: item.color || `hsl(${index * 30}, 70%, 50%)` }}
+              aria-hidden="true"
             />
             <span className={cn(commonStyles.legendLabel, themeStyles.legendLabel)}>
               {item.label}
@@ -227,7 +292,17 @@ const PieChart: React.FC<PieChartProps> = ({
           <svg 
             viewBox="0 0 200 200" 
             className={cn(commonStyles.chart, themeStyles.chart)}
+            role="img"
+            aria-labelledby={title ? chartTitleId : undefined}
+            aria-describedby={chartDescId}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+            onBlur={() => setFocusedIndex(null)}
           >
+            <title id={chartTitleId}>{title || 'Pie Chart'}</title>
+            <desc id={chartDescId}>
+              {`Pie chart showing ${data.length} segments: ${chartData.map(item => `${item.label} at ${item.percentage.toFixed(1)}%`).join(', ')}`}
+            </desc>
             {renderPieSlices()}
           </svg>
           {renderTooltip()}

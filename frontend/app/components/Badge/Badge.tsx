@@ -9,13 +9,28 @@ import commonStyles from './Badge.common.module.css';
 import lightStyles from './Badge.light.module.css';
 import darkStyles from './Badge.dark.module.css';
 
+export type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
+export type BadgeSize = 'small' | 'medium';
+
 export interface BadgeProps {
+  /** Badge content */
   children: React.ReactNode;
-  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
-  size?: 'small' | 'medium';
+  /** Visual variant */
+  variant?: BadgeVariant;
+  /** Size variant */
+  size?: BadgeSize;
+  /** Icon before content */
   iconBefore?: React.ReactNode;
+  /** Icon after content */
   iconAfter?: React.ReactNode;
+  /** Additional CSS classes */
   className?: string;
+  /** Render as pill shape */
+  pill?: boolean;
+  /** Interactive badge (clickable) */
+  onClick?: () => void;
+  /** Accessible label (for icon-only badges) */
+  ariaLabel?: string;
 }
 
 const Badge: React.FC<BadgeProps> = ({
@@ -25,25 +40,72 @@ const Badge: React.FC<BadgeProps> = ({
   iconBefore,
   iconAfter,
   className = '',
+  pill = false,
+  onClick,
+  ariaLabel,
 }) => {
-    const { resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  
+  // Don't render until theme is resolved
+  if (!resolvedTheme) return null;
+  
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const isInteractive = !!onClick;
+  
+  const badgeClasses = cn(
+    commonStyles.badge,
+    themeStyles.badge,
+    commonStyles[variant],
+    themeStyles[variant],
+    commonStyles[size],
+    themeStyles[size],
+    pill && commonStyles.pill,
+    isInteractive && commonStyles.interactive,
+    className
+  );
+  
+  const content = (
+    <>
+      {iconBefore && (
+        <span 
+          className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon, commonStyles.badgeIconBefore)}
+          aria-hidden="true"
+        >
+          {iconBefore}
+        </span>
+      )}
+      {children}
+      {iconAfter && (
+        <span 
+          className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon, commonStyles.badgeIconAfter)}
+          aria-hidden="true"
+        >
+          {iconAfter}
+        </span>
+      )}
+    </>
+  );
+  
+  if (isInteractive) {
+    return (
+      <button
+        type="button"
+        className={badgeClasses}
+        onClick={onClick}
+        aria-label={ariaLabel}
+      >
+        {content}
+      </button>
+    );
+  }
 
   return (
     <span
-      className={cn(
-        commonStyles.badge,
-        themeStyles.badge,
-        commonStyles[variant],
-        themeStyles[variant],
-        commonStyles[size],
-        themeStyles[size],
-        className
-      )}
+      className={badgeClasses}
+      role={ariaLabel ? 'status' : undefined}
+      aria-label={ariaLabel}
     >
-      {iconBefore && <span className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon, commonStyles.badgeIconBefore)}>{iconBefore}</span>}
-      {children}
-      {iconAfter && <span className={cn(commonStyles.badgeIcon, themeStyles.badgeIcon, commonStyles.badgeIconAfter)}>{iconAfter}</span>}
+      {content}
     </span>
   );
 };

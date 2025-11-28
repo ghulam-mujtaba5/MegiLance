@@ -1,0 +1,186 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ ما",
+    "retry": "حاول مرة أخرى",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "clear": "مسح",
+    "submit": "إرسال",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "close": "إغلاق",
+    "open": "فتح",
+    "yes": "نعم",
+    "no": "لا",
+    "confirm": "تأكيد",
+    "viewAll": "عرض الكل",
+    "learnMore": "اعرف المزيد",
+    "getStarted": "ابدأ الآن"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "browseProjects": "تصفح المشاريع",
+    "browseFreelancers": "ابحث عن مستقلين",
+    "howItWorks": "كيف يعمل",
+    "pricing": "الأسعار",
+    "about": "من نحن",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "dashboard": "لوحة التحكم",
+    "messages": "الرسائل",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+  "auth": {
+    "login": {
+      "title": "مرحباً بعودتك",
+      "subtitle": "سجل الدخول للمتابعة إلى حسابك",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "signIn": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "سجل الآن",
+      "orContinueWith": "أو تابع باستخدام"
+    },
+    "signup": {
+      "title": "أنشئ حسابك",
+      "subtitle": "انضم إلى شبكة المواهب والعملاء المميزين",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "agreeToTerms": "أوافق على الشروط وسياسة الخصوصية",
+      "createAccount": "إنشاء حساب",
+      "haveAccount": "لديك حساب بالفعل؟",
+      "signIn": "سجل الدخول"
+    },
+    "forgotPassword": {
+      "title": "نسيت كلمة المرور؟",
+      "subtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين",
+      "email": "البريد الإلكتروني",
+      "sendLink": "إرسال رابط إعادة التعيين",
+      "backToLogin": "العودة لتسجيل الدخول"
+    },
+    "errors": {
+      "invalidEmail": "يرجى إدخال بريد إلكتروني صالح",
+      "invalidPassword": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+      "passwordMismatch": "كلمات المرور غير متطابقة",
+      "invalidCredentials": "بريد إلكتروني أو كلمة مرور غير صحيحة",
+      "accountExists": "يوجد حساب بهذا البريد الإلكتروني بالفعل"
+    }
+  },
+  "dashboard": {
+    "welcome": "مرحباً بعودتك، {{name}}!",
+    "overview": "نظرة عامة",
+    "recentActivity": "النشاط الأخير",
+    "quickActions": "إجراءات سريعة",
+    "stats": {
+      "activeProjects": "المشاريع النشطة",
+      "completedProjects": "المكتملة",
+      "totalEarnings": "إجمالي الأرباح",
+      "pendingPayments": "المدفوعات المعلقة"
+    }
+  },
+  "projects": {
+    "title": "المشاريع",
+    "browse": "تصفح المشاريع",
+    "myProjects": "مشاريعي",
+    "create": "إنشاء مشروع",
+    "details": "تفاصيل المشروع",
+    "proposals": "العروض",
+    "milestones": "المراحل",
+    "status": {
+      "open": "مفتوح",
+      "inProgress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "budget": "الميزانية",
+    "duration": "المدة",
+    "skills": "المهارات المطلوبة",
+    "apply": "تقديم عرض",
+    "hire": "توظيف"
+  },
+  "freelancers": {
+    "title": "المستقلون",
+    "browse": "ابحث عن مستقلين",
+    "profile": "الملف الشخصي",
+    "skills": "المهارات",
+    "experience": "الخبرة",
+    "rating": "التقييم",
+    "hourlyRate": "السعر بالساعة",
+    "availability": "التوفر",
+    "portfolio": "أعمال سابقة",
+    "reviews": "التقييمات",
+    "hire": "وظّف الآن",
+    "message": "إرسال رسالة"
+  },
+  "payments": {
+    "title": "المدفوعات",
+    "history": "سجل المدفوعات",
+    "pending": "معلقة",
+    "completed": "مكتملة",
+    "methods": "طرق الدفع",
+    "addMethod": "إضافة طريقة دفع",
+    "withdraw": "سحب",
+    "deposit": "إضافة رصيد"
+  },
+  "messages": {
+    "title": "الرسائل",
+    "inbox": "الوارد",
+    "sent": "المرسلة",
+    "compose": "رسالة جديدة",
+    "noMessages": "لا توجد رسائل بعد",
+    "typeMessage": "اكتب رسالة..."
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "profile": "الملف الشخصي",
+    "account": "الحساب",
+    "notifications": "الإشعارات",
+    "security": "الأمان",
+    "billing": "الفواتير",
+    "preferences": "التفضيلات"
+  },
+  "footer": {
+    "company": "الشركة",
+    "about": "من نحن",
+    "careers": "الوظائف",
+    "blog": "المدونة",
+    "press": "الصحافة",
+    "support": "الدعم",
+    "helpCenter": "مركز المساعدة",
+    "contact": "اتصل بنا",
+    "faq": "الأسئلة الشائعة",
+    "legal": "قانوني",
+    "terms": "شروط الخدمة",
+    "privacy": "سياسة الخصوصية",
+    "cookies": "سياسة الكوكيز",
+    "copyright": "© {{year}} ميجيلانس. جميع الحقوق محفوظة."
+  },
+  "errors": {
+    "404": {
+      "title": "الصفحة غير موجودة",
+      "message": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها."
+    },
+    "500": {
+      "title": "حدث خطأ ما",
+      "message": "نعتذر عن الإزعاج. يرجى المحاولة مرة أخرى لاحقاً."
+    },
+    "network": {
+      "title": "خطأ في الاتصال",
+      "message": "يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى."
+    }
+  }
+}

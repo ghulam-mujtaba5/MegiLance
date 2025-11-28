@@ -1,4 +1,32 @@
 /* @AI-HINT: Dark theme styles for ErrorBoundary fallback */
-.container { background: #1b1f2a; color: #e5e7eb; border: 1px solid #2a3142; }
+.container { background: #1b1f2a; color: #e5e7eb; border-color: #3f2a2a; }
+.icon { color: #f87171; }
 .title { color: #f9fafb; }
 .message { color: #d1d5db; }
+.detailsSummary { background: #2a3142; color: #94a3b8; }
+.errorStack { background: #111827; color: #e5e7eb; border: 1px solid #2a3142; }
+
+.tryAgainButton {
+  background: #4573df;
+  color: #fff;
+}
+.tryAgainButton:hover {
+  background: #5c87e8;
+}
+
+.refreshButton {
+  background: #2a3142;
+  color: #e5e7eb;
+}
+.refreshButton:hover {
+  background: #374151;
+}
+
+.homeButton {
+  background: transparent;
+  color: #60a5fa;
+  border: 1px solid #60a5fa;
+}
+.homeButton:hover {
+  background: rgba(96, 165, 250, 0.1);
+}

@@ -2,6 +2,8 @@
 @AI-HINT: Admin Dashboard API - System monitoring, analytics, and management
 Uses Turso HTTP API directly - NO SQLite fallback
 """
+import re
+import logging
 from typing import List, Optional
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -9,9 +11,67 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.core.security import get_current_active_user
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.models.user import User
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+# ============ Constants for Validation ============
+
+VALID_USER_TYPES = {'Admin', 'admin', 'Client', 'client', 'Freelancer', 'freelancer'}
+VALID_PROJECT_STATUSES = {'open', 'in_progress', 'completed', 'cancelled', 'draft'}
+VALID_PAYMENT_STATUSES = {'pending', 'completed', 'failed', 'refunded', 'cancelled'}
+MAX_LIMIT = 200
+MAX_SKIP = 10000
+MAX_SEARCH_LENGTH = 100
+
+
+def validate_user_type(user_type: Optional[str]) -> Optional[str]:
+    """Validate user type parameter"""
+    if user_type is None:
+        return None
+    user_type_lower = user_type.lower()
+    valid_lower = {ut.lower() for ut in VALID_USER_TYPES}
+    if user_type_lower not in valid_lower:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid user_type. Must be one of: Client, Freelancer, Admin"
+        )
+    return user_type
+
+
+def validate_project_status(project_status: Optional[str]) -> Optional[str]:
+    """Validate project status parameter"""
+    if project_status is None:
+        return None
+    if project_status.lower() not in VALID_PROJECT_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Must be one of: {', '.join(VALID_PROJECT_STATUSES)}"
+        )
+    return project_status.lower()
+
+
+def validate_payment_status(payment_status: Optional[str]) -> Optional[str]:
+    """Validate payment status parameter"""
+    if payment_status is None:
+        return None
+    if payment_status.lower() not in VALID_PAYMENT_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Must be one of: {', '.join(VALID_PAYMENT_STATUSES)}"
+        )
+    return payment_status.lower()
+
+
+def sanitize_search(search: Optional[str]) -> Optional[str]:
+    """Sanitize search input to prevent SQL injection"""
+    if search is None:
+        return None
+    # Remove potentially dangerous characters
+    sanitized = re.sub(r'[;\'"\\/\x00]', '', search)
+    # Limit length
+    return sanitized[:MAX_SEARCH_LENGTH]
 
 
 # ============ Schemas ============
@@ -106,10 +166,12 @@ async def get_admin_user(current_user: User = Depends(get_current_active_user)):
     """Verify that current user is an admin"""
     user_type = _safe_str(current_user.user_type)
     if user_type not in ['Admin', 'admin']:
+        logger.warning(f"Non-admin user {current_user.id} attempted to access admin endpoint")
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
         )
+    logger.info(f"Admin user {current_user.id} accessing admin endpoint")
     return current_user
 
 
@@ -559,24 +621,28 @@ async def get_recent_activity(
 
 @router.get("/admin/users/list")
 async def list_all_users(
-    user_type: Optional[str] = Query(None),
-    search: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    user_type: Optional[str] = Query(None, description="Filter by user type: Client, Freelancer, Admin"),
+    search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH, description="Search by name or email"),
+    skip: int = Query(0, ge=0, le=MAX_SKIP, description="Number of records to skip"),
+    limit: int = Query(50, ge=1, le=MAX_LIMIT, description="Maximum number of records to return"),
     admin: User = Depends(get_admin_user)
 ):
     """List all users with filtering options."""
+    # Validate inputs
+    validated_user_type = validate_user_type(user_type)
+    sanitized_search = sanitize_search(search)
+    
     where_clauses = []
     params = []
     
-    if user_type:
+    if validated_user_type:
         where_clauses.append("user_type = ?")
-        params.append(user_type)
+        params.append(validated_user_type)
     
-    if search:
+    if sanitized_search:
         where_clauses.append("(name LIKE ? OR email LIKE ?)")
-        params.append(f"%{search}%")
-        params.append(f"%{search}%")
+        params.append(f"%{sanitized_search}%")
+        params.append(f"%{sanitized_search}%")
     
     where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
     
@@ -620,25 +686,48 @@ async def toggle_user_status(
     admin: User = Depends(get_admin_user)
 ):
     """Activate or deactivate a user account."""
+    # Validate user_id
+    if user_id <= 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user ID")
+    
+    # Prevent admin from deactivating themselves
+    if user_id == admin.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot toggle your own account status"
+        )
+    
     # Get current status
     result = execute_query(
-        "SELECT is_active FROM users WHERE id = ?", [user_id]
+        "SELECT is_active, user_type FROM users WHERE id = ?", [user_id]
     )
     
     if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="User not found")
     
     current_status = bool(_get_val(result["rows"][0], 0))
+    target_user_type = _safe_str(_get_val(result["rows"][0], 1))
+    
+    # Prevent deactivating other admins (security measure)
+    if target_user_type in ['Admin', 'admin'] and current_status:
+        logger.warning(f"Admin {admin.id} attempted to deactivate admin user {user_id}")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cannot deactivate admin accounts via this endpoint"
+        )
+    
     new_status = 0 if current_status else 1
     
     # Update status
     update_result = execute_query(
-        "UPDATE users SET is_active = ? WHERE id = ?",
-        [new_status, user_id]
+        "UPDATE users SET is_active = ?, updated_at = ? WHERE id = ?",
+        [new_status, datetime.utcnow().isoformat(), user_id]
     )
     
     if not update_result:
         raise HTTPException(status_code=500, detail="Failed to update user status")
+    
+    logger.info(f"Admin {admin.id} toggled user {user_id} status to {'active' if new_status else 'inactive'}")
     
     return {
         "success": True,
@@ -649,10 +738,10 @@ async def toggle_user_status(
 
 @router.get("/admin/users")
 async def get_admin_users(
-    role: Optional[str] = Query(None),
-    search: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    role: Optional[str] = Query(None, description="Filter by role: Client, Freelancer, Admin"),
+    search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH),
+    skip: int = Query(0, ge=0, le=MAX_SKIP),
+    limit: int = Query(50, ge=1, le=MAX_LIMIT),
     admin: User = Depends(get_admin_user)
 ):
     """List all users - Admin endpoint"""
@@ -661,14 +750,17 @@ async def get_admin_users(
 
 @router.get("/admin/projects")
 async def get_admin_projects(
-    status: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    status: Optional[str] = Query(None, description="Filter by status: open, in_progress, completed, cancelled"),
+    skip: int = Query(0, ge=0, le=MAX_SKIP),
+    limit: int = Query(50, ge=1, le=MAX_LIMIT),
     admin: User = Depends(get_admin_user)
 ):
     """Get all projects with admin access"""
-    where_sql = "WHERE status = ?" if status else ""
-    params = [status] if status else []
+    # Validate status
+    validated_status = validate_project_status(status)
+    
+    where_sql = "WHERE status = ?" if validated_status else ""
+    params = [validated_status] if validated_status else []
     
     # Get total
     count_result = execute_query(f"SELECT COUNT(*) FROM projects {where_sql}", params)
@@ -706,14 +798,17 @@ async def get_admin_projects(
 
 @router.get("/admin/payments")
 async def get_admin_payments(
-    status: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    status: Optional[str] = Query(None, description="Filter by status: pending, completed, failed, refunded"),
+    skip: int = Query(0, ge=0, le=MAX_SKIP),
+    limit: int = Query(50, ge=1, le=MAX_LIMIT),
     admin: User = Depends(get_admin_user)
 ):
     """Get all payments with admin access"""
-    where_sql = "WHERE status = ?" if status else ""
-    params = [status] if status else []
+    # Validate status
+    validated_status = validate_payment_status(status)
+    
+    where_sql = "WHERE status = ?" if validated_status else ""
+    params = [validated_status] if validated_status else []
     
     # Get total
     count_result = execute_query(f"SELECT COUNT(*) FROM payments {where_sql}", params)

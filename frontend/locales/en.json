@@ -1,0 +1,186 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "clear": "Clear",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "viewAll": "View All",
+    "learnMore": "Learn More",
+    "getStarted": "Get Started"
+  },
+  "nav": {
+    "home": "Home",
+    "browseProjects": "Browse Projects",
+    "browseFreelancers": "Find Freelancers",
+    "howItWorks": "How It Works",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Log In",
+    "signup": "Sign Up",
+    "dashboard": "Dashboard",
+    "messages": "Messages",
+    "settings": "Settings",
+    "logout": "Log Out"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue to your account",
+      "email": "Email Address",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "orContinueWith": "Or continue with"
+    },
+    "signup": {
+      "title": "Create Your Account",
+      "subtitle": "Join the top-tier network of talent and clients",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "agreeToTerms": "I agree to the Terms & Privacy Policy",
+      "createAccount": "Create Account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password?",
+      "subtitle": "Enter your email and we'll send you a reset link",
+      "email": "Email Address",
+      "sendLink": "Send Reset Link",
+      "backToLogin": "Back to Sign In"
+    },
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "invalidPassword": "Password must be at least 8 characters",
+      "passwordMismatch": "Passwords do not match",
+      "invalidCredentials": "Invalid email or password",
+      "accountExists": "An account with this email already exists"
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}!",
+    "overview": "Overview",
+    "recentActivity": "Recent Activity",
+    "quickActions": "Quick Actions",
+    "stats": {
+      "activeProjects": "Active Projects",
+      "completedProjects": "Completed",
+      "totalEarnings": "Total Earnings",
+      "pendingPayments": "Pending Payments"
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "browse": "Browse Projects",
+    "myProjects": "My Projects",
+    "create": "Create Project",
+    "details": "Project Details",
+    "proposals": "Proposals",
+    "milestones": "Milestones",
+    "status": {
+      "open": "Open",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "budget": "Budget",
+    "duration": "Duration",
+    "skills": "Required Skills",
+    "apply": "Submit Proposal",
+    "hire": "Hire"
+  },
+  "freelancers": {
+    "title": "Freelancers",
+    "browse": "Find Freelancers",
+    "profile": "Profile",
+    "skills": "Skills",
+    "experience": "Experience",
+    "rating": "Rating",
+    "hourlyRate": "Hourly Rate",
+    "availability": "Availability",
+    "portfolio": "Portfolio",
+    "reviews": "Reviews",
+    "hire": "Hire Now",
+    "message": "Send Message"
+  },
+  "payments": {
+    "title": "Payments",
+    "history": "Payment History",
+    "pending": "Pending",
+    "completed": "Completed",
+    "methods": "Payment Methods",
+    "addMethod": "Add Payment Method",
+    "withdraw": "Withdraw",
+    "deposit": "Add Funds"
+  },
+  "messages": {
+    "title": "Messages",
+    "inbox": "Inbox",
+    "sent": "Sent",
+    "compose": "New Message",
+    "noMessages": "No messages yet",
+    "typeMessage": "Type a message..."
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "account": "Account",
+    "notifications": "Notifications",
+    "security": "Security",
+    "billing": "Billing",
+    "preferences": "Preferences"
+  },
+  "footer": {
+    "company": "Company",
+    "about": "About Us",
+    "careers": "Careers",
+    "blog": "Blog",
+    "press": "Press",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "contact": "Contact Us",
+    "faq": "FAQ",
+    "legal": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "copyright": "© {{year}} MegiLance. All rights reserved."
+  },
+  "errors": {
+    "404": {
+      "title": "Page Not Found",
+      "message": "The page you're looking for doesn't exist or has been moved."
+    },
+    "500": {
+      "title": "Something Went Wrong",
+      "message": "We apologize for the inconvenience. Please try again later."
+    },
+    "network": {
+      "title": "Connection Error",
+      "message": "Please check your internet connection and try again."
+    }
+  }
+}

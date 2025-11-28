@@ -42,10 +42,12 @@ const Button = <C extends React.ElementType = 'button'>({
   provider,
   className = '',
   onClick,
+  type = 'button',
   ...props
-}: ButtonProps<C>) => {
+}: ButtonProps<C> & { type?: 'button' | 'submit' | 'reset' }) => {
   const { resolvedTheme } = useTheme();
   const Component = (as || 'button') as React.ElementType;
+  const isButton = !as || as === 'button';
 
   if (!resolvedTheme) return null; // Or a loading skeleton
 
@@ -86,9 +88,12 @@ const Button = <C extends React.ElementType = 'button'>({
         fullWidth && commonStyles.fullWidth,
         className
       )}
+      {...(isButton ? { type } : {})}
       disabled={isLoading || props.disabled}
       onClick={handleClick}
       aria-label={accessibleLabel}
+      aria-busy={isLoading ? 'true' : undefined}
+      aria-disabled={props.disabled ? 'true' : undefined}
       {...props}
     >
       {isLoading && <Loader2 className={cn(commonStyles.spinner, themeStyles.spinner, commonStyles.loadingIcon)} />}

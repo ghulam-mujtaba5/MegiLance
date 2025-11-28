@@ -1,4 +1,5 @@
 # @AI-HINT: Review and Rating Management API - Turso-only, no SQLite fallback
+# Enhanced with input validation and security measures
 """
 Review and Rating Management API
 
@@ -10,6 +11,7 @@ Handles:
 - Rating aggregation
 """
 import json
+import re
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from datetime import datetime
@@ -18,6 +20,70 @@ from app.db.turso_http import execute_query, parse_rows
 from app.core.security import get_current_user_from_token
 
 router = APIRouter()
+
+# === Input Validation Constants ===
+MAX_REVIEW_TEXT_LENGTH = 2000
+MIN_REVIEW_TEXT_LENGTH = 20
+MIN_RATING = 1.0
+MAX_RATING = 5.0
+
+
+def _validate_rating(rating: float, field_name: str = "Rating") -> float:
+    """Validate rating is within acceptable range"""
+    if rating is None:
+        return None
+    if not isinstance(rating, (int, float)):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"{field_name} must be a number"
+        )
+    if rating < MIN_RATING or rating > MAX_RATING:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"{field_name} must be between {MIN_RATING} and {MAX_RATING}"
+        )
+    return float(rating)
+
+
+def _validate_review_text(text: str) -> str:
+    """Validate review text content"""
+    if not text:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Review text is required"
+        )
+    
+    text = text.strip()
+    
+    if len(text) < MIN_REVIEW_TEXT_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Review text must be at least {MIN_REVIEW_TEXT_LENGTH} characters"
+        )
+    
+    if len(text) > MAX_REVIEW_TEXT_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Review text exceeds maximum length of {MAX_REVIEW_TEXT_LENGTH} characters"
+        )
+    
+    return text
+
+
+def _validate_review_data(review_data: dict) -> None:
+    """Validate all review input data"""
+    # Validate main rating
+    if "rating" in review_data:
+        _validate_rating(review_data["rating"], "Overall rating")
+    
+    # Validate sub-ratings
+    for field in ["communication_rating", "quality_rating", "professionalism_rating", "deadline_rating"]:
+        if field in review_data and review_data[field] is not None:
+            _validate_rating(review_data[field], field.replace("_", " ").title())
+    
+    # Validate review text
+    if "review_text" in review_data:
+        review_data["review_text"] = _validate_review_text(review_data["review_text"])
 
 
 def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
@@ -39,9 +105,24 @@ async def create_review(
     - One review per party per contract
     - Contract must be completed
     """
+    # Validate input
+    _validate_review_data(review_data)
+    
     user_id = current_user.get("user_id")
     contract_id = review_data.get("contract_id")
     reviewed_user_id = review_data.get("reviewed_user_id")
+    
+    # Validate required fields
+    if not contract_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Contract ID is required"
+        )
+    if not reviewed_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reviewed user ID is required"
+        )
     
     # Get contract
     result = execute_query(

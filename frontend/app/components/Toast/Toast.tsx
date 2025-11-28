@@ -12,13 +12,24 @@ import darkStyles from './Toast.dark.module.css';
 export type ToastVariant = 'info' | 'success' | 'warning' | 'danger';
 
 export interface ToastProps {
+  /** Toast title */
   title?: string;
+  /** Toast description/message */
   description?: string;
+  /** Whether toast is visible */
   show: boolean;
+  /** Visual variant */
   variant?: ToastVariant;
+  /** Callback when toast is dismissed */
   onClose?: () => void;
-  duration?: number; // ms
+  /** Auto-dismiss duration in ms (0 = no auto-dismiss) */
+  duration?: number;
+  /** Additional CSS classes */
   className?: string;
+  /** Unique ID for accessibility */
+  id?: string;
+  /** Pause auto-dismiss on hover */
+  pauseOnHover?: boolean;
 }
 
 const Toast: React.FC<ToastProps> = ({
@@ -29,15 +40,42 @@ const Toast: React.FC<ToastProps> = ({
   onClose,
   duration = 4000,
   className = '',
+  id,
+  pauseOnHover = true,
 }) => {
+  const generatedId = React.useId();
+  const toastId = id ?? generatedId;
+  const [isPaused, setIsPaused] = React.useState(false);
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const remainingRef = React.useRef(duration);
+  const startRef = React.useRef(Date.now());
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
-    if (!show || !duration || !onClose) return;
-    const t = setTimeout(onClose, duration);
-    return () => clearTimeout(t);
-  }, [show, duration, onClose]);
+    if (!show || !duration || !onClose || isPaused) return;
+    
+    startRef.current = Date.now();
+    timerRef.current = setTimeout(onClose, remainingRef.current);
+    
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [show, duration, onClose, isPaused]);
+
+  const handleMouseEnter = () => {
+    if (pauseOnHover && timerRef.current) {
+      clearTimeout(timerRef.current);
+      remainingRef.current -= Date.now() - startRef.current;
+      setIsPaused(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (pauseOnHover) {
+      setIsPaused(false);
+    }
+  };
 
   if (!resolvedTheme) return null;
 
@@ -70,16 +108,24 @@ const Toast: React.FC<ToastProps> = ({
     </>
   );
 
+  const commonProps = {
+    id: toastId,
+    className: baseClassName,
+    'aria-atomic': true as const,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+  };
+
   if (variant === 'danger' || variant === 'warning') {
     return (
-      <div role="alert" aria-live="assertive" aria-atomic="true" className={baseClassName}>
+      <div role="alert" aria-live="assertive" {...commonProps}>
         {content}
       </div>
     );
   }
 
   return (
-    <div role="status" aria-live="polite" aria-atomic="true" className={baseClassName}>
+    <div role="status" aria-live="polite" {...commonProps}>
       {content}
     </div>
   );

@@ -5,9 +5,23 @@
   display: inline-block;
 }
 
+.customTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.customTrigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .menu {
   position: absolute;
-  right: 0;
   top: calc(100% + 8px);
   z-index: 50;
   min-width: 180px;
@@ -18,6 +32,16 @@
   border: 1px solid;
   box-shadow: var(--shadow-lg);
   animation: fadeIn 0.1s ease-out;
+}
+
+.alignStart {
+  left: 0;
+  right: auto;
+}
+
+.alignEnd {
+  right: 0;
+  left: auto;
 }
 
 .menuItem {
@@ -31,20 +55,49 @@
   text-align: left;
   background-color: transparent;
   border: none;
-  transition: background-color 0.15s ease-in-out;
+  transition: background-color 0.15s ease-in-out, transform 0.1s ease-out;
 }
 
 .menuItem:hover:not(:disabled) {
   cursor: pointer;
 }
 
-.menuItem:disabled {
+.menuItem:focus {
+  outline: none;
+}
+
+.menuItem:focus-visible {
+  outline: 2px solid var(--color-primary, #4573df);
+  outline-offset: -2px;
+}
+
+.menuItemFocused {
+  background-color: var(--menu-item-hover-bg, rgba(0, 0, 0, 0.05));
+}
+
+.menuItemDisabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
+.menuItemDestructive {
+  color: var(--color-error, #e81123);
+}
+
+.menuItemDestructive:hover:not(:disabled) {
+  background-color: rgba(232, 17, 35, 0.1);
+}
+
 .itemIcon {
   margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.itemLabel {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .separator {

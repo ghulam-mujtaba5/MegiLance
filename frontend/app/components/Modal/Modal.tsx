@@ -1,7 +1,7 @@
 // @AI-HINT: This is the Modal component for dialogs, confirmations, and overlays. All styles are per-component only. See Modal.common.css, Modal.light.css, and Modal.dark.css for theming.
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { IoClose } from 'react-icons/io5';
 import { useTheme } from 'next-themes';
@@ -15,24 +15,68 @@ export interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   title?: string;
+  /** Optional description for screen readers */
+  description?: string;
   footer?: React.ReactNode;
   size?: 'small' | 'medium' | 'large';
   className?: string;
+  /** Whether clicking outside the modal closes it (default: true) */
+  closeOnOverlayClick?: boolean;
+  /** Whether pressing Escape closes the modal (default: true) */
+  closeOnEscape?: boolean;
+  /** ID of the element that triggered the modal (for returning focus) */
+  triggerElementId?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer, size = 'medium', className = '' }) => {
+const Modal: React.FC<ModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  children, 
+  title, 
+  description,
+  footer, 
+  size = 'medium', 
+  className = '',
+  closeOnOverlayClick = true,
+  closeOnEscape = true,
+  triggerElementId,
+}) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<HTMLElement | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const { resolvedTheme } = useTheme();
+  
+  // Generate unique IDs for accessibility
+  const modalTitleId = useRef(`modal-title-${Math.random().toString(36).substr(2, 9)}`);
+  const modalDescId = useRef(`modal-desc-${Math.random().toString(36).substr(2, 9)}`);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Store the previously focused element when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      previousActiveElement.current = document.activeElement as HTMLElement;
+    }
+  }, [isOpen]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+    // Return focus to trigger element or previously focused element
+    requestAnimationFrame(() => {
+      if (triggerElementId) {
+        document.getElementById(triggerElementId)?.focus();
+      } else if (previousActiveElement.current) {
+        previousActiveElement.current.focus();
+      }
+    });
+  }, [onClose, triggerElementId]);
+
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+      if (event.key === 'Escape' && closeOnEscape) {
+        handleClose();
       }
     };
 
@@ -40,8 +84,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer,
       if (event.key !== 'Tab' || !modalRef.current) return;
 
       const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
       );
+      
+      if (focusableElements.length === 0) return;
+      
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
 
@@ -62,7 +109,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer,
       document.addEventListener('keydown', handleEscKey);
       document.addEventListener('keydown', handleFocusTrap);
       document.body.style.overflow = 'hidden';
-      modalRef.current?.focus();
+      // Focus the modal after a brief delay to ensure it's rendered
+      requestAnimationFrame(() => {
+        modalRef.current?.focus();
+      });
     } else {
       document.body.style.overflow = 'unset';
     }
@@ -72,9 +122,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer,
       document.removeEventListener('keydown', handleFocusTrap);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose, closeOnEscape]);
 
-    const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const sizeClass = {
     small: commonStyles.sizeSmall,
@@ -82,26 +132,51 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, footer,
     large: commonStyles.sizeLarge,
   }[size];
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (closeOnOverlayClick && e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
   const modalContent = (
     <div
       className={cn(commonStyles.modalOverlay, themeStyles.modalOverlay)}
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={title ? 'modal-title' : undefined}
+      onClick={handleOverlayClick}
+      role="presentation"
     >
       <div
         className={cn(commonStyles.modalContent, themeStyles.modalContent, sizeClass, className)}
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? modalTitleId.current : undefined}
+        aria-describedby={description ? modalDescId.current : undefined}
       >
         <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-          {title && <h2 id="modal-title" className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>{title}</h2>}
-          <button onClick={onClose} className={cn(commonStyles.closeButton, themeStyles.closeButton)} aria-label="Close modal">
-            <IoClose />
+          {title && (
+            <h2 
+              id={modalTitleId.current} 
+              className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}
+            >
+              {title}
+            </h2>
+          )}
+          <button 
+            type="button"
+            onClick={handleClose} 
+            className={cn(commonStyles.closeButton, themeStyles.closeButton)} 
+            aria-label="Close modal"
+          >
+            <IoClose aria-hidden="true" />
           </button>
         </div>
+        {description && (
+          <p id={modalDescId.current} className="sr-only">
+            {description}
+          </p>
+        )}
         <div className={cn(commonStyles.modalBody, themeStyles.modalBody)}>
           {children}
         </div>

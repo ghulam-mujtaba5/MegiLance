@@ -27,7 +27,7 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); /* Subtle depth */
 }
 
-.trigger:hover {
+.trigger:hover:not(:disabled) {
   border-color: var(--dropdown-border-color-hover);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); /* Enhanced shadow */
 }
@@ -38,10 +38,38 @@
   box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.12), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+.trigger.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background-color: var(--dropdown-disabled-bg, #f3f4f6);
+}
+
+.trigger.error {
+  border-color: var(--color-error, #e81123);
+}
+
+.trigger.error:focus-visible {
+  border-color: var(--color-error, #e81123);
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.12);
+}
+
+.label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholder {
+  color: var(--dropdown-placeholder-color, #9ca3af);
+}
+
 .caret {
   color: var(--dropdown-caret-color);
   transition: transform 0.2s ease-in-out;
   font-size: 1.2em;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
 }
 
 .caretOpen {
@@ -79,13 +107,38 @@
   line-height: 1.4;
 }
 
-.option:hover {
+.option:hover:not(.optionDisabled) {
   background-color: var(--dropdown-option-hover-bg);
   transform: translateX(2px); /* Subtle slide */
 }
 
-.optionFocused {
+.optionFocused:not(.optionDisabled) {
   background-color: var(--dropdown-option-focused-bg);
   color: var(--dropdown-option-focused-text);
   transform: translateX(2px);
+}
+
+.optionSelected {
+  font-weight: 600;
+  background-color: var(--dropdown-option-selected-bg, rgba(69, 115, 223, 0.1));
+}
+
+.optionDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  color: var(--dropdown-disabled-text, #9ca3af);
+}
+
+.noOptions {
+  padding: 0.625rem 1rem;
+  color: var(--dropdown-placeholder-color, #9ca3af);
+  font-style: italic;
+  text-align: center;
+}
+
+.errorMessage {
+  display: block;
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--color-error, #e81123);
 }

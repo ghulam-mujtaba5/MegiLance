@@ -1,9 +1,11 @@
 # @AI-HINT: Proposals API - CRUD for freelancer proposals on projects
 # Uses Turso HTTP API directly - NO SQLite fallback
+# Enhanced with input validation and security measures
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
 from datetime import datetime
+import re
 
 from app.core.security import get_current_active_user
 from app.db.turso_http import execute_query, to_str, parse_date
@@ -11,6 +13,72 @@ from app.models.user import User
 from app.schemas.proposal import ProposalCreate, ProposalRead, ProposalUpdate
 
 router = APIRouter()
+
+# === Input Validation Constants ===
+MAX_COVER_LETTER_LENGTH = 5000
+MAX_AVAILABILITY_LENGTH = 500
+MAX_ATTACHMENTS_LENGTH = 2000
+MAX_BID_AMOUNT = 1000000  # $1M max
+MAX_HOURLY_RATE = 1000    # $1000/hr max
+MAX_ESTIMATED_HOURS = 10000  # 10,000 hours max
+VALID_PROPOSAL_STATUSES = {"draft", "submitted", "accepted", "rejected", "withdrawn"}
+
+
+def _validate_proposal_input(proposal) -> None:
+    """Validate proposal input fields"""
+    if proposal.cover_letter and len(proposal.cover_letter) > MAX_COVER_LETTER_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Cover letter exceeds maximum length of {MAX_COVER_LETTER_LENGTH} characters"
+        )
+    
+    if proposal.availability and len(proposal.availability) > MAX_AVAILABILITY_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Availability exceeds maximum length of {MAX_AVAILABILITY_LENGTH} characters"
+        )
+    
+    if proposal.attachments and len(proposal.attachments) > MAX_ATTACHMENTS_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Attachments field exceeds maximum length of {MAX_ATTACHMENTS_LENGTH} characters"
+        )
+    
+    if proposal.bid_amount is not None:
+        if proposal.bid_amount < 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Bid amount cannot be negative"
+            )
+        if proposal.bid_amount > MAX_BID_AMOUNT:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Bid amount exceeds maximum of ${MAX_BID_AMOUNT:,}"
+            )
+    
+    if proposal.hourly_rate is not None:
+        if proposal.hourly_rate < 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Hourly rate cannot be negative"
+            )
+        if proposal.hourly_rate > MAX_HOURLY_RATE:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Hourly rate exceeds maximum of ${MAX_HOURLY_RATE}/hr"
+            )
+    
+    if proposal.estimated_hours is not None:
+        if proposal.estimated_hours < 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Estimated hours cannot be negative"
+            )
+        if proposal.estimated_hours > MAX_ESTIMATED_HOURS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Estimated hours exceeds maximum of {MAX_ESTIMATED_HOURS:,} hours"
+            )
 
 
 def _get_val(row: list, idx: int):
@@ -104,6 +172,9 @@ def create_draft_proposal(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only freelancers can create proposals"
         )
+    
+    # Validate input
+    _validate_proposal_input(proposal)
     
     # Check if project exists
     result = execute_query("SELECT id FROM projects WHERE id = ?", [proposal.project_id])
@@ -271,6 +342,16 @@ def create_proposal(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only freelancers can submit proposals"
+        )
+    
+    # Validate input
+    _validate_proposal_input(proposal)
+    
+    # Validate cover letter is not empty for submission
+    if not proposal.cover_letter or len(proposal.cover_letter.strip()) < 50:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cover letter must be at least 50 characters"
         )
     
     # Check if project exists and is open

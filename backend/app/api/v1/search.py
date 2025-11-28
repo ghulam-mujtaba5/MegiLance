@@ -1,5 +1,7 @@
 # @AI-HINT: Advanced Search API for projects, freelancers, and global search - Turso HTTP only
-from fastapi import APIRouter, Depends, Query
+# Enhanced with input sanitization and security measures
+import re
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from typing import List, Optional, Literal
 
 from app.db.turso_http import execute_query, to_str, parse_date
@@ -7,6 +9,66 @@ from app.schemas.project import ProjectRead
 from app.schemas.user import UserRead
 
 router = APIRouter(prefix="/search", tags=["search"])
+
+# === Security Constants ===
+MAX_QUERY_LENGTH = 200
+MAX_SKILLS_LENGTH = 500
+MAX_RESULTS = 100
+
+# Characters that could be used for SQL/wildcard injection
+UNSAFE_CHARS_PATTERN = re.compile(r'[%_\[\]\\\'\";\-\-]')
+
+
+def sanitize_search_query(query: str) -> str:
+    """Sanitize search query to prevent SQL injection and wildcard abuse"""
+    if not query:
+        return ""
+    
+    # Trim and limit length
+    query = query.strip()[:MAX_QUERY_LENGTH]
+    
+    # Escape SQL LIKE wildcards
+    query = query.replace('\\', '\\\\')
+    query = query.replace('%', '\\%')
+    query = query.replace('_', '\\_')
+    
+    # Remove potentially dangerous characters
+    query = re.sub(r'[;\'\"\-\-]', '', query)
+    
+    return query
+
+
+def sanitize_skill_list(skills: str) -> List[str]:
+    """Sanitize and parse skill list"""
+    if not skills:
+        return []
+    
+    skills = skills[:MAX_SKILLS_LENGTH]
+    skill_list = []
+    
+    for s in skills.split(','):
+        s = s.strip().lower()
+        # Remove special characters from skill names
+        s = re.sub(r'[^a-z0-9\s\.\+\#]', '', s)
+        if s and len(s) <= 50:
+            skill_list.append(s)
+    
+    return skill_list[:20]  # Max 20 skills
+
+
+def validate_search_params(q: Optional[str], limit: int, offset: int) -> None:
+    """Validate common search parameters"""
+    if limit > MAX_RESULTS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Limit cannot exceed {MAX_RESULTS}"
+        )
+    
+    if q and len(q) > MAX_QUERY_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Search query exceeds maximum length of {MAX_QUERY_LENGTH} characters"
+        )
 
 
 def row_to_project(row: list) -> dict:
@@ -65,24 +127,36 @@ async def search_projects(
     - Filter by skills, category, budget range, experience level
     - Public endpoint
     """
+    validate_search_params(q, limit, offset)
+    
     conditions = []
     params = []
     
-    # Text search
+    # Text search with sanitization
     if q:
-        conditions.append("(title LIKE ? OR description LIKE ?)")
-        search_term = f"%{q}%"
-        params.extend([search_term, search_term])
+        safe_q = sanitize_search_query(q)
+        if safe_q:
+            conditions.append("(title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')")
+            search_term = f"%{safe_q}%"
+            params.extend([search_term, search_term])
     
-    # Filter by status
+    # Filter by status (validate against allowed values)
+    valid_statuses = {"open", "in_progress", "completed", "cancelled", "draft"}
     if status:
+        if status.lower() not in valid_statuses:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid status. Allowed: {', '.join(valid_statuses)}"
+            )
         conditions.append("status = ?")
-        params.append(status)
+        params.append(status.lower())
     
     # Filter by category
     if category:
-        conditions.append("category LIKE ?")
-        params.append(f"%{category}%")
+        safe_category = sanitize_search_query(category)
+        if safe_category:
+            conditions.append("category LIKE ? ESCAPE '\\'")
+            params.append(f"%{safe_category}%")
     
     # Filter by budget range
     if budget_min is not None:

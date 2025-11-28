@@ -3,6 +3,7 @@
 No local SQLite fallback - all queries go directly to Turso
 """
 
+import re
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
 from datetime import datetime
@@ -13,6 +14,57 @@ from app.core.security import get_current_active_user
 from app.db.turso_http import get_turso_http
 
 router = APIRouter()
+
+# Validation constants
+MAX_TITLE_LENGTH = 200
+MAX_DESCRIPTION_LENGTH = 10000
+MAX_SEARCH_LENGTH = 100
+ALLOWED_STATUSES = {"open", "in_progress", "completed", "cancelled", "on_hold"}
+
+
+def sanitize_search_term(term: str) -> str:
+    """
+    Sanitize search term to prevent injection and limit special characters.
+    """
+    if not term:
+        return ""
+    # Limit length
+    term = term[:MAX_SEARCH_LENGTH]
+    # Escape SQL LIKE special characters
+    term = term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    # Remove any null bytes or control characters
+    term = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', term)
+    return term
+
+
+def validate_project_input(project: ProjectCreate) -> None:
+    """Validate project input data."""
+    if len(project.title) > MAX_TITLE_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Title must not exceed {MAX_TITLE_LENGTH} characters"
+        )
+    if project.description and len(project.description) > MAX_DESCRIPTION_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Description must not exceed {MAX_DESCRIPTION_LENGTH} characters"
+        )
+    if project.status and project.status.lower() not in ALLOWED_STATUSES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid status. Allowed: {', '.join(ALLOWED_STATUSES)}"
+        )
+    if project.budget_min is not None and project.budget_min < 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Budget minimum cannot be negative"
+        )
+    if project.budget_max is not None and project.budget_min is not None:
+        if project.budget_max < project.budget_min:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Budget maximum cannot be less than minimum"
+            )
 
 
 def _row_to_project(row: list, columns: list = None) -> dict:
@@ -40,11 +92,11 @@ def _row_to_project(row: list, columns: list = None) -> dict:
 
 @router.get("/", response_model=List[ProjectRead])
 def list_projects(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(100, ge=1, le=100, description="Max records to return"),
     status: Optional[str] = Query(None, description="Filter by project status"),
-    category: Optional[str] = Query(None, description="Filter by category"),
-    search: Optional[str] = Query(None, description="Search in title and description")
+    category: Optional[str] = Query(None, max_length=50, description="Filter by category"),
+    search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH, description="Search in title and description")
 ):
     """List projects from Turso database (Public)"""
     try:
@@ -58,8 +110,14 @@ def list_projects(
         params = []
         
         if status:
+            # Validate status
+            if status.lower() not in ALLOWED_STATUSES:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid status. Allowed: {', '.join(ALLOWED_STATUSES)}"
+                )
             sql += " AND status = ?"
-            params.append(status)
+            params.append(status.lower())
         else:
             # By default only show open projects for public list
             sql += " AND status = 'open'"
@@ -68,8 +126,11 @@ def list_projects(
             sql += " AND category = ?"
             params.append(category)
         if search:
-            sql += " AND (title LIKE ? OR description LIKE ?)"
-            params.extend([f"%{search}%", f"%{search}%"])
+            # Sanitize search term
+            safe_search = sanitize_search_term(search)
+            if safe_search:
+                sql += " AND (title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')"
+                params.extend([f"%{safe_search}%", f"%{safe_search}%"])
         
         sql += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
         
@@ -77,11 +138,13 @@ def list_projects(
         projects = [_row_to_project(row) for row in result.get("rows", [])]
         return projects
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"[ERROR] list_projects: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -165,6 +228,9 @@ def create_project(
             detail="Only clients can create projects"
         )
     
+    # Validate input
+    validate_project_input(project)
+    
     try:
         turso = get_turso_http()
         now = datetime.utcnow().isoformat()
@@ -202,7 +268,7 @@ def create_project(
         print(f"[ERROR] create_project: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 

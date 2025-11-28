@@ -1,6 +1,6 @@
 // @AI-HINT: This is a reusable Checkbox component. It is designed to be themeable and accessible.
 'use client';
-import React from 'react';
+import React, { useId, useRef, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { AlertCircle } from 'lucide-react';
@@ -15,34 +15,58 @@ export interface CheckboxProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   children?: React.ReactNode;
   error?: string;
+  helpText?: string;
   className?: string;
   disabled?: boolean;
   indeterminate?: boolean;
+  required?: boolean;
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({ 
-  id, 
+  id: providedId, 
   name, 
   checked, 
   onChange, 
   children, 
   error, 
+  helpText,
   className = '',
   disabled = false,
-  indeterminate = false
+  indeterminate = false,
+  required = false
 }) => {
+  const generatedId = useId();
+  const id = providedId ?? generatedId;
+  const inputRef = useRef<HTMLInputElement>(null);
   const { resolvedTheme } = useTheme();
+  
+  // Handle indeterminate state (can only be set via JavaScript)
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.indeterminate = indeterminate;
+    }
+  }, [indeterminate]);
   
   if (!resolvedTheme) {
     return null; // Don't render until theme is resolved
   }
   
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
+  const hasError = !!error;
+  const errorId = hasError ? `${id}-error` : undefined;
+  const helpId = !hasError && helpText ? `${id}-help` : undefined;
   
   return (
     <div className={cn(commonStyles.checkboxWrapper, themeStyles.checkboxWrapper, className)}>
-      <label className={cn(commonStyles.checkboxLabel, themeStyles.checkboxLabel)}>
+      <label 
+        className={cn(
+          commonStyles.checkboxLabel, 
+          themeStyles.checkboxLabel,
+          disabled && commonStyles.disabled
+        )}
+      >
         <input
+          ref={inputRef}
           id={id}
           type="checkbox"
           name={name}
@@ -50,20 +74,34 @@ const Checkbox: React.FC<CheckboxProps> = ({
           checked={checked}
           onChange={onChange}
           disabled={disabled}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? `${id}-error` : undefined}
+          required={required}
+          aria-invalid={hasError ? 'true' : 'false'}
+          aria-describedby={errorId ?? helpId}
+          aria-required={required}
         />
-        <span className={cn(
-          commonStyles.checkboxCustom, 
-          themeStyles.checkboxCustom,
-          indeterminate && commonStyles.indeterminate
-        )}></span>
-        <span className={cn(commonStyles.checkboxText, themeStyles.checkboxText)}>{children}</span>
+        <span 
+          className={cn(
+            commonStyles.checkboxCustom, 
+            themeStyles.checkboxCustom,
+            indeterminate && commonStyles.indeterminate,
+            hasError && commonStyles.hasError
+          )}
+          aria-hidden="true"
+        />
+        <span className={cn(commonStyles.checkboxText, themeStyles.checkboxText)}>
+          {children}
+          {required && <span className={commonStyles.required} aria-hidden="true"> *</span>}
+        </span>
       </label>
-      {error && (
-        <p id={`${id}-error`} className={cn(commonStyles.checkboxError, themeStyles.checkboxError)}>
-          <AlertCircle size={14} />
+      {hasError && (
+        <p id={errorId} className={cn(commonStyles.checkboxError, themeStyles.checkboxError)} role="alert">
+          <AlertCircle size={14} aria-hidden="true" />
           {error}
+        </p>
+      )}
+      {!hasError && helpText && (
+        <p id={helpId} className={cn(commonStyles.checkboxHelpText, themeStyles.checkboxHelpText)}>
+          {helpText}
         </p>
       )}
     </div>

@@ -122,6 +122,8 @@ const Input: React.FC<InputProps> = ({
             aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={errorId ?? helpId}
             aria-errormessage={errorId}
+            aria-required={props.required ? 'true' : undefined}
+            autoComplete={type === 'password' ? (props.autoComplete || 'current-password') : props.autoComplete}
             onFocus={(e) => {
               setIsFocused(true);
               props.onFocus?.(e);
@@ -169,6 +171,8 @@ const Input: React.FC<InputProps> = ({
           aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={errorId ?? helpId}
           aria-errormessage={errorId}
+          aria-required={props.required ? 'true' : undefined}
+          autoComplete={type === 'password' ? (props.autoComplete || 'current-password') : props.autoComplete}
           onFocus={(e) => {
             setIsFocused(true);
             props.onFocus?.(e);

@@ -45,6 +45,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return 'general';
   }, [pathname]);
 
+  // Announce route changes to screen readers
+  const [routeAnnouncement, setRouteAnnouncement] = useState('');
+  useEffect(() => {
+    if (pathname) {
+      const pageName = pathname.split('/').pop() || 'Home';
+      const formattedName = pageName.charAt(0).toUpperCase() + pageName.slice(1).replace(/-/g, ' ');
+      setRouteAnnouncement(`Navigated to ${formattedName} page`);
+    }
+  }, [pathname]);
+
   const profileMenuItems = useMemo(() => {
     switch (area) {
       case 'client':
@@ -94,18 +104,43 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
-      <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={area === 'general' ? undefined : area} />
-      <div className={cn(commonStyles.mainContent, isCollapsed && commonStyles.sidebarCollapsed)}>
-
-
-        <ErrorBoundary>
-          <main id="main-content" className={cn(commonStyles.pageContent, themeStyles.pageContent)}>
-            {children}
-          </main>
-        </ErrorBoundary>
+    <>
+      {/* Skip link for keyboard users */}
+      <a 
+        href="#main-content" 
+        className={cn(commonStyles.skipLink, themeStyles.skipLink)}
+      >
+        Skip to main content
+      </a>
+      
+      {/* Live region for route announcements */}
+      <div 
+        role="status" 
+        aria-live="polite" 
+        aria-atomic="true"
+        className={commonStyles.srOnly}
+      >
+        {routeAnnouncement}
       </div>
-    </div>
+
+      <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
+        <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={area === 'general' ? undefined : area} />
+        <div className={cn(commonStyles.mainContent, isCollapsed && commonStyles.sidebarCollapsed)}>
+
+
+          <ErrorBoundary>
+            <main 
+              id="main-content" 
+              className={cn(commonStyles.pageContent, themeStyles.pageContent)}
+              role="main"
+              aria-label={`${area === 'general' ? '' : area.charAt(0).toUpperCase() + area.slice(1) + ' '}Dashboard content`}
+            >
+              {children}
+            </main>
+          </ErrorBoundary>
+        </div>
+      </div>
+    </>
   );
 };
 

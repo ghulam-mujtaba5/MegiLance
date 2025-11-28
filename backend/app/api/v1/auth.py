@@ -1,6 +1,7 @@
 # @AI-HINT: Auth endpoints - register, login, 2FA, email verification, password reset
 # Uses Turso HTTP API directly - NO SQLite fallback
 
+import re
 from typing import Any, Dict
 import json
 from datetime import datetime
@@ -51,6 +52,53 @@ from app.core.config import get_settings
 
 router = APIRouter()
 
+# Security: Validation constants
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+MAX_NAME_LENGTH = 100
+MAX_BIO_LENGTH = 2000
+MAX_EMAIL_LENGTH = 254
+ALLOWED_USER_TYPES = {'client', 'freelancer', 'admin'}
+
+
+def validate_email(email: str) -> bool:
+    """Validate email format and length."""
+    if not email or len(email) > MAX_EMAIL_LENGTH:
+        return False
+    return bool(EMAIL_REGEX.match(email))
+
+
+def validate_password_strength(password: str) -> tuple[bool, str]:
+    """
+    Validate password meets security requirements.
+    Returns (is_valid, error_message).
+    """
+    settings = get_settings()
+    min_length = getattr(settings, 'password_min_length', 8)
+    
+    if len(password) < min_length:
+        return False, f"Password must be at least {min_length} characters long"
+    
+    if not re.search(r'[A-Z]', password):
+        return False, "Password must contain at least one uppercase letter"
+    
+    if not re.search(r'[a-z]', password):
+        return False, "Password must contain at least one lowercase letter"
+    
+    if not re.search(r'\d', password):
+        return False, "Password must contain at least one number"
+    
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False, "Password must contain at least one special character"
+    
+    return True, ""
+
+
+def sanitize_string(value: str, max_length: int = 255) -> str:
+    """Sanitize string input by trimming and limiting length."""
+    if not value:
+        return ""
+    return value.strip()[:max_length]
+
 
 def _user_from_row(row: list, cols: list) -> dict:
     """Convert Turso row to user dict"""
@@ -89,10 +137,37 @@ def register_user(request: Request, payload: UserCreate):
     
     Creates a new user account in Turso database.
     """
+    # Validate email format
+    if not validate_email(payload.email):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid email format"
+        )
+    
+    # Validate password strength
+    is_valid, error_msg = validate_password_strength(payload.password)
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=error_msg
+        )
+    
+    # Validate user_type
+    user_type = (payload.user_type or "client").lower()
+    if user_type not in ALLOWED_USER_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid user type. Allowed: {', '.join(ALLOWED_USER_TYPES)}"
+        )
+    
+    # Sanitize inputs
+    name = sanitize_string(payload.name or "", MAX_NAME_LENGTH)
+    bio = sanitize_string(payload.bio or "", MAX_BIO_LENGTH)
+    
     # Check if email already exists
     check_result = execute_query(
         "SELECT id FROM users WHERE email = ?",
-        [payload.email]
+        [payload.email.lower()]  # Normalize email to lowercase
     )
     
     if check_result and check_result.get("rows") and len(check_result["rows"]) > 0:
@@ -120,16 +195,16 @@ def register_user(request: Request, payload: UserCreate):
            bio, skills, hourly_rate, profile_image_url, location, profile_data, joined_at)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         [
-            payload.email,
+            payload.email.lower(),  # Store email as lowercase
             hashed_password,
             1 if payload.is_active else 0,
-            payload.name or "",
-            payload.user_type or "client",
-            payload.bio or "",
-            payload.skills or "",
+            name,
+            user_type,
+            bio,
+            sanitize_string(payload.skills or "", 500),
             payload.hourly_rate or 0,
-            payload.profile_image_url or "",
-            payload.location or "",
+            sanitize_string(payload.profile_image_url or "", 500),
+            sanitize_string(payload.location or "", 100),
             profile_data_json,
             now
         ]

@@ -1,7 +1,7 @@
 // @AI-HINT: Portal Search page. Theme-aware, accessible, animated with filters and results list.
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import api from '@/lib/api';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -11,6 +11,12 @@ import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import common from './Search.common.module.css';
 import light from './Search.light.module.css';
 import dark from './Search.dark.module.css';
+
+// Input validation
+const MAX_QUERY_LENGTH = 200;
+const sanitizeQuery = (query: string): string => {
+  return query.slice(0, MAX_QUERY_LENGTH).replace(/[<>"'&]/g, '');
+};
 
 type ResultType = 'Message' | 'Project' | 'User' | 'Invoice';
 
@@ -29,24 +35,39 @@ const Search: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
   const { notify } = useToaster();
+  const uniqueId = useId();
+  const searchInputId = `${uniqueId}-search`;
+  const typeSelectId = `${uniqueId}-type`;
+  const dateSelectId = `${uniqueId}-date`;
+  const resultsRegionId = `${uniqueId}-results`;
 
   const [query, setQuery] = useState('');
   const [type, setType] = useState<(typeof TYPES)[number]>('All');
   const [date, setDate] = useState<(typeof DATES)[number]>('Any time');
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchCount, setSearchCount] = useState(0); // For announcing result count
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const resultsRef = useRef<HTMLDivElement | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
   const resultsVisible = useIntersectionObserver(resultsRef, { threshold: 0.1 });
 
   const searchAPI = useCallback(async (searchQuery: string, searchType: string) => {
-    if (!searchQuery.trim()) {
+    const sanitizedQuery = sanitizeQuery(searchQuery);
+    if (!sanitizedQuery.trim()) {
       setResults([]);
+      setSearchCount(0);
       return;
     }
+
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
 
     setLoading(true);
     const allResults: Result[] = [];
@@ -85,13 +106,27 @@ const Search: React.FC = () => {
       }
 
       setResults(allResults);
+      setSearchCount(allResults.length);
     } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        // Request was cancelled, ignore
+        return;
+      }
       console.error('Search error:', error);
       notify({ title: 'Search Error', description: 'Failed to fetch results. Please try again.', variant: 'danger' });
     } finally {
       setLoading(false);
     }
   }, [notify]);
+
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   // Debounced search
   useEffect(() => {
@@ -135,25 +170,42 @@ const Search: React.FC = () => {
         </div>
 
         <div className={cn(common.controls)} role="search" aria-label="Global search controls">
-          <label className={common.srOnly} htmlFor="q">Query</label>
+          <label className={common.srOnly} htmlFor={searchInputId}>Search query</label>
           <input
-            id="q"
+            id={searchInputId}
             className={common.input}
             type="search"
             placeholder="Search projects and freelancers…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            maxLength={MAX_QUERY_LENGTH}
+            aria-describedby={`${uniqueId}-search-hint`}
           />
+          <span id={`${uniqueId}-search-hint`} className={common.srOnly}>
+            Enter keywords to search for projects and freelancers
+          </span>
 
-          <label className={common.srOnly} htmlFor="type">Type</label>
-          <select id="type" className={common.select} value={type} onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}>
+          <label className={common.srOnly} htmlFor={typeSelectId}>Filter by type</label>
+          <select
+            id={typeSelectId}
+            className={common.select}
+            value={type}
+            onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
+            aria-label="Filter by result type"
+          >
             {TYPES.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
 
-          <label className={common.srOnly} htmlFor="date">Date</label>
-          <select id="date" className={common.select} value={date} onChange={(e) => setDate(e.target.value as (typeof DATES)[number])}>
+          <label className={common.srOnly} htmlFor={dateSelectId}>Filter by date</label>
+          <select
+            id={dateSelectId}
+            className={common.select}
+            value={date}
+            onChange={(e) => setDate(e.target.value as (typeof DATES)[number])}
+            aria-label="Filter by date range"
+          >
             {DATES.map((d) => (
               <option key={d} value={d}>{d}</option>
             ))}
@@ -168,20 +220,41 @@ const Search: React.FC = () => {
         )}
 
         {!loading && query.trim() && (
-          <div ref={resultsRef} className={cn(common.results, resultsVisible ? common.isVisible : common.isNotVisible)} role="list" aria-label="Search results">
-            {filteredResults.map((r) => (
-              <article key={r.id} role="listitem" className={common.card} aria-labelledby={`res-${r.id}-title`}>
-                <h3 id={`res-${r.id}-title`} className={common.cardTitle}>{r.title}</h3>
-                <div className={common.cardMeta}>
-                  <span className={cn(common.typeBadge, r.type === 'Project' ? common.typeProject : common.typeUser)}>
-                    {r.type}
-                  </span>
-                  <span>{formatDate(r.date)}</span>
-                </div>
-                <p>{r.snippet}</p>
-              </article>
-            ))}
-          </div>
+          <>
+            <div
+              aria-live="polite"
+              aria-atomic="true"
+              className={common.srOnly}
+            >
+              {filteredResults.length} {filteredResults.length === 1 ? 'result' : 'results'} found
+            </div>
+            <div
+              ref={resultsRef}
+              id={resultsRegionId}
+              className={cn(common.results, resultsVisible ? common.isVisible : common.isNotVisible)}
+              role="region"
+              aria-label={`Search results: ${filteredResults.length} ${filteredResults.length === 1 ? 'result' : 'results'}`}
+            >
+              {filteredResults.map((r, index) => (
+                <article
+                  key={r.id}
+                  role="article"
+                  className={common.card}
+                  aria-labelledby={`res-${r.id}-title`}
+                  tabIndex={0}
+                >
+                  <h3 id={`res-${r.id}-title`} className={common.cardTitle}>{r.title}</h3>
+                  <div className={common.cardMeta}>
+                    <span className={cn(common.typeBadge, r.type === 'Project' ? common.typeProject : common.typeUser)}>
+                      {r.type}
+                    </span>
+                    <time dateTime={r.date}>{formatDate(r.date)}</time>
+                  </div>
+                  <p>{r.snippet}</p>
+                </article>
+              ))}
+            </div>
+          </>
         )}
 
         {!loading && query.trim() && filteredResults.length === 0 && (

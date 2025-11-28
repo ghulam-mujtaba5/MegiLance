@@ -1,7 +1,7 @@
 // @AI-HINT: This is the Sidebar component. It provides the main navigation for the application dashboard. It is designed to be responsive, themed, and accessible, with a collapsible state, using a per-component CSS module architecture.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useId, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { useTheme } from 'next-themes';
@@ -26,6 +26,17 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType }) => {
   const { resolvedTheme } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
+  const uniqueId = useId();
+  const sidebarId = `${uniqueId}-sidebar`;
+  const navId = `${uniqueId}-nav`;
+
+  // Handle keyboard shortcut for toggling sidebar
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === '[' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      toggleSidebar();
+    }
+  }, [toggleSidebar]);
 
   if (!resolvedTheme) return null;
 
@@ -33,6 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
 
   return (
     <aside
+      id={sidebarId}
       className={cn(
         commonStyles.sidebar,
         themeStyles.sidebar,
@@ -40,6 +52,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onKeyDown={handleKeyDown}
+      aria-label={`Main navigation sidebar${isCollapsed ? ' (collapsed)' : ''}`}
     >
       <header className={cn(commonStyles.sidebarHeader, themeStyles.sidebarHeader)}>
         <div className={cn(commonStyles.logoContainer)}>
@@ -50,25 +64,29 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
               themeStyles.logoText,
               isCollapsed && commonStyles.logoTextCollapsed
             )}
+            aria-hidden={isCollapsed}
           >
             MegiLance
           </span>
         </div>
         <button
+          type="button"
           onClick={toggleSidebar}
           className={cn(commonStyles.toggleButton, themeStyles.toggleButton)}
-          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-          aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          title={isCollapsed ? 'Expand Sidebar (Ctrl+[)' : 'Collapse Sidebar (Ctrl+[)'}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!isCollapsed}
+          aria-controls={navId}
         >
-          {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          {isCollapsed ? <ChevronRight size={20} aria-hidden="true" /> : <ChevronLeft size={20} aria-hidden="true" />}
         </button>
       </header>
 
-      <div className={cn(commonStyles.sidebarNavContainer, themeStyles.sidebarNavContainer)}>
+      <nav id={navId} className={cn(commonStyles.sidebarNavContainer, themeStyles.sidebarNavContainer)} role="navigation">
         <SidebarNav isCollapsed={isCollapsed} userType={userType} />
-      </div>
+      </nav>
 
-      <div className={commonStyles.divider}></div>
+      <div className={commonStyles.divider} role="separator" aria-hidden="true"></div>
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>
         <div className={cn(commonStyles.userInfo)}>
@@ -78,6 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
               commonStyles.userDetails,
               isCollapsed && commonStyles.userDetailsCollapsed
             )}
+            aria-hidden={isCollapsed}
           >
             <span className={cn(commonStyles.userName, themeStyles.userName)}>John Doe</span>
             <span className={cn(commonStyles.userRole, themeStyles.userRole)}>

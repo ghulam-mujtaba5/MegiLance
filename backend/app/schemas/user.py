@@ -44,7 +44,7 @@ class UserBase(BaseModel):
     name: Optional[str] = None
     user_type: Optional[str] = Field(default=None, description="Freelancer, Client, Admin")
     bio: Optional[str] = None
-    skills: Optional[str] = None  # JSON string of skills
+    skills: Optional[List[str] | str] = None  # Can be list or JSON string
     hourly_rate: Optional[float] = None
     profile_image_url: Optional[str] = None
     location: Optional[str] = None

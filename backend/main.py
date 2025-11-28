@@ -74,13 +74,19 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(RequestIDMiddleware)
 
+# Configure CORS - restrict in production
+cors_origins = settings.backend_cors_origins
+if settings.environment == "production" and "*" in cors_origins:
+    # In production, require explicit origins - log warning if wildcard used
+    logger.warning("CORS wildcard (*) used in production - consider restricting to specific origins")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
+    allow_origins=cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["*"],  # Allow all headers to fix CORS issues
+    expose_headers=["X-Request-Id", "X-Total-Count"],
     max_age=3600,
 )
 

@@ -221,6 +221,8 @@ const Textarea: React.FC<TextareaProps> = ({
           aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={errorId ?? helpId}
           aria-errormessage={errorId}
+          aria-required={props.required}
+          aria-label={hideLabel && label ? label : undefined}
           maxLength={maxLength}
           onFocus={(e) => {
             setIsFocused(true);
@@ -246,16 +248,29 @@ const Textarea: React.FC<TextareaProps> = ({
         )}
       </div>
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div className={cn(commonStyles.suggestionsList, themeStyles.suggestionsList)}>
+        <div 
+          className={cn(commonStyles.suggestionsList, themeStyles.suggestionsList)}
+          role="listbox"
+          aria-label="Suggestions"
+        >
           {filteredSuggestions.map((suggestion, index) => (
             <div
               key={suggestion}
+              role="option"
+              aria-selected={index === selectedSuggestion}
+              tabIndex={-1}
               className={cn(
                 commonStyles.suggestionItem,
                 themeStyles.suggestionItem,
                 index === selectedSuggestion && commonStyles.selected
               )}
               onClick={() => handleSuggestionClick(suggestion)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSuggestionClick(suggestion);
+                }
+              }}
             >
               {suggestion}
             </div>

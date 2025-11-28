@@ -1,29 +1,62 @@
 # Simplified Dockerfile for MegiLance backend with Turso (libSQL)
-# No need for GCC - all pure Python packages!
-FROM python:3.13-slim
+# Security-hardened production build
+FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
-# No system dependencies needed - pure Python!
-
-# Copy requirements and install Python dependencies
+# Install build dependencies in a separate stage
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --user -r requirements.txt
 
-# Copy application code
-COPY . .
+# Final production image
+FROM python:3.13-slim
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+# Security: Disable Python bytecode and buffering
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/home/appuser/.local/bin:$PATH" \
+    # Security: Prevent pip from caching
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Create uploads directory
+WORKDIR /app
+
+# Create non-root user FIRST for security
+RUN useradd -m -u 1000 -s /bin/bash appuser
+
+# Copy installed packages from builder
+COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
+
+# Copy application code with proper ownership
+COPY --chown=appuser:appuser . .
+
+# Create uploads directory with correct permissions
 RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
 
+# Security: Remove unnecessary packages and clean up
+RUN apt-get purge -y --auto-remove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Switch to non-root user
 USER appuser
 
-# Environment variables
-ENV PATH=/usr/local/bin:$PATH
-ENV PYTHONUNBUFFERED=1
+# Expose port (documentation only)
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/live').read()" || exit 1
 
 # Use gunicorn with uvicorn workers for production
-CMD ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-"]
+# Security: Limit worker memory and timeouts
+CMD ["gunicorn", "main:app", \
+     "-w", "4", \
+     "-k", "uvicorn.workers.UvicornWorker", \
+     "--bind", "0.0.0.0:8000", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-", \
+     "--timeout", "120", \
+     "--graceful-timeout", "30", \
+     "--keep-alive", "5", \
+     "--max-requests", "1000", \
+     "--max-requests-jitter", "50"]

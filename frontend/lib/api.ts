@@ -3,16 +3,26 @@
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-// Auth token management
+// Token storage keys - use constants to prevent typos
+const TOKEN_STORAGE_KEY = 'auth_token';
+const REFRESH_TOKEN_STORAGE_KEY = 'refresh_token';
+
+// Auth token management with secure storage
 let authToken: string | null = null;
 
 export function setAuthToken(token: string | null) {
   authToken = token;
   if (typeof window !== 'undefined') {
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
+    try {
+      if (token) {
+        // Use sessionStorage for access tokens (more secure)
+        sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+      } else {
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+      }
+    } catch (e) {
+      console.warn('Storage unavailable:', e);
     }
   }
 }
@@ -20,19 +30,81 @@ export function setAuthToken(token: string | null) {
 export function getAuthToken(): string | null {
   if (authToken) return authToken;
   if (typeof window !== 'undefined') {
-    authToken = localStorage.getItem('auth_token');
+    try {
+      // Try sessionStorage first (access token), then localStorage (legacy)
+      authToken = sessionStorage.getItem(TOKEN_STORAGE_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY);
+    } catch (e) {
+      console.warn('Storage unavailable:', e);
+    }
   }
   return authToken;
 }
 
-// Generic fetch wrapper with auth
-async function apiFetch<T = any>(
+export function setRefreshToken(token: string | null) {
+  if (typeof window !== 'undefined') {
+    try {
+      if (token) {
+        localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, token);
+      } else {
+        localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+      }
+    } catch (e) {
+      console.warn('Storage unavailable:', e);
+    }
+  }
+}
+
+export function getRefreshToken(): string | null {
+  if (typeof window !== 'undefined') {
+    try {
+      return localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
+    } catch (e) {
+      console.warn('Storage unavailable:', e);
+    }
+  }
+  return null;
+}
+
+// Clear all authentication data
+export function clearAuthData() {
+  authToken = null;
+  if (typeof window !== 'undefined') {
+    try {
+      sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+    } catch (e) {
+      console.warn('Storage unavailable:', e);
+    }
+  }
+}
+
+// Custom error class for API errors
+export class APIError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public code?: string,
+    public details?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = 'APIError';
+  }
+}
+
+// Request timeout (30 seconds)
+const REQUEST_TIMEOUT = 30000;
+
+// Generic fetch wrapper with auth, timeout, and security headers
+async function apiFetch<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
   const token = getAuthToken();
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> || {}),
+    // Security: Prevent MIME type sniffing
+    'X-Content-Type-Options': 'nosniff',
   };
 
   if (!(options.body instanceof FormData)) {
@@ -43,45 +115,115 @@ async function apiFetch<T = any>(
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers: headers as HeadersInit,
-  });
+  // Create AbortController for timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-    throw new Error(error.detail || `HTTP ${response.status}`);
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers: headers as HeadersInit,
+      signal: controller.signal,
+      // Include credentials for CORS requests (cookies, auth headers)
+      credentials: 'include',
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+      throw new APIError(
+        error.detail || `HTTP ${response.status}`,
+        response.status,
+        error.error_type,
+        error
+      );
+    }
+
+    // Handle 204 No Content
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    return response.json();
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof APIError) {
+      throw error;
+    }
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new APIError('Request timeout', 408);
+    }
+    
+    throw new APIError(
+      error instanceof Error ? error.message : 'Network error',
+      0
+    );
   }
-
-  return response.json();
 }
 
 // ===========================
 // AUTHENTICATION
 // ===========================
+
+// Type definitions for auth responses
+interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
+  user: AuthUser;
+}
+
+interface RefreshResponse {
+  access_token: string;
+}
+
+interface TwoFactorStatus {
+  enabled: boolean;
+}
+
+interface TwoFactorEnableResponse {
+  secret: string;
+  qr_code_url: string;
+  backup_codes: string[];
+}
+
 export const authApi = {
-  login: async (email: string, password: string) => {
-    const data = await apiFetch<{ access_token: string; refresh_token: string; user: any }>('/auth/login', {
+  login: async (email: string, password: string): Promise<LoginResponse> => {
+    const data = await apiFetch<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
     setAuthToken(data.access_token);
+    setRefreshToken(data.refresh_token);
     return data;
   },
 
-  register: async (userData: { email: string; password: string; name: string; role: string }) => {
-    return apiFetch('/auth/register', {
+  register: async (userData: { email: string; password: string; name: string; role: string }): Promise<AuthUser> => {
+    return apiFetch<AuthUser>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   },
 
   logout: () => {
-    setAuthToken(null);
+    clearAuthData();
   },
 
-  refreshToken: async (refreshToken: string) => {
-    const data = await apiFetch<{ access_token: string }>('/auth/refresh', {
+  refreshToken: async (): Promise<RefreshResponse> => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) {
+      throw new APIError('No refresh token available', 401);
+    }
+    const data = await apiFetch<RefreshResponse>('/auth/refresh', {
       method: 'POST',
       body: JSON.stringify({ refresh_token: refreshToken }),
     });
@@ -89,16 +231,16 @@ export const authApi = {
     return data;
   },
 
-  me: () => apiFetch<any>('/auth/me'),
+  me: (): Promise<AuthUser> => apiFetch<AuthUser>('/auth/me'),
 
-  updateProfile: (data: any) => apiFetch<any>('/auth/me', {
+  updateProfile: (data: Partial<AuthUser>): Promise<AuthUser> => apiFetch<AuthUser>('/auth/me', {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
 
-  get2FAStatus: () => apiFetch<{ enabled: boolean }>('/auth/2fa/status'),
+  get2FAStatus: (): Promise<TwoFactorStatus> => apiFetch<TwoFactorStatus>('/auth/2fa/status'),
 
-  enable2FA: () => apiFetch<{ secret: string; qr_code_url: string; backup_codes: string[] }>('/auth/2fa/enable', { method: 'POST' }),
+  enable2FA: (): Promise<TwoFactorEnableResponse> => apiFetch<TwoFactorEnableResponse>('/auth/2fa/enable', { method: 'POST' }),
 
   verify2FA: (code: string) => apiFetch('/auth/2fa/verify', { 
     method: 'POST', 
@@ -601,7 +743,7 @@ export const milestonesApi = {
 // ===========================
 export const messagesApi = {
   createConversation: (data: any) =>
-    apiFetch('/messages/conversations', {
+    apiFetch('/conversations', {
       method: 'POST',
       body: data instanceof FormData ? data : JSON.stringify(data),
     }),

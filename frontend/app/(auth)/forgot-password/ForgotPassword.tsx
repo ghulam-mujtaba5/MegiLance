@@ -26,17 +26,47 @@ const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateEmail = (email: string): boolean => {
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) {
+      setError('Email is required.');
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Please enter a valid email address.');
+      return false;
+    }
+    if (trimmed.length > 254) {
+      setError('Email address is too long.');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!validateEmail(email)) return;
+    
     setLoading(true);
-    console.log('Password reset requested for:', email);
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // Call the password reset API
+      const response = await fetch('/backend/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      
+      // Always show success to prevent email enumeration
       setSubmitted(true);
-    }, 1500);
+    } catch (err) {
+      // Still show success to prevent email enumeration attacks
+      setSubmitted(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const styles = React.useMemo(() => {
@@ -100,10 +130,15 @@ const ForgotPassword: React.FC = () => {
                 label="Email Address"
                 placeholder="your.email@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError('');
+                }}
+                error={error}
                 disabled={loading}
+                aria-describedby={error ? 'email-error' : undefined}
               />
-              <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading || !email} className={styles.submitButton}>
+              <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading || !email.trim()} className={styles.submitButton}>
                 {loading ? 'Sending Link...' : 'Send Reset Link'}
               </Button>
             </form>
