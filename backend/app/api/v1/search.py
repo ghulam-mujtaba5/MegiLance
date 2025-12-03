@@ -82,11 +82,12 @@ def row_to_project(row: list) -> dict:
         "budget_min": float(row[5].get("value")) if row[5].get("type") != "null" else None,
         "budget_max": float(row[6].get("value")) if row[6].get("type") != "null" else None,
         "experience_level": to_str(row[7]),
-        "status": to_str(row[8]),
-        "skills": to_str(row[9]),
-        "client_id": row[10].get("value") if row[10].get("type") != "null" else None,
-        "created_at": parse_date(row[11]),
-        "updated_at": parse_date(row[12])
+        "estimated_duration": to_str(row[8]) if len(row) > 8 else "Not specified",
+        "status": to_str(row[9]) if len(row) > 9 else "open",
+        "skills": to_str(row[10]) if len(row) > 10 else "",
+        "client_id": row[11].get("value") if len(row) > 11 and row[11].get("type") != "null" else None,
+        "created_at": parse_date(row[12]) if len(row) > 12 else None,
+        "updated_at": parse_date(row[13]) if len(row) > 13 else None
     }
 
 
@@ -187,7 +188,7 @@ async def search_projects(
     params.extend([limit, offset])
     
     result = execute_query(
-        f"""SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, status, skills, client_id, created_at, updated_at
+        f"""SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, estimated_duration, status, skills, client_id, created_at, updated_at
             FROM projects
             WHERE {where_clause}
             ORDER BY created_at DESC
@@ -464,7 +465,7 @@ async def get_trending(
     """
     if type == "projects":
         result = execute_query(
-            """SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, status, skills, client_id, created_at, updated_at
+            """SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, estimated_duration, status, skills, client_id, created_at, updated_at
                FROM projects
                WHERE status = 'open'
                ORDER BY created_at DESC
