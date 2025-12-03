@@ -5,7 +5,7 @@ Run this script to populate the database with realistic test data
 """
 
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal
+from app.db.session import get_session_local
 from app.models import (
     TimeEntry, Invoice, Escrow, Category, Favorite, Tag, ProjectTag,
     SupportTicket, Refund, User, Project, Contract, Payment
@@ -227,7 +227,7 @@ def seed_invoices(db: Session):
             total=total,
             due_date=datetime.utcnow() + timedelta(days=14),
             status=status,
-            items=items,
+            items=json.dumps(items),
             payment_id=payment_id,
             paid_date=paid_date,
             notes="Thank you for your business!"
@@ -263,8 +263,7 @@ def seed_escrow(db: Session):
             amount=round(amount, 2),
             released_amount=round(released, 2),
             status=status,
-            expires_at=datetime.utcnow() + timedelta(days=90),
-            notes="Escrow for project milestone"
+            expires_at=datetime.utcnow() + timedelta(days=90)
         )
         escrow_records.append(escrow)
         db.add(escrow)
@@ -417,6 +416,7 @@ def main():
     """Main seed function"""
     print("\n🌱 Starting comprehensive database seeding...\n")
     
+    SessionLocal = get_session_local()
     db = SessionLocal()
     try:
         # Seed in order (respecting dependencies)

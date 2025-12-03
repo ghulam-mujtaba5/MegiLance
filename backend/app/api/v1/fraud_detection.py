@@ -194,7 +194,7 @@ async def get_my_risk_profile(
 ):
     """Get the current user's fraud risk profile."""
     service = get_fraud_detection_service(db)
-    analysis = await service.analyze_user(current_user["id"])
+    analysis = await service.analyze_user(current_user.id)
     
     return {
         "risk_profile": analysis,
@@ -214,7 +214,7 @@ async def report_fraud(
         "report_id": f"FR-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
         "entity_type": request.entity_type,
         "entity_id": request.entity_id,
-        "reported_by": current_user["id"],
+        "reported_by": current_user.id,
         "reason": request.reason,
         "status": "pending_review",
         "created_at": datetime.utcnow().isoformat()
@@ -231,7 +231,7 @@ async def get_fraud_reports(
 ):
     """Get fraud reports (admin only)."""
     # Check if user is admin
-    if current_user.get("role") != "admin":
+    if current_user.role != "admin" and current_user.role != "Admin":
         raise HTTPException(
             status_code=403,
             detail="Only administrators can view fraud reports"

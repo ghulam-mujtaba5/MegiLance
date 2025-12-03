@@ -213,8 +213,9 @@ async def estimate_project_price(
         multiplier = complexity_multipliers.get(complexity.lower(), 1.0)
         
         # Get average rates for the category
+        # Use average of min and max budget since 'budget' column doesn't exist
         result = execute_query(
-            """SELECT AVG(budget) as avg_budget, COUNT(*) as project_count
+            """SELECT AVG((budget_min + budget_max) / 2) as avg_budget, COUNT(*) as project_count
                FROM projects
                WHERE category = ? AND status IN ('completed', 'in_progress')""",
             [category.value if hasattr(category, 'value') else str(category)]
@@ -365,11 +366,11 @@ async def check_user_fraud_risk(
     
     Requires admin privileges or own user
     """
-    user_type = current_user.get("user_type", "").lower()
-    is_admin = user_type == "admin"
+    user_type = current_user.user_type.lower() if current_user.user_type else ""
+    is_admin = user_type == "admin" or current_user.role.lower() == "admin"
     
     # Only allow admins or self
-    if current_user['id'] != user_id and not is_admin:
+    if current_user.id != user_id and not is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to check this user"

@@ -59,10 +59,18 @@ def _row_to_payment(row: list) -> dict:
             val = row[i]
             if col == "amount" and val is not None:
                 payment[col] = float(val)
+            elif col == "tx_hash":
+                payment["transaction_hash"] = val # Map for Pydantic model
+                payment[col] = val
             else:
                 payment[col] = val
         else:
             payment[col] = None
+            
+    # Ensure required fields for Pydantic model
+    if "currency" not in payment or payment["currency"] is None:
+        payment["currency"] = "USDC"
+        
     return payment
 
 
@@ -91,9 +99,12 @@ def list_payments(
     try:
         turso = get_turso_http()
         
+        # Updated query to match actual schema
+        # Schema has: blockchain_tx_hash, processed_at
+        # Missing: currency, escrow_address
         sql = """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                        currency, status, payment_type, tx_hash, escrow_address,
-                        description, created_at, updated_at, completed_at 
+                        'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                        description, created_at, updated_at, processed_at as completed_at 
                  FROM payments WHERE 1=1"""
         params = []
         
@@ -128,7 +139,7 @@ def list_payments(
         print(f"[ERROR] list_payments: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Database temporarily unavailable"
+            detail=f"Database temporarily unavailable: {str(e)}"
         )
 
 
@@ -142,8 +153,8 @@ def get_payment(
         turso = get_turso_http()
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      currency, status, payment_type, tx_hash, escrow_address,
-                      description, created_at, updated_at, completed_at 
+                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE id = ?""",
             [payment_id]
         )
@@ -235,24 +246,28 @@ def create_payment(
             )
         
         now = datetime.utcnow().isoformat()
-        currency = (payment.currency or "USDC").upper()
+        # currency = (payment.currency or "USDC").upper() # Not stored in DB
         payment_type = (payment.payment_type or "milestone").lower()
         description = (payment.description or "")[:1000]  # Truncate to limit
         
+        # Insert with required fields
         turso.execute(
             """INSERT INTO payments (contract_id, from_user_id, to_user_id, amount,
-                                     currency, status, payment_type, description,
+                                     payment_type, payment_method, status, description,
+                                     platform_fee, freelancer_amount,
                                      created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [payment.contract_id, current_user.id, payment.to_user_id, payment.amount,
-             currency, "pending", payment_type, description, now, now]
+             payment_type, "crypto", "pending", description, 
+             0.0, payment.amount, # platform_fee, freelancer_amount
+             now, now]
         )
         
         # Get created payment
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      currency, status, payment_type, tx_hash, escrow_address,
-                      description, created_at, updated_at, completed_at 
+                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE from_user_id = ? ORDER BY id DESC LIMIT 1""",
             [current_user.id]
         )
@@ -311,14 +326,9 @@ def update_payment(
                         detail=f"Invalid status. Allowed: {', '.join(ALLOWED_PAYMENT_STATUSES)}"
                     )
                 value = value.lower()
-            # Validate currency
-            if key == "currency" and value:
-                if value.upper() not in ALLOWED_CURRENCIES:
-                    raise HTTPException(
-                        status_code=status.HTTP_400_BAD_REQUEST,
-                        detail=f"Invalid currency. Allowed: {', '.join(ALLOWED_CURRENCIES)}"
-                    )
-                value = value.upper()
+            # Validate currency - Ignore as not in DB
+            if key == "currency":
+                continue
             # Validate payment_type
             if key == "payment_type" and value:
                 if value.lower() not in ALLOWED_PAYMENT_TYPES:
@@ -334,8 +344,13 @@ def update_payment(
             if key == "amount" and value is not None:
                 validate_amount(value)
             
-            updates.append(f"{key} = ?")
-            params.append(value)
+            # Map keys to DB columns
+            if key == "transaction_hash":
+                updates.append("blockchain_tx_hash = ?")
+                params.append(value)
+            else:
+                updates.append(f"{key} = ?")
+                params.append(value)
         
         if updates:
             updates.append("updated_at = ?")
@@ -347,8 +362,8 @@ def update_payment(
         # Return updated payment
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      currency, status, payment_type, tx_hash, escrow_address,
-                      description, created_at, updated_at, completed_at 
+                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE id = ?""",
             [payment_id]
         )
@@ -383,14 +398,14 @@ def complete_payment(
         
         now = datetime.utcnow().isoformat()
         turso.execute(
-            "UPDATE payments SET status = ?, completed_at = ?, tx_hash = ?, updated_at = ? WHERE id = ?",
+            "UPDATE payments SET status = ?, processed_at = ?, blockchain_tx_hash = ?, updated_at = ? WHERE id = ?",
             ["completed", now, tx_hash, now, payment_id]
         )
         
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      currency, status, payment_type, tx_hash, escrow_address,
-                      description, created_at, updated_at, completed_at 
+                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE id = ?""",
             [payment_id]
         )

@@ -56,7 +56,29 @@ Complete validation schemas for all models:
 
 #### 3. API Endpoints (118 Total Routes)
 
-**New API Modules (6):**
+**New API Modules (8):**
+
+**AI Services API** (`api/v1/ai_services.py`) - 8 endpoints:
+- ✅ POST `/ai/chat` - AI Chatbot
+- ✅ POST `/ai/fraud-check` - Text-based fraud detection
+- ✅ GET `/ai/match-freelancers/{project_id}` - Match freelancers to project
+- ✅ POST `/ai/estimate-price` - Project price estimation
+- ✅ GET `/ai/estimate-freelancer-rate/{freelancer_id}` - Freelancer rate estimation
+- ✅ GET `/ai/fraud-check/user/{user_id}` - User fraud analysis
+- ✅ GET `/ai/fraud-check/project/{project_id}` - Project fraud analysis
+- ✅ GET `/ai/fraud-check/proposal/{proposal_id}` - Proposal fraud analysis
+
+**Fraud Detection API** (`api/v1/fraud_detection.py`) - 10 endpoints:
+- ✅ GET `/fraud-detection/analyze/user/{user_id}` - Analyze user risk
+- ✅ GET `/fraud-detection/analyze/project/{project_id}` - Analyze project risk
+- ✅ GET `/fraud-detection/analyze/proposal/{proposal_id}` - Analyze proposal risk
+- ✅ POST `/fraud-detection/analyze/bulk` - Bulk analysis
+- ✅ GET `/fraud-detection/my-risk-profile` - Self risk profile
+- ✅ POST `/fraud-detection/report` - Report fraud
+- ✅ GET `/fraud-detection/reports` - List reports (admin)
+- ✅ GET `/fraud-detection/config/thresholds` - Risk thresholds
+- ✅ GET `/fraud-detection/statistics` - Fraud stats
+- ✅ GET `/fraud-detection/dashboard` - Fraud dashboard
 
 **Messages API** (`api/v1/messages.py`) - 11 endpoints:
 - ✅ POST `/api/conversations` - Create conversation (auto-dedupe)
@@ -403,8 +425,6 @@ POST /api/messages
 ## 📝 Notes
 
 **Excluded from Implementation (As Requested):**
-- ❌ AI modules (recommendation engine, matching algorithm)
-- ❌ AI-powered features (smart matching, predictive analytics)
 - ❌ MongoDB integration (planned for AI/analytics)
 
 **Backend is Production-Ready for:**
@@ -415,6 +435,8 @@ POST /api/messages
 - ✅ Reviews and disputes
 - ✅ Skills and portfolio
 - ✅ Payment tracking
+- ✅ AI Services (Chatbot, Price Estimation, Matching)
+- ✅ Fraud Detection (Risk Analysis, Reporting)
 
 ## ✅ Verification
 

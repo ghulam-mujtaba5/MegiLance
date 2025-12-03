@@ -23,21 +23,21 @@ interface DevCredential {
 const DEV_CREDENTIALS: DevCredential[] = [
   {
     email: 'admin@megilance.com',
-    password: 'Password123!',
+    password: 'admin123',
     role: 'admin',
     label: 'Admin',
     icon: FaUserShield,
   },
   {
-    email: 'freelancer1@example.com',
-    password: 'Password123!',
+    email: 'freelancer@example.com',
+    password: 'freelancer123',
     role: 'freelancer',
     label: 'Freelancer',
     icon: FaUserTie,
   },
   {
-    email: 'client1@example.com',
-    password: 'Password123!',
+    email: 'client@example.com',
+    password: 'client123',
     role: 'client',
     label: 'Client',
     icon: FaBriefcase,

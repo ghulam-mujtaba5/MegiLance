@@ -10,9 +10,9 @@ from datetime import datetime
 BASE_URL = "http://127.0.0.1:8000/api"
 
 # Test credentials
-ADMIN_CREDS = {"email": "admin@megilance.com", "password": "Password123!"}
-CLIENT_CREDS = {"email": "client1@example.com", "password": "Password123!"}
-FREELANCER_CREDS = {"email": "freelancer1@example.com", "password": "Password123!"}
+ADMIN_CREDS = {"email": "admin@megilance.com", "password": "admin123"}
+CLIENT_CREDS = {"email": "client@example.com", "password": "client123"}
+FREELANCER_CREDS = {"email": "freelancer@example.com", "password": "freelancer123"}
 
 class TestResult:
     def __init__(self):

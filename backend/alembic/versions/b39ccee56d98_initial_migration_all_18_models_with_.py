@@ -31,7 +31,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_skills_category'), 'skills', ['category'], unique=False)
-        op.create_index(op.f('ix_skills_name'), 'skills', ['name'], unique=True)
+    op.create_index(op.f('ix_skills_name'), 'skills', ['name'], unique=True)
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
@@ -40,7 +40,16 @@ def upgrade() -> None:
     sa.Column('last_name', sa.String(length=100), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('is_verified', sa.Boolean(), nullable=False),
+    sa.Column('email_verified', sa.Boolean(), nullable=False, server_default='0'),
+    sa.Column('email_verification_token', sa.String(length=255), nullable=True),
     sa.Column('name', sa.String(length=255), nullable=True),
+    sa.Column('role', sa.String(length=50), nullable=False, server_default='client'),
+    sa.Column('two_factor_enabled', sa.Boolean(), nullable=False, server_default='0'),
+    sa.Column('two_factor_secret', sa.String(length=255), nullable=True),
+    sa.Column('two_factor_backup_codes', sa.Text(), nullable=True),
+    sa.Column('password_reset_token', sa.String(length=255), nullable=True),
+    sa.Column('password_reset_expires', sa.DateTime(), nullable=True),
+    sa.Column('last_password_changed', sa.DateTime(), nullable=True),
     sa.Column('user_type', sa.String(length=20), nullable=True),
     sa.Column('bio', sa.Text(), nullable=True),
     sa.Column('skills', sa.Text(), nullable=True),
@@ -48,6 +57,7 @@ def upgrade() -> None:
     sa.Column('profile_image_url', sa.String(length=500), nullable=True),
     sa.Column('location', sa.String(length=100), nullable=True),
     sa.Column('profile_data', sa.JSON(), nullable=True),
+    sa.Column('notification_preferences', sa.Text(), nullable=True),
     sa.Column('account_balance', sa.Float(), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=True),
     sa.Column('joined_at', sa.DateTime(), nullable=False),
@@ -57,7 +67,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
-        op.create_index(op.f('ix_users_is_active'), 'users', ['is_active'], unique=False)
+    op.create_index(op.f('ix_users_is_active'), 'users', ['is_active'], unique=False)
     op.create_index(op.f('ix_users_user_type'), 'users', ['user_type'], unique=False)
     op.create_table('audit_logs',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -77,7 +87,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_audit_logs_created_at'), 'audit_logs', ['created_at'], unique=False)
     op.create_index(op.f('ix_audit_logs_entity_id'), 'audit_logs', ['entity_id'], unique=False)
     op.create_index(op.f('ix_audit_logs_entity_type'), 'audit_logs', ['entity_type'], unique=False)
-        op.create_index(op.f('ix_audit_logs_user_id'), 'audit_logs', ['user_id'], unique=False)
+    op.create_index(op.f('ix_audit_logs_user_id'), 'audit_logs', ['user_id'], unique=False)
     op.create_table('notifications',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -95,7 +105,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_notifications_created_at'), 'notifications', ['created_at'], unique=False)
-        op.create_index(op.f('ix_notifications_is_read'), 'notifications', ['is_read'], unique=False)
+    op.create_index(op.f('ix_notifications_is_read'), 'notifications', ['is_read'], unique=False)
     op.create_index(op.f('ix_notifications_notification_type'), 'notifications', ['notification_type'], unique=False)
     op.create_index(op.f('ix_notifications_user_id'), 'notifications', ['user_id'], unique=False)
     op.create_table('portfolio_items',
@@ -110,7 +120,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['freelancer_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-        op.create_table('projects',
+    op.create_table('projects',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=False),
     sa.Column('description', sa.Text(), nullable=False),
@@ -128,7 +138,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['client_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-        op.create_table('user_sessions',
+    op.create_table('user_sessions',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('session_token', sa.String(length=255), nullable=False),
@@ -143,7 +153,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_sessions_expires_at'), 'user_sessions', ['expires_at'], unique=False)
-        op.create_index(op.f('ix_user_sessions_is_active'), 'user_sessions', ['is_active'], unique=False)
+    op.create_index(op.f('ix_user_sessions_is_active'), 'user_sessions', ['is_active'], unique=False)
     op.create_index(op.f('ix_user_sessions_refresh_token'), 'user_sessions', ['refresh_token'], unique=True)
     op.create_index(op.f('ix_user_sessions_session_token'), 'user_sessions', ['session_token'], unique=True)
     op.create_index(op.f('ix_user_sessions_user_id'), 'user_sessions', ['user_id'], unique=False)
@@ -163,7 +173,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['verified_by'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-        op.create_index(op.f('ix_user_skills_skill_id'), 'user_skills', ['skill_id'], unique=False)
+    op.create_index(op.f('ix_user_skills_skill_id'), 'user_skills', ['skill_id'], unique=False)
     op.create_index(op.f('ix_user_skills_user_id'), 'user_skills', ['user_id'], unique=False)
     op.create_table('conversations',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -183,7 +193,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_conversations_client_id'), 'conversations', ['client_id'], unique=False)
     op.create_index(op.f('ix_conversations_freelancer_id'), 'conversations', ['freelancer_id'], unique=False)
-        op.create_index(op.f('ix_conversations_is_archived'), 'conversations', ['is_archived'], unique=False)
+    op.create_index(op.f('ix_conversations_is_archived'), 'conversations', ['is_archived'], unique=False)
     op.create_index(op.f('ix_conversations_last_message_at'), 'conversations', ['last_message_at'], unique=False)
     op.create_index(op.f('ix_conversations_project_id'), 'conversations', ['project_id'], unique=False)
     op.create_index(op.f('ix_conversations_status'), 'conversations', ['status'], unique=False)
@@ -192,24 +202,28 @@ def upgrade() -> None:
     sa.Column('project_id', sa.Integer(), nullable=False),
     sa.Column('freelancer_id', sa.Integer(), nullable=False),
     sa.Column('cover_letter', sa.Text(), nullable=False),
+    sa.Column('bid_amount', sa.Float(), nullable=False, server_default='0.0'),
     sa.Column('estimated_hours', sa.Integer(), nullable=False),
     sa.Column('hourly_rate', sa.Float(), nullable=False),
     sa.Column('availability', sa.String(length=20), nullable=False),
     sa.Column('attachments', sa.Text(), nullable=True),
     sa.Column('status', sa.String(length=20), nullable=False),
+    sa.Column('is_draft', sa.Boolean(), nullable=False, server_default='0'),
+    sa.Column('draft_data', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['freelancer_id'], ['users.id'], ),
     sa.ForeignKeyConstraint(['project_id'], ['projects.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-        op.create_table('contracts',
+    op.create_table('contracts',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('contract_address', sa.String(length=100), nullable=True),
     sa.Column('project_id', sa.Integer(), nullable=False),
     sa.Column('freelancer_id', sa.Integer(), nullable=False),
     sa.Column('client_id', sa.Integer(), nullable=False),
     sa.Column('winning_bid_id', sa.Integer(), nullable=True),
+    sa.Column('amount', sa.Float(), nullable=False),
     sa.Column('contract_amount', sa.Float(), nullable=False),
     sa.Column('platform_fee', sa.Float(), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
@@ -230,7 +244,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_contracts_client_id'), 'contracts', ['client_id'], unique=False)
     op.create_index(op.f('ix_contracts_freelancer_id'), 'contracts', ['freelancer_id'], unique=False)
-        op.create_index(op.f('ix_contracts_project_id'), 'contracts', ['project_id'], unique=False)
+    op.create_index(op.f('ix_contracts_project_id'), 'contracts', ['project_id'], unique=False)
     op.create_index(op.f('ix_contracts_status'), 'contracts', ['status'], unique=False)
     op.create_table('messages',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -255,7 +269,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_messages_conversation_id'), 'messages', ['conversation_id'], unique=False)
-        op.create_index(op.f('ix_messages_is_read'), 'messages', ['is_read'], unique=False)
+    op.create_index(op.f('ix_messages_is_read'), 'messages', ['is_read'], unique=False)
     op.create_index(op.f('ix_messages_project_id'), 'messages', ['project_id'], unique=False)
     op.create_index(op.f('ix_messages_receiver_id'), 'messages', ['receiver_id'], unique=False)
     op.create_index(op.f('ix_messages_sender_id'), 'messages', ['sender_id'], unique=False)
@@ -283,7 +297,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_disputes_contract_id'), 'disputes', ['contract_id'], unique=False)
     op.create_index(op.f('ix_disputes_created_at'), 'disputes', ['created_at'], unique=False)
     op.create_index(op.f('ix_disputes_dispute_type'), 'disputes', ['dispute_type'], unique=False)
-        op.create_index(op.f('ix_disputes_raised_by'), 'disputes', ['raised_by'], unique=False)
+    op.create_index(op.f('ix_disputes_raised_by'), 'disputes', ['raised_by'], unique=False)
     op.create_index(op.f('ix_disputes_status'), 'disputes', ['status'], unique=False)
     op.create_table('milestones',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -305,7 +319,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_milestones_contract_id'), 'milestones', ['contract_id'], unique=False)
-        op.create_index(op.f('ix_milestones_status'), 'milestones', ['status'], unique=False)
+    op.create_index(op.f('ix_milestones_status'), 'milestones', ['status'], unique=False)
     op.create_table('reviews',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('contract_id', sa.Integer(), nullable=False),
@@ -326,7 +340,7 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_reviews_contract_id'), 'reviews', ['contract_id'], unique=False)
     op.create_index(op.f('ix_reviews_created_at'), 'reviews', ['created_at'], unique=False)
-        op.create_index(op.f('ix_reviews_reviewee_id'), 'reviews', ['reviewee_id'], unique=False)
+    op.create_index(op.f('ix_reviews_reviewee_id'), 'reviews', ['reviewee_id'], unique=False)
     op.create_index(op.f('ix_reviews_reviewer_id'), 'reviews', ['reviewer_id'], unique=False)
     op.create_table('payments',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -357,7 +371,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_payments_contract_id'), 'payments', ['contract_id'], unique=False)
     op.create_index(op.f('ix_payments_created_at'), 'payments', ['created_at'], unique=False)
     op.create_index(op.f('ix_payments_from_user_id'), 'payments', ['from_user_id'], unique=False)
-        op.create_index(op.f('ix_payments_milestone_id'), 'payments', ['milestone_id'], unique=False)
+    op.create_index(op.f('ix_payments_milestone_id'), 'payments', ['milestone_id'], unique=False)
     op.create_index(op.f('ix_payments_payment_type'), 'payments', ['payment_type'], unique=False)
     op.create_index(op.f('ix_payments_status'), 'payments', ['status'], unique=False)
     op.create_index(op.f('ix_payments_to_user_id'), 'payments', ['to_user_id'], unique=False)

@@ -4,7 +4,8 @@ FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
-# Install build dependencies in a separate stage
+# Install build dependencies and libmagic
+RUN apt-get update && apt-get install -y --no-install-recommends libmagic1 && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
@@ -33,8 +34,9 @@ COPY --chown=appuser:appuser . .
 # Create uploads directory with correct permissions
 RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
 
-# Security: Remove unnecessary packages and clean up
-RUN apt-get purge -y --auto-remove && \
+# Install libmagic runtime dependency and clean up
+RUN apt-get update && apt-get install -y --no-install-recommends libmagic1 && \
+    apt-get purge -y --auto-remove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Switch to non-root user

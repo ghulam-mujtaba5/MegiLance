@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, event, Engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from app.core.config import get_settings
-from app.db.turso_client import TursoHttpClient
+from app.db.turso_http import TursoHTTP
 import sqlite3
 
 
@@ -22,13 +22,10 @@ _turso_client = None
 def get_turso_client():
     """Get or create Turso HTTP client connection"""
     global _turso_client
-    if _turso_client is None and settings.turso_database_url and settings.turso_auth_token:
+    if _turso_client is None:
         try:
-            _turso_client = TursoHttpClient(
-                url=settings.turso_database_url,
-                auth_token=settings.turso_auth_token
-            )
-            print(f"[OK] Turso HTTP client created: {settings.turso_database_url}")
+            _turso_client = TursoHTTP.get_instance()
+            print(f"[OK] Turso HTTP client obtained")
         except Exception as e:
             print(f"[WARNING] Failed to create Turso client: {e}")
     return _turso_client
@@ -73,7 +70,8 @@ def get_engine():
                         cursor.close()
         except Exception as e:
             print(f"⚠️ Database engine creation failed: {e}")
-            _engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+            print(f"⚠️ Falling back to local SQLite: sqlite:///./local_dev.db")
+            _engine = create_engine("sqlite:///./local_dev.db", connect_args={"check_same_thread": False})
     return _engine
 
 def get_session_local():

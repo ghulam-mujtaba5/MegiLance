@@ -5,6 +5,7 @@ import React from 'react';
 import { ThemeProvider } from 'next-themes';
 import AppChrome from './components/AppChrome/AppChrome';
 import { ToasterProvider } from './components/Toast/ToasterProvider';
+import QuickLogin from '@/app/components/QuickLogin';
 import StructuredData from '@/app/shared/StructuredData';
 import { AnalyticsProvider } from '@/app/shared/analytics/AnalyticsProvider';
 
@@ -23,6 +24,7 @@ const ClientRoot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <AppChrome>
             {children}
           </AppChrome>
+          <QuickLogin />
           <StructuredData />
         </ToasterProvider>
       </AnalyticsProvider>

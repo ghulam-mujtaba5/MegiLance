@@ -1,51 +1,108 @@
 """
 @AI-HINT: Turso HTTP API client for synchronous database queries
 This module provides a simple HTTP-based interface to Turso/libSQL database
-without using async/await to avoid event loop issues in FastAPI sync contexts
+without using async/await to avoid event loop issues in FastAPI sync contexts.
+Now supports local SQLite fallback for development.
 """
 
 import requests
+import sqlite3
+import os
 from typing import Optional, List, Dict, Any
 from app.core.config import get_settings
 
 
 class TursoHTTP:
-    """Synchronous HTTP client for Turso database"""
+    """Synchronous HTTP client for Turso database with SQLite fallback"""
     
     _instance = None
     _url: str = None
     _token: str = None
+    _is_local: bool = False
+    _local_db_path: str = None
     
     @classmethod
     def get_instance(cls) -> Optional['TursoHTTP']:
         """Get singleton instance of TursoHTTP client"""
         if cls._instance is None:
             settings = get_settings()
-            if settings.turso_database_url and settings.turso_auth_token:
-                cls._instance = cls()
+            cls._instance = cls()
+            
+            # Check if we should use local SQLite
+            # If TURSO_DATABASE_URL is not set, or if we explicitly want local
+            if not settings.turso_database_url or not settings.turso_auth_token:
+                cls._is_local = True
+                # Extract path from "file:./local.db" or "sqlite:///./local.db"
+                db_url = settings.database_url or "file:./local.db"
+                if db_url.startswith("file:"):
+                    cls._local_db_path = db_url.replace("file:", "")
+                elif db_url.startswith("sqlite:///"):
+                    cls._local_db_path = db_url.replace("sqlite:///", "")
+                else:
+                    cls._local_db_path = "./local.db"
+                
+                # Ensure path is absolute or relative to cwd
+                if cls._local_db_path.startswith("./"):
+                     cls._local_db_path = cls._local_db_path # Keep relative
+                
+                print(f"[DB] Using local SQLite: {cls._local_db_path}")
+            else:
+                cls._is_local = False
                 cls._url = settings.turso_database_url.replace("libsql://", "https://")
                 if not cls._url.endswith("/"):
                     cls._url += "/"
                 cls._token = settings.turso_auth_token
                 print(f"[TURSO] HTTP client initialized: {cls._url[:50]}...")
-            else:
-                print("[TURSO] No Turso credentials configured")
+                
         return cls._instance
     
     def execute(self, sql: str, params: List[Any] = None) -> Dict[str, Any]:
         """
-        Execute a SQL query against Turso
-        
-        Args:
-            sql: SQL query string with ? placeholders
-            params: List of parameter values
-            
-        Returns:
-            Dict with 'columns' and 'rows' keys, or raises exception
+        Execute a SQL query
         """
         if params is None:
             params = []
             
+        if self._is_local:
+            return self._execute_local(sql, params)
+        else:
+            return self._execute_remote(sql, params)
+
+    def _execute_local(self, sql: str, params: List[Any]) -> Dict[str, Any]:
+        """Execute query against local SQLite"""
+        try:
+            # Connect to local DB
+            conn = sqlite3.connect(self._local_db_path)
+            conn.row_factory = sqlite3.Row # Allow accessing columns by name
+            cursor = conn.cursor()
+            
+            cursor.execute(sql, params)
+            
+            if sql.strip().upper().startswith("SELECT"):
+                rows = cursor.fetchall()
+                columns = [description[0] for description in cursor.description]
+                
+                # Convert rows to list of lists (to match Turso format somewhat)
+                result_rows = []
+                for row in rows:
+                    result_rows.append(list(row))
+                
+                conn.close()
+                return {
+                    "columns": columns,
+                    "rows": result_rows
+                }
+            else:
+                conn.commit()
+                conn.close()
+                return {"columns": [], "rows": []}
+                
+        except Exception as e:
+            print(f"[SQLITE] Error: {e}")
+            raise Exception(f"SQLite error: {e}")
+
+    def _execute_remote(self, sql: str, params: List[Any]) -> Dict[str, Any]:
+        """Execute query against Turso HTTP API"""
         response = requests.post(
             self._url,
             headers={
@@ -75,37 +132,48 @@ class TursoHTTP:
         }
     
     def execute_many(self, statements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Execute multiple SQL statements in a single request
-        
-        Args:
-            statements: List of {"q": sql, "params": [...]} dicts
+        if self._is_local:
+            # Naive implementation for local
+            results = []
+            conn = sqlite3.connect(self._local_db_path)
+            cursor = conn.cursor()
+            try:
+                for stmt in statements:
+                    sql = stmt["q"]
+                    params = stmt.get("params", [])
+                    cursor.execute(sql, params)
+                    results.append({"columns": [], "rows": []})
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                raise e
+            finally:
+                conn.close()
+            return results
+        else:
+            # Remote implementation
+            response = requests.post(
+                self._url,
+                headers={
+                    "Authorization": f"Bearer {self._token}",
+                    "Content-Type": "application/json"
+                },
+                json={"statements": statements},
+                timeout=15
+            )
             
-        Returns:
-            List of results, one per statement
-        """
-        response = requests.post(
-            self._url,
-            headers={
-                "Authorization": f"Bearer {self._token}",
-                "Content-Type": "application/json"
-            },
-            json={"statements": statements},
-            timeout=15
-        )
-        
-        if response.status_code != 200:
-            raise Exception(f"Turso HTTP error: {response.status_code} - {response.text}")
-        
-        data = response.json()
-        results = []
-        for item in data:
-            result = item.get("results", {})
-            results.append({
-                "columns": result.get("columns", []),
-                "rows": result.get("rows", [])
-            })
-        return results
+            if response.status_code != 200:
+                raise Exception(f"Turso HTTP error: {response.status_code} - {response.text}")
+            
+            data = response.json()
+            results = []
+            for item in data:
+                result = item.get("results", {})
+                results.append({
+                    "columns": result.get("columns", []),
+                    "rows": result.get("rows", [])
+                })
+            return results
     
     def fetch_one(self, sql: str, params: List[Any] = None) -> Optional[List[Any]]:
         """Execute query and return first row or None"""
@@ -125,10 +193,8 @@ class TursoHTTP:
 
 
 def get_turso_http() -> TursoHTTP:
-    """Get Turso HTTP client instance - raises exception if not configured"""
+    """Get Turso HTTP client instance"""
     client = TursoHTTP.get_instance()
-    if client is None:
-        raise Exception("Turso database not configured - set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN")
     return client
 
 
@@ -137,68 +203,20 @@ def get_turso_http() -> TursoHTTP:
 def execute_query(sql: str, params: List[Any] = None) -> Optional[Dict[str, Any]]:
     """
     Execute a SQL query and return the result.
-    
-    Args:
-        sql: SQL query string with ? placeholders
-        params: List of parameter values
-        
-    Returns:
-        Dict with 'cols' and 'rows' keys, or None on error
     """
-    if params is None:
-        params = []
-    
     try:
-        settings = get_settings()
-        url = settings.turso_database_url.replace("libsql://", "https://")
-        token = settings.turso_auth_token
+        client = TursoHTTP.get_instance()
+        result = client.execute(sql, params)
         
-        # Build the statement - use object format if params provided
-        if params:
-            # Convert params to the correct format for ? placeholders
-            statement = {
-                "q": sql,
-                "params": params
-            }
-        else:
-            # Simple string format for no params
-            statement = sql
+        # Convert to the format expected by the frontend/helper (cols, rows with types)
+        # This is a bit messy because the original execute_query returned a specific format
+        # mimicking Turso's raw response structure for the frontend.
         
-        response = requests.post(
-            url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "statements": [statement]
-            },
-            timeout=10
-        )
+        columns = result.get("columns", [])
+        rows_raw = result.get("rows", [])
         
-        if response.status_code != 200:
-            print(f"[TURSO] HTTP error: {response.status_code} - {response.text}")
-            return None
-        
-        data = response.json()
-        if not data or len(data) == 0:
-            return {"cols": [], "rows": []}
-        
-        first_result = data[0]
-        if "error" in first_result:
-            print(f"[TURSO] Query error: {first_result['error']}")
-            return None
-        
-        results = first_result.get("results", {})
-        
-        # Convert to standard format with cols and rows
-        columns = results.get("columns", [])
-        rows_raw = results.get("rows", [])
-        
-        # Convert columns to col format expected by parse_rows
         cols = [{"name": col} for col in columns]
         
-        # Convert rows to value format expected by parse_rows
         rows = []
         for row in rows_raw:
             row_data = []
@@ -208,13 +226,14 @@ def execute_query(sql: str, params: List[Any] = None) -> Optional[Dict[str, Any]
                 else:
                     row_data.append({"type": "text", "value": val})
             rows.append(row_data)
-        
+            
         return {
             "cols": cols,
             "rows": rows
         }
+
     except Exception as e:
-        print(f"[TURSO] execute_query error: {e}")
+        print(f"[DB] execute_query error: {e}")
         return None
 
 

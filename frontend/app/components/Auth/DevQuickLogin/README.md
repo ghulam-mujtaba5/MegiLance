@@ -28,13 +28,13 @@ Development-only quick login feature for MegiLance that appears on the login pag
 
 ## Test Credentials
 
-All test accounts use the password: `password123`
+All test accounts use specific passwords:
 
 | Role | Email | Password |
 |------|-------|----------|
-| Admin | admin@megilance.com | password123 |
-| Freelancer | freelancer1@example.com | password123 |
-| Client | client1@example.com | password123 |
+| Admin | admin@megilance.com | admin123 |
+| Freelancer | freelancer@example.com | freelancer123 |
+| Client | client@example.com | client123 |
 
 ## Security
 
@@ -118,7 +118,7 @@ frontend/app/components/Auth/DevQuickLogin/
 ### Login Fails
 - Verify backend is running on port 8000
 - Check database has seeded test users
-- Verify password hasn't been changed (should be "password123")
+- Verify password hasn't been changed (should be "admin123", "client123", etc.)
 
 ### Wrong Dashboard Redirect
 - Component automatically selects correct role tab

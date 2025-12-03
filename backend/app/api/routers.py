@@ -1,19 +1,19 @@
 from fastapi import APIRouter
 from .v1 import (
     health, users, mock, projects, proposals, contracts, portfolio, payments, 
-    auth, client, upload, ai_services, matching, assessments, pricing, interviews, verification,
-    analytics_pro, escrow_pro, notifications_pro, chatbot, teams, audit, features, recommendations,
+    auth, client, upload, assessments, interviews, verification,
+    analytics_pro, escrow_pro, notifications_pro, teams, audit, features,
     export_import, i18n, rate_limiting, webhooks, gamification, scheduler, reports, referrals, moderation,
     bulk_operations, saved_searches, activity_feed, api_keys, comments, file_versions, custom_fields,
     templates, calendar, organizations, notification_preferences, two_factor, email_templates, integrations,
-    push_notifications, invoice_tax, contract_builder, skill_graph, ai_writing,
+    push_notifications, invoice_tax, contract_builder, skill_graph,
     social_login, timezone, backup_restore,
     portfolio_builder, compliance, achievement_system, learning_center,
-    fraud_detection, analytics_dashboard, marketplace,
+    analytics_dashboard, marketplace,
     subscription_billing, multi_currency, legal_documents, knowledge_base, workflow_automation,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
-    websocket, uploads, portal_endpoints, analytics, job_alerts,
+    websocket, uploads, portal_endpoints, analytics, job_alerts, ai_services, fraud_detection, stripe,
     # New enterprise features
     user_feedback, custom_branding, audit_trail, career_development,
     referral_program, communication_center, metrics_dashboard, data_analytics_export,
@@ -52,7 +52,7 @@ api_router.include_router(disputes.router, prefix="/disputes", tags=["disputes"]
 
 # Payments and portfolio
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
-# api_router.include_router(stripe.router, prefix="/stripe", tags=["stripe"])  # Stripe temporarily disabled - import error
+api_router.include_router(stripe.router, prefix="/stripe", tags=["stripe"])
 api_router.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
 
 # Time tracking, invoices, and escrow
@@ -86,17 +86,17 @@ api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])
 api_router.include_router(upload.router, prefix="/upload", tags=["upload"])
 api_router.include_router(client.router, prefix="/client", tags=["client"])
 
-# AI services (excluded from implementation but keeping route)
+# AI services
 api_router.include_router(ai_services.router, prefix="/ai", tags=["ai"])
 
 # Smart AI Matching - ML-powered freelancer-job matching
-api_router.include_router(matching.router, prefix="/matching", tags=["matching"])
+# api_router.include_router(matching.router, prefix="/matching", tags=["matching"])
 
 # Skill Assessments - Professional skill verification
 api_router.include_router(assessments.router, prefix="/assessments", tags=["assessments"])
 
 # Smart Pricing - ML-powered pricing intelligence
-api_router.include_router(pricing.router, prefix="/pricing", tags=["pricing"])
+# api_router.include_router(pricing.router, prefix="/pricing", tags=["pricing"])
 
 # Video Interviews - WebRTC video calling
 api_router.include_router(interviews.router, prefix="/interviews", tags=["interviews"])
@@ -114,7 +114,7 @@ api_router.include_router(escrow_pro.router, prefix="/escrow-pro", tags=["escrow
 api_router.include_router(notifications_pro.router, prefix="/notifications-pro", tags=["notifications-pro"])
 
 # AI Chatbot - Intelligent support automation
-api_router.include_router(chatbot.router, prefix="/chatbot", tags=["chatbot"])
+# api_router.include_router(chatbot.router, prefix="/chatbot", tags=["chatbot"])
 
 # Team Collaboration - Agency and team management
 api_router.include_router(teams.router, prefix="/teams", tags=["teams"])
@@ -126,7 +126,7 @@ api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
 api_router.include_router(features.router, prefix="/features", tags=["features"])
 
 # Recommendation Engine - AI-powered suggestions
-api_router.include_router(recommendations.router, prefix="/recommendations", tags=["recommendations"])
+# api_router.include_router(recommendations.router, prefix="/recommendations", tags=["recommendations"])
 
 # Export/Import - Data portability and GDPR compliance
 api_router.include_router(export_import.router, prefix="/export-import", tags=["export-import"])
@@ -210,7 +210,7 @@ api_router.include_router(contract_builder.router, tags=["contract-builder"])
 api_router.include_router(skill_graph.router, tags=["skill-graph"])
 
 # AI Writing Assistant - Content generation
-api_router.include_router(ai_writing.router, tags=["ai-writing"])
+# api_router.include_router(ai_writing.router, tags=["ai-writing"])
 
 # Social Login - OAuth2 social authentication
 api_router.include_router(social_login.router, tags=["social-login"])

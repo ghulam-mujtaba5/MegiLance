@@ -23,6 +23,9 @@ stripe==11.5.0
 # WebSocket Real-time Features
 python-socketio==5.14.3
 
+# File type detection
+python-magic==0.4.27
+
 # Testing
 pytest==8.3.5
 pytest-asyncio==0.25.1
@@ -31,4 +34,5 @@ httpx==0.28.1
 
 # Turso (libSQL) - Managed SQLite database service
 # Uses libsql-client HTTP API for direct queries (authentication, etc.)
-libsql-client>=0.3.1
+# libsql-client>=0.3.1
+requests==2.31.0

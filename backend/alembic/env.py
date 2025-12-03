@@ -25,7 +25,9 @@ from app.core.config import get_settings
 from app.models import (
     User, Skill, UserSkill, Project, Proposal, Contract, Payment,
     PortfolioItem, Message, Conversation, Notification, Review,
-    Dispute, Milestone, UserSession, AuditLog
+    Dispute, Milestone, UserSession, AuditLog,
+    Category, Tag, ProjectTag, TimeEntry, Invoice, Escrow,
+    Favorite, SupportTicket, Refund
 )
 
 # Get settings
@@ -34,7 +36,14 @@ settings = get_settings()
 # Determine database URL - prioritize Turso if configured
 if settings.turso_database_url and settings.turso_auth_token:
     # For Turso, use SQLite dialect with local path
-    db_url = f"sqlite:///{settings.database_url.replace('file:', '').replace('file://', '')}"
+    # Handle existing sqlite prefix to avoid duplication
+    clean_url = settings.database_url.replace('file:', '').replace('file://', '')
+    if clean_url.startswith('sqlite:///'):
+        db_url = clean_url
+    elif clean_url.startswith('sqlite://'):
+        db_url = clean_url
+    else:
+        db_url = f"sqlite:///{clean_url}"
 else:
     db_url = settings.database_url
     if not db_url.startswith("sqlite"):

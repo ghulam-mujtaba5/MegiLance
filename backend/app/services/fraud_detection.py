@@ -193,7 +193,7 @@ class FraudDetectionService:
             recent_time = datetime.utcnow() - timedelta(hours=1)
             recent_proposals = self.db.query(Proposal).filter(
                 Proposal.freelancer_id == user_id,
-                Proposal.submitted_at >= recent_time
+                Proposal.created_at >= recent_time
             ).count()
             
             if recent_proposals > 10:
@@ -223,8 +223,8 @@ class FraudDetectionService:
         try:
             # Check for disputed payments
             disputed_payments = self.db.query(Payment).filter(
-                Payment.payer_id == user_id,
-                Payment.status == 'DISPUTED'
+                Payment.from_user_id == user_id,
+                Payment.status == 'disputed'
             ).count()
             
             if disputed_payments > 2:
@@ -233,8 +233,8 @@ class FraudDetectionService:
             
             # Check for failed payments
             failed_payments = self.db.query(Payment).filter(
-                Payment.payer_id == user_id,
-                Payment.status == 'FAILED'
+                Payment.from_user_id == user_id,
+                Payment.status == 'failed'
             ).count()
             
             if failed_payments > 3:

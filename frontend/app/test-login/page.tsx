@@ -13,7 +13,7 @@ export default function TestLogin() {
     setResult(null);
     
     try {
-      const data = await api.auth.login('admin@megilance.com', 'Password123!');
+      const data = await api.auth.login('admin@megilance.com', 'admin123');
       
       setResult({
         status: 200,
