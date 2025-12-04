@@ -6,6 +6,7 @@ import React, { useId, useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Eye, EyeOff, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import commonStyles from './Input.common.module.css';
 import lightStyles from './Input.light.module.css';
 import darkStyles from './Input.dark.module.css';
@@ -239,24 +240,36 @@ const Input: React.FC<InputProps> = ({
       )}
     >
       {label && !hideLabel && (
-        <label 
+        <motion.label 
           htmlFor={inputId} 
           className={cn(
             commonStyles.inputLabel, 
             themeStyles.inputLabel,
-            showFloatingLabel && commonStyles.floatingLabel
+            // Remove CSS-based floating class if we are animating with Framer Motion
+            // showFloatingLabel && commonStyles.floatingLabel 
           )}
+          initial={false}
+          animate={floatingLabel ? (showFloatingLabel ? { y: -28, scale: 0.85, x: -2 } : { y: 0, scale: 1, x: 0 }) : {}}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
           {label}
-        </label>
+        </motion.label>
       )}
       {renderInputGroup()}
-      {hasError && typeof error === 'string' && (
-        <p id={errorId} className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}>
-          <AlertCircle size={16} />
-          {error}
-        </p>
-      )}
+      <AnimatePresence>
+        {hasError && typeof error === 'string' && (
+          <motion.p 
+            id={errorId} 
+            className={cn(commonStyles.errorMessage, themeStyles.errorMessage)}
+            initial={{ opacity: 0, y: -5, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -5, height: 0 }}
+          >
+            <AlertCircle size={16} />
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
       {!hasError && helpText && (
         <p id={helpId} className={cn(commonStyles.helpText, themeStyles.helpText)}>
           {helpText}

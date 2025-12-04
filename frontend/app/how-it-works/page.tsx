@@ -6,6 +6,9 @@ import { useTheme } from 'next-themes';
 import { FileText, Handshake, CheckCircle, UserCircle, Briefcase, DollarSign } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import StepCard from '@/app/components/Public/StepCard/StepCard';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './HowItWorksPage.common.module.css';
 import lightStyles from './HowItWorksPage.light.module.css';
 import darkStyles from './HowItWorksPage.dark.module.css';
@@ -59,28 +62,44 @@ const HowItWorksPage: React.FC = () => {
   if (!resolvedTheme) return null;
 
   return (
-    <main id="main-content" role="main" className={cn(commonStyles.container, themeStyles.container)}>
-      <header className={commonStyles.header}>
-        <h1 className={cn(commonStyles.title, themeStyles.title)}>How MegiLance Works</h1>
-        <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>A simple, secure, and decentralized way to get work done.</p>
-      </header>
+    <PageTransition>
+      <main id="main-content" role="main" className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <header className={commonStyles.header}>
+            <h1 className={cn(commonStyles.title, themeStyles.title)}>How MegiLance Works</h1>
+            <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>A simple, secure, and decentralized way to get work done.</p>
+          </header>
+        </ScrollReveal>
 
-      <section className={commonStyles.main} aria-label="Process overview">
-        <section className={commonStyles.section} aria-labelledby="howitworks-clients">
-          <h2 id="howitworks-clients" className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>For Clients</h2>
-          <div className={commonStyles.grid}>
-            {clientSteps.map(step => <StepCard key={step.stepNumber} {...step} />)}
-          </div>
-        </section>
+        <section className={commonStyles.main} aria-label="Process overview">
+          <section className={commonStyles.section} aria-labelledby="howitworks-clients">
+            <ScrollReveal>
+              <h2 id="howitworks-clients" className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>For Clients</h2>
+            </ScrollReveal>
+            <StaggerContainer className={commonStyles.grid}>
+              {clientSteps.map(step => (
+                <StaggerItem key={step.stepNumber}>
+                  <StepCard {...step} />
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </section>
 
-        <section className={commonStyles.section} aria-labelledby="howitworks-freelancers">
-          <h2 id="howitworks-freelancers" className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>For Freelancers</h2>
-          <div className={commonStyles.grid}>
-            {freelancerSteps.map(step => <StepCard key={step.stepNumber} {...step} />)}
-          </div>
+          <section className={commonStyles.section} aria-labelledby="howitworks-freelancers">
+            <ScrollReveal>
+              <h2 id="howitworks-freelancers" className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>For Freelancers</h2>
+            </ScrollReveal>
+            <StaggerContainer className={commonStyles.grid}>
+              {freelancerSteps.map(step => (
+                <StaggerItem key={step.stepNumber}>
+                  <StepCard {...step} />
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </section>
         </section>
-      </section>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

@@ -1,6 +1,8 @@
 // @AI-HINT: This is the root component for the Settings page. It assembles the modular sub-components to construct the full page view, managing the active section state.
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
 
 // Modular Components
 import SettingsLayout from './components/SettingsLayout/SettingsLayout';
@@ -31,18 +33,30 @@ const Settings: React.FC = () => {
   const [activeSection, setActiveSection] = useState<TSettingsSection>('profile');
 
   return (
-    <div className="Settings-container">
-      <SettingsLayout
-        sidebar={
-          <SettingsSidebarNav 
-            activeSection={activeSection} 
-            onSectionChange={setActiveSection} 
-          />
-        }
-      >
-        {renderSection(activeSection)}
-      </SettingsLayout>
-    </div>
+    <PageTransition>
+      <div className="Settings-container">
+        <SettingsLayout
+          sidebar={
+            <SettingsSidebarNav 
+              activeSection={activeSection} 
+              onSectionChange={setActiveSection} 
+            />
+          }
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              {renderSection(activeSection)}
+            </motion.div>
+          </AnimatePresence>
+        </SettingsLayout>
+      </div>
+    </PageTransition>
   );
 };
 

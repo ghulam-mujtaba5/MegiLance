@@ -1,40 +1,43 @@
-.storyCard {
-  background-color: #f8fafc; /* cool-gray-50 */
-  border: 1px solid #e2e8f0; /* cool-gray-200 */
+.story {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-.storyCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px -4px rgba(20, 29, 49, 0.08);
-  border-color: #cbd5e1; /* cool-gray-300 */
+.story:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: #27AE60;
 }
 
 .quote {
-  color: #475569; /* cool-gray-600 */
+  color: #4a5568;
+}
+
+.quoteMark {
+  color: #27AE60;
 }
 
 .avatar {
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 0 2px #e2e8f0; /* cool-gray-200 */
+  border-color: #e2e8f0;
 }
 
 .name {
-  color: #1e293b; /* cool-gray-800 */
+  color: #1a202c;
 }
 
 .role {
-  color: #64748b; /* cool-gray-500 */
+  color: #718096;
 }
 
 .location {
-  color: #64748b; /* cool-gray-500 */
+  color: #27AE60;
 }
 
 .achievement {
-  background-color: #fffbeb; /* yellow-50 */
-  color: #b45309; /* yellow-700 */
+  background: rgba(39, 174, 96, 0.1);
+  color: #27AE60;
 }
 
 .achievementIcon {
-  color: #f59e0b; /* yellow-500 */
+  fill: #27AE60;
 }

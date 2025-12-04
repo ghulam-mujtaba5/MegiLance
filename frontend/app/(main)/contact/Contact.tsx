@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useTheme } from 'next-themes';
-import { motion, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 
@@ -14,6 +13,9 @@ import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import Textarea from '@/app/components/Textarea/Textarea';
 import { useToast } from '@/app/components/Toast/use-toast';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import common from './Contact.common.module.css';
 import light from './Contact.light.module.css';
@@ -33,28 +35,6 @@ const contactInfo = [
   { icon: Phone, text: '+1 (555) 123-4567', href: 'tel:+15551234567' },
   { icon: MapPin, text: '123 Innovation Drive, Silicon Valley, CA', href: '#' },
 ];
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-} satisfies Variants;
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 100,
-    },
-  },
-} satisfies Variants;
 
 const Contact: React.FC = () => {
   const { resolvedTheme } = useTheme();
@@ -99,79 +79,78 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className={styles.page}>
-      <motion.div
-        className={styles.container}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.header className={styles.header} variants={itemVariants}>
-          <h1 className={styles.title}>Get in Touch</h1>
-          <p className={styles.subtitle}>
-            Have a question or a project in mind? We&apos;d love to hear from you.
-          </p>
-        </motion.header>
+    <PageTransition>
+      <div className={styles.page}>
+        <div className={styles.container}>
+          <ScrollReveal>
+            <header className={styles.header}>
+              <h1 className={styles.title}>Get in Touch</h1>
+              <p className={styles.subtitle}>
+                Have a question or a project in mind? We&apos;d love to hear from you.
+              </p>
+            </header>
+          </ScrollReveal>
 
-        <div className={styles.contentGrid}>
-          <motion.div className={styles.infoPanel} variants={itemVariants}>
-            {contactInfo.map((item, index) => (
-              <a key={index} href={item.href} className={styles.infoItem}>
-                <item.icon className={styles.infoIcon} />
-                <span className={styles.infoText}>{item.text}</span>
-              </a>
-            ))}
-          </motion.div>
+          <StaggerContainer className={styles.contentGrid}>
+            <StaggerItem className={styles.infoPanel}>
+              {contactInfo.map((item, index) => (
+                <a key={index} href={item.href} className={styles.infoItem}>
+                  <item.icon className={styles.infoIcon} />
+                  <span className={styles.infoText}>{item.text}</span>
+                </a>
+              ))}
+            </StaggerItem>
 
-          <motion.div className={styles.formPanel} variants={itemVariants}>
-            <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
-              <Input
-                id="name"
-                label="Full Name"
-                placeholder="John Doe"
-                {...register('name')}
-                error={errors.name?.message}
-                disabled={isSubmitting}
-              />
-              <Input
-                id="email"
-                label="Email Address"
-                type="email"
-                placeholder="you@example.com"
-                {...register('email')}
-                error={errors.email?.message}
-                disabled={isSubmitting}
-              />
-              <Select
-                id="topic"
-                label="Topic"
-                {...register('topic')}
-                disabled={isSubmitting}
-                defaultValue=""
-                options={[
-                  { value: '', label: 'Select a topic...' },
-                  { value: 'support', label: 'General Support' },
-                  { value: 'sales', label: 'Sales Inquiry' },
-                  { value: 'partnerships', label: 'Partnerships' },
-                ]}
-              />
-              <Textarea
-                id="message"
-                label="Your Message"
-                placeholder="Tell us about your project or question..."
-                {...register('message')}
-                error={errors.message?.message}
-                disabled={isSubmitting}
-                rows={5}
-              />
-              <Button type="submit" isLoading={isSubmitting} iconBefore={<Send size={18} />}>
-                {isSubmitting ? 'Sending...' : 'Send Message'}
-              </Button>
-            </form>
-          </motion.div>
+            <StaggerItem className={styles.formPanel}>
+              <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+                <Input
+                  id="name"
+                  label="Full Name"
+                  placeholder="John Doe"
+                  {...register('name')}
+                  error={errors.name?.message}
+                  disabled={isSubmitting}
+                />
+                <Input
+                  id="email"
+                  label="Email Address"
+                  type="email"
+                  placeholder="you@example.com"
+                  {...register('email')}
+                  error={errors.email?.message}
+                  disabled={isSubmitting}
+                />
+                <Select
+                  id="topic"
+                  label="Topic"
+                  {...register('topic')}
+                  disabled={isSubmitting}
+                  defaultValue=""
+                  options={[
+                    { value: '', label: 'Select a topic...' },
+                    { value: 'support', label: 'General Support' },
+                    { value: 'sales', label: 'Sales Inquiry' },
+                    { value: 'partnerships', label: 'Partnerships' },
+                  ]}
+                />
+                <Textarea
+                  id="message"
+                  label="Your Message"
+                  placeholder="Tell us about your project or question..."
+                  {...register('message')}
+                  error={errors.message?.message}
+                  disabled={isSubmitting}
+                  rows={5}
+                />
+                <Button type="submit" isLoading={isSubmitting} iconBefore={<Send size={18} />}>
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                </Button>
+              </form>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

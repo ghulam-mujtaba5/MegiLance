@@ -1,10 +1,10 @@
 // @AI-HINT: FAQ page with theme-aware styling, animations, and accessible accordion semantics.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import commonStyles from './Faq.common.module.css';
 import lightStyles from './Faq.light.module.css';
 import darkStyles from './Faq.dark.module.css';
@@ -77,52 +77,44 @@ const Faq: React.FC = () => {
 
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const headerRef = useRef<HTMLElement | null>(null);
-  const listRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const listVisible = useIntersectionObserver(listRef, { threshold: 0.1 });
-
   const handleClick = (index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
   };
 
   const Header = useMemo(() => (
-    <header
-      ref={headerRef as any}
-      className={cn(
-        commonStyles.faqHeader,
-        headerVisible ? commonStyles.isVisible : commonStyles.isNotVisible
-      )}
-    >
-      <h1 id="faq-title">Frequently Asked Questions</h1>
-      <p>Find answers to common questions about MegiLance.</p>
-    </header>
-  ), [headerVisible]);
+    <ScrollReveal>
+      <header
+        className={cn(commonStyles.faqHeader)}
+      >
+        <h1 id="faq-title">Frequently Asked Questions</h1>
+        <p>Find answers to common questions about MegiLance.</p>
+      </header>
+    </ScrollReveal>
+
+  ), []);
 
   return (
-    <main id="main-content" role="main" aria-labelledby="faq-title" className={cn(commonStyles.faq, themed.themeWrapper)}>
-      <div className={commonStyles.faqContainer}>
-        {Header}
-        <div
-          ref={listRef}
-          className={cn(
-            commonStyles.faqList,
-            listVisible ? commonStyles.isVisible : commonStyles.isNotVisible
-          )}
-        >
-          {faqData.map((item, index) => (
-            <FaqItem
-              key={index}
-              index={index}
-              item={item}
-              isOpen={openIndex === index}
-              onClick={() => handleClick(index)}
-            />
-          ))}
+    <PageTransition>
+      <main id="main-content" role="main" aria-labelledby="faq-title" className={cn(commonStyles.faq, themed.themeWrapper)}>
+        <div className={commonStyles.faqContainer}>
+          {Header}
+          <StaggerContainer
+            className={cn(commonStyles.faqList)}
+            delay={0.1}
+          >
+            {faqData.map((item, index) => (
+              <FaqItem
+                key={index}
+                index={index}
+                item={item}
+                isOpen={openIndex === index}
+                onClick={() => handleClick(index)}
+              />
+            ))}
+          </StaggerContainer>
         </div>
-      </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

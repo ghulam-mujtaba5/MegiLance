@@ -6,6 +6,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 import commonStyles from './Button.common.module.css';
 import lightStyles from './Button.light.module.css';
@@ -57,6 +58,9 @@ const Button = <C extends React.ElementType = 'button'>({
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
+  // Create a motion component dynamically but memoized to prevent remounts
+  const MotionComponent = React.useMemo(() => motion(Component as any), [Component]);
+
   // Handle click with loading state
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (isLoading || props.disabled) return;
@@ -69,7 +73,10 @@ const Button = <C extends React.ElementType = 'button'>({
   const accessibleLabel = (!children && (iconBefore || iconAfter)) ? (ariaFromProps ?? titleFromProps) : undefined;
 
   return (
-    <Component
+    <MotionComponent
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={cn(
         commonStyles.button,
         // Support both prefixed and non-prefixed variant and size class names
@@ -102,7 +109,7 @@ const Button = <C extends React.ElementType = 'button'>({
         {children}
       </span>
       {iconAfter && !isLoading && <span className={commonStyles.iconAfter} aria-hidden="true">{iconAfter}</span>}
-    </Component>
+    </MotionComponent>
   );
 };
 

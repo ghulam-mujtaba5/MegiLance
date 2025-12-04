@@ -1,107 +1,86 @@
-/* Section background removed to use page-level background */
+/* @AI-HINT: Light theme styles for BlockchainShowcase. */
+
+.blockchainShowcase {
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+}
 
 .badge {
-  background-color: #f8fafc;
-  border-color: #e2e8f0;
-  color: #64748b;
+  background: rgba(247, 147, 26, 0.1);
+  color: #f7931a;
+  border-color: rgba(247, 147, 26, 0.2);
 }
 
 .title {
-  color: #0f172a;
-}
-
-.titleHighlight {
-  background-image: linear-gradient(120deg, #4573df, #ff9800);
+  color: #1a1a1a;
 }
 
 .subtitle {
-  color: #64748b;
+  color: #4a4a4a;
 }
 
 .block {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  color: #0f172a;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.05);
 }
 
 .block:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
 }
 
 .blockHeader {
-  color: #64748b;
+  color: #666666;
 }
 
 .blockContent {
-  color: #0f172a;
-}
-
-.connector {
-  color: #94a3b8;
+  color: #1a1a1a;
 }
 
 .feature {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.05);
 }
 
 .feature:hover {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  border-color: #cbd5e1;
-}
-
-.featureIcon {
-  color: #4573df;
+  background: #ffffff;
 }
 
 .featureTitle {
-  color: #0f172a;
+  color: #1a1a1a;
 }
 
 .featureDescription {
-  color: #64748b;
-}
-
-.featureBenefit {
-  background-color: #dbeafe;
-  color: #1e40af;
+  color: #4a4a4a;
 }
 
 .stat {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.05);
 }
 
-.statNumber {
-  color: #4573df;
+.stat:hover {
+  background: #ffffff;
 }
 
 .statLabel {
-  color: #64748b;
+  color: #4a4a4a;
 }
 
 .supportedChains {
-  background-color: #f8fafc;
-  border-color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(0, 0, 0, 0.05);
 }
 
 .chainsTitle {
-  color: #64748b;
+  color: #1a1a1a;
 }
 
 .chain {
-  background-color: #ffffff;
-  color: #475569;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.05);
+  color: #4a4a4a;
 }
 
 .chain:hover {
-  background-color: #ffffff;
-  border-color: #cbd5e1;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  color: #f7931a;
 }

@@ -11,6 +11,9 @@ import Input from '@/app/components/Input/Input';
 import { FaKey } from 'react-icons/fa';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { AnimatedOrb, ParticlesSystem } from '@/app/components/3D';
 import commonStyles from './ForgotPassword.common.module.css';
 import lightStyles from './ForgotPassword.light.module.css';
 import darkStyles from './ForgotPassword.dark.module.css';
@@ -102,13 +105,20 @@ const ForgotPassword: React.FC = () => {
   }, [resolvedTheme]);
 
   return (
-    <div className={styles.loginPage}>
+    <PageTransition className={styles.loginPage}>
+      {/* Stunning 3D Background Elements */}
+      <div className={commonStyles.backgroundDecor}>
+        <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
+        <AnimatedOrb variant="purple" size={280} blur={60} opacity={0.25} className={commonStyles.orbBottomLeft} />
+        <ParticlesSystem count={6} className={commonStyles.particlesBg} />
+      </div>
+
       <div className={styles.brandingSlot}>
         <AuthBrandingPanel roleConfig={forgotPasswordBranding} />
       </div>
       <div className={styles.formPanel}>
-        <div className={styles.formContainer}>
-          <div className={styles.formHeader}>
+        <StaggerContainer className={styles.formContainer}>
+          <StaggerItem className={styles.formHeader}>
             <h1 className={styles.formTitle}>Forgot Password?</h1>
             {submitted ? (
               <p className={styles.formSubtitle}>
@@ -119,38 +129,40 @@ const ForgotPassword: React.FC = () => {
                 No problem. Enter your email and we&apos;ll send you a reset link.
               </p>
             )}
-          </div>
+          </StaggerItem>
 
           {!submitted && (
-            <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                label="Email Address"
-                placeholder="your.email@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (error) setError('');
-                }}
-                error={error}
-                disabled={loading}
-                aria-describedby={error ? 'email-error' : undefined}
-              />
-              <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading || !email.trim()} className={styles.submitButton}>
-                {loading ? 'Sending Link...' : 'Send Reset Link'}
-              </Button>
-            </form>
+            <StaggerItem>
+              <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  label="Email Address"
+                  placeholder="your.email@example.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error) setError('');
+                  }}
+                  error={error}
+                  disabled={loading}
+                  aria-describedby={error ? 'email-error' : undefined}
+                />
+                <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading || !email.trim()} className={styles.submitButton}>
+                  {loading ? 'Sending Link...' : 'Send Reset Link'}
+                </Button>
+              </form>
+            </StaggerItem>
           )}
 
-          <div className={styles.signupPrompt}>
+          <StaggerItem className={styles.signupPrompt}>
             <p>Remembered your password? <Link href="/login">Back to Sign In</Link></p>
             <p className="mt-1">Or <Link href="/passwordless">sign in with a magic link</Link></p>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

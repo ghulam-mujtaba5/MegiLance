@@ -1,11 +1,13 @@
 // @AI-HINT: Admin Users page. Theme-aware, accessible, animated user management with filters, selection, bulk actions, and modal.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useAdminData } from '@/hooks/useAdmin';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import common from './AdminUsers.common.module.css';
 import light from './AdminUsers.light.module.css';
 import dark from './AdminUsers.dark.module.css';
@@ -43,12 +45,6 @@ const AdminUsers: React.FC = () => {
   React.useEffect(() => {
     if (users) setRows(users as unknown as UserRow[]);
   }, [users]);
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const tableRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const tableVisible = useIntersectionObserver(tableRef, { threshold: 0.1 });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -133,47 +129,50 @@ const AdminUsers: React.FC = () => {
   };
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <div>
-            <h1 className={common.title}>Users</h1>
-            <p className={cn(common.subtitle, themed.subtitle)}>Manage all platform users. Filter by role and status, select multiple, and apply bulk actions.</p>
-          </div>
-          <div className={common.controls} aria-label="User filters">
-            <label className={common.srOnly} htmlFor="q">Search</label>
-            <input id="q" className={cn(common.input, themed.input)} type="search" placeholder="Search users…" value={query} onChange={(e) => setQuery(e.target.value)} />
-            <label className={common.srOnly} htmlFor="role">Role</label>
-            <select id="role" className={cn(common.select, themed.select)} value={role} onChange={(e) => setRole(e.target.value as (typeof ROLES)[number])}>
-              {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-            <label className={common.srOnly} htmlFor="status">Status</label>
-            <select id="status" className={cn(common.select, themed.select)} value={status} onChange={(e) => setStatus(e.target.value as (typeof STATUSES)[number])}>
-              {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <button type="button" className={cn(common.button, themed.button)} onClick={() => openModal('suspend')} disabled={selectedIds.length === 0}>Suspend</button>
-            <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={() => openModal('restore')} disabled={selectedIds.length === 0}>Restore</button>
-            <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={exportCSV} disabled={sorted.length === 0}>Export CSV</button>
-            <label className={common.srOnly} htmlFor="pageSize">Rows per page</label>
-            <select
-              id="pageSize"
-              className={cn(common.select, themed.select)}
-              value={pageSize}
-              onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-              aria-label="Rows per page"
-            >
-              {[10, 20, 50].map(sz => <option key={sz} value={sz}>{sz}/page</option>)}
-            </select>
-          </div>
-        </div>
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <div className={common.header}>
+              <div>
+                <h1 className={common.title}>Users</h1>
+                <p className={cn(common.subtitle, themed.subtitle)}>Manage all platform users. Filter by role and status, select multiple, and apply bulk actions.</p>
+              </div>
+              <div className={common.controls} aria-label="User filters">
+                <label className={common.srOnly} htmlFor="q">Search</label>
+                <input id="q" className={cn(common.input, themed.input)} type="search" placeholder="Search users…" value={query} onChange={(e) => setQuery(e.target.value)} />
+                <label className={common.srOnly} htmlFor="role">Role</label>
+                <select id="role" className={cn(common.select, themed.select)} value={role} onChange={(e) => setRole(e.target.value as (typeof ROLES)[number])}>
+                  {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+                <label className={common.srOnly} htmlFor="status">Status</label>
+                <select id="status" className={cn(common.select, themed.select)} value={status} onChange={(e) => setStatus(e.target.value as (typeof STATUSES)[number])}>
+                  {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+                <button type="button" className={cn(common.button, themed.button)} onClick={() => openModal('suspend')} disabled={selectedIds.length === 0}>Suspend</button>
+                <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={() => openModal('restore')} disabled={selectedIds.length === 0}>Restore</button>
+                <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={exportCSV} disabled={sorted.length === 0}>Export CSV</button>
+                <label className={common.srOnly} htmlFor="pageSize">Rows per page</label>
+                <select
+                  id="pageSize"
+                  className={cn(common.select, themed.select)}
+                  value={pageSize}
+                  onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+                  aria-label="Rows per page"
+                >
+                  {[10, 20, 50].map(sz => <option key={sz} value={sz}>{sz}/page</option>)}
+                </select>
+              </div>
+            </div>
+          </ScrollReveal>
 
-        {selectedIds.length > 0 && (
-          <div className={cn(common.bulkBar, themed.bulkBar)} role="status" aria-live="polite">
-            {selectedIds.length} selected
-          </div>
-        )}
+          {selectedIds.length > 0 && (
+            <div className={cn(common.bulkBar, themed.bulkBar)} role="status" aria-live="polite">
+              {selectedIds.length} selected
+            </div>
+          )}
 
-        <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
+          <StaggerContainer delay={0.1} className={common.tableWrap}>
           {loading && <div className={common.skeletonRow} aria-busy={loading || undefined} />}
           {error && <div className={common.error}>Failed to load users.</div>}
           <table className={cn(common.table, themed.table)}>
@@ -280,7 +279,7 @@ const AdminUsers: React.FC = () => {
               </button>
             </div>
           )}
-        </div>
+        </StaggerContainer>
       </div>
 
       {modal && (
@@ -307,7 +306,8 @@ const AdminUsers: React.FC = () => {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

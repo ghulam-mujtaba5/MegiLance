@@ -16,6 +16,8 @@ import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel
 import Checkbox from '@/app/components/Checkbox/Checkbox';
 import DevQuickLogin from '@/app/components/Auth/DevQuickLogin/DevQuickLogin';
 import { FloatingCube, FloatingSphere, ParticlesSystem, AnimatedOrb } from '@/app/components/3D';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Login.common.module.css';
 import lightStyles from './Login.light.module.css';
 import darkStyles from './Login.dark.module.css';
@@ -287,7 +289,7 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className={styles.loginPage}>
+    <PageTransition className={styles.loginPage}>
       {/* Stunning 3D Background Elements */}
       <div className={commonStyles.backgroundDecor}>
         <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
@@ -312,35 +314,37 @@ const Login: React.FC = () => {
         <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
       </div>
       <div className={styles.formPanel}>
-        <div className={styles.formContainer}>
+        <StaggerContainer className={styles.formContainer}>
           {isPreviewMode() && (
             <div role="status" aria-live="polite" className="mb-4 rounded-md border border-dashed border-[var(--border-color)] p-3 text-sm text-[var(--text-secondary)]">
               <strong>Preview Mode:</strong> Auth checks are disabled. Use the quick links below to jump into dashboards.
             </div>
           )}
-          <div className={styles.formHeader}>
+          <StaggerItem className={styles.formHeader}>
             <h1 className={styles.formTitle}>Sign in to MegiLance</h1>
             <p className={styles.formSubtitle}>Enter your details to access your account.</p>
-          </div>
+          </StaggerItem>
 
-          <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
-            <Tabs.List className={styles.roleSelector}>
-              {Object.entries(roleConfig).map(([role, { label, icon: Icon }]) => (
-                <Tabs.Tab key={role} icon={<Icon />}>
-                  {label}
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
-          </Tabs>
+          <StaggerItem>
+            <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
+              <Tabs.List className={styles.roleSelector}>
+                {Object.entries(roleConfig).map(([role, { label, icon: Icon }]) => (
+                  <Tabs.Tab key={role} icon={<Icon />}>
+                    {label}
+                  </Tabs.Tab>
+                ))}
+              </Tabs.List>
+            </Tabs>
+          </StaggerItem>
 
-          <div className={styles.socialAuth}>
+          <StaggerItem className={styles.socialAuth}>
             <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}>
               <FaGoogle className="mr-2" /> Continue with Google
             </Button>
             <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}>
               <FaGithub className="mr-2" /> Continue with GitHub
             </Button>
-          </div>
+          </StaggerItem>
 
           {isPreviewMode() && (
             <div className={styles.previewDashboards}>
@@ -350,18 +354,21 @@ const Login: React.FC = () => {
             </div>
           )}
 
-          <div className={styles.divider}>
+          <StaggerItem className={styles.divider}>
             <span className={styles.dividerText}>OR</span>
-          </div>
+          </StaggerItem>
 
-          <DevQuickLogin 
-            onCredentialSelect={handleDevQuickLogin}
-            onAutoLogin={handleDevAutoLogin}
-          />
+          <StaggerItem>
+            <DevQuickLogin 
+              onCredentialSelect={handleDevQuickLogin}
+              onAutoLogin={handleDevAutoLogin}
+            />
+          </StaggerItem>
 
-          {needs2FA ? (
-            // Two-Factor Authentication verification form
-            <div className={styles.loginForm}>
+          <StaggerItem>
+            {needs2FA ? (
+              // Two-Factor Authentication verification form
+              <div className={styles.loginForm}>
               {errors.general && <p className={styles.generalError}>{errors.general}</p>}
               <div className={styles.formHeader}>
                 <h2 className={styles.formTitle}>Enter Verification Code</h2>
@@ -445,13 +452,14 @@ const Login: React.FC = () => {
             </Button>
           </form>
           )}
+          </StaggerItem>
 
-          <div className={styles.signupPrompt}>
+          <StaggerItem className={styles.signupPrompt}>
             <p>Don&apos;t have an account? <Link href="/signup">Create one now</Link></p>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

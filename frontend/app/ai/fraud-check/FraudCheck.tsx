@@ -3,9 +3,12 @@
 
 import React, { useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Shield, AlertTriangle, CheckCircle, XCircle, RefreshCw, FileText, Zap } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 
 import commonStyles from './FraudCheck.common.module.css';
 import lightStyles from './FraudCheck.light.module.css';
@@ -148,163 +151,196 @@ const FraudCheck: React.FC = () => {
     : circumference;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.innerContainer}>
-        {/* Header */}
-        <header className={commonStyles.header}>
-          <div className={cn(commonStyles.headerIcon, themeStyles.headerIcon)}>
-            <Shield size={32} />
-          </div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>AI Fraud & Spam Analyzer</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Powered by advanced AI to detect fraudulent patterns, spam indicators, and suspicious content in project descriptions, messages, and user profiles.
-          </p>
-        </header>
-
-        {/* Form */}
-        <form className={cn(commonStyles.form, themeStyles.form)} onSubmit={handleAnalysis}>
-          <label className={cn(commonStyles.formLabel, themeStyles.formLabel)}>
-            <FileText size={16} />
-            Content to Analyze
-          </label>
-          <textarea
-            className={cn(commonStyles.textarea, themeStyles.textarea)}
-            rows={8}
-            placeholder="Paste the project description, message content, or user bio you want to analyze for potential fraud or spam..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            required
-            disabled={isLoading}
-          />
-          
-          <div className={commonStyles.formActions}>
-            <Button 
-              variant="primary" 
-              type="submit" 
-              isLoading={isLoading}
-              iconBefore={<Zap size={18} />}
-              disabled={!text.trim()}
-            >
-              {isLoading ? 'Analyzing...' : 'Analyze Content'}
-            </Button>
-            
-            <button 
-              type="button"
-              className={cn(commonStyles.sampleButton, themeStyles.sampleButton)}
-              onClick={() => loadSample('clean')}
-              disabled={isLoading}
-            >
-              Load Clean Sample
-            </button>
-            <button 
-              type="button"
-              className={cn(commonStyles.sampleButton, themeStyles.sampleButton)}
-              onClick={() => loadSample('suspicious')}
-              disabled={isLoading}
-            >
-              Load Suspicious Sample
-            </button>
-          </div>
-        </form>
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className={cn(commonStyles.form, themeStyles.form)}>
-            <div className={commonStyles.loadingState}>
-              <div className={cn(commonStyles.loadingSpinner, themeStyles.loadingSpinner)} />
-              <p className={cn(commonStyles.loadingText, themeStyles.loadingText)}>Analyzing content patterns...</p>
-              <p className={cn(commonStyles.loadingSubtext, themeStyles.loadingSubtext)}>Our AI is scanning for fraud indicators</p>
-            </div>
-          </div>
-        )}
-
-        {/* Results */}
-        {analysisResult && !isLoading && (
-          <div className={cn(commonStyles.result, themeStyles.result, riskClass, riskThemeClass)}>
-            <div className={cn(commonStyles.resultHeader, themeStyles.resultHeader)}>
-              <div className={cn(commonStyles.resultIcon, themeStyles.resultIcon)}>
-                {getRiskIcon(analysisResult.riskLevel)}
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <div className={commonStyles.innerContainer}>
+          {/* Header */}
+          <ScrollReveal>
+            <header className={commonStyles.header}>
+              <div className={cn(commonStyles.headerIcon, themeStyles.headerIcon)}>
+                <Shield size={32} />
               </div>
-              <div>
-                <h2 className={cn(commonStyles.resultTitle, themeStyles.resultTitle)}>Analysis Complete</h2>
-                <p className={cn(commonStyles.resultSubtitle, themeStyles.resultSubtitle)}>
-                  {analysisResult.confidence}% confidence score
-                </p>
-              </div>
-            </div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>AI Fraud & Spam Analyzer</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Powered by advanced AI to detect fraudulent patterns, spam indicators, and suspicious content in project descriptions, messages, and user profiles.
+              </p>
+            </header>
+          </ScrollReveal>
 
-            <div className={commonStyles.resultSummary}>
-              {/* Animated Score Circle */}
-              <div className={commonStyles.scoreCircle}>
-                <svg className={commonStyles.scoreRing} viewBox="0 0 140 140">
-                  <circle 
-                    cx="70" 
-                    cy="70" 
-                    r="60" 
-                    className={cn(commonStyles.scoreRingBg, themeStyles.scoreRingBg)}
-                  />
-                  <circle 
-                    cx="70" 
-                    cy="70" 
-                    r="60" 
-                    className={cn(commonStyles.scoreRingProgress, themeStyles.scoreRingProgress)}
-                    style={{ strokeDashoffset }}
-                  />
-                </svg>
-                <div className={commonStyles.scoreValue}>
-                  <p className={cn(commonStyles.resultScore, themeStyles.resultScore)}>
-                    {analysisResult.score}
-                  </p>
-                  <span className={cn(commonStyles.scoreLabel, themeStyles.scoreLabel)}>Risk Score</span>
+          {/* Form */}
+          <ScrollReveal delay={0.1}>
+            <form className={cn(commonStyles.form, themeStyles.form)} onSubmit={handleAnalysis}>
+              <label className={cn(commonStyles.formLabel, themeStyles.formLabel)}>
+                <FileText size={16} />
+                Content to Analyze
+              </label>
+              <textarea
+                className={cn(commonStyles.textarea, themeStyles.textarea)}
+                rows={8}
+                placeholder="Paste the project description, message content, or user bio you want to analyze for potential fraud or spam..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+              
+              <div className={commonStyles.formActions}>
+                <Button 
+                  variant="primary" 
+                  type="submit" 
+                  isLoading={isLoading}
+                  iconBefore={<Zap size={18} />}
+                  disabled={!text.trim()}
+                >
+                  {isLoading ? 'Analyzing...' : 'Analyze Content'}
+                </Button>
+                
+                <button 
+                  type="button"
+                  className={cn(commonStyles.sampleButton, themeStyles.sampleButton)}
+                  onClick={() => loadSample('clean')}
+                  disabled={isLoading}
+                >
+                  Load Clean Sample
+                </button>
+                <button 
+                  type="button"
+                  className={cn(commonStyles.sampleButton, themeStyles.sampleButton)}
+                  onClick={() => loadSample('suspicious')}
+                  disabled={isLoading}
+                >
+                  Load Suspicious Sample
+                </button>
+              </div>
+            </form>
+          </ScrollReveal>
+
+          <AnimatePresence mode="wait">
+            {/* Loading State */}
+            {isLoading && (
+              <motion.div 
+                key="loading"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={cn(commonStyles.form, themeStyles.form)}
+              >
+                <div className={commonStyles.loadingState}>
+                  <div className={cn(commonStyles.loadingSpinner, themeStyles.loadingSpinner)} />
+                  <p className={cn(commonStyles.loadingText, themeStyles.loadingText)}>Analyzing content patterns...</p>
+                  <p className={cn(commonStyles.loadingSubtext, themeStyles.loadingSubtext)}>Our AI is scanning for fraud indicators</p>
                 </div>
-              </div>
-
-              {/* Risk Info */}
-              <div className={commonStyles.riskMeter}>
-                <p className={cn(commonStyles.resultLevel, themeStyles.resultLevel)}>
-                  {analysisResult.riskLevel} Risk
-                  <span className={cn(commonStyles.riskBadge, themeStyles.riskBadge)}>
-                    {analysisResult.riskLevel}
-                  </span>
-                </p>
-                <p className={cn(commonStyles.riskDescription, themeStyles.riskDescription)}>
-                  {getRiskDescription(analysisResult.riskLevel)}
-                </p>
-              </div>
-            </div>
-
-            {/* Warnings */}
-            {analysisResult.warnings.length > 0 && (
-              <div className={cn(commonStyles.resultWarnings, themeStyles.resultWarnings)}>
-                <h3>
-                  <AlertTriangle size={18} />
-                  {analysisResult.warnings.length} Issue{analysisResult.warnings.length > 1 ? 's' : ''} Detected
-                </h3>
-                <ul className={commonStyles.warningsList}>
-                  {analysisResult.warnings.map((warning, index) => (
-                    <li key={index} className={cn(commonStyles.warningItem, themeStyles.warningItem)}>
-                      <span className={cn(commonStyles.warningIcon, themeStyles.warningIcon)}>!</span>
-                      {warning}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              </motion.div>
             )}
 
-            {/* Actions */}
-            <div className={cn(commonStyles.resultActions, themeStyles.resultActions)}>
-              <Button 
-                variant="secondary" 
-                iconBefore={<RefreshCw size={18} />}
-                onClick={handleReset}
+            {/* Results */}
+            {analysisResult && !isLoading && (
+              <motion.div 
+                key="result"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className={cn(commonStyles.result, themeStyles.result, riskClass, riskThemeClass)}
               >
-                Analyze Another
-              </Button>
-            </div>
-          </div>
-        )}
+                <div className={cn(commonStyles.resultHeader, themeStyles.resultHeader)}>
+                  <div className={cn(commonStyles.resultIcon, themeStyles.resultIcon)}>
+                    {getRiskIcon(analysisResult.riskLevel)}
+                  </div>
+                  <div>
+                    <h2 className={cn(commonStyles.resultTitle, themeStyles.resultTitle)}>Analysis Complete</h2>
+                    <p className={cn(commonStyles.resultSubtitle, themeStyles.resultSubtitle)}>
+                      {analysisResult.confidence}% confidence score
+                    </p>
+                  </div>
+                </div>
+
+                <div className={commonStyles.resultSummary}>
+                  {/* Animated Score Circle */}
+                  <div className={commonStyles.scoreCircle}>
+                    <svg className={commonStyles.scoreRing} viewBox="0 0 140 140">
+                      <circle 
+                        cx="70" 
+                        cy="70" 
+                        r="60" 
+                        className={cn(commonStyles.scoreRingBg, themeStyles.scoreRingBg)}
+                      />
+                      <motion.circle 
+                        cx="70" 
+                        cy="70" 
+                        r="60" 
+                        className={cn(commonStyles.scoreRingProgress, themeStyles.scoreRingProgress)}
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                      />
+                    </svg>
+                    <div className={commonStyles.scoreValue}>
+                      <motion.p 
+                        className={cn(commonStyles.resultScore, themeStyles.resultScore)}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        {analysisResult.score}
+                      </motion.p>
+                      <span className={cn(commonStyles.scoreLabel, themeStyles.scoreLabel)}>Risk Score</span>
+                    </div>
+                  </div>
+
+                  {/* Risk Info */}
+                  <div className={commonStyles.riskMeter}>
+                    <p className={cn(commonStyles.resultLevel, themeStyles.resultLevel)}>
+                      {analysisResult.riskLevel} Risk
+                      <span className={cn(commonStyles.riskBadge, themeStyles.riskBadge)}>
+                        {analysisResult.riskLevel}
+                      </span>
+                    </p>
+                    <p className={cn(commonStyles.riskDescription, themeStyles.riskDescription)}>
+                      {getRiskDescription(analysisResult.riskLevel)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Warnings */}
+                {analysisResult.warnings.length > 0 && (
+                  <div className={cn(commonStyles.resultWarnings, themeStyles.resultWarnings)}>
+                    <h3>
+                      <AlertTriangle size={18} />
+                      {analysisResult.warnings.length} Issue{analysisResult.warnings.length > 1 ? 's' : ''} Detected
+                    </h3>
+                    <ul className={commonStyles.warningsList}>
+                      {analysisResult.warnings.map((warning, index) => (
+                        <motion.li 
+                          key={index} 
+                          className={cn(commonStyles.warningItem, themeStyles.warningItem)}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2 + (index * 0.1) }}
+                        >
+                          <span className={cn(commonStyles.warningIcon, themeStyles.warningIcon)}>!</span>
+                          {warning}
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className={cn(commonStyles.resultActions, themeStyles.resultActions)}>
+                  <Button 
+                    variant="secondary" 
+                    iconBefore={<RefreshCw size={18} />}
+                    onClick={handleReset}
+                  >
+                    Analyze Another
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

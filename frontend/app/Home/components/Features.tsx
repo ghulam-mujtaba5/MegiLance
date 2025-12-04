@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Cpu, ShieldCheck, Globe, Wallet } from 'lucide-react';
 
 import FeatureCard from './FeatureCard';
+import { StaggerContainer, StaggerItem } from '../../components/Animations/StaggerContainer';
 import commonStyles from './Features.common.module.css';
 import lightStyles from './Features.light.module.css';
 import darkStyles from './Features.dark.module.css';
@@ -58,16 +59,17 @@ const Features: React.FC = () => {
               description={heroFeature.description}
             />
           </div>
-          <div className={cn(commonStyles.secondaryGrid)}>
+          <StaggerContainer className={cn(commonStyles.secondaryGrid)}>
             {secondaryFeatures.map((feature) => (
-              <FeatureCard
-                key={feature.title}
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-              />
+              <StaggerItem key={feature.title}>
+                <FeatureCard
+                  icon={feature.icon}
+                  title={feature.title}
+                  description={feature.description}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         </div>
       </div>
     </section>

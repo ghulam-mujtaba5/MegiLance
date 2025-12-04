@@ -1,10 +1,10 @@
 // @AI-HINT: Admin Payments page. Theme-aware, accessible, animated with summary KPIs, filters, and transactions table.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminPayments.common.module.css';
 import light from './AdminPayments.light.module.css';
@@ -47,14 +47,6 @@ const AdminPayments: React.FC = () => {
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
   const [role, setRole] = useState<(typeof ROLES)[number]>('All');
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const summaryRef = useRef<HTMLDivElement | null>(null);
-  const tableRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const summaryVisible = useIntersectionObserver(summaryRef, { threshold: 0.1 });
-  const tableVisible = useIntersectionObserver(tableRef, { threshold: 0.1 });
-
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter(t =>
@@ -77,9 +69,9 @@ const AdminPayments: React.FC = () => {
   }, [filtered]);
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
+    <PageTransition className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
+        <ScrollReveal className={common.header}>
           <div>
             <h1 className={common.title}>Payments</h1>
             <p className={cn(common.subtitle, themed.subtitle)}>Monitor platform-wide transactions. Filter by type, status, role, and search users.</p>
@@ -101,60 +93,62 @@ const AdminPayments: React.FC = () => {
             </select>
             <button type="button" className={cn(common.button, themed.button)}>Export CSV</button>
           </div>
-        </div>
+        </ScrollReveal>
 
-        <section ref={summaryRef} className={cn(common.summary, summaryVisible ? common.isVisible : common.isNotVisible)} aria-label="Payments summary">
-          <div className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby="m1">
-            <div id="m1" className={cn(common.cardTitle, themed.cardTitle)}>Total Volume</div>
-            <div className={common.metric}>{metrics.volume}</div>
-          </div>
-          <div className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby="m2">
-            <div id="m2" className={cn(common.cardTitle, themed.cardTitle)}>Completed</div>
-            <div className={common.metric}>{metrics.completed}</div>
-          </div>
-          <div className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby="m3">
-            <div id="m3" className={cn(common.cardTitle, themed.cardTitle)}>Pending</div>
-            <div className={common.metric}>{metrics.pending}</div>
-          </div>
-        </section>
-
-        <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
-          {loading && <div className={common.skeletonRow} aria-busy="true" />}
-          {error && <div className={common.error}>Failed to load transactions.</div>}
-          <table className={cn(common.table, themed.table)}>
-            <thead>
-              <tr>
-                <th scope="col" className={themed.th + ' ' + common.th}>Date</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>User</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>Role</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>Type</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>Status</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(t => (
-                <tr key={t.id} className={common.row}>
-                  <td className={themed.td + ' ' + common.td}>{t.date}</td>
-                  <td className={themed.td + ' ' + common.td}>{t.user}</td>
-                  <td className={themed.td + ' ' + common.td}>{t.role}</td>
-                  <td className={themed.td + ' ' + common.td}>{t.type}</td>
-                  <td className={themed.td + ' ' + common.td}>
-                    <span className={cn(common.badge, themed.badge)}>{t.status}</span>
-                  </td>
-                  <td className={themed.td + ' ' + common.td}>{t.amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {filtered.length === 0 && !loading && (
-            <div role="status" aria-live="polite" className={cn(common.card, themed.card)}>
-              No transactions match your filters.
+        <StaggerContainer>
+          <ScrollReveal className={common.summary} aria-label="Payments summary">
+            <div className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby="m1">
+              <div id="m1" className={cn(common.cardTitle, themed.cardTitle)}>Total Volume</div>
+              <div className={common.metric}>{metrics.volume}</div>
             </div>
-          )}
-        </div>
+            <div className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby="m2">
+              <div id="m2" className={cn(common.cardTitle, themed.cardTitle)}>Completed</div>
+              <div className={common.metric}>{metrics.completed}</div>
+            </div>
+            <div className={cn(common.card, themed.card)} tabIndex={0} aria-labelledby="m3">
+              <div id="m3" className={cn(common.cardTitle, themed.cardTitle)}>Pending</div>
+              <div className={common.metric}>{metrics.pending}</div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal className={common.tableWrap}>
+            {loading && <div className={common.skeletonRow} aria-busy="true" />}
+            {error && <div className={common.error}>Failed to load transactions.</div>}
+            <table className={cn(common.table, themed.table)}>
+              <thead>
+                <tr>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Date</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>User</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Role</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Type</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Status</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map(t => (
+                  <tr key={t.id} className={common.row}>
+                    <td className={themed.td + ' ' + common.td}>{t.date}</td>
+                    <td className={themed.td + ' ' + common.td}>{t.user}</td>
+                    <td className={themed.td + ' ' + common.td}>{t.role}</td>
+                    <td className={themed.td + ' ' + common.td}>{t.type}</td>
+                    <td className={themed.td + ' ' + common.td}>
+                      <span className={cn(common.badge, themed.badge)}>{t.status}</span>
+                    </td>
+                    <td className={themed.td + ' ' + common.td}>{t.amount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {filtered.length === 0 && !loading && (
+              <div role="status" aria-live="polite" className={cn(common.card, themed.card)}>
+                No transactions match your filters.
+              </div>
+            )}
+          </ScrollReveal>
+        </StaggerContainer>
       </div>
-    </main>
+    </PageTransition>
   );
 };
 

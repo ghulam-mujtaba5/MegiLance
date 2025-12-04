@@ -1,0 +1,20 @@
+.page {
+  background-color: #111827; /* bg-gray-900 */
+  color: #ffffff; /* text-white */
+}
+
+.iconWrapper {
+  background-color: rgba(127, 29, 29, 0.3); /* bg-red-900/30 */
+}
+
+.description {
+  color: #9ca3af; /* text-gray-400 */
+}
+
+.link {
+  color: #9ca3af; /* text-gray-400 */
+}
+
+.link:hover {
+  color: #ffffff; /* text-white */
+}

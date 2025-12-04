@@ -21,6 +21,9 @@ import {
   Filler,
 } from 'chart.js';
 import { FaUsers, FaDollarSign, FaCheckCircle, FaTrophy } from 'react-icons/fa';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 
 import commonStyles from './AnalyticsDashboard.common.module.css';
 import lightStyles from './AnalyticsDashboard.light.module.css';
@@ -216,88 +219,94 @@ const AnalyticsDashboard: React.FC = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Analytics Dashboard</h1>
+    <PageTransition>
+      <div className={styles.container}>
+        <ScrollReveal>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Analytics Dashboard</h1>
+          </div>
+        </ScrollReveal>
+
+        {/* Metrics Summary */}
+        <ScrollReveal delay={0.1}>
+          <div className={styles.metricsGrid}>
+            <div className={styles.metricCard}>
+              <div className={cn(styles.metricIcon, 'bg-blue-500')}>
+                <FaUsers size={24} color="#ffffff" />
+              </div>
+              <div>
+                <div className={styles.metricValue}>{summary?.total_users || 0}</div>
+                <div className={styles.metricLabel}>Total Users</div>
+              </div>
+            </div>
+
+            <div className={styles.metricCard}>
+              <div className={cn(styles.metricIcon, 'bg-orange-500')}>
+                <FaTrophy size={24} color="#ffffff" />
+              </div>
+              <div>
+                <div className={styles.metricValue}>{summary?.active_projects || 0}</div>
+                <div className={styles.metricLabel}>Active Projects</div>
+              </div>
+            </div>
+
+            <div className={styles.metricCard}>
+              <div className={cn(styles.metricIcon, 'bg-green-500')}>
+                <FaDollarSign size={24} color="#ffffff" />
+              </div>
+              <div>
+                <div className={styles.metricValue}>
+                  ${((summary?.total_revenue || 0) / 100).toFixed(2)}
+                </div>
+                <div className={styles.metricLabel}>Total Revenue</div>
+              </div>
+            </div>
+
+            <div className={styles.metricCard}>
+              <div className={cn(styles.metricIcon, 'bg-purple-500')}>
+                <FaCheckCircle size={24} color="#ffffff" />
+              </div>
+              <div>
+                <div className={styles.metricValue}>
+                  {((summary?.completion_rate || 0) * 100).toFixed(1)}%
+                </div>
+                <div className={styles.metricLabel}>Completion Rate</div>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Charts */}
+        <StaggerContainer delay={0.2} className={styles.chartsGrid}>
+          <div className={styles.chartCard}>
+            <h2 className={styles.chartTitle}>Registration Trends (30 Days)</h2>
+            {registrationData && (
+              <div style={{ height: '300px' }}>
+                <Line data={registrationData} options={chartOptions} />
+              </div>
+            )}
+          </div>
+
+          <div className={styles.chartCard}>
+            <h2 className={styles.chartTitle}>Revenue Trends (30 Days)</h2>
+            {revenueData && (
+              <div style={{ height: '300px' }}>
+                <Bar data={revenueData} options={chartOptions} />
+              </div>
+            )}
+          </div>
+
+          <div className={styles.chartCard}>
+            <h2 className={styles.chartTitle}>User Distribution</h2>
+            {userDistribution && (
+              <div style={{ height: '300px' }}>
+                <Doughnut data={userDistribution} options={doughnutOptions} />
+              </div>
+            )}
+          </div>
+        </StaggerContainer>
       </div>
-
-      {/* Metrics Summary */}
-      <div className={styles.metricsGrid}>
-        <div className={styles.metricCard}>
-          <div className={cn(styles.metricIcon, 'bg-blue-500')}>
-            <FaUsers size={24} color="#ffffff" />
-          </div>
-          <div>
-            <div className={styles.metricValue}>{summary?.total_users || 0}</div>
-            <div className={styles.metricLabel}>Total Users</div>
-          </div>
-        </div>
-
-        <div className={styles.metricCard}>
-          <div className={cn(styles.metricIcon, 'bg-orange-500')}>
-            <FaTrophy size={24} color="#ffffff" />
-          </div>
-          <div>
-            <div className={styles.metricValue}>{summary?.active_projects || 0}</div>
-            <div className={styles.metricLabel}>Active Projects</div>
-          </div>
-        </div>
-
-        <div className={styles.metricCard}>
-          <div className={cn(styles.metricIcon, 'bg-green-500')}>
-            <FaDollarSign size={24} color="#ffffff" />
-          </div>
-          <div>
-            <div className={styles.metricValue}>
-              ${((summary?.total_revenue || 0) / 100).toFixed(2)}
-            </div>
-            <div className={styles.metricLabel}>Total Revenue</div>
-          </div>
-        </div>
-
-        <div className={styles.metricCard}>
-          <div className={cn(styles.metricIcon, 'bg-purple-500')}>
-            <FaCheckCircle size={24} color="#ffffff" />
-          </div>
-          <div>
-            <div className={styles.metricValue}>
-              {((summary?.completion_rate || 0) * 100).toFixed(1)}%
-            </div>
-            <div className={styles.metricLabel}>Completion Rate</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className={styles.chartsGrid}>
-        <div className={styles.chartCard}>
-          <h2 className={styles.chartTitle}>Registration Trends (30 Days)</h2>
-          {registrationData && (
-            <div style={{ height: '300px' }}>
-              <Line data={registrationData} options={chartOptions} />
-            </div>
-          )}
-        </div>
-
-        <div className={styles.chartCard}>
-          <h2 className={styles.chartTitle}>Revenue Trends (30 Days)</h2>
-          {revenueData && (
-            <div style={{ height: '300px' }}>
-              <Bar data={revenueData} options={chartOptions} />
-            </div>
-          )}
-        </div>
-
-        <div className={styles.chartCard}>
-          <h2 className={styles.chartTitle}>User Distribution</h2>
-          {userDistribution && (
-            <div style={{ height: '300px' }}>
-              <Doughnut data={userDistribution} options={doughnutOptions} />
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    </PageTransition>
   );
 };
 

@@ -7,6 +7,9 @@ import JobCard from '@/app/components/JobCard/JobCard';
 import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
 import { useFreelancerData } from '@/hooks/useFreelancer';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Projects.common.module.css';
 import lightStyles from './Projects.light.module.css';
 import darkStyles from './Projects.dark.module.css';
@@ -81,104 +84,118 @@ const Projects: React.FC = () => {
   };
 
   return (
-    <div className={styles.pageContainer}>
-      <header className={styles.header} role="region" aria-label="Projects header" title="Projects header">
-        <h1 className={styles.title}>Find Your Next Project</h1>
-        <p className={styles.subtitle}>
-          Browse thousands of jobs and find the perfect match for your skills.
-        </p>
-      </header>
+    <PageTransition>
+      <div className={styles.pageContainer}>
+        <ScrollReveal>
+          <header className={styles.header} role="region" aria-label="Projects header" title="Projects header">
+            <h1 className={styles.title}>Find Your Next Project</h1>
+            <p className={styles.subtitle}>
+              Browse thousands of jobs and find the perfect match for your skills.
+            </p>
+          </header>
+        </ScrollReveal>
 
-      {loading && <div className={styles.loading} aria-busy="true">Loading projects...</div>}
-      {error && <div className={styles.error}>Failed to load projects.</div>}
+        {loading && <div className={styles.loading} aria-busy="true">Loading projects...</div>}
+        {error && <div className={styles.error}>Failed to load projects.</div>}
 
-      <div className={styles.searchFilterBar}>
-        <div className={styles.searchInput}>
-          <label htmlFor="proj-search" className={styles.srOnly}>Search projects</label>
-          <Input
-            id="proj-search"
-            type="text"
-            placeholder="Search by keyword, skill, or company..."
-            title="Search projects"
-            value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-          />
-        </div>
-        <div className={styles.toolbar} role="group" aria-label="Sorting and actions" title="Sorting and actions">
-          <label htmlFor="sort" className={styles.srOnly}>Sort by</label>
-          <select
-            id="sort"
-            className={styles.select}
-            value={`${sortKey}:${sortDir}`}
-            onChange={(e) => {
-              const [k, d] = e.target.value.split(':') as [typeof sortKey, typeof sortDir];
-              setSortKey(k);
-              setSortDir(d);
-              setPage(1);
-            }}
-            aria-label="Sort projects"
-            title="Sort projects"
-          >
-            <option value="postedTime:desc">Newest</option>
-            <option value="postedTime:asc">Oldest</option>
-            <option value="title:asc">Title A–Z</option>
-            <option value="title:desc">Title Z–A</option>
-            <option value="clientName:asc">Client A–Z</option>
-            <option value="clientName:desc">Client Z–A</option>
-          </select>
-          <Button variant="secondary" onClick={onExportCSV} aria-label="Export current results to CSV" title="Export current results to CSV">Export CSV</Button>
-          <label htmlFor="pageSize" className={styles.srOnly}>Results per page</label>
-          <select
-            id="pageSize"
-            className={styles.select}
-            value={pageSize}
-            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
-            aria-label="Results per page"
-            title="Results per page"
-          >
-            {[12, 24, 48].map(sz => <option key={sz} value={sz}>{sz}/page</option>)}
-          </select>
-        </div>
-        <span className={styles.srOnly} aria-live="polite">
-          {`${sortedProjects.length} result(s). ${searchQuery ? `Filter: ${searchQuery}.` : ''} Sort: ${sortKey}. Page size: ${pageSize}.`}
-        </span>
-      </div>
-
-      <div className={styles.projectGrid} role="region" aria-label="Project results" title="Project results">
-        {pagedProjects.map((project) => (
-          <JobCard key={project.id} {...project} />
-        ))}
-        {sortedProjects.length === 0 && !loading && (
-          <div className={styles.emptyState}>
-            {searchQuery ? 'No projects match your search.' : 'No projects available.'}
+        <ScrollReveal delay={0.1}>
+          <div className={styles.searchFilterBar}>
+            <div className={styles.searchInput}>
+              <label htmlFor="proj-search" className={styles.srOnly}>Search projects</label>
+              <Input
+                id="proj-search"
+                type="text"
+                placeholder="Search by keyword, skill, or company..."
+                title="Search projects"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+              />
+            </div>
+            <div className={styles.toolbar} role="group" aria-label="Sorting and actions" title="Sorting and actions">
+              <label htmlFor="sort" className={styles.srOnly}>Sort by</label>
+              <select
+                id="sort"
+                className={styles.select}
+                value={`${sortKey}:${sortDir}`}
+                onChange={(e) => {
+                  const [k, d] = e.target.value.split(':') as [typeof sortKey, typeof sortDir];
+                  setSortKey(k);
+                  setSortDir(d);
+                  setPage(1);
+                }}
+                aria-label="Sort projects"
+                title="Sort projects"
+              >
+                <option value="postedTime:desc">Newest</option>
+                <option value="postedTime:asc">Oldest</option>
+                <option value="title:asc">Title A–Z</option>
+                <option value="title:desc">Title Z–A</option>
+                <option value="clientName:asc">Client A–Z</option>
+                <option value="clientName:desc">Client Z–A</option>
+              </select>
+              <Button variant="secondary" onClick={onExportCSV} aria-label="Export current results to CSV" title="Export current results to CSV">Export CSV</Button>
+              <label htmlFor="pageSize" className={styles.srOnly}>Results per page</label>
+              <select
+                id="pageSize"
+                className={styles.select}
+                value={pageSize}
+                onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+                aria-label="Results per page"
+                title="Results per page"
+              >
+                {[12, 24, 48].map(sz => <option key={sz} value={sz}>{sz}/page</option>)}
+              </select>
+            </div>
+            <span className={styles.srOnly} aria-live="polite">
+              {`${sortedProjects.length} result(s). ${searchQuery ? `Filter: ${searchQuery}.` : ''} Sort: ${sortKey}. Page size: ${pageSize}.`}
+            </span>
           </div>
+        </ScrollReveal>
+
+        <StaggerContainer 
+          delay={0.2} 
+          className={styles.projectGrid} 
+          role="region" 
+          aria-label="Project results" 
+          title="Project results"
+        >
+          {pagedProjects.map((project) => (
+            <JobCard key={project.id} {...project} />
+          ))}
+          {sortedProjects.length === 0 && !loading && (
+            <div className={styles.emptyState}>
+              {searchQuery ? 'No projects match your search.' : 'No projects available.'}
+            </div>
+          )}
+        </StaggerContainer>
+
+        {sortedProjects.length > 0 && (
+          <ScrollReveal delay={0.3}>
+            <div className={styles.paginationBar} role="navigation" aria-label="Pagination" title="Pagination">
+              <Button
+                variant="secondary"
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                aria-label="Previous page"
+                title="Previous page"
+                disabled={pageSafe === 1}
+              >
+                Prev
+              </Button>
+              <span className={styles.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sortedProjects.length} result(s)</span>
+              <Button
+                variant="primary"
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                aria-label="Next page"
+                title="Next page"
+                disabled={pageSafe === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          </ScrollReveal>
         )}
       </div>
-
-      {sortedProjects.length > 0 && (
-        <div className={styles.paginationBar} role="navigation" aria-label="Pagination" title="Pagination">
-          <Button
-            variant="secondary"
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            aria-label="Previous page"
-            title="Previous page"
-            disabled={pageSafe === 1}
-          >
-            Prev
-          </Button>
-          <span className={styles.paginationInfo} aria-live="polite">Page {pageSafe} of {totalPages} · {sortedProjects.length} result(s)</span>
-          <Button
-            variant="primary"
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            aria-label="Next page"
-            title="Next page"
-            disabled={pageSafe === totalPages}
-          >
-            Next
-          </Button>
-        </div>
-      )}
-    </div>
+    </PageTransition>
   );
 };
 

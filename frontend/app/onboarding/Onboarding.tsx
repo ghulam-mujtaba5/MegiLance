@@ -4,7 +4,9 @@
 import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
 
 import commonStyles from './Onboarding.common.module.css';
 import lightStyles from './Onboarding.light.module.css';
@@ -25,38 +27,44 @@ const Onboarding: React.FC = () => {
   };
 
   const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className={commonStyles.step}>
-            <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>Welcome to MegiLance!</h2>
-            <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>The AI-powered platform for the future of work. Let&apos;s get your profile set up.</p>
-            <Button onClick={nextStep}>Get Started</Button>
-          </div>
-        );
-      case 2:
-        return (
-          <div className={commonStyles.step}>
-            <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>How Our AI Works For You</h2>
-            <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>Our AI helps you find the perfect projects by analyzing your skills and ranking your profile. A higher rank means more visibility to clients!</p>
-            <Button onClick={nextStep}>Next</Button>
-          </div>
-        );
-      case 3:
-        return (
-          <div className={commonStyles.step}>
-            <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>Connect Your Wallet</h2>
-            <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>Securely connect your crypto wallet to receive USDC payments directly. All transactions are handled via smart contracts for your security.</p>
-            <Button onClick={finishOnboarding}>Connect Wallet & Finish</Button>
-          </div>
-        );
-      default:
-        return null;
-    }
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+          className={commonStyles.step}
+        >
+          {step === 1 && (
+            <>
+              <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>Welcome to MegiLance!</h2>
+              <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>The AI-powered platform for the future of work. Let&apos;s get your profile set up.</p>
+              <Button onClick={nextStep}>Get Started</Button>
+            </>
+          )}
+          {step === 2 && (
+            <>
+              <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>How Our AI Works For You</h2>
+              <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>Our AI helps you find the perfect projects by analyzing your skills and ranking your profile. A higher rank means more visibility to clients!</p>
+              <Button onClick={nextStep}>Next</Button>
+            </>
+          )}
+          {step === 3 && (
+            <>
+              <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>Connect Your Wallet</h2>
+              <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>Securely connect your crypto wallet to receive USDC payments directly. All transactions are handled via smart contracts for your security.</p>
+              <Button onClick={finishOnboarding}>Connect Wallet & Finish</Button>
+            </>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    );
   };
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
+    <PageTransition className={cn(commonStyles.container, themeStyles.container)}>
       <div className={commonStyles.innerContainer}>
         {renderStep()}
         <div className={commonStyles.progress}>
@@ -65,7 +73,7 @@ const Onboarding: React.FC = () => {
           <div className={cn(commonStyles.progressDot, step >= 3 && commonStyles.progressDotActive, step >= 3 && themeStyles.progressDotActive, themeStyles.progressDot)}></div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

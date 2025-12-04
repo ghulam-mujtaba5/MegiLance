@@ -5,8 +5,10 @@ import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 
 import api from '@/lib/api';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import common from './Search.common.module.css';
 import light from './Search.light.module.css';
@@ -48,12 +50,7 @@ const Search: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [searchCount, setSearchCount] = useState(0); // For announcing result count
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const resultsRef = useRef<HTMLDivElement | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const resultsVisible = useIntersectionObserver(resultsRef, { threshold: 0.1 });
 
   const searchAPI = useCallback(async (searchQuery: string, searchType: string) => {
     const sanitizedQuery = sanitizeQuery(searchQuery);
@@ -162,79 +159,84 @@ const Search: React.FC = () => {
   };
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <h1 className={common.title}>Search</h1>
-          <p className={common.subtitle}>Find projects and freelancers across the platform.</p>
-        </div>
-
-        <div className={cn(common.controls)} role="search" aria-label="Global search controls">
-          <label className={common.srOnly} htmlFor={searchInputId}>Search query</label>
-          <input
-            id={searchInputId}
-            className={common.input}
-            type="search"
-            placeholder="Search projects and freelancers…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            maxLength={MAX_QUERY_LENGTH}
-            aria-describedby={`${uniqueId}-search-hint`}
-          />
-          <span id={`${uniqueId}-search-hint`} className={common.srOnly}>
-            Enter keywords to search for projects and freelancers
-          </span>
-
-          <label className={common.srOnly} htmlFor={typeSelectId}>Filter by type</label>
-          <select
-            id={typeSelectId}
-            className={common.select}
-            value={type}
-            onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
-            aria-label="Filter by result type"
-          >
-            {TYPES.map((t) => (
-              <option key={t} value={t}>{t}</option>
-            ))}
-          </select>
-
-          <label className={common.srOnly} htmlFor={dateSelectId}>Filter by date</label>
-          <select
-            id={dateSelectId}
-            className={common.select}
-            value={date}
-            onChange={(e) => setDate(e.target.value as (typeof DATES)[number])}
-            aria-label="Filter by date range"
-          >
-            {DATES.map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
-        </div>
-
-        {loading && (
-          <div className={common.loadingState}>
-            <div className={common.spinner}></div>
-            <p>Searching...</p>
-          </div>
-        )}
-
-        {!loading && query.trim() && (
-          <>
-            <div
-              aria-live="polite"
-              aria-atomic="true"
-              className={common.srOnly}
-            >
-              {filteredResults.length} {filteredResults.length === 1 ? 'result' : 'results'} found
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <div className={common.header}>
+              <h1 className={common.title}>Search</h1>
+              <p className={common.subtitle}>Find projects and freelancers across the platform.</p>
             </div>
-            <div
-              ref={resultsRef}
-              id={resultsRegionId}
-              className={cn(common.results, resultsVisible ? common.isVisible : common.isNotVisible)}
-              role="region"
-              aria-label={`Search results: ${filteredResults.length} ${filteredResults.length === 1 ? 'result' : 'results'}`}
-            >
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.1}>
+            <div className={cn(common.controls)} role="search" aria-label="Global search controls">
+              <label className={common.srOnly} htmlFor={searchInputId}>Search query</label>
+              <input
+                id={searchInputId}
+                className={common.input}
+                type="search"
+                placeholder="Search projects and freelancers…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                maxLength={MAX_QUERY_LENGTH}
+                aria-describedby={`${uniqueId}-search-hint`}
+              />
+              <span id={`${uniqueId}-search-hint`} className={common.srOnly}>
+                Enter keywords to search for projects and freelancers
+              </span>
+
+              <label className={common.srOnly} htmlFor={typeSelectId}>Filter by type</label>
+              <select
+                id={typeSelectId}
+                className={common.select}
+                value={type}
+                onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}
+                aria-label="Filter by result type"
+              >
+                {TYPES.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+
+              <label className={common.srOnly} htmlFor={dateSelectId}>Filter by date</label>
+              <select
+                id={dateSelectId}
+                className={common.select}
+                value={date}
+                onChange={(e) => setDate(e.target.value as (typeof DATES)[number])}
+                aria-label="Filter by date range"
+              >
+                {DATES.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+          </ScrollReveal>
+
+          {loading && (
+            <div className={common.loadingState}>
+              <div className={common.spinner}></div>
+              <p>Searching...</p>
+            </div>
+          )}
+
+          {!loading && query.trim() && (
+            <>
+              <div
+                aria-live="polite"
+                aria-atomic="true"
+                className={common.srOnly}
+              >
+                {filteredResults.length} {filteredResults.length === 1 ? 'result' : 'results'} found
+              </div>
+              <StaggerContainer
+                delay={0.2}
+                id={resultsRegionId}
+                className={common.results}
+                role="region"
+                aria-label={`Search results: ${filteredResults.length} ${filteredResults.length === 1 ? 'result' : 'results'}`}
+              >
               {filteredResults.map((r, index) => (
                 <article
                   key={r.id}
@@ -253,7 +255,7 @@ const Search: React.FC = () => {
                   <p>{r.snippet}</p>
                 </article>
               ))}
-            </div>
+            </StaggerContainer>
           </>
         )}
 
@@ -280,7 +282,8 @@ const Search: React.FC = () => {
           />
         )}
       </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

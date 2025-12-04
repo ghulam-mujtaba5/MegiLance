@@ -1,85 +1,38 @@
-/* @AI-HINT: Premium StatItem styles - Animated counter cards with glassmorphism and sophisticated interactions */
-
 .statItem {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1.25rem 1rem;
-  border-radius: 16px;
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.statItem::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(69, 115, 223, 0.03) 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  border-radius: inherit;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  transition: transform 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 .statItem:hover {
-  transform: translateY(-6px);
-}
-
-.statItem:hover::before {
-  opacity: 1;
+  transform: translateY(-5px);
 }
 
 .statIcon {
+  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  margin-bottom: 0.875rem;
-  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.statItem:hover .statIcon {
-  transform: scale(1.1) rotate(5deg);
 }
 
 .statValue {
-  font-family: var(--font-family-heading);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 800;
+  font-family: var(--font-poppins);
+  font-size: 2.5rem;
+  font-weight: 700;
   line-height: 1.1;
-  letter-spacing: -0.03em;
   margin-bottom: 0.25rem;
-  transition: all 0.3s ease;
+  font-variant-numeric: tabular-nums;
 }
 
 .statLabel {
-  font-family: var(--font-family-body);
-  font-size: 0.8125rem;
+  font-family: var(--font-inter);
+  font-size: 0.875rem;
   font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
-}
-
-@media (max-width: 768px) {
-  .statItem {
-    padding: 1rem 0.75rem;
-  }
-
-  .statIcon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    margin-bottom: 0.625rem;
-  }
-
-  .statValue {
-    font-size: 1.25rem;
-  }
-
-  .statLabel {
-    font-size: 0.75rem;
-  }
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }

@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { IoClose } from 'react-icons/io5';
 import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import commonStyles from './Modal.common.module.css';
 import lightStyles from './Modal.light.module.css';
@@ -138,62 +139,78 @@ const Modal: React.FC<ModalProps> = ({
     }
   };
 
-  const modalContent = (
-    <div
-      className={cn(commonStyles.modalOverlay, themeStyles.modalOverlay)}
-      onClick={handleOverlayClick}
-      role="presentation"
-    >
-      <div
-        className={cn(commonStyles.modalContent, themeStyles.modalContent, sizeClass, className)}
-        ref={modalRef}
-        onClick={(e) => e.stopPropagation()}
-        tabIndex={-1}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? modalTitleId.current : undefined}
-        aria-describedby={description ? modalDescId.current : undefined}
-      >
-        <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-          {title && (
-            <h2 
-              id={modalTitleId.current} 
-              className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}
-            >
-              {title}
-            </h2>
-          )}
-          <button 
-            type="button"
-            onClick={handleClose} 
-            className={cn(commonStyles.closeButton, themeStyles.closeButton)} 
-            aria-label="Close modal"
-          >
-            <IoClose aria-hidden="true" />
-          </button>
-        </div>
-        {description && (
-          <p id={modalDescId.current} className="sr-only">
-            {description}
-          </p>
-        )}
-        <div className={cn(commonStyles.modalBody, themeStyles.modalBody)}>
-          {children}
-        </div>
-        {footer && (
-          <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
-            {footer}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  if (!isOpen || !isMounted) {
+  if (!isMounted) {
     return null;
   }
 
-  return createPortal(modalContent, document.body);
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className={cn(commonStyles.modalOverlay, themeStyles.modalOverlay)}
+          onClick={handleOverlayClick}
+          role="presentation"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div
+            className={cn(commonStyles.modalContent, themeStyles.modalContent, sizeClass, className)}
+            ref={modalRef}
+            onClick={(e) => e.stopPropagation()}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? modalTitleId.current : undefined}
+            aria-describedby={description ? modalDescId.current : undefined}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 300, 
+              damping: 30,
+              mass: 1
+            }}
+          >
+            <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
+              {title && (
+                <h2 
+                  id={modalTitleId.current} 
+                  className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}
+                >
+                  {title}
+                </h2>
+              )}
+              <button 
+                type="button"
+                onClick={handleClose} 
+                className={cn(commonStyles.closeButton, themeStyles.closeButton)} 
+                aria-label="Close modal"
+              >
+                <IoClose aria-hidden="true" />
+              </button>
+            </div>
+            {description && (
+              <p id={modalDescId.current} className="sr-only">
+                {description}
+              </p>
+            )}
+            <div className={cn(commonStyles.modalBody, themeStyles.modalBody)}>
+              {children}
+            </div>
+            {footer && (
+              <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
+                {footer}
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
 };
 
 export default Modal;

@@ -1,52 +1,63 @@
 .stat {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem; /* 20px */
-  padding: 1.5rem; /* 24px */
-  border-radius: 1rem; /* 16px */
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  align-items: flex-start;
+  gap: 1.5rem;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  border: 1px solid transparent;
   position: relative;
   overflow: hidden;
 }
 
+.stat:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
 .statIcon {
-  width: 3.5rem; /* 56px */
-  height: 3.5rem; /* 56px */
-  border-radius: 0.75rem; /* 12px */
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
 .statIcon svg {
-  width: 1.75rem; /* 28px */
-  height: 1.75rem; /* 28px */
+  width: 1.75rem;
+  height: 1.75rem;
+  stroke-width: 2px;
+}
+
+.stat:hover .statIcon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .statContent {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem; /* 8px */
+  flex: 1;
 }
 
 .statNumber {
   font-family: var(--font-poppins);
-  font-size: 2.25rem; /* 36px */
-  font-weight: 800;
-  line-height: 1.2;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .statLabel {
-  font-family: var(--font-inter);
-  font-size: 1rem; /* 16px */
+  font-family: var(--font-poppins);
+  font-size: 1.125rem;
   font-weight: 600;
-  line-height: 1.4;
+  margin-bottom: 0.5rem;
 }
 
 .statDescription {
   font-family: var(--font-inter);
-  font-size: 0.875rem; /* 14px */
-  line-height: 1.6;
-  opacity: 0.8;
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }

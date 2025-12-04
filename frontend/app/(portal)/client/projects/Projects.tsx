@@ -6,6 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PlusCircle, Download, Search, AlertTriangle, SearchX } from 'lucide-react';
 import { useClientData } from '@/hooks/useClient';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import ProjectCard, { ProjectCardProps } from '@/app/components/ProjectCard/ProjectCard';
 import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
@@ -96,63 +99,69 @@ const Projects: React.FC = () => {
   }
 
   return (
-    <div className={cn(common.page, themed.theme)}>
-      <header className={common.header}>
-        <div>
-          <h1 className={common.title}>Projects</h1>
-          <p className={common.subtitle}>Manage all your ongoing and completed projects.</p>
-        </div>
-        <div className={common.actions}>
-          <Button variant="secondary" iconBefore={<Download size={16} />}>Export</Button>
-          <Button iconBefore={<PlusCircle size={16} />}>New Project</Button>
-        </div>
-      </header>
+    <PageTransition>
+      <div className={cn(common.page, themed.theme)}>
+        <ScrollReveal>
+          <header className={common.header}>
+            <div>
+              <h1 className={common.title}>Projects</h1>
+              <p className={common.subtitle}>Manage all your ongoing and completed projects.</p>
+            </div>
+            <div className={common.actions}>
+              <Button variant="secondary" iconBefore={<Download size={16} />}>Export</Button>
+              <Button iconBefore={<PlusCircle size={16} />}>New Project</Button>
+            </div>
+          </header>
+        </ScrollReveal>
 
-      <div className={common.controls}>
-        <Input
-          iconBefore={<Search size={18} />}
-          placeholder="Search by project title..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={common.searchInput}
-        />
-        <div className={common.filters}>
-          <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
-          <Select
-            id="sort-key"
-            options={SORT_OPTIONS}
-            value={sortKey}
-            onChange={(e) => setSortKey(e.target.value as 'updatedAt' | 'title' | 'budget' | 'progress')}
+        <ScrollReveal delay={0.1}>
+          <div className={common.controls}>
+            <Input
+              iconBefore={<Search size={18} />}
+              placeholder="Search by project title..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={common.searchInput}
+            />
+            <div className={common.filters}>
+              <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
+              <Select
+                id="sort-key"
+                options={SORT_OPTIONS}
+                value={sortKey}
+                onChange={(e) => setSortKey(e.target.value as 'updatedAt' | 'title' | 'budget' | 'progress')}
+              />
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {loading ? (
+          <div className={common.grid}>
+            {Array.from({ length: 9 }).map((_, i) => <div key={i} className={common.skeletonCard} />)}
+          </div>
+        ) : paginatedProjects.length > 0 ? (
+          <StaggerContainer delay={0.2} className={common.grid}>
+            {paginatedProjects.map(project => <ProjectCard key={project.id} {...project} />)}
+          </StaggerContainer>
+        ) : (
+          <EmptyState
+            title="No Projects Found"
+            description="It looks like there are no projects matching your criteria."
+            icon={<SearchX size={48} />}
           />
-        </div>
+        )}
+
+        {paginatedProjects.length > 0 && (
+          <div className={common.paginationContainer}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(sortedProjects.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
-
-      {loading ? (
-        <div className={common.grid}>
-          {Array.from({ length: 9 }).map((_, i) => <div key={i} className={common.skeletonCard} />)}
-        </div>
-      ) : paginatedProjects.length > 0 ? (
-        <main className={common.grid}>
-          {paginatedProjects.map(project => <ProjectCard key={project.id} {...project} />)}
-        </main>
-      ) : (
-        <EmptyState
-          title="No Projects Found"
-          description="It looks like there are no projects matching your criteria."
-          icon={<SearchX size={48} />}
-        />
-      )}
-
-      {paginatedProjects.length > 0 && (
-        <div className={common.paginationContainer}>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(sortedProjects.length / itemsPerPage)}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
-    </div>
+    </PageTransition>
   );
 };
 

@@ -1,16 +1,11 @@
-/* @AI-HINT: Light theme overrides for UserAvatar. Do not use global or theme CSS. */
 .userAvatar {
-  background: linear-gradient(135deg, #e0f2fe, #dbeafe);
-  color: #1e40af;
-  border: 2px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background: #e2e8f0;
+  color: #4a5568;
+  border-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.userAvatar::after {
-  background: linear-gradient(45deg, #3b82f6, #4573df);
-}
-
-.userAvatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+.userAvatarClickable:hover {
+  border-color: #27AE60;
+  box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2);
 }

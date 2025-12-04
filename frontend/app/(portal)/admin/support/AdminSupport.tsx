@@ -1,10 +1,10 @@
 // @AI-HINT: Admin Support page. Theme-aware, accessible, animated tickets list with filters and a details panel.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { useAdminData } from '@/hooks/useAdmin';
 import Modal from '@/app/components/Modal/Modal';
 import common from './AdminSupport.common.module.css';
@@ -52,14 +52,6 @@ const AdminSupport: React.FC = () => {
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
   const [priority, setPriority] = useState<(typeof PRIORITIES)[number]>('All');
   const [selectedId, setSelectedId] = useState<string | null>(rows[0]?.id ?? null);
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const listRef = useRef<HTMLDivElement | null>(null);
-  const detailsRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const listVisible = useIntersectionObserver(listRef, { threshold: 0.1 });
-  const detailsVisible = useIntersectionObserver(detailsRef, { threshold: 0.1 });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -177,9 +169,9 @@ const AdminSupport: React.FC = () => {
   };
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
+    <PageTransition className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
+        <ScrollReveal className={common.header}>
           <div>
             <h1 className={common.title}>Support</h1>
             <p className={cn(common.subtitle, themed.subtitle)}>Triage and resolve support tickets. Filter by status and priority; select a ticket to view details.</p>
@@ -197,10 +189,10 @@ const AdminSupport: React.FC = () => {
             </select>
             <button type="button" className={cn(common.button, themed.button)} onClick={() => setIsNewOpen(true)}>New Ticket</button>
           </div>
-        </div>
+        </ScrollReveal>
 
         <section className={cn(common.layout)}>
-          <div ref={listRef} className={cn(common.listCard, themed.listCard, listVisible ? common.isVisible : common.isNotVisible)} aria-label="Tickets list">
+          <ScrollReveal className={cn(common.listCard, themed.listCard)} aria-label="Tickets list" delay={0.1}>
             <div className={cn(common.cardTitle)}>Tickets</div>
             <div className={cn(common.toolbar)}>
               <div className={common.controls}>
@@ -285,9 +277,9 @@ const AdminSupport: React.FC = () => {
                 >Next</button>
               </div>
             )}
-          </div>
+          </ScrollReveal>
 
-          <div ref={detailsRef} className={cn(common.detailsCard, themed.detailsCard, detailsVisible ? common.isVisible : common.isNotVisible)} aria-label="Ticket details">
+          <ScrollReveal className={cn(common.detailsCard, themed.detailsCard)} aria-label="Ticket details" delay={0.2}>
             <div className={cn(common.cardTitle)}>Details</div>
             {selectedTicket ? (
               <div className={common.detailsGrid}>
@@ -298,6 +290,7 @@ const AdminSupport: React.FC = () => {
                 <div className={common.kv}><div>Assignee</div><div>{selectedTicket.assignee ?? 'Unassigned'}</div></div>
                 <div className={common.kv}><div>Created</div><div>{selectedTicket.created}</div></div>
                 <div className={common.kv}><div>Message</div><div>{selectedTicket.body}</div></div>
+
                 <div className={common.actions}>
                   <button type="button" className={cn(common.button, themed.button)} onClick={assignSelected}>Assign</button>
                   <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={resolveSelected}>Resolve</button>
@@ -306,7 +299,7 @@ const AdminSupport: React.FC = () => {
             ) : (
               <div role="status" aria-live="polite">Select a ticket to view details.</div>
             )}
-          </div>
+          </ScrollReveal>
         </section>
       </div>
       {isNewOpen && (
@@ -337,7 +330,7 @@ const AdminSupport: React.FC = () => {
           </div>
         </Modal>
       )}
-    </main>
+    </PageTransition>
   );
 };
 

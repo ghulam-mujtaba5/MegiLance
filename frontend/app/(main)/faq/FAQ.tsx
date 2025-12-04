@@ -3,9 +3,10 @@
 import React from 'react';
 import Script from 'next/script';
 import { useTheme } from 'next-themes';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Accordion, { AccordionItem } from '@/app/components/Accordion/Accordion';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import common from './FAQ.common.module.css';
 import light from './FAQ.light.module.css';
 import dark from './FAQ.dark.module.css';
@@ -58,35 +59,31 @@ const FAQ: React.FC = () => {
   };
 
   return (
-    <main id="main-content" role="main" aria-labelledby="faq-title" className={styles.root}>
-      <Script id="faq-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      
-      <motion.header 
-        className={styles.header}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <span className={styles.badge}>Answers you need</span>
-        <h1 id="faq-title" className={styles.title}>Frequently Asked Questions</h1>
-        <p className={styles.subtitle}>Quick, clear answers about our platform, security, and how to get started.</p>
-      </motion.header>
+    <PageTransition>
+      <main id="main-content" role="main" aria-labelledby="faq-title" className={styles.root}>
+        <Script id="faq-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+        
+        <ScrollReveal>
+          <header className={styles.header}>
+            <span className={styles.badge}>Answers you need</span>
+            <h1 id="faq-title" className={styles.title}>Frequently Asked Questions</h1>
+            <p className={styles.subtitle}>Quick, clear answers about our platform, security, and how to get started.</p>
+          </header>
+        </ScrollReveal>
 
-      <motion.div 
-        className={styles.accordionContainer}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <Accordion type="single" defaultValue="item-1">
-          {faqData.map((item) => (
-            <AccordionItem key={item.value} value={item.value} title={item.question}>
-              <p>{item.answer}</p>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </motion.div>
-    </main>
+        <ScrollReveal delay={0.2}>
+          <div className={styles.accordionContainer}>
+            <Accordion type="single" defaultValue="item-1">
+              {faqData.map((item) => (
+                <AccordionItem key={item.value} value={item.value} title={item.question}>
+                  <p>{item.answer}</p>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </ScrollReveal>
+      </main>
+    </PageTransition>
   );
 };
 

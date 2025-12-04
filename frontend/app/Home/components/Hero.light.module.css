@@ -136,7 +136,7 @@
 }
 
 /* Feature Pills */
-.featurePill {
+.floatingPill {
   background: rgba(255, 255, 255, 0.8);
   color: #374151;
   border: 1px solid rgba(229, 231, 235, 0.8);
@@ -145,14 +145,14 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-.featurePill:hover {
+.floatingPill:hover {
   background: rgba(255, 255, 255, 0.95);
   border-color: rgba(69, 115, 223, 0.25);
   box-shadow: 0 4px 12px rgba(69, 115, 223, 0.1);
   color: #1e293b;
 }
 
-.featurePill svg {
+.floatingPill svg {
   color: #4573df;
 }
 

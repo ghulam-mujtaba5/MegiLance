@@ -1,62 +1,42 @@
-/* @AI-HINT: Light theme styles for the ProductScreenshots carousel component. */
+/* @AI-HINT: Light theme styles for ProductScreenshots. */
 
 .carouselContainer {
-  background: transparent;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .carouselTitle {
-  color: transparent;
-  background-image: linear-gradient(120deg, #0f172a, #4573df);
+  color: #1a1a1a;
 }
 
 .carouselSubtitle {
-  color: #64748b;
+  color: #4a4a4a;
 }
 
-.carouselWrapper {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 25px 50px -12px rgba(69, 115, 223, 0.1);
-}
-
-.navButton {
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #e2e8f0;
-  color: #0f172a;
-  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.1);
-}
-
-.navButton:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: #cbd5e1;
-  box-shadow: 0 6px 16px rgba(69, 115, 223, 0.15);
-}
-
-.screenshotImage {
-  box-shadow: 0 25px 50px -12px rgba(69, 115, 223, 0.15);
-  border: 1px solid #e2e8f0;
-}
-
-.playOverlay {
-  background: rgba(69, 115, 223, 0.8);
-  box-shadow: 0 10px 25px rgba(69, 115, 223, 0.3);
-}
-
-.playOverlay:hover {
-  background: rgba(69, 115, 223, 1);
-  box-shadow: 0 15px 30px rgba(69, 115, 223, 0.4);
+.slideContent {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .slideTitle {
-  color: #0f172a;
+  color: #1a1a1a;
 }
 
 .slideDescription {
-  color: #64748b;
+  color: #4a4a4a;
+}
+
+.navButton {
+  background: rgba(255, 255, 255, 0.8);
+  color: #1a1a1a;
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+.navButton:hover {
+  background: #ffffff;
 }
 
 .indicator {
-  background: #cbd5e1;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .indicatorActive {
@@ -64,11 +44,11 @@
 }
 
 .autoPlayButton {
-  border: 1px solid #4573df;
-  color: #4573df;
+  background: rgba(255, 255, 255, 0.8);
+  color: #1a1a1a;
+  border-color: rgba(0, 0, 0, 0.05);
 }
 
 .autoPlayButton:hover {
-  background: #4573df;
-  color: white;
+  background: #ffffff;
 }

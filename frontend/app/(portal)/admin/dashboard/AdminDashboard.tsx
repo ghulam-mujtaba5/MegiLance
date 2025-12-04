@@ -1,12 +1,14 @@
 // @AI-HINT: Admin Dashboard page. Theme-aware, accessible, animated KPIs, charts, users table, and quick actions.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useAdminData, type RecentActivity as ActivityType } from '@/hooks/useAdmin';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import common from './AdminDashboard.common.module.css';
 import light from './AdminDashboard.light.module.css';
 import dark from './AdminDashboard.dark.module.css';
@@ -73,14 +75,6 @@ const AdminDashboard: React.FC = () => {
   const { users, kpis, systemStats, recentActivity, loading, error } = useAdminData();
   const [role, setRole] = useState<'All' | 'Admin' | 'Client' | 'Freelancer'>('All');
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const kpiRef = useRef<HTMLDivElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const kpisVisible = useIntersectionObserver(kpiRef, { threshold: 0.1 });
-  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
-
   const effectiveKPIs: KPI[] = useMemo(() => {
     if (!kpis || !Array.isArray(kpis) || kpis.length === 0) return [];
     return kpis.map((k, idx) => ({ id: String(k.id ?? idx), label: k.label, value: k.value, trend: (k as KPI).trend ?? '' }));
@@ -122,52 +116,58 @@ const AdminDashboard: React.FC = () => {
   if (!resolvedTheme) return null;
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <FraudAlertBanner message="Multiple high-risk activities have been detected. Please review the flagged items immediately."/>
-      
-      {/* Welcome Banner */}
-      <div className={common.welcomeBanner}>
-        <div className={common.welcomeBannerContent}>
-          <h1 className={common.welcomeBannerTitle}>Welcome back, Admin!</h1>
-          <p className={common.welcomeBannerText}>Here&apos;s what&apos;s happening with the platform today.</p>
-          <div className={common.quickActions}>
-            <Link href="/admin/users">
-              <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
-                Manage Users
-              </Button>
-            </Link>
-            <Link href="/admin/settings">
-              <Button variant="secondary" size="md" iconBefore={<Shield size={18} />}>
-                System Settings
-              </Button>
-            </Link>
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <FraudAlertBanner message="Multiple high-risk activities have been detected. Please review the flagged items immediately."/>
+        
+        {/* Welcome Banner */}
+        <ScrollReveal>
+          <div className={common.welcomeBanner}>
+            <div className={common.welcomeBannerContent}>
+              <h1 className={common.welcomeBannerTitle}>Welcome back, Admin!</h1>
+              <p className={common.welcomeBannerText}>Here&apos;s what&apos;s happening with the platform today.</p>
+              <div className={common.quickActions}>
+                <Link href="/admin/users">
+                  <Button variant="secondary" size="md" iconBefore={<Plus size={18} />}>
+                    Manage Users
+                  </Button>
+                </Link>
+                <Link href="/admin/settings">
+                  <Button variant="secondary" size="md" iconBefore={<Shield size={18} />}>
+                    System Settings
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      
-      <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <div>
-            <h1 className={common.title}>Admin Dashboard</h1>
-            <p className={cn(common.subtitle, themed.subtitle)}>Global overview of platform metrics, users, and operations.</p>
-          </div>
-          <div className={common.controls} aria-label="Admin dashboard controls">
-            <label className={common.srOnly} htmlFor="role-filter">Filter by role</label>
-            <select id="role-filter" className={cn(common.select, themed.select)} value={role} onChange={(e) => setRole(e.target.value as 'All' | 'Admin' | 'Client' | 'Freelancer')} title="Filter users by role">
-              {['All','Admin','Client','Freelancer'].map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-            <Button variant="primary" size="md">
-              Create Announcement
-            </Button>
-            <Button variant="secondary" size="md">
-              Run Maintenance
-            </Button>
-          </div>
-        </div>
+        </ScrollReveal>
+        
+        <div className={common.container}>
+          <ScrollReveal delay={0.1}>
+            <div className={common.header}>
+              <div>
+                <h1 className={common.title}>Admin Dashboard</h1>
+                <p className={cn(common.subtitle, themed.subtitle)}>Global overview of platform metrics, users, and operations.</p>
+              </div>
+              <div className={common.controls} aria-label="Admin dashboard controls">
+                <label className={common.srOnly} htmlFor="role-filter">Filter by role</label>
+                <select id="role-filter" className={cn(common.select, themed.select)} value={role} onChange={(e) => setRole(e.target.value as 'All' | 'Admin' | 'Client' | 'Freelancer')} title="Filter users by role">
+                  {['All','Admin','Client','Freelancer'].map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+                <Button variant="primary" size="md">
+                  Create Announcement
+                </Button>
+                <Button variant="secondary" size="md">
+                  Run Maintenance
+                </Button>
+              </div>
+            </div>
+          </ScrollReveal>
 
-        {/* Stats Grid */}
-        {loading ? (
-          <div className={common.statsGrid}>
+          {/* Stats Grid */}
+          <ScrollReveal delay={0.2}>
+            {loading ? (
+              <div className={common.statsGrid}>
             {[1,2,3,4].map(i => (
               <Card key={i} className={common.statCard}>
                 <div className={common.loadingState}>
@@ -210,7 +210,10 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        <section ref={kpiRef} className={cn(common.kpis, kpisVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="kpi-section-title">
+          </ScrollReveal>
+
+        <ScrollReveal delay={0.3}>
+          <section className={common.kpis} aria-labelledby="kpi-section-title">
           <h2 id="kpi-section-title" className={common.srOnly}>Key Performance Indicators</h2>
           {loading && (
             <div className={common.skeletonRow} aria-busy="true" />
@@ -235,13 +238,14 @@ const AdminDashboard: React.FC = () => {
               )}
             </div>
           ))}
-        </section>
+          </section>
+        </ScrollReveal>
 
         <div aria-live="polite" className={common.srOnly}>
           {role !== 'All' && `Showing ${filteredUsers.length} ${role} users.`}
         </div>
         
-        <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="main-content-title">
+        <StaggerContainer delay={0.4} className={common.grid} aria-labelledby="main-content-title">
           <h2 id="main-content-title" className={common.srOnly}>Main Content</h2>
           
           {/* Recent Activity */}
@@ -301,9 +305,10 @@ const AdminDashboard: React.FC = () => {
               ))}
             </svg>
           </div>
-        </section>
+        </StaggerContainer>
       </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

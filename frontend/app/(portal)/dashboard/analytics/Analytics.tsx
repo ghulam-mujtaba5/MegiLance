@@ -1,10 +1,10 @@
 // @AI-HINT: Portal Analytics page. Theme-aware, accessible, animated KPIs and charts with filters.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import common from './Analytics.common.module.css';
 import light from './Analytics.light.module.css';
 import dark from './Analytics.dark.module.css';
@@ -18,14 +18,6 @@ const Analytics: React.FC = () => {
 
   const [range, setRange] = useState<(typeof RANGES)[number]>('Last 30 days');
   const [segment, setSegment] = useState<(typeof SEGMENTS)[number]>('All');
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const kpisRef = useRef<HTMLDivElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const kpisVisible = useIntersectionObserver(kpisRef, { threshold: 0.1 });
-  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
 
   // Mock data influenced by filters
   const data = useMemo(() => {
@@ -51,9 +43,9 @@ const Analytics: React.FC = () => {
   }, [range, segment]);
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
+    <PageTransition className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
+        <ScrollReveal className={common.header}>
           <div>
             <h1 className={common.title}>Analytics</h1>
             <p className={themed.subtitle}>Track revenue, users, and performance across your workspace.</p>
@@ -69,10 +61,10 @@ const Analytics: React.FC = () => {
               {SEGMENTS.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
-        </div>
+        </ScrollReveal>
 
         <section aria-label="Key performance indicators">
-          <div ref={kpisRef} className={cn(common.kpis, kpisVisible ? common.isVisible : common.isNotVisible)}>
+          <StaggerContainer className={common.kpis}>
             {data.kpis.map((k) => (
               <div key={k.label} tabIndex={0} className={cn(common.kpi, themed.kpi)}>
                 <div className={cn(common.kpiLabel, themed.kpiLabel)}>{k.label}</div>
@@ -80,11 +72,11 @@ const Analytics: React.FC = () => {
                 <div className={cn(common.kpiDelta, themed.kpiDelta)} aria-label={`Delta ${k.delta}`}>{k.delta}</div>
               </div>
             ))}
-          </div>
+          </StaggerContainer>
         </section>
 
         <section aria-label="Analytics charts and breakdowns">
-          <div ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)}>
+          <StaggerContainer className={common.grid} delay={0.2}>
             <div className={cn(common.card, themed.card)}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>Monthly Revenue</div>
               {/* SVG bar chart to avoid inline styles */}
@@ -153,11 +145,11 @@ const Analytics: React.FC = () => {
                 )}
               </svg>
             </div>
-          </div>
+          </StaggerContainer>
         </section>
 
         <section aria-label="Metrics table">
-          <div className={cn(common.card, themed.card)}>
+          <ScrollReveal className={cn(common.card, themed.card)} delay={0.4}>
             <div className={cn(common.cardTitle, themed.cardTitle)}>Breakdown</div>
             <table className={common.table}>
               <thead>
@@ -175,10 +167,10 @@ const Analytics: React.FC = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </ScrollReveal>
         </section>
       </div>
-    </main>
+    </PageTransition>
   );
 };
 

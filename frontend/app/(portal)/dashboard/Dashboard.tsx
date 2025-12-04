@@ -1,11 +1,13 @@
 // @AI-HINT: Portal Dashboard page. Premium billionaire-grade dashboard with 3D floating elements, glassmorphism, and advanced micro-interactions.
 'use client';
 
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useUser } from '@/hooks/useUser';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 // Premium 3D components
 import { 
@@ -42,14 +44,6 @@ const Dashboard: React.FC = () => {
     return { ...authCommon, ...t } as { [k: string]: string };
   }, [resolvedTheme]);
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const metricsRef = useRef<HTMLDivElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const metricsVisible = useIntersectionObserver(metricsRef, { threshold: 0.1 });
-  const contentVisible = useIntersectionObserver(contentRef, { threshold: 0.1 });
-
   const displayUser: User = {
     fullName: user?.fullName ?? 'Guest User',
     email: user?.email ?? 'guest@example.com',
@@ -59,44 +53,52 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      {/* Stunning 3D Background Elements */}
-      <div className={common.backgroundDecor}>
-        <AnimatedOrb variant="blue" size={300} blur={60} opacity={0.4} className={common.orbTopRight} />
-        <AnimatedOrb variant="purple" size={250} blur={50} opacity={0.3} className={common.orbBottomLeft} />
-        <ParticlesSystem count={8} className={common.particlesBg} />
-      </div>
-      
-      {/* Floating 3D Objects */}
-      <div className={common.floating3DElements}>
-        <div className={common.floatingElement} style={{ top: '10%', right: '5%' }}>
-          <FloatingCube size={40} />
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        {/* Stunning 3D Background Elements */}
+        <div className={common.backgroundDecor}>
+          <AnimatedOrb variant="blue" size={300} blur={60} opacity={0.4} className={common.orbTopRight} />
+          <AnimatedOrb variant="purple" size={250} blur={50} opacity={0.3} className={common.orbBottomLeft} />
+          <ParticlesSystem count={8} className={common.particlesBg} />
         </div>
-        <div className={common.floatingElement} style={{ bottom: '15%', left: '3%' }}>
-          <FloatingSphere size={50} variant="gradient" />
-        </div>
-        <div className={common.floatingElement} style={{ top: '50%', right: '8%' }}>
-          <FloatingSphere size={35} variant="purple" />
-        </div>
-      </div>
-      
-      <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <DashboardHeader userRole="client" user={displayUser} styles={headerStyles} />
-        </div>
-        <div ref={metricsRef} className={cn(common.metrics, metricsVisible ? common.isVisible : common.isNotVisible)}>
-          <DashboardMetrics />
-        </div>
-        <div ref={contentRef} className={cn(common.contentGrid, contentVisible ? common.isVisible : common.isNotVisible)}>
-          <div className={common.recentProjects}>
-            <DashboardRecentProjects />
+        
+        {/* Floating 3D Objects */}
+        <div className={common.floating3DElements}>
+          <div className={common.floatingElement} style={{ top: '10%', right: '5%' }}>
+            <FloatingCube size={40} />
           </div>
-          <div className={common.activityFeed}>
-            <DashboardActivityFeed />
+          <div className={common.floatingElement} style={{ bottom: '15%', left: '3%' }}>
+            <FloatingSphere size={50} variant="gradient" />
+          </div>
+          <div className={common.floatingElement} style={{ top: '50%', right: '8%' }}>
+            <FloatingSphere size={35} variant="purple" />
           </div>
         </div>
-      </div>
-    </main>
+        
+        <div className={common.container}>
+          <ScrollReveal>
+            <div className={common.header}>
+              <DashboardHeader userRole="client" user={displayUser} styles={headerStyles} />
+            </div>
+          </ScrollReveal>
+          
+          <ScrollReveal delay={0.2}>
+            <div className={common.metrics}>
+              <DashboardMetrics />
+            </div>
+          </ScrollReveal>
+          
+          <StaggerContainer className={common.contentGrid}>
+            <StaggerItem className={common.recentProjects}>
+              <DashboardRecentProjects />
+            </StaggerItem>
+            <StaggerItem className={common.activityFeed}>
+              <DashboardActivityFeed />
+            </StaggerItem>
+          </StaggerContainer>
+        </div>
+      </main>
+    </PageTransition>
   );
 };
 

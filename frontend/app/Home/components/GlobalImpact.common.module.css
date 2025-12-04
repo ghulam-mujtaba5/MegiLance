@@ -1,212 +1,126 @@
-/* @AI-HINT: Common styles for the GlobalImpact section, defining layout, typography, and base component styles. */
-
 .globalImpact {
-  padding: 5rem 0;
   position: relative;
+  padding: 8rem 0;
   overflow: hidden;
+  perspective: 1000px;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 2;
 }
 
-/* --- Header --- */
 .header {
   text-align: center;
-  max-width: 768px;
-  margin: 0 auto 4rem auto;
+  max-width: 800px;
+  margin: 0 auto 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-inter);
-  font-size: 0.875rem;
-  font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 9999px;
-  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .title {
   font-family: var(--font-poppins);
-  font-size: clamp(2.25rem, 5vw, 3rem); /* Responsive font size */
-  font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-  letter-spacing: -0.025em;
+  font-size: 3.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .highlight {
+  position: relative;
   display: inline-block;
 }
 
 .subtitle {
   font-family: var(--font-inter);
-  font-size: 1.125rem;
-  line-height: 1.7;
-  opacity: 0.85;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  max-width: 600px;
 }
 
-/* --- Main Grid Layout --- */
 .mainGrid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 3rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
   align-items: center;
-  margin-bottom: 5rem;
+  margin-bottom: 8rem;
 }
 
 .globeSection {
-  grid-column: 1 / span 7;
   position: relative;
-  min-height: 500px;
+  height: 600px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.globePlaceholder {
-  width: 100%;
-  padding-bottom: 100%;
-  border-radius: 50%;
-  background-color: rgba(128, 128, 128, 0.1);
+  perspective: 1000px;
 }
 
 .statsGrid {
-  grid-column: 8 / span 5;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
 }
 
-/* --- Success Stories --- */
 .storiesSection {
-  text-align: center;
+  position: relative;
 }
 
 .storiesTitle {
   font-family: var(--font-poppins);
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
-  font-weight: 700;
-  margin-bottom: 3rem;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  letter-spacing: -0.025em;
+  font-size: 2.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 4rem;
 }
 
 .storiesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
-/* --- Responsive Design --- */
 @media (max-width: 1024px) {
-  .globalImpact {
-    padding: 4rem 0;
-  }
-  
-  .container {
-    gap: 3rem;
-  }
-  
   .mainGrid {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 4rem;
   }
 
   .globeSection {
-    grid-column: 1 / -1;
-    min-height: 400px;
+    height: 400px;
   }
 
-  .statsGrid {
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
   .storiesGrid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .globalImpact {
-    padding: 3rem 0;
-  }
-  
-  .container {
-    padding: 0 1rem;
-    gap: 2.5rem;
-  }
-  
-  .header {
-    margin-bottom: 2.5rem;
-  }
-  
   .title {
-    font-size: clamp(2rem, 5vw, 2.5rem);
-  }
-  
-  .subtitle {
-    font-size: 1rem;
-  }
-  
-  .mainGrid {
-    gap: 2rem;
-  }
-  
-  .globeSection {
-    min-height: 350px;
+    font-size: 2.5rem;
   }
   
   .statsGrid {
     grid-template-columns: 1fr;
-  }
-  
-  .storiesTitle {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    margin-bottom: 2rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .globalImpact {
-    padding: 2.5rem 0;
-  }
-  
-  .container {
-    padding: 0 0.75rem;
-    gap: 2rem;
-  }
-  
-  .storiesGrid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .title {
-    font-size: clamp(1.75rem, 6vw, 2.25rem);
-  }
-  
-  .subtitle {
-    font-size: 0.95rem;
-  }
-  
-  .badge {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.8rem;
-  }
-  
-  .storiesTitle {
-    font-size: clamp(1.25rem, 4vw, 1.75rem);
   }
 }

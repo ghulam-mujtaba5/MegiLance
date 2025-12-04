@@ -1,34 +1,46 @@
 /* @AI-HINT: Dark theme styles for the main site Footer. Defines the color palette for a premium, high-contrast, and brand-aligned dark mode appearance. */
 
 .footer {
-  background-color: var(--color-background-primary-dark, #0d1117);
-  border-top: 1px solid var(--color-border-subtle-dark, #30363d);
+  background-color: #050505;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background-image: radial-gradient(circle at 50% 0%, rgba(69, 115, 223, 0.05), transparent 40%);
 }
 
 .tagline {
-  color: var(--color-text-secondary-dark, #8b949e);
+  color: #9ca3af;
 }
 
 .linksTitle {
-  color: var(--color-text-primary-dark, #c9d1d9);
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .linkItem {
-  color: var(--color-text-secondary-dark, #8b949e);
+  color: #9ca3af;
 }
 
 .linkItem:hover {
-  color: var(--color-brand-primary-dark, #58a6ff);
+  color: #60a5fa;
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
 }
 
 .bottomBar {
-  border-top: 1px solid var(--color-border-subtle-dark, #30363d);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
 .copyright {
-  color: var(--color-text-tertiary-dark, #6e7681);
+  color: #6b7280;
 }
 
 .socialLink {
-  color: var(--color-text-secondary-dark, #8b949e);
+  color: #9ca3af;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.socialLink:hover {
+  color: #ffffff;
+  background-color: rgba(69, 115, 223, 0.2);
+  border-color: rgba(69, 115, 223, 0.5);
+  box-shadow: 0 0 15px rgba(69, 115, 223, 0.3);
 }

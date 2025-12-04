@@ -1,0 +1,199 @@
+/* @AI-HINT: Portfolio Showcase page - light theme */
+
+.container {
+  background: #f9fafb;
+}
+
+.title {
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+.settingsBtn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.settingsBtn:hover {
+  background: #e5e7eb;
+}
+
+.addBtn {
+  background: linear-gradient(135deg, #4573df 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+.addBtn:hover {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
+}
+
+.publicUrl {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.publicUrl a {
+  color: #4573df;
+}
+
+.categoryBtn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.categoryBtn:hover {
+  background: #e5e7eb;
+}
+
+.categoryActive {
+  background: #4573df;
+  color: #fff;
+}
+
+.layoutToggle {
+  background: #f3f4f6;
+}
+
+.layoutBtn {
+  background: transparent;
+  color: #6b7280;
+}
+
+.layoutBtn:hover,
+.layoutActive {
+  background: #fff;
+  color: #111827;
+}
+
+.loading {
+  color: #6b7280;
+}
+
+.emptyState {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.emptyTitle {
+  color: #111827;
+}
+
+.emptyBtn {
+  background: linear-gradient(135deg, #4573df 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+.sectionTitle {
+  color: #111827;
+}
+
+.featuredCard,
+.portfolioCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.featuredCard:hover,
+.portfolioCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.featuredBadge {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.cardCategory {
+  color: #4573df;
+}
+
+.cardTitle {
+  color: #111827;
+}
+
+.cardDesc {
+  color: #6b7280;
+}
+
+.tag {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.stat {
+  color: #6b7280;
+}
+
+.likeBtn {
+  color: #6b7280;
+}
+
+.liked {
+  color: #ef4444;
+}
+
+.modal {
+  background: #fff;
+}
+
+.modalHeader {
+  border-color: #e5e7eb;
+}
+
+.closeButton {
+  color: #6b7280;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+}
+
+.input,
+.select,
+.textarea {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.addTagBtn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.selectedTag {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.modalFooter {
+  border-color: #e5e7eb;
+}
+
+.cancelBtn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cancelBtn:hover {
+  background: #e5e7eb;
+}
+
+.saveBtn {
+  background: linear-gradient(135deg, #4573df 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+.saveBtn:hover {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
+}

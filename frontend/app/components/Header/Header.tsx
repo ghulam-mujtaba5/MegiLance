@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
+import { Button } from '@/app/components/Button/Button';
 
 import commonStyles from './Header.common.module.css';
 import lightStyles from './Header.light.module.css';
@@ -42,7 +43,11 @@ const Header: React.FC = () => {
             <Link href="/about" className={cn(commonStyles.navLink, themeStyles.navLink)}>About</Link>
             <Link href="/blog" className={cn(commonStyles.navLink, themeStyles.navLink)}>Blog</Link>
             <Link href="/contact" className={cn(commonStyles.navLink, themeStyles.navLink)}>Contact</Link>
-            <Link href="/login" className={cn(commonStyles.navLink, commonStyles.signIn, themeStyles.signIn)}>Sign In</Link>
+            <Link href="/login" className={commonStyles.signInLink}>
+              <Button variant="primary" size="sm" className={commonStyles.signInButton}>
+                Sign In
+              </Button>
+            </Link>
           </div>
           <button onClick={toggleMenu} className={cn(commonStyles.mobileMenuButton, themeStyles.mobileMenuButton)} aria-label="Toggle menu">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -55,7 +60,11 @@ const Header: React.FC = () => {
         <Link href="/about" className={cn(commonStyles.navLink, themeStyles.navLink)}>About</Link>
         <Link href="/blog" className={cn(commonStyles.navLink, themeStyles.navLink)}>Blog</Link>
         <Link href="/contact" className={cn(commonStyles.navLink, themeStyles.navLink)}>Contact</Link>
-        <Link href="/login" className={cn(commonStyles.navLink, commonStyles.signIn, themeStyles.signIn)}>Sign In</Link>
+        <Link href="/login" className={commonStyles.signInLinkMobile}>
+           <Button variant="primary" size="md" fullWidth>
+              Sign In
+           </Button>
+        </Link>
       </div>
     </>
   );

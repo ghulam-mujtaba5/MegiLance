@@ -6,6 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import UserAvatar from '../components/UserAvatar/UserAvatar';
 import ProjectCard, { ProjectCardProps } from '../components/ProjectCard/ProjectCard';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Profile.common.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
@@ -120,52 +123,62 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className={cn(commonStyles.page, themeStyles.page)}>
-      <div className={commonStyles.container}>
-        <header className={cn(commonStyles.header, themeStyles.header)}>
-          <UserAvatar 
-            name={user?.full_name || 'User'} 
-            src={user?.profile_picture_url} 
-            size="large" 
-          />
-          <div className={commonStyles.headerInfo}>
-            <h1 className={cn(commonStyles.name, themeStyles.name)}>
-              {user?.full_name || 'Your Name'}
-            </h1>
-            <p className={cn(commonStyles.bio, themeStyles.bio)}>
-              {user?.bio || 'Add a bio to tell others about yourself.'}
-            </p>
-            <span className={cn(commonStyles.role, themeStyles.role)}>
-              {user?.role === 'client' ? '👔 Client' : user?.role === 'admin' ? '🛡️ Admin' : '👤 User'}
-            </span>
-          </div>
-        </header>
-        
-        <main className={commonStyles.content}>
-          <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
-            {user?.role === 'client' ? 'Your Projects' : 'Recent Activity'}
-          </h2>
+    <PageTransition>
+      <div className={cn(commonStyles.page, themeStyles.page)}>
+        <div className={commonStyles.container}>
+          <ScrollReveal>
+            <header className={cn(commonStyles.header, themeStyles.header)}>
+              <UserAvatar 
+                name={user?.full_name || 'User'} 
+                src={user?.profile_picture_url} 
+                size="large" 
+              />
+              <div className={commonStyles.headerInfo}>
+                <h1 className={cn(commonStyles.name, themeStyles.name)}>
+                  {user?.full_name || 'Your Name'}
+                </h1>
+                <p className={cn(commonStyles.bio, themeStyles.bio)}>
+                  {user?.bio || 'Add a bio to tell others about yourself.'}
+                </p>
+                <span className={cn(commonStyles.role, themeStyles.role)}>
+                  {user?.role === 'client' ? '👔 Client' : user?.role === 'admin' ? '🛡️ Admin' : '👤 User'}
+                </span>
+              </div>
+            </header>
+          </ScrollReveal>
           
-          {projects.length > 0 ? (
-            <div className={commonStyles.projectsGrid}>
-              {projects.map((project) => (
-                <ProjectCard key={project.id} {...project} />
-              ))}
-            </div>
-          ) : (
-            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-              <span className={commonStyles.emptyIcon}>📋</span>
-              <h3>No Projects Yet</h3>
-              <p>
-                {user?.role === 'client' 
-                  ? 'Post your first project to start hiring talented freelancers.'
-                  : 'Your project activity will appear here.'}
-              </p>
-            </div>
-          )}
-        </main>
+          <main className={commonStyles.content}>
+            <ScrollReveal delay={0.1}>
+              <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
+                {user?.role === 'client' ? 'Your Projects' : 'Recent Activity'}
+              </h2>
+            </ScrollReveal>
+            
+            {projects.length > 0 ? (
+              <StaggerContainer className={commonStyles.projectsGrid}>
+                {projects.map((project) => (
+                  <StaggerItem key={project.id}>
+                    <ProjectCard {...project} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            ) : (
+              <ScrollReveal delay={0.2}>
+                <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+                  <span className={commonStyles.emptyIcon}>📋</span>
+                  <h3>No Projects Yet</h3>
+                  <p>
+                    {user?.role === 'client' 
+                      ? 'Post your first project to start hiring talented freelancers.'
+                      : 'Your project activity will appear here.'}
+                  </p>
+                </div>
+              </ScrollReveal>
+            )}
+          </main>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

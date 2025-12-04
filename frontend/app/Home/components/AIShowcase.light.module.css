@@ -1,56 +1,45 @@
-/* @AI-HINT: Light theme styles for the AIShowcase section, defining colors for a clean, professional look with enhanced visual effects. */
+/* @AI-HINT: Light theme styles for AIShowcase. */
 
 .aiShowcase {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 .badge {
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-  color: var(--primary-4573df);
-  box-shadow: 0 4px 6px rgba(69, 115, 223, 0.1);
-}
-
-.badge:hover {
-  box-shadow: 0 6px 10px rgba(69, 115, 223, 0.15);
-  transform: translateY(-2px);
+  background: rgba(69, 115, 223, 0.1);
+  color: #4573df;
+  border-color: rgba(69, 115, 223, 0.2);
 }
 
 .title {
-  background: linear-gradient(90deg, var(--primary-4573df), var(--brand-indigo-3c3c88));
+  background: linear-gradient(135deg, #1a1a1a 0%, #4573df 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .subtitle {
-  color: #4b5563;
+  color: #4a4a4a;
 }
 
 .techStack {
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(229, 231, 235, 0.7);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .techTitle {
-  color: #111827;
+  color: #1a1a1a;
 }
 
 .techLogo {
-  background: rgba(249, 250, 251, 0.7);
-  border: 1px solid rgba(229, 231, 235, 0.5);
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.05);
+  color: #4a4a4a;
 }
 
 .techLogo:hover {
-  background: rgba(241, 245, 249, 0.9);
-  border: 1px solid rgba(209, 213, 219, 0.7);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
-}
-
-.techLogo svg {
-  color: var(--primary-4573df);
+  background: #ffffff;
+  color: #4573df;
 }
 
 .techLogoName {
-  color: #374151;
+  color: #1a1a1a;
 }

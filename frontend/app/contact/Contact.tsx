@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { cn } from '@/lib/utils';
 
 import commonStyles from './Contact.common.module.css';
@@ -20,9 +20,6 @@ const Contact: React.FC = () => {
 
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
-
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const isVisible = useIntersectionObserver(containerRef, { threshold: 0.1 });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -61,43 +58,46 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <main
-      id="main-content"
-      role="main"
-      ref={containerRef}
-      className={cn(commonStyles.contactPage, commonStyles.isNotVisible, { [commonStyles.isVisible]: isVisible })}
-    >
-      <div className={cn(commonStyles.container, themeStyles.container)}>
-        <header className={cn(commonStyles.header, themeStyles.header)}>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>Get in Touch</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>Have a question or feedback? We&apos;d love to hear from you.</p>
-        </header>
+    <PageTransition>
+      <main
+        id="main-content"
+        role="main"
+        className={cn(commonStyles.contactPage)}
+      >
+        <div className={cn(commonStyles.container, themeStyles.container)}>
+          <ScrollReveal>
+            <header className={cn(commonStyles.header, themeStyles.header)}>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>Get in Touch</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>Have a question or feedback? We&apos;d love to hear from you.</p>
+            </header>
+          </ScrollReveal>
 
-        <div className={cn(commonStyles.contentWrapper)}>
-          <section className={cn(commonStyles.formContainer, themeStyles.formContainer)} aria-label="Contact form">
-            {submitted ? (
-              <div className={cn(commonStyles.successMessage, themeStyles.successMessage)} role="status" aria-live="polite">
-                <h3>Thank You!</h3>
-                <p>Your message has been sent. We&apos;ll get back to you shortly.</p>
-              </div>
-            ) : (
-              <form className={cn(commonStyles.form)} onSubmit={handleSubmit} noValidate>
-                <Input
-                  label="Full Name"
-                  type="text"
-                  placeholder="Your Name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  aria-invalid={Boolean(errors.name)}
-                  aria-describedby={errors.name ? 'name-error' : undefined}
-                />
-                {errors.name && (
-                  <p id="name-error" className={cn(commonStyles.errorText)} role="alert">
-                    {errors.name}
-                  </p>
-                )}
+          <StaggerContainer className={cn(commonStyles.contentWrapper)} delay={0.1}>
+            <section className={cn(commonStyles.formContainer, themeStyles.formContainer)} aria-label="Contact form">
+              {submitted ? (
+                <div className={cn(commonStyles.successMessage, themeStyles.successMessage)} role="status" aria-live="polite">
+                  <h3>Thank You!</h3>
+                  <p>Your message has been sent. We&apos;ll get back to you shortly.</p>
+                </div>
+              ) : (
+                <form className={cn(commonStyles.form)} onSubmit={handleSubmit} noValidate>
+                  <Input
+                    label="Full Name"
+                    type="text"
+                    placeholder="Your Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    aria-invalid={Boolean(errors.name)}
+                    aria-describedby={errors.name ? 'name-error' : undefined}
+                  />
+                  {errors.name && (
+                    <p id="name-error" className={cn(commonStyles.errorText)} role="alert">
+                      {errors.name}
+                    </p>
+                  )}
+
                 <Input
                   label="Email Address"
                   type="email"
@@ -138,16 +138,17 @@ const Contact: React.FC = () => {
                 </Button>
               </form>
             )}
-          </section>
-          <section className={cn(commonStyles.infoContainer, themeStyles.infoContainer)} aria-labelledby="contact-info">
-            <h3 id="contact-info">Contact Information</h3>
-            <p>For support or general inquiries, please email us at your convenience. We aim to respond to all queries within 24 hours.</p>
-            <a href="mailto:support@megilance.com" className={cn(commonStyles.emailLink, themeStyles.emailLink)}>support@megilance.com</a>
-            {/* Social links can be added here later */}
-          </section>
+            </section>
+            <section className={cn(commonStyles.infoContainer, themeStyles.infoContainer)} aria-labelledby="contact-info">
+              <h3 id="contact-info">Contact Information</h3>
+              <p>For support or general inquiries, please email us at your convenience. We aim to respond to all queries within 24 hours.</p>
+              <a href="mailto:support@megilance.com" className={cn(commonStyles.emailLink, themeStyles.emailLink)}>support@megilance.com</a>
+              {/* Social links can be added here later */}
+            </section>
+          </StaggerContainer>
         </div>
-      </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

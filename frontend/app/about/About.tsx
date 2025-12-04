@@ -1,11 +1,11 @@
 // @AI-HINT: The About Us page, fully refactored for premium quality with modular components and animations.
 'use client';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { FaUsers, FaLightbulb, FaShieldAlt } from 'react-icons/fa';
 
 import commonStyles from './About.common.module.css';
@@ -27,16 +27,6 @@ const teamMembers = [
 ];
 
 // --- Subcomponents ---
-const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const isVisible = useIntersectionObserver(ref, { threshold: 0.2 });
-  return (
-    <section ref={ref} className={cn(commonStyles.section, isVisible && commonStyles.isVisible, className)}>
-      {children}
-    </section>
-  );
-};
-
 const ValueCard: React.FC<{ value: typeof values[0]; themeStyles: any }> = ({ value, themeStyles }) => (
   <div className={cn(commonStyles.valueCard, themeStyles.valueCard)}>
     <value.icon className={cn(commonStyles.valueIcon, themeStyles.valueIcon)} aria-hidden="true" />
@@ -59,35 +49,45 @@ const About: React.FC = () => {
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <main id="main-content" role="main" className={cn(commonStyles.aboutPage, themeStyles.aboutPage)}>
-      <div className={commonStyles.container}>
-        <header className={commonStyles.header}>
-          <h1 className={commonStyles.title}>About MegiLance</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>The Future of Freelancing, Powered by AI and Web3.</p>
-        </header>
+    <PageTransition>
+      <main id="main-content" role="main" className={cn(commonStyles.aboutPage, themeStyles.aboutPage)}>
+        <div className={commonStyles.container}>
+          <ScrollReveal>
+            <header className={commonStyles.header}>
+              <h1 className={commonStyles.title}>About MegiLance</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>The Future of Freelancing, Powered by AI and Web3.</p>
+            </header>
+          </ScrollReveal>
 
-        <AnimatedSection>
-          <h2 className={commonStyles.sectionTitle}>Our Mission</h2>
-          <p className={commonStyles.missionText}>
-            Our mission is to create a transparent, efficient, and fair freelance marketplace. We leverage cutting-edge AI to match the right talent with the right projects, and utilize blockchain technology for secure, instant payments, eliminating the need for traditional intermediaries.
-          </p>
-        </AnimatedSection>
+          <ScrollReveal delay={0.1}>
+            <section className={commonStyles.section}>
+              <h2 className={commonStyles.sectionTitle}>Our Mission</h2>
+              <p className={commonStyles.missionText}>
+                Our mission is to create a transparent, efficient, and fair freelance marketplace. We leverage cutting-edge AI to match the right talent with the right projects, and utilize blockchain technology for secure, instant payments, eliminating the need for traditional intermediaries.
+              </p>
+            </section>
+          </ScrollReveal>
 
-        <AnimatedSection>
-          <h2 className={commonStyles.sectionTitle}>Our Core Values</h2>
-          <div className={commonStyles.valuesGrid}>
-            {values.map(value => <ValueCard key={value.title} value={value} themeStyles={themeStyles} />)}
-          </div>
-        </AnimatedSection>
+          <section className={commonStyles.section}>
+            <ScrollReveal delay={0.2}>
+              <h2 className={commonStyles.sectionTitle}>Our Core Values</h2>
+            </ScrollReveal>
+            <StaggerContainer className={commonStyles.valuesGrid} delay={0.3}>
+              {values.map(value => <ValueCard key={value.title} value={value} themeStyles={themeStyles} />)}
+            </StaggerContainer>
+          </section>
 
-        <AnimatedSection>
-          <h2 className={commonStyles.sectionTitle}>Meet the Team</h2>
-          <div className={commonStyles.teamGrid}>
-            {teamMembers.map(member => <TeamMemberCard key={member.name} member={member} themeStyles={themeStyles} />)}
-          </div>
-        </AnimatedSection>
-      </div>
-    </main>
+          <section className={commonStyles.section}>
+            <ScrollReveal delay={0.4}>
+              <h2 className={commonStyles.sectionTitle}>Meet the Team</h2>
+            </ScrollReveal>
+            <StaggerContainer className={commonStyles.teamGrid} delay={0.5}>
+              {teamMembers.map(member => <TeamMemberCard key={member.name} member={member} themeStyles={themeStyles} />)}
+            </StaggerContainer>
+          </section>
+        </div>
+      </main>
+    </PageTransition>
   );
 };
 

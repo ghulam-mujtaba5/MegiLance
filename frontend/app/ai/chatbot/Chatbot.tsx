@@ -3,9 +3,12 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Send, Sparkles, MoreVertical, Trash2, Settings, Paperclip } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 
 import commonStyles from './Chatbot.common.module.css';
 import lightStyles from './Chatbot.light.module.css';
@@ -112,130 +115,149 @@ const Chatbot: React.FC = () => {
   };
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={cn(commonStyles.chatContainer, themeStyles.chatContainer)}>
-        {/* Header */}
-        <header className={cn(commonStyles.header, themeStyles.header)}>
-          <div className={commonStyles.headerLeft}>
-            <div className={cn(commonStyles.aiAvatar, themeStyles.aiAvatar)}>
-              <Sparkles size={24} />
-            </div>
-            <div className={commonStyles.headerInfo}>
-              <h2>MegiLance AI</h2>
-              <p className={cn(commonStyles.headerSubtext, themeStyles.headerSubtext)}>
-                <span className={cn(commonStyles.statusDot, themeStyles.statusDot)} />
-                Online • Ready to help
-              </p>
-            </div>
-          </div>
-          <div className={commonStyles.headerActions}>
-            <button 
-              className={cn(commonStyles.iconButton, themeStyles.iconButton)}
-              onClick={handleClearChat}
-              title="Clear chat"
-              aria-label="Clear chat history"
-            >
-              <Trash2 size={18} />
-            </button>
-            <button 
-              className={cn(commonStyles.iconButton, themeStyles.iconButton)}
-              title="Settings"
-              aria-label="Chat settings"
-            >
-              <MoreVertical size={18} />
-            </button>
-          </div>
-        </header>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={cn(commonStyles.chatContainer, themeStyles.chatContainer)}>
+            {/* Header */}
+            <header className={cn(commonStyles.header, themeStyles.header)}>
+              <div className={commonStyles.headerLeft}>
+                <div className={cn(commonStyles.aiAvatar, themeStyles.aiAvatar)}>
+                  <Sparkles size={24} />
+                </div>
+                <div className={commonStyles.headerInfo}>
+                  <h2>MegiLance AI</h2>
+                  <p className={cn(commonStyles.headerSubtext, themeStyles.headerSubtext)}>
+                    <span className={cn(commonStyles.statusDot, themeStyles.statusDot)} />
+                    Online • Ready to help
+                  </p>
+                </div>
+              </div>
+              <div className={commonStyles.headerActions}>
+                <button 
+                  className={cn(commonStyles.iconButton, themeStyles.iconButton)}
+                  onClick={handleClearChat}
+                  title="Clear chat"
+                  aria-label="Clear chat history"
+                >
+                  <Trash2 size={18} />
+                </button>
+                <button 
+                  className={cn(commonStyles.iconButton, themeStyles.iconButton)}
+                  title="Settings"
+                  aria-label="Chat settings"
+                >
+                  <MoreVertical size={18} />
+                </button>
+              </div>
+            </header>
 
-        {/* Messages */}
-        <div className={commonStyles.messages} role="log" aria-live="polite" aria-label="Chat messages">
-          {messages.map(msg => (
-            <div 
-              key={msg.id} 
-              className={cn(
-                commonStyles.message,
-                msg.sender === 'user' ? commonStyles.messageUser : commonStyles.messageBot
-              )}
-            >
-              {msg.sender === 'bot' && (
-                <div className={cn(commonStyles.messageAvatar, themeStyles.messageAvatar)}>
-                  <Sparkles size={16} />
-                </div>
-              )}
-              <div>
-                <div className={cn(
-                  commonStyles.messageBubble,
-                  msg.sender === 'user' ? themeStyles.messageBubbleUser : themeStyles.messageBubbleBot
-                )}>
-                  {msg.text}
-                </div>
-                <span className={cn(commonStyles.messageTime, themeStyles.messageTime)}>
-                  {formatTime(msg.timestamp)}
-                </span>
-              </div>
+            {/* Messages */}
+            <div className={commonStyles.messages} role="log" aria-live="polite" aria-label="Chat messages">
+              <AnimatePresence initial={false}>
+                {messages.map(msg => (
+                  <motion.div 
+                    key={msg.id} 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className={cn(
+                      commonStyles.message,
+                      msg.sender === 'user' ? commonStyles.messageUser : commonStyles.messageBot
+                    )}
+                  >
+                    {msg.sender === 'bot' && (
+                      <div className={cn(commonStyles.messageAvatar, themeStyles.messageAvatar)}>
+                        <Sparkles size={16} />
+                      </div>
+                    )}
+                    <div>
+                      <div className={cn(
+                        commonStyles.messageBubble,
+                        msg.sender === 'user' ? themeStyles.messageBubbleUser : themeStyles.messageBubbleBot
+                      )}>
+                        {msg.text}
+                      </div>
+                      <span className={cn(commonStyles.messageTime, themeStyles.messageTime)}>
+                        {formatTime(msg.timestamp)}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              
+              {/* Typing Indicator */}
+              <AnimatePresence>
+                {isTyping && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className={cn(commonStyles.message, commonStyles.messageBot)}
+                  >
+                    <div className={cn(commonStyles.messageAvatar, themeStyles.messageAvatar)}>
+                      <Sparkles size={16} />
+                    </div>
+                    <div className={cn(commonStyles.typingIndicator, themeStyles.typingIndicator)}>
+                      <div className={commonStyles.typingDots}>
+                        <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                        <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                        <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <div ref={messagesEndRef} />
             </div>
-          ))}
-          
-          {/* Typing Indicator */}
-          {isTyping && (
-            <div className={cn(commonStyles.message, commonStyles.messageBot)}>
-              <div className={cn(commonStyles.messageAvatar, themeStyles.messageAvatar)}>
-                <Sparkles size={16} />
-              </div>
-              <div className={cn(commonStyles.typingIndicator, themeStyles.typingIndicator)}>
-                <div className={commonStyles.typingDots}>
-                  <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
-                  <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
-                  <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
-                </div>
-              </div>
-            </div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
 
-        {/* Suggestions */}
-        {showSuggestions && messages.length <= 2 && (
-          <div className={commonStyles.suggestions}>
-            {SUGGESTIONS.map((suggestion, index) => (
-              <button
-                key={index}
-                className={cn(commonStyles.suggestionChip, themeStyles.suggestionChip)}
-                onClick={() => handleSuggestionClick(suggestion)}
+            {/* Suggestions */}
+            {showSuggestions && messages.length <= 2 && (
+              <div className={commonStyles.suggestions}>
+                {SUGGESTIONS.map((suggestion, index) => (
+                  <motion.button
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={cn(commonStyles.suggestionChip, themeStyles.suggestionChip)}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion}
+                  </motion.button>
+                ))}
+              </div>
+            )}
+
+            {/* Input Form */}
+            <form 
+              className={cn(commonStyles.inputForm, themeStyles.inputForm)} 
+              onSubmit={handleSend}
+            >
+              <input
+                ref={inputRef}
+                type="text"
+                className={cn(commonStyles.input, themeStyles.input)}
+                placeholder="Ask me anything about MegiLance..."
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                disabled={isTyping}
+                aria-label="Type your message"
+              />
+              <button 
+                type="submit" 
+                className={cn(commonStyles.sendButton, themeStyles.sendButton)}
+                disabled={!input.trim() || isTyping}
+                aria-label="Send message"
               >
-                {suggestion}
+                <Send size={20} />
               </button>
-            ))}
+            </form>
           </div>
-        )}
-
-        {/* Input Form */}
-        <form 
-          className={cn(commonStyles.inputForm, themeStyles.inputForm)} 
-          onSubmit={handleSend}
-        >
-          <input
-            ref={inputRef}
-            type="text"
-            className={cn(commonStyles.input, themeStyles.input)}
-            placeholder="Ask me anything about MegiLance..."
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            disabled={isTyping}
-            aria-label="Type your message"
-          />
-          <button 
-            type="submit" 
-            className={cn(commonStyles.sendButton, themeStyles.sendButton)}
-            disabled={!input.trim() || isTyping}
-            aria-label="Send message"
-          >
-            <Send size={20} />
-          </button>
-        </form>
+        </ScrollReveal>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

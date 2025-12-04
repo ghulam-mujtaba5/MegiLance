@@ -1,73 +1,42 @@
-/* @AI-HINT: Dark theme styles for the AIShowcaseCard, defining colors for a sleek, modern look with enhanced visual effects. */
+/* @AI-HINT: Dark theme styles for AIShowcaseCard. */
 
-.card {
-  background: rgba(17, 24, 39, 0.85);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(55, 65, 81, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+.cardContent {
+  background: rgba(30, 30, 30, 0.6);
 }
 
-.card:hover {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(75, 85, 99, 0.8);
-}
-
-.cardGlow {
-  background: radial-gradient(circle at 50% 0%, rgba(69, 115, 223, 0.2), transparent 70%);
-}
-
-.cardBorder {
-  background: linear-gradient(90deg, var(--primary-4573df), var(--accent-ff9800));
-  border: none;
+.card:hover .cardContent {
+  background: rgba(40, 40, 40, 0.8);
 }
 
 .iconWrapper {
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  color: #d1d5db;
-  border: 1px solid rgba(55, 65, 81, 0.8);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: rgba(69, 115, 223, 0.15);
+  color: #60a5fa;
 }
 
 .card:hover .iconWrapper {
-  background: linear-gradient(135deg, var(--primary-4573df) 0%, #3a66c7 100%);
+  background: #60a5fa;
   color: #ffffff;
-  border: 1px solid rgba(69, 115, 223, 0.5);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .title {
-  color: #f9fafb;
+  color: #ffffff;
 }
 
 .description {
-  color: #d1d5db;
-}
-
-.footer {
-  border-top: 1px solid rgba(55, 65, 81, 0.7);
+  color: #cccccc;
 }
 
 .stats {
-  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-  color: #a5b4fc;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.card:hover .stats {
-  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
-  color: #c7d2fe;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  background: rgba(69, 115, 223, 0.15);
+  color: #60a5fa;
 }
 
 .learnMore {
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  color: #d1d5db;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
-.learnMore:hover {
-  background: linear-gradient(135deg, var(--accent-ff9800) 0%, #e68900 100%);
-  color: white;
-  box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+.card:hover .learnMore {
+  background: #60a5fa;
+  color: #ffffff;
 }

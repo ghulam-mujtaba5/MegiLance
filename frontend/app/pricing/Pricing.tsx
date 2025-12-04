@@ -2,10 +2,10 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 
 // Modular Components
 import { BillingToggle } from '@/components/pricing/BillingToggle/BillingToggle';
@@ -73,18 +73,6 @@ const faqData = [
   }
 ];
 
-// --- Animated Section Wrapper ---
-const AnimatedSection = ({ children }: { children: React.ReactNode }) => {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const isVisible = useIntersectionObserver(ref, { threshold: 0.1 });
-
-  return (
-    <div ref={ref} className={`${styles.isNotVisible} ${isVisible ? styles.isVisible : ''}`}>
-      {children}
-    </div>
-  );
-};
-
 // --- Main Pricing Page Component ---
 const PricingPage = () => {
   const { resolvedTheme } = useTheme();
@@ -106,25 +94,25 @@ const PricingPage = () => {
   };
 
   return (
-    <div className={`${styles.page} ${themeStyles.page}`}>
-      <div className={styles.container}>
-        <AnimatedSection>
-          <header className={styles.header}>
-            <h1 className={`${styles.title} ${themeStyles.title}`}>Find the perfect plan for your needs</h1>
-            <p className={`${styles.subtitle} ${themeStyles.subtitle}`}>
-              Whether you&apos;re a solo freelancer or a growing enterprise, MegiLance offers flexible pricing to help you succeed.
-            </p>
-          </header>
-        </AnimatedSection>
+    <PageTransition>
+      <div className={`${styles.page} ${themeStyles.page}`}>
+        <div className={styles.container}>
+          <ScrollReveal>
+            <header className={styles.header}>
+              <h1 className={`${styles.title} ${themeStyles.title}`}>Find the perfect plan for your needs</h1>
+              <p className={`${styles.subtitle} ${themeStyles.subtitle}`}>
+                Whether you&apos;re a solo freelancer or a growing enterprise, MegiLance offers flexible pricing to help you succeed.
+              </p>
+            </header>
+          </ScrollReveal>
 
-        <AnimatedSection>
-          <div className={styles.billingToggleWrapper}>
-            <BillingToggle billingCycle={billingCycle} setBillingCycle={setBillingCycle} />
-          </div>
-        </AnimatedSection>
+          <ScrollReveal delay={0.1}>
+            <div className={styles.billingToggleWrapper}>
+              <BillingToggle billingCycle={billingCycle} setBillingCycle={setBillingCycle} />
+            </div>
+          </ScrollReveal>
 
-        <AnimatedSection>
-          <div className={styles.grid}>
+          <StaggerContainer className={styles.grid} delay={0.2}>
             {pricingData.map((tier) => (
               <PricingCard
                 key={tier.tier}
@@ -132,28 +120,28 @@ const PricingPage = () => {
                 {...getTierProps(tier.tier)}
               />
             ))}
-          </div>
-        </AnimatedSection>
+          </StaggerContainer>
 
-        <AnimatedSection>
-          <section className={styles.faqSection} aria-labelledby="faq-heading">
-            <header className={styles.faqHeader}>
-              <h2 id="faq-heading" className={`${styles.faqTitle} ${themeStyles.faqTitle}`}>Frequently Asked Questions</h2>
-              <p className={`${styles.faqSubtitle} ${themeStyles.faqSubtitle}`}>
-                Have questions? We&apos;ve got answers. If you can&apos;t find what you&apos;re looking for, feel free to contact us.
-              </p>
-            </header>
-            <div className={`${styles.faqList} ${themeStyles.faqList}`}>
-              {faqData.map((faq, index) => (
-                <FaqItem key={index} question={faq.question}>
-                  <p>{faq.answer}</p>
-                </FaqItem>
-              ))}
-            </div>
-          </section>
-        </AnimatedSection>
+          <ScrollReveal delay={0.3}>
+            <section className={styles.faqSection} aria-labelledby="faq-heading">
+              <header className={styles.faqHeader}>
+                <h2 id="faq-heading" className={`${styles.faqTitle} ${themeStyles.faqTitle}`}>Frequently Asked Questions</h2>
+                <p className={`${styles.faqSubtitle} ${themeStyles.faqSubtitle}`}>
+                  Have questions? We&apos;ve got answers. If you can&apos;t find what you&apos;re looking for, feel free to contact us.
+                </p>
+              </header>
+              <div className={`${styles.faqList} ${themeStyles.faqList}`}>
+                {faqData.map((faq, index) => (
+                  <FaqItem key={index} question={faq.question}>
+                    <p>{faq.answer}</p>
+                  </FaqItem>
+                ))}
+              </div>
+            </section>
+          </ScrollReveal>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

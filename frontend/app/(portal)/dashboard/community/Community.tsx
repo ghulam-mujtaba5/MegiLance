@@ -1,10 +1,10 @@
 // @AI-HINT: Portal Community page. Theme-aware, accessible, animated threads list with filters and composer.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import common from './Community.common.module.css';
 import light from './Community.light.module.css';
 import dark from './Community.dark.module.css';
@@ -35,12 +35,6 @@ const Community: React.FC = () => {
   const [sort, setSort] = useState<(typeof SORTS)[number]>('Latest');
   const [message, setMessage] = useState('');
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const layoutRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const layoutVisible = useIntersectionObserver(layoutRef, { threshold: 0.1 });
-
   const threads = useMemo(() => {
     const q = query.trim().toLowerCase();
     const filtered = initialThreads.filter(t =>
@@ -57,78 +51,84 @@ const Community: React.FC = () => {
   };
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <div>
-            <h1 className={common.title}>Community</h1>
-            <p className={cn(common.subtitle, themed.subtitle)}>Discuss features, share tips, and get help from the community.</p>
-          </div>
-          <div className={common.controls} role="search">
-            <label htmlFor="community-search" className={common.srOnly}>Search threads</label>
-            <input
-              id="community-search"
-              className={cn(common.input, themed.input)}
-              type="search"
-              placeholder="Search threads..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-
-            <label htmlFor="community-sort" className={common.srOnly}>Sort by</label>
-            <select
-              id="community-sort"
-              className={cn(common.select, themed.select)}
-              value={sort}
-              onChange={(e) => setSort(e.target.value as (typeof SORTS)[number])}
-            >
-              {SORTS.map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </div>
-        </div>
-
-        <div ref={layoutRef} className={cn(common.layout, layoutVisible ? common.isVisible : common.isNotVisible)}>
-          <section aria-label="Latest threads" className={cn(common.card, themed.card)}>
-            <div className={cn(common.cardTitle)}>Threads</div>
-            <div className={common.threadList}>
-              {threads.map((t) => (
-                <article key={t.id} tabIndex={0} aria-labelledby={`thread-${t.id}-title`} className={cn(common.thread, themed.thread)}>
-                  <h3 id={`thread-${t.id}-title`} className={common.threadTitle}>{t.title}</h3>
-                  <div className={common.threadMeta}>
-                    <span aria-label={`Author ${t.author}`}>{t.author}</span>
-                    <span aria-label={`Posted ${t.time}`}>{t.time}</span>
-                    <span aria-label={`${t.replies} replies`}>{t.replies} replies</span>
-                  </div>
-                  <div className={common.threadTags}>
-                    {t.tags.map(tag => (
-                      <span key={tag} className={cn(common.tag, themed.tag)}>{tag}</span>
-                    ))}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <aside aria-label="Create a new thread" className={cn(common.card, themed.card)}>
-            <div className={cn(common.cardTitle)}>Start a discussion</div>
-            <form className={common.composer} onSubmit={onPost}>
-              <label htmlFor="compose" className={common.srOnly}>Message</label>
-              <textarea
-                id="compose"
-                className={cn(common.textarea, themed.textarea)}
-                placeholder="Share your question or idea..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              <div className={common.actions}>
-                <button type="submit" className={cn(common.button, themed.button)} aria-label="Post message">Post</button>
-                <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={() => setMessage('')} aria-label="Clear message">Clear</button>
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <div className={common.header}>
+              <div>
+                <h1 className={common.title}>Community</h1>
+                <p className={cn(common.subtitle, themed.subtitle)}>Discuss features, share tips, and get help from the community.</p>
               </div>
-            </form>
-          </aside>
+              <div className={common.controls} role="search">
+                <label htmlFor="community-search" className={common.srOnly}>Search threads</label>
+                <input
+                  id="community-search"
+                  className={cn(common.input, themed.input)}
+                  type="search"
+                  placeholder="Search threads..."
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+
+                <label htmlFor="community-sort" className={common.srOnly}>Sort by</label>
+                <select
+                  id="community-sort"
+                  className={cn(common.select, themed.select)}
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value as (typeof SORTS)[number])}
+                >
+                  {SORTS.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal>
+            <div className={common.layout}>
+              <section aria-label="Latest threads" className={cn(common.card, themed.card)}>
+                <div className={cn(common.cardTitle)}>Threads</div>
+                <StaggerContainer className={common.threadList}>
+                  {threads.map((t) => (
+                    <article key={t.id} tabIndex={0} aria-labelledby={`thread-${t.id}-title`} className={cn(common.thread, themed.thread)}>
+                      <h3 id={`thread-${t.id}-title`} className={common.threadTitle}>{t.title}</h3>
+                      <div className={common.threadMeta}>
+                        <span aria-label={`Author ${t.author}`}>{t.author}</span>
+                        <span aria-label={`Posted ${t.time}`}>{t.time}</span>
+                        <span aria-label={`${t.replies} replies`}>{t.replies} replies</span>
+                      </div>
+                      <div className={common.threadTags}>
+                        {t.tags.map(tag => (
+                          <span key={tag} className={cn(common.tag, themed.tag)}>{tag}</span>
+                        ))}
+                      </div>
+                    </article>
+                  ))}
+                </StaggerContainer>
+              </section>
+
+              <aside aria-label="Create a new thread" className={cn(common.card, themed.card)}>
+                <div className={cn(common.cardTitle)}>Start a discussion</div>
+                <form className={common.composer} onSubmit={onPost}>
+                  <label htmlFor="compose" className={common.srOnly}>Message</label>
+                  <textarea
+                    id="compose"
+                    className={cn(common.textarea, themed.textarea)}
+                    placeholder="Share your question or idea..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <div className={common.actions}>
+                    <button type="submit" className={cn(common.button, themed.button)} aria-label="Post message">Post</button>
+                    <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={() => setMessage('')} aria-label="Clear message">Clear</button>
+                  </div>
+                </form>
+              </aside>
+            </div>
+          </ScrollReveal>
         </div>
-      </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

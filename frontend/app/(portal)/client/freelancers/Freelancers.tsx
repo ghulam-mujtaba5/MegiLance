@@ -1,10 +1,10 @@
 // @AI-HINT: Client Freelancers page. Theme-aware, accessible filters and animated freelancers grid.
 'use client';
 
-import React, { useId, useMemo, useRef, useState } from 'react';
+import React, { useId, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { useClientData } from '@/hooks/useClient';
 import FreelancerCard, { Freelancer } from './components/FreelancerCard/FreelancerCard';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
@@ -49,12 +49,6 @@ const Freelancers: React.FC = () => {
   const [availability, setAvailability] = useState<Availability>('All');
   type SortKey = 'name' | 'title' | 'rate' | 'location' | 'availability' | 'rating';
   const [sortKey, setSortKey] = useState<SortKey>('name');
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -105,14 +99,14 @@ const Freelancers: React.FC = () => {
   React.useEffect(() => { setPage(1); }, [sortKey, sortDir, query, availability, pageSize]);
 
   return (
-    <main className={cn(common.page, themed.page)}>
+    <PageTransition className={cn(common.page, themed.page)}>
       <div className={cn(common.container)}>
-        <header ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
+        <ScrollReveal className={common.header}>
           <h1 className={cn(common.title, themed.title)}>Find Freelancers</h1>
           <p className={cn(common.subtitle, themed.subtitle)}>Search, filter, and connect with the perfect talent for your project.</p>
-        </header>
+        </ScrollReveal>
 
-        <section className={cn(common.controlsSection, themed.controlsSection)}>
+        <ScrollReveal className={cn(common.controlsSection, themed.controlsSection)} delay={0.1}>
           <div className={cn(common.filters)}>
             <Input
               id="search-query"
@@ -172,9 +166,9 @@ const Freelancers: React.FC = () => {
               Export CSV
             </Button>
           </div>
-        </section>
+        </ScrollReveal>
 
-        <section ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)} aria-live="polite">
+        <StaggerContainer className={common.grid} aria-live="polite" delay={0.2}>
           {loading && (
             [...Array(12)].map((_, i) => (
               <div key={i} className={common.skeletonCard}>
@@ -201,7 +195,7 @@ const Freelancers: React.FC = () => {
               <p>Try adjusting your search or filter criteria.</p>
             </div>
           )}
-        </section>
+        </StaggerContainer>
 
         {totalPages > 1 && (
           <div className={common.paginationBar}>
@@ -219,7 +213,7 @@ const Freelancers: React.FC = () => {
           </div>
         )}
       </div>
-    </main>
+    </PageTransition>
   );
 };
 

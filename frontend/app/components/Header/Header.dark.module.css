@@ -1,40 +1,39 @@
 .header {
-  /* Fallback */
-  background-color: var(--surface);
-  /* Subtle translucency on supported browsers */
-  background-color: color-mix(in oklab, var(--surface) 90%, transparent);
-  border-color: var(--border);
+  background-color: rgba(10, 10, 12, 0.6);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .brandName {
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #ffffff 0%, #a5a5a5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .navLink {
-  color: var(--text-secondary);
+  color: #9ca3af;
 }
 
 .navLink:hover {
-  color: var(--primary);
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-.signIn {
-  background-color: var(--primary);
-  color: var(--text-on-primary);
-}
-
-.signIn:hover {
-  /* Fallback */
-  background-color: var(--primary);
-  /* Slightly darker on capable browsers */
-  background-color: color-mix(in oklab, var(--primary) 90%, black);
+.navLink::after {
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
 }
 
 .mobileMenuButton {
-  color: var(--text-primary);
+  color: #e5e7eb;
+}
+
+.mobileMenuButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .mobileNavMenu {
-  background-color: var(--surface);
-  border-color: var(--border);
+  background-color: rgba(10, 10, 12, 0.8);
+  border-color: rgba(255, 255, 255, 0.08);
 }

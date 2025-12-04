@@ -2073,6 +2073,77 @@ export const reviewResponsesApi = {
     apiFetch(`/review-responses/${reviewId}`, { method: 'DELETE' }),
 };
 
+// ===========================
+// ACTIVITY FEED
+// ===========================
+export const activityFeedApi = {
+  list: (filters?: { type?: string; page?: number; page_size?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/activity-feed/?${params}`);
+  },
+  get: (activityId: number) => apiFetch(`/activity-feed/${activityId}`),
+  markAsRead: (activityId: number) =>
+    apiFetch(`/activity-feed/${activityId}/read`, { method: 'POST' }),
+  markAllAsRead: () => apiFetch('/activity-feed/read-all', { method: 'POST' }),
+  getUnreadCount: () => apiFetch('/activity-feed/unread-count'),
+};
+
+// ===========================
+// INTEGRATIONS
+// ===========================
+export const integrationsApi = {
+  list: () => apiFetch('/integrations/'),
+  get: (integrationId: string) => apiFetch(`/integrations/${integrationId}`),
+  connect: (provider: string, data?: any) =>
+    apiFetch(`/integrations/${provider}/connect`, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    }),
+  disconnect: (integrationId: string) =>
+    apiFetch(`/integrations/${integrationId}/disconnect`, { method: 'POST' }),
+  sync: (integrationId: string) =>
+    apiFetch(`/integrations/${integrationId}/sync`, { method: 'POST' }),
+  getSettings: (integrationId: string) =>
+    apiFetch(`/integrations/${integrationId}/settings`),
+  updateSettings: (integrationId: string, settings: any) =>
+    apiFetch(`/integrations/${integrationId}/settings`, {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    }),
+  getAvailable: () => apiFetch('/integrations/available'),
+};
+
+// ===========================
+// USER FEEDBACK
+// ===========================
+export const userFeedbackApi = {
+  submit: (data: { type: string; message: string; page?: string; rating?: number }) =>
+    apiFetch('/user-feedback/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  list: (filters?: { type?: string; status?: string; page?: number; page_size?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/user-feedback/?${params}`);
+  },
+  get: (feedbackId: number) => apiFetch(`/user-feedback/${feedbackId}`),
+  update: (feedbackId: number, data: { status?: string; admin_response?: string }) =>
+    apiFetch(`/user-feedback/${feedbackId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+};
+
 export default {
   auth: authApi,
   analytics: analyticsApi,

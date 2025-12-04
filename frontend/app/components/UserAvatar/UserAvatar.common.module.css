@@ -1,122 +1,44 @@
-/* @AI-HINT: Shared styles for UserAvatar component. Do not use or import any global or theme CSS. */
 .userAvatar {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  font-weight: 600;
   overflow: hidden;
-  -webkit-user-select: none; /* For Safari */
+  border-radius: 50%;
+  font-weight: 600;
   user-select: none;
-  position: relative;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
-  /* Ensure sufficient touch target size */
-  min-width: 32px;
-  min-height: 32px;
-}
-
-/* High contrast focus indicator for forced colors mode */
-@media (forced-colors: active) {
-  .userAvatar:focus {
-    outline: 2px solid highlight;
-    outline-offset: 2px;
-  }
-}
-
-.userAvatar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-600));
-  opacity: 0.1;
-  z-index: 0;
-}
-
-.userAvatar::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 12px;
-  background: linear-gradient(45deg, var(--color-primary-400), var(--color-primary-600));
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.userAvatar:hover::after {
-  opacity: 1;
 }
 
 .userAvatarSmall {
-  width: 32px;
-  height: 32px;
-  font-size: 0.8rem;
+  width: 2rem;
+  height: 2rem;
+  font-size: 0.75rem;
 }
 
 .userAvatarMedium {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   font-size: 1rem;
 }
 
 .userAvatarLarge {
-  width: 56px;
-  height: 56px;
+  width: 3.5rem;
+  height: 3.5rem;
   font-size: 1.25rem;
 }
 
-.userAvatarImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: relative;
-  z-index: 1;
-  transition: transform 0.3s ease;
-  /* Optimize image rendering */
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-.userAvatar:hover .userAvatarImage {
-  transform: scale(1.05);
-}
-
-.userAvatar span {
-  position: relative;
-  z-index: 1;
-  color: var(--color-primary-700);
-  transition: all 0.3s ease;
-  /* Ensure text has sufficient contrast */
-  line-height: 1.2;
-}
-
-.userAvatar:hover span {
-  transform: scale(1.05);
-}
-
-.userAvatar:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Clickable avatar styles */
 .userAvatarClickable {
   cursor: pointer;
 }
 
-.userAvatarClickable:focus {
-  outline: 2px solid var(--color-primary-500, #4573df);
-  outline-offset: 2px;
+.userAvatarClickable:hover {
+  transform: scale(1.05);
 }
 
-.userAvatarClickable:active {
-  transform: scale(0.98);
+.userAvatarImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }

@@ -1,14 +1,23 @@
 // @AI-HINT: Newsletter signup component with optimistic UI and basic validation.
 'use client';
 import React, { useState } from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import { useAnalytics } from '@/app/shared/analytics/AnalyticsProvider';
+
+import commonStyles from './NewsletterSignup.common.module.css';
+import lightStyles from './NewsletterSignup.light.module.css';
+import darkStyles from './NewsletterSignup.dark.module.css';
 
 interface Props { compact?: boolean; }
 
 const NewsletterSignup: React.FC<Props> = ({ compact }) => {
   const { track } = useAnalytics();
+  const { resolvedTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,25 +34,25 @@ const NewsletterSignup: React.FC<Props> = ({ compact }) => {
   };
 
   if (status === 'success') {
-    return <p role="status" className="text-sm">Thanks! Check your inbox to confirm.</p>;
+    return <p role='status' className={cn(commonStyles.successMessage, themeStyles.successMessage)}>Thanks! Check your inbox to confirm.</p>;
   }
 
   return (
-    <form onSubmit={submit} className="flex gap-2 w-full max-w-sm" aria-label="Newsletter signup form">
+    <form onSubmit={submit} className={commonStyles.form} aria-label='Newsletter signup form'>
       <input
-        type="email"
-        aria-label="Email address"
-        placeholder="you@example.com"
+        type='email'
+        aria-label='Email address'
+        placeholder='you@example.com'
         value={email}
         onChange={(e) => { setEmail(e.target.value); if (status==='error') setStatus('idle'); }}
-        className="flex-1 rounded-md border px-3 py-2 text-sm bg-[var(--surface-elev)] border-[var(--border)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+        className={cn(commonStyles.input, themeStyles.input)}
         disabled={status==='loading'}
         required
       />
       <button
-        type="submit"
+        type='submit'
         disabled={status==='loading'}
-        className="rounded-md bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-[var(--text-on-primary)] hover:brightness-105 disabled:opacity-50"
+        className={cn(commonStyles.button, themeStyles.button)}
       >
         {status==='loading' ? '...' : compact ? 'Join' : 'Subscribe'}
       </button>

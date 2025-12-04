@@ -3,6 +3,7 @@
 
 import React, { useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 import commonStyles from './Toast.common.module.css';
@@ -77,6 +78,12 @@ const Toast: React.FC<ToastProps> = ({
     }
   };
 
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    if (info.offset.x > 100) {
+      onClose?.();
+    }
+  };
+
   if (!resolvedTheme) return null;
 
   const baseClassName = cn(
@@ -84,7 +91,6 @@ const Toast: React.FC<ToastProps> = ({
     themeStyles.toast,
     commonStyles[variant],
     themeStyles[variant],
-    show ? commonStyles.enter : commonStyles.exit,
     className,
   );
 
@@ -108,26 +114,27 @@ const Toast: React.FC<ToastProps> = ({
     </>
   );
 
-  const commonProps = {
-    id: toastId,
-    className: baseClassName,
-    'aria-atomic': true as const,
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
-  };
-
-  if (variant === 'danger' || variant === 'warning') {
-    return (
-      <div role="alert" aria-live="assertive" {...commonProps}>
-        {content}
-      </div>
-    );
-  }
-
   return (
-    <div role="status" aria-live="polite" {...commonProps}>
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: 300, scale: 0.9 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+      whileHover={{ scale: 1.02 }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={{ right: 0.5 }}
+      onDragEnd={handleDragEnd}
+      className={baseClassName}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      role={variant === 'danger' || variant === 'warning' ? "alert" : "status"}
+      aria-live={variant === 'danger' || variant === 'warning' ? "assertive" : "polite"}
+      id={toastId}
+      aria-atomic="true"
+    >
       {content}
-    </div>
+    </motion.div>
   );
 };
 

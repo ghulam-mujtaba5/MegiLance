@@ -1,57 +1,25 @@
-/* @AI-HINT: Dark theme styles for FeatureCard. Defines colors for a sleek, high-contrast, and modern appearance. */
-
 .featureCard {
-  background-color: rgba(31, 41, 55, 0.7);
-  border: 1px solid rgba(58, 65, 74, 0.5);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(30, 41, 59, 0.4);
+  border-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .featureCard:hover {
-  background-color: rgba(31, 41, 55, 0.9);
-  border-color: rgba(88, 166, 255, 0.4);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-}
-
-.featureCard:hover::after {
-  background: radial-gradient(circle, rgba(88, 166, 255, 0.15) 0%, transparent 70%);
+  background: rgba(30, 41, 59, 0.6);
+  box-shadow: 0 20px 40px rgba(39, 174, 96, 0.15);
+  border-color: rgba(74, 222, 128, 0.5);
 }
 
 .iconWrapper {
-  background-color: rgba(31, 41, 55, 0.8);
-  color: #58a6ff;
-  border: 1px solid rgba(58, 65, 74, 0.5);
+  background: rgba(39, 174, 96, 0.15);
+  color: #4ade80;
+  box-shadow: 0 0 15px rgba(39, 174, 96, 0.2);
 }
 
 .title {
-  color: #f5f7fa;
+  color: #f8fafc;
 }
 
 .description {
-  color: #d1d5db;
-}
-
-/* Hero Variant Dark */
-.hero {
-  background: linear-gradient(145deg, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.9));
-  border: 1px solid rgba(58, 65, 74, 0.6);
-}
-
-.hero:hover {
-  border-color: rgba(88, 166, 255, 0.5);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-.hero .iconWrapper {
-  background: linear-gradient(135deg, #4573df, #58a6ff);
-  color: #ffffff;
-  border: none;
-  box-shadow: 0 8px 20px rgba(88, 166, 255, 0.3);
-}
-
-.hero .title {
-  color: #f5f7fa;
-}
-
-.hero .description {
-  color: #d1d5db;
+  color: #94a3b8;
 }

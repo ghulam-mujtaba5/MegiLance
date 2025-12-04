@@ -1,13 +1,11 @@
-/* Section background removed to use page-level background */
-
 .testimonials {
-  background: transparent;
+  background: #f8fafc;
 }
 
 .title {
-  color: #0f172a;
+  color: #1a202c;
 }
 
 .subtitle {
-  color: #64748b;
+  color: #4a5568;
 }

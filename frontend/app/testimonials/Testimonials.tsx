@@ -1,14 +1,16 @@
 // @AI-HINT: Testimonials page with theme-aware styling, animated sections, and accessible structure.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { Quote } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import common from './Testimonials.common.module.css';
 import light from './Testimonials.light.module.css';
 import dark from './Testimonials.dark.module.css';
@@ -77,91 +79,92 @@ const Testimonials: React.FC = () => {
     [selected]
   );
 
-  const headerRef = useRef<HTMLElement | null>(null);
-  const controlsRef = useRef<HTMLDivElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
-  const ctaRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-  const controlsVisible = useIntersectionObserver(controlsRef, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' });
-  const ctaVisible = useIntersectionObserver(ctaRef, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' });
-
   return (
-    <main id="main-content" role="main" aria-labelledby="testimonials-title" className={cn(common.page, themed.page)}>
-      <div className={common.container}>
-        <header
-          ref={headerRef}
-          className={cn(common.header, themed.header, headerVisible ? common.isVisible : common.isNotVisible)}
-        >
-          <h1 id="testimonials-title" className={cn(common.title, themed.title)}>What Our Users Say</h1>
-          <p className={cn(common.subtitle, themed.subtitle)}>Real stories from clients, freelancers, and enterprise partners.</p>
-        </header>
+    <PageTransition>
+      <main id="main-content" role="main" aria-labelledby="testimonials-title" className={cn(common.page, themed.page)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <header className={cn(common.header, themed.header)}>
+              <h1 id="testimonials-title" className={cn(common.title, themed.title)}>What Our Users Say</h1>
+              <p className={cn(common.subtitle, themed.subtitle)}>Real stories from clients, freelancers, and enterprise partners.</p>
+            </header>
+          </ScrollReveal>
 
-        <div
-          ref={controlsRef}
-          className={cn(common.controls, controlsVisible ? common.isVisible : common.isNotVisible)}
-          role="toolbar"
-          aria-label="Filter testimonials by category"
-        >
-          {categories.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className={cn(common.chip, themed.chip)}
-              aria-pressed={selected === c || undefined}
-              onClick={() => setSelected(c)}
+          <ScrollReveal delay={0.1}>
+            <div
+              className={common.controls}
+              role="toolbar"
+              aria-label="Filter testimonials by category"
             >
-              {c}
-            </button>
-          ))}
-        </div>
-
-        <section aria-label="Testimonials">
-          <div
-            ref={gridRef}
-            className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)}
-          >
-            {filtered.map((t, index) => (
-              <figure key={t.name} className={cn(common.card, themed.card)} style={{ transitionDelay: `${index * 100}ms` }}>
-                <div className={common.quoteWrapper}>
-                  <Quote className={cn(common.quoteIcon, themed.quoteIcon)} aria-hidden="true" />
-                  <blockquote className={cn(common.quote, themed.quote)}>“{t.quote}”</blockquote>
-                </div>
-                <figcaption className={cn(common.person, themed.person)}>
-                  <Image
-                    className={common.avatar}
-                    src={t.avatar}
-                    alt={`${t.name} avatar`}
-                    width={48}
-                    height={48}
-                    loading="lazy"
-                  />
-                  <div className={common.personDetails}>
-                    <div className={cn(common.name, themed.name)}>{t.name}</div>
-                    <div className={cn(common.role, themed.role)}>{t.role}</div>
-                  </div>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-
-        <section ref={ctaRef} className={cn(common.ctaSection, ctaVisible ? common.isVisible : common.isNotVisible)} aria-label="Call to action">
-          <div className={cn(common.cta, themed.cta)}>
-            <h2 className={cn(common.ctaTitle, themed.ctaTitle)}>Ready to build your masterpiece?</h2>
-            <div className={common.buttonGroup}>
-              <Link href="/signup/client">
-                <Button size="lg" variant="primary">Join as a Client</Button>
-              </Link>
-              <Link href="/signup/freelancer">
-                <Button size="lg" variant="secondary">Apply as Talent</Button>
-              </Link>
+              {categories.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className={cn(common.chip, themed.chip, selected === c && common.active)}
+                  aria-pressed={selected === c || undefined}
+                  onClick={() => setSelected(c)}
+                >
+                  {c}
+                </button>
+              ))}
             </div>
-          </div>
-        </section>
-      </div>
-    </main>
+          </ScrollReveal>
+
+          <section aria-label="Testimonials">
+            <motion.div layout className={common.grid}>
+              <AnimatePresence mode="popLayout">
+                {filtered.map((t) => (
+                  <motion.figure
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    key={t.name}
+                    className={cn(common.card, themed.card)}
+                  >
+                    <div className={common.quoteWrapper}>
+                      <Quote className={cn(common.quoteIcon, themed.quoteIcon)} aria-hidden="true" />
+                      <blockquote className={cn(common.quote, themed.quote)}>“{t.quote}”</blockquote>
+                    </div>
+                    <figcaption className={cn(common.person, themed.person)}>
+                      <Image
+                        className={common.avatar}
+                        src={t.avatar}
+                        alt={`${t.name} avatar`}
+                        width={48}
+                        height={48}
+                        loading="lazy"
+                      />
+                      <div className={common.personDetails}>
+                        <div className={cn(common.name, themed.name)}>{t.name}</div>
+                        <div className={cn(common.role, themed.role)}>{t.role}</div>
+                      </div>
+                    </figcaption>
+                  </motion.figure>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </section>
+
+          <ScrollReveal>
+            <section className={cn(common.ctaSection, themed.ctaSection)} aria-label="Call to action">
+              <div className={cn(common.cta, themed.cta)}>
+                <h2 className={cn(common.ctaTitle, themed.ctaTitle)}>Ready to build your masterpiece?</h2>
+                <div className={common.buttonGroup}>
+                  <Link href="/signup/client">
+                    <Button size="lg" variant="primary">Join as a Client</Button>
+                  </Link>
+                  <Link href="/signup/freelancer">
+                    <Button size="lg" variant="secondary">Apply as Talent</Button>
+                  </Link>
+                </div>
+              </div>
+            </section>
+          </ScrollReveal>
+        </div>
+      </main>
+    </PageTransition>
   );
 };
 

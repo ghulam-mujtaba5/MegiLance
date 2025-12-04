@@ -9,6 +9,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { loadHireDraft, saveHireDraft, clearHireDraft } from '@/app/mocks/hires';
 import api from '@/lib/api';
 
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+
 import Button from '@/app/components/Button/Button';
 import StepIndicator from './components/StepIndicator/StepIndicator';
 import StepFreelancer from './components/StepFreelancer/StepFreelancer';
@@ -122,14 +125,17 @@ const Hire: React.FC = () => {
   };
 
   return (
-    <main className={cn(common.page, themed.page)}>
-      <div className={common.container}>
-        <header className={common.header}>
-          <h1 className={cn(common.title, themed.title)}>Hire a Freelancer</h1>
-          <p className={cn(common.subtitle, themed.subtitle)}>Complete the steps to send a hiring request.</p>
-        </header>
+    <PageTransition>
+      <main className={cn(common.page, themed.page)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <header className={common.header}>
+              <h1 className={cn(common.title, themed.title)}>Hire a Freelancer</h1>
+              <p className={cn(common.subtitle, themed.subtitle)}>Complete the steps to send a hiring request.</p>
+            </header>
+          </ScrollReveal>
 
-        <div className={common.stepIndicatorContainer}>
+          <div className={common.stepIndicatorContainer}>
             <StepIndicator steps={STEPS} currentStep={step} />
         </div>
 
@@ -166,7 +172,8 @@ const Hire: React.FC = () => {
             </div>
         </form>
       </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

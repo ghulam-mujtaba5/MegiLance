@@ -3,8 +3,11 @@
 
 import React, { useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Input from '@/app/components/Input/Input';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import {
   Calculator,
   FileText,
@@ -160,299 +163,325 @@ const PriceEstimator: React.FC = () => {
   if (!resolvedTheme) return null;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.innerContainer}>
-        {/* Header */}
-        <header className={commonStyles.header}>
-          <div className={cn(commonStyles.headerIcon, themeStyles.headerIcon)}>
-            <Calculator />
-          </div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>
-            AI Price Estimator
-          </h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Get accurate, data-driven cost estimates for your project powered by AI analysis
-          </p>
-        </header>
-
-        {/* Main Grid */}
-        <div className={commonStyles.mainGrid}>
-          {/* Form Card */}
-          <div className={cn(commonStyles.formCard, themeStyles.formCard)}>
-            <div className={commonStyles.formHeader}>
-              <div className={cn(commonStyles.formIconWrapper, themeStyles.formIconWrapper)}>
-                <FileText />
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <div className={commonStyles.innerContainer}>
+          {/* Header */}
+          <ScrollReveal>
+            <header className={commonStyles.header}>
+              <div className={cn(commonStyles.headerIcon, themeStyles.headerIcon)}>
+                <Calculator />
               </div>
-              <div>
-                <h2 className={cn(commonStyles.formTitle, themeStyles.formTitle)}>
-                  Project Details
-                </h2>
-                <p className={cn(commonStyles.formSubtitle, themeStyles.formSubtitle)}>
-                  Describe your project for accurate pricing
-                </p>
-              </div>
-            </div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>
+                AI Price Estimator
+              </h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Get accurate, data-driven cost estimates for your project powered by AI analysis
+              </p>
+            </header>
+          </ScrollReveal>
 
-            <form className={commonStyles.form} onSubmit={handleSubmit}>
-              <div className={commonStyles.formGrid}>
-                {/* Project Title */}
-                <div className={commonStyles.formGroup}>
-                  <label className={cn(commonStyles.label, themeStyles.label)}>
-                    <Briefcase />
-                    Project Title
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="e.g., E-commerce Website Redesign"
-                    value={formData.title}
-                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    required
-                    fullWidth
-                  />
-                </div>
-
-                {/* Description */}
-                <div className={commonStyles.formGroup}>
-                  <label className={cn(commonStyles.label, themeStyles.label)}>
+          {/* Main Grid */}
+          <div className={commonStyles.mainGrid}>
+            {/* Form Card */}
+            <ScrollReveal delay={0.1}>
+              <div className={cn(commonStyles.formCard, themeStyles.formCard)}>
+                <div className={commonStyles.formHeader}>
+                  <div className={cn(commonStyles.formIconWrapper, themeStyles.formIconWrapper)}>
                     <FileText />
-                    Project Description
-                  </label>
-                  <textarea
-                    className={cn(commonStyles.textarea, themeStyles.textarea)}
-                    placeholder="Describe the project scope, key features, deliverables, and any specific requirements..."
-                    value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                    rows={5}
-                    required
-                  />
-                </div>
-
-                {/* Industry & Complexity Row */}
-                <div className={commonStyles.formRow}>
-                  <div className={commonStyles.formGroup}>
-                    <label className={cn(commonStyles.label, themeStyles.label)}>
-                      <Layers />
-                      Industry
-                      <span className={cn(commonStyles.labelOptional, themeStyles.labelOptional)}>Optional</span>
-                    </label>
-                    <Input
-                      type="text"
-                      placeholder="e.g., SaaS, Retail, Healthcare"
-                      value={formData.industry}
-                      onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
-                      fullWidth
-                    />
                   </div>
-
-                  <div className={commonStyles.formGroup}>
-                    <label className={cn(commonStyles.label, themeStyles.label)}>
-                      <Zap />
-                      Complexity
-                    </label>
-                    <select
-                      className={cn(commonStyles.select, themeStyles.select)}
-                      value={formData.complexity}
-                      onChange={(e) => setFormData(prev => ({ ...prev, complexity: e.target.value }))}
-                      required
-                    >
-                      <option value="Low">Low - Simple features</option>
-                      <option value="Medium">Medium - Standard project</option>
-                      <option value="High">High - Complex integrations</option>
-                      <option value="Enterprise">Enterprise - Large scale</option>
-                    </select>
+                  <div>
+                    <h2 className={cn(commonStyles.formTitle, themeStyles.formTitle)}>
+                      Project Details
+                    </h2>
+                    <p className={cn(commonStyles.formSubtitle, themeStyles.formSubtitle)}>
+                      Describe your project for accurate pricing
+                    </p>
                   </div>
                 </div>
 
-                {/* Timeline */}
-                <div className={commonStyles.formGroup}>
-                  <label className={cn(commonStyles.label, themeStyles.label)}>
-                    <Clock />
-                    Expected Timeline
-                  </label>
-                  <select
-                    className={cn(commonStyles.select, themeStyles.select)}
-                    value={formData.timeline}
-                    onChange={(e) => setFormData(prev => ({ ...prev, timeline: e.target.value }))}
-                    required
-                  >
-                    <option value="Urgent (< 1 week)">Urgent (less than 1 week)</option>
-                    <option value="Standard (1-4 weeks)">Standard (1-4 weeks)</option>
-                    <option value="Flexible">Flexible</option>
-                    <option value="Long-term (> 2 months)">Long-term (2+ months)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Submit Section */}
-              <div className={cn(commonStyles.submitSection, themeStyles.submitSection)}>
-                <button
-                  type="submit"
-                  className={cn(commonStyles.submitButton, themeStyles.submitButton)}
-                  disabled={isLoading || !formData.title || !formData.description}
-                >
-                  <Sparkles />
-                  {isLoading ? 'Analyzing...' : 'Get AI Estimate'}
-                </button>
-                <p className={cn(commonStyles.privacyNote, themeStyles.privacyNote)}>
-                  <Shield />
-                  Your project details are analyzed securely
-                </p>
-              </div>
-            </form>
-          </div>
-
-          {/* Results Panel */}
-          <div className={cn(commonStyles.resultsPanel, themeStyles.resultsPanel)}>
-            {/* Empty State */}
-            {!isLoading && !result && (
-              <div className={commonStyles.emptyState}>
-                <div className={cn(commonStyles.emptyStateIcon, themeStyles.emptyStateIcon)}>
-                  <Calculator />
-                </div>
-                <h3 className={cn(commonStyles.emptyStateTitle, themeStyles.emptyStateTitle)}>
-                  Ready to Estimate
-                </h3>
-                <p className={cn(commonStyles.emptyStateText, themeStyles.emptyStateText)}>
-                  Fill in your project details and our AI will calculate an accurate price range
-                </p>
-              </div>
-            )}
-
-            {/* Loading State */}
-            {isLoading && (
-              <div className={commonStyles.loadingState}>
-                <div className={cn(commonStyles.loadingOrb, themeStyles.loadingOrb)}>
-                  <div className={cn(commonStyles.loadingOrbInner, themeStyles.loadingOrbInner)}>
-                    <Sparkles />
-                  </div>
-                </div>
-                <h3 className={cn(commonStyles.loadingTitle, themeStyles.loadingTitle)}>
-                  AI is analyzing...
-                </h3>
-                <p className={cn(commonStyles.loadingText, themeStyles.loadingText)}>
-                  Processing your project requirements
-                </p>
-                <div className={commonStyles.loadingSteps}>
-                  {loadingSteps.map((step, index) => (
-                    <div
-                      key={step.id}
-                      className={cn(
-                        commonStyles.loadingStep,
-                        themeStyles.loadingStep,
-                        step.completed && themeStyles.completed,
-                        !step.completed && index === loadingSteps.findIndex(s => !s.completed) && commonStyles.active,
-                        !step.completed && index === loadingSteps.findIndex(s => !s.completed) && themeStyles.active
-                      )}
-                    >
-                      {step.completed ? (
-                        <CheckCircle2 className={cn(commonStyles.loadingStepCheck, themeStyles.loadingStepCheck)} />
-                      ) : (
-                        <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid currentColor', opacity: 0.5 }} />
-                      )}
-                      <span>{step.label}</span>
+                <form className={commonStyles.form} onSubmit={handleSubmit}>
+                  <div className={commonStyles.formGrid}>
+                    {/* Project Title */}
+                    <div className={commonStyles.formGroup}>
+                      <label className={cn(commonStyles.label, themeStyles.label)}>
+                        <Briefcase />
+                        Project Title
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="e.g., E-commerce Website Redesign"
+                        value={formData.title}
+                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                        required
+                        fullWidth
+                      />
                     </div>
-                  ))}
-                </div>
+
+                    {/* Description */}
+                    <div className={commonStyles.formGroup}>
+                      <label className={cn(commonStyles.label, themeStyles.label)}>
+                        <FileText />
+                        Project Description
+                      </label>
+                      <textarea
+                        className={cn(commonStyles.textarea, themeStyles.textarea)}
+                        placeholder="Describe the project scope, key features, deliverables, and any specific requirements..."
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        rows={5}
+                        required
+                      />
+                    </div>
+
+                    {/* Industry & Complexity Row */}
+                    <div className={commonStyles.formRow}>
+                      <div className={commonStyles.formGroup}>
+                        <label className={cn(commonStyles.label, themeStyles.label)}>
+                          <Layers />
+                          Industry
+                          <span className={cn(commonStyles.labelOptional, themeStyles.labelOptional)}>Optional</span>
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="e.g., SaaS, Retail, Healthcare"
+                          value={formData.industry}
+                          onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
+                          fullWidth
+                        />
+                      </div>
+
+                      <div className={commonStyles.formGroup}>
+                        <label className={cn(commonStyles.label, themeStyles.label)}>
+                          <Zap />
+                          Complexity
+                        </label>
+                        <select
+                          className={cn(commonStyles.select, themeStyles.select)}
+                          value={formData.complexity}
+                          onChange={(e) => setFormData(prev => ({ ...prev, complexity: e.target.value }))}
+                          required
+                        >
+                          <option value="Low">Low - Simple features</option>
+                          <option value="Medium">Medium - Standard project</option>
+                          <option value="High">High - Complex integrations</option>
+                          <option value="Enterprise">Enterprise - Large scale</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Timeline */}
+                    <div className={commonStyles.formGroup}>
+                      <label className={cn(commonStyles.label, themeStyles.label)}>
+                        <Clock />
+                        Expected Timeline
+                      </label>
+                      <select
+                        className={cn(commonStyles.select, themeStyles.select)}
+                        value={formData.timeline}
+                        onChange={(e) => setFormData(prev => ({ ...prev, timeline: e.target.value }))}
+                        required
+                      >
+                        <option value="Urgent (< 1 week)">Urgent (less than 1 week)</option>
+                        <option value="Standard (1-4 weeks)">Standard (1-4 weeks)</option>
+                        <option value="Flexible">Flexible</option>
+                        <option value="Long-term (> 2 months)">Long-term (2+ months)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Submit Section */}
+                  <div className={cn(commonStyles.submitSection, themeStyles.submitSection)}>
+                    <button
+                      type="submit"
+                      className={cn(commonStyles.submitButton, themeStyles.submitButton)}
+                      disabled={isLoading || !formData.title || !formData.description}
+                    >
+                      <Sparkles />
+                      {isLoading ? 'Analyzing...' : 'Get AI Estimate'}
+                    </button>
+                    <p className={cn(commonStyles.privacyNote, themeStyles.privacyNote)}>
+                      <Shield />
+                      Your project details are analyzed securely
+                    </p>
+                  </div>
+                </form>
               </div>
-            )}
+            </ScrollReveal>
 
-            {/* Results State */}
-            {!isLoading && result && (
-              <div className={commonStyles.resultsState}>
-                {/* Price Header */}
-                <div className={cn(commonStyles.priceHeader, themeStyles.priceHeader)}>
-                  <p className={cn(commonStyles.priceLabel, themeStyles.priceLabel)}>
-                    Estimated Price Range
-                  </p>
-                  <div className={commonStyles.priceRange}>
-                    <span className={cn(commonStyles.priceValue, themeStyles.priceValue)}>
-                      ${result.minPrice.toLocaleString()}
-                    </span>
-                    <span className={cn(commonStyles.priceDivider, themeStyles.priceDivider)}>—</span>
-                    <span className={cn(commonStyles.priceValue, themeStyles.priceValue)}>
-                      ${result.maxPrice.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className={cn(commonStyles.priceConfidence, themeStyles.priceConfidence)}>
-                    <TrendingUp />
-                    {result.confidence}% Confidence
-                  </div>
-                </div>
+            {/* Results Panel */}
+            <div className={cn(commonStyles.resultsPanel, themeStyles.resultsPanel)}>
+              <AnimatePresence mode="wait">
+                {/* Empty State */}
+                {!isLoading && !result && (
+                  <motion.div 
+                    key="empty"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className={commonStyles.emptyState}
+                  >
+                    <div className={cn(commonStyles.emptyStateIcon, themeStyles.emptyStateIcon)}>
+                      <Calculator />
+                    </div>
+                    <h3 className={cn(commonStyles.emptyStateTitle, themeStyles.emptyStateTitle)}>
+                      Ready to Estimate
+                    </h3>
+                    <p className={cn(commonStyles.emptyStateText, themeStyles.emptyStateText)}>
+                      Fill in your project details and our AI will calculate an accurate price range
+                    </p>
+                  </motion.div>
+                )}
 
-                {/* Cost Breakdown */}
-                <div className={commonStyles.breakdownSection}>
-                  <h4 className={cn(commonStyles.breakdownTitle, themeStyles.breakdownTitle)}>
-                    <Layers />
-                    Cost Breakdown
-                  </h4>
-                  <div className={commonStyles.breakdownList}>
-                    {result.breakdown.map((item, index) => (
-                      <div key={index} className={cn(commonStyles.breakdownItem, themeStyles.breakdownItem)}>
-                        <div className={commonStyles.breakdownItemLeft}>
-                          <div className={cn(commonStyles.breakdownItemIcon, themeStyles.breakdownItemIcon)}>
-                            {item.icon}
-                          </div>
-                          <span className={cn(commonStyles.breakdownItemLabel, themeStyles.breakdownItemLabel)}>
-                            {item.label}
-                          </span>
+                {/* Loading State */}
+                {isLoading && (
+                  <motion.div 
+                    key="loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className={commonStyles.loadingState}
+                  >
+                    <div className={cn(commonStyles.loadingOrb, themeStyles.loadingOrb)}>
+                      <div className={cn(commonStyles.loadingOrbInner, themeStyles.loadingOrbInner)}>
+                        <Sparkles />
+                      </div>
+                    </div>
+                    <h3 className={cn(commonStyles.loadingTitle, themeStyles.loadingTitle)}>
+                      AI is analyzing...
+                    </h3>
+                    <p className={cn(commonStyles.loadingText, themeStyles.loadingText)}>
+                      Processing your project requirements
+                    </p>
+                    <div className={commonStyles.loadingSteps}>
+                      {loadingSteps.map((step, index) => (
+                        <div
+                          key={step.id}
+                          className={cn(
+                            commonStyles.loadingStep,
+                            themeStyles.loadingStep,
+                            step.completed && themeStyles.completed,
+                            !step.completed && index === loadingSteps.findIndex(s => !s.completed) && commonStyles.active,
+                            !step.completed && index === loadingSteps.findIndex(s => !s.completed) && themeStyles.active
+                          )}
+                        >
+                          {step.completed ? (
+                            <CheckCircle2 className={cn(commonStyles.loadingStepCheck, themeStyles.loadingStepCheck)} />
+                          ) : (
+                            <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid currentColor', opacity: 0.5 }} />
+                          )}
+                          <span>{step.label}</span>
                         </div>
-                        <span className={cn(commonStyles.breakdownItemValue, themeStyles.breakdownItemValue)}>
-                          {item.value}
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Results State */}
+                {!isLoading && result && (
+                  <motion.div 
+                    key="result"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className={commonStyles.resultsState}
+                  >
+                    {/* Price Header */}
+                    <div className={cn(commonStyles.priceHeader, themeStyles.priceHeader)}>
+                      <p className={cn(commonStyles.priceLabel, themeStyles.priceLabel)}>
+                        Estimated Price Range
+                      </p>
+                      <div className={commonStyles.priceRange}>
+                        <span className={cn(commonStyles.priceValue, themeStyles.priceValue)}>
+                          ${result.minPrice.toLocaleString()}
+                        </span>
+                        <span className={cn(commonStyles.priceDivider, themeStyles.priceDivider)}>—</span>
+                        <span className={cn(commonStyles.priceValue, themeStyles.priceValue)}>
+                          ${result.maxPrice.toLocaleString()}
                         </span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Project Factors */}
-                <div className={commonStyles.factorsSection}>
-                  <h4 className={cn(commonStyles.factorsTitle, themeStyles.factorsTitle)}>
-                    <Users />
-                    Project Factors
-                  </h4>
-                  <div className={commonStyles.factorsGrid}>
-                    {result.factors.map((factor, index) => (
-                      <div key={index} className={cn(commonStyles.factorCard, themeStyles.factorCard)}>
-                        <p className={cn(commonStyles.factorValue, themeStyles.factorValue)}>
-                          {factor.value}
-                        </p>
-                        <p className={cn(commonStyles.factorLabel, themeStyles.factorLabel)}>
-                          {factor.label}
-                        </p>
+                      <div className={cn(commonStyles.priceConfidence, themeStyles.priceConfidence)}>
+                        <TrendingUp />
+                        {result.confidence}% Confidence
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
 
-                {/* Actions */}
-                <div className={cn(commonStyles.actionsSection, themeStyles.actionsSection)}>
-                  <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
-                    <ArrowRight />
-                    Post This Project
-                  </button>
-                  <button 
-                    className={cn(commonStyles.actionButton, themeStyles.actionButton, themeStyles.secondary)}
-                    onClick={handleReset}
-                  >
-                    <RefreshCw />
-                    New Estimate
-                  </button>
-                </div>
+                    {/* Cost Breakdown */}
+                    <div className={commonStyles.breakdownSection}>
+                      <h4 className={cn(commonStyles.breakdownTitle, themeStyles.breakdownTitle)}>
+                        <Layers />
+                        Cost Breakdown
+                      </h4>
+                      <div className={commonStyles.breakdownList}>
+                        {result.breakdown.map((item, index) => (
+                          <div key={index} className={cn(commonStyles.breakdownItem, themeStyles.breakdownItem)}>
+                            <div className={commonStyles.breakdownItemLeft}>
+                              <div className={cn(commonStyles.breakdownItemIcon, themeStyles.breakdownItemIcon)}>
+                                {item.icon}
+                              </div>
+                              <span className={cn(commonStyles.breakdownItemLabel, themeStyles.breakdownItemLabel)}>
+                                {item.label}
+                              </span>
+                            </div>
+                            <span className={cn(commonStyles.breakdownItemValue, themeStyles.breakdownItemValue)}>
+                              {item.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
-                {/* Disclaimer */}
-                <div className={cn(commonStyles.disclaimer, themeStyles.disclaimer)}>
-                  <Info />
-                  <span>
-                    This is an AI-generated estimate based on market data. 
-                    Final prices may vary based on freelancer bids and detailed requirements.
-                  </span>
-                </div>
-              </div>
-            )}
+                    {/* Project Factors */}
+                    <div className={commonStyles.factorsSection}>
+                      <h4 className={cn(commonStyles.factorsTitle, themeStyles.factorsTitle)}>
+                        <Users />
+                        Project Factors
+                      </h4>
+                      <div className={commonStyles.factorsGrid}>
+                        {result.factors.map((factor, index) => (
+                          <div key={index} className={cn(commonStyles.factorCard, themeStyles.factorCard)}>
+                            <p className={cn(commonStyles.factorValue, themeStyles.factorValue)}>
+                              {factor.value}
+                            </p>
+                            <p className={cn(commonStyles.factorLabel, themeStyles.factorLabel)}>
+                              {factor.label}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className={cn(commonStyles.actionsSection, themeStyles.actionsSection)}>
+                      <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
+                        <ArrowRight />
+                        Post This Project
+                      </button>
+                      <button 
+                        className={cn(commonStyles.actionButton, themeStyles.actionButton, themeStyles.secondary)}
+                        onClick={handleReset}
+                      >
+                        <RefreshCw />
+                        New Estimate
+                      </button>
+                    </div>
+
+                    {/* Disclaimer */}
+                    <div className={cn(commonStyles.disclaimer, themeStyles.disclaimer)}>
+                      <Info />
+                      <span>
+                        This is an AI-generated estimate based on market data. 
+                        Final prices may vary based on freelancer bids and detailed requirements.
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

@@ -1,11 +1,13 @@
 // @AI-HINT: Notifications page under portal layout. Theme-aware, accessible. Fetches from notifications API.
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import { Loader2 } from 'lucide-react';
 import api from '@/lib/api';
@@ -98,12 +100,6 @@ const Notifications: React.FC = () => {
     [selected, notifs]
   );
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const listRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const listVisible = useIntersectionObserver(listRef, { threshold: 0.1 });
-
   const markAllRead = async () => {
     try {
       await api.notifications.markAllAsRead();
@@ -167,51 +163,54 @@ const Notifications: React.FC = () => {
   }
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.container}>
-        {error && (
-          <div className={cn(common.errorBanner, themed.errorBanner)}>
-            {error}
-          </div>
-        )}
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <h1 className={common.title}>Notifications</h1>
-          <div className={common.filters} role="toolbar" aria-label="Filter notifications">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                type="button"
-                className={common.chip}
-                aria-pressed={(selected === c) || undefined}
-                onClick={() => setSelected(c)}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-          <div className={common.actionsBar} role="toolbar" aria-label="Notification actions">
-            <button type="button" className={common.button} onClick={markAllRead}>Mark all read</button>
-            <button type="button" className={cn(common.button, common.buttonSecondary)} onClick={clearAll}>Clear all</button>
-            <p className={common.srOnly} aria-live="polite">{status}</p>
-          </div>
-        </div>
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          {error && (
+            <div className={cn(common.errorBanner, themed.errorBanner)}>
+              {error}
+            </div>
+          )}
+          <ScrollReveal>
+            <div className={common.header}>
+              <h1 className={common.title}>Notifications</h1>
+              <div className={common.filters} role="toolbar" aria-label="Filter notifications">
+                {CATEGORIES.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    className={common.chip}
+                    aria-pressed={(selected === c) || undefined}
+                    onClick={() => setSelected(c)}
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <div className={common.actionsBar} role="toolbar" aria-label="Notification actions">
+                <button type="button" className={common.button} onClick={markAllRead}>Mark all read</button>
+                <button type="button" className={cn(common.button, common.buttonSecondary)} onClick={clearAll}>Clear all</button>
+                <p className={common.srOnly} aria-live="polite">{status}</p>
+              </div>
+            </div>
+          </ScrollReveal>
 
-        {notifs.length === 0 ? (
-          <EmptyState
-            title="No notifications"
-            description="You're all caught up! New notifications will appear here."
-            action={
-              <button
-                type="button"
-                className={common.button}
-                onClick={() => notify({ title: 'All caught up', description: 'Nothing to review right now.', variant: 'info', duration: 2200 })}
-              >
-                Refresh
-              </button>
-            }
-          />
-        ) : (
-          <div ref={listRef} className={cn(common.list, listVisible ? common.isVisible : common.isNotVisible)} role="list" aria-label="Notification list">
+          {notifs.length === 0 ? (
+            <EmptyState
+              title="No notifications"
+              description="You're all caught up! New notifications will appear here."
+              action={
+                <button
+                  type="button"
+                  className={common.button}
+                  onClick={() => notify({ title: 'All caught up', description: 'Nothing to review right now.', variant: 'info', duration: 2200 })}
+                >
+                  Refresh
+                </button>
+              }
+            />
+          ) : (
+            <StaggerContainer delay={0.1} className={common.list} role="list" aria-label="Notification list">
             {filtered.map((n) => (
               <div key={n.id} role="listitem" className={common.item}>
                 <div>
@@ -230,10 +229,11 @@ const Notifications: React.FC = () => {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-      </div>
-    </main>
+            </StaggerContainer>
+          )}
+        </div>
+      </main>
+    </PageTransition>
   );
 };
 

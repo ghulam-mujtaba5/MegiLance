@@ -6,6 +6,9 @@ import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PricingCard } from '@/components/pricing/PricingCard/PricingCard';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Pricing.common.module.css';
 import lightStyles from './Pricing.light.module.css';
 import darkStyles from './Pricing.dark.module.css';
@@ -81,56 +84,45 @@ const Pricing: React.FC = () => {
     ...(resolvedTheme === 'dark' ? darkStyles : lightStyles),
   };
 
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.15,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
-
   return (
-    <main id="main-content" className={styles.root}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Find the perfect plan</h1>
-        <p className={styles.subtitle}>Start for free, then upgrade or downgrade anytime. No hidden fees.</p>
-      </div>
+    <PageTransition>
+      <main id="main-content" className={styles.root}>
+        <ScrollReveal>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Find the perfect plan</h1>
+            <p className={styles.subtitle}>Start for free, then upgrade or downgrade anytime. No hidden fees.</p>
+          </div>
+        </ScrollReveal>
 
-      <div className={styles.toggleContainer}>
-        <span className={cn(styles.toggleLabel, billingCycle === 'monthly' && styles.activeLabel)}>Monthly</span>
-        <button
-          onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annually' : 'monthly')}
-          className={styles.toggleSwitch}
-          aria-label={`Switch to ${billingCycle === 'monthly' ? 'annual' : 'monthly'} billing`}
-        >
-          <motion.div className={styles.toggleHandle} layout transition={{ type: 'spring', stiffness: 700, damping: 30 }} />
-        </button>
-        <span className={cn(styles.toggleLabel, billingCycle === 'annually' && styles.activeLabel)}>
-          Annually <span className={styles.discountBadge}>Save 15%</span>
-        </span>
-      </div>
+        <ScrollReveal delay={0.2}>
+          <div className={styles.toggleContainer}>
+            <span className={cn(styles.toggleLabel, billingCycle === 'monthly' && styles.activeLabel)}>Monthly</span>
+            <button
+              onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'annually' : 'monthly')}
+              className={styles.toggleSwitch}
+              aria-label={`Switch to ${billingCycle === 'monthly' ? 'annual' : 'monthly'} billing`}
+            >
+              <motion.div className={styles.toggleHandle} layout transition={{ type: 'spring', stiffness: 700, damping: 30 }} />
+            </button>
+            <span className={cn(styles.toggleLabel, billingCycle === 'annually' && styles.activeLabel)}>
+              Annually <span className={styles.discountBadge}>Save 15%</span>
+            </span>
+          </div>
+        </ScrollReveal>
 
-      <motion.div 
-        className={styles.grid}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {pricingData[billingCycle].map((tier) => (
-          <motion.div key={tier.tier} variants={itemVariants}>
-            <PricingCard {...tier} />
-          </motion.div>
-        ))}
-      </motion.div>
+        <StaggerContainer className={styles.grid}>
+          {pricingData[billingCycle].map((tier) => (
+            <StaggerItem key={tier.tier}>
+              <PricingCard {...tier} />
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
 
-      <p className={styles.note}>All prices in USD. Applicable taxes may be added at checkout. Contact us for enterprise solutions.</p>
-    </main>
+        <ScrollReveal delay={0.4}>
+          <p className={styles.note}>All prices in USD. Applicable taxes may be added at checkout. Contact us for enterprise solutions.</p>
+        </ScrollReveal>
+      </main>
+    </PageTransition>
   );
 };
 

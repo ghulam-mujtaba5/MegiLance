@@ -1,139 +1,185 @@
 /* @AI-HINT: Common styles for the How It Works section. Defines the responsive grid layout, typography, and structure for a premium, modern design. */
 
 .howItWorks {
-  padding: 6rem 0;
+  padding: 8rem 0;
   position: relative;
   width: 100%;
+  overflow: hidden;
+  /* BILLIONAIRE LEVEL - 3D Context */
+  perspective: 1000px;
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 2rem;
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 5rem;
-  max-width: 750px;
+  margin-bottom: 6rem;
+  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
+  /* BILLIONAIRE LEVEL - 3D Depth */
+  transform-style: preserve-3d;
+  transform: translateZ(0);
 }
 
 .tagline {
-  font-family: var(--font-inter);
-  font-weight: 600;
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-weight: 700;
   font-size: 0.875rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 1rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 100px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .title {
-  font-family: var(--font-poppins);
-  font-size: clamp(2.25rem, 5vw, 3rem);
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 1rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #4573df 0%, #ff9800 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
-  font-family: var(--font-inter);
-  font-size: 1.125rem;
-  line-height: 1.7;
-  opacity: 0.8;
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  line-height: 1.8;
+  opacity: 0.9;
+  font-weight: 400;
 }
 
 .timeline {
   position: relative;
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   width: 100%;
+  /* BILLIONAIRE LEVEL - 3D Context */
+  transform-style: preserve-3d;
 }
 
 /* The vertical timeline bar */
 .timeline::after {
   content: '';
   position: absolute;
-  width: 3px;
+  width: 4px;
   top: 0;
   bottom: 0;
   left: 50%;
-  margin-left: -1.5px;
-  background: linear-gradient(to bottom, var(--primary-4573df), var(--accent-orange-ff9800));
+  margin-left: -2px;
+  background: linear-gradient(to bottom, #4573df, #ff9800);
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(69, 115, 223, 0.3);
 }
 
 /* Timeline items */
 .timelineItem {
   position: relative;
   width: 50%;
-  padding: 1.25rem 2.5rem;
+  padding: 2rem 4rem;
   box-sizing: border-box;
+  /* BILLIONAIRE LEVEL - 3D Card */
+  transform-style: preserve-3d;
+  transform: perspective(1000px) translateZ(0);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .timelineItem:nth-child(odd) {
   left: 0;
+  text-align: right;
 }
 
 .timelineItem:nth-child(even) {
   left: 50%;
+  text-align: left;
 }
 
 /* Timeline content */
 .timelineContent {
-  padding: 1.875rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  border-radius: 24px;
   position: relative;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 30px -5px rgba(0, 0, 0, 0.05),
+    0 4px 10px -2px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .timelineContent:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.15);
+  transform: perspective(1000px) translateZ(20px) translateY(-10px);
+  box-shadow: 
+    0 20px 40px -5px rgba(69, 115, 223, 0.15),
+    0 10px 20px -5px rgba(0, 0, 0, 0.05);
+  border-color: rgba(69, 115, 223, 0.3);
 }
 
 /* Timeline dot */
 .timelineDot {
   position: absolute;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary-4573df), var(--accent-orange-ff9800));
-  top: 1.875rem;
+  background: linear-gradient(135deg, #4573df, #ff9800);
+  top: 2.5rem;
   z-index: 1;
-  box-shadow: 0 0 0 6px rgba(69, 115, 223, 0.1);
+  box-shadow: 0 0 0 8px rgba(69, 115, 223, 0.1), 0 0 20px rgba(69, 115, 223, 0.4);
+  transition: all 0.3s ease;
+}
+
+.timelineItem:hover .timelineDot {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 12px rgba(69, 115, 223, 0.2), 0 0 30px rgba(69, 115, 223, 0.6);
 }
 
 .timelineItem:nth-child(odd) .timelineDot {
-  right: -0.75rem;
+  right: -1rem;
 }
 
 .timelineItem:nth-child(even) .timelineDot {
-  left: -0.75rem;
+  left: -1rem;
 }
 
 /* Timeline item content */
 .stepNumber {
-  font-family: var(--font-inter);
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.625rem;
-  color: var(--primary-4573df);
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #4573df;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .stepTitle {
-  font-family: var(--font-poppins);
-  font-size: 1.5rem;
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
   font-weight: 700;
-  margin-bottom: 0.9375rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
 .stepDescription {
-  font-family: var(--font-inter);
-  font-size: 1rem;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
   line-height: 1.6;
   opacity: 0.9;
 }
@@ -141,34 +187,23 @@
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
   .timeline::after {
-    left: 2.1875rem;
+    left: 2rem;
   }
   
   .howItWorks {
-    padding: 4rem 0;
+    padding: 6rem 0;
   }
   
   .container {
-    padding: 0 1rem;
-  }
-  
-  .header {
-    margin-bottom: 3rem;
-  }
-  
-  .title {
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-  }
-  
-  .subtitle {
-    font-size: 1rem;
+    padding: 0 1.5rem;
   }
   
   .timelineItem {
     width: 100%;
-    padding-left: 4.375rem;
-    padding-right: 1.5625rem;
+    padding-left: 5rem;
+    padding-right: 0;
     left: 0 !important;
+    text-align: left;
   }
   
   .timelineItem:nth-child(even) {
@@ -176,53 +211,11 @@
   }
   
   .timelineDot {
-    left: 1.4375rem !important;
+    left: 1rem !important;
     right: auto !important;
-  }
-}
-
-@media screen and (max-width: 480px) {
-  .howItWorks {
-    padding: 3rem 0;
-  }
-  
-  .container {
-    padding: 0 0.75rem;
-  }
-  
-  .header {
-    margin-bottom: 2rem;
   }
   
   .title {
-    font-size: clamp(1.5rem, 5vw, 2rem);
-  }
-  
-  .subtitle {
-    font-size: 0.95rem;
-  }
-  
-  .timelineItem {
-    padding-left: 3.5rem;
-    padding-right: 1rem;
-  }
-  
-  .timelineContent {
-    padding: 1.25rem;
-  }
-  
-  .timelineDot {
-    left: 1rem !important;
-    width: 1.25rem;
-    height: 1.25rem;
-    top: 1.25rem;
-  }
-  
-  .stepTitle {
-    font-size: 1.25rem;
-  }
-  
-  .stepDescription {
-    font-size: 0.95rem;
+    font-size: 2.5rem;
   }
 }

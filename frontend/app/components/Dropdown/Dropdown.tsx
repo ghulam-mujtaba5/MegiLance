@@ -4,6 +4,7 @@
 import React, { useState, useRef, useEffect, useId, useCallback, useMemo } from 'react';
 import { IoChevronDown } from 'react-icons/io5';
 import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import commonStyles from './Dropdown.common.module.css';
 import lightStyles from './Dropdown.light.module.css';
@@ -260,47 +261,53 @@ const Dropdown: React.FC<DropdownProps> = ({
           aria-hidden="true"
         />
       </button>
-      {isOpen && (
-        <ul
-          ref={optionsRef}
-          id={listId}
-          className={cn(commonStyles.options, themeStyles.options)}
-          role="listbox"
-          aria-labelledby={labelId}
-          aria-activedescendant={focusedIndex >= 0 ? `${listId}-option-${focusedIndex}` : undefined}
-          tabIndex={-1}
-        >
-          {options.length === 0 ? (
-            <li className={cn(commonStyles.noOptions, themeStyles.noOptions)} role="option" aria-disabled="true">
-              No options available
-            </li>
-          ) : (
-            options.map((option, index) => (
-              <li
-                id={`${listId}-option-${index}`}
-                key={option.value}
-                className={cn(
-                  commonStyles.option,
-                  themeStyles.option,
-                  focusedIndex === index && commonStyles.optionFocused,
-                  focusedIndex === index && themeStyles.optionFocused,
-                  selected?.value === option.value && commonStyles.optionSelected,
-                  selected?.value === option.value && themeStyles.optionSelected,
-                  option.disabled && commonStyles.optionDisabled,
-                  option.disabled && themeStyles.optionDisabled
-                )}
-                onClick={() => handleSelect(option)}
-                onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
-                role="option"
-                aria-selected={selected?.value === option.value}
-                aria-disabled={option.disabled}
-              >
-                {option.label}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.ul
+            ref={optionsRef}
+            id={listId}
+            className={cn(commonStyles.options, themeStyles.options)}
+            role="listbox"
+            aria-labelledby={labelId}
+            aria-activedescendant={focusedIndex >= 0 ? `${listId}-option-${focusedIndex}` : undefined}
+            tabIndex={-1}
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            {options.length === 0 ? (
+              <li className={cn(commonStyles.noOptions, themeStyles.noOptions)} role="option" aria-disabled="true">
+                No options available
               </li>
-            ))
-          )}
-        </ul>
-      )}
+            ) : (
+              options.map((option, index) => (
+                <li
+                  id={`${listId}-option-${index}`}
+                  key={option.value}
+                  className={cn(
+                    commonStyles.option,
+                    themeStyles.option,
+                    focusedIndex === index && commonStyles.optionFocused,
+                    focusedIndex === index && themeStyles.optionFocused,
+                    selected?.value === option.value && commonStyles.optionSelected,
+                    selected?.value === option.value && themeStyles.optionSelected,
+                    option.disabled && commonStyles.optionDisabled,
+                    option.disabled && themeStyles.optionDisabled
+                  )}
+                  onClick={() => handleSelect(option)}
+                  onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
+                  role="option"
+                  aria-selected={selected?.value === option.value}
+                  aria-disabled={option.disabled}
+                >
+                  {option.label}
+                </li>
+              ))
+            )}
+          </motion.ul>
+        )}
+      </AnimatePresence>
       {error && errorMessage && (
         <span id={errorId} className={cn(commonStyles.errorMessage, themeStyles.errorMessage)} role="alert">
           {errorMessage}

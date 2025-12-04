@@ -15,16 +15,17 @@ export const MegiLanceLogo: React.FC<{ className?: string }> = ({ className }) =
   if (!resolvedTheme) return null;
 
   return (
-    <svg
-      className={cn(commonStyles.logo, className)}
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="MegiLance Logo"
-      role="img"
-    >
+    <div className={cn(commonStyles.logoWrapper, className)}>
+      <svg
+        className={commonStyles.logoSvg}
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="MegiLance Logo"
+        role="img"
+      >
       <title>MegiLance Logo</title>
       <desc>MegiLance brand logo featuring stylized M lettermark with AI neural network connections</desc>
       <defs>
@@ -63,6 +64,7 @@ export const MegiLanceLogo: React.FC<{ className?: string }> = ({ className }) =
       <circle cx="25" cy="7" r="2" fill="#ffffff" opacity="0.9" />
       <circle cx="25" cy="7" r="1" fill="#4573df" />
     </svg>
+    </div>
   );
 };
 

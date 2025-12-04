@@ -4,6 +4,7 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from 'next-themes';
+import { AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Toast, { ToastProps, ToastVariant } from './Toast';
 import commonStyles from './ToasterProvider.common.module.css';
@@ -61,17 +62,19 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({ child
       {typeof window !== 'undefined'
         ? createPortal(
             <div className={cn(commonStyles.stack, themeStyles.stack)} aria-live="polite" aria-atomic="false">
-              {items.map(({ id, title, description, variant = 'info', duration = 4000 }) => (
-                <Toast
-                  key={id}
-                  title={title}
-                  description={description}
-                  variant={variant}
-                  show={true}
-                  duration={duration}
-                  onClose={() => dismiss(id)}
-                />
-              ))}
+              <AnimatePresence initial={false} mode="popLayout">
+                {items.map(({ id, title, description, variant = 'info', duration = 4000 }) => (
+                  <Toast
+                    key={id}
+                    title={title}
+                    description={description}
+                    variant={variant}
+                    show={true}
+                    duration={duration}
+                    onClose={() => dismiss(id)}
+                  />
+                ))}
+              </AnimatePresence>
             </div>,
             document.body,
           )

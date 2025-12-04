@@ -19,6 +19,9 @@ import ProductScreenshots from './components/ProductScreenshots';
 import GlobalImpact from './components/GlobalImpact';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
+import { ScrollReveal } from '../components/Animations/ScrollReveal';
+import { PageTransition } from '../components/Animations/PageTransition';
+import GlobeBackground from '../components/Animations/GlobeBackground';
 
 import commonStyles from './Home.common.module.css';
 import lightStyles from './Home.light.module.css';
@@ -29,95 +32,120 @@ const Home: React.FC = () => {
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <div className={cn(commonStyles.homePage, themeStyles.homePage)}>
-      {/* Background Parallax Layers */}
-      <div className={commonStyles.parallaxBackground}>
-        <div className={cn(commonStyles.gradientOrb, commonStyles.orb1, themeStyles.gradientOrb)} />
-        <div className={cn(commonStyles.gradientOrb, commonStyles.orb2, themeStyles.gradientOrb)} />
-        <div className={cn(commonStyles.gradientOrb, commonStyles.orb3, themeStyles.gradientOrb)} />
-      </div>
+    <PageTransition>
+      <div className={cn(commonStyles.homePage, themeStyles.homePage)}>
+        {/* Background Parallax Layers */}
+        <div className={commonStyles.parallaxBackground}>
+          <GlobeBackground />
+          <div className={cn(commonStyles.gradientOrb, commonStyles.orb1, themeStyles.gradientOrb)} />
+          <div className={cn(commonStyles.gradientOrb, commonStyles.orb2, themeStyles.gradientOrb)} />
+          <div className={cn(commonStyles.gradientOrb, commonStyles.orb3, themeStyles.gradientOrb)} />
+        </div>
 
-      <div className={commonStyles.pageContent}>
-        {/* Hero Section */}
-        <Hero />
+        <div className={commonStyles.pageContent}>
+          {/* Hero Section */}
+          <ScrollReveal width="100%" direction="none" duration={0.8}>
+            <Hero />
+          </ScrollReveal>
 
         {/* Trust Indicators */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <TrustIndicators />
+            <ScrollReveal width="100%" delay={0.2}>
+              <TrustIndicators />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Why MegiLance */}
         <div className={commonStyles.homeSection}>
-          <WhyMegiLance />
+          <ScrollReveal width="100%" direction="left">
+            <WhyMegiLance />
+          </ScrollReveal>
         </div>
 
         {/* Features */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <Features />
+            <ScrollReveal width="100%" direction="right">
+              <Features />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* How It Works */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <HowItWorks />
+            <ScrollReveal width="100%" direction="up">
+              <HowItWorks />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* AI Showcase */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <AIShowcase />
+            <ScrollReveal width="100%" direction="up" distance={80}>
+              <AIShowcase />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Powered By AI */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <PoweredByAI />
+            <ScrollReveal width="100%" direction="up">
+              <PoweredByAI />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Blockchain Showcase */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <BlockchainShowcase />
+            <ScrollReveal width="100%" direction="left">
+              <BlockchainShowcase />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Product Screenshots */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <ProductScreenshots />
+            <ScrollReveal width="100%" direction="up">
+              <ProductScreenshots />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Global Impact */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <GlobalImpact />
+            <ScrollReveal width="100%" direction="up">
+              <GlobalImpact />
+            </ScrollReveal>
           </div>
         </div>
 
         {/* Testimonials */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
-            <Testimonials />
+            <ScrollReveal width="100%" direction="up">
+              <Testimonials />
+            </ScrollReveal>
           </div>
         </div>
 
-        {/* CTA */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <CTA />
+          {/* CTA */}
+          <div className={commonStyles.homeSection}>
+            <div className={commonStyles.sectionContainer}>
+              <ScrollReveal width="100%" direction="up" delay={0.2}>
+                <CTA />
+              </ScrollReveal>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
-};
-
-export default Home;
+};export default Home;

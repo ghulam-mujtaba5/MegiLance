@@ -1,0 +1,166 @@
+/* @AI-HINT: Admin Skills page - light theme */
+
+.container {
+  background: #f9fafb;
+}
+
+.title {
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+.pendingBadge {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.tabs {
+  background: #f3f4f6;
+}
+
+.tab {
+  background: transparent;
+  color: #6b7280;
+}
+
+.tab:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tabActive {
+  background: #fff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filterBar {
+  background: transparent;
+}
+
+.searchInput {
+  background: #fff;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.select {
+  background: #fff;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.checkbox {
+  color: #374151;
+}
+
+.emptyState {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.skillCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.skillCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.skillName {
+  color: #111827;
+}
+
+.featuredBadge {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.skillDesc {
+  color: #6b7280;
+}
+
+.skillMeta {
+  color: #9ca3af;
+}
+
+.iconBtn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.iconBtn:hover {
+  background: #e5e7eb;
+}
+
+.categoryCard {
+  background: #fff;
+  border-color: #e5e7eb;
+}
+
+.categoryCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.categoryName {
+  color: #111827;
+}
+
+.categoryDesc {
+  color: #6b7280;
+}
+
+.categoryMeta {
+  color: #9ca3af;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modalContent {
+  background: #fff;
+}
+
+.modalHeader {
+  border-color: #e5e7eb;
+  color: #111827;
+}
+
+.closeBtn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.closeBtn:hover {
+  background: #e5e7eb;
+}
+
+.input,
+.textarea {
+  background: #fff;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.colorInput {
+  border-color: #d1d5db;
+}
+
+.modalFooter {
+  border-color: #e5e7eb;
+}

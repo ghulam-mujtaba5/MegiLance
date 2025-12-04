@@ -1,7 +1,7 @@
 // @AI-HINT: Clients page with theme-aware styling, animated sections, accessible structure, and optimized images.
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
@@ -11,7 +11,7 @@ const ClientLogoCard = dynamic(() => import('./components/ClientLogoCard'));
 const CaseStudyCard = dynamic(() => import('./components/CaseStudyCard'));
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import common from './Clients.common.module.css';
 import light from './Clients.light.module.css';
 import dark from './Clients.dark.module.css';
@@ -89,134 +89,118 @@ const Clients: React.FC = () => {
     });
   }, [notify]);
 
-  const headerRef = useRef<HTMLElement | null>(null);
-  const controlsRef = useRef<HTMLDivElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
-  const casesRef = useRef<HTMLDivElement | null>(null);
-  const ctaRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const controlsVisible = useIntersectionObserver(controlsRef, { threshold: 0.1 });
-  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
-  const casesVisible = useIntersectionObserver(casesRef, { threshold: 0.1 });
-  const ctaVisible = useIntersectionObserver(ctaRef, { threshold: 0.1 });
-
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.container}>
-        <header
-          ref={headerRef as any}
-          className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}
-        >
-          <h1 className={common.title}>Our Clients</h1>
-          <p className={common.subtitle}>Trusted by high-velocity teams across AI, fintech, e‑commerce, and healthcare.</p>
-        </header>
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <header className={common.header}>
+              <h1 className={common.title}>Our Clients</h1>
+              <p className={common.subtitle}>Trusted by high-velocity teams across AI, fintech, e‑commerce, and healthcare.</p>
+            </header>
+          </ScrollReveal>
 
-        <div
-          ref={controlsRef}
-          className={cn(common.controls, controlsVisible ? common.isVisible : common.isNotVisible)}
-          role="toolbar"
-          aria-label="Filter clients by industry"
-        >
-          {industries.map((c) => {
-            const active = selected === c;
-            return (
-              <button
-                key={c}
-                type="button"
-                className={cn(common.chip, active && common.chipActive)}
-                aria-pressed={active ? 'true' : 'false'}
-                data-active={active || undefined}
-                onClick={() => onSelect(c)}
+          <ScrollReveal delay={0.1}>
+            <div
+              className={common.controls}
+              role="toolbar"
+              aria-label="Filter clients by industry"
+            >
+              {industries.map((c) => {
+                const active = selected === c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    className={cn(common.chip, active && common.chipActive)}
+                    aria-pressed={active ? 'true' : 'false'}
+                    data-active={active || undefined}
+                    onClick={() => onSelect(c)}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+          </ScrollReveal>
+
+          <section aria-label="Client logos">
+            <StaggerContainer className={common.grid} delay={0.2}>
+              {isLoading && (
+                Array.from({ length: 8 }).map((_, i) => (
+                  <div key={`s-${i}`} className={cn(common.logoCard, common.skeleton)} aria-hidden="true" />
+                ))
+              )}
+              {!isLoading && filtered.length === 0 && (
+                <div className={common.gridSpanAll}>
+                  <EmptyState
+                    title="No clients in this category"
+                    description="Try a different industry or contact our team for a tailored walkthrough."
+                    action={
+                      <a href="/contact" className={common.button} aria-label="Contact sales">
+                        Contact Sales
+                      </a>
+                    }
+                  />
+                </div>
+              )}
+              {!isLoading && filtered.length > 0 && (
+                filtered.map((l) => (
+                  <ClientLogoCard key={l.name} name={l.name} src={l.src} industry={l.industry} />
+                ))
+              )}
+            </StaggerContainer>
+          </section>
+
+          <section className={common.section} aria-label="Impact metrics">
+            <h2 className={common.sectionTitle}>Impact Metrics</h2>
+            <StaggerContainer className={common.metricGrid} role="list" delay={0.3}>
+              {metrics.map(m => (
+                <li key={m.label} className={common.metricCard}>
+                  <div className={common.metricValue}>{m.value}</div>
+                  <div className={common.metricLabel}>{m.label}</div>
+                  <div className={common.metricDetail}>{m.detail}</div>
+                </li>
+              ))}
+            </StaggerContainer>
+          </section>
+
+          <section className={common.section} aria-label="Case studies">
+            <h2 className={common.sectionTitle}>Case Studies</h2>
+            <StaggerContainer className={common.caseGrid} delay={0.4}>
+              {cases.map((c) => (
+                <CaseStudyCard key={c.title} title={c.title} description={c.desc} media={c.media} />
+              ))}
+            </StaggerContainer>
+          </section>
+
+          <section className={common.section} aria-label="Call to action">
+            <ScrollReveal className={common.cta} delay={0.5}>
+              <a
+                href="/contact"
+                className={common.button}
+                aria-label="Contact sales"
+                onClick={() =>
+                  notify({ title: 'Opening contact', description: 'We’ll help you get started.', variant: 'success', duration: 2500 })
+                }
               >
-                {c}
-              </button>
-            );
-          })}
+                Contact Sales
+              </a>
+              <a
+                href="/jobs"
+                className={cn(common.button, common.buttonSecondary)}
+                aria-label="Find talent"
+                onClick={() =>
+                  notify({ title: 'Explore talent', description: 'Curated experts across domains.', variant: 'info', duration: 2500 })
+                }
+              >
+                Find Talent
+              </a>
+            </ScrollReveal>
+          </section>
         </div>
-
-        <section aria-label="Client logos">
-          <div
-            ref={gridRef}
-            className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)}
-          >
-            {isLoading && (
-              Array.from({ length: 8 }).map((_, i) => (
-                <div key={`s-${i}`} className={cn(common.logoCard, common.skeleton)} aria-hidden="true" />
-              ))
-            )}
-            {!isLoading && filtered.length === 0 && (
-              <div className={common.gridSpanAll}>
-                <EmptyState
-                  title="No clients in this category"
-                  description="Try a different industry or contact our team for a tailored walkthrough."
-                  action={
-                    <a href="/contact" className={common.button} aria-label="Contact sales">
-                      Contact Sales
-                    </a>
-                  }
-                />
-              </div>
-            )}
-            {!isLoading && filtered.length > 0 && (
-              filtered.map((l) => (
-                <ClientLogoCard key={l.name} name={l.name} src={l.src} industry={l.industry} />
-              ))
-            )}
-          </div>
-        </section>
-
-        <section className={common.section} aria-label="Impact metrics">
-          <h2 className={common.sectionTitle}>Impact Metrics</h2>
-          <ul className={common.metricGrid} role="list">
-            {metrics.map(m => (
-              <li key={m.label} className={common.metricCard}>
-                <div className={common.metricValue}>{m.value}</div>
-                <div className={common.metricLabel}>{m.label}</div>
-                <div className={common.metricDetail}>{m.detail}</div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className={common.section} aria-label="Case studies">
-          <h2 className={common.sectionTitle}>Case Studies</h2>
-          <div
-            ref={casesRef}
-            className={cn(common.caseGrid, casesVisible ? common.isVisible : common.isNotVisible)}
-          >
-            {cases.map((c) => (
-              <CaseStudyCard key={c.title} title={c.title} description={c.desc} media={c.media} />
-            ))}
-          </div>
-        </section>
-
-        <section className={common.section} aria-label="Call to action">
-          <div ref={ctaRef} className={cn(common.cta, ctaVisible ? common.isVisible : common.isNotVisible)}>
-            <a
-              href="/contact"
-              className={common.button}
-              aria-label="Contact sales"
-              onClick={() =>
-                notify({ title: 'Opening contact', description: 'We’ll help you get started.', variant: 'success', duration: 2500 })
-              }
-            >
-              Contact Sales
-            </a>
-            <a
-              href="/jobs"
-              className={cn(common.button, common.buttonSecondary)}
-              aria-label="Find talent"
-              onClick={() =>
-                notify({ title: 'Explore talent', description: 'Curated experts across domains.', variant: 'info', duration: 2500 })
-              }
-            >
-              Find Talent
-            </a>
-          </div>
-        </section>
-      </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

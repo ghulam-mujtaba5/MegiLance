@@ -16,6 +16,9 @@ import Checkbox from '@/app/components/Checkbox/Checkbox';
 import Tabs from '@/app/components/Tabs/Tabs';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { AnimatedOrb, ParticlesSystem } from '@/app/components/3D';
 import commonStyles from './Signup.common.module.css';
 import lightStyles from './Signup.light.module.css';
 import darkStyles from './Signup.dark.module.css';
@@ -202,88 +205,99 @@ const Signup: React.FC = () => {
   }, [resolvedTheme]);
 
   return (
-    <div className={styles.loginPage}>
+    <PageTransition className={styles.loginPage}>
+      {/* Stunning 3D Background Elements */}
+      <div className={commonStyles.backgroundDecor}>
+        <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
+        <AnimatedOrb variant="purple" size={280} blur={60} opacity={0.25} className={commonStyles.orbBottomLeft} />
+        <ParticlesSystem count={6} className={commonStyles.particlesBg} />
+      </div>
+
       <div className={styles.brandingSlot}>
         <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
       </div>
       <div className={styles.formPanel}>
-        <div className={styles.formContainer}>
-          <div className={styles.formHeader}>
+        <StaggerContainer className={styles.formContainer}>
+          <StaggerItem className={styles.formHeader}>
             <h1 className={styles.formTitle}>Create Your Account</h1>
             <p className={styles.formSubtitle}>Join the top-tier network of talent and clients.</p>
-          </div>
+          </StaggerItem>
 
-          <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
-            <Tabs.List className={styles.roleSelector}>
-              {Object.values(roleConfig).map((role) => (
-                <Tabs.Tab key={role.id} icon={<role.brandIcon />}>
-                  {role.label}
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
-          </Tabs>
+          <StaggerItem>
+            <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
+              <Tabs.List className={styles.roleSelector}>
+                {Object.values(roleConfig).map((role) => (
+                  <Tabs.Tab key={role.id} icon={<role.brandIcon />}>
+                    {role.label}
+                  </Tabs.Tab>
+                ))}
+              </Tabs.List>
+            </Tabs>
+          </StaggerItem>
 
-          <div className={styles.socialAuth}>
+          <StaggerItem className={styles.socialAuth}>
             <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
             <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
-          </div>
+          </StaggerItem>
 
-          <div className={styles.divider}><span className={styles.dividerText}>OR</span></div>
+          <StaggerItem className={styles.divider}><span className={styles.dividerText}>OR</span></StaggerItem>
 
-          <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
-            <Input name="fullName" type="text" label="Full Name" placeholder="John Doe" value={formData.fullName} onChange={handleChange} error={errors.fullName} disabled={loading} />
-            <Input name="email" type="email" label="Email" placeholder="you@example.com" value={formData.email} onChange={handleChange} error={errors.email} disabled={loading} />
-            <Input 
-              name="password" 
-              type={showPassword ? 'text' : 'password'}
-              label="Password" 
-              placeholder="8+ characters" 
-              value={formData.password} 
-              onChange={handleChange} 
-              error={errors.password} 
-              disabled={loading} 
-              iconAfter={
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              }
-            />
-            <Input 
-              name="confirmPassword" 
-              type={showConfirmPassword ? 'text' : 'password'}
-              label="Confirm Password" 
-              placeholder="Re-enter password" 
-              value={formData.confirmPassword} 
-              onChange={handleChange} 
-              error={errors.confirmPassword} 
-              disabled={loading} 
-              iconAfter={
-                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              }
-            />
-            
-            <Checkbox
-              name="agreedToTerms"
-              checked={formData.agreedToTerms}
-              onChange={handleChange}
-              error={errors.agreedToTerms}
-            >
-              I agree to the <Link href="/terms" className={styles.forgotPasswordLink}>Terms</Link> & <Link href="/privacy" className={styles.forgotPasswordLink}>Privacy Policy</Link>.
-            </Checkbox>
+          <StaggerItem>
+            <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
+              <Input name="fullName" type="text" label="Full Name" placeholder="John Doe" value={formData.fullName} onChange={handleChange} error={errors.fullName} disabled={loading} />
+              <Input name="email" type="email" label="Email" placeholder="you@example.com" value={formData.email} onChange={handleChange} error={errors.email} disabled={loading} />
+              <Input 
+                name="password" 
+                type={showPassword ? 'text' : 'password'}
+                label="Password" 
+                placeholder="8+ characters" 
+                value={formData.password} 
+                onChange={handleChange} 
+                error={errors.password} 
+                disabled={loading} 
+                iconAfter={
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                }
+              />
+              <Input 
+                name="confirmPassword" 
+                type={showConfirmPassword ? 'text' : 'password'}
+                label="Confirm Password" 
+                placeholder="Re-enter password" 
+                value={formData.confirmPassword} 
+                onChange={handleChange} 
+                error={errors.confirmPassword} 
+                disabled={loading} 
+                iconAfter={
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                }
+              />
+              
+              <Checkbox
+                name="agreedToTerms"
+                checked={formData.agreedToTerms}
+                onChange={handleChange}
+                error={errors.agreedToTerms}
+              >
+                I agree to the <Link href="/terms" className={styles.forgotPasswordLink}>Terms</Link> & <Link href="/privacy" className={styles.forgotPasswordLink}>Privacy Policy</Link>.
+              </Checkbox>
 
-            <Button type="submit" variant="primary" fullWidth className={styles.submitButton} isLoading={loading} disabled={loading}>
-              {loading ? 'Creating Account...' : `Create ${roleConfig[selectedRole].label} Account`}
-            </Button>
-          </form>
+              <Button type="submit" variant="primary" fullWidth className={styles.submitButton} isLoading={loading} disabled={loading}>
+                {loading ? 'Creating Account...' : `Create ${roleConfig[selectedRole].label} Account`}
+              </Button>
+            </form>
+          </StaggerItem>
 
-          <div className={styles.signupPrompt}>
+          <StaggerItem className={styles.signupPrompt}>
             <p>Already have an account? <Link href="/login">Sign In</Link> or <Link href="/passwordless">use magic link</Link></p>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

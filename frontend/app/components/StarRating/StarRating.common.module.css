@@ -1,9 +1,17 @@
 .starRating {
   display: flex;
+  gap: 0.25rem;
   align-items: center;
-  gap: 2px;
 }
 
 .star {
-  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transition: all 0.2s ease;
+}
+
+.filled {
+  transform: scale(1);
+}
+
+.empty {
+  opacity: 0.3;
 }

@@ -1,11 +1,11 @@
 // @AI-HINT: Admin Projects page. Theme-aware, accessible, animated list with filters and row actions.
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { useAdminData } from '@/hooks/useAdmin';
 import common from './AdminProjects.common.module.css';
 import light from './AdminProjects.light.module.css';
@@ -39,12 +39,6 @@ const AdminProjects: React.FC = () => {
 
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<(typeof STATUSES)[number]>('All');
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const tableRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const tableVisible = useIntersectionObserver(tableRef, { threshold: 0.1 });
 
   const rows: ProjectRow[] = useMemo(() => {
     if (!Array.isArray(projects)) return [];
@@ -102,9 +96,9 @@ const AdminProjects: React.FC = () => {
   React.useEffect(() => { setPage(1); }, [sortKey, sortDir, query, status, pageSize]);
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
+    <PageTransition className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
+        <ScrollReveal className={common.header}>
           <div>
             <h1 className={common.title}>Projects</h1>
             <p className={cn(common.subtitle, themed.subtitle)}>Platform-wide projects overview. Filter by status and search by name/client.</p>
@@ -118,9 +112,9 @@ const AdminProjects: React.FC = () => {
             </select>
             <button type="button" className={cn(common.button, themed.button)}>Create Project</button>
           </div>
-        </div>
+        </ScrollReveal>
 
-        <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)} aria-busy={loading || undefined}>
+        <ScrollReveal className={common.tableWrap} aria-busy={loading || undefined} delay={0.2}>
           {error && <div className={common.error}>Failed to load projects.</div>}
           <div className={cn(common.toolbar)}>
             <div className={common.controls}>
@@ -236,9 +230,9 @@ const AdminProjects: React.FC = () => {
               >Next</button>
             </div>
           )}
-        </div>
+        </ScrollReveal>
       </div>
-    </main>
+    </PageTransition>
   );
 };
 

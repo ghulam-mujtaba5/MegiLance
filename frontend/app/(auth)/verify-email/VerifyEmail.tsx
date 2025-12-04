@@ -10,6 +10,8 @@ import api from '@/lib/api';
 import { FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './VerifyEmail.common.module.css';
 import lightStyles from './VerifyEmail.light.module.css';
 import darkStyles from './VerifyEmail.dark.module.css';
@@ -83,20 +85,20 @@ const VerifyEmail: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.card}>
+    <PageTransition className={styles.container}>
+      <StaggerContainer className={styles.card}>
         {status === 'loading' && (
-          <>
+          <StaggerItem>
             <div className={styles.iconWrapper}>
               <FaSpinner className={commonStyles.spinIcon} size={64} />
             </div>
             <h1 className={styles.title}>Verifying Your Email</h1>
             <p className={styles.message}>Please wait while we verify your email address...</p>
-          </>
+          </StaggerItem>
         )}
 
         {status === 'success' && (
-          <>
+          <StaggerItem>
             <div className={styles.iconWrapper}>
               <FaCheckCircle className={commonStyles.successIcon} size={64} />
             </div>
@@ -120,11 +122,11 @@ const VerifyEmail: React.FC = () => {
                 </Button>
               </Link>
             </div>
-          </>
+          </StaggerItem>
         )}
 
         {status === 'error' && (
-          <>
+          <StaggerItem>
             <div className={styles.iconWrapper}>
               <FaTimesCircle className={commonStyles.errorIcon} size={64} />
             </div>
@@ -137,10 +139,10 @@ const VerifyEmail: React.FC = () => {
                 </Button>
               </Link>
             </div>
-          </>
+          </StaggerItem>
         )}
-      </div>
-    </div>
+      </StaggerContainer>
+    </PageTransition>
   );
 };
 

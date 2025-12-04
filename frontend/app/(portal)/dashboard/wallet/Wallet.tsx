@@ -1,11 +1,11 @@
 // @AI-HINT: Portal Wallet page. Theme-aware, accessible, animated balance and transactions. Fetches from payments API.
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { Loader2 } from 'lucide-react';
+import { PageTransition, ScrollReveal } from '@/components/Animations';
 import common from './Wallet.common.module.css';
 import light from './Wallet.light.module.css';
 import dark from './Wallet.dark.module.css';
@@ -33,12 +33,6 @@ const Wallet: React.FC = () => {
   const [type, setType] = useState<(typeof TYPES)[number]>('All');
   const [range, setRange] = useState<(typeof RANGES)[number]>('Past month');
   const [toast, setToast] = useState<{ kind: 'success' | 'error'; msg: string } | null>(null);
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const gridVisible = useIntersectionObserver(gridRef, { threshold: 0.1 });
 
   // Fetch transactions from API
   useEffect(() => {
@@ -138,79 +132,85 @@ const Wallet: React.FC = () => {
   }
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.container}>
-        {error && (
-          <div className={cn(common.errorBanner, themed.errorBanner)}>
-            {error}
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          {error && (
+            <div className={cn(common.errorBanner, themed.errorBanner)}>
+              {error}
+            </div>
+          )}
+          <ScrollReveal>
+            <div className={common.header}>
+              <div>
+                <h1 className={common.title}>Wallet</h1>
+                <p className={cn(common.subtitle, themed.subtitle)}>Manage your balance, payouts, and transactions.</p>
+              </div>
+              <div className={common.controls} aria-label="Wallet filters">
+                <label className={common.srOnly} htmlFor="type">Type</label>
+                <select id="type" className={cn(common.select, themed.select)} value={type} onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}>
+                  {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+
+                <label className={common.srOnly} htmlFor="range">Date range</label>
+                <select id="range" className={cn(common.select, themed.select)} value={range} onChange={(e) => setRange(e.target.value as (typeof RANGES)[number])}>
+                  {RANGES.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+
+                <button type="button" className={cn(common.button, themed.button)} onClick={exportCSV}>Export CSV</button>
+              </div>
+            </div>
+          </ScrollReveal>
+
+          <ScrollReveal>
+            <div className={common.grid}>
+              <section className={cn(common.card, themed.card)} aria-label="Current balance">
+                <div className={cn(common.cardTitle, themed.cardTitle)}>Balance</div>
+                <div className={common.balance}>
+                  <div className={common.amount}>${balance.toLocaleString()}</div>
+                </div>
+              </section>
+
+              <section className={cn(common.card, themed.card)} aria-label="Transactions">
+                <div className={cn(common.cardTitle, themed.cardTitle)}>Transactions</div>
+                <table className={common.table}>
+                  <thead>
+                    <tr>
+                      <th scope="col" className={themed.th + ' ' + common.th}>Date</th>
+                      <th scope="col" className={themed.th + ' ' + common.th}>Description</th>
+                      <th scope="col" className={themed.th + ' ' + common.th}>Type</th>
+                      <th scope="col" className={themed.th + ' ' + common.th}>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {txns.map((t) => (
+                      <tr key={t.id}>
+                        <td className={themed.td + ' ' + common.td}>{t.date}</td>
+                        <td className={themed.td + ' ' + common.td}>{t.description}</td>
+                        <td className={themed.td + ' ' + common.td}>{t.type}</td>
+                        <td className={themed.td + ' ' + common.td} aria-label={`Amount ${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString()}`}>
+                          {(t.amount >= 0 ? '+' : '') + '$' + Math.abs(t.amount).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </section>
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {toast && (
+          <div
+            role="status"
+            aria-live="polite"
+            className={cn(common.toast, themed.toast, toast.kind === 'success' ? themed.toastSuccess : themed.toastError)}
+          >
+            {toast.msg}
           </div>
         )}
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
-          <div>
-            <h1 className={common.title}>Wallet</h1>
-            <p className={cn(common.subtitle, themed.subtitle)}>Manage your balance, payouts, and transactions.</p>
-          </div>
-          <div className={common.controls} aria-label="Wallet filters">
-            <label className={common.srOnly} htmlFor="type">Type</label>
-            <select id="type" className={cn(common.select, themed.select)} value={type} onChange={(e) => setType(e.target.value as (typeof TYPES)[number])}>
-              {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
-
-            <label className={common.srOnly} htmlFor="range">Date range</label>
-            <select id="range" className={cn(common.select, themed.select)} value={range} onChange={(e) => setRange(e.target.value as (typeof RANGES)[number])}>
-              {RANGES.map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-
-            <button type="button" className={cn(common.button, themed.button)} onClick={exportCSV}>Export CSV</button>
-          </div>
-        </div>
-
-        <div ref={gridRef} className={cn(common.grid, gridVisible ? common.isVisible : common.isNotVisible)}>
-          <section className={cn(common.card, themed.card)} aria-label="Current balance">
-            <div className={cn(common.cardTitle, themed.cardTitle)}>Balance</div>
-            <div className={common.balance}>
-              <div className={common.amount}>${balance.toLocaleString()}</div>
-            </div>
-          </section>
-
-          <section className={cn(common.card, themed.card)} aria-label="Transactions">
-            <div className={cn(common.cardTitle, themed.cardTitle)}>Transactions</div>
-            <table className={common.table}>
-              <thead>
-                <tr>
-                  <th scope="col" className={themed.th + ' ' + common.th}>Date</th>
-                  <th scope="col" className={themed.th + ' ' + common.th}>Description</th>
-                  <th scope="col" className={themed.th + ' ' + common.th}>Type</th>
-                  <th scope="col" className={themed.th + ' ' + common.th}>Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {txns.map((t) => (
-                  <tr key={t.id}>
-                    <td className={themed.td + ' ' + common.td}>{t.date}</td>
-                    <td className={themed.td + ' ' + common.td}>{t.description}</td>
-                    <td className={themed.td + ' ' + common.td}>{t.type}</td>
-                    <td className={themed.td + ' ' + common.td} aria-label={`Amount ${t.amount >= 0 ? '+' : ''}${t.amount.toLocaleString()}`}>
-                      {(t.amount >= 0 ? '+' : '') + '$' + Math.abs(t.amount).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        </div>
-      </div>
-
-      {toast && (
-        <div
-          role="status"
-          aria-live="polite"
-          className={cn(common.toast, themed.toast, toast.kind === 'success' ? themed.toastSuccess : themed.toastError)}
-        >
-          {toast.msg}
-        </div>
-      )}
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

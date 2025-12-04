@@ -1,143 +1,170 @@
 /* @AI-HINT: Common styles for the StepCard. Defines the core layout, typography, and structure for a premium, modern step card with 3D effects. */
 
 .stepCard {
-  padding: 2rem;
+  padding: 2.5rem;
   position: relative;
-  width: 50%;
+  width: 45%; /* Leave gap for timeline */
   box-sizing: border-box;
-  border-radius: 16px;
-  margin-bottom: 3rem;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+  border-radius: 24px;
+  margin-bottom: 2rem;
+  clear: both;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   transform-style: preserve-3d;
   perspective: 1000px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 10px 30px -5px rgba(0, 0, 0, 0.05),
+    0 4px 10px -2px rgba(0, 0, 0, 0.02),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .stepCard:hover {
-  transform: translateZ(20px) scale(1.02);
+  transform: perspective(1000px) translateZ(20px) translateY(-10px);
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.15),
-    0 0 30px rgba(69, 115, 223, 0.1);
+    0 20px 40px -5px rgba(69, 115, 223, 0.15),
+    0 10px 20px -5px rgba(0, 0, 0, 0.05);
+  border-color: rgba(69, 115, 223, 0.3);
+  z-index: 10;
 }
 
 /* Position cards on alternating sides */
-.freelancer {
-  left: 0;
-  padding-right: 40px;
+.client {
+  float: left;
+  text-align: right;
+  margin-right: 55%;
   transform-origin: right center;
 }
 
-.freelancer:hover {
-  transform: perspective(1000px) rotateY(-3deg) translateZ(20px) scale(1.02);
-}
-
-.client {
-  left: 50%;
-  padding-left: 40px;
+.freelancer {
+  float: right;
+  text-align: left;
+  margin-left: 55%;
   transform-origin: left center;
 }
 
-.client:hover {
-  transform: perspective(1000px) rotateY(3deg) translateZ(20px) scale(1.02);
-}
-
-/* Arrow pointing to the timeline */
-.stepCard::after {
-  content: ' ';
+/* Connector Dot */
+.stepCard::before {
+  content: '';
   position: absolute;
-  top: 28px;
-  width: 0;
-  height: 0;
-  border-top: 12px solid transparent;
-  border-bottom: 12px solid transparent;
+  top: 2.5rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4573df, #ff9800);
+  box-shadow: 0 0 0 4px rgba(69, 115, 223, 0.2);
+  transition: all 0.3s ease;
 }
 
-.freelancer::after {
-  right: -12px;
-  border-left-width: 12px;
-  border-left-style: solid;
+.client::before {
+  right: -11.5%; /* Adjust based on gap */
 }
 
-.client::after {
-  left: -12px;
-  border-right-width: 12px;
-  border-right-style: solid;
+.freelancer::before {
+  left: -11.5%;
+}
+
+.stepCard:hover::before {
+  transform: scale(1.5);
+  box-shadow: 0 0 0 8px rgba(69, 115, 223, 0.3);
 }
 
 .content {
   position: relative;
+  z-index: 2;
 }
 
 .iconWrapper {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
-  transition: background-color 0.3s ease;
+  margin-bottom: 1.5rem;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  background: rgba(69, 115, 223, 0.1);
+  color: #4573df;
+}
+
+.stepCard:hover .iconWrapper {
+  transform: scale(1.1) rotate(10deg);
+  background: #4573df;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(69, 115, 223, 0.3);
 }
 
 .iconWrapper svg {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
 }
 
 .title {
-  font-family: 'Poppins', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
 .description {
-  font-size: 1rem;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
   line-height: 1.6;
   opacity: 0.9;
 }
 
 .stepNumber {
   position: absolute;
-  top: -15px;
-  font-size: 4rem;
-  font-weight: 800;
+  top: 1rem;
+  font-family: var(--font-heading);
+  font-size: 5rem;
+  font-weight: 900;
   line-height: 1;
-  z-index: -1;
+  z-index: 0;
   opacity: 0.05;
-  transition: color 0.3s ease;
-}
-
-.freelancer .stepNumber {
-  right: 0;
+  transition: all 0.3s ease;
 }
 
 .client .stepNumber {
-  left: 0;
+  left: 2rem;
+}
+
+.freelancer .stepNumber {
+  right: 2rem;
+}
+
+.stepCard:hover .stepNumber {
+  opacity: 0.1;
+  transform: scale(1.1);
+  color: #4573df;
 }
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {
-  .stepCard, .client, .freelancer {
+  .stepCard {
     width: 100%;
-    left: 0;
-    padding-left: 55px;
-    padding-right: 1rem;
-    margin-bottom: 2rem;
+    float: none;
+    margin-right: 0;
+    margin-left: 0;
+    text-align: left;
+    padding-left: 5rem;
   }
 
-  .client::after, .freelancer::after {
-    left: -12px;
-    border-right-width: 12px;
-    border-right-style: solid;
-    border-left: none;
+  .client, .freelancer {
+    float: none;
+    margin: 0 0 2rem 0;
+    text-align: left;
   }
 
-  .stepNumber {
-    font-size: 3.5rem;
-  }
-
-  .client .stepNumber, .freelancer .stepNumber {
-    left: -15px;
+  .client::before, .freelancer::before {
+    left: 1.5rem;
     right: auto;
+  }
+  
+  .client .stepNumber, .freelancer .stepNumber {
+    left: auto;
+    right: 2rem;
   }
 }

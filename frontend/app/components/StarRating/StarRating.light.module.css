@@ -1,7 +1,9 @@
-.star.filled {
-  color: #F2C94C; /* MegiLance Warning Yellow */
+.filled {
+  fill: #F2C94C;
+  color: #F2C94C;
+  filter: drop-shadow(0 0 2px rgba(242, 201, 76, 0.5));
 }
 
-.star.empty {
-  color: #E0E0E0; /* Light grey for empty stars */
+.empty {
+  color: #cbd5e1;
 }

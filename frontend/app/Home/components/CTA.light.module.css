@@ -1,25 +1,16 @@
-.container {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  box-shadow: 0 25px 50px -12px rgba(69, 115, 223, 0.15);
+.ctaSection {
+  background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
 }
 
 .title {
-  color: #0f172a;
+  color: #ffffff;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.ctaButton {
-  background-color: #4573df;
-  color: #ffffff;
-  border: none;
-}
-
-.ctaButton:hover {
-  background-color: #3a63c5;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(69, 115, 223, 0.25), 0 8px 10px -6px rgba(69, 115, 223, 0.25);
+.newsletterLabel {
+  color: rgba(255, 255, 255, 0.8);
 }

@@ -1,6 +1,8 @@
 // @AI-HINT: This is the root component for the Messages page. It assembles the modular sub-components and manages the application state for the messaging interface.
 'use client';
 import React, { useState } from 'react';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 // Modular Components
 import ConversationList from './components/ConversationList/ConversationList';
@@ -19,23 +21,27 @@ const Messages: React.FC = () => {
   };
 
   return (
-    <div className="Messages-container">
-      <ConversationList 
-        selectedConversationId={selectedConversationId}
-        onSelectConversation={setSelectedConversationId}
-        refreshKey={refreshKey}
-      />
-      <div className="Messages-chat-area">
-        <ChatWindow 
-          conversationId={selectedConversationId} 
-          refreshKey={refreshKey} 
-        />
-        <MessageInput 
-          conversationId={selectedConversationId} 
-          onMessageSent={handleMessageSent} 
-        />
-      </div>
-    </div>
+    <PageTransition>
+      <StaggerContainer className="Messages-container">
+        <StaggerItem>
+          <ConversationList 
+            selectedConversationId={selectedConversationId}
+            onSelectConversation={setSelectedConversationId}
+            refreshKey={refreshKey}
+          />
+        </StaggerItem>
+        <StaggerItem className="Messages-chat-area">
+          <ChatWindow 
+            conversationId={selectedConversationId} 
+            refreshKey={refreshKey} 
+          />
+          <MessageInput 
+            conversationId={selectedConversationId} 
+            onMessageSent={handleMessageSent} 
+          />
+        </StaggerItem>
+      </StaggerContainer>
+    </PageTransition>
   );
 };
 

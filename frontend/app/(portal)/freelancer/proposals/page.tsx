@@ -6,6 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { usePersistedState } from '@/app/lib/hooks/usePersistedState';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 
 import DataToolbar, { SortOption } from '@/app/components/DataToolbar/DataToolbar';
 import PaginationBar from '@/app/components/PaginationBar/PaginationBar';
@@ -221,96 +224,108 @@ const ProposalsPage: React.FC = () => {
   if (!resolvedTheme) return null;
 
   return (
-    <div className={cn(commonStyles.container, styles.container)}>
-      <header className={cn(commonStyles.header, styles.header)}>
-        <h1 className={cn(commonStyles.title, styles.title)}>My Proposals</h1>
-        <p className={cn(commonStyles.subtitle, styles.subtitle)}>Track and manage all your job proposals from a centralized dashboard.</p>
-      </header>
+    <PageTransition>
+      <div className={cn(commonStyles.container, styles.container)}>
+        <ScrollReveal>
+          <header className={cn(commonStyles.header, styles.header)}>
+            <h1 className={cn(commonStyles.title, styles.title)}>My Proposals</h1>
+            <p className={cn(commonStyles.subtitle, styles.subtitle)}>Track and manage all your job proposals from a centralized dashboard.</p>
+          </header>
+        </ScrollReveal>
 
-      {error ? (
-        <div className={cn(commonStyles.emptyState, styles.emptyState)}>
-          <h3 className={cn(commonStyles.emptyTitle, styles.emptyTitle)}>Error Loading Proposals</h3>
-          <p className={cn(commonStyles.emptyText, styles.emptyText)}>{error}</p>
-          <Button variant="primary" onClick={fetchProposals}>Try Again</Button>
-        </div>
-      ) : (
-        <>
-          <div className={cn(commonStyles.toolbarContainer, styles.toolbarContainer)}>
-            <DataToolbar
-              query={q}
-              onQueryChange={(val) => { setQ(val); setPage(1); }}
-              sortValue={`${sortKey}:${sortDir}`}
-              onSortChange={(val) => {
-                const [k, d] = val.split(':') as [keyof Proposal, 'asc' | 'desc'];
-                setSortKey(k); setSortDir(d); setPage(1);
-              }}
-              pageSize={pageSize}
-              onPageSizeChange={(sz) => { setPageSize(sz); setPage(1); }}
-              sortOptions={sortOptions}
-              searchPlaceholder="Search by job or client..."
-            />
-          </div>
-
-          <div className={cn(commonStyles.filterContainer, styles.filterContainer)}>
-            <StatusFilter
-              allStatuses={allStatuses}
-              selectedStatuses={statusFilters}
-              onChange={(selected) => { setStatusFilters(selected); setPage(1); }}
-            />
-          </div>
-
-          {loading ? (
-            <div className={cn(commonStyles.grid, styles.grid)}>
-                <TableSkeleton rows={pageSize} cols={1} useCards />
-            </div>
-          ) : sorted.length > 0 ? (
-            <div className={cn(commonStyles.grid, styles.grid)}>
-              {paged.map(proposal => (
-                <ProposalCard
-                  key={proposal.id}
-                  proposal={proposal}
-                  onView={handleView}
-                  onEdit={handleEdit}
-                  onWithdraw={handleWithdraw}
-                />
-              ))}
-            </div>
-          ) : (
+        {error ? (
+          <ScrollReveal>
             <div className={cn(commonStyles.emptyState, styles.emptyState)}>
-              <h3 className={cn(commonStyles.emptyTitle, styles.emptyTitle)}>No Proposals Found</h3>
-              <p className={cn(commonStyles.emptyText, styles.emptyText)}>
-                {proposals.length === 0 
-                  ? "You haven't submitted any proposals yet. Browse available jobs to get started!"
-                  : "Your search or filter criteria did not match any proposals."}
-              </p>
-              {proposals.length === 0 ? (
-                <Button variant="primary" onClick={() => window.location.href = '/jobs'}>Browse Jobs</Button>
-              ) : (
-                <Button variant="secondary" onClick={() => { setQ(''); setStatusFilters([]); }}>Clear All Filters</Button>
-              )}
+              <h3 className={cn(commonStyles.emptyTitle, styles.emptyTitle)}>Error Loading Proposals</h3>
+              <p className={cn(commonStyles.emptyText, styles.emptyText)}>{error}</p>
+              <Button variant="primary" onClick={fetchProposals}>Try Again</Button>
             </div>
-          )}
+          </ScrollReveal>
+        ) : (
+          <>
+            <ScrollReveal delay={0.1}>
+              <div className={cn(commonStyles.toolbarContainer, styles.toolbarContainer)}>
+                <DataToolbar
+                  query={q}
+                  onQueryChange={(val) => { setQ(val); setPage(1); }}
+                  sortValue={`${sortKey}:${sortDir}`}
+                  onSortChange={(val) => {
+                    const [k, d] = val.split(':') as [keyof Proposal, 'asc' | 'desc'];
+                    setSortKey(k); setSortDir(d); setPage(1);
+                  }}
+                  pageSize={pageSize}
+                  onPageSizeChange={(sz) => { setPageSize(sz); setPage(1); }}
+                  sortOptions={sortOptions}
+                  searchPlaceholder="Search by job or client..."
+                />
+              </div>
 
-          {sorted.length > 0 && (
-            <PaginationBar
-              currentPage={pageSafe}
-              totalPages={totalPages}
-              totalResults={sorted.length}
-              onPrev={() => setPage(p => Math.max(1, p - 1))}
-              onNext={() => setPage(p => Math.min(totalPages, p + 1))}
-            />
-          )}
-        </>
-      )}
+              <div className={cn(commonStyles.filterContainer, styles.filterContainer)}>
+                <StatusFilter
+                  allStatuses={allStatuses}
+                  selectedStatuses={statusFilters}
+                  onChange={(selected) => { setStatusFilters(selected); setPage(1); }}
+                />
+              </div>
+            </ScrollReveal>
 
-      <Modal isOpen={withdrawOpen} onClose={() => setWithdrawOpen(false)} title="Withdraw Proposal" size="small">
-        <p className={cn(commonStyles.modalText, styles.modalText)}>Are you sure you want to withdraw this proposal? This action cannot be undone.</p>
-        <div className={cn(commonStyles.modalActions, styles.modalActions)}>
-          <Button variant="secondary" onClick={() => setWithdrawOpen(false)}>Cancel</Button>
-          <Button variant="danger" onClick={confirmWithdraw}>Confirm Withdraw</Button>
-        </div>
-      </Modal>
-    </div>
+            {loading ? (
+              <div className={cn(commonStyles.grid, styles.grid)}>
+                  <TableSkeleton rows={pageSize} cols={1} useCards />
+              </div>
+            ) : sorted.length > 0 ? (
+              <StaggerContainer delay={0.2} className={cn(commonStyles.grid, styles.grid)}>
+                {paged.map(proposal => (
+                  <ProposalCard
+                    key={proposal.id}
+                    proposal={proposal}
+                    onView={handleView}
+                    onEdit={handleEdit}
+                    onWithdraw={handleWithdraw}
+                  />
+                ))}
+              </StaggerContainer>
+            ) : (
+              <ScrollReveal delay={0.2}>
+                <div className={cn(commonStyles.emptyState, styles.emptyState)}>
+                  <h3 className={cn(commonStyles.emptyTitle, styles.emptyTitle)}>No Proposals Found</h3>
+                  <p className={cn(commonStyles.emptyText, styles.emptyText)}>
+                    {proposals.length === 0 
+                      ? "You haven't submitted any proposals yet. Browse available jobs to get started!"
+                      : "Your search or filter criteria did not match any proposals."}
+                  </p>
+                  {proposals.length === 0 ? (
+                    <Button variant="primary" onClick={() => window.location.href = '/jobs'}>Browse Jobs</Button>
+                  ) : (
+                    <Button variant="secondary" onClick={() => { setQ(''); setStatusFilters([]); }}>Clear All Filters</Button>
+                  )}
+                </div>
+              </ScrollReveal>
+            )}
+
+            {sorted.length > 0 && (
+              <ScrollReveal delay={0.3}>
+                <PaginationBar
+                  currentPage={pageSafe}
+                  totalPages={totalPages}
+                  totalResults={sorted.length}
+                  onPrev={() => setPage(p => Math.max(1, p - 1))}
+                  onNext={() => setPage(p => Math.min(totalPages, p + 1))}
+                />
+              </ScrollReveal>
+            )}
+          </>
+        )}
+
+        <Modal isOpen={withdrawOpen} onClose={() => setWithdrawOpen(false)} title="Withdraw Proposal" size="small">
+          <p className={cn(commonStyles.modalText, styles.modalText)}>Are you sure you want to withdraw this proposal? This action cannot be undone.</p>
+          <div className={cn(commonStyles.modalActions, styles.modalActions)}>
+            <Button variant="secondary" onClick={() => setWithdrawOpen(false)}>Cancel</Button>
+            <Button variant="danger" onClick={confirmWithdraw}>Confirm Withdraw</Button>
+          </div>
+        </Modal>
+      </div>
+    </PageTransition>
   );
 };
 

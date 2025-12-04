@@ -1,28 +1,26 @@
-/* @AI-HINT: Light theme styles for the TestimonialCard. Defines a premium color palette for a clean, professional, and brand-aligned light mode appearance. */
-
 .testimonialCard {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .testimonialCard:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: #27AE60;
 }
 
 .quoteIcon {
-  color: #94a3b8;
+  color: #1a202c;
 }
 
 .quote {
-  color: #334155;
+  color: #4a5568;
 }
 
 .authorName {
-  color: #0f172a;
+  color: #1a202c;
 }
 
 .authorTitle {
-  color: #64748b;
+  color: #718096;
 }

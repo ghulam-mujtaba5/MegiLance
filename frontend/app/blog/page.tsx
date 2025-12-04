@@ -5,48 +5,41 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 
 import BlogPostCard from '@/app/components/Public/BlogPostCard/BlogPostCard';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { cn } from '@/lib/utils';
 import { mockPosts } from './data';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import commonStyles from './Blog.common.module.css';
 import lightStyles from './Blog.light.module.css';
 import darkStyles from './Blog.dark.module.css';
-
-const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const isVisible = useIntersectionObserver(ref, { threshold: 0.1 });
-
-  return (
-    <div ref={ref} className={cn(className, commonStyles.isNotVisible, { [commonStyles.isVisible]: isVisible })}>
-      {children}
-    </div>
-  );
-};
 
 const BlogPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
-    <main id="main-content" role="main" aria-labelledby="blog-title" className={commonStyles.container}>
-      <AnimatedSection>
-        <header className={commonStyles.header}>
-          <h1 id="blog-title" className={cn(commonStyles.title, themeStyles.title)}>The MegiLance Blog</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Insights on crypto, freelancing, and the future of work.
-          </p>
-        </header>
-      </AnimatedSection>
+    <PageTransition>
+      <main id="main-content" role="main" aria-labelledby="blog-title" className={commonStyles.container}>
+        <ScrollReveal>
+          <header className={commonStyles.header}>
+            <h1 id="blog-title" className={cn(commonStyles.title, themeStyles.title)}>The MegiLance Blog</h1>
+            <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+              Insights on crypto, freelancing, and the future of work.
+            </p>
+          </header>
+        </ScrollReveal>
 
-      <AnimatedSection>
-        <section className={commonStyles.grid} aria-label="Recent posts">
+        <StaggerContainer className={commonStyles.grid} aria-label="Recent posts">
           {mockPosts.map((post) => (
-            <BlogPostCard key={post.slug} {...post} />
+            <StaggerItem key={post.slug}>
+              <BlogPostCard {...post} />
+            </StaggerItem>
           ))}
-        </section>
-      </AnimatedSection>
-    </main>
+        </StaggerContainer>
+      </main>
+    </PageTransition>
   );
 };
 

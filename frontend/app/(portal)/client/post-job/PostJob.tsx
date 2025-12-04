@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+
 import { PostJobData, PostJobErrors, type Category } from './PostJob.types';
 import { loadDraft, saveDraft, clearDraft } from '@/app/mocks/jobs';
 import api from '@/lib/api';
@@ -160,39 +163,46 @@ const PostJob: React.FC = () => {
 
   if (submissionState === 'success') {
     return (
-      <div className={cn(common.centered_container, themed.centered_container)}>
-        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className={common.result_card}>
-          <CheckCircle className={cn(common.result_icon, common.success_icon, themed.success_icon)} size={48} />
-          <h2 className={cn(common.result_title, themed.result_title)}>Job Posted Successfully!</h2>
-          <p className={cn(common.result_message, themed.result_message)}>Your job is now live. You will be notified when freelancers start applying.</p>
-          <Button onClick={() => window.location.reload()}>Post Another Job</Button>
-        </motion.div>
-      </div>
+      <PageTransition>
+        <div className={cn(common.centered_container, themed.centered_container)}>
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className={common.result_card}>
+            <CheckCircle className={cn(common.result_icon, common.success_icon, themed.success_icon)} size={48} />
+            <h2 className={cn(common.result_title, themed.result_title)}>Job Posted Successfully!</h2>
+            <p className={cn(common.result_message, themed.result_message)}>Your job is now live. You will be notified when freelancers start applying.</p>
+            <Button onClick={() => window.location.reload()}>Post Another Job</Button>
+          </motion.div>
+        </div>
+      </PageTransition>
     );
   }
 
   if (submissionState === 'error') {
     return (
-      <div className={cn(common.centered_container, themed.centered_container)}>
-        <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className={common.result_card}>
-          <AlertTriangle className={cn(common.result_icon, common.error_icon, themed.error_icon)} size={48} />
-          <h2 className={cn(common.result_title, themed.result_title)}>Submission Failed</h2>
-          <p className={cn(common.result_message, themed.result_message)}>Something went wrong. Please try submitting again.</p>
-          <Button onClick={() => setSubmissionState('idle')}>Try Again</Button>
-        </motion.div>
-      </div>
+      <PageTransition>
+        <div className={cn(common.centered_container, themed.centered_container)}>
+          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className={common.result_card}>
+            <AlertTriangle className={cn(common.result_icon, common.error_icon, themed.error_icon)} size={48} />
+            <h2 className={cn(common.result_title, themed.result_title)}>Submission Failed</h2>
+            <p className={cn(common.result_message, themed.result_message)}>Something went wrong. Please try submitting again.</p>
+            <Button onClick={() => setSubmissionState('idle')}>Try Again</Button>
+          </motion.div>
+        </div>
+      </PageTransition>
     );
   }
 
   return (
-    <main className={cn(common.main, themed.main)}>
-      <div className={common.container}>
-        <header className={common.header}>
-          <h1 className={cn(common.title, themed.title)}>Post a Job</h1>
-          <p className={cn(common.subtitle, themed.subtitle)}>Follow the steps to get your job posted and find the right talent.</p>
-        </header>
+    <PageTransition>
+      <main className={cn(common.main, themed.main)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <header className={common.header}>
+              <h1 className={cn(common.title, themed.title)}>Post a Job</h1>
+              <p className={cn(common.subtitle, themed.subtitle)}>Follow the steps to get your job posted and find the right talent.</p>
+            </header>
+          </ScrollReveal>
 
-        <div className={common.step_indicator_container}>
+          <div className={common.step_indicator_container}>
           <StepIndicator steps={STEPS} currentStep={currentStep} />
         </div>
 
@@ -230,7 +240,8 @@ const PostJob: React.FC = () => {
           )}
         </footer>
       </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

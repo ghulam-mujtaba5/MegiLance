@@ -1,10 +1,9 @@
 // @AI-HINT: Client Reviews management. Theme-aware, accessible editor and animated reviews list.
 'use client';
 
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useClientData } from '@/hooks/useClient';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import Input from '@/app/components/Input/Input';
@@ -13,6 +12,7 @@ import Button from '@/app/components/Button/Button';
 import StarRating from '@/app/components/StarRating/StarRating';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Textarea from '@/app/components/Textarea/Textarea';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import api from '@/lib/api';
 import common from './Reviews.common.module.css';
 import light from './Reviews.light.module.css';
@@ -54,14 +54,6 @@ const Reviews: React.FC = () => {
   const [eligibleContracts, setEligibleContracts] = useState<any[]>([]);
   const [selectedContractId, setSelectedContractId] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const listRef = useRef<HTMLDivElement | null>(null);
-  const editorRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const listVisible = useIntersectionObserver(listRef, { threshold: 0.1 });
-  const editorVisible = useIntersectionObserver(editorRef, { threshold: 0.1 });
 
   useEffect(() => {
     async function loadEligible() {
@@ -160,58 +152,61 @@ const Reviews: React.FC = () => {
   };
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.container}>
-        <section ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="review-controls-title">
-          <h2 id="review-controls-title" className={common.srOnly}>Review Controls</h2>
-          <div>
-            <h1 className={common.title}>Reviews</h1>
-            <p className={common.subtitle}>Manage and respond to client feedback.</p>
-          </div>
-        </section>
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.container}>
+          <ScrollReveal>
+            <section className={common.header} aria-labelledby="review-controls-title">
+              <h2 id="review-controls-title" className={common.srOnly}>Review Controls</h2>
+              <div>
+                <h1 className={common.title}>Reviews</h1>
+                <p className={common.subtitle}>Manage and respond to client feedback.</p>
+              </div>
+            </section>
+          </ScrollReveal>
 
-        <section ref={listRef} className={cn(common.list, listVisible ? common.isVisible : common.isNotVisible)} aria-live="polite">
-          <h2 className={common.srOnly}>Review List</h2>
-          {loading && (
-            <div className={common.grid}>
-              {[...Array(6)].map((_, i) => (
-                <article key={i} className={cn(common.card, themed.card, common.skeleton)}>
-                  <div className={common.cardHeader}>
-                    <Skeleton height={40} width={40} className={common.avatarSkeleton} />
-                    <div className={common.headerText}>
-                      <Skeleton height={16} width={'60%'} />
-                      <Skeleton height={12} width={'40%'} />
+          <section className={common.list} aria-live="polite">
+            <h2 className={common.srOnly}>Review List</h2>
+            {loading && (
+              <StaggerContainer className={common.grid}>
+                {[...Array(6)].map((_, i) => (
+                  <article key={i} className={cn(common.card, themed.card, common.skeleton)}>
+                    <div className={common.cardHeader}>
+                      <Skeleton height={40} width={40} className={common.avatarSkeleton} />
+                      <div className={common.headerText}>
+                        <Skeleton height={16} width={'60%'} />
+                        <Skeleton height={12} width={'40%'} />
+                      </div>
                     </div>
-                  </div>
-                  <Skeleton height={20} width={'80%'} className={common.ratingSkeleton} />
-                  <Skeleton height={12} width={'90%'} />
-                  <Skeleton height={12} width={'70%'} />
-                </article>
-              ))}
-            </div>
-          )}
-          {error && <div className={common.error}>Failed to load reviews.</div>}
-          {!loading && sorted.length > 0 && (
-            <div className={common.grid}>
-              {paged.map(r => (
-                <article key={r.id} className={cn(common.card, themed.card)}>
-                  <header className={common.cardHeader}>
-                    <UserAvatar src={r.avatarUrl} name={r.freelancer} size={40} />
-                    <div className={common.headerText}>
-                      <h3 className={common.freelancerName}>{r.freelancer}</h3>
-                      <p className={common.projectName}>{r.project}</p>
+                    <Skeleton height={20} width={'80%'} className={common.ratingSkeleton} />
+                    <Skeleton height={12} width={'90%'} />
+                    <Skeleton height={12} width={'70%'} />
+                  </article>
+                ))}
+              </StaggerContainer>
+            )}
+            {error && <div className={common.error}>Failed to load reviews.</div>}
+            {!loading && sorted.length > 0 && (
+              <StaggerContainer className={common.grid}>
+                {paged.map(r => (
+                  <article key={r.id} className={cn(common.card, themed.card)}>
+                    <header className={common.cardHeader}>
+                      <UserAvatar src={r.avatarUrl} name={r.freelancer} size={40} />
+                      <div className={common.headerText}>
+                        <h3 className={common.freelancerName}>{r.freelancer}</h3>
+                        <p className={common.projectName}>{r.project}</p>
+                      </div>
+                    </header>
+                    <div className={common.cardBody}>
+                      <StarRating rating={r.rating} />
+                      <p className={common.reviewText}>{r.text}</p>
                     </div>
-                  </header>
-                  <div className={common.cardBody}>
-                    <StarRating rating={r.rating} />
-                    <p className={common.reviewText}>{r.text}</p>
-                  </div>
                   <footer className={common.cardFooter}>
                     <time dateTime={r.created}>{new Date(r.created).toLocaleDateString()}</time>
                   </footer>
                 </article>
               ))}
-            </div>
+            </StaggerContainer>
           )}
           {sorted.length === 0 && !loading && (
             <div className={common.emptyState} role="status" aria-live="polite">
@@ -239,7 +234,9 @@ const Reviews: React.FC = () => {
           </div>
         )}
 
-        <section ref={editorRef} className={cn(common.editor, themed.editor, editorVisible ? common.isVisible : common.isNotVisible)} aria-labelledby="new-title">
+                <ScrollReveal>
+          <section className={common.editor} aria-labelledby="leave-review-title">
+
           <h2 id="new-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Leave a Review</h2>
           <div className={common.editorForm}>
             
@@ -297,9 +294,11 @@ const Reviews: React.FC = () => {
               </Button>
             </div>
           </div>
-        </section>
+          </section>
+        </ScrollReveal>
       </div>
     </main>
+    </PageTransition>
   );
 };
 

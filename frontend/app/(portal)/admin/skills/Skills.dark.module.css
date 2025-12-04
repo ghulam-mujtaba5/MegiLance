@@ -1,0 +1,167 @@
+/* @AI-HINT: Admin Skills page - dark theme */
+
+.container {
+  background: #0a0a0c;
+}
+
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.pendingBadge {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.tabs {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab {
+  background: transparent;
+  color: #9ca3af;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tabActive {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
+}
+
+.filterBar {
+  background: transparent;
+}
+
+.searchInput {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+.select {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
+}
+
+.checkbox {
+  color: #d1d5db;
+}
+
+.emptyState {
+  background: rgba(255, 255, 255, 0.03);
+  color: #9ca3af;
+}
+
+.skillCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skillCard:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.skillName {
+  color: #f9fafb;
+}
+
+.featuredBadge {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.skillDesc {
+  color: #9ca3af;
+}
+
+.skillMeta {
+  color: #6b7280;
+}
+
+.iconBtn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d1d5db;
+}
+
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.categoryCard {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.categoryCard:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.categoryName {
+  color: #f9fafb;
+}
+
+.categoryDesc {
+  color: #9ca3af;
+}
+
+.categoryMeta {
+  color: #6b7280;
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.modalContent {
+  background: #1a1a1f;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modalHeader {
+  border-color: rgba(255, 255, 255, 0.05);
+  color: #f9fafb;
+}
+
+.closeBtn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #9ca3af;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.input,
+.textarea {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+.colorInput {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.modalFooter {
+  border-color: rgba(255, 255, 255, 0.05);
+}

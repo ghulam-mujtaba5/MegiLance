@@ -1,11 +1,11 @@
 // @AI-HINT: Audit Logs page. Theme-aware, accessible, animated table with filters. Fetches from admin activity API.
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { Loader2 } from 'lucide-react';
 import common from './AuditLogs.common.module.css';
 import light from './AuditLogs.light.module.css';
@@ -35,12 +35,6 @@ const AuditLogs: React.FC = () => {
   const [range, setRange] = useState<(typeof RANGES)[number]>('Past month');
   const [actor, setActor] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const tableRef = useRef<HTMLDivElement | null>(null);
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const tableVisible = useIntersectionObserver(tableRef, { threshold: 0.1 });
 
   // Fetch audit logs from API
   useEffect(() => {
@@ -108,26 +102,26 @@ const AuditLogs: React.FC = () => {
 
   if (loading) {
     return (
-      <main className={cn(common.page, themed.themeWrapper)}>
+      <PageTransition className={cn(common.page, themed.themeWrapper)}>
         <div className={common.container}>
           <div className={common.loadingState}>
             <Loader2 className={common.spinner} size={32} />
             <span>Loading audit logs...</span>
           </div>
         </div>
-      </main>
+      </PageTransition>
     );
   }
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
+    <PageTransition className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
         {error && (
           <div className={cn(common.errorBanner, themed.errorBanner)}>
             {error}
           </div>
         )}
-        <div ref={headerRef} className={cn(common.header, headerVisible ? common.isVisible : common.isNotVisible)}>
+        <ScrollReveal className={common.header}>
           <div>
             <h1 className={common.title}>Audit Logs</h1>
             <p className={cn(common.subtitle, themed.subtitle)}>Track important security and activity events across your account.</p>
@@ -146,63 +140,65 @@ const AuditLogs: React.FC = () => {
               {RANGES.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
-        </div>
+        </ScrollReveal>
 
-        <div ref={tableRef} className={cn(common.tableWrap, tableVisible ? common.isVisible : common.isNotVisible)}>
-          <table className={cn(common.table, themed.table)}>
-            <thead>
-              <tr>
-                <th scope="col" className={themed.th + ' ' + common.th}>Time</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>Actor</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>Action</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>Resource</th>
-                <th scope="col" className={themed.th + ' ' + common.th}>IP</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map(l => (
-                <tr
-                  key={l.id}
-                  tabIndex={0}
-                  className={cn(common.row)}
-                  onClick={() => setSelectedId(l.id)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(l.id); } }}
-                  aria-selected={selectedId === l.id}
-                >
-                  <td className={themed.td + ' ' + common.td}>{new Date(l.time).toLocaleString()}</td>
-                  <td className={themed.td + ' ' + common.td}>{l.actor}</td>
-                  <td className={themed.td + ' ' + common.td}>{l.action}</td>
-                  <td className={themed.td + ' ' + common.td}>{l.resource}</td>
-                  <td className={themed.td + ' ' + common.td}>{l.ip}</td>
+        <StaggerContainer>
+          <ScrollReveal className={common.tableWrap}>
+            <table className={cn(common.table, themed.table)}>
+              <thead>
+                <tr>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Time</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Actor</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Action</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>Resource</th>
+                  <th scope="col" className={themed.th + ' ' + common.th}>IP</th>
                 </tr>
+              </thead>
+              <tbody>
+                {logs.map(l => (
+                  <tr
+                    key={l.id}
+                    tabIndex={0}
+                    className={cn(common.row)}
+                    onClick={() => setSelectedId(l.id)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(l.id); } }}
+                    aria-selected={selectedId === l.id}
+                  >
+                    <td className={themed.td + ' ' + common.td}>{new Date(l.time).toLocaleString()}</td>
+                    <td className={themed.td + ' ' + common.td}>{l.actor}</td>
+                    <td className={themed.td + ' ' + common.td}>{l.action}</td>
+                    <td className={themed.td + ' ' + common.td}>{l.resource}</td>
+                    <td className={themed.td + ' ' + common.td}>{l.ip}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ScrollReveal>
+
+          {logs.length === 0 && (
+            <div role="status" aria-live="polite" className={cn(common.details, themed.details)}>
+              No matching audit logs.
+            </div>
+          )}
+
+          {selected && (
+            <ScrollReveal className={cn(common.details, themed.details)} aria-label={`Details for event ${selected.id}`}>
+              <div className={cn(common.detailsTitle)}>Event Details</div>
+              <div className={common.kv}><div>Event ID</div><div>{selected.id}</div></div>
+              <div className={common.kv}><div>Time</div><div>{new Date(selected.time).toLocaleString()}</div></div>
+              <div className={common.kv}><div>Actor</div><div>{selected.actor}</div></div>
+              <div className={common.kv}><div>Action</div><div>{selected.action}</div></div>
+              <div className={common.kv}><div>Resource</div><div>{selected.resource}</div></div>
+              <div className={common.kv}><div>IP Address</div><div>{selected.ip}</div></div>
+              {selected.meta && Object.entries(selected.meta).map(([k,v]) => (
+                <div key={k} className={common.kv}><div>{k}</div><div>{v}</div></div>
               ))}
-            </tbody>
-          </table>
-        </div>
-
-        {logs.length === 0 && (
-          <div role="status" aria-live="polite" className={cn(common.details, themed.details)}>
-            No matching audit logs.
-          </div>
-        )}
-
-        {selected && (
-          <section className={cn(common.details, themed.details)} aria-label={`Details for event ${selected.id}`}>
-            <div className={cn(common.detailsTitle)}>Event Details</div>
-            <div className={common.kv}><div>Event ID</div><div>{selected.id}</div></div>
-            <div className={common.kv}><div>Time</div><div>{new Date(selected.time).toLocaleString()}</div></div>
-            <div className={common.kv}><div>Actor</div><div>{selected.actor}</div></div>
-            <div className={common.kv}><div>Action</div><div>{selected.action}</div></div>
-            <div className={common.kv}><div>Resource</div><div>{selected.resource}</div></div>
-            <div className={common.kv}><div>IP Address</div><div>{selected.ip}</div></div>
-            {selected.meta && Object.entries(selected.meta).map(([k,v]) => (
-              <div key={k} className={common.kv}><div>{k}</div><div>{v}</div></div>
-            ))}
-            <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={() => setSelectedId(null)}>Close</button>
-          </section>
-        )}
+              <button type="button" className={cn(common.button, themed.button, 'secondary')} onClick={() => setSelectedId(null)}>Close</button>
+            </ScrollReveal>
+          )}
+        </StaggerContainer>
       </div>
-    </main>
+    </PageTransition>
   );
 };
 

@@ -1,12 +1,14 @@
 // @AI-HINT: Client Dashboard component. Theme-aware, accessible dashboard with KPIs, recent projects, and activity feed. All data comes from backend APIs via useClientData hook.
 'use client';
 
-import React, { useMemo, useRef, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 import { useClientData } from '@/hooks/useClient';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import KeyMetrics from './components/KeyMetrics/KeyMetrics';
 import { 
   Briefcase, 
@@ -53,20 +55,12 @@ const ClientDashboard: React.FC = () => {
   const themed = resolvedTheme === 'dark' ? dark : light;
   const { projects, payments, loading, error } = useClientData();
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const widgetsRef = useRef<HTMLDivElement | null>(null);
-  const contentRef = useRef<HTMLDivElement | null>(null);
-
   const metricCards = [
     { title: 'Total Projects', icon: Briefcase, trend: <Trend value={5.2} /> },
     { title: 'Active Projects', icon: CheckCircle, trend: <Trend value={-1.8} /> },
     { title: 'Total Spent', icon: DollarSign, trend: <Trend value={12.5} /> },
     { title: 'Pending Payments', icon: Clock, trend: <Trend value={0} /> },
   ];
-
-  const headerVisible = useIntersectionObserver(headerRef, { threshold: 0.1 });
-  const widgetsVisible = useIntersectionObserver(widgetsRef, { threshold: 0.1 });
-  const contentVisible = useIntersectionObserver(contentRef, { threshold: 0.1 });
 
   const metrics = useMemo(() => {
     const totalProjects = Array.isArray(projects) ? projects.length : 0;
@@ -245,47 +239,52 @@ const ClientDashboard: React.FC = () => {
   }, [projects, payments, metrics.activeProjects]);
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
-      <div className={common.srOnly} aria-live="polite" role="status">
-        {liveRegionMessage}
-      </div>
-      <div className={common.container}>
-        {/* Welcome Banner */}
-        <div className={cn(common.welcomeBanner, themed.welcomeBanner)}>
-          <div className={common.welcomeBannerContent}>
-            <h1 className={cn(common.welcomeBannerTitle, themed.welcomeBannerTitle)}>
-              Welcome back! 👋
-            </h1>
-            <p className={cn(common.welcomeBannerText, themed.welcomeBannerText)}>
-              Here&apos;s what&apos;s happening with your projects and freelancers today.
-            </p>
-            <div className={common.quickActions}>
-              <Link href="/client/post-job">
-                <Button variant="primary" size="md" iconBefore={<Plus size={18} />}>
-                  Post New Project
-                </Button>
-              </Link>
-              <Link href="/freelancers">
-                <Button variant="secondary" size="md" iconBefore={<Users size={18} />}>
-                  Find Freelancers
-                </Button>
-              </Link>
+    <PageTransition>
+      <main className={cn(common.page, themed.themeWrapper)}>
+        <div className={common.srOnly} aria-live="polite" role="status">
+          {liveRegionMessage}
+        </div>
+        <div className={common.container}>
+          {/* Welcome Banner */}
+          <ScrollReveal>
+            <div className={cn(common.welcomeBanner, themed.welcomeBanner)}>
+              <div className={common.welcomeBannerContent}>
+                <h1 className={cn(common.welcomeBannerTitle, themed.welcomeBannerTitle)}>
+                  Welcome back! 👋
+                </h1>
+                <p className={cn(common.welcomeBannerText, themed.welcomeBannerText)}>
+                  Here&apos;s what&apos;s happening with your projects and freelancers today.
+                </p>
+                <div className={common.quickActions}>
+                  <Link href="/client/post-job">
+                    <Button variant="primary" size="md" iconBefore={<Plus size={18} />}>
+                      Post New Project
+                    </Button>
+                  </Link>
+                  <Link href="/freelancers">
+                    <Button variant="secondary" size="md" iconBefore={<Users size={18} />}>
+                      Find Freelancers
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </ScrollReveal>
 
-        {error && (
-          <div className={cn(common.errorBanner, themed.errorBanner)}>
-            <AlertCircle size={20} />
-            <span>Unable to load some data. Please refresh the page.</span>
-          </div>
-        )}
+          {error && (
+            <div className={cn(common.errorBanner, themed.errorBanner)}>
+              <AlertCircle size={20} />
+              <span>Unable to load some data. Please refresh the page.</span>
+            </div>
+          )}
 
-        <div ref={widgetsRef} className={cn(common.widgetsGrid, widgetsVisible ? common.isVisible : common.isNotVisible)}>
-          <KeyMetrics metrics={metrics} loading={loading} metricCards={metricCards} />
-        </div>
+          <ScrollReveal delay={0.1}>
+            <div className={common.widgetsGrid}>
+              <KeyMetrics metrics={metrics} loading={loading} metricCards={metricCards} />
+            </div>
+          </ScrollReveal>
 
-        <div ref={contentRef} className={cn(common.dashboardGrid, contentVisible ? common.isVisible : common.isNotVisible)}>
+          <StaggerContainer delay={0.2} className={common.dashboardGrid}>
           {/* Charts */}
           <div className={common.chartsContainer}>
             <Card title="Spending Overview" icon={DollarSign}>
@@ -417,9 +416,10 @@ const ClientDashboard: React.FC = () => {
               )}
             </div>
           </section>
+          </StaggerContainer>
         </div>
-      </div>
-    </main>
+      </main>
+    </PageTransition>
   );
 };
 

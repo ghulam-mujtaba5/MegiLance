@@ -81,26 +81,6 @@ const Hero: React.FC = () => {
       {/* Premium animated mesh gradient background */}
       <div className={cn(commonStyles.meshBackground, styles.meshBackground)} />
       
-      {/* Stunning 3D floating objects */}
-      <div className={cn(commonStyles.floating3D, commonStyles.floating3DTopLeft)}>
-        <FloatingCube size={50} />
-      </div>
-      <div className={cn(commonStyles.floating3D, commonStyles.floating3DTopRight)}>
-        <FloatingSphere size={70} variant="purple" />
-      </div>
-      <div className={cn(commonStyles.floating3D, commonStyles.floating3DBottomLeft)}>
-        <FloatingRing size={80} thickness={6} />
-      </div>
-      <div className={cn(commonStyles.floating3D, commonStyles.floating3DBottomRight)}>
-        <FloatingSphere size={55} variant="orange" />
-      </div>
-      <div className={cn(commonStyles.floating3D, commonStyles.floating3DCenterRight)}>
-        <FloatingCube size={35} />
-      </div>
-      <div className={cn(commonStyles.floating3D, commonStyles.floating3DCenterLeft)}>
-        <OrbitingElements count={4} size={120} />
-      </div>
-      
       {/* Background particles */}
       <ParticlesSystem count={10} className={commonStyles.particlesLayer} />
       
@@ -118,139 +98,179 @@ const Hero: React.FC = () => {
       <div className={cn(commonStyles.gridPattern, styles.gridPattern)} />
 
       <div className={commonStyles.contentWrapper}>
-        {/* Announcement badge */}
-        <Link 
-          href="/blog/ai-matching-2025" 
-          className={cn(
-            commonStyles.announcementBadge, 
-            styles.announcementBadge,
-            isVisible && commonStyles.fadeInUp
-          )}
-          style={{ animationDelay: '0.1s' }}
-        >
-          <span className={cn(commonStyles.badgeIcon, styles.badgeIcon)}>
-            <Sparkles size={14} />
-          </span>
-          <span className={commonStyles.badgeText}>
-            New: AI-powered instant matching is here
-          </span>
-          <ChevronRight size={16} className={commonStyles.badgeArrow} />
-        </Link>
-
-        {/* Main headline with gradient text */}
-        <h1 
-          className={cn(
-            commonStyles.mainHeading, 
-            styles.mainHeading,
-            isVisible && commonStyles.fadeInUp
-          )}
-          style={{ animationDelay: '0.2s' }}
-        >
-          <span className={commonStyles.headingLine}>Where Elite Talent</span>
-          <span className={cn(commonStyles.headingGradient, styles.headingGradient)}>
-            Meets Innovation
-          </span>
-        </h1>
-
-        {/* Value proposition */}
-        <p 
-          className={cn(
-            commonStyles.subheading, 
-            styles.subheading,
-            isVisible && commonStyles.fadeInUp
-          )}
-          style={{ animationDelay: '0.3s' }}
-        >
-          MegiLance combines AI-powered talent matching with blockchain-secured payments
-          to create the world&apos;s most trusted freelance marketplace. Join 50,000+ professionals 
-          building their future.
-        </p>
-
-        {/* CTA buttons */}
-        <div 
-          className={cn(
-            commonStyles.ctaGroup,
-            isVisible && commonStyles.fadeInUp
-          )}
-          style={{ animationDelay: '0.4s' }}
-        >
-          <Link href="/signup" className={commonStyles.ctaLink}>
-            <Button 
-              variant="primary" 
-              size="lg" 
-              className={cn(commonStyles.primaryCta, styles.primaryCta)}
+        <div className={commonStyles.heroGrid}>
+          {/* Left Column: Content */}
+          <div className={commonStyles.leftColumn}>
+            {/* Announcement badge */}
+            <Link 
+              href="/blog/ai-matching-2025" 
+              className={cn(
+                commonStyles.announcementBadge, 
+                styles.announcementBadge,
+                isVisible && commonStyles.fadeInUp
+              )}
+              style={{ animationDelay: '0.1s' }}
             >
-              Start Free Today
-              <ArrowRight size={18} className={commonStyles.ctaIcon} />
-            </Button>
-          </Link>
-          <Link href="/how-it-works" className={commonStyles.ctaLink}>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className={cn(commonStyles.secondaryCta, styles.secondaryCta)}
-            >
-              <PlayCircle size={18} />
-              See How It Works
-            </Button>
-          </Link>
-        </div>
+              <span className={cn(commonStyles.badgeIcon, styles.badgeIcon)}>
+                <Sparkles size={14} />
+              </span>
+              <span className={commonStyles.badgeText}>
+                New: AI-powered instant matching is here
+              </span>
+              <ChevronRight size={16} className={commonStyles.badgeArrow} />
+            </Link>
 
-        {/* Social proof row */}
-        <div 
-          className={cn(
-            commonStyles.socialProof,
-            isVisible && commonStyles.fadeInUp
-          )}
-          style={{ animationDelay: '0.5s' }}
-        >
-          <div className={cn(commonStyles.avatarStack, styles.avatarStack)}>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className={cn(commonStyles.avatar, styles.avatar)}>
-                <span>{String.fromCharCode(64 + i)}</span>
-              </div>
-            ))}
-          </div>
-          <div className={commonStyles.proofText}>
-            <div className={cn(commonStyles.proofStars, styles.proofStars)}>
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={14} fill="currentColor" />
-              ))}
-              <span className={styles.ratingText}>4.9/5</span>
+            {/* Main headline with gradient text */}
+            <h1 
+              className={cn(
+                commonStyles.mainHeading, 
+                styles.mainHeading,
+                isVisible && commonStyles.fadeInUp
+              )}
+              style={{ animationDelay: '0.2s' }}
+            >
+              <span className={commonStyles.headingLine}>Where Elite Talent</span>
+              <span className={cn(commonStyles.headingGradient, styles.headingGradient)}>
+                Meets Innovation
+              </span>
+            </h1>
+
+            {/* Value proposition */}
+            <p 
+              className={cn(
+                commonStyles.subheading, 
+                styles.subheading,
+                isVisible && commonStyles.fadeInUp
+              )}
+              style={{ animationDelay: '0.3s' }}
+            >
+              MegiLance combines AI-powered talent matching with blockchain-secured payments
+              to create the world&apos;s most trusted freelance marketplace. Join 50,000+ professionals 
+              building their future.
+            </p>
+
+            {/* CTA buttons */}
+            <div 
+              className={cn(
+                commonStyles.ctaGroup,
+                isVisible && commonStyles.fadeInUp
+              )}
+              style={{ animationDelay: '0.4s' }}
+            >
+              <Link href="/signup" className={commonStyles.ctaLink}>
+                <Button 
+                  variant="primary" 
+                  size="lg" 
+                  className={cn(commonStyles.primaryCta, styles.primaryCta)}
+                >
+                  Start Free Today
+                  <ArrowRight size={18} className={commonStyles.ctaIcon} />
+                </Button>
+              </Link>
+              <Link href="/how-it-works" className={commonStyles.ctaLink}>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className={cn(commonStyles.secondaryCta, styles.secondaryCta)}
+                >
+                  <PlayCircle size={18} />
+                  See How It Works
+                </Button>
+              </Link>
             </div>
-            <span className={cn(commonStyles.proofLabel, styles.proofLabel)}>
-              Trusted by 50,000+ professionals
-            </span>
+
+            {/* Social proof row */}
+            <div 
+              className={cn(
+                commonStyles.socialProof,
+                isVisible && commonStyles.fadeInUp
+              )}
+              style={{ animationDelay: '0.5s' }}
+            >
+              <div className={cn(commonStyles.avatarStack, styles.avatarStack)}>
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className={cn(commonStyles.avatar, styles.avatar)}>
+                    <span>{String.fromCharCode(64 + i)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className={commonStyles.proofText}>
+                <div className={cn(commonStyles.proofStars, styles.proofStars)}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} fill="currentColor" />
+                  ))}
+                  <span className={styles.ratingText}>4.9/5</span>
+                </div>
+                <span className={cn(commonStyles.proofLabel, styles.proofLabel)}>
+                  Trusted by 50,000+ professionals
+                </span>
+              </div>
+            </div>
+
+             {/* Trust badges */}
+            <div 
+              className={cn(
+                commonStyles.trustBadges,
+                isVisible && commonStyles.fadeInUp
+              )}
+              style={{ animationDelay: '0.6s' }}
+            >
+              <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
+                <CheckCircle2 size={16} />
+                <span>SOC 2 Certified</span>
+              </div>
+              <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
+                <ShieldCheck size={16} />
+                <span>Bank-grade Security</span>
+              </div>
+              <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
+                <Globe size={16} />
+                <span>GDPR Compliant</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: 3D Visuals */}
+          <div className={commonStyles.rightColumn}>
+            <div className={commonStyles.visualContainer}>
+               {/* Stunning 3D floating objects - Repositioned for Right Column */}
+              <div className={cn(commonStyles.floating3D, commonStyles.floating3DTopLeft)}>
+                <FloatingCube size={50} />
+              </div>
+              <div className={cn(commonStyles.floating3D, commonStyles.floating3DTopRight)}>
+                <FloatingSphere size={70} variant="purple" />
+              </div>
+              <div className={cn(commonStyles.floating3D, commonStyles.floating3DBottomLeft)}>
+                <FloatingRing size={80} thickness={6} />
+              </div>
+              <div className={cn(commonStyles.floating3D, commonStyles.floating3DBottomRight)}>
+                <FloatingSphere size={55} variant="orange" />
+              </div>
+              <div className={cn(commonStyles.floating3D, commonStyles.floating3DCenterRight)}>
+                <FloatingCube size={35} />
+              </div>
+              <div className={cn(commonStyles.floating3D, commonStyles.floating3DCenterLeft)}>
+                <OrbitingElements count={4} size={120} />
+              </div>
+
+              {/* Feature pills - Floating in 3D space */}
+              <div className={cn(commonStyles.floatingPill, commonStyles.pill1, styles.floatingPill)}>
+                <Bot size={16} />
+                <span>AI Smart Matching</span>
+              </div>
+              <div className={cn(commonStyles.floatingPill, commonStyles.pill2, styles.floatingPill)}>
+                <Zap size={16} />
+                <span>Instant Payments</span>
+              </div>
+              <div className={cn(commonStyles.floatingPill, commonStyles.pill3, styles.floatingPill)}>
+                <ShieldCheck size={16} />
+                <span>Blockchain Escrow</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Feature pills */}
-        <div 
-          className={cn(
-            commonStyles.featurePills,
-            isVisible && commonStyles.fadeInUp
-          )}
-          style={{ animationDelay: '0.6s' }}
-        >
-          <div className={cn(commonStyles.featurePill, styles.featurePill)}>
-            <Bot size={16} />
-            <span>AI Smart Matching</span>
-          </div>
-          <div className={cn(commonStyles.featurePill, styles.featurePill)}>
-            <Zap size={16} />
-            <span>Instant Payments</span>
-          </div>
-          <div className={cn(commonStyles.featurePill, styles.featurePill)}>
-            <ShieldCheck size={16} />
-            <span>Blockchain Escrow</span>
-          </div>
-          <div className={cn(commonStyles.featurePill, styles.featurePill)}>
-            <Globe size={16} />
-            <span>45+ Countries</span>
-          </div>
-        </div>
-
-        {/* Stats grid with glassmorphism */}
+        {/* Stats grid with glassmorphism - Full Width Bottom */}
         <div 
           className={cn(
             commonStyles.statsContainer,
@@ -280,28 +300,6 @@ const Hero: React.FC = () => {
               label="Countries Served" 
               icon={<Globe size={20} />} 
             />
-          </div>
-        </div>
-
-        {/* Trust badges */}
-        <div 
-          className={cn(
-            commonStyles.trustBadges,
-            isVisible && commonStyles.fadeInUp
-          )}
-          style={{ animationDelay: '0.8s' }}
-        >
-          <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
-            <CheckCircle2 size={16} />
-            <span>SOC 2 Certified</span>
-          </div>
-          <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
-            <ShieldCheck size={16} />
-            <span>Bank-grade Security</span>
-          </div>
-          <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
-            <Globe size={16} />
-            <span>GDPR Compliant</span>
           </div>
         </div>
       </div>

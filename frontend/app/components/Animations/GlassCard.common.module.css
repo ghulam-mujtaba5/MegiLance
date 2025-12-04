@@ -1,0 +1,12 @@
+.glassCard {
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.hoverEffect:hover {
+  transform: translateY(-5px) scale(1.02);
+}

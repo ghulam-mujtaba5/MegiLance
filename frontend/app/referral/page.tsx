@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/app/components/Animations';
 import commonStyles from './ReferralPage.common.module.css';
 import lightStyles from './ReferralPage.light.module.css';
 import darkStyles from './ReferralPage.dark.module.css';
@@ -32,14 +33,14 @@ const ReferralPage: React.FC = () => {
   };
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <header className={commonStyles.header}>
+    <PageTransition className={cn(commonStyles.container, themeStyles.container)}>
+      <ScrollReveal className={commonStyles.header}>
         <h1 className={cn(commonStyles.title, themeStyles.title)}>Invite Friends, Earn Crypto</h1>
         <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>Share your unique link and earn rewards for every new user who joins and completes a job.</p>
-      </header>
+      </ScrollReveal>
 
-      <main className={commonStyles.main}>
-        <div className={cn(commonStyles.card, themeStyles.card)}>
+      <StaggerContainer className={commonStyles.main}>
+        <ScrollReveal className={cn(commonStyles.card, themeStyles.card)}>
           <h2 className={cn(commonStyles.cardTitle, themeStyles.cardTitle)}>Your Referral Link</h2>
           <div className={commonStyles.linkWrapper}>
             <label htmlFor="referral-link" className={commonStyles.visuallyHidden}>Your referral link</label>
@@ -48,9 +49,9 @@ const ReferralPage: React.FC = () => {
               {copied ? 'Copied!' : 'Copy'}
             </Button>
           </div>
-        </div>
+        </ScrollReveal>
 
-        <div className={cn(commonStyles.statsCard, themeStyles.statsCard)}>
+        <ScrollReveal className={cn(commonStyles.statsCard, themeStyles.statsCard)}>
           <h2 className={cn(commonStyles.cardTitle, themeStyles.cardTitle)}>Your Stats</h2>
           <div className={commonStyles.statsGrid}>
             <div className={cn(commonStyles.statItem, themeStyles.statItem)}>
@@ -62,9 +63,9 @@ const ReferralPage: React.FC = () => {
               <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Tokens Earned</span>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </ScrollReveal>
+      </StaggerContainer>
+    </PageTransition>
   );
 };
 

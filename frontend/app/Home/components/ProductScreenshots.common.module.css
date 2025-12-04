@@ -3,50 +3,46 @@
 .carouselContainer {
   position: relative;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 5rem 1.5rem;
+  padding: 8rem 1.5rem;
   box-sizing: border-box;
+  perspective: 1500px;
 }
 
 .carouselHeader {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 5rem;
   width: 100%;
 }
 
 .carouselTitle {
-  font-family: var(--font-poppins);
-  font-size: 2.5rem;
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 800;
-  margin-bottom: 1rem;
-  letter-spacing: -0.025em;
-  background: linear-gradient(120deg, var(--text-primary-23272f), var(--primary-4573df));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .carouselSubtitle {
-  font-family: var(--font-inter);
-  font-size: 1.125rem;
-  color: var(--text-secondary-333333);
-  max-width: 600px;
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  max-width: 700px;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.8;
+  opacity: 0.8;
 }
 
 .carouselWrapper {
   position: relative;
   display: flex;
   align-items: center;
-  overflow: hidden;
-  border-radius: 1.5rem;
-  background: var(--background-primary-ffffff);
-  height: 500px;
+  overflow: visible; /* Allow 3D elements to pop out */
+  border-radius: 2rem;
+  height: 600px;
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   /* 3D Perspective for slides */
   perspective: 1500px;
   transform-style: preserve-3d;
@@ -56,36 +52,33 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
-  width: 3.5rem;
-  height: 3.5rem;
+  z-index: 20;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   backdrop-filter: blur(10px);
-  /* Thumb-friendly minimum size */
-  min-width: 44px;
-  min-height: 44px;
+  color: inherit;
 }
 
 .navButton:hover {
-  background: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .prevButton {
-  left: 1.5rem;
+  left: -2rem;
 }
 
 .nextButton {
-  right: 1.5rem;
+  right: -2rem;
 }
 
 .carouselSlides {
@@ -93,6 +86,7 @@
   width: 100%;
   height: 100%;
   position: relative;
+  transform-style: preserve-3d;
 }
 
 .slide {
@@ -104,91 +98,98 @@
   width: 100%;
   box-sizing: border-box;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.6s ease-in-out, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   /* 3D Slide Transform */
-  transform: perspective(1500px) rotateY(15deg) translateZ(-100px);
+  transform: perspective(1500px) rotateY(20deg) translateZ(-200px) translateX(100px);
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 
 .slideActive {
   opacity: 1;
-  z-index: 1;
-  transform: perspective(1500px) rotateY(0deg) translateZ(0);
+  z-index: 10;
+  transform: perspective(1500px) rotateY(0deg) translateZ(0) translateX(0);
+  pointer-events: auto;
 }
 
 .slideContent {
   display: flex;
   height: 100%;
-  padding: 2rem;
+  padding: 3rem;
   width: 100%;
   box-sizing: border-box;
   align-items: center;
+  gap: 4rem;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
 }
 
 .screenshotContainer {
-  flex: 1;
+  flex: 1.5;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 2rem;
+  padding: 0;
   box-sizing: border-box;
   /* 3D Device Frame Effect */
   perspective: 1000px;
+  transform-style: preserve-3d;
 }
 
 .screenshotImage {
   max-width: 100%;
   max-height: 100%;
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+    0 30px 60px -15px rgba(0, 0, 0, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.1);
-  object-fit: contain;
+  object-fit: cover;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
   width: 100%;
   height: auto;
-  border: 1px solid rgba(0, 0, 0, 0.05);
   /* 3D Tilt Effect */
-  transform-style: preserve-3d;
+  transform: rotateY(-5deg) rotateX(5deg);
 }
 
-.screenshotImage:hover {
-  transform: perspective(1000px) rotateX(-2deg) rotateY(5deg) scale(1.02) translateZ(10px);
+.screenshotContainer:hover .screenshotImage {
+  transform: rotateY(0deg) rotateX(0deg) scale(1.02) translateZ(20px);
   box-shadow: 
-    0 35px 60px -15px rgba(0, 0, 0, 0.2),
-    0 0 40px rgba(69, 115, 223, 0.1);
+    0 40px 80px -20px rgba(0, 0, 0, 0.3),
+    0 0 50px rgba(69, 115, 223, 0.15);
 }
 
 .playOverlay {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 5rem;
-  height: 5rem;
+  transform: translate(-50%, -50%) translateZ(30px);
+  width: 6rem;
+  height: 6rem;
   border-radius: 50%;
-  background: rgba(69, 115, 223, 0.8);
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
-  /* Thumb-friendly minimum size */
-  min-width: 44px;
-  min-height: 44px;
-  box-shadow: 0 10px 25px rgba(69, 115, 223, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 .playOverlay:hover {
-  background: rgba(69, 115, 223, 1);
-  transform: translate(-50%, -50%) scale(1.1);
-  box-shadow: 0 15px 30px rgba(69, 115, 223, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%) translateZ(50px) scale(1.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .slideInfo {
@@ -196,135 +197,110 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem;
+  padding: 0;
   max-width: 500px;
   box-sizing: border-box;
+  transform: translateZ(20px);
 }
 
 .slideTitle {
-  font-family: var(--font-poppins);
-  font-size: 2rem;
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--text-primary-23272f);
-  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
 }
 
 .slideDescription {
-  font-family: var(--font-inter);
-  font-size: 1.125rem;
-  color: var(--text-secondary-333333);
-  line-height: 1.6;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  opacity: 0.8;
 }
 
 .carouselControls {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  margin-top: 2rem;
+  margin-top: 3rem;
   width: 100%;
+  gap: 2rem;
 }
 
 .indicators {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .indicator {
   width: 0.75rem;
   height: 0.75rem;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  /* Thumb-friendly minimum size */
-  min-width: 44px;
-  min-height: 44px;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0;
 }
 
 .indicatorActive {
-  background: var(--primary-4573df);
-  transform: scale(1.2);
+  background: #4573df;
+  transform: scale(1.3);
+  box-shadow: 0 0 10px rgba(69, 115, 223, 0.5);
 }
 
 .autoPlayButton {
-  background: transparent;
-  border: 1px solid var(--primary-4573df);
-  color: var(--primary-4573df);
-  padding: 0.5rem 1.25rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  /* Thumb-friendly minimum size */
-  min-height: 44px;
-  min-width: 44px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: inherit;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-inter);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .autoPlayButton:hover {
-  background: var(--primary-4573df);
-  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
   .carouselWrapper {
-    height: 450px;
+    height: auto;
+    min-height: 600px;
   }
   
   .slideContent {
     flex-direction: column;
-    padding: 1.5rem;
+    padding: 2rem;
+    gap: 2rem;
   }
   
   .screenshotContainer {
-    padding: 1.5rem;
-    margin-bottom: 2rem;
+    width: 100%;
+    flex: none;
   }
   
   .slideInfo {
-    padding: 1.5rem;
+    width: 100%;
     max-width: 100%;
-  }
-  
-  .carouselTitle {
-    font-size: 2rem;
-  }
-  
-  .carouselSubtitle {
-    font-size: 1.125rem;
-  }
-  
-  .slideTitle {
-    font-size: 1.75rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .carouselContainer {
-    padding: 4rem 1rem;
-  }
-  
-  .carouselWrapper {
-    height: 400px;
-    border-radius: 1rem;
+    text-align: center;
   }
   
   .navButton {
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: 44px;
-    min-height: 44px;
+    width: 3rem;
+    height: 3rem;
   }
   
   .prevButton {
@@ -334,90 +310,22 @@
   .nextButton {
     right: 1rem;
   }
-  
-  .screenshotImage {
-    max-height: 200px;
-  }
-  
-  .playOverlay {
-    width: 4rem;
-    height: 4rem;
-    min-width: 44px;
-    min-height: 44px;
-  }
-  
-  .slideTitle {
-    font-size: 1.5rem;
-  }
-  
-  .slideDescription {
-    font-size: 1rem;
-  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .carouselContainer {
-    padding: 3rem 0.75rem;
-  }
-  
-  .carouselWrapper {
-    height: 350px;
-  }
-  
-  .slideContent {
-    padding: 1rem;
-  }
-  
-  .screenshotContainer {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .slideInfo {
-    padding: 1rem;
+    padding: 4rem 1rem;
   }
   
   .carouselTitle {
-    font-size: 1.75rem;
-  }
-  
-  .carouselSubtitle {
-    font-size: 1rem;
+    font-size: 2.5rem;
   }
   
   .slideTitle {
-    font-size: 1.25rem;
+    font-size: 2rem;
   }
   
-  /* Hide navigation buttons on small screens for better touch experience */
   .navButton {
     display: none;
-  }
-  
-  .carouselControls {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .indicators {
-    order: 2;
-  }
-  
-  .autoPlayButton {
-    order: 1;
-  }
-  
-  /* Enhanced touch targets for mobile */
-  .indicator {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-  }
-  
-  .autoPlayButton {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.75rem 1.25rem;
   }
 }
