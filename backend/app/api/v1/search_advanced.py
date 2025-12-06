@@ -122,7 +122,7 @@ async def search_freelancers(
 @router.get("/autocomplete", response_model=AutocompleteResponse)
 async def autocomplete(
     q: str = Query(..., min_length=1, description="Search query"),
-    type: str = Query("all", regex="^(all|projects|skills)$"),
+    type: str = Query("all", pattern="^(all|projects|skills)$"),
     limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db)
 ):

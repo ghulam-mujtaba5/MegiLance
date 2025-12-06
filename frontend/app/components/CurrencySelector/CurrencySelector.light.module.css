@@ -1,0 +1,74 @@
+/* Light Theme - Currency Selector */
+
+.container {
+  color: #0a0a0a;
+}
+
+.toggleContainer {
+  background-color: #f5f5f5;
+}
+
+.toggleButton {
+  color: #6b7280;
+}
+
+.toggleButton:hover {
+  background-color: #e5e5e5;
+  color: #0a0a0a;
+}
+
+.toggleButtonActive {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.selectorButton {
+  background-color: #ffffff;
+  color: #0a0a0a;
+  border-color: #e5e5e5;
+}
+
+.selectorButton:hover:not(:disabled) {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.dropdown {
+  background-color: #ffffff;
+  border-color: #e5e5e5;
+}
+
+.searchContainer {
+  border-color: #e5e5e5;
+  color: #6b7280;
+}
+
+.searchInput {
+  color: #0a0a0a;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.currencyItem {
+  color: #0a0a0a;
+}
+
+.currencyItem:hover {
+  background-color: #f5f5f5;
+}
+
+.currencyItemActive {
+  background-color: #eff6ff;
+  color: #4573df;
+}
+
+.emptyState {
+  color: #6b7280;
+}
+
+.conversionContainer {
+  background-color: #f9fafb;
+  border-color: #e5e5e5;
+}

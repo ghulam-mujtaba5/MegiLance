@@ -1,0 +1,63 @@
+/* @AI-HINT: MFASetup light theme colors */
+
+.container {
+  background-color: #ffffff;
+}
+
+.header {
+  color: #1a1a1a;
+}
+
+.methodGrid {
+  /* Light theme specific styles */
+}
+
+.methodCard {
+  background-color: #f8f9fa;
+  border-color: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.methodCard:hover {
+  background-color: #ffffff;
+  border-color: #4573df;
+}
+
+.methodCard.selected {
+  background-color: #eef3ff;
+  border-color: #4573df;
+}
+
+.setupContainer,
+.verifyContainer {
+  color: #1a1a1a;
+}
+
+.secret {
+  background-color: #f0f0f0;
+  color: #1a1a1a;
+  border: 1px solid #e0e0e0;
+}
+
+.backupCodes {
+  background-color: #fff9e6;
+  border-color: #f2c94c;
+}
+
+.backupCode {
+  background-color: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #e0e0e0;
+}
+
+.error {
+  background-color: #fff0f0;
+  color: #e81123;
+  border: 1px solid #e81123;
+}
+
+.phoneSection,
+.infoSection {
+  background-color: #f8f9fa;
+  color: #1a1a1a;
+}

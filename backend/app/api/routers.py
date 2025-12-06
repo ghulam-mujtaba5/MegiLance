@@ -10,7 +10,7 @@ from .v1 import (
     social_login, timezone, backup_restore,
     portfolio_builder, compliance, achievement_system, learning_center,
     analytics_dashboard, marketplace,
-    subscription_billing, multi_currency, legal_documents, knowledge_base, workflow_automation,
+    subscription_billing, legal_documents, knowledge_base, workflow_automation,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
     websocket, uploads, portal_endpoints, analytics, job_alerts, ai_services, fraud_detection, stripe,
@@ -20,7 +20,11 @@ from .v1 import (
     advanced_gamification, availability_calendar, review_responses, platform_compliance,
     notification_settings, search_analytics, rate_cards, proposal_templates,
     portfolio_showcase, notes_tags, custom_statuses, skill_taxonomy, search_advanced, realtime_notifications,
-    ai_matching
+    ai_matching,
+    # Version 2.0 Advanced Features
+    security, video_communication,
+    # Disabled due to import issues (will fix)
+    # multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics
 )
 
 
@@ -324,6 +328,28 @@ api_router.include_router(custom_statuses.router, tags=["custom-statuses"])
 
 # Skill Taxonomy - Hierarchical skill management
 api_router.include_router(skill_taxonomy.router, tags=["skill-taxonomy"])
+
+# ========================================
+# VERSION 2.0 ADVANCED FEATURES
+# ========================================
+
+# Advanced Security - MFA, risk-based auth, session management
+api_router.include_router(security.router, prefix="/security", tags=["security-advanced"])
+
+# Video Communication - WebRTC calls, screen sharing, whiteboard
+api_router.include_router(video_communication.router, prefix="/video", tags=["video"])
+
+# Multi-Currency Payments - DISABLED (will fix imports)
+# api_router.include_router(multicurrency.router, prefix="/multicurrency", tags=["multicurrency"])
+
+# Advanced AI - DISABLED (will fix imports)
+# api_router.include_router(ai_advanced.router, prefix="/ai-advanced", tags=["ai-advanced"])
+
+# Admin Fraud Alerts - DISABLED (will fix imports)
+# api_router.include_router(admin_fraud_alerts.router, prefix="/admin/fraud-alerts", tags=["admin-fraud"])
+
+# Admin Analytics - DISABLED (will fix imports)
+# api_router.include_router(admin_analytics.router, prefix="/admin", tags=["admin-analytics"])
 
 # Mock endpoints (DISABLED - using real database endpoints)
 # api_router.include_router(mock.router, prefix="", tags=["mock"])

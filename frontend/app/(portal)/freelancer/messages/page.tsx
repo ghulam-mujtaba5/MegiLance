@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import Messages from '../../../messages/Messages';
+import Messages from '../../../Messages/Messages';
 
 const FreelancerMessagesPage = () => {
   return <Messages />;

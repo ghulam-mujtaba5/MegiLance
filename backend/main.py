@@ -76,19 +76,42 @@ app.add_middleware(RequestIDMiddleware)
 
 # Configure CORS - restrict in production
 cors_origins = settings.backend_cors_origins
-if settings.environment == "production" and "*" in cors_origins:
-    # In production, require explicit origins - log warning if wildcard used
-    logger.warning("CORS wildcard (*) used in production - consider restricting to specific origins")
+if settings.environment == "production":
+    if "*" in cors_origins:
+        logger.warning("SECURITY: CORS wildcard (*) detected in production - restricting to localhost only")
+        cors_origins = ["http://localhost:3000"]  # Force safe default
+    elif not cors_origins:
+        logger.error("CRITICAL: No CORS origins configured in production")
+        raise ValueError("CORS origins must be explicitly configured in production")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*"],  # Allow all headers to fix CORS issues
+    allow_headers=["Content-Type", "Authorization"],  # Restrict headers
     expose_headers=["X-Request-Id", "X-Total-Count"],
     max_age=3600,
 )
+
+
+# Add security headers middleware
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        response = await call_next(request)
+        # Add security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+        if settings.environment == "production":
+            # In production, set secure cookie flags
+            response.headers["Set-Cookie"] = "Path=/; Secure; HttpOnly; SameSite=Strict"
+        return response
+
+
+app.add_middleware(SecurityHeadersMiddleware)
 
 @app.on_event("startup")
 async def on_startup():

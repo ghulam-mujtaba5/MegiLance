@@ -1,106 +1,137 @@
 """
-@AI-HINT: Database session management for Turso (libSQL) database
-Turso is a distributed SQLite database service built on libSQL
-Uses custom HTTP client for direct connection to Turso cloud
+@AI-HINT: Database session management - Consolidated to SQLite for dev, Turso for production
+Supports both local SQLite (development) and Turso (production)
 """
 
 from sqlalchemy import create_engine, event, Engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+from sqlalchemy.pool import StaticPool, QueuePool
 from app.core.config import get_settings
-from app.db.turso_http import TursoHTTP
-import sqlite3
+import logging
 
-
+logger = logging.getLogger(__name__)
 settings = get_settings()
 
 # Lazy engine creation to avoid blocking on startup
 _engine = None
 _SessionLocal = None
-_turso_client = None
 
-def get_turso_client():
-    """Get or create Turso HTTP client connection"""
-    global _turso_client
-    if _turso_client is None:
-        try:
-            _turso_client = TursoHTTP.get_instance()
-            print(f"[OK] Turso HTTP client obtained")
-        except Exception as e:
-            print(f"[WARNING] Failed to create Turso client: {e}")
-    return _turso_client
 
 def get_engine():
     """
-    Create database engine.
-    Uses the configured `database_url` (file:... for local sqlite) if provided.
-    Note: Turso (libsql://) requires a compatible SQLAlchemy dialect/driver
-    (e.g. sqlalchemy-libsql). If you run with `DATABASE_URL` pointing at Turso,
-    ensure the appropriate driver is installed in the environment.
+    Create and return database engine.
+    
+    Priority:
+    1. Turso in production (libsql://)
+    2. Local SQLite in development (file://./local.db)
     """
     global _engine
     if _engine is None:
         try:
-            # Prefer explicit TURSO_DATABASE_URL if provided; fallback to settings.database_url; else local file sqlite for persistence
-            db_url = (
-                settings.turso_database_url
-                or settings.database_url
-                or "sqlite:///./local_dev.db"
-            )
-            print(f"[OK] Database engine created: {db_url}")
-            connect_args = {}
-            if db_url.startswith("file:") or db_url.startswith("sqlite"):
+            # Determine database URL
+            if settings.environment == "production" and settings.turso_database_url:
+                db_url = settings.turso_database_url
+                logger.info(f"Using Turso database: {db_url.split('?')[0]}")
+                pool_class = QueuePool
+                connect_args = {}
+            else:
+                # Development: use local SQLite
+                db_url = settings.database_url or "sqlite:///./local_dev.db"
+                logger.info(f"Using local SQLite database: {db_url}")
+                pool_class = StaticPool
                 connect_args = {"check_same_thread": False}
+            
             _engine = create_engine(
                 db_url,
                 connect_args=connect_args,
-                poolclass=StaticPool if db_url.startswith("sqlite") else None,
-                echo=settings.debug
+                poolclass=pool_class,
+                echo=settings.debug,
+                pool_pre_ping=True,  # Verify connections before using
+                pool_recycle=3600,   # Recycle connections hourly
             )
 
-            # If using sqlite, enable recommended pragmas
+            # Enable SQLite optimizations for development
             if db_url.startswith("sqlite") or db_url.startswith("file:"):
                 @event.listens_for(_engine, "connect")
                 def set_sqlite_pragma(dbapi_conn, connection_record):
-                    cursor = dbapi_conn.cursor()
                     try:
+                        cursor = dbapi_conn.cursor()
                         cursor.execute("PRAGMA foreign_keys=ON")
                         cursor.execute("PRAGMA journal_mode=WAL")
-                    finally:
+                        cursor.execute("PRAGMA synchronous=NORMAL")
                         cursor.close()
+                    except Exception as e:
+                        logger.warning(f"Failed to set SQLite PRAGMA: {e}")
+            
+            logger.info("Database engine created successfully")
+            
         except Exception as e:
-            print(f"[WARNING] Database engine creation failed: {e}")
-            print(f"[WARNING] Falling back to local SQLite: sqlite:///./local_dev.db")
-            _engine = create_engine("sqlite:///./local_dev.db", connect_args={"check_same_thread": False})
+            logger.error(f"Failed to create database engine: {e}")
+            # Fall back to local SQLite
+            logger.warning("Falling back to local SQLite: sqlite:///./local_dev.db")
+            _engine = create_engine(
+                "sqlite:///./local_dev.db",
+                connect_args={"check_same_thread": False},
+                poolclass=StaticPool,
+                echo=settings.debug,
+            )
+
     return _engine
 
+
 def get_session_local():
+    """Get or create session factory"""
     global _SessionLocal
     if _SessionLocal is None:
-        _SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
+        _SessionLocal = sessionmaker(
+            autocommit=False,
+            autoflush=False,
+            bind=get_engine(),
+            expire_on_commit=False,
+        )
     return _SessionLocal
 
-# Note: previous implementation synced Turso -> local cache (turso_cache.db).
-# That local cache has been removed from the workflow. Use the Turso client
-# (`get_turso_client()`) directly when you need to run SQL against the remote DB.
-
-# For backward compatibility
-engine = None
-SessionLocal = None
 
 def get_db():
     """Dependency for getting database sessions"""
-    print(f"\n[DB] GET_DB: Creating session...")
     session_factory = get_session_local()
     db = session_factory()
-    print(f"   Session created: {db}")
     try:
         yield db
-        print(f"   [OK] Session completed successfully")
     except Exception as e:
-        print(f"   [ERROR] Session error: {e}")
+        logger.error(f"Database session error: {e}")
         db.rollback()
         raise
     finally:
-        print(f"   [INFO] Closing session")
         db.close()
+
+
+# Legacy compatibility
+engine = None
+SessionLocal = None
+
+
+def execute_query(query: str, params: dict = None):
+    """Execute a raw SQL query using Turso client or local database"""
+    try:
+        # Try Turso client first if configured
+        turso_client = get_turso_client()
+        if turso_client and settings.turso_database_url:
+            result = turso_client.execute(query, params or {})
+            return result
+    except Exception as e:
+        print(f"[WARNING] Turso query failed: {e}, falling back to local DB")
+    
+    # Fallback to local database
+    engine = get_engine()
+    with engine.connect() as conn:
+        if params:
+            result = conn.execute(text(query), params)
+        else:
+            result = conn.execute(text(query))
+        conn.commit()
+        
+        # Return results if it's a SELECT query
+        if query.strip().upper().startswith('SELECT'):
+            return [dict(row) for row in result.mappings()]
+        return result

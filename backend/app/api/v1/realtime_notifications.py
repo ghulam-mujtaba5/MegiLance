@@ -14,7 +14,7 @@ from collections import defaultdict
 
 from app.db.session import get_db
 from app.models.notification import Notification
-from app.core.security import decode_access_token
+from app.core.security import decode_token
 
 
 router = APIRouter()
@@ -151,7 +151,7 @@ async def websocket_notifications(
         return
     
     try:
-        payload = decode_access_token(token)
+        payload = decode_token(token)
         user_id = payload.get("sub")
         if not user_id:
             await websocket.close(code=1008, reason="Invalid token")

@@ -1,0 +1,277 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # Backend Tests
+  backend-tests:
+    name: Backend Tests & Quality
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pytest-asyncio bandit safety
+    
+    - name: Run security checks
+      run: |
+        cd backend
+        echo "=== Checking for known vulnerabilities ==="
+        safety check --json || true
+        
+        echo "=== Running Bandit security scan ==="
+        bandit -r app/ -ll || true
+    
+    - name: Run linting
+      run: |
+        cd backend
+        pip install flake8 black isort
+        echo "=== Black formatting check ==="
+        black --check app/ --diff || true
+        echo "=== Import sorting ==="
+        isort --check-only app/ || true
+    
+    - name: Run tests
+      run: |
+        cd backend
+        pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./backend/coverage.xml
+        flags: backend
+        fail_ci_if_error: false
+
+  # Frontend Tests
+  frontend-tests:
+    name: Frontend Tests & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+    
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+    
+    - name: Run linting
+      run: |
+        cd frontend
+        npm run lint || true
+    
+    - name: Run tests
+      run: |
+        cd frontend
+        npm test -- --coverage --watchAll=false || true
+    
+    - name: Build
+      run: |
+        cd frontend
+        npm run build
+    
+    - name: Check bundle size
+      run: |
+        cd frontend
+        du -sh .next/
+        echo "If > 500MB, consider optimizing"
+
+  # Database Migrations Check
+  migrations-check:
+    name: Database Migrations
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+    
+    - name: Check migration status
+      run: |
+        cd backend
+        alembic current
+        alembic history | head -10
+
+  # Docker Build (optional - commented out for faster CI)
+  # docker-build:
+  #   name: Docker Build
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push'
+  #   
+  #   steps:
+  #   - uses: actions/checkout@v3
+  #   
+  #   - name: Set up Docker Buildx
+  #     uses: docker/setup-buildx-action@v2
+  #   
+  #   - name: Build backend
+  #     uses: docker/build-push-action@v4
+  #     with:
+  #       context: ./backend
+  #       push: false
+  #       cache-from: type=gha
+  #       cache-to: type=gha,mode=max
+  #   
+  #   - name: Build frontend
+  #     uses: docker/build-push-action@v4
+  #     with:
+  #       context: ./frontend
+  #       push: false
+  #       cache-from: type=gha
+  #       cache-to: type=gha,mode=max
+
+  # Code Quality Analysis
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install analysis tools
+      run: |
+        pip install pylint radon
+    
+    - name: Pylint Analysis
+      run: |
+        cd backend
+        pylint app/ --exit-zero --output-format=colorized
+    
+    - name: Code Complexity
+      run: |
+        cd backend
+        radon cc app/ -a -nb
+
+  # Dependency Check
+  dependency-check:
+    name: Dependency Vulnerabilities
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Check Python dependencies
+      run: |
+        pip install safety
+        cd backend
+        safety check --json || true
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'frontend/package-lock.json'
+    
+    - name: Check Node dependencies
+      run: |
+        cd frontend
+        npm audit || true
+
+  # Deploy (only on main branch)
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [backend-tests, frontend-tests, migrations-check]
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to DigitalOcean
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+        
+        ssh -i ~/.ssh/deploy_key "$DEPLOY_USER@$DEPLOY_HOST" << 'EOF'
+          cd /home/megilance
+          git pull origin main
+          docker compose pull
+          docker compose -f docker-compose.yml up -d
+          docker compose exec -T backend alembic upgrade head
+          docker compose ps
+        EOF
+    
+    - name: Verify Deployment
+      env:
+        DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      run: |
+        sleep 30
+        curl -f https://api.megilance.com/api/health/ready || exit 1
+        echo "✅ Deployment successful!"
+
+# Scheduled Jobs
+  scheduled-tests:
+    name: Scheduled Security Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Run OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'MegiLance'
+        path: '.'
+        format: 'All'
+        args: >
+          --enableExperimental

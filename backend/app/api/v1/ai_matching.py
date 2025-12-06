@@ -197,7 +197,7 @@ async def get_match_score(
 
 @router.post("/track-click")
 async def track_recommendation_click(
-    item_type: str = Query(..., regex="^(project|freelancer)$"),
+    item_type: str = Query(..., pattern="^(project|freelancer)$"),
     item_id: int = Query(...),
     score: float = Query(...),
     db: Session = Depends(get_db),

@@ -1,0 +1,162 @@
+/* @AI-HINT: Dark theme colors for fraud alerts dashboard */
+
+.container {
+  background: #1a1a1a;
+  color: #e5e5e5;
+}
+
+.header {
+  border-bottom-color: #2a2a2a;
+}
+
+.statCard {
+  background: #242424;
+  border-color: #2a2a2a;
+}
+
+.filters {
+  background: #242424;
+  border-color: #2a2a2a;
+}
+
+.searchBox {
+  background: #1f1f1f;
+  border-color: #3a3a3a;
+  color: #e5e5e5;
+}
+
+.searchInput {
+  color: #e5e5e5;
+}
+
+.searchInput::placeholder {
+  color: #888888;
+}
+
+.select {
+  background: #1f1f1f;
+  border-color: #3a3a3a;
+  color: #e5e5e5;
+}
+
+.select:hover {
+  border-color: #5a8dff;
+}
+
+.alertCard {
+  background: #242424;
+  border-color: #2a2a2a;
+}
+
+.alertCard:hover {
+  background: #2a2a2a;
+}
+
+.severity {
+  background: rgba(69, 115, 223, 0.2);
+  color: #5a8dff;
+}
+
+.severityCritical .severity {
+  background: rgba(232, 17, 35, 0.2);
+  color: #ff6b7a;
+}
+
+.severityHigh .severity {
+  background: rgba(242, 169, 62, 0.2);
+  color: #ffd666;
+}
+
+.severityMedium .severity {
+  background: rgba(255, 185, 0, 0.2);
+  color: #ffd666;
+}
+
+.severityLow .severity {
+  background: rgba(16, 124, 16, 0.2);
+  color: #5cce5c;
+}
+
+.alertScore {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e5e5e5;
+}
+
+.evidenceText {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cccccc;
+  border: 1px solid #2a2a2a;
+}
+
+.empty,
+.error,
+.loading {
+  background: #242424;
+  border-color: #2a2a2a;
+  color: #e5e5e5;
+}
+
+.empty h3,
+.loading p {
+  color: #e5e5e5;
+}
+
+.empty p {
+  color: #999999;
+}
+
+.error {
+  background: rgba(232, 17, 35, 0.1);
+  border-color: #ff6b7a;
+  color: #ff6b7a;
+}
+
+.modalContent {
+  background: #242424;
+}
+
+.modalHeader {
+  background: #242424;
+  border-bottom-color: #2a2a2a;
+  color: #e5e5e5;
+}
+
+.closeButton {
+  color: #e5e5e5;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modalBody {
+  background: #242424;
+  color: #e5e5e5;
+  border-bottom-color: #2a2a2a;
+}
+
+.detailText {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cccccc;
+  border: 1px solid #2a2a2a;
+}
+
+.textarea {
+  background: #1f1f1f;
+  border-color: #3a3a3a;
+  color: #e5e5e5;
+}
+
+.textarea:focus {
+  border-color: #5a8dff;
+  outline: none;
+}
+
+.textarea::placeholder {
+  color: #888888;
+}
+
+.modalFooter {
+  background: #242424;
+  border-top-color: #2a2a2a;
+}

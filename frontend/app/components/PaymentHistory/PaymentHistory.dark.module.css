@@ -1,0 +1,71 @@
+/* Dark Theme - Payment History */
+
+.container {
+  color: #f5f5f5;
+}
+
+.searchContainer {
+  background-color: #1a1a1a;
+  border-color: #2a2a2a;
+  color: #9ca3af;
+}
+
+.searchInput {
+  color: #f5f5f5;
+}
+
+.searchInput::placeholder {
+  color: #6b7280;
+}
+
+.select {
+  background-color: #1a1a1a;
+  color: #f5f5f5;
+  border-color: #2a2a2a;
+}
+
+.totals {
+  background-color: #0a0a0a;
+  border-color: #3a3a3a;
+}
+
+.loading,
+.error,
+.empty {
+  background-color: #1a1a1a;
+  color: #f5f5f5;
+}
+
+.error {
+  background-color: #2d1414;
+  color: #fca5a5;
+}
+
+.paymentCard {
+  background-color: #1a1a1a;
+  border-color: #2a2a2a;
+}
+
+.paymentCard:hover {
+  border-color: #3a3a3a;
+}
+
+.statusCompleted {
+  background-color: #1e4620;
+  color: #86efac;
+}
+
+.statusPending {
+  background-color: #4a3f1a;
+  color: #fbbf24;
+}
+
+.statusFailed {
+  background-color: #3d1a1e;
+  color: #fca5a5;
+}
+
+.statusCancelled {
+  background-color: #2a2a2a;
+  color: #d1d5db;
+}

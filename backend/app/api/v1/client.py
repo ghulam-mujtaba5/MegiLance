@@ -4,14 +4,14 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.db.turso_http import execute_query, to_str, parse_date
-from app.core.security import get_current_user_from_header
+from app.core.security import get_current_user_from_token
 
 router = APIRouter()
 
 
 @router.get("/projects", response_model=List[dict])
 def get_client_projects(
-    current_user: dict = Depends(get_current_user_from_header)
+    current_user: dict = Depends(get_current_user_from_token)
 ):
     """
     Get client projects with transformed data structure for frontend
@@ -129,7 +129,7 @@ def get_client_projects(
 
 @router.get("/payments", response_model=List[dict])
 def get_client_payments(
-    current_user: dict = Depends(get_current_user_from_header)
+    current_user: dict = Depends(get_current_user_from_token)
 ):
     """
     Get client payments with transformed data structure for frontend
@@ -184,7 +184,7 @@ def get_client_payments(
 
 @router.get("/freelancers", response_model=List[dict])
 def get_client_freelancers(
-    current_user: dict = Depends(get_current_user_from_header)
+    current_user: dict = Depends(get_current_user_from_token)
 ):
     """
     Get freelancers that have worked with the client
@@ -260,7 +260,7 @@ def get_client_freelancers(
 
 @router.get("/reviews", response_model=List[dict])
 def get_client_reviews(
-    current_user: dict = Depends(get_current_user_from_header)
+    current_user: dict = Depends(get_current_user_from_token)
 ):
     """
     Get reviews for the client
@@ -309,7 +309,7 @@ def get_client_reviews(
 @router.post("/jobs")
 def create_client_job(
     job_data: dict,
-    current_user: dict = Depends(get_current_user_from_header)
+    current_user: dict = Depends(get_current_user_from_token)
 ):
     """
     Create a new job posting for the client

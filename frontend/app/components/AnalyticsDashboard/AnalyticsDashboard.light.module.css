@@ -1,0 +1,78 @@
+/* @AI-HINT: Light theme for analytics dashboard */
+
+.container {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.header {
+  border-bottom-color: #e5e5e5;
+}
+
+.dateSelect {
+  background: #ffffff;
+  border-color: #d0d0d0;
+  color: #1a1a1a;
+}
+
+.dateSelect:hover {
+  border-color: #4573df;
+}
+
+.metricCard {
+  background: #f7f7f7;
+  border-color: #e5e5e5;
+}
+
+.metricCard:hover {
+  background: #fafafa;
+}
+
+.metricLabel {
+  color: #666666;
+}
+
+.card {
+  background: #ffffff;
+  border-color: #e5e5e5;
+}
+
+.chartBarContainer {
+  background: rgba(69, 115, 223, 0.1);
+}
+
+.chartBarFill {
+  background: #4573df;
+}
+
+.listItem {
+  background: rgba(69, 115, 223, 0.04);
+}
+
+.listItem:hover {
+  background: rgba(69, 115, 223, 0.08);
+}
+
+.listName {
+  color: #1a1a1a;
+}
+
+.listMeta {
+  color: #888888;
+}
+
+.loading,
+.error {
+  background: #f9f9f9;
+  border-color: #e5e5e5;
+  color: #1a1a1a;
+}
+
+.loading p {
+  color: #1a1a1a;
+}
+
+.error {
+  background: #fef3f3;
+  border-color: #e81123;
+}

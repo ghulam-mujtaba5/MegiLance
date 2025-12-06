@@ -1,0 +1,185 @@
+/* @AI-HINT: MFASetup common styles - layout, structure, animations */
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+.methodGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.methodCard {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.methodCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.methodCard.selected {
+  border-width: 3px;
+}
+
+.methodIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.methodTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.methodDesc {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.setupContainer,
+.verifyContainer {
+  margin-bottom: 2rem;
+}
+
+.qrSection {
+  text-align: center;
+}
+
+.setupTitle,
+.verifyTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.qrCodeWrapper {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.qrCode {
+  max-width: 250px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.secretSection {
+  margin-top: 1.5rem;
+}
+
+.secretLabel {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.secret {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  text-align: center;
+  letter-spacing: 0.1em;
+}
+
+.phoneSection,
+.infoSection {
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.codeInput {
+  text-align: center;
+  font-size: 1.5rem;
+  letter-spacing: 0.5em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.backupCodes {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 2px dashed;
+}
+
+.backupCodes h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.backupInfo {
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.codesList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.backupCode {
+  display: block;
+  padding: 0.5rem;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.error {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+@media (max-width: 640px) {
+  .methodGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .codesList {
+    grid-template-columns: 1fr;
+  }
+}
