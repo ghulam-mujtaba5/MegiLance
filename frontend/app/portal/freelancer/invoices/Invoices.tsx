@@ -97,11 +97,18 @@ const Invoices: React.FC = () => {
       return;
     }
 
+    // Find the selected contract to get the client ID
+    const selectedContract = contracts.find(c => c.id === contractId);
+    if (!selectedContract) {
+      setError('Invalid contract selected');
+      return;
+    }
+
     try {
       setError(null);
       const formData: InvoiceFormData = {
         contract_id: contractId,
-        to_user_id: 1, // TODO: Get from contract
+        to_user_id: selectedContract.client_id,
         due_date: dueDate,
         items: lineItems,
         line_items: lineItems,

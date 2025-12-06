@@ -12,6 +12,7 @@ from app.models.user import User
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.core.security import get_current_active_user
 from app.db.turso_http import get_turso_http
+from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
 
 router = APIRouter()
 
@@ -226,6 +227,14 @@ def create_project(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only clients can create projects"
+        )
+    
+    # Check profile completion
+    if not is_profile_complete(current_user):
+        missing = get_missing_profile_fields(current_user)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Please complete your profile before posting a project. Missing: {', '.join(missing)}"
         )
     
     # Validate input

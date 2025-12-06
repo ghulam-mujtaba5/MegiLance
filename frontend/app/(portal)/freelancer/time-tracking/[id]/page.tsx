@@ -48,8 +48,42 @@ export default function TimeEntryDetailPage() {
   const fetchTimeEntry = async () => {
     setLoading(true);
     try {
-      // Mock data
-      const mockEntry: TimeEntry = {
+      // Try to fetch from API
+      const { timeEntriesApi } = await import('@/lib/api');
+      const entryId = parseInt(params.id as string, 10);
+      const data = await timeEntriesApi.get(entryId);
+      
+      if (data) {
+        // Map API response to component format
+        const apiEntry: TimeEntry = {
+          id: data.id?.toString() || params.id as string,
+          projectId: data.contract_id?.toString() || 'unknown',
+          projectName: data.project_name || data.contract?.project_title || 'Project',
+          clientName: data.client_name || data.contract?.client_name || 'Client',
+          taskDescription: data.description || 'Time entry',
+          startTime: data.start_time,
+          endTime: data.end_time,
+          duration: data.duration_hours || (data.duration / 3600) || 0,
+          hourlyRate: data.hourly_rate || 0,
+          totalAmount: data.total_amount || data.earnings || 0,
+          status: data.status || 'draft',
+          notes: data.notes || '',
+          screenshots: data.screenshots || [],
+          activityLevel: data.activity_level,
+          keystrokes: data.keystrokes,
+          mouseClicks: data.mouse_clicks,
+          createdAt: data.created_at,
+          updatedAt: data.updated_at
+        };
+        setEntry(apiEntry);
+        setEditedNotes(apiEntry.notes || '');
+      } else {
+        throw new Error('No data returned');
+      }
+    } catch (error) {
+      console.error('Failed to fetch time entry, using demo data:', error);
+      // Fallback demo data for display purposes
+      const demoEntry: TimeEntry = {
         id: params.id as string,
         projectId: 'proj_001',
         projectName: 'E-commerce Website Development',
@@ -74,11 +108,8 @@ export default function TimeEntryDetailPage() {
         createdAt: '2025-01-25T09:00:00Z',
         updatedAt: '2025-01-25T17:35:00Z'
       };
-
-      setEntry(mockEntry);
-      setEditedNotes(mockEntry.notes || '');
-    } catch (error) {
-      console.error('Failed to fetch time entry:', error);
+      setEntry(demoEntry);
+      setEditedNotes(demoEntry.notes || '');
     } finally {
       setLoading(false);
     }

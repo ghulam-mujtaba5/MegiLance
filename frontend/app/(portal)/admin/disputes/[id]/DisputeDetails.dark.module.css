@@ -1,0 +1,45 @@
+.container {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+.title {
+  color: #ffffff;
+}
+
+.meta {
+  color: #aaa;
+}
+
+.section {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+}
+
+.sectionTitle {
+  border-bottom-color: #333;
+  color: #ddd;
+}
+
+.evidenceItem {
+  background-color: #252525;
+  border-color: #333;
+}
+
+.textarea,
+.select {
+  background-color: #2a2a2a;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+.textarea:focus,
+.select:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.loadingState,
+.errorState {
+  color: #aaa;
+}

@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { FaUsers, FaLightbulb, FaShieldAlt } from 'react-icons/fa';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere, HoverCard3D } from '@/app/components/3D';
 
 import commonStyles from './About.common.module.css';
 import lightStyles from './About.light.module.css';
@@ -28,19 +29,23 @@ const teamMembers = [
 
 // --- Subcomponents ---
 const ValueCard: React.FC<{ value: typeof values[0]; themeStyles: any }> = ({ value, themeStyles }) => (
-  <div className={cn(commonStyles.valueCard, themeStyles.valueCard)}>
-    <value.icon className={cn(commonStyles.valueIcon, themeStyles.valueIcon)} aria-hidden="true" />
-    <h3 className={commonStyles.valueTitle}>{value.title}</h3>
-    <p className={commonStyles.valueDescription}>{value.description}</p>
-  </div>
+  <HoverCard3D>
+    <div className={cn(commonStyles.valueCard, themeStyles.valueCard)}>
+      <value.icon className={cn(commonStyles.valueIcon, themeStyles.valueIcon)} aria-hidden="true" />
+      <h3 className={commonStyles.valueTitle}>{value.title}</h3>
+      <p className={commonStyles.valueDescription}>{value.description}</p>
+    </div>
+  </HoverCard3D>
 );
 
 const TeamMemberCard: React.FC<{ member: typeof teamMembers[0]; themeStyles: any }> = ({ member, themeStyles }) => (
-  <div className={cn(commonStyles.teamCard, themeStyles.teamCard)}>
-    <Image src={member.avatar} alt={`Portrait of ${member.name}`} width={120} height={120} className={commonStyles.teamAvatar} />
-    <h3 className={commonStyles.teamName}>{member.name}</h3>
-    <p className={commonStyles.teamRole}>{member.role}</p>
-  </div>
+  <HoverCard3D intensity={10}>
+    <div className={cn(commonStyles.teamCard, themeStyles.teamCard)}>
+      <Image src={member.avatar} alt={`Portrait of ${member.name}`} width={120} height={120} className={commonStyles.teamAvatar} />
+      <h3 className={commonStyles.teamName}>{member.name}</h3>
+      <p className={commonStyles.teamRole}>{member.role}</p>
+    </div>
+  </HoverCard3D>
 );
 
 // --- Main Component ---
@@ -50,6 +55,18 @@ const About: React.FC = () => {
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+         <AnimatedOrb variant="blue" size={600} blur={100} opacity={0.1} className="absolute top-[-20%] left-[-10%]" />
+         <AnimatedOrb variant="orange" size={500} blur={80} opacity={0.08} className="absolute bottom-[-20%] right-[-10%]" />
+         <ParticlesSystem count={15} className="absolute inset-0" />
+         <div className="absolute top-1/4 right-10 opacity-10 animate-float-slow">
+           <FloatingCube size={50} />
+         </div>
+         <div className="absolute bottom-1/3 left-20 opacity-10 animate-float-medium">
+           <FloatingSphere size={40} variant="gradient" />
+         </div>
+      </div>
+
       <main id="main-content" role="main" className={cn(commonStyles.aboutPage, themeStyles.aboutPage)}>
         <div className={commonStyles.container}>
           <ScrollReveal>

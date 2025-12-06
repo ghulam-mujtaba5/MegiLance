@@ -6,6 +6,8 @@ from typing import Optional, Dict, Any
 from decimal import Decimal
 import os
 import json
+import asyncio
+import random
 
 # Graceful fallback for missing dependencies
 try:
@@ -26,6 +28,10 @@ except ImportError:
 
 class BlockchainPaymentService:
     """Service for handling blockchain-based USDC payments"""
+    
+    # Mock state (Class attributes to persist across requests in the same process)
+    _mock_balances: Dict[str, Decimal] = {}
+    _mock_transactions: Dict[str, Dict[str, Any]] = {}
     
     def __init__(self):
         self.rpc_url = os.getenv('POLYGON_RPC_URL', 'https://polygon-rpc.com/')
@@ -97,7 +103,8 @@ class BlockchainPaymentService:
     async def check_balance(self, wallet_address: str) -> Decimal:
         """Check USDC balance for a wallet address"""
         if not WEB3_AVAILABLE or not self.usdc_contract:
-            return Decimal("1000.00") # Mock balance
+            # Return mock balance (default 1000 for new addresses)
+            return self._mock_balances.get(wallet_address, Decimal("1000.00"))
             
         try:
             balance_wei = self.usdc_contract.functions.balanceOf(
@@ -122,10 +129,42 @@ class BlockchainPaymentService:
         Returns transaction hash and status
         """
         if not WEB3_AVAILABLE:
+            # Mock Transaction Logic
+            # Simulate network delay
+            await asyncio.sleep(random.uniform(1.0, 3.0))
+
+            current_balance = self._mock_balances.get(from_address, Decimal("1000.00"))
+            
+            if current_balance < amount_usdc:
+                return {
+                    'success': False,
+                    'error': 'Insufficient funds (Mock)',
+                    'status': 'failed'
+                }
+            
+            # Update balances
+            self._mock_balances[from_address] = current_balance - amount_usdc
+            self._mock_balances[to_address] = self._mock_balances.get(to_address, Decimal("1000.00")) + amount_usdc
+            
+            tx_hash = '0xMOCK_' + os.urandom(8).hex()
+            
+            # Store transaction
+            self._mock_transactions[tx_hash] = {
+                'confirmed': True,
+                'status': 'success',
+                'block_number': 12345678,
+                'gas_used': 21000,
+                'transaction_hash': tx_hash,
+                'from': from_address,
+                'to': to_address,
+                'amount': str(amount_usdc),
+                'mock': True
+            }
+            
             return {
                 'success': True,
-                'transaction_hash': '0xMOCK_TRANSACTION_HASH_' + os.urandom(4).hex(),
-                'status': 'pending',
+                'transaction_hash': tx_hash,
+                'status': 'pending', # Initially pending, verified later
                 'amount': str(amount_usdc),
                 'from': from_address,
                 'to': to_address,
@@ -176,13 +215,18 @@ class BlockchainPaymentService:
     async def verify_transaction(self, tx_hash: str) -> Dict[str, Any]:
         """Verify transaction status on blockchain"""
         if not WEB3_AVAILABLE:
+            # Check mock store
+            if tx_hash in self._mock_transactions:
+                return self._mock_transactions[tx_hash]
+            
             return {
                 'confirmed': True,
                 'status': 'success',
                 'block_number': 12345678,
                 'gas_used': 21000,
                 'transaction_hash': tx_hash,
-                'mock': True
+                'mock': True,
+                'note': 'Transaction not found in mock store, assuming success for legacy mocks'
             }
 
         try:

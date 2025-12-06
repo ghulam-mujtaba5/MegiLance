@@ -13,6 +13,10 @@ import ToggleSwitch from '@/app/components/ToggleSwitch/ToggleSwitch';
 import Card from '@/app/components/Card/Card';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import MegaLoader from '@/app/components/Loading/MegaLoader';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { StaggerItem } from '@/app/components/Animations/StaggerItem';
 import { Bell, Trash2, Search, Zap } from 'lucide-react';
 
 import commonStyles from './JobAlerts.common.module.css';
@@ -117,127 +121,139 @@ const JobAlertsPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1 className={styles.title}>Job Alerts</h1>
-          <p className={styles.subtitle}>
-            Stay ahead of the competition. Get notified instantly when jobs matching your skills are posted.
-          </p>
-        </div>
-        <div className={styles.headerIcon}>
-          <Bell size={48} className={styles.bellIcon} />
-        </div>
-      </header>
+    <PageTransition>
+      <div className={styles.container}>
+        <ScrollReveal>
+          <header className={styles.header}>
+            <div className={styles.headerContent}>
+              <h1 className={styles.title}>Job Alerts</h1>
+              <p className={styles.subtitle}>
+                Stay ahead of the competition. Get notified instantly when jobs matching your skills are posted.
+              </p>
+            </div>
+            <div className={styles.headerIcon}>
+              <Bell size={48} className={styles.bellIcon} />
+            </div>
+          </header>
+        </ScrollReveal>
 
-      <main className={styles.mainContent}>
-        <div className={styles.grid}>
-          {/* Create Alert Section */}
-          <section className={styles.createSection}>
-            <Card title="Create New Alert" icon={Search} className={styles.createCard}>
-              <form onSubmit={handleCreate} className={styles.form}>
-                <div className={styles.formGroup}>
-                  <Input
-                    id="alert-keywords"
-                    label="Keywords"
-                    placeholder="e.g. React, Python, DeFi, Smart Contracts"
-                    value={keywords}
-                    onChange={(e) => setKeywords(e.target.value)}
-                    fullWidth
-                    helpText="Separate multiple keywords with commas."
-                  />
-                </div>
-                
-                <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
-                    <Select
-                      id="alert-frequency"
-                      label="Frequency"
-                      options={frequencyOptions}
-                      value={frequency}
-                      onChange={(e) => setFrequency(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.formGroup}>
-                  <ToggleSwitch
-                    id="ai-powered"
-                    label="Enable AI Matching"
-                    checked={isAiPowered}
-                    onChange={setIsAiPowered}
-                    helpText="Our AI will analyze job descriptions to ensure they truly match your profile, reducing noise."
-                  />
-                </div>
-
-                <div className={styles.formActions}>
-                  <Button 
-                    type="submit" 
-                    variant="primary" 
-                    isLoading={isCreating} 
-                    fullWidth
-                    iconBefore={<Bell size={18} />}
-                  >
-                    Create Alert
-                  </Button>
-                </div>
-              </form>
-            </Card>
-          </section>
-
-          {/* Alerts List Section */}
-          <section className={styles.listSection}>
-            <h2 className={styles.sectionTitle}>Your Active Alerts ({alerts.length})</h2>
-            
-            {alerts.length === 0 ? (
-              <EmptyState
-                title="No alerts yet"
-                description="Create your first job alert to start receiving notifications about new opportunities."
-                icon={<Bell size={48} />}
-                action={
-                  <Button variant="primary" onClick={() => document.getElementById('alert-keywords')?.focus()}>
-                    Create Alert Above
-                  </Button>
-                }
-              />
-            ) : (
-              <div className={styles.alertList}>
-                {alerts.map(alert => (
-                  <div key={alert.id} className={styles.alertItem}>
-                    <div className={styles.alertContent}>
-                      <div className={styles.alertHeader}>
-                        <h3 className={styles.alertKeywords}>{alert.keywords}</h3>
-                        {alert.is_ai_powered && (
-                          <Badge variant="info" className={styles.aiBadge}>
-                            <Zap size={12} className="mr-1" /> AI Powered
-                          </Badge>
-                        )}
-                      </div>
-                      <div className={styles.alertMeta}>
-                        <span className={styles.frequencyLabel}>
-                          Frequency: <strong>{alert.frequency}</strong>
-                        </span>
+        <main className={styles.mainContent}>
+          <div className={styles.grid}>
+            {/* Create Alert Section */}
+            <ScrollReveal delay={0.1}>
+              <section className={styles.createSection}>
+                <Card title="Create New Alert" icon={Search} className={styles.createCard}>
+                  <form onSubmit={handleCreate} className={styles.form}>
+                    <div className={styles.formGroup}>
+                      <Input
+                        id="alert-keywords"
+                        label="Keywords"
+                        placeholder="e.g. React, Python, DeFi, Smart Contracts"
+                        value={keywords}
+                        onChange={(e) => setKeywords(e.target.value)}
+                        fullWidth
+                        helpText="Separate multiple keywords with commas."
+                      />
+                    </div>
+                    
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <Select
+                          id="alert-frequency"
+                          label="Frequency"
+                          options={frequencyOptions}
+                          value={frequency}
+                          onChange={(e) => setFrequency(e.target.value)}
+                        />
                       </div>
                     </div>
-                    <div className={styles.alertActions}>
+
+                    <div className={styles.formGroup}>
+                      <ToggleSwitch
+                        id="ai-powered"
+                        label="Enable AI Matching"
+                        checked={isAiPowered}
+                        onChange={setIsAiPowered}
+                        helpText="Our AI will analyze job descriptions to ensure they truly match your profile, reducing noise."
+                      />
+                    </div>
+
+                    <div className={styles.formActions}>
                       <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => handleDelete(alert.id)}
-                        title="Delete Alert"
-                        className={styles.deleteButton}
+                        type="submit" 
+                        variant="primary" 
+                        isLoading={isCreating} 
+                        fullWidth
+                        iconBefore={<Bell size={18} />}
                       >
-                        <Trash2 size={18} />
+                        Create Alert
                       </Button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        </div>
-      </main>
-    </div>
+                  </form>
+                </Card>
+              </section>
+            </ScrollReveal>
+
+            {/* Alerts List Section */}
+            <section className={styles.listSection}>
+              <ScrollReveal delay={0.2}>
+                <h2 className={styles.sectionTitle}>Your Active Alerts ({alerts.length})</h2>
+              </ScrollReveal>
+              
+              {alerts.length === 0 ? (
+                <ScrollReveal delay={0.3}>
+                  <EmptyState
+                    title="No alerts yet"
+                    description="Create your first job alert to start receiving notifications about new opportunities."
+                    icon={<Bell size={48} />}
+                    action={
+                      <Button variant="primary" onClick={() => document.getElementById('alert-keywords')?.focus()}>
+                        Create Alert Above
+                      </Button>
+                    }
+                  />
+                </ScrollReveal>
+              ) : (
+                <StaggerContainer className={styles.alertList} delay={0.3}>
+                  {alerts.map(alert => (
+                    <StaggerItem key={alert.id}>
+                      <div className={styles.alertItem}>
+                        <div className={styles.alertContent}>
+                          <div className={styles.alertHeader}>
+                            <h3 className={styles.alertKeywords}>{alert.keywords}</h3>
+                            {alert.is_ai_powered && (
+                              <Badge variant="info" className={styles.aiBadge}>
+                                <Zap size={12} className="mr-1" /> AI Powered
+                              </Badge>
+                            )}
+                          </div>
+                          <div className={styles.alertMeta}>
+                            <span className={styles.frequencyLabel}>
+                              Frequency: <strong>{alert.frequency}</strong>
+                            </span>
+                          </div>
+                        </div>
+                        <div className={styles.alertActions}>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleDelete(alert.id)}
+                            title="Delete Alert"
+                            className={styles.deleteButton}
+                          >
+                            <Trash2 size={18} />
+                          </Button>
+                        </div>
+                      </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              )}
+            </section>
+          </div>
+        </main>
+      </div>
+    </PageTransition>
   );
 };
 

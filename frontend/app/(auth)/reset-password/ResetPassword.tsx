@@ -10,6 +10,8 @@ import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import { FaShieldAlt } from 'react-icons/fa';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import commonStyles from './ResetPassword.common.module.css';
 import lightStyles from './ResetPassword.light.module.css';
@@ -76,61 +78,71 @@ const ResetPassword: React.FC = () => {
   }, [resolvedTheme]);
 
   return (
-    <div className={styles.loginPage}>
-      <div className={styles.brandingSlot}>
-        <AuthBrandingPanel roleConfig={resetPasswordBranding} />
-      </div>
-      <div className={styles.formPanel}>
-        <div className={styles.formContainer}>
-          <div className={styles.formHeader}>
-            <h1 className={styles.formTitle}>Set a New Password</h1>
-            {submitted ? (
-              <p className={styles.formSubtitle}>
-                Your password has been successfully reset.
-              </p>
-            ) : (
-              <p className={styles.formSubtitle}>Create a new, strong password for your account.</p>
-            )}
-          </div>
+    <PageTransition>
+      <div className={styles.loginPage}>
+        <div className={styles.brandingSlot}>
+          <AuthBrandingPanel roleConfig={resetPasswordBranding} />
+        </div>
+        <div className={styles.formPanel}>
+          <StaggerContainer className={styles.formContainer}>
+            <StaggerItem className={styles.formHeader}>
+              <h1 className={styles.formTitle}>Set a New Password</h1>
+              {submitted ? (
+                <p className={styles.formSubtitle}>
+                  Your password has been successfully reset.
+                </p>
+              ) : (
+                <p className={styles.formSubtitle}>Create a new, strong password for your account.</p>
+              )}
+            </StaggerItem>
 
-          {!submitted ? (
-            <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                label="New Password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                error={errors.password}
-                disabled={loading}
-              />
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                label="Confirm New Password"
-                placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                error={errors.confirmPassword}
-                disabled={loading}
-              />
-              <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading} className={styles.submitButton}>
-                {loading ? 'Resetting Password...' : 'Set New Password'}
-              </Button>
-            </form>
-          ) : (
-            <Link href="/login">
-              <Button variant="primary" fullWidth className={styles.submitButton}>
-                Return to Sign In
-              </Button>
-            </Link>
-          )}
+            {!submitted ? (
+              <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
+                <StaggerItem>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    label="New Password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    error={errors.password}
+                    disabled={loading}
+                  />
+                </StaggerItem>
+                <StaggerItem>
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    label="Confirm New Password"
+                    placeholder="••••••••"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    error={errors.confirmPassword}
+                    disabled={loading}
+                  />
+                </StaggerItem>
+                <StaggerItem>
+                  <Button type="submit" variant="primary" fullWidth isLoading={loading} disabled={loading} className={styles.submitButton}>
+                    {loading ? 'Resetting Password...' : 'Set New Password'}
+                  </Button>
+                </StaggerItem>
+              </form>
+            ) : (
+              <StaggerItem>
+                <Link href="/login">
+                  <Button variant="primary" fullWidth className={styles.submitButton}>
+                    Return to Sign In
+                  </Button>
+                </Link>
+              </StaggerItem>
+            )}
+          </StaggerContainer>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

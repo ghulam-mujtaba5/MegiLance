@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { integrationsApi } from '@/lib/api';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { StaggerItem } from '@/app/components/Animations/StaggerItem';
 import commonStyles from './Integrations.common.module.css';
 import lightStyles from './Integrations.light.module.css';
 import darkStyles from './Integrations.dark.module.css';
@@ -246,218 +250,225 @@ export default function IntegrationsPage() {
   const connectedCount = integrations.filter(i => i.status === 'connected').length;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>Integrations</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Connect your favorite tools and services • {connectedCount} connected
-          </p>
-        </div>
-      </div>
-
-      <div className={cn(commonStyles.categories, themeStyles.categories)}>
-        {categories.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
-            className={cn(
-              commonStyles.categoryBtn,
-              themeStyles.categoryBtn,
-              activeCategory === cat.id && commonStyles.categoryActive,
-              activeCategory === cat.id && themeStyles.categoryActive
-            )}
-          >
-            <span className={commonStyles.categoryIcon}>{cat.icon}</span>
-            <span>{cat.name}</span>
-          </button>
-        ))}
-      </div>
-
-      {loading ? (
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>
-          Loading integrations...
-        </div>
-      ) : (
-        <div className={commonStyles.integrationsGrid}>
-          {filteredIntegrations.map(integration => {
-            const status = statusConfig[integration.status];
-            return (
-              <div
-                key={integration.provider}
-                className={cn(
-                  commonStyles.integrationCard,
-                  themeStyles.integrationCard,
-                  integration.status === 'connected' && commonStyles.connected,
-                  integration.status === 'connected' && themeStyles.connected
-                )}
-              >
-                <div className={commonStyles.integrationHeader}>
-                  <span className={commonStyles.integrationIcon}>{integration.icon}</span>
-                  <div className={commonStyles.integrationInfo}>
-                    <h3 className={cn(commonStyles.integrationName, themeStyles.integrationName)}>
-                      {integration.name}
-                    </h3>
-                    <span
-                      className={commonStyles.statusBadge}
-                      style={{ backgroundColor: status.color }}
-                    >
-                      {status.label}
-                    </span>
-                  </div>
-                </div>
-
-                <p className={cn(commonStyles.integrationDesc, themeStyles.integrationDesc)}>
-                  {integration.description}
-                </p>
-
-                {integration.scopes && (
-                  <div className={commonStyles.scopes}>
-                    {integration.scopes.map(scope => (
-                      <span
-                        key={scope}
-                        className={cn(commonStyles.scope, themeStyles.scope)}
-                      >
-                        {scope}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {integration.status === 'connected' && (
-                  <div className={commonStyles.syncInfo}>
-                    <label className={commonStyles.syncToggle}>
-                      <input
-                        type="checkbox"
-                        checked={integration.sync_enabled}
-                        onChange={() => toggleSync(integration)}
-                      />
-                      <span className={cn(commonStyles.syncLabel, themeStyles.syncLabel)}>
-                        Auto-sync enabled
-                      </span>
-                    </label>
-                    {integration.last_sync && (
-                      <span className={cn(commonStyles.lastSync, themeStyles.lastSync)}>
-                        Last sync: {new Date(integration.last_sync).toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                <div className={commonStyles.integrationActions}>
-                  {integration.status === 'connected' ? (
-                    <>
-                      <button
-                        onClick={() => syncNow(integration.id)}
-                        className={cn(commonStyles.syncBtn, themeStyles.syncBtn)}
-                      >
-                        🔄 Sync Now
-                      </button>
-                      <button
-                        onClick={() => setShowSettings(integration)}
-                        className={cn(commonStyles.settingsBtn, themeStyles.settingsBtn)}
-                      >
-                        ⚙️
-                      </button>
-                      <button
-                        onClick={() => disconnectIntegration(integration.id)}
-                        className={cn(commonStyles.disconnectBtn, themeStyles.disconnectBtn)}
-                      >
-                        Disconnect
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => connectIntegration(integration.provider)}
-                      disabled={connecting === integration.provider}
-                      className={cn(commonStyles.connectBtn, themeStyles.connectBtn)}
-                    >
-                      {connecting === integration.provider ? 'Connecting...' : 'Connect'}
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Settings Modal */}
-      {showSettings && (
-        <div className={commonStyles.modalOverlay} onClick={() => setShowSettings(null)}>
-          <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={(e) => e.stopPropagation()}>
-            <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-              <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>
-                {showSettings.icon} {showSettings.name} Settings
-              </h2>
-              <button
-                onClick={() => setShowSettings(null)}
-                className={cn(commonStyles.closeButton, themeStyles.closeButton)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={commonStyles.modalContent}>
-              <div className={commonStyles.settingsSection}>
-                <h4 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
-                  Permissions
-                </h4>
-                <div className={commonStyles.permissionsList}>
-                  {showSettings.scopes?.map(scope => (
-                    <div key={scope} className={cn(commonStyles.permissionItem, themeStyles.permissionItem)}>
-                      <span className={commonStyles.permissionIcon}>✓</span>
-                      <span>{scope.replace(/\./g, ' ').replace(/^./, s => s.toUpperCase())}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className={commonStyles.settingsSection}>
-                <h4 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
-                  Connection Info
-                </h4>
-                <div className={cn(commonStyles.infoGrid, themeStyles.infoGrid)}>
-                  <div className={commonStyles.infoItem}>
-                    <span className={commonStyles.infoLabel}>Status</span>
-                    <span
-                      className={commonStyles.infoValue}
-                      style={{ color: statusConfig[showSettings.status].color }}
-                    >
-                      {statusConfig[showSettings.status].label}
-                    </span>
-                  </div>
-                  {showSettings.connected_at && (
-                    <div className={commonStyles.infoItem}>
-                      <span className={commonStyles.infoLabel}>Connected</span>
-                      <span className={commonStyles.infoValue}>
-                        {new Date(showSettings.connected_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  )}
-                  {showSettings.last_sync && (
-                    <div className={commonStyles.infoItem}>
-                      <span className={commonStyles.infoLabel}>Last Sync</span>
-                      <span className={commonStyles.infoValue}>
-                        {new Date(showSettings.last_sync).toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
-              <button
-                onClick={() => setShowSettings(null)}
-                className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}
-              >
-                Close
-              </button>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>Integrations</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Connect your favorite tools and services • {connectedCount} connected
+              </p>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.1}>
+          <div className={cn(commonStyles.categories, themeStyles.categories)}>
+            {categories.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={cn(
+                  commonStyles.categoryBtn,
+                  themeStyles.categoryBtn,
+                  activeCategory === cat.id && commonStyles.categoryActive,
+                  activeCategory === cat.id && themeStyles.categoryActive
+                )}
+              >
+                <span className={commonStyles.categoryIcon}>{cat.icon}</span>
+                <span>{cat.name}</span>
+              </button>
+            ))}
+          </div>
+        </ScrollReveal>
+
+        {loading ? (
+          <div className={cn(commonStyles.loading, themeStyles.loading)}>
+            Loading integrations...
+          </div>
+        ) : (
+          <StaggerContainer className={commonStyles.integrationsGrid} delay={0.2}>
+            {filteredIntegrations.map(integration => {
+              const status = statusConfig[integration.status];
+              return (
+                <StaggerItem key={integration.provider}>
+                  <div
+                    className={cn(
+                      commonStyles.integrationCard,
+                      themeStyles.integrationCard,
+                      integration.status === 'connected' && commonStyles.connected,
+                      integration.status === 'connected' && themeStyles.connected
+                    )}
+                  >
+                    <div className={commonStyles.integrationHeader}>
+                      <span className={commonStyles.integrationIcon}>{integration.icon}</span>
+                      <div className={commonStyles.integrationInfo}>
+                        <h3 className={cn(commonStyles.integrationName, themeStyles.integrationName)}>
+                          {integration.name}
+                        </h3>
+                        <span
+                          className={commonStyles.statusBadge}
+                          style={{ backgroundColor: status.color }}
+                        >
+                          {status.label}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className={cn(commonStyles.integrationDesc, themeStyles.integrationDesc)}>
+                      {integration.description}
+                    </p>
+
+                    {integration.scopes && (
+                      <div className={commonStyles.scopes}>
+                        {integration.scopes.map(scope => (
+                          <span
+                            key={scope}
+                            className={cn(commonStyles.scope, themeStyles.scope)}
+                          >
+                            {scope}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {integration.status === 'connected' && (
+                      <div className={commonStyles.syncInfo}>
+                        <label className={commonStyles.syncToggle}>
+                          <input
+                            type="checkbox"
+                            checked={integration.sync_enabled}
+                            onChange={() => toggleSync(integration)}
+                          />
+                          <span className={cn(commonStyles.syncLabel, themeStyles.syncLabel)}>
+                            Auto-sync enabled
+                          </span>
+                        </label>
+                        {integration.last_sync && (
+                          <span className={cn(commonStyles.lastSync, themeStyles.lastSync)}>
+                            Last sync: {new Date(integration.last_sync).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    <div className={commonStyles.integrationActions}>
+                      {integration.status === 'connected' ? (
+                        <>
+                          <button
+                            onClick={() => syncNow(integration.id)}
+                            className={cn(commonStyles.syncBtn, themeStyles.syncBtn)}
+                          >
+                            🔄 Sync Now
+                          </button>
+                          <button
+                            onClick={() => setShowSettings(integration)}
+                            className={cn(commonStyles.settingsBtn, themeStyles.settingsBtn)}
+                          >
+                            ⚙️
+                          </button>
+                          <button
+                            onClick={() => disconnectIntegration(integration.id)}
+                            className={cn(commonStyles.disconnectBtn, themeStyles.disconnectBtn)}
+                          >
+                            Disconnect
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => connectIntegration(integration.provider)}
+                          disabled={connecting === integration.provider}
+                          className={cn(commonStyles.connectBtn, themeStyles.connectBtn)}
+                        >
+                          {connecting === integration.provider ? 'Connecting...' : 'Connect'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </StaggerItem>
+              );
+            })}
+          </StaggerContainer>
+        )}
+
+        {/* Settings Modal */}
+        {showSettings && (
+          <div className={commonStyles.modalOverlay} onClick={() => setShowSettings(null)}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={(e) => e.stopPropagation()}>
+              <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
+                <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>
+                  {showSettings.icon} {showSettings.name} Settings
+                </h2>
+                <button
+                  onClick={() => setShowSettings(null)}
+                  className={cn(commonStyles.closeButton, themeStyles.closeButton)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className={commonStyles.modalContent}>
+                <div className={commonStyles.settingsSection}>
+                  <h4 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
+                    Permissions
+                  </h4>
+                  <div className={commonStyles.permissionsList}>
+                    {showSettings.scopes?.map(scope => (
+                      <div key={scope} className={cn(commonStyles.permissionItem, themeStyles.permissionItem)}>
+                        <span className={commonStyles.permissionIcon}>✓</span>
+                        <span>{scope.replace(/\./g, ' ').replace(/^./, s => s.toUpperCase())}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={commonStyles.settingsSection}>
+                  <h4 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
+                    Connection Info
+                  </h4>
+                  <div className={cn(commonStyles.infoGrid, themeStyles.infoGrid)}>
+                    <div className={commonStyles.infoItem}>
+                      <span className={commonStyles.infoLabel}>Status</span>
+                      <span
+                        className={commonStyles.infoValue}
+                        style={{ color: statusConfig[showSettings.status].color }}
+                      >
+                        {statusConfig[showSettings.status].label}
+                      </span>
+                    </div>
+                    {showSettings.connected_at && (
+                      <div className={commonStyles.infoItem}>
+                        <span className={commonStyles.infoLabel}>Connected</span>
+                        <span className={commonStyles.infoValue}>
+                          {new Date(showSettings.connected_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                    {showSettings.last_sync && (
+                      <div className={commonStyles.infoItem}>
+                        <span className={commonStyles.infoLabel}>Last Sync</span>
+                        <span className={commonStyles.infoValue}>
+                          {new Date(showSettings.last_sync).toLocaleString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
+                <button
+                  onClick={() => setShowSettings(null)}
+                  className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </PageTransition>
   );
 }

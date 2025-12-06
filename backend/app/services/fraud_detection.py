@@ -52,7 +52,15 @@ class FraudDetectionService:
                 flags.append('Unverified account')
             
             # Check profile completeness
-            profile_data = user.profile_data or {}
+            # Handle profile_data being a JSON string or dict
+            import json
+            profile_data = {}
+            if user.profile_data:
+                try:
+                    profile_data = json.loads(user.profile_data) if isinstance(user.profile_data, str) else user.profile_data
+                except:
+                    profile_data = {}
+            
             if not profile_data.get('bio') or not profile_data.get('skills'):
                 risk_score += 10
                 flags.append('Incomplete profile')

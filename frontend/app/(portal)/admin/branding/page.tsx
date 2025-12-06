@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { brandingApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Tabs from '@/app/components/Tabs/Tabs';
+import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import commonStyles from './Branding.common.module.css';
 import lightStyles from './Branding.light.module.css';
 import darkStyles from './Branding.dark.module.css';
@@ -142,331 +143,343 @@ export default function BrandingPage() {
   }
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <header className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>Custom Branding</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Customize the platform appearance and branding
-          </p>
-        </div>
-        <div className={commonStyles.headerActions}>
-          <Button variant="secondary" onClick={handleReset}>
-            Reset Defaults
-          </Button>
-          <Button variant="primary" onClick={handleSave} disabled={!hasChanges || saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </div>
-      </header>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <header className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>Custom Branding</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Customize the platform appearance and branding
+              </p>
+            </div>
+            <div className={commonStyles.headerActions}>
+              <Button variant="secondary" onClick={handleReset}>
+                Reset Defaults
+              </Button>
+              <Button variant="primary" onClick={handleSave} disabled={!hasChanges || saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+          </header>
+        </ScrollReveal>
 
-      {/* Preview Card */}
-      <div className={cn(commonStyles.previewCard, themeStyles.previewCard)}>
-        <div className={commonStyles.previewHeader}>
-          <h3>Live Preview</h3>
-        </div>
-        <div
-          className={commonStyles.previewContent}
-          style={{
-            '--preview-primary': settings.primary_color,
-            '--preview-secondary': settings.secondary_color,
-            '--preview-accent': settings.accent_color,
-            '--preview-font': settings.font_family
-          } as React.CSSProperties}
-        >
-          <div className={commonStyles.mockHeader}>
-            {settings.logo_url ? (
-              <img src={settings.logo_url} alt="Logo" className={commonStyles.mockLogo} />
-            ) : (
-              <span className={commonStyles.mockLogoText}>{settings.company_name}</span>
+        {/* Preview Card */}
+        <ScrollReveal delay={0.1}>
+          <div className={cn(commonStyles.previewCard, themeStyles.previewCard)}>
+            <div className={commonStyles.previewHeader}>
+              <h3>Live Preview</h3>
+            </div>
+            <div
+              className={commonStyles.previewContent}
+              style={{
+                '--preview-primary': settings.primary_color,
+                '--preview-secondary': settings.secondary_color,
+                '--preview-accent': settings.accent_color,
+                '--preview-font': settings.font_family
+              } as React.CSSProperties}
+            >
+              <div className={commonStyles.mockHeader}>
+                {settings.logo_url ? (
+                  <img src={settings.logo_url} alt="Logo" className={commonStyles.mockLogo} />
+                ) : (
+                  <span className={commonStyles.mockLogoText}>{settings.company_name}</span>
+                )}
+                <div className={commonStyles.mockNav}>
+                  <span>Find Work</span>
+                  <span>Find Talent</span>
+                  <button style={{ backgroundColor: settings.primary_color }}>Sign Up</button>
+                </div>
+              </div>
+              <div className={commonStyles.mockHero}>
+                <h2 style={{ fontFamily: settings.font_family }}>{settings.company_name}</h2>
+                <p>{settings.tagline}</p>
+                <button style={{ backgroundColor: settings.primary_color }}>Get Started</button>
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.2}>
+          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        </ScrollReveal>
+
+        <ScrollReveal delay={0.3}>
+          <div className={commonStyles.tabContent}>
+            {activeTab === 'general' && (
+              <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+                <div className={commonStyles.formGroup}>
+                  <label>Company Name</label>
+                  <input
+                    type="text"
+                    value={settings.company_name}
+                    onChange={e => updateField('company_name', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <div className={commonStyles.formGroup}>
+                  <label>Tagline</label>
+                  <input
+                    type="text"
+                    value={settings.tagline}
+                    onChange={e => updateField('tagline', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <div className={commonStyles.formGroup}>
+                  <label>Support Email</label>
+                  <input
+                    type="email"
+                    value={settings.support_email}
+                    onChange={e => updateField('support_email', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <div className={commonStyles.formGroup}>
+                  <label>Footer Text</label>
+                  <input
+                    type="text"
+                    value={settings.footer_text}
+                    onChange={e => updateField('footer_text', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+              </div>
             )}
-            <div className={commonStyles.mockNav}>
-              <span>Find Work</span>
-              <span>Find Talent</span>
-              <button style={{ backgroundColor: settings.primary_color }}>Sign Up</button>
-            </div>
-          </div>
-          <div className={commonStyles.mockHero}>
-            <h2 style={{ fontFamily: settings.font_family }}>{settings.company_name}</h2>
-            <p>{settings.tagline}</p>
-            <button style={{ backgroundColor: settings.primary_color }}>Get Started</button>
-          </div>
-        </div>
-      </div>
 
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+            {activeTab === 'colors' && (
+              <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+                <div className={commonStyles.colorGrid}>
+                  <div className={commonStyles.colorGroup}>
+                    <label>Primary Color</label>
+                    <div className={commonStyles.colorInput}>
+                      <input
+                        type="color"
+                        value={settings.primary_color}
+                        onChange={e => updateField('primary_color', e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        value={settings.primary_color}
+                        onChange={e => updateField('primary_color', e.target.value)}
+                        className={cn(commonStyles.input, themeStyles.input)}
+                      />
+                    </div>
+                    <span className={commonStyles.colorHint}>Buttons, links, active states</span>
+                  </div>
+                  <div className={commonStyles.colorGroup}>
+                    <label>Secondary Color</label>
+                    <div className={commonStyles.colorInput}>
+                      <input
+                        type="color"
+                        value={settings.secondary_color}
+                        onChange={e => updateField('secondary_color', e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        value={settings.secondary_color}
+                        onChange={e => updateField('secondary_color', e.target.value)}
+                        className={cn(commonStyles.input, themeStyles.input)}
+                      />
+                    </div>
+                    <span className={commonStyles.colorHint}>Success states, positive actions</span>
+                  </div>
+                  <div className={commonStyles.colorGroup}>
+                    <label>Accent Color</label>
+                    <div className={commonStyles.colorInput}>
+                      <input
+                        type="color"
+                        value={settings.accent_color}
+                        onChange={e => updateField('accent_color', e.target.value)}
+                      />
+                      <input
+                        type="text"
+                        value={settings.accent_color}
+                        onChange={e => updateField('accent_color', e.target.value)}
+                        className={cn(commonStyles.input, themeStyles.input)}
+                      />
+                    </div>
+                    <span className={commonStyles.colorHint}>Highlights, notifications</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
-      <div className={commonStyles.tabContent}>
-        {activeTab === 'general' && (
-          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
-            <div className={commonStyles.formGroup}>
-              <label>Company Name</label>
-              <input
-                type="text"
-                value={settings.company_name}
-                onChange={e => updateField('company_name', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-              />
-            </div>
-            <div className={commonStyles.formGroup}>
-              <label>Tagline</label>
-              <input
-                type="text"
-                value={settings.tagline}
-                onChange={e => updateField('tagline', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-              />
-            </div>
-            <div className={commonStyles.formGroup}>
-              <label>Support Email</label>
-              <input
-                type="email"
-                value={settings.support_email}
-                onChange={e => updateField('support_email', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-              />
-            </div>
-            <div className={commonStyles.formGroup}>
-              <label>Footer Text</label>
-              <input
-                type="text"
-                value={settings.footer_text}
-                onChange={e => updateField('footer_text', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-              />
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'colors' && (
-          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
-            <div className={commonStyles.colorGrid}>
-              <div className={commonStyles.colorGroup}>
-                <label>Primary Color</label>
-                <div className={commonStyles.colorInput}>
+            {activeTab === 'logos' && (
+              <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+                <div className={commonStyles.formGroup}>
+                  <label>Logo (Light Mode)</label>
                   <input
-                    type="color"
-                    value={settings.primary_color}
-                    onChange={e => updateField('primary_color', e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    value={settings.primary_color}
-                    onChange={e => updateField('primary_color', e.target.value)}
+                    type="url"
+                    value={settings.logo_url}
+                    onChange={e => updateField('logo_url', e.target.value)}
                     className={cn(commonStyles.input, themeStyles.input)}
+                    placeholder="https://... (image URL)"
                   />
+                  {settings.logo_url && (
+                    <div className={commonStyles.logoPreview}>
+                      <img src={settings.logo_url} alt="Logo preview" />
+                    </div>
+                  )}
                 </div>
-                <span className={commonStyles.colorHint}>Buttons, links, active states</span>
-              </div>
-              <div className={commonStyles.colorGroup}>
-                <label>Secondary Color</label>
-                <div className={commonStyles.colorInput}>
+                <div className={commonStyles.formGroup}>
+                  <label>Logo (Dark Mode)</label>
                   <input
-                    type="color"
-                    value={settings.secondary_color}
-                    onChange={e => updateField('secondary_color', e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    value={settings.secondary_color}
-                    onChange={e => updateField('secondary_color', e.target.value)}
+                    type="url"
+                    value={settings.logo_dark_url}
+                    onChange={e => updateField('logo_dark_url', e.target.value)}
                     className={cn(commonStyles.input, themeStyles.input)}
+                    placeholder="https://... (image URL)"
                   />
+                  {settings.logo_dark_url && (
+                    <div className={cn(commonStyles.logoPreview, commonStyles.darkPreview)}>
+                      <img src={settings.logo_dark_url} alt="Dark logo preview" />
+                    </div>
+                  )}
                 </div>
-                <span className={commonStyles.colorHint}>Success states, positive actions</span>
-              </div>
-              <div className={commonStyles.colorGroup}>
-                <label>Accent Color</label>
-                <div className={commonStyles.colorInput}>
+                <div className={commonStyles.formGroup}>
+                  <label>Favicon</label>
                   <input
-                    type="color"
-                    value={settings.accent_color}
-                    onChange={e => updateField('accent_color', e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    value={settings.accent_color}
-                    onChange={e => updateField('accent_color', e.target.value)}
+                    type="url"
+                    value={settings.favicon_url}
+                    onChange={e => updateField('favicon_url', e.target.value)}
                     className={cn(commonStyles.input, themeStyles.input)}
+                    placeholder="https://... (32x32 icon URL)"
                   />
                 </div>
-                <span className={commonStyles.colorHint}>Highlights, notifications</span>
               </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {activeTab === 'logos' && (
-          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
-            <div className={commonStyles.formGroup}>
-              <label>Logo (Light Mode)</label>
-              <input
-                type="url"
-                value={settings.logo_url}
-                onChange={e => updateField('logo_url', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-                placeholder="https://... (image URL)"
-              />
-              {settings.logo_url && (
-                <div className={commonStyles.logoPreview}>
-                  <img src={settings.logo_url} alt="Logo preview" />
+            {activeTab === 'typography' && (
+              <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+                <div className={commonStyles.formGroup}>
+                  <label>Font Family</label>
+                  <select
+                    value={settings.font_family}
+                    onChange={e => updateField('font_family', e.target.value)}
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  >
+                    {FONT_OPTIONS.map(font => (
+                      <option key={font} value={font}>{font}</option>
+                    ))}
+                  </select>
                 </div>
-              )}
-            </div>
-            <div className={commonStyles.formGroup}>
-              <label>Logo (Dark Mode)</label>
-              <input
-                type="url"
-                value={settings.logo_dark_url}
-                onChange={e => updateField('logo_dark_url', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-                placeholder="https://... (image URL)"
-              />
-              {settings.logo_dark_url && (
-                <div className={cn(commonStyles.logoPreview, commonStyles.darkPreview)}>
-                  <img src={settings.logo_dark_url} alt="Dark logo preview" />
+                <div className={cn(commonStyles.fontPreview, themeStyles.fontPreview)}>
+                  <h3 style={{ fontFamily: settings.font_family }}>
+                    The quick brown fox jumps over the lazy dog
+                  </h3>
+                  <p style={{ fontFamily: settings.font_family }}>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  </p>
                 </div>
-              )}
-            </div>
-            <div className={commonStyles.formGroup}>
-              <label>Favicon</label>
-              <input
-                type="url"
-                value={settings.favicon_url}
-                onChange={e => updateField('favicon_url', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-                placeholder="https://... (32x32 icon URL)"
-              />
-            </div>
-          </div>
-        )}
+              </div>
+            )}
 
-        {activeTab === 'typography' && (
-          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
-            <div className={commonStyles.formGroup}>
-              <label>Font Family</label>
-              <select
-                value={settings.font_family}
-                onChange={e => updateField('font_family', e.target.value)}
-                className={cn(commonStyles.input, themeStyles.input)}
-              >
-                {FONT_OPTIONS.map(font => (
-                  <option key={font} value={font}>{font}</option>
-                ))}
-              </select>
-            </div>
-            <div className={cn(commonStyles.fontPreview, themeStyles.fontPreview)}>
-              <h3 style={{ fontFamily: settings.font_family }}>
-                The quick brown fox jumps over the lazy dog
-              </h3>
-              <p style={{ fontFamily: settings.font_family }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-            </div>
-          </div>
-        )}
+            {activeTab === 'links' && (
+              <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+                <h3>Legal Pages</h3>
+                <div className={commonStyles.formRow}>
+                  <div className={commonStyles.formGroup}>
+                    <label>Terms of Service URL</label>
+                    <input
+                      type="text"
+                      value={settings.terms_url}
+                      onChange={e => updateField('terms_url', e.target.value)}
+                      className={cn(commonStyles.input, themeStyles.input)}
+                    />
+                  </div>
+                  <div className={commonStyles.formGroup}>
+                    <label>Privacy Policy URL</label>
+                    <input
+                      type="text"
+                      value={settings.privacy_url}
+                      onChange={e => updateField('privacy_url', e.target.value)}
+                      className={cn(commonStyles.input, themeStyles.input)}
+                    />
+                  </div>
+                </div>
 
-        {activeTab === 'links' && (
-          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
-            <h3>Legal Pages</h3>
-            <div className={commonStyles.formRow}>
-              <div className={commonStyles.formGroup}>
-                <label>Terms of Service URL</label>
-                <input
-                  type="text"
-                  value={settings.terms_url}
-                  onChange={e => updateField('terms_url', e.target.value)}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                />
+                <h3>Social Links</h3>
+                <div className={commonStyles.formRow}>
+                  <div className={commonStyles.formGroup}>
+                    <label>🐦 Twitter</label>
+                    <input
+                      type="url"
+                      value={settings.social_links.twitter || ''}
+                      onChange={e => updateSocialLink('twitter', e.target.value)}
+                      className={cn(commonStyles.input, themeStyles.input)}
+                      placeholder="https://twitter.com/..."
+                    />
+                  </div>
+                  <div className={commonStyles.formGroup}>
+                    <label>💼 LinkedIn</label>
+                    <input
+                      type="url"
+                      value={settings.social_links.linkedin || ''}
+                      onChange={e => updateSocialLink('linkedin', e.target.value)}
+                      className={cn(commonStyles.input, themeStyles.input)}
+                      placeholder="https://linkedin.com/company/..."
+                    />
+                  </div>
+                </div>
+                <div className={commonStyles.formRow}>
+                  <div className={commonStyles.formGroup}>
+                    <label>📘 Facebook</label>
+                    <input
+                      type="url"
+                      value={settings.social_links.facebook || ''}
+                      onChange={e => updateSocialLink('facebook', e.target.value)}
+                      className={cn(commonStyles.input, themeStyles.input)}
+                      placeholder="https://facebook.com/..."
+                    />
+                  </div>
+                  <div className={commonStyles.formGroup}>
+                    <label>📷 Instagram</label>
+                    <input
+                      type="url"
+                      value={settings.social_links.instagram || ''}
+                      onChange={e => updateSocialLink('instagram', e.target.value)}
+                      className={cn(commonStyles.input, themeStyles.input)}
+                      placeholder="https://instagram.com/..."
+                    />
+                  </div>
+                </div>
               </div>
-              <div className={commonStyles.formGroup}>
-                <label>Privacy Policy URL</label>
-                <input
-                  type="text"
-                  value={settings.privacy_url}
-                  onChange={e => updateField('privacy_url', e.target.value)}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                />
-              </div>
-            </div>
+            )}
 
-            <h3>Social Links</h3>
-            <div className={commonStyles.formRow}>
-              <div className={commonStyles.formGroup}>
-                <label>🐦 Twitter</label>
-                <input
-                  type="url"
-                  value={settings.social_links.twitter || ''}
-                  onChange={e => updateSocialLink('twitter', e.target.value)}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                  placeholder="https://twitter.com/..."
-                />
+            {activeTab === 'advanced' && (
+              <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
+                <div className={commonStyles.formGroup}>
+                  <label>Custom CSS</label>
+                  <p className={commonStyles.hint}>
+                    Add custom CSS to override default styles. Use with caution.
+                  </p>
+                  <textarea
+                    value={settings.custom_css}
+                    onChange={e => updateField('custom_css', e.target.value)}
+                    className={cn(commonStyles.textarea, themeStyles.input)}
+                    rows={12}
+                    placeholder="/* Custom CSS rules */"
+                  />
+                </div>
               </div>
-              <div className={commonStyles.formGroup}>
-                <label>💼 LinkedIn</label>
-                <input
-                  type="url"
-                  value={settings.social_links.linkedin || ''}
-                  onChange={e => updateSocialLink('linkedin', e.target.value)}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                  placeholder="https://linkedin.com/company/..."
-                />
-              </div>
-            </div>
-            <div className={commonStyles.formRow}>
-              <div className={commonStyles.formGroup}>
-                <label>📘 Facebook</label>
-                <input
-                  type="url"
-                  value={settings.social_links.facebook || ''}
-                  onChange={e => updateSocialLink('facebook', e.target.value)}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                  placeholder="https://facebook.com/..."
-                />
-              </div>
-              <div className={commonStyles.formGroup}>
-                <label>📷 Instagram</label>
-                <input
-                  type="url"
-                  value={settings.social_links.instagram || ''}
-                  onChange={e => updateSocialLink('instagram', e.target.value)}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                  placeholder="https://instagram.com/..."
-                />
-              </div>
-            </div>
+            )}
           </div>
-        )}
+        </ScrollReveal>
 
-        {activeTab === 'advanced' && (
-          <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
-            <div className={commonStyles.formGroup}>
-              <label>Custom CSS</label>
-              <p className={commonStyles.hint}>
-                Add custom CSS to override default styles. Use with caution.
-              </p>
-              <textarea
-                value={settings.custom_css}
-                onChange={e => updateField('custom_css', e.target.value)}
-                className={cn(commonStyles.textarea, themeStyles.input)}
-                rows={12}
-                placeholder="/* Custom CSS rules */"
-              />
+        {/* Unsaved Banner */}
+        {hasChanges && (
+          <ScrollReveal delay={0.4}>
+            <div className={cn(commonStyles.unsavedBanner, themeStyles.unsavedBanner)}>
+              <span>⚠️ You have unsaved changes</span>
+              <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
+                {saving ? 'Saving...' : 'Save Now'}
+              </Button>
             </div>
-          </div>
+          </ScrollReveal>
         )}
       </div>
-
-      {/* Unsaved Banner */}
-      {hasChanges && (
-        <div className={cn(commonStyles.unsavedBanner, themeStyles.unsavedBanner)}>
-          <span>⚠️ You have unsaved changes</span>
-          <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
-            {saving ? 'Saving...' : 'Save Now'}
-          </Button>
-        </div>
-      )}
-    </div>
+    </PageTransition>
   );
 }

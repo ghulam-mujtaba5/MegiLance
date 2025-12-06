@@ -1,0 +1,18 @@
+/* @AI-HINT: Dark theme styles for the PortalFooter. */
+
+.footer {
+  border-top: 1px solid var(--border-dark);
+  background-color: var(--background-dark);
+}
+
+.copyright {
+  color: var(--text-tertiary-dark);
+}
+
+.link {
+  color: var(--text-secondary-dark);
+}
+
+.link:hover {
+  color: var(--primary-4573df);
+}

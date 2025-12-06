@@ -11,7 +11,7 @@ import re
 import logging
 from math import ceil
 
-from sqlalchemy import and_, or_, func, desc, asc
+from sqlalchemy import and_, or_, func, desc, asc, text
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
@@ -375,13 +375,29 @@ class SearchService:
         
         # Text search
         if query:
-            search_term = f"%{query}%"
-            base_query = base_query.filter(
-                or_(
-                    Project.title.ilike(search_term),
-                    Project.description.ilike(search_term)
+            try:
+                # Use FTS5 for performance
+                # Sanitize query for FTS5 (simple sanitization)
+                fts_query = query.replace('"', '""')
+                # Use MATCH operator
+                search_sql = text("SELECT rowid FROM projects_fts WHERE projects_fts MATCH :q")
+                matched_ids = [r[0] for r in self.db.execute(search_sql, {"q": fts_query}).fetchall()]
+                
+                if not matched_ids:
+                    # No matches found via FTS
+                    return [], 0, {}
+                    
+                base_query = base_query.filter(Project.id.in_(matched_ids))
+            except Exception as e:
+                # Fallback to LIKE if FTS fails (e.g. table not created yet)
+                logger.warning(f"FTS search failed, falling back to LIKE: {e}")
+                search_term = f"%{query}%"
+                base_query = base_query.filter(
+                    or_(
+                        Project.title.ilike(search_term),
+                        Project.description.ilike(search_term)
+                    )
                 )
-            )
         
         # Apply filters
         if filters.min_budget:
@@ -410,8 +426,16 @@ class SearchService:
         
         base_query = base_query.order_by(order_by)
         
-        # Apply pagination
-        if pagination:
+        # Apply pagination strategy
+        # If sorting by relevance (default) and we have a query, we fetch a larger pool
+        # to sort in memory. Otherwise we use DB pagination.
+        is_relevance_sort = (sort.field == "relevance" or sort.field is None) and query
+        
+        if is_relevance_sort:
+            # Fetch a candidate pool (e.g. 200 newest items) to score
+            # This is a compromise: "Relevance among newest 200"
+            base_query = base_query.limit(200)
+        elif pagination:
             base_query = base_query.offset(pagination.offset).limit(pagination.per_page)
         
         # Execute query
@@ -449,6 +473,14 @@ class SearchService:
                     "proposals_count": getattr(project, 'proposals_count', 0)
                 }
             ))
+            
+        # If we did manual relevance sorting, we need to sort and paginate now
+        if is_relevance_sort:
+            results.sort(key=lambda x: x.score, reverse=True)
+            if pagination:
+                start = pagination.offset
+                end = start + pagination.per_page
+                results = results[start:end]
         
         # Build facets
         facets = await self._build_project_facets(query, filters)
@@ -473,14 +505,25 @@ class SearchService:
         
         # Text search
         if query:
-            search_term = f"%{query}%"
-            base_query = base_query.filter(
-                or_(
-                    User.full_name.ilike(search_term),
-                    User.title.ilike(search_term),
-                    User.bio.ilike(search_term)
+            try:
+                # Use FTS5 for performance
+                fts_query = query.replace('"', '""')
+                search_sql = text("SELECT rowid FROM users_fts WHERE users_fts MATCH :q")
+                matched_ids = [r[0] for r in self.db.execute(search_sql, {"q": fts_query}).fetchall()]
+                
+                if not matched_ids:
+                    return [], 0, {}
+                    
+                base_query = base_query.filter(User.id.in_(matched_ids))
+            except Exception as e:
+                logger.warning(f"FTS search failed, falling back to LIKE: {e}")
+                search_term = f"%{query}%"
+                base_query = base_query.filter(
+                    or_(
+                        User.name.ilike(search_term),
+                        User.bio.ilike(search_term)
+                    )
                 )
-            )
         
         # Apply filters
         if filters.min_hourly_rate:
@@ -507,8 +550,13 @@ class SearchService:
         
         base_query = base_query.order_by(order_by)
         
-        # Apply pagination
-        if pagination:
+        # Apply pagination strategy
+        is_relevance_sort = (sort.field == "relevance" or sort.field is None) and query
+        
+        if is_relevance_sort:
+            # Fetch candidate pool
+            base_query = base_query.limit(200)
+        elif pagination:
             base_query = base_query.offset(pagination.offset).limit(pagination.per_page)
         
         # Execute query
@@ -517,16 +565,20 @@ class SearchService:
         # Build results
         results = []
         for user in freelancers:
+            # Handle missing attributes safely
+            user_name = getattr(user, 'name', '') or f"{getattr(user, 'first_name', '')} {getattr(user, 'last_name', '')}".strip() or 'Unknown'
+            user_title = getattr(user, 'user_type', '') or ''
+            
             score = self.scorer.calculate_text_score(
                 query,
-                user.full_name + " " + (user.title or ""),
+                f"{user_name} {user_title}",
                 user.bio or "",
                 getattr(user, 'skills', [])
             )
             
             # Add popularity boost
             popularity = self.scorer.calculate_popularity_score(
-                rating=user.rating or 0,
+                rating=getattr(user, 'rating', 0) or 0,
                 completed_projects=getattr(user, 'completed_projects_count', 0)
             )
             score = score * 0.6 + popularity * 0.4
@@ -534,23 +586,31 @@ class SearchService:
             results.append(SearchResult(
                 id=str(user.id),
                 type="freelancer",
-                title=user.full_name,
+                title=user_name,
                 description=user.bio[:200] + "..." if user.bio and len(user.bio) > 200 else (user.bio or ""),
                 score=score,
                 highlights={
-                    "name": [self.text_processor.highlight(user.full_name, query)] if query else [],
+                    "name": [self.text_processor.highlight(user_name, query)] if query else [],
                     "bio": self.text_processor.extract_snippets(user.bio or "", query)
                 },
                 data={
-                    "title": user.title,
+                    "title": user_title,
                     "hourly_rate": user.hourly_rate,
-                    "rating": user.rating,
+                    "rating": getattr(user, 'rating', 0),
                     "location": user.location,
-                    "avatar_url": user.avatar_url,
+                    "avatar_url": getattr(user, 'profile_image_url', None),
                     "is_verified": user.is_verified,
                     "completed_projects": getattr(user, 'completed_projects_count', 0)
                 }
             ))
+            
+        # If we did manual relevance sorting, we need to sort and paginate now
+        if is_relevance_sort:
+            results.sort(key=lambda x: x.score, reverse=True)
+            if pagination:
+                start = pagination.offset
+                end = start + pagination.per_page
+                results = results[start:end]
         
         # Build facets
         facets = await self._build_freelancer_facets(query, filters)

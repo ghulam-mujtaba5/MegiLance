@@ -48,9 +48,21 @@
 }
 
 .success_icon {
-  color: var(--color-success);
+  color: var(--color-success, #22c55e);
 }
 
 .error_icon {
-  color: var(--color-error);
+  color: var(--color-error, #ef4444);
+}
+
+.progressLabel {
+  color: var(--color-text-dark-primary);
+}
+
+.savedIndicator {
+  color: var(--color-text-dark-secondary);
+}
+
+.progressFill {
+  background: linear-gradient(90deg, var(--primary, #4573df) 0%, #3b82f6 100%);
 }

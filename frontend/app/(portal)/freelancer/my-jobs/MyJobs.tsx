@@ -9,6 +9,8 @@ import PaginatedJobGrid from './components/PaginatedJobGrid/PaginatedJobGrid';
 import { JobStatusCardProps } from './components/JobStatusCard/JobStatusCard';
 import { SortOption } from '@/app/components/DataToolbar/DataToolbar';
 import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 
 import commonStyles from './MyJobs.common.module.css';
 import lightStyles from './MyJobs.light.module.css';
@@ -132,44 +134,54 @@ const MyJobs: React.FC = () => {
   if (!resolvedTheme) return null;
 
   return (
-    <div className={cn(commonStyles.container, styles.container)}>
-      <header className={cn(commonStyles.header, styles.header)}>
-        <h1 className={cn(commonStyles.title, styles.title)}>My Jobs</h1>
-        <p className={cn(commonStyles.subtitle, styles.subtitle)}>Track your active projects and review completed work.</p>
-      </header>
+    <PageTransition>
+      <div className={cn(commonStyles.container, styles.container)}>
+        <ScrollReveal>
+          <header className={cn(commonStyles.header, styles.header)}>
+            <h1 className={cn(commonStyles.title, styles.title)}>My Jobs</h1>
+            <p className={cn(commonStyles.subtitle, styles.subtitle)}>Track your active projects and review completed work.</p>
+          </header>
+        </ScrollReveal>
 
-      {error ? (
-        <div className={cn(commonStyles.emptyState, styles.emptyState)}>
-          <h3>Error Loading Jobs</h3>
-          <p>{error}</p>
-          <Button variant="primary" onClick={fetchJobs}>Try Again</Button>
-        </div>
-      ) : loading ? (
-        <div className={cn(commonStyles.loadingState, styles.loadingState)}>
-          <div className={cn(commonStyles.spinner, styles.spinner)} />
-          <p>Loading your jobs...</p>
-        </div>
-      ) : (
-        <div className={cn(commonStyles.gridsContainer, styles.gridsContainer)}>
-          <PaginatedJobGrid
-            storageKey="freelancer:my-jobs:active"
-            jobs={activeJobs}
-            sortOptions={activeSortOptions}
-            defaultSortKey="progress"
-            searchKeys={['title', 'client', 'status']}
-            title="Active Jobs"
-          />
-          <PaginatedJobGrid
-            storageKey="freelancer:my-jobs:completed"
-            jobs={completedJobs}
-            sortOptions={completedSortOptions}
-            defaultSortKey="completionDate"
-            searchKeys={['title', 'client', 'completionDate']}
-            title="Completed Jobs"
-          />
-        </div>
-      )}
-    </div>
+        {error ? (
+          <ScrollReveal delay={0.1}>
+            <div className={cn(commonStyles.emptyState, styles.emptyState)}>
+              <h3>Error Loading Jobs</h3>
+              <p>{error}</p>
+              <Button variant="primary" onClick={fetchJobs}>Try Again</Button>
+            </div>
+          </ScrollReveal>
+        ) : loading ? (
+          <div className={cn(commonStyles.loadingState, styles.loadingState)}>
+            <div className={cn(commonStyles.spinner, styles.spinner)} />
+            <p>Loading your jobs...</p>
+          </div>
+        ) : (
+          <div className={cn(commonStyles.gridsContainer, styles.gridsContainer)}>
+            <ScrollReveal delay={0.1}>
+              <PaginatedJobGrid
+                storageKey="freelancer:my-jobs:active"
+                jobs={activeJobs}
+                sortOptions={activeSortOptions}
+                defaultSortKey="progress"
+                searchKeys={['title', 'client', 'status']}
+                title="Active Jobs"
+              />
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <PaginatedJobGrid
+                storageKey="freelancer:my-jobs:completed"
+                jobs={completedJobs}
+                sortOptions={completedSortOptions}
+                defaultSortKey="completionDate"
+                searchKeys={['title', 'client', 'completionDate']}
+                title="Completed Jobs"
+              />
+            </ScrollReveal>
+          </div>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

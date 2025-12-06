@@ -1,0 +1,18 @@
+/* @AI-HINT: Light theme styles for the PortalFooter. */
+
+.footer {
+  border-top: 1px solid var(--border-light);
+  background-color: var(--background-light);
+}
+
+.copyright {
+  color: var(--text-tertiary-light);
+}
+
+.link {
+  color: var(--text-secondary-light);
+}
+
+.link:hover {
+  color: var(--primary-4573df);
+}

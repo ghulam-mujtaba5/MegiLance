@@ -82,9 +82,16 @@ class EmailService:
                     msg.attach(part)
             
             # Send email
+            if self.smtp_server == "smtp.gmail.com" and not self.smtp_username:
+                # Mock email sending if not configured
+                print(f"[MOCK EMAIL] To: {to_email}, Subject: {subject}")
+                print(f"[MOCK EMAIL] Content: {text_content or html_content[:100]}...")
+                return True
+
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.starttls()
-                server.login(self.smtp_username, self.smtp_password)
+                if self.smtp_username and self.smtp_password:
+                    server.login(self.smtp_username, self.smtp_password)
                 server.send_message(msg)
             
             return True

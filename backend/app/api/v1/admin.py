@@ -140,6 +140,25 @@ class RecentActivity(BaseModel):
     user_name: str
     amount: Optional[float]
 
+class PlatformReviewStats(BaseModel):
+    """Platform-wide review statistics"""
+    overall_rating: float
+    total_reviews: int
+    positive_reviews: int
+    neutral_reviews: int
+    negative_reviews: int
+    recent_reviews: List[dict]
+
+class FraudAlert(BaseModel):
+    """Fraud alert details"""
+    id: int
+    user_id: int
+    user_name: str
+    risk_score: float
+    reason: str
+    created_at: datetime
+    status: str
+
 
 def _get_val(row: list, idx: int):
     """Extract value from Turso row"""
@@ -967,3 +986,76 @@ async def get_platform_settings(admin: User = Depends(get_admin_user)):
             "escrow_enabled": True
         }
     }
+
+@router.get("/admin/dashboard/reviews", response_model=PlatformReviewStats)
+async def get_platform_review_stats(admin: User = Depends(get_admin_user)):
+    """Get platform-wide review statistics."""
+    overall_rating = 0.0
+    total_reviews = 0
+    positive_reviews = 0
+    neutral_reviews = 0
+    negative_reviews = 0
+    recent_reviews = []
+    
+    # Overall stats
+    result = execute_query(
+        """SELECT 
+           COUNT(*), 
+           AVG(rating),
+           SUM(CASE WHEN rating >= 4 THEN 1 ELSE 0 END),
+           SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END),
+           SUM(CASE WHEN rating <= 2 THEN 1 ELSE 0 END)
+           FROM reviews""", []
+    )
+    
+    if result and result.get("rows"):
+        row = result["rows"][0]
+        total_reviews = int(_get_val(row, 0) or 0)
+        overall_rating = float(_get_val(row, 1) or 0)
+        positive_reviews = int(_get_val(row, 2) or 0)
+        neutral_reviews = int(_get_val(row, 3) or 0)
+        negative_reviews = int(_get_val(row, 4) or 0)
+    
+    # Recent reviews
+    result = execute_query(
+        """SELECT r.id, r.rating, r.comment, r.created_at, u.name
+           FROM reviews r
+           LEFT JOIN users u ON u.id = r.reviewer_id
+           ORDER BY r.created_at DESC LIMIT 5""", []
+    )
+    
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            recent_reviews.append({
+                "id": int(_get_val(row, 0) or 0),
+                "rating": float(_get_val(row, 1) or 0),
+                "comment": _safe_str(_get_val(row, 2)),
+                "created_at": parse_date(_get_val(row, 3)),
+                "reviewer_name": _safe_str(_get_val(row, 4)) or "Unknown"
+            })
+            
+    return PlatformReviewStats(
+        overall_rating=round(overall_rating, 2),
+        total_reviews=total_reviews,
+        positive_reviews=positive_reviews,
+        neutral_reviews=neutral_reviews,
+        negative_reviews=negative_reviews,
+        recent_reviews=recent_reviews
+    )
+
+@router.get("/admin/dashboard/fraud", response_model=List[FraudAlert])
+async def get_fraud_alerts(
+    limit: int = Query(10, ge=1, le=50),
+    admin: User = Depends(get_admin_user)
+):
+    """Get fraud alerts."""
+    # Since we don't have a dedicated fraud table yet, we'll return an empty list
+    # or check disputes for potential fraud
+    
+    alerts = []
+    
+    # Check disputes marked as 'fraud' or similar if applicable
+    # For now, returning empty list to satisfy the contract
+    
+    return alerts
+

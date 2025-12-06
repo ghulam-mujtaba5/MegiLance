@@ -4,7 +4,10 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import Button from '../../../components/Button/Button';
+import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Skills.common.module.css';
 import lightStyles from './Skills.light.module.css';
 import darkStyles from './Skills.dark.module.css';
@@ -250,330 +253,338 @@ export default function SkillsAdminPage() {
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={cn(commonStyles.header, themeStyles.header)}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>
-            Skill Taxonomy
-          </h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Manage platform skills, categories, and relationships
-          </p>
-        </div>
-        <div className={commonStyles.headerActions}>
-          {unverifiedCount > 0 && (
-            <span className={cn(commonStyles.pendingBadge, themeStyles.pendingBadge)}>
-              {unverifiedCount} pending verification
-            </span>
-          )}
-          <Button
-            variant="primary"
-            onClick={activeTab === 'skills' ? handleCreateSkill : handleCreateCategory}
-          >
-            Add {activeTab === 'skills' ? 'Skill' : 'Category'}
-          </Button>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
-        <button
-          onClick={() => setActiveTab('skills')}
-          className={cn(
-            commonStyles.tab,
-            themeStyles.tab,
-            activeTab === 'skills' && commonStyles.tabActive,
-            activeTab === 'skills' && themeStyles.tabActive
-          )}
-        >
-          Skills ({skills.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('categories')}
-          className={cn(
-            commonStyles.tab,
-            themeStyles.tab,
-            activeTab === 'categories' && commonStyles.tabActive,
-            activeTab === 'categories' && themeStyles.tabActive
-          )}
-        >
-          Categories ({categories.length})
-        </button>
-      </div>
-
-      {loading ? (
-        <div className={commonStyles.loading}>Loading...</div>
-      ) : (
-        <>
-          {activeTab === 'skills' && (
-            <>
-              {/* Filters */}
-              <div className={cn(commonStyles.filterBar, themeStyles.filterBar)}>
-                <input
-                  type="text"
-                  placeholder="Search skills..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className={cn(commonStyles.searchInput, themeStyles.searchInput)}
-                />
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className={cn(commonStyles.select, themeStyles.select)}
-                >
-                  <option value="all">All Categories</option>
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-                <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
-                  <input
-                    type="checkbox"
-                    checked={showVerifiedOnly}
-                    onChange={(e) => setShowVerifiedOnly(e.target.checked)}
-                  />
-                  Verified only
-                </label>
-              </div>
-
-              {/* Skills List */}
-              <div className={commonStyles.skillsList}>
-                {filteredSkills.length === 0 ? (
-                  <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-                    <p>No skills found</p>
-                  </div>
-                ) : (
-                  filteredSkills.map(skill => (
-                    <div key={skill.id} className={cn(commonStyles.skillCard, themeStyles.skillCard)}>
-                      <div className={commonStyles.skillInfo}>
-                        <div className={commonStyles.skillHeader}>
-                          <h4 className={cn(commonStyles.skillName, themeStyles.skillName)}>
-                            {skill.name}
-                            {skill.is_featured && (
-                              <span className={cn(commonStyles.featuredBadge, themeStyles.featuredBadge)}>
-                                ⭐ Featured
-                              </span>
-                            )}
-                          </h4>
-                          <span
-                            className={cn(commonStyles.categoryTag, themeStyles.categoryTag)}
-                            style={{ backgroundColor: getCategoryColor(skill.category_id) + '20', color: getCategoryColor(skill.category_id) }}
-                          >
-                            {getCategoryName(skill.category_id)}
-                          </span>
-                        </div>
-                        {skill.description && (
-                          <p className={cn(commonStyles.skillDesc, themeStyles.skillDesc)}>
-                            {skill.description}
-                          </p>
-                        )}
-                        <div className={cn(commonStyles.skillMeta, themeStyles.skillMeta)}>
-                          <span>{skill.usage_count.toLocaleString()} uses</span>
-                          {skill.synonyms.length > 0 && (
-                            <span>Also: {skill.synonyms.join(', ')}</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className={commonStyles.skillActions}>
-                        {!skill.is_verified && (
-                          <Button variant="success" size="sm" onClick={() => handleVerifySkill(skill.id)}>
-                            Verify
-                          </Button>
-                        )}
-                        <button
-                          onClick={() => handleToggleFeatured(skill.id)}
-                          className={cn(commonStyles.iconBtn, themeStyles.iconBtn)}
-                          title={skill.is_featured ? 'Remove from featured' : 'Add to featured'}
-                        >
-                          {skill.is_featured ? '⭐' : '☆'}
-                        </button>
-                        <Button variant="ghost" size="sm" onClick={() => handleEditSkill(skill)}>
-                          Edit
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteSkill(skill.id)}>
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </>
-          )}
-
-          {activeTab === 'categories' && (
-            <div className={commonStyles.categoriesGrid}>
-              {categories.map(category => (
-                <div
-                  key={category.id}
-                  className={cn(commonStyles.categoryCard, themeStyles.categoryCard)}
-                  style={{ borderLeftColor: category.color }}
-                >
-                  <div className={commonStyles.categoryHeader}>
-                    <span className={commonStyles.categoryIcon}>{category.icon}</span>
-                    <h4 className={cn(commonStyles.categoryName, themeStyles.categoryName)}>
-                      {category.name}
-                    </h4>
-                  </div>
-                  {category.description && (
-                    <p className={cn(commonStyles.categoryDesc, themeStyles.categoryDesc)}>
-                      {category.description}
-                    </p>
-                  )}
-                  <div className={cn(commonStyles.categoryMeta, themeStyles.categoryMeta)}>
-                    <span>{category.skills_count} skills</span>
-                  </div>
-                  <div className={commonStyles.categoryActions}>
-                    <Button variant="ghost" size="sm" onClick={() => handleEditCategory(category)}>
-                      Edit
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDeleteCategory(category.id)}>
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-              ))}
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={cn(commonStyles.header, themeStyles.header)}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>
+                Skill Taxonomy
+              </h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Manage platform skills, categories, and relationships
+              </p>
             </div>
-          )}
-        </>
-      )}
-
-      {/* Skill Modal */}
-      {(isCreating && activeTab === 'skills') || isEditingSkill ? (
-        <div className={cn(commonStyles.modal, themeStyles.modal)}>
-          <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
-            <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-              <h2>{isEditingSkill ? 'Edit Skill' : 'New Skill'}</h2>
-              <button onClick={() => { setIsCreating(false); setIsEditingSkill(null); }} className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}>×</button>
-            </div>
-            <div className={commonStyles.modalBody}>
-              <div className={commonStyles.formGroup}>
-                <label>Skill Name</label>
-                <input
-                  type="text"
-                  value={skillForm.name}
-                  onChange={(e) => setSkillForm(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g. React.js"
-                  className={cn(commonStyles.input, themeStyles.input)}
-                />
-              </div>
-              <div className={commonStyles.formGroup}>
-                <label>Category</label>
-                <select
-                  value={skillForm.category_id}
-                  onChange={(e) => setSkillForm(prev => ({ ...prev, category_id: e.target.value }))}
-                  className={cn(commonStyles.select, themeStyles.select)}
-                >
-                  {categories.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className={commonStyles.formGroup}>
-                <label>Description (optional)</label>
-                <textarea
-                  value={skillForm.description}
-                  onChange={(e) => setSkillForm(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Brief description of the skill"
-                  rows={3}
-                  className={cn(commonStyles.textarea, themeStyles.textarea)}
-                />
-              </div>
-              <div className={commonStyles.formGroup}>
-                <label>Synonyms (comma-separated)</label>
-                <input
-                  type="text"
-                  value={skillForm.synonyms}
-                  onChange={(e) => setSkillForm(prev => ({ ...prev, synonyms: e.target.value }))}
-                  placeholder="e.g. React, ReactJS"
-                  className={cn(commonStyles.input, themeStyles.input)}
-                />
-              </div>
-              <div className={commonStyles.checkboxGroup}>
-                <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
-                  <input
-                    type="checkbox"
-                    checked={skillForm.is_verified}
-                    onChange={(e) => setSkillForm(prev => ({ ...prev, is_verified: e.target.checked }))}
-                  />
-                  Verified skill
-                </label>
-                <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
-                  <input
-                    type="checkbox"
-                    checked={skillForm.is_featured}
-                    onChange={(e) => setSkillForm(prev => ({ ...prev, is_featured: e.target.checked }))}
-                  />
-                  Featured skill
-                </label>
-              </div>
-            </div>
-            <div className={commonStyles.modalFooter}>
-              <Button variant="secondary" onClick={() => { setIsCreating(false); setIsEditingSkill(null); }}>Cancel</Button>
-              <Button variant="primary" onClick={handleSaveSkill}>Save Skill</Button>
+            <div className={commonStyles.headerActions}>
+              {unverifiedCount > 0 && (
+                <span className={cn(commonStyles.pendingBadge, themeStyles.pendingBadge)}>
+                  {unverifiedCount} pending verification
+                </span>
+              )}
+              <Button
+                variant="primary"
+                onClick={activeTab === 'skills' ? handleCreateSkill : handleCreateCategory}
+              >
+                Add {activeTab === 'skills' ? 'Skill' : 'Category'}
+              </Button>
             </div>
           </div>
-        </div>
-      ) : null}
+        </ScrollReveal>
 
-      {/* Category Modal */}
-      {(isCreating && activeTab === 'categories') || isEditingCategory ? (
-        <div className={cn(commonStyles.modal, themeStyles.modal)}>
-          <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
-            <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-              <h2>{isEditingCategory ? 'Edit Category' : 'New Category'}</h2>
-              <button onClick={() => { setIsCreating(false); setIsEditingCategory(null); }} className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}>×</button>
-            </div>
-            <div className={commonStyles.modalBody}>
-              <div className={commonStyles.formGroup}>
-                <label>Category Name</label>
-                <input
-                  type="text"
-                  value={categoryForm.name}
-                  onChange={(e) => setCategoryForm(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g. Development"
-                  className={cn(commonStyles.input, themeStyles.input)}
-                />
+        {/* Tabs */}
+        <ScrollReveal delay={0.1}>
+          <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
+            <button
+              onClick={() => setActiveTab('skills')}
+              className={cn(
+                commonStyles.tab,
+                themeStyles.tab,
+                activeTab === 'skills' && commonStyles.tabActive,
+                activeTab === 'skills' && themeStyles.tabActive
+              )}
+            >
+              Skills ({skills.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('categories')}
+              className={cn(
+                commonStyles.tab,
+                themeStyles.tab,
+                activeTab === 'categories' && commonStyles.tabActive,
+                activeTab === 'categories' && themeStyles.tabActive
+              )}
+            >
+              Categories ({categories.length})
+            </button>
+          </div>
+        </ScrollReveal>
+
+        {loading ? (
+          <div className={commonStyles.loading}>Loading...</div>
+        ) : (
+          <>
+            {activeTab === 'skills' && (
+              <>
+                {/* Filters */}
+                <ScrollReveal delay={0.2}>
+                  <div className={cn(commonStyles.filterBar, themeStyles.filterBar)}>
+                    <input
+                      type="text"
+                      placeholder="Search skills..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className={cn(commonStyles.searchInput, themeStyles.searchInput)}
+                    />
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className={cn(commonStyles.select, themeStyles.select)}
+                    >
+                      <option value="all">All Categories</option>
+                      {categories.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
+                    <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
+                      <input
+                        type="checkbox"
+                        checked={showVerifiedOnly}
+                        onChange={(e) => setShowVerifiedOnly(e.target.checked)}
+                      />
+                      Verified only
+                    </label>
+                  </div>
+                </ScrollReveal>
+
+                {/* Skills List */}
+                <StaggerContainer className={commonStyles.skillsList}>
+                  {filteredSkills.length === 0 ? (
+                    <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+                      <p>No skills found</p>
+                    </div>
+                  ) : (
+                    filteredSkills.map(skill => (
+                      <StaggerItem key={skill.id} className={cn(commonStyles.skillCard, themeStyles.skillCard)}>
+                        <div className={commonStyles.skillInfo}>
+                          <div className={commonStyles.skillHeader}>
+                            <h4 className={cn(commonStyles.skillName, themeStyles.skillName)}>
+                              {skill.name}
+                              {skill.is_featured && (
+                                <span className={cn(commonStyles.featuredBadge, themeStyles.featuredBadge)}>
+                                  ⭐ Featured
+                                </span>
+                              )}
+                            </h4>
+                            <span
+                              className={cn(commonStyles.categoryTag, themeStyles.categoryTag)}
+                              style={{ backgroundColor: getCategoryColor(skill.category_id) + '20', color: getCategoryColor(skill.category_id) }}
+                            >
+                              {getCategoryName(skill.category_id)}
+                            </span>
+                          </div>
+                          {skill.description && (
+                            <p className={cn(commonStyles.skillDesc, themeStyles.skillDesc)}>
+                              {skill.description}
+                            </p>
+                          )}
+                          <div className={cn(commonStyles.skillMeta, themeStyles.skillMeta)}>
+                            <span>{skill.usage_count.toLocaleString()} uses</span>
+                            {skill.synonyms.length > 0 && (
+                              <span>Also: {skill.synonyms.join(', ')}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className={commonStyles.skillActions}>
+                          {!skill.is_verified && (
+                            <Button variant="success" size="sm" onClick={() => handleVerifySkill(skill.id)}>
+                              Verify
+                            </Button>
+                          )}
+                          <button
+                            onClick={() => handleToggleFeatured(skill.id)}
+                            className={cn(commonStyles.iconBtn, themeStyles.iconBtn)}
+                            title={skill.is_featured ? 'Remove from featured' : 'Add to featured'}
+                          >
+                            {skill.is_featured ? '⭐' : '☆'}
+                          </button>
+                          <Button variant="ghost" size="sm" onClick={() => handleEditSkill(skill)}>
+                            Edit
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteSkill(skill.id)}>
+                            Delete
+                          </Button>
+                        </div>
+                      </StaggerItem>
+                    ))
+                  )}
+                </StaggerContainer>
+              </>
+            )}
+
+            {activeTab === 'categories' && (
+              <StaggerContainer className={commonStyles.categoriesGrid}>
+                {categories.map(category => (
+                  <StaggerItem
+                    key={category.id}
+                    className={cn(commonStyles.categoryCard, themeStyles.categoryCard)}
+                    style={{ borderLeftColor: category.color }}
+                  >
+                    <div className={commonStyles.categoryHeader}>
+                      <span className={commonStyles.categoryIcon}>{category.icon}</span>
+                      <h4 className={cn(commonStyles.categoryName, themeStyles.categoryName)}>
+                        {category.name}
+                      </h4>
+                    </div>
+                    {category.description && (
+                      <p className={cn(commonStyles.categoryDesc, themeStyles.categoryDesc)}>
+                        {category.description}
+                      </p>
+                    )}
+                    <div className={cn(commonStyles.categoryMeta, themeStyles.categoryMeta)}>
+                      <span>{category.skills_count} skills</span>
+                    </div>
+                    <div className={commonStyles.categoryActions}>
+                      <Button variant="ghost" size="sm" onClick={() => handleEditCategory(category)}>
+                        Edit
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDeleteCategory(category.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            )}
+          </>
+        )}
+
+        {/* Skill Modal */}
+        {(isCreating && activeTab === 'skills') || isEditingSkill ? (
+          <div className={cn(commonStyles.modal, themeStyles.modal)}>
+            <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
+              <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
+                <h2>{isEditingSkill ? 'Edit Skill' : 'New Skill'}</h2>
+                <button onClick={() => { setIsCreating(false); setIsEditingSkill(null); }} className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}>×</button>
               </div>
-              <div className={commonStyles.formGroup}>
-                <label>Description</label>
-                <textarea
-                  value={categoryForm.description}
-                  onChange={(e) => setCategoryForm(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Brief description"
-                  rows={2}
-                  className={cn(commonStyles.textarea, themeStyles.textarea)}
-                />
-              </div>
-              <div className={commonStyles.formRow}>
+              <div className={commonStyles.modalBody}>
                 <div className={commonStyles.formGroup}>
-                  <label>Icon (emoji)</label>
+                  <label>Skill Name</label>
                   <input
                     type="text"
-                    value={categoryForm.icon}
-                    onChange={(e) => setCategoryForm(prev => ({ ...prev, icon: e.target.value }))}
-                    placeholder="💻"
+                    value={skillForm.name}
+                    onChange={(e) => setSkillForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g. React.js"
                     className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
                 <div className={commonStyles.formGroup}>
-                  <label>Color</label>
-                  <input
-                    type="color"
-                    value={categoryForm.color}
-                    onChange={(e) => setCategoryForm(prev => ({ ...prev, color: e.target.value }))}
-                    className={cn(commonStyles.colorInput, themeStyles.colorInput)}
+                  <label>Category</label>
+                  <select
+                    value={skillForm.category_id}
+                    onChange={(e) => setSkillForm(prev => ({ ...prev, category_id: e.target.value }))}
+                    className={cn(commonStyles.select, themeStyles.select)}
+                  >
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className={commonStyles.formGroup}>
+                  <label>Description (optional)</label>
+                  <textarea
+                    value={skillForm.description}
+                    onChange={(e) => setSkillForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Brief description of the skill"
+                    rows={3}
+                    className={cn(commonStyles.textarea, themeStyles.textarea)}
                   />
                 </div>
+                <div className={commonStyles.formGroup}>
+                  <label>Synonyms (comma-separated)</label>
+                  <input
+                    type="text"
+                    value={skillForm.synonyms}
+                    onChange={(e) => setSkillForm(prev => ({ ...prev, synonyms: e.target.value }))}
+                    placeholder="e.g. React, ReactJS"
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <div className={commonStyles.checkboxGroup}>
+                  <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
+                    <input
+                      type="checkbox"
+                      checked={skillForm.is_verified}
+                      onChange={(e) => setSkillForm(prev => ({ ...prev, is_verified: e.target.checked }))}
+                    />
+                    Verified skill
+                  </label>
+                  <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
+                    <input
+                      type="checkbox"
+                      checked={skillForm.is_featured}
+                      onChange={(e) => setSkillForm(prev => ({ ...prev, is_featured: e.target.checked }))}
+                    />
+                    Featured skill
+                  </label>
+                </div>
+              </div>
+              <div className={commonStyles.modalFooter}>
+                <Button variant="secondary" onClick={() => { setIsCreating(false); setIsEditingSkill(null); }}>Cancel</Button>
+                <Button variant="primary" onClick={handleSaveSkill}>Save Skill</Button>
               </div>
             </div>
-            <div className={commonStyles.modalFooter}>
-              <Button variant="secondary" onClick={() => { setIsCreating(false); setIsEditingCategory(null); }}>Cancel</Button>
-              <Button variant="primary" onClick={handleSaveCategory}>Save Category</Button>
+          </div>
+        ) : null}
+
+        {/* Category Modal */}
+        {(isCreating && activeTab === 'categories') || isEditingCategory ? (
+          <div className={cn(commonStyles.modal, themeStyles.modal)}>
+            <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
+              <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
+                <h2>{isEditingCategory ? 'Edit Category' : 'New Category'}</h2>
+                <button onClick={() => { setIsCreating(false); setIsEditingCategory(null); }} className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}>×</button>
+              </div>
+              <div className={commonStyles.modalBody}>
+                <div className={commonStyles.formGroup}>
+                  <label>Category Name</label>
+                  <input
+                    type="text"
+                    value={categoryForm.name}
+                    onChange={(e) => setCategoryForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="e.g. Development"
+                    className={cn(commonStyles.input, themeStyles.input)}
+                  />
+                </div>
+                <div className={commonStyles.formGroup}>
+                  <label>Description</label>
+                  <textarea
+                    value={categoryForm.description}
+                    onChange={(e) => setCategoryForm(prev => ({ ...prev, description: e.target.value }))}
+                    placeholder="Brief description"
+                    rows={2}
+                    className={cn(commonStyles.textarea, themeStyles.textarea)}
+                  />
+                </div>
+                <div className={commonStyles.formRow}>
+                  <div className={commonStyles.formGroup}>
+                    <label>Icon (emoji)</label>
+                    <input
+                      type="text"
+                      value={categoryForm.icon}
+                      onChange={(e) => setCategoryForm(prev => ({ ...prev, icon: e.target.value }))}
+                      placeholder="💻"
+                      className={cn(commonStyles.input, themeStyles.input)}
+                    />
+                  </div>
+                  <div className={commonStyles.formGroup}>
+                    <label>Color</label>
+                    <input
+                      type="color"
+                      value={categoryForm.color}
+                      onChange={(e) => setCategoryForm(prev => ({ ...prev, color: e.target.value }))}
+                      className={cn(commonStyles.colorInput, themeStyles.colorInput)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className={commonStyles.modalFooter}>
+                <Button variant="secondary" onClick={() => { setIsCreating(false); setIsEditingCategory(null); }}>Cancel</Button>
+                <Button variant="primary" onClick={handleSaveCategory}>Save Category</Button>
+              </div>
             </div>
           </div>
-        </div>
-      ) : null}
-    </div>
+        ) : null}
+      </div>
+    </PageTransition>
   );
 }

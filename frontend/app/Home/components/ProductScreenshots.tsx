@@ -135,9 +135,6 @@ const ProductScreenshots: React.FC = () => {
                     width={800}
                     height={600}
                   />
-                  <div className={cn(commonStyles.playOverlay, styles.playOverlay)}>
-                    <Play size={32} />
-                  </div>
                 </div>
                 <div className={cn(commonStyles.slideInfo, styles.slideInfo)}>
                   <h3 className={cn(commonStyles.slideTitle, styles.slideTitle)}>{screenshot.title}</h3>

@@ -1,0 +1,34 @@
+.container {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.title {
+  color: #1a1a1a;
+}
+
+.tableContainer {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.table th {
+  background-color: #f1f3f5;
+  color: #555;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.table td {
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.loadingState,
+.errorState,
+.emptyState {
+  color: #666;
+}

@@ -11,6 +11,9 @@ import Textarea from '@/app/components/Textarea/Textarea'; // Using the reusable
 import commonStyles from './Profile.common.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 // Default profile for initial render and fallback
 const defaultProfile = {
@@ -188,102 +191,112 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className={styles.profileContainer}>
-      <header className={styles.header}>
-        <UserAvatar name={name} size="large" />
-        <div className={styles.headerInfo}>
-          <h1 className={styles.name}>{name || 'Your Name'}</h1>
-          <p className={styles.title}>{title || 'Your Title'}</p>
-          <span className={styles.rank}>Freelancer Rank: {rank}</span>
-        </div>
-        <div className={styles.headerActions}>
-          <Button variant="secondary" type="button" onClick={saveDraft} title="Save profile draft">Save Draft</Button>
-        </div>
-      </header>
+    <PageTransition>
+      <div className={styles.profileContainer}>
+        <ScrollReveal>
+          <header className={styles.header}>
+            <UserAvatar name={name} size="large" />
+            <div className={styles.headerInfo}>
+              <h1 className={styles.name}>{name || 'Your Name'}</h1>
+              <p className={styles.title}>{title || 'Your Title'}</p>
+              <span className={styles.rank}>Freelancer Rank: {rank}</span>
+            </div>
+            <div className={styles.headerActions}>
+              <Button variant="secondary" type="button" onClick={saveDraft} title="Save profile draft">Save Draft</Button>
+            </div>
+          </header>
+        </ScrollReveal>
 
-      <form className={styles.form} onSubmit={onSubmit} noValidate>
-        {status && <div className={styles.status} role="status" aria-live="polite">{status}</div>}
+        <form className={styles.form} onSubmit={onSubmit} noValidate>
+          {status && (
+            <ScrollReveal>
+              <div className={styles.status} role="status" aria-live="polite">{status}</div>
+            </ScrollReveal>
+          )}
 
-        <div className={styles.inlineSection}>
-          <Input
-            label="Full Name"
-            type="text"
-            value={name}
-            title="Enter your full name"
-            onChange={(e) => setName(e.target.value)}
-          />
-          <Input
-            label="Professional Title"
-            type="text"
-            value={title}
-            title="Enter your professional headline (publicly visible)"
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
+          <StaggerContainer>
+            <StaggerItem className={styles.inlineSection}>
+              <Input
+                label="Full Name"
+                type="text"
+                value={name}
+                title="Enter your full name"
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Input
+                label="Professional Title"
+                type="text"
+                value={title}
+                title="Enter your professional headline (publicly visible)"
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </StaggerItem>
 
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>About Me</h2>
-          <Textarea
-            id="bio-textarea"
-            value={bio}
-            rows={6}
-            label="Profile Bio"
-            hideLabel
-            title="Write a short bio (publicly visible)"
-            onChange={(e) => setBio(e.target.value)}
-          />
-        </div>
+            <StaggerItem className={styles.section}>
+              <h2 className={styles.sectionTitle}>About Me</h2>
+              <Textarea
+                id="bio-textarea"
+                value={bio}
+                rows={6}
+                label="Profile Bio"
+                hideLabel
+                title="Write a short bio (publicly visible)"
+                onChange={(e) => setBio(e.target.value)}
+              />
+            </StaggerItem>
 
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Skills</h2>
-          <Input
-            label="Skills"
-            type="text"
-            value={skills}
-            hideLabel
-            title="Enter comma-separated skills"
-            aria-describedby="skills-help"
-            onChange={(e) => setSkills(e.target.value)}
-          />
-          <small id="skills-help" className={styles.skillsInfo}>Separate skills with a comma.</small>
-        </div>
+            <StaggerItem className={styles.section}>
+              <h2 className={styles.sectionTitle}>Skills</h2>
+              <Input
+                label="Skills"
+                type="text"
+                value={skills}
+                hideLabel
+                title="Enter comma-separated skills"
+                aria-describedby="skills-help"
+                onChange={(e) => setSkills(e.target.value)}
+              />
+              <small id="skills-help" className={styles.skillsInfo}>Separate skills with a comma.</small>
+            </StaggerItem>
 
-        <div className={styles.inlineSection}>
-          <Input
-            label="Hourly Rate ($/hr)"
-            type="number"
-            value={hourlyRate}
-            aria-invalid={errors.hourlyRate ? 'true' : undefined}
-            aria-describedby={errors.hourlyRate ? 'hourlyRate-error' : undefined}
-            title="Enter your hourly rate in USD"
-            onChange={(e) => setHourlyRate(e.target.value)}
-          />
-          <Input
-            label="Portfolio URL"
-            type="text"
-            value={portfolioUrl}
-            aria-invalid={errors.portfolioUrl ? 'true' : undefined}
-            aria-describedby={errors.portfolioUrl ? 'portfolioUrl-error' : undefined}
-            title="Link to your portfolio or website"
-            onChange={(e) => setPortfolioUrl(e.target.value)}
-          />
-        </div>
+            <StaggerItem className={styles.inlineSection}>
+              <Input
+                label="Hourly Rate ($/hr)"
+                type="number"
+                value={hourlyRate}
+                aria-invalid={errors.hourlyRate ? 'true' : undefined}
+                aria-describedby={errors.hourlyRate ? 'hourlyRate-error' : undefined}
+                title="Enter your hourly rate in USD"
+                onChange={(e) => setHourlyRate(e.target.value)}
+              />
+              <Input
+                label="Portfolio URL"
+                type="text"
+                value={portfolioUrl}
+                aria-invalid={errors.portfolioUrl ? 'true' : undefined}
+                aria-describedby={errors.portfolioUrl ? 'portfolioUrl-error' : undefined}
+                title="Link to your portfolio or website"
+                onChange={(e) => setPortfolioUrl(e.target.value)}
+              />
+            </StaggerItem>
 
-        {(errors.hourlyRate || errors.portfolioUrl) && (
-          <div className={styles.errors} role="alert">
-            {errors.hourlyRate && <p id="hourlyRate-error" className={styles.errorText}>{errors.hourlyRate}</p>}
-            {errors.portfolioUrl && <p id="portfolioUrl-error" className={styles.errorText}>{errors.portfolioUrl}</p>}
-          </div>
-        )}
+            {(errors.hourlyRate || errors.portfolioUrl) && (
+              <StaggerItem className={styles.errors} role="alert">
+                {errors.hourlyRate && <p id="hourlyRate-error" className={styles.errorText}>{errors.hourlyRate}</p>}
+                {errors.portfolioUrl && <p id="portfolioUrl-error" className={styles.errorText}>{errors.portfolioUrl}</p>}
+              </StaggerItem>
+            )}
 
-        <div className={styles.actions}>
-          <Button variant="secondary" type="button" onClick={resetForm} title="Reset to defaults">Reset</Button>
-          <Button variant="primary" type="submit" title="Save profile changes" isLoading={saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </div>
-      </form>
-    </div>
+            <StaggerItem className={styles.actions}>
+              <Button variant="secondary" type="button" onClick={resetForm} title="Reset to defaults">Reset</Button>
+              <Button variant="primary" type="submit" title="Save profile changes" isLoading={saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </StaggerItem>
+          </StaggerContainer>
+        </form>
+      </div>
+    </PageTransition>
   );
 };
 

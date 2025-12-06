@@ -2,6 +2,18 @@
   background-color: var(--bg-primary-light);
 }
 
+.progressBar {
+  background-color: var(--bg-tertiary-light);
+}
+
+.progressFill {
+  background: linear-gradient(90deg, var(--primary-light), var(--accent-light));
+}
+
+.headerTop {
+  color: var(--text-primary-light);
+}
+
 .title {
   color: var(--text-primary-light);
 }
@@ -10,8 +22,24 @@
   color: var(--text-secondary-light);
 }
 
+.savedIndicator {
+  background-color: var(--success-light);
+  color: white;
+}
+
+.estimatedTotal {
+  background-color: var(--bg-secondary-light);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary-light);
+}
+
 .footer {
   border-top-color: var(--border-light);
+}
+
+.footerLeft,
+.footerRight {
+  color: var(--text-primary-light);
 }
 
 .result_card {
@@ -25,6 +53,10 @@
 
 .result_message {
   color: var(--text-secondary-light);
+}
+
+.result_actions {
+  color: var(--text-primary-light);
 }
 
 .success_icon {

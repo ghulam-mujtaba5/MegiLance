@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { StaggerItem } from '@/app/components/Animations/StaggerItem';
 import commonStyles from './SavedSearches.common.module.css';
 import lightStyles from './SavedSearches.light.module.css';
 import darkStyles from './SavedSearches.dark.module.css';
@@ -215,310 +219,320 @@ export default function SavedSearchesPage() {
   }
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>Saved Searches</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Manage your job search filters and alerts
-          </p>
-        </div>
-        <button 
-          className={cn(commonStyles.createButton, themeStyles.createButton)}
-          onClick={() => setShowCreateModal(true)}
-        >
-          + New Saved Search
-        </button>
-      </div>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>Saved Searches</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Manage your job search filters and alerts
+              </p>
+            </div>
+            <button 
+              className={cn(commonStyles.createButton, themeStyles.createButton)}
+              onClick={() => setShowCreateModal(true)}
+            >
+              + New Saved Search
+            </button>
+          </div>
+        </ScrollReveal>
 
-      {/* Stats Summary */}
-      <div className={commonStyles.statsGrid}>
-        <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-          <span className={commonStyles.statIcon}>🔍</span>
-          <div>
-            <div className={cn(commonStyles.statValue, themeStyles.statValue)}>{searches.length}</div>
-            <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Saved Searches</div>
-          </div>
-        </div>
-        <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-          <span className={commonStyles.statIcon}>🔔</span>
-          <div>
-            <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
-              {searches.filter(s => s.alertEnabled).length}
+        {/* Stats Summary */}
+        <ScrollReveal delay={0.1}>
+          <div className={commonStyles.statsGrid}>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>🔍</span>
+              <div>
+                <div className={cn(commonStyles.statValue, themeStyles.statValue)}>{searches.length}</div>
+                <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Saved Searches</div>
+              </div>
             </div>
-            <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Active Alerts</div>
-          </div>
-        </div>
-        <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-          <span className={commonStyles.statIcon}>✨</span>
-          <div>
-            <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
-              {searches.reduce((sum, s) => sum + s.newMatches, 0)}
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>🔔</span>
+              <div>
+                <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
+                  {searches.filter(s => s.alertEnabled).length}
+                </div>
+                <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Active Alerts</div>
+              </div>
             </div>
-            <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>New Matches</div>
-          </div>
-        </div>
-        <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-          <span className={commonStyles.statIcon}>📊</span>
-          <div>
-            <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
-              {searches.reduce((sum, s) => sum + s.matchCount, 0)}
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>✨</span>
+              <div>
+                <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
+                  {searches.reduce((sum, s) => sum + s.newMatches, 0)}
+                </div>
+                <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>New Matches</div>
+              </div>
             </div>
-            <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Total Matches</div>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>📊</span>
+              <div>
+                <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
+                  {searches.reduce((sum, s) => sum + s.matchCount, 0)}
+                </div>
+                <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Total Matches</div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </ScrollReveal>
 
-      {/* Saved Searches List */}
-      {searches.length === 0 ? (
-        <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-          <span className={commonStyles.emptyIcon}>🔍</span>
-          <h2>No saved searches yet</h2>
-          <p>Create your first saved search to get notified when new jobs match your criteria.</p>
-          <button 
-            className={cn(commonStyles.createButton, themeStyles.createButton)}
-            onClick={() => setShowCreateModal(true)}
-          >
-            Create Saved Search
-          </button>
-        </div>
-      ) : (
-        <div className={commonStyles.searchesList}>
-          {searches.map(search => (
-            <div key={search.id} className={cn(commonStyles.searchCard, themeStyles.searchCard)}>
-              <div className={commonStyles.searchHeader}>
-                <div className={commonStyles.searchInfo}>
-                  <h3 className={cn(commonStyles.searchName, themeStyles.searchName)}>
-                    {search.name}
-                    {search.newMatches > 0 && (
-                      <span className={cn(commonStyles.newBadge, themeStyles.newBadge)}>
-                        {search.newMatches} new
+        {/* Saved Searches List */}
+        {searches.length === 0 ? (
+          <ScrollReveal delay={0.2}>
+            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+              <span className={commonStyles.emptyIcon}>🔍</span>
+              <h2>No saved searches yet</h2>
+              <p>Create your first saved search to get notified when new jobs match your criteria.</p>
+              <button 
+                className={cn(commonStyles.createButton, themeStyles.createButton)}
+                onClick={() => setShowCreateModal(true)}
+              >
+                Create Saved Search
+              </button>
+            </div>
+          </ScrollReveal>
+        ) : (
+          <StaggerContainer className={commonStyles.searchesList} delay={0.2}>
+            {searches.map(search => (
+              <StaggerItem key={search.id}>
+                <div className={cn(commonStyles.searchCard, themeStyles.searchCard)}>
+                  <div className={commonStyles.searchHeader}>
+                    <div className={commonStyles.searchInfo}>
+                      <h3 className={cn(commonStyles.searchName, themeStyles.searchName)}>
+                        {search.name}
+                        {search.newMatches > 0 && (
+                          <span className={cn(commonStyles.newBadge, themeStyles.newBadge)}>
+                            {search.newMatches} new
+                          </span>
+                        )}
+                      </h3>
+                      <p className={cn(commonStyles.searchQuery, themeStyles.searchQuery)}>
+                        &quot;{search.query}&quot;
+                      </p>
+                    </div>
+                    <div className={commonStyles.searchActions}>
+                      <button 
+                        className={cn(commonStyles.runButton, themeStyles.runButton)}
+                        onClick={() => runSearch(search)}
+                      >
+                        Run Search
+                      </button>
+                      <button 
+                        className={cn(commonStyles.editButton, themeStyles.editButton)}
+                        onClick={() => setEditingSearch(search)}
+                      >
+                        ✏️
+                      </button>
+                      <button 
+                        className={cn(commonStyles.deleteButton, themeStyles.deleteButton)}
+                        onClick={() => deleteSearch(search.id)}
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className={commonStyles.filterTags}>
+                    {search.filters.category && (
+                      <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
+                        📁 {search.filters.category}
                       </span>
                     )}
-                  </h3>
-                  <p className={cn(commonStyles.searchQuery, themeStyles.searchQuery)}>
-                    &quot;{search.query}&quot;
-                  </p>
+                    {(search.filters.minBudget || search.filters.maxBudget) && (
+                      <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
+                        💰 ${search.filters.minBudget || 0} - ${search.filters.maxBudget || '∞'}
+                      </span>
+                    )}
+                    {search.filters.experienceLevel && (
+                      <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
+                        📊 {search.filters.experienceLevel}
+                      </span>
+                    )}
+                    {search.filters.projectType && (
+                      <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
+                        📋 {search.filters.projectType}
+                      </span>
+                    )}
+                    {search.filters.skills?.map(skill => (
+                      <span key={skill} className={cn(commonStyles.skillTag, themeStyles.skillTag)}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <div className={commonStyles.searchFooter}>
+                    <div className={commonStyles.searchMeta}>
+                      <span className={cn(commonStyles.metaItem, themeStyles.metaItem)}>
+                        {search.matchCount} matches
+                      </span>
+                      <span className={cn(commonStyles.metaItem, themeStyles.metaItem)}>
+                        Last run: {new Date(search.lastRun).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className={commonStyles.alertToggle}>
+                      <label className={cn(commonStyles.toggleLabel, themeStyles.toggleLabel)}>
+                        <span>Alert: {getFrequencyLabel(search.alertFrequency)}</span>
+                        <button 
+                          className={cn(
+                            commonStyles.toggle,
+                            themeStyles.toggle,
+                            search.alertEnabled && commonStyles.toggleActive,
+                            search.alertEnabled && themeStyles.toggleActive
+                          )}
+                          onClick={() => toggleAlert(search.id)}
+                        >
+                          <span className={commonStyles.toggleKnob} />
+                        </button>
+                      </label>
+                    </div>
+                  </div>
                 </div>
-                <div className={commonStyles.searchActions}>
-                  <button 
-                    className={cn(commonStyles.runButton, themeStyles.runButton)}
-                    onClick={() => runSearch(search)}
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        )}
+
+        {/* Create/Edit Modal */}
+        {(showCreateModal || editingSearch) && (
+          <div className={cn(commonStyles.modalOverlay, themeStyles.modalOverlay)} onClick={() => { setShowCreateModal(false); setEditingSearch(null); }}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={e => e.stopPropagation()}>
+              <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>
+                {editingSearch ? 'Edit Saved Search' : 'Create Saved Search'}
+              </h2>
+              
+              <div className={commonStyles.formGroup}>
+                <label className={cn(commonStyles.label, themeStyles.label)}>Search Name</label>
+                <input
+                  type="text"
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="e.g., React Development Jobs"
+                  value={newSearch.name}
+                  onChange={e => setNewSearch({ ...newSearch, name: e.target.value })}
+                />
+              </div>
+              
+              <div className={commonStyles.formGroup}>
+                <label className={cn(commonStyles.label, themeStyles.label)}>Search Query</label>
+                <input
+                  type="text"
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="e.g., React developer"
+                  value={newSearch.query}
+                  onChange={e => setNewSearch({ ...newSearch, query: e.target.value })}
+                />
+              </div>
+              
+              <div className={commonStyles.formRow}>
+                <div className={commonStyles.formGroup}>
+                  <label className={cn(commonStyles.label, themeStyles.label)}>Category</label>
+                  <select
+                    className={cn(commonStyles.select, themeStyles.select)}
+                    value={newSearch.category}
+                    onChange={e => setNewSearch({ ...newSearch, category: e.target.value })}
                   >
-                    Run Search
-                  </button>
-                  <button 
-                    className={cn(commonStyles.editButton, themeStyles.editButton)}
-                    onClick={() => setEditingSearch(search)}
+                    <option value="">Any Category</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Mobile Development">Mobile Development</option>
+                    <option value="Design">Design</option>
+                    <option value="Writing">Writing</option>
+                    <option value="Marketing">Marketing</option>
+                  </select>
+                </div>
+                <div className={commonStyles.formGroup}>
+                  <label className={cn(commonStyles.label, themeStyles.label)}>Experience Level</label>
+                  <select
+                    className={cn(commonStyles.select, themeStyles.select)}
+                    value={newSearch.experienceLevel}
+                    onChange={e => setNewSearch({ ...newSearch, experienceLevel: e.target.value })}
                   >
-                    ✏️
-                  </button>
-                  <button 
-                    className={cn(commonStyles.deleteButton, themeStyles.deleteButton)}
-                    onClick={() => deleteSearch(search.id)}
-                  >
-                    🗑️
-                  </button>
+                    <option value="">Any Level</option>
+                    <option value="entry">Entry Level</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="expert">Expert</option>
+                  </select>
                 </div>
               </div>
               
-              <div className={commonStyles.filterTags}>
-                {search.filters.category && (
-                  <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
-                    📁 {search.filters.category}
-                  </span>
-                )}
-                {(search.filters.minBudget || search.filters.maxBudget) && (
-                  <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
-                    💰 ${search.filters.minBudget || 0} - ${search.filters.maxBudget || '∞'}
-                  </span>
-                )}
-                {search.filters.experienceLevel && (
-                  <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
-                    📊 {search.filters.experienceLevel}
-                  </span>
-                )}
-                {search.filters.projectType && (
-                  <span className={cn(commonStyles.filterTag, themeStyles.filterTag)}>
-                    📋 {search.filters.projectType}
-                  </span>
-                )}
-                {search.filters.skills?.map(skill => (
-                  <span key={skill} className={cn(commonStyles.skillTag, themeStyles.skillTag)}>
-                    {skill}
-                  </span>
-                ))}
+              <div className={commonStyles.formRow}>
+                <div className={commonStyles.formGroup}>
+                  <label className={cn(commonStyles.label, themeStyles.label)}>Min Budget ($)</label>
+                  <input
+                    type="number"
+                    className={cn(commonStyles.input, themeStyles.input)}
+                    placeholder="0"
+                    value={newSearch.minBudget}
+                    onChange={e => setNewSearch({ ...newSearch, minBudget: e.target.value })}
+                  />
+                </div>
+                <div className={commonStyles.formGroup}>
+                  <label className={cn(commonStyles.label, themeStyles.label)}>Max Budget ($)</label>
+                  <input
+                    type="number"
+                    className={cn(commonStyles.input, themeStyles.input)}
+                    placeholder="No limit"
+                    value={newSearch.maxBudget}
+                    onChange={e => setNewSearch({ ...newSearch, maxBudget: e.target.value })}
+                  />
+                </div>
               </div>
               
-              <div className={commonStyles.searchFooter}>
-                <div className={commonStyles.searchMeta}>
-                  <span className={cn(commonStyles.metaItem, themeStyles.metaItem)}>
-                    {search.matchCount} matches
-                  </span>
-                  <span className={cn(commonStyles.metaItem, themeStyles.metaItem)}>
-                    Last run: {new Date(search.lastRun).toLocaleDateString()}
-                  </span>
+              <div className={commonStyles.formGroup}>
+                <label className={cn(commonStyles.label, themeStyles.label)}>Skills (comma-separated)</label>
+                <input
+                  type="text"
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="e.g., React, TypeScript, Node.js"
+                  value={newSearch.skills}
+                  onChange={e => setNewSearch({ ...newSearch, skills: e.target.value })}
+                />
+              </div>
+              
+              <div className={commonStyles.formRow}>
+                <div className={commonStyles.formGroup}>
+                  <label className={cn(commonStyles.label, themeStyles.label)}>Alert Frequency</label>
+                  <select
+                    className={cn(commonStyles.select, themeStyles.select)}
+                    value={newSearch.alertFrequency}
+                    onChange={e => setNewSearch({ ...newSearch, alertFrequency: e.target.value as 'instant' | 'daily' | 'weekly' })}
+                  >
+                    <option value="instant">Instant</option>
+                    <option value="daily">Daily Digest</option>
+                    <option value="weekly">Weekly Digest</option>
+                  </select>
                 </div>
-                <div className={commonStyles.alertToggle}>
-                  <label className={cn(commonStyles.toggleLabel, themeStyles.toggleLabel)}>
-                    <span>Alert: {getFrequencyLabel(search.alertFrequency)}</span>
-                    <button 
-                      className={cn(
-                        commonStyles.toggle,
-                        themeStyles.toggle,
-                        search.alertEnabled && commonStyles.toggleActive,
-                        search.alertEnabled && themeStyles.toggleActive
-                      )}
-                      onClick={() => toggleAlert(search.id)}
-                    >
-                      <span className={commonStyles.toggleKnob} />
-                    </button>
+                <div className={commonStyles.formGroup}>
+                  <label className={cn(commonStyles.checkboxLabel, themeStyles.checkboxLabel)}>
+                    <input
+                      type="checkbox"
+                      checked={newSearch.alertEnabled}
+                      onChange={e => setNewSearch({ ...newSearch, alertEnabled: e.target.checked })}
+                    />
+                    <span>Enable email alerts</span>
                   </label>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Create/Edit Modal */}
-      {(showCreateModal || editingSearch) && (
-        <div className={cn(commonStyles.modalOverlay, themeStyles.modalOverlay)} onClick={() => { setShowCreateModal(false); setEditingSearch(null); }}>
-          <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={e => e.stopPropagation()}>
-            <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>
-              {editingSearch ? 'Edit Saved Search' : 'Create Saved Search'}
-            </h2>
-            
-            <div className={commonStyles.formGroup}>
-              <label className={cn(commonStyles.label, themeStyles.label)}>Search Name</label>
-              <input
-                type="text"
-                className={cn(commonStyles.input, themeStyles.input)}
-                placeholder="e.g., React Development Jobs"
-                value={newSearch.name}
-                onChange={e => setNewSearch({ ...newSearch, name: e.target.value })}
-              />
-            </div>
-            
-            <div className={commonStyles.formGroup}>
-              <label className={cn(commonStyles.label, themeStyles.label)}>Search Query</label>
-              <input
-                type="text"
-                className={cn(commonStyles.input, themeStyles.input)}
-                placeholder="e.g., React developer"
-                value={newSearch.query}
-                onChange={e => setNewSearch({ ...newSearch, query: e.target.value })}
-              />
-            </div>
-            
-            <div className={commonStyles.formRow}>
-              <div className={commonStyles.formGroup}>
-                <label className={cn(commonStyles.label, themeStyles.label)}>Category</label>
-                <select
-                  className={cn(commonStyles.select, themeStyles.select)}
-                  value={newSearch.category}
-                  onChange={e => setNewSearch({ ...newSearch, category: e.target.value })}
+              
+              <div className={commonStyles.modalActions}>
+                <button 
+                  className={cn(commonStyles.cancelButton, themeStyles.cancelButton)}
+                  onClick={() => { setShowCreateModal(false); setEditingSearch(null); }}
                 >
-                  <option value="">Any Category</option>
-                  <option value="Web Development">Web Development</option>
-                  <option value="Mobile Development">Mobile Development</option>
-                  <option value="Design">Design</option>
-                  <option value="Writing">Writing</option>
-                  <option value="Marketing">Marketing</option>
-                </select>
-              </div>
-              <div className={commonStyles.formGroup}>
-                <label className={cn(commonStyles.label, themeStyles.label)}>Experience Level</label>
-                <select
-                  className={cn(commonStyles.select, themeStyles.select)}
-                  value={newSearch.experienceLevel}
-                  onChange={e => setNewSearch({ ...newSearch, experienceLevel: e.target.value })}
+                  Cancel
+                </button>
+                <button 
+                  className={cn(commonStyles.saveButton, themeStyles.saveButton)}
+                  onClick={handleCreateSearch}
+                  disabled={!newSearch.name || !newSearch.query}
                 >
-                  <option value="">Any Level</option>
-                  <option value="entry">Entry Level</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="expert">Expert</option>
-                </select>
+                  {editingSearch ? 'Save Changes' : 'Create Search'}
+                </button>
               </div>
-            </div>
-            
-            <div className={commonStyles.formRow}>
-              <div className={commonStyles.formGroup}>
-                <label className={cn(commonStyles.label, themeStyles.label)}>Min Budget ($)</label>
-                <input
-                  type="number"
-                  className={cn(commonStyles.input, themeStyles.input)}
-                  placeholder="0"
-                  value={newSearch.minBudget}
-                  onChange={e => setNewSearch({ ...newSearch, minBudget: e.target.value })}
-                />
-              </div>
-              <div className={commonStyles.formGroup}>
-                <label className={cn(commonStyles.label, themeStyles.label)}>Max Budget ($)</label>
-                <input
-                  type="number"
-                  className={cn(commonStyles.input, themeStyles.input)}
-                  placeholder="No limit"
-                  value={newSearch.maxBudget}
-                  onChange={e => setNewSearch({ ...newSearch, maxBudget: e.target.value })}
-                />
-              </div>
-            </div>
-            
-            <div className={commonStyles.formGroup}>
-              <label className={cn(commonStyles.label, themeStyles.label)}>Skills (comma-separated)</label>
-              <input
-                type="text"
-                className={cn(commonStyles.input, themeStyles.input)}
-                placeholder="e.g., React, TypeScript, Node.js"
-                value={newSearch.skills}
-                onChange={e => setNewSearch({ ...newSearch, skills: e.target.value })}
-              />
-            </div>
-            
-            <div className={commonStyles.formRow}>
-              <div className={commonStyles.formGroup}>
-                <label className={cn(commonStyles.label, themeStyles.label)}>Alert Frequency</label>
-                <select
-                  className={cn(commonStyles.select, themeStyles.select)}
-                  value={newSearch.alertFrequency}
-                  onChange={e => setNewSearch({ ...newSearch, alertFrequency: e.target.value as 'instant' | 'daily' | 'weekly' })}
-                >
-                  <option value="instant">Instant</option>
-                  <option value="daily">Daily Digest</option>
-                  <option value="weekly">Weekly Digest</option>
-                </select>
-              </div>
-              <div className={commonStyles.formGroup}>
-                <label className={cn(commonStyles.checkboxLabel, themeStyles.checkboxLabel)}>
-                  <input
-                    type="checkbox"
-                    checked={newSearch.alertEnabled}
-                    onChange={e => setNewSearch({ ...newSearch, alertEnabled: e.target.checked })}
-                  />
-                  <span>Enable email alerts</span>
-                </label>
-              </div>
-            </div>
-            
-            <div className={commonStyles.modalActions}>
-              <button 
-                className={cn(commonStyles.cancelButton, themeStyles.cancelButton)}
-                onClick={() => { setShowCreateModal(false); setEditingSearch(null); }}
-              >
-                Cancel
-              </button>
-              <button 
-                className={cn(commonStyles.saveButton, themeStyles.saveButton)}
-                onClick={handleCreateSearch}
-                disabled={!newSearch.name || !newSearch.query}
-              >
-                {editingSearch ? 'Save Changes' : 'Create Search'}
-              </button>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </PageTransition>
   );
 }

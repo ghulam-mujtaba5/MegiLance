@@ -9,6 +9,8 @@ import api from '@/lib/api';
 import { FaSearch, FaBriefcase, FaClock, FaDollarSign, FaTag } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
+import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import commonStyles from './PublicJobs.common.module.css';
 import lightStyles from './PublicJobs.light.module.css';
@@ -124,81 +126,89 @@ const PublicJobs: React.FC = () => {
   };
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Find Work</h1>
-        <p className={styles.subtitle}>Browse the latest jobs and start your next project.</p>
-      </div>
+    <PageTransition>
+      <div className={styles.page}>
+        <ScrollReveal>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Find Work</h1>
+            <p className={styles.subtitle}>Browse the latest jobs and start your next project.</p>
+          </div>
 
-      <div className={styles.controls}>
-        <div className={styles.searchInput}>
-          <Input
-            placeholder="Search for jobs..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            iconBefore={<FaSearch />}
-            fullWidth
-          />
-        </div>
-      </div>
-
-      {loading ? (
-        <div className={styles.loading}>Loading jobs...</div>
-      ) : error ? (
-        <div className={styles.error}>{error}</div>
-      ) : (
-        <div className={styles.grid}>
-          {projects.length === 0 ? (
-            <div className="text-center py-12 opacity-75">
-              No jobs found matching your criteria.
+          <div className={styles.controls}>
+            <div className={styles.searchInput}>
+              <Input
+                placeholder="Search for jobs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                iconBefore={<FaSearch />}
+                fullWidth
+              />
             </div>
-          ) : (
-            projects.map((project) => (
-              <Link href={`/jobs/${project.id}`} key={project.id} className="block">
-                <div className={styles.card}>
-                  <div className={styles.cardHeader}>
-                    <div>
-                      <h3 className={styles.jobTitle}>{project.title}</h3>
-                      <div className={styles.clientInfo}>
-                        {project.experience_level} • {project.estimated_duration}
+          </div>
+        </ScrollReveal>
+
+        {loading ? (
+          <div className={styles.loading}>Loading jobs...</div>
+        ) : error ? (
+          <div className={styles.error}>{error}</div>
+        ) : (
+          <StaggerContainer className={styles.grid}>
+            {projects.length === 0 ? (
+              <StaggerItem>
+                <div className="text-center py-12 opacity-75">
+                  No jobs found matching your criteria.
+                </div>
+              </StaggerItem>
+            ) : (
+              projects.map((project) => (
+                <StaggerItem key={project.id}>
+                  <Link href={`/jobs/${project.id}`} className="block">
+                    <div className={styles.card}>
+                      <div className={styles.cardHeader}>
+                        <div>
+                          <h3 className={styles.jobTitle}>{project.title}</h3>
+                          <div className={styles.clientInfo}>
+                            {project.experience_level} • {project.estimated_duration}
+                          </div>
+                        </div>
+                        <div className={styles.budget}>
+                          {formatBudget(project)}
+                        </div>
+                      </div>
+
+                      <p className={styles.description}>{project.description}</p>
+
+                      <div className={styles.tags}>
+                        {project.skills.slice(0, 5).map((skill, index) => (
+                          <span key={index} className={styles.tag}>
+                            {skill}
+                          </span>
+                        ))}
+                        {project.skills.length > 5 && (
+                          <span className={styles.tag}>+{project.skills.length - 5}</span>
+                        )}
+                      </div>
+
+                      <div className={styles.footer}>
+                        <div className="flex items-center gap-4">
+                          <span className="flex items-center gap-1">
+                            <FaClock className="text-xs" /> {formatTimeAgo(project.created_at)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <FaBriefcase className="text-xs" /> {project.budget_type === 'hourly' ? 'Hourly' : 'Fixed'}
+                          </span>
+                        </div>
+                        <Button variant="outline" size="sm">View Details</Button>
                       </div>
                     </div>
-                    <div className={styles.budget}>
-                      {formatBudget(project)}
-                    </div>
-                  </div>
-
-                  <p className={styles.description}>{project.description}</p>
-
-                  <div className={styles.tags}>
-                    {project.skills.slice(0, 5).map((skill, index) => (
-                      <span key={index} className={styles.tag}>
-                        {skill}
-                      </span>
-                    ))}
-                    {project.skills.length > 5 && (
-                      <span className={styles.tag}>+{project.skills.length - 5}</span>
-                    )}
-                  </div>
-
-                  <div className={styles.footer}>
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <FaClock className="text-xs" /> {formatTimeAgo(project.created_at)}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FaBriefcase className="text-xs" /> {project.budget_type === 'hourly' ? 'Hourly' : 'Fixed'}
-                      </span>
-                    </div>
-                    <Button variant="outline" size="sm">View Details</Button>
-                  </div>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
-      )}
-    </div>
+                  </Link>
+                </StaggerItem>
+              ))
+            )}
+          </StaggerContainer>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

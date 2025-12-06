@@ -5,8 +5,11 @@ Manages email, in-app, and push notifications
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from datetime import datetime
 import logging
+import json
+from app.models.notification import Notification
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +44,7 @@ class NotificationService:
     ) -> Dict[str, Any]:
         """Send a notification to a user"""
         try:
-            notification = {
+            notification_data = {
                 'user_id': user_id,
                 'type': notification_type,
                 'title': title,
@@ -52,7 +55,7 @@ class NotificationService:
             }
             
             # Save to database
-            # await self._save_notification(notification)
+            saved_notification = await self._save_notification(notification_data)
             
             # Send email if requested
             if send_email:
@@ -63,10 +66,35 @@ class NotificationService:
                 await self._send_push_notification(user_id, title, message)
             
             logger.info(f"Notification sent to user {user_id}: {notification_type}")
-            return notification
+            
+            # Return dict representation including the ID
+            notification_data['id'] = saved_notification.id
+            return notification_data
             
         except Exception as e:
             logger.error(f"Error sending notification: {e}")
+            # Don't crash the caller if notification fails, just log it
+            return {}
+    
+    async def _save_notification(self, notification_data: Dict[str, Any]) -> Notification:
+        """Save notification to database"""
+        try:
+            notification = Notification(
+                user_id=notification_data['user_id'],
+                notification_type=notification_data['type'],
+                title=notification_data['title'],
+                content=notification_data['message'],
+                data=json.dumps(notification_data['data']) if notification_data.get('data') else None,
+                is_read=False,
+                created_at=datetime.utcnow()
+            )
+            self.db.add(notification)
+            self.db.commit()
+            self.db.refresh(notification)
+            return notification
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"Failed to save notification to DB: {e}")
             raise
     
     async def get_user_notifications(
@@ -78,11 +106,31 @@ class NotificationService:
     ) -> List[Dict[str, Any]]:
         """Get notifications for a user"""
         try:
-            # Query notifications
-            # notifications = self.db.query(Notification).filter(...)
+            query = self.db.query(Notification).filter(Notification.user_id == user_id)
             
-            # Placeholder
-            return []
+            if unread_only:
+                query = query.filter(Notification.is_read == False)
+            
+            # Sort by newest first
+            query = query.order_by(desc(Notification.created_at))
+            
+            # Pagination
+            notifications = query.offset(offset).limit(limit).all()
+            
+            results = []
+            for n in notifications:
+                results.append({
+                    'id': n.id,
+                    'type': n.notification_type,
+                    'title': n.title,
+                    'message': n.content,
+                    'data': json.loads(n.data) if n.data else {},
+                    'created_at': n.created_at.isoformat() if n.created_at else None,
+                    'read': n.is_read,
+                    'read_at': n.read_at.isoformat() if n.read_at else None
+                })
+            
+            return results
             
         except Exception as e:
             logger.error(f"Error getting notifications: {e}")
@@ -95,14 +143,42 @@ class NotificationService:
     ) -> bool:
         """Mark notifications as read"""
         try:
-            # Update notifications
-            # self.db.query(Notification).filter(...).update({'read': True})
+            # Update notifications belonging to this user
+            self.db.query(Notification).filter(
+                Notification.id.in_(notification_ids),
+                Notification.user_id == user_id
+            ).update(
+                {
+                    Notification.is_read: True,
+                    Notification.read_at: datetime.utcnow()
+                },
+                synchronize_session=False
+            )
             self.db.commit()
             return True
-            
         except Exception as e:
-            logger.error(f"Error marking notifications as read: {e}")
             self.db.rollback()
+            logger.error(f"Error marking notifications as read: {e}")
+            return False
+
+    async def mark_all_as_read(self, user_id: int) -> bool:
+        """Mark all notifications for a user as read"""
+        try:
+            self.db.query(Notification).filter(
+                Notification.user_id == user_id,
+                Notification.is_read == False
+            ).update(
+                {
+                    Notification.is_read: True,
+                    Notification.read_at: datetime.utcnow()
+                },
+                synchronize_session=False
+            )
+            self.db.commit()
+            return True
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"Error marking all notifications as read: {e}")
             return False
     
     async def _send_email_notification(self, user_id: int, title: str, message: str):

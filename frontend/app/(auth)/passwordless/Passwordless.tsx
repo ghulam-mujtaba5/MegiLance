@@ -13,6 +13,8 @@ import Input from '@/app/components/Input/Input';
 import Tabs from '@/app/components/Tabs/Tabs';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import { isPreviewMode } from '@/app/utils/flags';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import commonStyles from './Passwordless.common.module.css';
 import lightStyles from './Passwordless.light.module.css';
@@ -163,100 +165,108 @@ const Passwordless: React.FC = () => {
   }, [resolvedTheme]);
 
   return (
-    <div className={styles.loginPage}>
-      <div className={styles.brandingSlot}>
-        <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
-      </div>
-      <div className={styles.formPanel}>
-        <div className={styles.formContainer}>
-          {isPreviewMode() && (
-            <div role="status" aria-live="polite" className="mb-4 rounded-md border border-dashed border-[var(--border-color)] p-3 text-sm text-[var(--text-secondary)]">
-              <strong>Preview Mode:</strong> Auth checks are disabled. Use the quick links below to jump into dashboards.
-            </div>
-          )}
-          
-          <div className={styles.formHeader}>
-            <h1 className={styles.formTitle}>Passwordless Sign In</h1>
-            {submitted ? (
-              <p className={styles.formSubtitle}>
-                Check your email for a magic link to sign in.
-              </p>
-            ) : (
-              <p className={styles.formSubtitle}>
-                Enter your email and we&apos;ll send you a magic link to sign in instantly.
-              </p>
+    <PageTransition>
+      <div className={styles.loginPage}>
+        <div className={styles.brandingSlot}>
+          <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
+        </div>
+        <div className={styles.formPanel}>
+          <StaggerContainer className={styles.formContainer}>
+            {isPreviewMode() && (
+              <StaggerItem>
+                <div role="status" aria-live="polite" className="mb-4 rounded-md border border-dashed border-[var(--border-color)] p-3 text-sm text-[var(--text-secondary)]">
+                  <strong>Preview Mode:</strong> Auth checks are disabled. Use the quick links below to jump into dashboards.
+                </div>
+              </StaggerItem>
             )}
-          </div>
+            
+            <StaggerItem className={styles.formHeader}>
+              <h1 className={styles.formTitle}>Passwordless Sign In</h1>
+              {submitted ? (
+                <p className={styles.formSubtitle}>
+                  Check your email for a magic link to sign in.
+                </p>
+              ) : (
+                <p className={styles.formSubtitle}>
+                  Enter your email and we&apos;ll send you a magic link to sign in instantly.
+                </p>
+              )}
+            </StaggerItem>
 
-          <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
-            <Tabs.List className={styles.roleSelector}>
-              {Object.entries(roleConfig).map(([role, { label, icon: Icon }]) => (
-                <Tabs.Tab key={role} icon={<Icon />}>
-                  {label}
-                </Tabs.Tab>
-              ))}
-            </Tabs.List>
-          </Tabs>
+            <StaggerItem>
+              <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
+                <Tabs.List className={styles.roleSelector}>
+                  {Object.entries(roleConfig).map(([role, { label, icon: Icon }]) => (
+                    <Tabs.Tab key={role} icon={<Icon />}>
+                      {label}
+                    </Tabs.Tab>
+                  ))}
+                </Tabs.List>
+              </Tabs>
+            </StaggerItem>
 
-          {submitted ? (
-            <div className={styles.successMessage}>
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 mx-auto mb-4">
-                <FaMagic className="text-green-600 dark:text-green-400 text-2xl" />
-              </div>
-              <p className="text-center mb-4">
-                We&apos;ve sent a magic link to <strong>{email}</strong>. Click the link to sign in.
-              </p>
-              <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
-                Didn&apos;t receive the email? Check your spam folder.
-              </p>
-              <Button 
-                variant="secondary" 
-                fullWidth 
-                onClick={handleResend} 
-                disabled={loading || countdown > 0}
-                className={styles.resendButton}
-              >
-                {loading ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Resend Magic Link'}
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
-              {errors.general && <p className={styles.generalError}>{errors.general}</p>}
-              <div className={styles.inputGroup}>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  label="Email Address"
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  error={errors.email}
-                  disabled={loading}
-                />
-              </div>
+            {submitted ? (
+              <StaggerItem className={styles.successMessage}>
+                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 mx-auto mb-4">
+                  <FaMagic className="text-green-600 dark:text-green-400 text-2xl" />
+                </div>
+                <p className="text-center mb-4">
+                  We&apos;ve sent a magic link to <strong>{email}</strong>. Click the link to sign in.
+                </p>
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
+                  Didn&apos;t receive the email? Check your spam folder.
+                </p>
+                <Button 
+                  variant="secondary" 
+                  fullWidth 
+                  onClick={handleResend} 
+                  disabled={loading || countdown > 0}
+                  className={styles.resendButton}
+                >
+                  {loading ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Resend Magic Link'}
+                </Button>
+              </StaggerItem>
+            ) : (
+              <form onSubmit={handleSubmit} noValidate className={styles.loginForm}>
+                {errors.general && <StaggerItem><p className={styles.generalError}>{errors.general}</p></StaggerItem>}
+                <StaggerItem className={styles.inputGroup}>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    label="Email Address"
+                    placeholder="your.email@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    error={errors.email}
+                    disabled={loading}
+                  />
+                </StaggerItem>
 
-              <Button 
-                type="submit" 
-                variant="primary" 
-                fullWidth 
-                isLoading={loading} 
-                disabled={loading} 
-                className={styles.submitButton}
-                iconBefore={<FaMagic />}
-              >
-                {loading ? 'Sending Magic Link...' : 'Send Magic Link'}
-              </Button>
-            </form>
-          )}
+                <StaggerItem>
+                  <Button 
+                    type="submit" 
+                    variant="primary" 
+                    fullWidth 
+                    isLoading={loading} 
+                    disabled={loading} 
+                    className={styles.submitButton}
+                    iconBefore={<FaMagic />}
+                  >
+                    {loading ? 'Sending Magic Link...' : 'Send Magic Link'}
+                  </Button>
+                </StaggerItem>
+              </form>
+            )}
 
-          <div className={styles.signupPrompt}>
-            <p>Want to use a password instead? <Link href="/login">Sign In</Link></p>
-            <p className="mt-1">Don&apos;t have an account? <Link href="/signup">Create one now</Link></p>
-          </div>
+            <StaggerItem className={styles.signupPrompt}>
+              <p>Want to use a password instead? <Link href="/login">Sign In</Link></p>
+              <p className="mt-1">Don&apos;t have an account? <Link href="/signup">Create one now</Link></p>
+            </StaggerItem>
+          </StaggerContainer>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

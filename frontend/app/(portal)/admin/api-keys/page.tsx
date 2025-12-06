@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { apiKeysApi } from '@/lib/api';
+import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './ApiKeys.common.module.css';
 import lightStyles from './ApiKeys.light.module.css';
 import darkStyles from './ApiKeys.dark.module.css';
@@ -56,38 +58,46 @@ export default function ApiKeysPage() {
       setLoading(true);
       const response = await apiKeysApi.list().catch(() => null);
       
-      const mockKeys: ApiKey[] = response?.keys || [
-        {
-          id: '1',
-          name: 'Production API',
-          key_preview: 'mk_live_****XYZ789',
-          permissions: ['read:projects', 'write:projects', 'read:payments'],
-          created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-          last_used_at: new Date(Date.now() - 3600000).toISOString(),
-          expires_at: new Date(Date.now() + 60 * 86400000).toISOString(),
-          status: 'active',
-        },
-        {
-          id: '2',
-          name: 'Analytics Dashboard',
-          key_preview: 'mk_live_****ABC123',
-          permissions: ['read:analytics', 'read:projects'],
-          created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
-          last_used_at: new Date(Date.now() - 86400000).toISOString(),
-          status: 'active',
-        },
-        {
-          id: '3',
-          name: 'Legacy Integration',
-          key_preview: 'mk_test_****DEF456',
-          permissions: ['read:users'],
-          created_at: new Date(Date.now() - 180 * 86400000).toISOString(),
-          expires_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-          status: 'expired',
-        },
-      ];
+      // Use API data if available, otherwise fall back to demo data
+      let keysData: ApiKey[] = [];
+      
+      if (response && (response.keys?.length > 0 || Array.isArray(response) && response.length > 0)) {
+        keysData = response.keys || response;
+      } else {
+        // Demo data for display when no real API keys exist
+        keysData = [
+          {
+            id: '1',
+            name: 'Production API',
+            key_preview: 'mk_live_****XYZ789',
+            permissions: ['read:projects', 'write:projects', 'read:payments'],
+            created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
+            last_used_at: new Date(Date.now() - 3600000).toISOString(),
+            expires_at: new Date(Date.now() + 60 * 86400000).toISOString(),
+            status: 'active',
+          },
+          {
+            id: '2',
+            name: 'Analytics Dashboard',
+            key_preview: 'mk_live_****ABC123',
+            permissions: ['read:analytics', 'read:projects'],
+            created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+            last_used_at: new Date(Date.now() - 86400000).toISOString(),
+            status: 'active',
+          },
+          {
+            id: '3',
+            name: 'Legacy Integration',
+            key_preview: 'mk_test_****DEF456',
+            permissions: ['read:users'],
+            created_at: new Date(Date.now() - 180 * 86400000).toISOString(),
+            expires_at: new Date(Date.now() - 10 * 86400000).toISOString(),
+            status: 'expired',
+          },
+        ];
+      }
 
-      setApiKeys(mockKeys);
+      setApiKeys(keysData);
     } catch (error) {
       console.error('Failed to load API keys:', error);
     } finally {
@@ -184,270 +194,282 @@ export default function ApiKeysPage() {
   }
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      {/* Header */}
-      <div className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>API Keys</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Manage API keys for external integrations
-          </p>
-        </div>
-        <button
-          className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-          onClick={() => setShowCreateModal(true)}
-        >
-          + Create New Key
-        </button>
-      </div>
-
-      {/* Warning Banner */}
-      <div className={cn(commonStyles.warning, themeStyles.warning)}>
-        <span className={commonStyles.warningIcon}>⚠️</span>
-        <div>
-          <strong>Keep your API keys secure</strong>
-          <p>Never share your API keys publicly or commit them to version control. 
-             Use environment variables instead.</p>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className={commonStyles.stats}>
-        <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-          <span className={commonStyles.statValue}>{apiKeys.length}</span>
-          <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Total Keys</span>
-        </div>
-        <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-          <span className={commonStyles.statValue}>{apiKeys.filter(k => k.status === 'active').length}</span>
-          <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Active</span>
-        </div>
-        <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-          <span className={commonStyles.statValue}>{apiKeys.filter(k => k.status === 'expired').length}</span>
-          <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Expired</span>
-        </div>
-      </div>
-
-      {/* Keys List */}
-      <div className={commonStyles.keysList}>
-        {apiKeys.length === 0 ? (
-          <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-            <span className={commonStyles.emptyIcon}>🔑</span>
-            <p>No API keys created yet</p>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        {/* Header */}
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>API Keys</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Manage API keys for external integrations
+              </p>
+            </div>
             <button
               className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
               onClick={() => setShowCreateModal(true)}
             >
-              Create your first API key
+              + Create New Key
             </button>
           </div>
-        ) : (
-          apiKeys.map((key) => (
-            <div key={key.id} className={cn(commonStyles.keyCard, themeStyles.keyCard)}>
-              <div className={commonStyles.keyHeader}>
-                <div className={commonStyles.keyInfo}>
-                  <h3 className={cn(commonStyles.keyName, themeStyles.keyName)}>{key.name}</h3>
-                  <code className={cn(commonStyles.keyPreview, themeStyles.keyPreview)}>
-                    {key.key_preview}
-                  </code>
-                </div>
-                <span className={cn(
-                  commonStyles.status,
-                  commonStyles[`status${key.status.charAt(0).toUpperCase() + key.status.slice(1)}`],
-                  themeStyles[`status${key.status.charAt(0).toUpperCase() + key.status.slice(1)}`]
-                )}>
-                  {key.status}
-                </span>
-              </div>
+        </ScrollReveal>
 
-              <div className={commonStyles.keyBody}>
-                <div className={commonStyles.permissions}>
-                  <span className={cn(commonStyles.permissionsLabel, themeStyles.permissionsLabel)}>
-                    Permissions:
-                  </span>
-                  <div className={commonStyles.permissionsList}>
-                    {key.permissions.map((perm) => (
-                      <span key={perm} className={cn(commonStyles.permission, themeStyles.permission)}>
-                        {perm}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className={cn(commonStyles.keyMeta, themeStyles.keyMeta)}>
-                  <span>Created: {formatDate(key.created_at)}</span>
-                  {key.last_used_at && <span>Last used: {formatTimeAgo(key.last_used_at)}</span>}
-                  {key.expires_at && (
-                    <span className={new Date(key.expires_at) < new Date() ? commonStyles.expired : ''}>
-                      Expires: {formatDate(key.expires_at)}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className={commonStyles.keyActions}>
-                {key.status === 'active' && (
-                  <button
-                    className={cn(commonStyles.dangerButton, themeStyles.dangerButton)}
-                    onClick={() => handleRevokeKey(key.id)}
-                  >
-                    Revoke
-                  </button>
-                )}
-                <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
-                  View Logs
-                </button>
-              </div>
+        {/* Warning Banner */}
+        <ScrollReveal delay={0.1}>
+          <div className={cn(commonStyles.warning, themeStyles.warning)}>
+            <span className={commonStyles.warningIcon}>⚠️</span>
+            <div>
+              <strong>Keep your API keys secure</strong>
+              <p>Never share your API keys publicly or commit them to version control. 
+                 Use environment variables instead.</p>
             </div>
-          ))
+          </div>
+        </ScrollReveal>
+
+        {/* Stats */}
+        <ScrollReveal delay={0.2}>
+          <div className={commonStyles.stats}>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statValue}>{apiKeys.length}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Total Keys</span>
+            </div>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statValue}>{apiKeys.filter(k => k.status === 'active').length}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Active</span>
+            </div>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statValue}>{apiKeys.filter(k => k.status === 'expired').length}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Expired</span>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Keys List */}
+        <div className={commonStyles.keysList}>
+          {apiKeys.length === 0 ? (
+            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+              <span className={commonStyles.emptyIcon}>🔑</span>
+              <p>No API keys created yet</p>
+              <button
+                className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                onClick={() => setShowCreateModal(true)}
+              >
+                Create your first API key
+              </button>
+            </div>
+          ) : (
+            <StaggerContainer>
+              {apiKeys.map((key) => (
+                <StaggerItem key={key.id}>
+                  <div className={cn(commonStyles.keyCard, themeStyles.keyCard)}>
+                    <div className={commonStyles.keyHeader}>
+                      <div className={commonStyles.keyInfo}>
+                        <h3 className={cn(commonStyles.keyName, themeStyles.keyName)}>{key.name}</h3>
+                        <code className={cn(commonStyles.keyPreview, themeStyles.keyPreview)}>
+                          {key.key_preview}
+                        </code>
+                      </div>
+                      <span className={cn(
+                        commonStyles.status,
+                        commonStyles[`status${key.status.charAt(0).toUpperCase() + key.status.slice(1)}`],
+                        themeStyles[`status${key.status.charAt(0).toUpperCase() + key.status.slice(1)}`]
+                      )}>
+                        {key.status}
+                      </span>
+                    </div>
+
+                    <div className={commonStyles.keyBody}>
+                      <div className={commonStyles.permissions}>
+                        <span className={cn(commonStyles.permissionsLabel, themeStyles.permissionsLabel)}>
+                          Permissions:
+                        </span>
+                        <div className={commonStyles.permissionsList}>
+                          {key.permissions.map((perm) => (
+                            <span key={perm} className={cn(commonStyles.permission, themeStyles.permission)}>
+                              {perm}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className={cn(commonStyles.keyMeta, themeStyles.keyMeta)}>
+                        <span>Created: {formatDate(key.created_at)}</span>
+                        {key.last_used_at && <span>Last used: {formatTimeAgo(key.last_used_at)}</span>}
+                        {key.expires_at && (
+                          <span className={new Date(key.expires_at) < new Date() ? commonStyles.expired : ''}>
+                            Expires: {formatDate(key.expires_at)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={commonStyles.keyActions}>
+                      {key.status === 'active' && (
+                        <button
+                          className={cn(commonStyles.dangerButton, themeStyles.dangerButton)}
+                          onClick={() => handleRevokeKey(key.id)}
+                        >
+                          Revoke
+                        </button>
+                      )}
+                      <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
+                        View Logs
+                      </button>
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          )}
+        </div>
+
+        {/* Create Modal */}
+        {showCreateModal && (
+          <div className={cn(commonStyles.modal, themeStyles.modal)}>
+            <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
+              {newKeyData ? (
+                // Show new key (only once)
+                <>
+                  <div className={commonStyles.modalHeader}>
+                    <h2>API Key Created</h2>
+                  </div>
+                  <div className={commonStyles.modalBody}>
+                    <div className={cn(commonStyles.successBanner, themeStyles.successBanner)}>
+                      <span>✅</span>
+                      <p><strong>Important:</strong> Copy your API key now. You won't be able to see it again!</p>
+                    </div>
+
+                    <div className={commonStyles.newKeyDisplay}>
+                      <div className={commonStyles.formGroup}>
+                        <label>API Key</label>
+                        <div className={commonStyles.keyWithCopy}>
+                          <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
+                            {newKeyData.key}
+                          </code>
+                          <button
+                            onClick={() => copyToClipboard(newKeyData.key)}
+                            className={cn(commonStyles.copyButton, themeStyles.copyButton)}
+                          >
+                            📋
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className={commonStyles.formGroup}>
+                        <label>Secret</label>
+                        <div className={commonStyles.keyWithCopy}>
+                          <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
+                            {newKeyData.secret}
+                          </code>
+                          <button
+                            onClick={() => copyToClipboard(newKeyData.secret)}
+                            className={cn(commonStyles.copyButton, themeStyles.copyButton)}
+                          >
+                            📋
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className={commonStyles.modalFooter}>
+                    <button
+                      className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                      onClick={closeCreateModal}
+                    >
+                      Done
+                    </button>
+                  </div>
+                </>
+              ) : (
+                // Create form
+                <>
+                  <div className={commonStyles.modalHeader}>
+                    <h2>Create API Key</h2>
+                    <button
+                      className={cn(commonStyles.closeButton, themeStyles.closeButton)}
+                      onClick={closeCreateModal}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className={commonStyles.modalBody}>
+                    <div className={commonStyles.formGroup}>
+                      <label>Key Name</label>
+                      <input
+                        type="text"
+                        value={newKey.name}
+                        onChange={(e) => setNewKey({ ...newKey, name: e.target.value })}
+                        className={cn(commonStyles.input, themeStyles.input)}
+                        placeholder="e.g., Production API"
+                      />
+                    </div>
+
+                    <div className={commonStyles.formGroup}>
+                      <label>Expiration</label>
+                      <select
+                        value={newKey.expires_in_days}
+                        onChange={(e) => setNewKey({ ...newKey, expires_in_days: Number(e.target.value) })}
+                        className={cn(commonStyles.select, themeStyles.select)}
+                      >
+                        <option value={30}>30 days</option>
+                        <option value={60}>60 days</option>
+                        <option value={90}>90 days</option>
+                        <option value={180}>180 days</option>
+                        <option value={365}>1 year</option>
+                        <option value={0}>Never expires</option>
+                      </select>
+                    </div>
+
+                    <div className={commonStyles.formGroup}>
+                      <label>Permissions</label>
+                      <div className={commonStyles.permissionsGrid}>
+                        {availablePermissions.map((perm) => (
+                          <label
+                            key={perm.id}
+                            className={cn(
+                              commonStyles.permissionOption,
+                              themeStyles.permissionOption,
+                              newKey.permissions.includes(perm.id) && commonStyles.permissionSelected,
+                              newKey.permissions.includes(perm.id) && themeStyles.permissionSelected
+                            )}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={newKey.permissions.includes(perm.id)}
+                              onChange={() => togglePermission(perm.id)}
+                            />
+                            <div>
+                              <span className={commonStyles.permLabel}>{perm.label}</span>
+                              <span className={cn(commonStyles.permDesc, themeStyles.permDesc)}>
+                                {perm.description}
+                              </span>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className={commonStyles.modalFooter}>
+                    <button
+                      className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
+                      onClick={closeCreateModal}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                      onClick={handleCreateKey}
+                      disabled={!newKey.name.trim() || newKey.permissions.length === 0}
+                    >
+                      Create Key
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         )}
       </div>
-
-      {/* Create Modal */}
-      {showCreateModal && (
-        <div className={cn(commonStyles.modal, themeStyles.modal)}>
-          <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
-            {newKeyData ? (
-              // Show new key (only once)
-              <>
-                <div className={commonStyles.modalHeader}>
-                  <h2>API Key Created</h2>
-                </div>
-                <div className={commonStyles.modalBody}>
-                  <div className={cn(commonStyles.successBanner, themeStyles.successBanner)}>
-                    <span>✅</span>
-                    <p><strong>Important:</strong> Copy your API key now. You won't be able to see it again!</p>
-                  </div>
-
-                  <div className={commonStyles.newKeyDisplay}>
-                    <div className={commonStyles.formGroup}>
-                      <label>API Key</label>
-                      <div className={commonStyles.keyWithCopy}>
-                        <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
-                          {newKeyData.key}
-                        </code>
-                        <button
-                          onClick={() => copyToClipboard(newKeyData.key)}
-                          className={cn(commonStyles.copyButton, themeStyles.copyButton)}
-                        >
-                          📋
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className={commonStyles.formGroup}>
-                      <label>Secret</label>
-                      <div className={commonStyles.keyWithCopy}>
-                        <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
-                          {newKeyData.secret}
-                        </code>
-                        <button
-                          onClick={() => copyToClipboard(newKeyData.secret)}
-                          className={cn(commonStyles.copyButton, themeStyles.copyButton)}
-                        >
-                          📋
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className={commonStyles.modalFooter}>
-                  <button
-                    className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-                    onClick={closeCreateModal}
-                  >
-                    Done
-                  </button>
-                </div>
-              </>
-            ) : (
-              // Create form
-              <>
-                <div className={commonStyles.modalHeader}>
-                  <h2>Create API Key</h2>
-                  <button
-                    className={cn(commonStyles.closeButton, themeStyles.closeButton)}
-                    onClick={closeCreateModal}
-                  >
-                    ✕
-                  </button>
-                </div>
-                <div className={commonStyles.modalBody}>
-                  <div className={commonStyles.formGroup}>
-                    <label>Key Name</label>
-                    <input
-                      type="text"
-                      value={newKey.name}
-                      onChange={(e) => setNewKey({ ...newKey, name: e.target.value })}
-                      className={cn(commonStyles.input, themeStyles.input)}
-                      placeholder="e.g., Production API"
-                    />
-                  </div>
-
-                  <div className={commonStyles.formGroup}>
-                    <label>Expiration</label>
-                    <select
-                      value={newKey.expires_in_days}
-                      onChange={(e) => setNewKey({ ...newKey, expires_in_days: Number(e.target.value) })}
-                      className={cn(commonStyles.select, themeStyles.select)}
-                    >
-                      <option value={30}>30 days</option>
-                      <option value={60}>60 days</option>
-                      <option value={90}>90 days</option>
-                      <option value={180}>180 days</option>
-                      <option value={365}>1 year</option>
-                      <option value={0}>Never expires</option>
-                    </select>
-                  </div>
-
-                  <div className={commonStyles.formGroup}>
-                    <label>Permissions</label>
-                    <div className={commonStyles.permissionsGrid}>
-                      {availablePermissions.map((perm) => (
-                        <label
-                          key={perm.id}
-                          className={cn(
-                            commonStyles.permissionOption,
-                            themeStyles.permissionOption,
-                            newKey.permissions.includes(perm.id) && commonStyles.permissionSelected,
-                            newKey.permissions.includes(perm.id) && themeStyles.permissionSelected
-                          )}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={newKey.permissions.includes(perm.id)}
-                            onChange={() => togglePermission(perm.id)}
-                          />
-                          <div>
-                            <span className={commonStyles.permLabel}>{perm.label}</span>
-                            <span className={cn(commonStyles.permDesc, themeStyles.permDesc)}>
-                              {perm.description}
-                            </span>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className={commonStyles.modalFooter}>
-                  <button
-                    className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
-                    onClick={closeCreateModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-                    onClick={handleCreateKey}
-                    disabled={!newKey.name.trim() || newKey.permissions.length === 0}
-                  >
-                    Create Key
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+    </PageTransition>
   );
 }

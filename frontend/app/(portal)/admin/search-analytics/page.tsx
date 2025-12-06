@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { searchAnalyticsApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Tabs from '@/app/components/Tabs/Tabs';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './SearchAnalytics.common.module.css';
 import lightStyles from './SearchAnalytics.light.module.css';
 import darkStyles from './SearchAnalytics.dark.module.css';
@@ -102,222 +105,228 @@ export default function SearchAnalyticsPage() {
   }
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <header className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>Search Analytics</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Monitor search patterns and optimize discovery
-          </p>
-        </div>
-        <div className={commonStyles.dateFilter}>
-          <select
-            value={dateRange}
-            onChange={e => setDateRange(e.target.value)}
-            className={cn(commonStyles.select, themeStyles.select)}
-          >
-            <option value="1d">Last 24 hours</option>
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-          </select>
-        </div>
-      </header>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <header className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>Search Analytics</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Monitor search patterns and optimize discovery
+              </p>
+            </div>
+            <div className={commonStyles.dateFilter}>
+              <select
+                value={dateRange}
+                onChange={e => setDateRange(e.target.value)}
+                className={cn(commonStyles.select, themeStyles.select)}
+              >
+                <option value="1d">Last 24 hours</option>
+                <option value="7d">Last 7 days</option>
+                <option value="30d">Last 30 days</option>
+                <option value="90d">Last 90 days</option>
+              </select>
+            </div>
+          </header>
+        </ScrollReveal>
 
-      {/* Stats */}
-      {stats && (
-        <div className={commonStyles.statsRow}>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>🔍</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.total_searches.toLocaleString()}</strong>
-              <span>Total Searches</span>
-            </div>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>👤</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.unique_searches.toLocaleString()}</strong>
-              <span>Unique Queries</span>
-            </div>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>📅</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.searches_today}</strong>
-              <span>Today</span>
-            </div>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>📊</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.avg_results.toFixed(1)}</strong>
-              <span>Avg Results</span>
-            </div>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>⚠️</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{(stats.zero_result_rate * 100).toFixed(1)}%</strong>
-              <span>Zero Results</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-
-      <div className={commonStyles.tabContent}>
-        {activeTab === 'overview' && (
-          <div className={commonStyles.overviewGrid}>
-            <div className={cn(commonStyles.card, themeStyles.card)}>
-              <h3>Top Search Terms</h3>
-              <div className={commonStyles.termsList}>
-                {topSearches.slice(0, 5).map((term, i) => (
-                  <div key={i} className={cn(commonStyles.termItem, themeStyles.termItem)}>
-                    <span className={commonStyles.rank}>#{i + 1}</span>
-                    <span className={commonStyles.termText}>{term.term}</span>
-                    <span className={commonStyles.count}>{term.count}</span>
-                  </div>
-                ))}
+        {/* Stats */}
+        {stats && (
+          <StaggerContainer className={commonStyles.statsRow}>
+            <StaggerItem className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>🔍</span>
+              <div className={commonStyles.statInfo}>
+                <strong>{stats.total_searches.toLocaleString()}</strong>
+                <span>Total Searches</span>
               </div>
-            </div>
-
-            <div className={cn(commonStyles.card, themeStyles.card)}>
-              <h3>Trending Now</h3>
-              <div className={commonStyles.termsList}>
-                {trendingSearches.slice(0, 5).map((term, i) => (
-                  <div key={i} className={cn(commonStyles.termItem, themeStyles.termItem)}>
-                    <span className={commonStyles.trendIcon}>{getTrendIcon(term.trend)}</span>
-                    <span className={commonStyles.termText}>{term.term}</span>
-                    <span className={cn(
-                      commonStyles.change,
-                      term.trend === 'up' && commonStyles.up,
-                      term.trend === 'down' && commonStyles.down
-                    )}>
-                      {term.trend === 'up' ? '+' : ''}{((term.count / 100) * 100).toFixed(0)}%
-                    </span>
-                  </div>
-                ))}
+            </StaggerItem>
+            <StaggerItem className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>👤</span>
+              <div className={commonStyles.statInfo}>
+                <strong>{stats.unique_searches.toLocaleString()}</strong>
+                <span>Unique Queries</span>
               </div>
-            </div>
-
-            <div className={cn(commonStyles.card, themeStyles.card)}>
-              <h3>Zero Result Queries</h3>
-              <div className={commonStyles.termsList}>
-                {zeroResults.slice(0, 5).map((query, i) => (
-                  <div key={i} className={cn(commonStyles.termItem, themeStyles.termItem)}>
-                    <span className={commonStyles.warningIcon}>⚠️</span>
-                    <span className={commonStyles.termText}>{query.query}</span>
-                    <span className={commonStyles.count}>{query.count}x</span>
-                  </div>
-                ))}
+            </StaggerItem>
+            <StaggerItem className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>📅</span>
+              <div className={commonStyles.statInfo}>
+                <strong>{stats.searches_today}</strong>
+                <span>Today</span>
               </div>
-            </div>
-          </div>
+            </StaggerItem>
+            <StaggerItem className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>📊</span>
+              <div className={commonStyles.statInfo}>
+                <strong>{stats.avg_results.toFixed(1)}</strong>
+                <span>Avg Results</span>
+              </div>
+            </StaggerItem>
+            <StaggerItem className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <span className={commonStyles.statIcon}>⚠️</span>
+              <div className={commonStyles.statInfo}>
+                <strong>{(stats.zero_result_rate * 100).toFixed(1)}%</strong>
+                <span>Zero Results</span>
+              </div>
+            </StaggerItem>
+          </StaggerContainer>
         )}
 
-        {activeTab === 'top' && (
-          <div className={cn(commonStyles.tableCard, themeStyles.tableCard)}>
-            <table className={commonStyles.table}>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Search Term</th>
-                  <th>Searches</th>
-                  <th>Clicks</th>
-                  <th>CTR</th>
-                  <th>Avg Position</th>
-                  <th>Trend</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topSearches.map((term, i) => (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    <td className={commonStyles.termCell}>{term.term}</td>
-                    <td>{term.count.toLocaleString()}</td>
-                    <td>{term.clicks}</td>
-                    <td>{(term.ctr * 100).toFixed(1)}%</td>
-                    <td>{term.avg_position.toFixed(1)}</td>
-                    <td>{getTrendIcon(term.trend)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <ScrollReveal delay={0.2}>
+          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        </ScrollReveal>
 
-        {activeTab === 'trending' && (
-          <div className={commonStyles.trendingGrid}>
-            {trendingSearches.map((term, i) => (
-              <div key={i} className={cn(commonStyles.trendCard, themeStyles.trendCard)}>
-                <div className={commonStyles.trendHeader}>
-                  <span className={commonStyles.trendRank}>#{i + 1}</span>
-                  <span className={cn(
-                    commonStyles.trendBadge,
-                    term.trend === 'up' && commonStyles.trendUp,
-                    term.trend === 'down' && commonStyles.trendDown
-                  )}>
-                    {getTrendIcon(term.trend)} {term.trend}
-                  </span>
+        <div className={commonStyles.tabContent}>
+          {activeTab === 'overview' && (
+            <StaggerContainer className={commonStyles.overviewGrid}>
+              <StaggerItem className={cn(commonStyles.card, themeStyles.card)}>
+                <h3>Top Search Terms</h3>
+                <div className={commonStyles.termsList}>
+                  {topSearches.slice(0, 5).map((term, i) => (
+                    <div key={i} className={cn(commonStyles.termItem, themeStyles.termItem)}>
+                      <span className={commonStyles.rank}>#{i + 1}</span>
+                      <span className={commonStyles.termText}>{term.term}</span>
+                      <span className={commonStyles.count}>{term.count}</span>
+                    </div>
+                  ))}
                 </div>
-                <h3>{term.term}</h3>
-                <div className={commonStyles.trendStats}>
-                  <div>
-                    <strong>{term.count}</strong>
-                    <span>Searches</span>
-                  </div>
-                  <div>
-                    <strong>{term.clicks}</strong>
-                    <span>Clicks</span>
-                  </div>
-                  <div>
-                    <strong>{(term.ctr * 100).toFixed(1)}%</strong>
-                    <span>CTR</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              </StaggerItem>
 
-        {activeTab === 'zero' && (
-          <div className={commonStyles.zeroSection}>
-            <div className={cn(commonStyles.alertCard, themeStyles.alertCard)}>
-              <h3>⚠️ Attention Required</h3>
-              <p>These queries returned no results. Consider adding relevant content or improving search indexing.</p>
-            </div>
-            
-            <div className={cn(commonStyles.tableCard, themeStyles.tableCard)}>
+              <StaggerItem className={cn(commonStyles.card, themeStyles.card)}>
+                <h3>Trending Now</h3>
+                <div className={commonStyles.termsList}>
+                  {trendingSearches.slice(0, 5).map((term, i) => (
+                    <div key={i} className={cn(commonStyles.termItem, themeStyles.termItem)}>
+                      <span className={commonStyles.trendIcon}>{getTrendIcon(term.trend)}</span>
+                      <span className={commonStyles.termText}>{term.term}</span>
+                      <span className={cn(
+                        commonStyles.change,
+                        term.trend === 'up' && commonStyles.up,
+                        term.trend === 'down' && commonStyles.down
+                      )}>
+                        {term.trend === 'up' ? '+' : ''}{((term.count / 100) * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </StaggerItem>
+
+              <StaggerItem className={cn(commonStyles.card, themeStyles.card)}>
+                <h3>Zero Result Queries</h3>
+                <div className={commonStyles.termsList}>
+                  {zeroResults.slice(0, 5).map((query, i) => (
+                    <div key={i} className={cn(commonStyles.termItem, themeStyles.termItem)}>
+                      <span className={commonStyles.warningIcon}>⚠️</span>
+                      <span className={commonStyles.termText}>{query.query}</span>
+                      <span className={commonStyles.count}>{query.count}x</span>
+                    </div>
+                  ))}
+                </div>
+              </StaggerItem>
+            </StaggerContainer>
+          )}
+
+          {activeTab === 'top' && (
+            <ScrollReveal className={cn(commonStyles.tableCard, themeStyles.tableCard)}>
               <table className={commonStyles.table}>
                 <thead>
                   <tr>
-                    <th>Query</th>
-                    <th>Occurrences</th>
-                    <th>Last Searched</th>
-                    <th>Action</th>
+                    <th>#</th>
+                    <th>Search Term</th>
+                    <th>Searches</th>
+                    <th>Clicks</th>
+                    <th>CTR</th>
+                    <th>Avg Position</th>
+                    <th>Trend</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {zeroResults.map((query, i) => (
+                  {topSearches.map((term, i) => (
                     <tr key={i}>
-                      <td className={commonStyles.termCell}>{query.query}</td>
-                      <td>{query.count}</td>
-                      <td>{formatDate(query.last_searched)}</td>
-                      <td>
-                        <Button variant="ghost" size="sm">
-                          Add Synonym
-                        </Button>
-                      </td>
+                      <td>{i + 1}</td>
+                      <td className={commonStyles.termCell}>{term.term}</td>
+                      <td>{term.count.toLocaleString()}</td>
+                      <td>{term.clicks}</td>
+                      <td>{(term.ctr * 100).toFixed(1)}%</td>
+                      <td>{term.avg_position.toFixed(1)}</td>
+                      <td>{getTrendIcon(term.trend)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          </div>
-        )}
+            </ScrollReveal>
+          )}
+
+          {activeTab === 'trending' && (
+            <StaggerContainer className={commonStyles.trendingGrid}>
+              {trendingSearches.map((term, i) => (
+                <StaggerItem key={i} className={cn(commonStyles.trendCard, themeStyles.trendCard)}>
+                  <div className={commonStyles.trendHeader}>
+                    <span className={commonStyles.trendRank}>#{i + 1}</span>
+                    <span className={cn(
+                      commonStyles.trendBadge,
+                      term.trend === 'up' && commonStyles.trendUp,
+                      term.trend === 'down' && commonStyles.trendDown
+                    )}>
+                      {getTrendIcon(term.trend)} {term.trend}
+                    </span>
+                  </div>
+                  <h3>{term.term}</h3>
+                  <div className={commonStyles.trendStats}>
+                    <div>
+                      <strong>{term.count}</strong>
+                      <span>Searches</span>
+                    </div>
+                    <div>
+                      <strong>{term.clicks}</strong>
+                      <span>Clicks</span>
+                    </div>
+                    <div>
+                      <strong>{(term.ctr * 100).toFixed(1)}%</strong>
+                      <span>CTR</span>
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          )}
+
+          {activeTab === 'zero' && (
+            <ScrollReveal className={commonStyles.zeroSection}>
+              <div className={cn(commonStyles.alertCard, themeStyles.alertCard)}>
+                <h3>⚠️ Attention Required</h3>
+                <p>These queries returned no results. Consider adding relevant content or improving search indexing.</p>
+              </div>
+              
+              <div className={cn(commonStyles.tableCard, themeStyles.tableCard)}>
+                <table className={commonStyles.table}>
+                  <thead>
+                    <tr>
+                      <th>Query</th>
+                      <th>Occurrences</th>
+                      <th>Last Searched</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {zeroResults.map((query, i) => (
+                      <tr key={i}>
+                        <td className={commonStyles.termCell}>{query.query}</td>
+                        <td>{query.count}</td>
+                        <td>{formatDate(query.last_searched)}</td>
+                        <td>
+                          <Button variant="ghost" size="sm">
+                            Add Synonym
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ScrollReveal>
+          )}
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

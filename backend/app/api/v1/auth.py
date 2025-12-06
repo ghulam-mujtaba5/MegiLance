@@ -259,11 +259,11 @@ def login_user(request: Request, credentials: LoginRequest):
     
     If user has 2FA enabled, returns requires_2fa=True and a temporary token.
     """
-    print(f"\n🔐 LOGIN ATTEMPT:")
+    print(f"\n[LOGIN ATTEMPT]:")
     print(f"   Email: {credentials.email}")
     
     user = authenticate_user(None, credentials.email, credentials.password)
-    print(f"   Auth Result: {'✅ SUCCESS' if user else '❌ FAILED'}")
+    print(f"   Auth Result: {'SUCCESS' if user else 'FAILED'}")
     
     if not user:
         print(f"   Reason: User not found or password mismatch")

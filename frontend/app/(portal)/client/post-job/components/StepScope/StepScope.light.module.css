@@ -1,4 +1,4 @@
-/* AI-HINT: Light theme styles for the StepScope component. */
+/* AI-HINT: Light theme styles for the enhanced StepScope component. */
 
 .container {
   background-color: var(--background);
@@ -13,6 +13,43 @@
   color: var(--text-secondary);
 }
 
+.tipButton {
+  background-color: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0369a1;
+}
+
+.tipButton:hover {
+  background-color: #e0f2fe;
+  border-color: #7dd3fc;
+}
+
+.tipsBox {
+  background-color: #fefce8;
+  border-color: #fde047;
+  color: #713f12;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, var(--primary) 0%, #60a5fa 100%);
+}
+
+.suggestionsLabel {
+  color: var(--text-secondary);
+}
+
+.suggestionChip {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.suggestionChip:hover {
+  background-color: #f1f5f9;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
 .help {
-    color: var(--text-tertiary);
+  color: var(--text-tertiary);
 }

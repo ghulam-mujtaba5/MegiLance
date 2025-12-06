@@ -7,6 +7,9 @@ import { useTheme } from 'next-themes';
 
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { cn } from '@/lib/utils';
 import commonStyles from './ReviewsPage.common.module.css';
 import lightStyles from './ReviewsPage.light.module.css';
@@ -127,69 +130,83 @@ const ReviewsPage: React.FC = () => {
   if (!resolvedTheme) return null;
 
   return (
-    <div className={cn(styles.pageWrapper)}>
-      <header className={cn(styles.header)}>
-        <h1>My Reviews</h1>
-        <p>See what clients are saying about your work.</p>
-      </header>
+    <PageTransition>
+      <div className={cn(styles.pageWrapper)}>
+        <ScrollReveal>
+          <header className={cn(styles.header)}>
+            <h1>My Reviews</h1>
+            <p>See what clients are saying about your work.</p>
+          </header>
+        </ScrollReveal>
 
-      {error ? (
-        <div className={cn(styles.errorState)}>
-          <h3>Unable to Load Reviews</h3>
-          <p>{error}</p>
-          <Button variant="primary" onClick={fetchReviews}>Try Again</Button>
-        </div>
-      ) : loading ? (
-        <div className={cn(styles.loadingState)}>
-          <div className={cn(styles.spinner)} />
-          <p>Loading your reviews...</p>
-        </div>
-      ) : (
-        <main className={cn(styles.mainGrid)}>
-          <span className={cn(styles.srOnly)} aria-live="polite">
-            {`Average rating ${averageRating} out of 5 based on ${reviews.length} review${reviews.length === 1 ? '' : 's'}.`}
-          </span>
-          <aside>
-            <div className={cn(styles.summaryCard)} role="region" aria-label="Rating summary" title="Rating summary">
-              <h2>Overall Rating</h2>
-              <div className={cn(styles.summaryRating)}>
-                <span className={cn(styles.summaryRatingScore)}>{averageRating}</span>
-                <StarRating rating={Math.round(parseFloat(averageRating))} styles={styles} />
-              </div>
-              <p className={cn(styles.reviewCount)}>Based on {reviews.length} reviews</p>
+        {error ? (
+          <ScrollReveal>
+            <div className={cn(styles.errorState)}>
+              <h3>Unable to Load Reviews</h3>
+              <p>{error}</p>
+              <Button variant="primary" onClick={fetchReviews}>Try Again</Button>
             </div>
-          </aside>
-
-          <section className={cn(styles.reviewsList)} role="region" aria-label="Client reviews" title="Client reviews">
-            {reviews.length === 0 ? (
-              <div className={cn(styles.emptyState)}>
-                <h3>No Reviews Yet</h3>
-                <p>Complete projects to start receiving client feedback.</p>
-              </div>
-            ) : (
-              reviews.map((review) => (
-                <div key={review.id} className={cn(styles.reviewItem)}>
-                  <div className={cn(styles.reviewItemHeader)}>
-                    <UserAvatar name={review.reviewer_name || `User #${review.reviewer_id}`} />
-                    <div className={cn(styles.reviewItemInfo)}>
-                      <span className={cn(styles.clientName)}>{review.reviewer_name || `Client #${review.reviewer_id}`}</span>
-                      <span className={cn(styles.projectName)}>
-                        {review.project_name ? `for ${review.project_name}` : `Contract #${review.contract_id}`}
-                      </span>
-                    </div>
-                    <div className={cn(styles.reviewItemRating)}>
-                      <StarRating rating={review.rating} styles={styles} />
-                      <span className={cn(styles.date)}>{new Date(review.created_at).toLocaleDateString()}</span>
-                    </div>
+          </ScrollReveal>
+        ) : loading ? (
+          <div className={cn(styles.loadingState)}>
+            <div className={cn(styles.spinner)} />
+            <p>Loading your reviews...</p>
+          </div>
+        ) : (
+          <main className={cn(styles.mainGrid)}>
+            <span className={cn(styles.srOnly)} aria-live="polite">
+              {`Average rating ${averageRating} out of 5 based on ${reviews.length} review${reviews.length === 1 ? '' : 's'}.`}
+            </span>
+            <aside>
+              <ScrollReveal delay={0.1}>
+                <div className={cn(styles.summaryCard)} role="region" aria-label="Rating summary" title="Rating summary">
+                  <h2>Overall Rating</h2>
+                  <div className={cn(styles.summaryRating)}>
+                    <span className={cn(styles.summaryRatingScore)}>{averageRating}</span>
+                    <StarRating rating={Math.round(parseFloat(averageRating))} styles={styles} />
                   </div>
-                  <p className={cn(styles.reviewItemComment)}>{review.review_text}</p>
+                  <p className={cn(styles.reviewCount)}>Based on {reviews.length} reviews</p>
                 </div>
-              ))
-            )}
-          </section>
-        </main>
-      )}
-    </div>
+              </ScrollReveal>
+            </aside>
+
+            <section className={cn(styles.reviewsList)} role="region" aria-label="Client reviews" title="Client reviews">
+              {reviews.length === 0 ? (
+                <ScrollReveal delay={0.2}>
+                  <div className={cn(styles.emptyState)}>
+                    <h3>No Reviews Yet</h3>
+                    <p>Complete projects to start receiving client feedback.</p>
+                  </div>
+                </ScrollReveal>
+              ) : (
+                <StaggerContainer delay={0.2}>
+                  {reviews.map((review) => (
+                    <StaggerItem key={review.id}>
+                      <div className={cn(styles.reviewItem)}>
+                        <div className={cn(styles.reviewItemHeader)}>
+                          <UserAvatar name={review.reviewer_name || `User #${review.reviewer_id}`} />
+                          <div className={cn(styles.reviewItemInfo)}>
+                            <span className={cn(styles.clientName)}>{review.reviewer_name || `Client #${review.reviewer_id}`}</span>
+                            <span className={cn(styles.projectName)}>
+                              {review.project_name ? `for ${review.project_name}` : `Contract #${review.contract_id}`}
+                            </span>
+                          </div>
+                          <div className={cn(styles.reviewItemRating)}>
+                            <StarRating rating={review.rating} styles={styles} />
+                            <span className={cn(styles.date)}>{new Date(review.created_at).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <p className={cn(styles.reviewItemComment)}>{review.review_text}</p>
+                      </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              )}
+            </section>
+          </main>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { auditTrailApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
+import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import commonStyles from './Audit.common.module.css';
 import lightStyles from './Audit.light.module.css';
 import darkStyles from './Audit.dark.module.css';
@@ -141,315 +142,325 @@ export default function AuditTrailPage() {
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <header className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>Audit Trail</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Monitor all system activities and user actions
-          </p>
-        </div>
-        <Button variant="primary" onClick={handleExport}>
-          📤 Export Logs
-        </Button>
-      </header>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <header className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>Audit Trail</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Monitor all system activities and user actions
+              </p>
+            </div>
+            <Button variant="primary" onClick={handleExport}>
+              📤 Export Logs
+            </Button>
+          </header>
+        </ScrollReveal>
 
-      {/* Stats */}
-      {stats && (
-        <div className={commonStyles.statsRow}>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>📊</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.total_logs.toLocaleString()}</strong>
-              <span>Total Logs</span>
+        {/* Stats */}
+        {stats && (
+          <ScrollReveal delay={0.1}>
+            <div className={commonStyles.statsRow}>
+              <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+                <span className={commonStyles.statIcon}>📊</span>
+                <div className={commonStyles.statInfo}>
+                  <strong>{stats.total_logs.toLocaleString()}</strong>
+                  <span>Total Logs</span>
+                </div>
+              </div>
+              <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+                <span className={commonStyles.statIcon}>📅</span>
+                <div className={commonStyles.statInfo}>
+                  <strong>{stats.logs_today}</strong>
+                  <span>Today</span>
+                </div>
+              </div>
+              <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+                <span className={commonStyles.statIcon}>🚨</span>
+                <div className={commonStyles.statInfo}>
+                  <strong>{stats.critical_events}</strong>
+                  <span>Critical</span>
+                </div>
+              </div>
+              <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+                <span className={commonStyles.statIcon}>👥</span>
+                <div className={commonStyles.statInfo}>
+                  <strong>{stats.unique_users}</strong>
+                  <span>Active Users</span>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>📅</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.logs_today}</strong>
-              <span>Today</span>
-            </div>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>🚨</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.critical_events}</strong>
-              <span>Critical</span>
-            </div>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={commonStyles.statIcon}>👥</span>
-            <div className={commonStyles.statInfo}>
-              <strong>{stats.unique_users}</strong>
-              <span>Active Users</span>
-            </div>
-          </div>
-        </div>
-      )}
+          </ScrollReveal>
+        )}
 
-      {/* Filters */}
-      <div className={cn(commonStyles.filtersCard, themeStyles.filtersCard)}>
-        <div className={commonStyles.filtersRow}>
-          <div className={commonStyles.filterGroup}>
-            <label>Severity</label>
-            <select
-              value={filters.severity}
-              onChange={e => { setFilters({ ...filters, severity: e.target.value }); setPage(1); }}
-              className={cn(commonStyles.input, themeStyles.input)}
-            >
-              <option value="">All</option>
-              <option value="info">Info</option>
-              <option value="warning">Warning</option>
-              <option value="critical">Critical</option>
-            </select>
+        {/* Filters */}
+        <ScrollReveal delay={0.2}>
+          <div className={cn(commonStyles.filtersCard, themeStyles.filtersCard)}>
+            <div className={commonStyles.filtersRow}>
+              <div className={commonStyles.filterGroup}>
+                <label>Severity</label>
+                <select
+                  value={filters.severity}
+                  onChange={e => { setFilters({ ...filters, severity: e.target.value }); setPage(1); }}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                >
+                  <option value="">All</option>
+                  <option value="info">Info</option>
+                  <option value="warning">Warning</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+              <div className={commonStyles.filterGroup}>
+                <label>Resource Type</label>
+                <select
+                  value={filters.resource_type}
+                  onChange={e => { setFilters({ ...filters, resource_type: e.target.value }); setPage(1); }}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                >
+                  <option value="">All</option>
+                  <option value="user">User</option>
+                  <option value="project">Project</option>
+                  <option value="contract">Contract</option>
+                  <option value="payment">Payment</option>
+                  <option value="proposal">Proposal</option>
+                  <option value="message">Message</option>
+                </select>
+              </div>
+              <div className={commonStyles.filterGroup}>
+                <label>Date From</label>
+                <input
+                  type="date"
+                  value={filters.date_from}
+                  onChange={e => { setFilters({ ...filters, date_from: e.target.value }); setPage(1); }}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                />
+              </div>
+              <div className={commonStyles.filterGroup}>
+                <label>Date To</label>
+                <input
+                  type="date"
+                  value={filters.date_to}
+                  onChange={e => { setFilters({ ...filters, date_to: e.target.value }); setPage(1); }}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                />
+              </div>
+              <div className={commonStyles.filterGroup}>
+                <label>Search</label>
+                <input
+                  type="text"
+                  value={filters.search}
+                  onChange={e => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
+                  className={cn(commonStyles.input, themeStyles.input)}
+                  placeholder="Search actions, users..."
+                />
+              </div>
+              <Button variant="secondary" size="sm" onClick={clearFilters}>
+                Clear
+              </Button>
+            </div>
           </div>
-          <div className={commonStyles.filterGroup}>
-            <label>Resource Type</label>
-            <select
-              value={filters.resource_type}
-              onChange={e => { setFilters({ ...filters, resource_type: e.target.value }); setPage(1); }}
-              className={cn(commonStyles.input, themeStyles.input)}
-            >
-              <option value="">All</option>
-              <option value="user">User</option>
-              <option value="project">Project</option>
-              <option value="contract">Contract</option>
-              <option value="payment">Payment</option>
-              <option value="proposal">Proposal</option>
-              <option value="message">Message</option>
-            </select>
-          </div>
-          <div className={commonStyles.filterGroup}>
-            <label>Date From</label>
-            <input
-              type="date"
-              value={filters.date_from}
-              onChange={e => { setFilters({ ...filters, date_from: e.target.value }); setPage(1); }}
-              className={cn(commonStyles.input, themeStyles.input)}
-            />
-          </div>
-          <div className={commonStyles.filterGroup}>
-            <label>Date To</label>
-            <input
-              type="date"
-              value={filters.date_to}
-              onChange={e => { setFilters({ ...filters, date_to: e.target.value }); setPage(1); }}
-              className={cn(commonStyles.input, themeStyles.input)}
-            />
-          </div>
-          <div className={commonStyles.filterGroup}>
-            <label>Search</label>
-            <input
-              type="text"
-              value={filters.search}
-              onChange={e => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
-              className={cn(commonStyles.input, themeStyles.input)}
-              placeholder="Search actions, users..."
-            />
-          </div>
-          <Button variant="secondary" size="sm" onClick={clearFilters}>
-            Clear
-          </Button>
-        </div>
-      </div>
+        </ScrollReveal>
 
-      {/* Logs Table */}
-      <div className={cn(commonStyles.logsCard, themeStyles.logsCard)}>
-        {loading ? (
-          <div className={commonStyles.loading}>Loading logs...</div>
-        ) : logs.length === 0 ? (
-          <div className={commonStyles.emptyState}>
-            <span>📭</span>
-            <p>No audit logs found matching your filters.</p>
-          </div>
-        ) : (
-          <>
-            <table className={commonStyles.logsTable}>
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Severity</th>
-                  <th>User</th>
-                  <th>Action</th>
-                  <th>Resource</th>
-                  <th>IP Address</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map(log => {
-                  const severity = SEVERITY_CONFIG[log.severity];
-                  return (
-                    <tr key={log.id} className={cn(themeStyles.logRow)}>
-                      <td className={commonStyles.timeCell}>
-                        {formatDate(log.created_at)}
-                      </td>
-                      <td>
-                        <span
-                          className={commonStyles.severityBadge}
-                          style={{ backgroundColor: severity.color }}
-                        >
-                          {severity.icon} {severity.label}
-                        </span>
-                      </td>
-                      <td>
-                        <div className={commonStyles.userCell}>
-                          <strong>{log.user_email}</strong>
-                          <span className={commonStyles.userRole}>{log.user_role}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span className={commonStyles.actionCell}>
-                          {getActionIcon(log.action)} {log.action}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={cn(commonStyles.resourceBadge, themeStyles.resourceBadge)}>
-                          {log.resource_type}
-                        </span>
-                        {log.resource_id && (
-                          <span className={commonStyles.resourceId}>#{log.resource_id.slice(-8)}</span>
-                        )}
-                      </td>
-                      <td className={commonStyles.ipCell}>{log.ip_address}</td>
-                      <td>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedLog(log)}
-                        >
-                          Details
-                        </Button>
-                      </td>
+        {/* Logs Table */}
+        <ScrollReveal delay={0.3}>
+          <div className={cn(commonStyles.logsCard, themeStyles.logsCard)}>
+            {loading ? (
+              <div className={commonStyles.loading}>Loading logs...</div>
+            ) : logs.length === 0 ? (
+              <div className={commonStyles.emptyState}>
+                <span>📭</span>
+                <p>No audit logs found matching your filters.</p>
+              </div>
+            ) : (
+              <>
+                <table className={commonStyles.logsTable}>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Severity</th>
+                      <th>User</th>
+                      <th>Action</th>
+                      <th>Resource</th>
+                      <th>IP Address</th>
+                      <th></th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {logs.map(log => {
+                      const severity = SEVERITY_CONFIG[log.severity];
+                      return (
+                        <tr key={log.id} className={cn(themeStyles.logRow)}>
+                          <td className={commonStyles.timeCell}>
+                            {formatDate(log.created_at)}
+                          </td>
+                          <td>
+                            <span
+                              className={commonStyles.severityBadge}
+                              style={{ backgroundColor: severity.color }}
+                            >
+                              {severity.icon} {severity.label}
+                            </span>
+                          </td>
+                          <td>
+                            <div className={commonStyles.userCell}>
+                              <strong>{log.user_email}</strong>
+                              <span className={commonStyles.userRole}>{log.user_role}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span className={commonStyles.actionCell}>
+                              {getActionIcon(log.action)} {log.action}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={cn(commonStyles.resourceBadge, themeStyles.resourceBadge)}>
+                              {log.resource_type}
+                            </span>
+                            {log.resource_id && (
+                              <span className={commonStyles.resourceId}>#{log.resource_id.slice(-8)}</span>
+                            )}
+                          </td>
+                          <td className={commonStyles.ipCell}>{log.ip_address}</td>
+                          <td>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedLog(log)}
+                            >
+                              Details
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
 
-            {/* Pagination */}
-            <div className={commonStyles.pagination}>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                ← Previous
-              </Button>
-              <span className={commonStyles.pageInfo}>
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                Next →
-              </Button>
+                {/* Pagination */}
+                <div className={commonStyles.pagination}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                  >
+                    ← Previous
+                  </Button>
+                  <span className={commonStyles.pageInfo}>
+                    Page {page} of {totalPages}
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                  >
+                    Next →
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </ScrollReveal>
+
+        {/* Detail Modal */}
+        {selectedLog && (
+          <div className={commonStyles.modalOverlay} onClick={() => setSelectedLog(null)}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={e => e.stopPropagation()}>
+              <h2>Audit Log Details</h2>
+              
+              <div className={commonStyles.detailSection}>
+                <h3>Basic Info</h3>
+                <div className={commonStyles.detailGrid}>
+                  <div>
+                    <label>Log ID</label>
+                    <span>{selectedLog.id}</span>
+                  </div>
+                  <div>
+                    <label>Timestamp</label>
+                    <span>{new Date(selectedLog.created_at).toLocaleString()}</span>
+                  </div>
+                  <div>
+                    <label>Severity</label>
+                    <span
+                      className={commonStyles.severityBadge}
+                      style={{ backgroundColor: SEVERITY_CONFIG[selectedLog.severity].color }}
+                    >
+                      {SEVERITY_CONFIG[selectedLog.severity].icon} {SEVERITY_CONFIG[selectedLog.severity].label}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={commonStyles.detailSection}>
+                <h3>User Info</h3>
+                <div className={commonStyles.detailGrid}>
+                  <div>
+                    <label>User ID</label>
+                    <span>{selectedLog.user_id}</span>
+                  </div>
+                  <div>
+                    <label>Email</label>
+                    <span>{selectedLog.user_email}</span>
+                  </div>
+                  <div>
+                    <label>Role</label>
+                    <span>{selectedLog.user_role}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={commonStyles.detailSection}>
+                <h3>Action Details</h3>
+                <div className={commonStyles.detailGrid}>
+                  <div>
+                    <label>Action</label>
+                    <span>{selectedLog.action}</span>
+                  </div>
+                  <div>
+                    <label>Resource Type</label>
+                    <span>{selectedLog.resource_type}</span>
+                  </div>
+                  <div>
+                    <label>Resource ID</label>
+                    <span>{selectedLog.resource_id || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={commonStyles.detailSection}>
+                <h3>Request Info</h3>
+                <div className={commonStyles.detailGrid}>
+                  <div>
+                    <label>IP Address</label>
+                    <span>{selectedLog.ip_address}</span>
+                  </div>
+                  <div className={commonStyles.fullWidth}>
+                    <label>User Agent</label>
+                    <span className={commonStyles.userAgent}>{selectedLog.user_agent}</span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedLog.details && Object.keys(selectedLog.details).length > 0 && (
+                <div className={commonStyles.detailSection}>
+                  <h3>Additional Details</h3>
+                  <pre className={cn(commonStyles.jsonBlock, themeStyles.jsonBlock)}>
+                    {JSON.stringify(selectedLog.details, null, 2)}
+                  </pre>
+                </div>
+              )}
+
+              <div className={commonStyles.modalActions}>
+                <Button variant="secondary" onClick={() => setSelectedLog(null)}>
+                  Close
+                </Button>
+              </div>
             </div>
-          </>
+          </div>
         )}
       </div>
-
-      {/* Detail Modal */}
-      {selectedLog && (
-        <div className={commonStyles.modalOverlay} onClick={() => setSelectedLog(null)}>
-          <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={e => e.stopPropagation()}>
-            <h2>Audit Log Details</h2>
-            
-            <div className={commonStyles.detailSection}>
-              <h3>Basic Info</h3>
-              <div className={commonStyles.detailGrid}>
-                <div>
-                  <label>Log ID</label>
-                  <span>{selectedLog.id}</span>
-                </div>
-                <div>
-                  <label>Timestamp</label>
-                  <span>{new Date(selectedLog.created_at).toLocaleString()}</span>
-                </div>
-                <div>
-                  <label>Severity</label>
-                  <span
-                    className={commonStyles.severityBadge}
-                    style={{ backgroundColor: SEVERITY_CONFIG[selectedLog.severity].color }}
-                  >
-                    {SEVERITY_CONFIG[selectedLog.severity].icon} {SEVERITY_CONFIG[selectedLog.severity].label}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className={commonStyles.detailSection}>
-              <h3>User Info</h3>
-              <div className={commonStyles.detailGrid}>
-                <div>
-                  <label>User ID</label>
-                  <span>{selectedLog.user_id}</span>
-                </div>
-                <div>
-                  <label>Email</label>
-                  <span>{selectedLog.user_email}</span>
-                </div>
-                <div>
-                  <label>Role</label>
-                  <span>{selectedLog.user_role}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={commonStyles.detailSection}>
-              <h3>Action Details</h3>
-              <div className={commonStyles.detailGrid}>
-                <div>
-                  <label>Action</label>
-                  <span>{selectedLog.action}</span>
-                </div>
-                <div>
-                  <label>Resource Type</label>
-                  <span>{selectedLog.resource_type}</span>
-                </div>
-                <div>
-                  <label>Resource ID</label>
-                  <span>{selectedLog.resource_id || 'N/A'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={commonStyles.detailSection}>
-              <h3>Request Info</h3>
-              <div className={commonStyles.detailGrid}>
-                <div>
-                  <label>IP Address</label>
-                  <span>{selectedLog.ip_address}</span>
-                </div>
-                <div className={commonStyles.fullWidth}>
-                  <label>User Agent</label>
-                  <span className={commonStyles.userAgent}>{selectedLog.user_agent}</span>
-                </div>
-              </div>
-            </div>
-
-            {selectedLog.details && Object.keys(selectedLog.details).length > 0 && (
-              <div className={commonStyles.detailSection}>
-                <h3>Additional Details</h3>
-                <pre className={cn(commonStyles.jsonBlock, themeStyles.jsonBlock)}>
-                  {JSON.stringify(selectedLog.details, null, 2)}
-                </pre>
-              </div>
-            )}
-
-            <div className={commonStyles.modalActions}>
-              <Button variant="secondary" onClick={() => setSelectedLog(null)}>
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </PageTransition>
   );
 }

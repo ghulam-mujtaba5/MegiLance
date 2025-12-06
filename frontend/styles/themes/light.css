@@ -2,24 +2,24 @@
 
 :root {
   /* Brand & Accent Colors */
-  --primary-4573df: #4573df;
-  --accent-ff9800: #ff9800;
+  --primary-4573df: var(--ml-blue);
+  --accent-ff9800: var(--ml-orange);
 
   /* Semantic Colors */
-  --success-27AE60: #27AE60;
-  --error-e81123: #e81123;
-  --warning-f2c94c: #F2C94C;
+  --success-27AE60: var(--ml-green);
+  --error-e81123: var(--ml-red);
+  --warning-f2c94c: var(--ml-yellow);
 
   /* UI Surfaces & Backgrounds */
   --background-ffffff: #ffffff;
-  --surface-f5f7fa: #f5f7fa; /* For cards, forms, light containers */
-  --surface-alt-f4f6f8: #F4F6F8; /* A slightly different gray for variation */
-  --container-dark-2c323a: #2c323a; /* For dark elements in light mode, e.g., modals */
-  --border-e0e0e0: #e0e0e0; /* A light border color */
+  --surface-f5f7fa: var(--neutral-50); /* For cards, forms, light containers */
+  --surface-alt-f4f6f8: var(--neutral-100); /* A slightly different gray for variation */
+  --container-dark-2c323a: var(--neutral-800); /* For dark elements in light mode, e.g., modals */
+  --border-e0e0e0: var(--neutral-200); /* A light border color */
 
   /* Text Colors */
-  --text-primary-23272f: #23272f;
-  --text-secondary-333333: #333333;
+  --text-primary-23272f: var(--neutral-900);
+  --text-secondary-333333: var(--neutral-600);
   --text-on-primary-ffffff: #ffffff;
   --text-on-accent-ffffff: #ffffff;
   --text-on-dark-ffffff: #ffffff;

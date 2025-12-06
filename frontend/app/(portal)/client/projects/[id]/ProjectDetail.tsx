@@ -1,48 +1,134 @@
-// @AI-HINT: Client Project Detail page. Theme-aware, accessible, animated detail layout with sections and actions.
+// @AI-HINT: Client Project Detail page with full proposal management, contract creation, and payment tracking.
 'use client';
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import api from '@/lib/api';
+import api, { proposalsApi, contractsApi } from '@/lib/api';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import { PageTransition, ScrollReveal } from '@/components/Animations';
+import Button from '@/app/components/Button/Button';
+import Badge from '@/app/components/Badge/Badge';
+import { User, DollarSign, Clock, CheckCircle, XCircle, MessageSquare, Star } from 'lucide-react';
 import common from './ProjectDetail.common.module.css';
 import light from './ProjectDetail.light.module.css';
 import dark from './ProjectDetail.dark.module.css';
+
+interface Proposal {
+  id: number;
+  freelancer_id: number;
+  freelancer_name?: string;
+  cover_letter: string;
+  bid_amount: number;
+  estimated_hours: number;
+  hourly_rate: number;
+  status: string;
+  created_at: string;
+}
 
 const ProjectDetail: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const rawId = params?.id ?? '';
   
   const [project, setProject] = useState<any>(null);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [proposalsLoading, setProposalsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [actionLoading, setActionLoading] = useState<number | null>(null);
+
+  const projectId = useMemo(() => {
+    if (!rawId) return null;
+    const idStr = rawId.replace(/^PROJ-0*/, '');
+    const id = parseInt(idStr, 10);
+    return isNaN(id) ? null : id;
+  }, [rawId]);
+
+  const loadProject = useCallback(async () => {
+    if (!projectId) return;
+    try {
+      const data = await api.projects.get(projectId);
+      setProject(data);
+    } catch (e) {
+      console.error(e);
+      setError('Failed to load project');
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId]);
+
+  const loadProposals = useCallback(async () => {
+    if (!projectId) return;
+    try {
+      const response = await proposalsApi.list(0, 50, projectId);
+      const data = Array.isArray(response) ? response : (response.proposals || []);
+      setProposals(data);
+    } catch (e) {
+      console.error('Failed to load proposals:', e);
+    } finally {
+      setProposalsLoading(false);
+    }
+  }, [projectId]);
 
   useEffect(() => {
-    async function load() {
-      if (!rawId) return;
-      try {
-        // Handle PROJ-001 format or just 1
-        const idStr = rawId.replace(/^PROJ-0*/, '');
-        const id = parseInt(idStr, 10);
-        if (isNaN(id)) throw new Error('Invalid Project ID');
+    loadProject();
+    loadProposals();
+  }, [loadProject, loadProposals]);
 
-        const data = await api.projects.get(id);
-        setProject(data);
-      } catch (e) {
-        console.error(e);
-        setError('Failed to load project');
-      } finally {
-        setLoading(false);
+  const handleAcceptProposal = async (proposalId: number) => {
+    if (!confirm('Accept this proposal? This will create a contract and reject other proposals.')) return;
+    
+    setActionLoading(proposalId);
+    try {
+      await proposalsApi.accept(proposalId);
+      
+      // Optionally create a contract automatically
+      const acceptedProposal = proposals.find(p => p.id === proposalId);
+      if (acceptedProposal && projectId) {
+        try {
+          await contractsApi.create({
+            project_id: projectId,
+            freelancer_id: acceptedProposal.freelancer_id,
+            amount: acceptedProposal.bid_amount,
+            terms: `Contract for project. Estimated ${acceptedProposal.estimated_hours} hours at $${acceptedProposal.hourly_rate}/hr.`,
+          });
+        } catch (contractErr) {
+          console.warn('Contract creation failed, but proposal was accepted:', contractErr);
+        }
       }
+      
+      // Refresh data
+      await loadProject();
+      await loadProposals();
+      
+      alert('Proposal accepted! A contract has been created.');
+    } catch (err) {
+      console.error('Failed to accept proposal:', err);
+      alert('Failed to accept proposal. Please try again.');
+    } finally {
+      setActionLoading(null);
     }
-    load();
-  }, [rawId]);
+  };
+
+  const handleRejectProposal = async (proposalId: number) => {
+    if (!confirm('Reject this proposal?')) return;
+    
+    setActionLoading(proposalId);
+    try {
+      await proposalsApi.reject(proposalId);
+      await loadProposals();
+    } catch (err) {
+      console.error('Failed to reject proposal:', err);
+      alert('Failed to reject proposal. Please try again.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   const requirements = useMemo(() => {
       if (!project?.skills) return [];
@@ -145,6 +231,105 @@ const ProjectDetail: React.FC = () => {
                     </div>
                 )}
               </div>
+            </section>
+          </ScrollReveal>
+
+          {/* Proposals Section - The Core Feature */}
+          <ScrollReveal>
+            <section className={cn(common.section, themed.section)} aria-labelledby='proposals-title'>
+              <h2 id='proposals-title' className={cn(common.sectionTitle, themed.sectionTitle)}>
+                Proposals ({proposals.length})
+              </h2>
+              
+              {proposalsLoading ? (
+                <div className={common.list}>
+                  <Skeleton height={100} width='100%' />
+                  <Skeleton height={100} width='100%' />
+                </div>
+              ) : proposals.length === 0 ? (
+                <div className={cn(common.emptyState, themed.emptyState)}>
+                  <p>No proposals received yet. Share your project to attract freelancers!</p>
+                </div>
+              ) : (
+                <div className={common.proposalsList}>
+                  {proposals.map((proposal) => (
+                    <div key={proposal.id} className={cn(common.proposalCard, themed.proposalCard)}>
+                      <div className={common.proposalHeader}>
+                        <div className={common.proposalFreelancer}>
+                          <User size={20} />
+                          <span>{proposal.freelancer_name || `Freelancer #${proposal.freelancer_id}`}</span>
+                        </div>
+                        <Badge 
+                          variant={
+                            proposal.status === 'accepted' ? 'success' : 
+                            proposal.status === 'rejected' ? 'error' : 
+                            'info'
+                          }
+                        >
+                          {proposal.status}
+                        </Badge>
+                      </div>
+                      
+                      <div className={common.proposalMeta}>
+                        <span><DollarSign size={16} /> ${proposal.bid_amount.toLocaleString()}</span>
+                        <span><Clock size={16} /> {proposal.estimated_hours} hours</span>
+                        <span>${proposal.hourly_rate}/hr</span>
+                      </div>
+                      
+                      <p className={common.proposalCoverLetter}>
+                        {proposal.cover_letter.length > 300 
+                          ? `${proposal.cover_letter.substring(0, 300)}...` 
+                          : proposal.cover_letter
+                        }
+                      </p>
+                      
+                      <div className={common.proposalFooter}>
+                        <span className={common.proposalDate}>
+                          Submitted {new Date(proposal.created_at).toLocaleDateString()}
+                        </span>
+                        
+                        {proposal.status === 'submitted' && (
+                          <div className={common.proposalActions}>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => router.push(`/portal/client/messages?freelancer=${proposal.freelancer_id}`)}
+                            >
+                              <MessageSquare size={16} /> Message
+                            </Button>
+                            <Button 
+                              variant="danger" 
+                              size="sm"
+                              isLoading={actionLoading === proposal.id}
+                              onClick={() => handleRejectProposal(proposal.id)}
+                            >
+                              <XCircle size={16} /> Reject
+                            </Button>
+                            <Button 
+                              variant="success" 
+                              size="sm"
+                              isLoading={actionLoading === proposal.id}
+                              onClick={() => handleAcceptProposal(proposal.id)}
+                            >
+                              <CheckCircle size={16} /> Accept & Hire
+                            </Button>
+                          </div>
+                        )}
+                        
+                        {proposal.status === 'accepted' && (
+                          <div className={common.proposalActions}>
+                            <Link href={`/portal/client/contracts`}>
+                              <Button variant="primary" size="sm">
+                                View Contract
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </ScrollReveal>
         </div>

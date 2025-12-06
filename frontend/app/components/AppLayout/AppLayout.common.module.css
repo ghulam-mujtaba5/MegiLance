@@ -41,6 +41,8 @@
   flex-grow: 1;
   padding: 1.5rem 2rem;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Handle collapsed sidebar */

@@ -1,9 +1,6 @@
 // @AI-HINT: Client Payments history. Theme-aware, accessible filters, KPI summary, and animated payments table.
 'use client';
 
-// @AI-HINT: This is the modernized client payments page, using PaymentCard, DashboardWidget, and custom controls for a premium, data-rich experience.
-'use client';
-
 import React, { useState, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -18,6 +15,9 @@ import Button from '@/app/components/Button/Button';
 import Pagination from '@/app/components/Pagination/Pagination';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import Trend from '@/app/components/Trend/Trend';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import common from './Payments.common.module.css';
 import light from './Payments.light.module.css';
@@ -40,7 +40,7 @@ const transformPaymentData = (payments: any[]): PaymentCardProps[] => {
 
 const STATUS_OPTIONS = [
   { value: 'All', label: 'All Statuses' },
-  { value: 'Paid', label: 'Paid' },
+  { value: 'Completed', label: 'Completed' },
   { value: 'Pending', label: 'Pending' },
   { value: 'Failed', label: 'Failed' },
 ];
@@ -92,7 +92,7 @@ const Payments: React.FC = () => {
   
   const kpis = useMemo(() => {
       const totalPaid = payments
-        .filter(p => p.status === 'Paid')
+        .filter(p => p.status === 'Paid' || p.status === 'Completed')
         .reduce((sum, p) => sum + p.amount, 0);
       const totalPending = payments
         .filter(p => p.status === 'Pending')
@@ -105,64 +105,76 @@ const Payments: React.FC = () => {
   }
 
   return (
-    <div className={cn(common.page, themed.theme)}>
-      <header className={common.header}>
-        <div>
-          <h1 className={common.title}>Payments</h1>
-          <p className={common.subtitle}>Review your transaction history and manage payments.</p>
-        </div>
-        <div className={common.actions}>
-          <Button variant="secondary" iconBefore={<Download size={16} />}>Export CSV</Button>
-        </div>
-      </header>
+    <PageTransition>
+      <div className={cn(common.page, themed.theme)}>
+        <ScrollReveal>
+          <header className={common.header}>
+            <div>
+              <h1 className={common.title}>Payments</h1>
+              <p className={common.subtitle}>Review your transaction history and manage payments.</p>
+            </div>
+            <div className={common.actions}>
+              <Button variant="secondary" iconBefore={<Download size={16} />}>Export CSV</Button>
+            </div>
+          </header>
+        </ScrollReveal>
 
-      <section className={common.kpiGrid}>
-        <DashboardWidget icon={DollarSign} title="Total Paid" value={`$${kpis.totalPaid.toLocaleString()}`} trend={<Trend direction="up" value="+5.2%" />} />
-        <DashboardWidget icon={TrendingUp} title="Avg. Payment" value={`$${(kpis.totalPaid / (payments.length || 1)).toFixed(2)}`} />
-        <DashboardWidget icon={TrendingDown} title="Pending" value={`$${kpis.totalPending.toLocaleString()}`} trend={<Trend direction="down" value="-1.8%" />} />
-      </section>
+        <ScrollReveal delay={0.1}>
+          <section className={common.kpiGrid}>
+            <DashboardWidget icon={DollarSign} title="Total Paid" value={`$${kpis.totalPaid.toLocaleString()}`} trend={<Trend direction="up" value="+5.2%" />} />
+            <DashboardWidget icon={TrendingUp} title="Avg. Payment" value={`$${(kpis.totalPaid / (payments.length || 1)).toFixed(2)}`} />
+            <DashboardWidget icon={TrendingDown} title="Pending" value={`$${kpis.totalPending.toLocaleString()}`} trend={<Trend direction="down" value="-1.8%" />} />
+          </section>
+        </ScrollReveal>
 
-      <div className={common.controls}>
-        <Input
-          id="payment-search"
-          iconBefore={<Search size={18} />}
-          placeholder="Search by project or freelancer..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className={common.searchInput}
-        />
-        <div className={common.filters}>
-          <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
-          <Select id="sort-key" options={SORT_OPTIONS} value={sortKey} onChange={(e) => setSortKey(e.target.value)} />
-        </div>
-      </div>
+        <ScrollReveal delay={0.2}>
+          <div className={common.controls}>
+            <Input
+              id="payment-search"
+              iconBefore={<Search size={18} />}
+              placeholder="Search by project or freelancer..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={common.searchInput}
+            />
+            <div className={common.filters}>
+              <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
+              <Select id="sort-key" options={SORT_OPTIONS} value={sortKey} onChange={(e) => setSortKey(e.target.value)} />
+            </div>
+          </div>
+        </ScrollReveal>
 
-      {loading ? (
-        <div className={common.grid}>
-          {Array.from({ length: itemsPerPage }).map((_, i) => <div key={i} className={common.skeletonCard} />)}
-        </div>
-      ) : paginatedPayments.length > 0 ? (
-        <main className={common.grid}>
-          {paginatedPayments.map(payment => <PaymentCard key={payment.id} {...payment} />)}
-        </main>
-      ) : (
-        <EmptyState
-          title="No Payments Found"
-          description="It looks like there are no payments matching your criteria. Try adjusting your filters."
-          icon={<SearchX size={48} />}
-        />
-      )}
-
-      {paginatedPayments.length > 0 && (
-        <div className={common.paginationContainer}>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(sortedPayments.length / itemsPerPage)}
-            onPageChange={setCurrentPage}
+        {loading ? (
+          <div className={common.grid}>
+            {Array.from({ length: itemsPerPage }).map((_, i) => <div key={i} className={common.skeletonCard} />)}
+          </div>
+        ) : paginatedPayments.length > 0 ? (
+          <StaggerContainer className={common.grid}>
+            {paginatedPayments.map(payment => (
+              <StaggerItem key={payment.id}>
+                <PaymentCard {...payment} />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        ) : (
+          <EmptyState
+            title="No Payments Found"
+            description="It looks like there are no payments matching your criteria. Try adjusting your filters."
+            icon={<SearchX size={48} />}
           />
-        </div>
-      )}
-    </div>
+        )}
+
+        {paginatedPayments.length > 0 && (
+          <div className={common.paginationContainer}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(sortedPayments.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

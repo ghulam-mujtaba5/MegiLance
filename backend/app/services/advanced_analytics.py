@@ -45,18 +45,15 @@ class AdvancedAnalyticsService:
         include_confidence: bool = True
     ) -> Dict[str, Any]:
         """
-        Generate revenue forecast using time series analysis.
-        
-        Uses historical data patterns to predict future revenue.
+        Generate revenue forecast using Linear Regression on historical data.
         """
         try:
             from app.models.payment import Payment
             
-            # Get historical revenue data
+            # Get historical revenue data (12 months)
             end_date = datetime.utcnow()
-            start_date = end_date - timedelta(days=365)  # 1 year of data
+            start_date = end_date - timedelta(days=365)
             
-            # Query monthly revenue
             payments = self.db.query(Payment).filter(
                 Payment.created_at >= start_date,
                 Payment.status == "completed"
@@ -68,48 +65,92 @@ class AdvancedAnalyticsService:
                 month_key = payment.created_at.strftime("%Y-%m")
                 monthly_revenue[month_key] += float(payment.amount or 0)
             
-            # Generate historical series
+            # Prepare data for regression
+            # X = month index (0, 1, 2...), y = revenue
+            sorted_months = sorted(monthly_revenue.keys())
+            
+            # Fill gaps with 0
+            X = []
+            y = []
             historical = []
-            current = start_date
-            while current <= end_date:
-                month_key = current.strftime("%Y-%m")
-                historical.append({
-                    "month": month_key,
-                    "revenue": monthly_revenue.get(month_key, 0)
-                })
-                current = current.replace(day=1) + timedelta(days=32)
-                current = current.replace(day=1)
             
-            # Simple forecasting model (in production, use Prophet, ARIMA, or LSTM)
-            # Calculate trend and seasonality
-            revenues = [h["revenue"] for h in historical if h["revenue"] > 0]
-            if not revenues:
-                revenues = [1000]  # Default if no data
+            if sorted_months:
+                # Find range
+                first_month_str = sorted_months[0]
+                first_month = datetime.strptime(first_month_str, "%Y-%m")
+                last_month = datetime.strptime(sorted_months[-1], "%Y-%m")
+                
+                current = first_month
+                idx = 0
+                while current <= last_month:
+                    m_key = current.strftime("%Y-%m")
+                    rev = monthly_revenue.get(m_key, 0.0)
+                    X.append(idx)
+                    y.append(rev)
+                    historical.append({"month": m_key, "revenue": rev})
+                    
+                    # Next month
+                    if current.month == 12:
+                        current = current.replace(year=current.year + 1, month=1)
+                    else:
+                        current = current.replace(month=current.month + 1)
+                    idx += 1
+            else:
+                X = [0]
+                y = [0.0]
+                historical = [{"month": end_date.strftime("%Y-%m"), "revenue": 0.0}]
+
+            # Linear Regression
+            n = len(X)
+            slope = 0
+            intercept = 0
+            mean_x = 0
+            denominator = 0
             
-            avg_revenue = sum(revenues) / len(revenues)
-            growth_rate = 0.05  # 5% monthly growth assumption
-            
-            # Generate forecast
+            if n > 1:
+                mean_x = sum(X) / n
+                mean_y = sum(y) / n
+                numerator = sum((X[i] - mean_x) * (y[i] - mean_y) for i in range(n))
+                denominator = sum((X[i] - mean_x) ** 2 for i in range(n))
+                
+                if denominator != 0:
+                    slope = numerator / denominator
+                intercept = mean_y - (slope * mean_x)
+            elif n == 1:
+                intercept = y[0]
+
+            # Generate Forecast
             forecast = []
-            last_revenue = revenues[-1] if revenues else avg_revenue
+            last_idx = X[-1] if X else 0
             
             for i in range(1, months_ahead + 1):
+                future_idx = last_idx + i
+                predicted = (slope * future_idx) + intercept
+                predicted = max(0, predicted) # No negative revenue
+                
                 future_date = end_date + timedelta(days=30 * i)
                 month_key = future_date.strftime("%Y-%m")
                 
-                # Apply growth with seasonality
-                seasonal_factor = 1 + 0.1 * math.sin(2 * math.pi * i / 12)  # Annual cycle
-                predicted = last_revenue * ((1 + growth_rate) ** i) * seasonal_factor
-                
-                # Confidence interval (wider for further predictions)
-                confidence_width = 0.1 + 0.05 * i  # Increases over time
-                
+                # Confidence interval based on variance
+                confidence_width = 0
+                if include_confidence:
+                    if n > 2 and denominator > 0:
+                        # Standard Error of Estimate
+                        sse = sum((y[i] - ((slope * X[i]) + intercept)) ** 2 for i in range(n))
+                        see = math.sqrt(sse / (n - 2))
+                        
+                        # Prediction Interval
+                        # 1.96 for 95% confidence
+                        confidence_width = 1.96 * see * math.sqrt(1 + (1/n) + ((future_idx - mean_x)**2 / denominator))
+                    else:
+                        confidence_width = predicted * 0.2 # Fallback 20% margin
+
                 forecast.append({
                     "month": month_key,
                     "predicted_revenue": round(predicted, 2),
-                    "confidence_low": round(predicted * (1 - confidence_width), 2) if include_confidence else None,
-                    "confidence_high": round(predicted * (1 + confidence_width), 2) if include_confidence else None,
-                    "confidence_level": round(0.95 - 0.05 * i, 2) if include_confidence else None
+                    "confidence_low": round(max(0, predicted - confidence_width), 2) if include_confidence else None,
+                    "confidence_high": round(predicted + confidence_width, 2) if include_confidence else None,
+                    "confidence_level": 0.95 if include_confidence else None
                 })
             
             # Calculate summary metrics
@@ -122,11 +163,11 @@ class AdvancedAnalyticsService:
                 "summary": {
                     "total_forecasted_revenue": round(total_forecast, 2),
                     "average_monthly": round(avg_monthly, 2),
-                    "growth_rate": round(growth_rate * 100, 1),
-                    "trend": "growing" if growth_rate > 0 else "declining"
+                    "growth_rate": round(slope, 2), # Slope represents monthly growth in currency units
+                    "trend": "growing" if slope > 0 else "declining" if slope < 0 else "stable"
                 },
                 "model_info": {
-                    "type": "trend_seasonal",
+                    "type": "linear_regression",
                     "last_updated": datetime.utcnow().isoformat()
                 }
             }

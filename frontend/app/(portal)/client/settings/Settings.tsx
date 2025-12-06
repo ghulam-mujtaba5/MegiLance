@@ -13,6 +13,9 @@ import Textarea from '@/app/components/Textarea/Textarea';
 import Select from '@/app/components/Select/Select';
 import Button from '@/app/components/Button/Button';
 import ToggleSwitch from '@/app/components/ToggleSwitch/ToggleSwitch';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import common from './Settings.common.module.css';
 import light from './Settings.light.module.css';
@@ -223,33 +226,39 @@ const Settings: React.FC = () => {
   ];
 
   return (
-    <div className={cn(styles.page, styles.theme)}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Settings</h1>
-        <p className={styles.subtitle}>Manage your client account settings and preferences.</p>
-      </header>
-      <div className={styles.container}>
-        <nav className={styles.nav}>
-          {navItems.map(item => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                className={cn(styles.navButton, activeTab === item.id && styles.navButtonActive)}
-                onClick={() => setActiveTab(item.id as SettingsTab)}
-                aria-current={activeTab === item.id ? 'page' : undefined}
-              >
-                <Icon size={18} className={styles.navIcon} />
-                {item.label}
-              </button>
-            );
-          })}
-        </nav>
-        <main className={styles.content}>
-          {renderContent()}
-        </main>
+    <PageTransition>
+      <div className={cn(styles.page, styles.theme)}>
+        <ScrollReveal>
+          <header className={styles.header}>
+            <h1 className={styles.title}>Settings</h1>
+            <p className={styles.subtitle}>Manage your client account settings and preferences.</p>
+          </header>
+        </ScrollReveal>
+        <div className={styles.container}>
+          <ScrollReveal delay={0.1}>
+            <nav className={styles.nav}>
+              {navItems.map(item => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    className={cn(styles.navButton, activeTab === item.id && styles.navButtonActive)}
+                    onClick={() => setActiveTab(item.id as SettingsTab)}
+                    aria-current={activeTab === item.id ? 'page' : undefined}
+                  >
+                    <Icon size={18} className={styles.navIcon} />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2} className={styles.content}>
+            {renderContent()}
+          </ScrollReveal>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

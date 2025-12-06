@@ -5,7 +5,12 @@ Provides AI-powered features: job matching, price estimation, proposal generatio
 from typing import List, Dict, Any, Optional
 from decimal import Decimal
 import os
+import json
+import logging
+import httpx
 from sqlalchemy.orm import Session
+
+logger = logging.getLogger(__name__)
 
 try:
     import openai
@@ -33,43 +38,106 @@ class AIWorkflowService:
         AI-powered job matching algorithm
         Returns ranked list of suitable freelancers
         """
-        # TODO: Implement ML model for matching
-        # For now, return rule-based matching
-        
         from app.models.user import User
         from app.models.user_skill import UserSkill
         
-        # Find freelancers with matching skills
+        # Find freelancers
         freelancers = db.query(User).filter(User.user_type == 'Freelancer').all()
         
+        # Prepare data for AI service
+        freelancer_profiles = []
+        freelancer_map = {}
+        
+        for f in freelancers:
+            # Get skills (handle both UserSkill relation and JSON string)
+            skills = []
+            if f.skills and isinstance(f.skills, str):
+                try:
+                    skills = json.loads(f.skills)
+                except:
+                    skills = [f.skills] if f.skills else []
+            else:
+                # Fallback to UserSkill relation if populated
+                user_skills = db.query(UserSkill).filter(UserSkill.user_id == f.id).all()
+                skills = [us.skill.name for us in user_skills if us.skill]
+            
+            freelancer_profiles.append({
+                "id": str(f.id),
+                "name": f.name or "Unknown",
+                "bio": f.bio or "",
+                "skills": skills
+            })
+            freelancer_map[str(f.id)] = f
+
+        # Try calling AI Microservice
+        ai_service_url = os.getenv("AI_SERVICE_URL", "http://ai:8001")
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{ai_service_url}/ai/match",
+                    json={
+                        "job_description": job_description,
+                        "required_skills": required_skills,
+                        "freelancers": freelancer_profiles
+                    },
+                    timeout=5.0
+                )
+                if response.status_code == 200:
+                    matches = response.json()
+                    # Map back to return format
+                    result = []
+                    for m in matches:
+                        f = freelancer_map.get(m["freelancer_id"])
+                        if f:
+                            result.append({
+                                'freelancer_id': f.id,
+                                'name': f.name,
+                                'email': f.email,
+                                'match_score': round(m["score"] * 100, 2),
+                                'matching_skills': [], # AI service doesn't return this yet
+                                'match_reasons': m.get("match_reasons", []),
+                                'recommendation': 'Highly Recommended' if m["score"] > 0.7 else 'Good Match'
+                            })
+                    return result
+        except Exception as e:
+            logger.warning(f"AI Service unavailable: {e}. Falling back to local matching.")
+
+        # Fallback: Local Rule-Based Matching
         matched = []
-        for freelancer in freelancers:
-            # Get freelancer skills
-            user_skills = db.query(UserSkill).filter(
-                UserSkill.user_id == freelancer.id
-            ).all()
+        req_skills_set = set(s.lower() for s in required_skills)
+        
+        for f_data in freelancer_profiles:
+            f_id = f_data["id"]
+            f_skills = set(s.lower() for s in f_data["skills"])
             
-            skill_names = [us.skill.name for us in user_skills if us.skill]
+            # Jaccard Similarity for skills
+            intersection = len(req_skills_set.intersection(f_skills))
+            union = len(req_skills_set.union(f_skills))
+            jaccard_score = intersection / union if union > 0 else 0
             
-            # Calculate match score
-            matching_skills = set(skill_names) & set(required_skills)
-            if matching_skills:
-                match_score = len(matching_skills) / len(required_skills) * 100
-                
+            # Simple bio keyword match
+            bio_score = 0
+            if f_data["bio"]:
+                bio_lower = f_data["bio"].lower()
+                keyword_hits = sum(1 for s in req_skills_set if s in bio_lower)
+                bio_score = min(1.0, keyword_hits / len(req_skills_set)) if req_skills_set else 0
+            
+            # Weighted score
+            final_score = (jaccard_score * 0.7) + (bio_score * 0.3)
+            
+            if final_score > 0.1: # Threshold
+                f = freelancer_map[f_id]
                 matched.append({
-                    'freelancer_id': freelancer.id,
-                    'name': freelancer.name,
-                    'email': freelancer.email,
-                    'match_score': round(match_score, 2),
-                    'matching_skills': list(matching_skills),
-                    'total_skills': len(skill_names),
-                    'recommendation': 'Highly Recommended' if match_score > 70 else 'Good Match' if match_score > 40 else 'Potential Match'
+                    'freelancer_id': f.id,
+                    'name': f.name,
+                    'email': f.email,
+                    'match_score': round(final_score * 100, 2),
+                    'matching_skills': list(req_skills_set.intersection(f_skills)),
+                    'recommendation': 'Good Match' if final_score > 0.5 else 'Potential Match'
                 })
         
-        # Sort by match score
         matched.sort(key=lambda x: x['match_score'], reverse=True)
-        
-        return matched[:10]  # Top 10 matches
+        return matched[:10]
     
     async def estimate_project_price(
         self,
@@ -131,6 +199,28 @@ class AIWorkflowService:
         """
         # Check if OpenAI is configured
         if not self.openai_api_key or not OPENAI_AVAILABLE:
+            # Try calling local AI Microservice first
+            ai_service_url = os.getenv("AI_SERVICE_URL", "http://ai:8001")
+            try:
+                prompt = f"Write a proposal for {job_title}. Skills: {', '.join(freelancer_skills)}."
+                async with httpx.AsyncClient() as client:
+                    response = await client.post(
+                        f"{ai_service_url}/ai/generate",
+                        json={"prompt": prompt, "max_length": 300},
+                        timeout=10.0
+                    )
+                    if response.status_code == 200:
+                        data = response.json()
+                        if data.get("method") == "local_llm":
+                            return {
+                                'success': True,
+                                'proposal_text': data["text"],
+                                'method': 'local_ai',
+                                'model': 'distilgpt2'
+                            }
+            except Exception as e:
+                logger.warning(f"Local AI generation failed: {e}")
+
             # Fallback to template-based generation
             return self._generate_template_proposal(
                 job_title,

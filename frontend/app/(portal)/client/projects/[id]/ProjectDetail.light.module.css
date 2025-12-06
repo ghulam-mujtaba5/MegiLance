@@ -12,3 +12,7 @@
 
 .button.primary { background: var(--primary); color: white; border: 1px solid rgba(0,0,0,0.12); }
 .button.secondary { background: var(--surface-elev); color: var(--text-primary); border: 1px solid var(--border); }
+
+.proposalCard { background: var(--surface); border-color: var(--border); }
+.proposalCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.emptyState { color: var(--text-secondary); }

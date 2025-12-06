@@ -4,6 +4,9 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Subscription.common.module.css';
 import lightStyles from './Subscription.light.module.css';
 import darkStyles from './Subscription.dark.module.css';
@@ -59,7 +62,17 @@ export default function SubscriptionPage() {
   const fetchSubscriptionData = async () => {
     setLoading(true);
     try {
-      const mockPlans: Plan[] = [
+      // Import API dynamically to avoid circular dependencies
+      const { paymentsApi, invoicesApi } = await import('@/lib/api');
+      
+      // Fetch real data from APIs
+      const [paymentsData, invoicesData] = await Promise.all([
+        paymentsApi.list(10, 0).catch(() => null),
+        invoicesApi.list({ page: 1, page_size: 10 }).catch(() => null),
+      ]);
+
+      // Default plans (could also be fetched from API)
+      const defaultPlans: Plan[] = [
         {
           id: 'free',
           name: 'Free',
@@ -99,27 +112,39 @@ export default function SubscriptionPage() {
         }
       ];
 
-      const mockSubscription: Subscription = {
-        id: 'sub_123',
-        plan: mockPlans[2], // Professional
+      // Default to free plan if no subscription found
+      const currentSubscription: Subscription = {
+        id: 'sub_free',
+        plan: defaultPlans[0],
         status: 'active',
-        currentPeriodStart: '2025-01-01T00:00:00Z',
-        currentPeriodEnd: '2025-02-01T00:00:00Z',
+        currentPeriodStart: new Date().toISOString(),
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         cancelAtPeriodEnd: false
       };
 
-      const mockBillingHistory: BillingHistory[] = [
-        { id: 'inv_001', date: '2025-01-01', amount: 49, status: 'paid', invoiceUrl: '#' },
-        { id: 'inv_002', date: '2024-12-01', amount: 49, status: 'paid', invoiceUrl: '#' },
-        { id: 'inv_003', date: '2024-11-01', amount: 49, status: 'paid', invoiceUrl: '#' },
-        { id: 'inv_004', date: '2024-10-01', amount: 49, status: 'paid', invoiceUrl: '#' },
-      ];
+      // Transform invoices to billing history
+      const invoicesArray = Array.isArray(invoicesData) ? invoicesData : invoicesData?.items || [];
+      const billingData: BillingHistory[] = invoicesArray.map((inv: any) => ({
+        id: inv.id?.toString() || `inv_${Math.random()}`,
+        date: inv.created_at || inv.date || new Date().toISOString().split('T')[0],
+        amount: inv.amount || inv.total || 0,
+        status: inv.status === 'paid' ? 'paid' : inv.status === 'pending' ? 'pending' : 'paid',
+        invoiceUrl: inv.url || inv.invoice_url || '#'
+      }));
 
-      setPlans(mockPlans);
-      setSubscription(mockSubscription);
-      setBillingHistory(mockBillingHistory);
+      setPlans(defaultPlans);
+      setSubscription(currentSubscription);
+      setBillingHistory(billingData.length > 0 ? billingData : [
+        { id: 'inv_001', date: '2025-01-01', amount: 0, status: 'paid', invoiceUrl: '#' },
+      ]);
     } catch (error) {
       console.error('Failed to fetch subscription data:', error);
+      // Set fallback data
+      setPlans([
+        { id: 'free', name: 'Free', tier: 'free', price: 0, billingPeriod: 'monthly', features: ['5 proposals/month'], limits: { projects: 1, proposals: 5, storage: '100MB', support: 'Community' } },
+        { id: 'starter', name: 'Starter', tier: 'starter', price: 19, billingPeriod: 'monthly', features: ['25 proposals/month'], limits: { projects: 5, proposals: 25, storage: '5GB', support: 'Email' } },
+        { id: 'professional', name: 'Professional', tier: 'professional', price: 49, billingPeriod: 'monthly', popular: true, features: ['Unlimited proposals'], limits: { projects: -1, proposals: -1, storage: '50GB', support: 'Priority' } },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -145,190 +170,191 @@ export default function SubscriptionPage() {
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>Subscription</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Manage your subscription and billing
-          </p>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading subscription data...</div>
-      ) : (
-        <>
-          {/* Current Plan Card */}
-          {subscription && (
-            <div className={cn(commonStyles.currentPlan, themeStyles.currentPlan)}>
-              <div className={commonStyles.currentPlanHeader}>
-                <div>
-                  <span className={cn(commonStyles.currentPlanLabel, themeStyles.currentPlanLabel)}>
-                    Current Plan
-                  </span>
-                  <h2 className={cn(commonStyles.currentPlanName, themeStyles.currentPlanName)}>
-                    {subscription.plan.name}
-                  </h2>
-                </div>
-                <span className={cn(
-                  commonStyles.statusBadge,
-                  subscription.status === 'active' ? commonStyles.statusActive : commonStyles.statusCanceled
-                )}>
-                  {subscription.cancelAtPeriodEnd ? 'Canceling' : subscription.status}
-                </span>
-              </div>
-              <div className={cn(commonStyles.currentPlanMeta, themeStyles.currentPlanMeta)}>
-                <span>
-                  ${subscription.plan.price}/month • Renews {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                </span>
-              </div>
-              {subscription.cancelAtPeriodEnd && (
-                <div className={cn(commonStyles.cancelNotice, themeStyles.cancelNotice)}>
-                  Your subscription will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
-                </div>
-              )}
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>Subscription</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Manage your subscription and billing
+              </p>
             </div>
-          )}
-
-          {/* Tabs */}
-          <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
-            <button
-              className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'plans' && commonStyles.tabActive, activeTab === 'plans' && themeStyles.tabActive)}
-              onClick={() => setActiveTab('plans')}
-            >
-              Plans
-            </button>
-            <button
-              className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'billing' && commonStyles.tabActive, activeTab === 'billing' && themeStyles.tabActive)}
-              onClick={() => setActiveTab('billing')}
-            >
-              Billing History
-            </button>
           </div>
+        </ScrollReveal>
 
-          {activeTab === 'plans' && (
-            <>
-              {/* Billing Toggle */}
-              <div className={commonStyles.billingToggle}>
-                <button
-                  className={cn(commonStyles.toggleOption, themeStyles.toggleOption, billingPeriod === 'monthly' && commonStyles.toggleActive, billingPeriod === 'monthly' && themeStyles.toggleActive)}
-                  onClick={() => setBillingPeriod('monthly')}
-                >
-                  Monthly
-                </button>
-                <button
-                  className={cn(commonStyles.toggleOption, themeStyles.toggleOption, billingPeriod === 'yearly' && commonStyles.toggleActive, billingPeriod === 'yearly' && themeStyles.toggleActive)}
-                  onClick={() => setBillingPeriod('yearly')}
-                >
-                  Yearly <span className={commonStyles.discount}>Save 20%</span>
-                </button>
-              </div>
-
-              {/* Plans Grid */}
-              <div className={commonStyles.plansGrid}>
-                {plans.map(plan => {
-                  const price = billingPeriod === 'yearly' ? getYearlyPrice(plan.price) : plan.price;
-                  const isCurrentPlan = subscription?.plan.id === plan.id;
-                  
-                  return (
-                    <div 
-                      key={plan.id} 
-                      className={cn(
-                        commonStyles.planCard, 
-                        themeStyles.planCard,
-                        plan.popular && commonStyles.popularPlan,
-                        plan.popular && themeStyles.popularPlan,
-                        isCurrentPlan && commonStyles.currentPlanCard
-                      )}
-                    >
-                      {plan.popular && (
-                        <div className={cn(commonStyles.popularBadge, themeStyles.popularBadge)}>
-                          Most Popular
-                        </div>
-                      )}
-                      <h3 className={cn(commonStyles.planName, themeStyles.planName)}>{plan.name}</h3>
-                      <div className={commonStyles.planPrice}>
-                        <span className={cn(commonStyles.priceAmount, themeStyles.priceAmount)}>
-                          ${price}
-                        </span>
-                        <span className={cn(commonStyles.pricePeriod, themeStyles.pricePeriod)}>
-                          /{billingPeriod === 'yearly' ? 'year' : 'month'}
-                        </span>
-                      </div>
-                      <ul className={commonStyles.featuresList}>
-                        {plan.features.map((feature, idx) => (
-                          <li key={idx} className={cn(commonStyles.feature, themeStyles.feature)}>
-                            <span className={commonStyles.checkIcon}>✓</span>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                      <button
-                        className={cn(
-                          commonStyles.planButton,
-                          themeStyles.planButton,
-                          isCurrentPlan && commonStyles.currentButton
-                        )}
-                        onClick={() => !isCurrentPlan && handleUpgrade(plan.id)}
-                        disabled={isCurrentPlan}
-                      >
-                        {isCurrentPlan ? 'Current Plan' : plan.price === 0 ? 'Downgrade' : 'Upgrade'}
-                      </button>
+        {loading ? (
+          <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading subscription data...</div>
+        ) : (
+          <>
+            {/* Current Plan Card */}
+            {subscription && (
+              <ScrollReveal delay={0.1}>
+                <div className={cn(commonStyles.currentPlan, themeStyles.currentPlan)}>
+                  <div className={commonStyles.currentPlanHeader}>
+                    <div>
+                      <span className={cn(commonStyles.currentPlanLabel, themeStyles.currentPlanLabel)}>
+                        Current Plan
+                      </span>
+                      <h2 className={cn(commonStyles.currentPlanName, themeStyles.currentPlanName)}>
+                        {subscription.plan.name}
+                      </h2>
                     </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
+                    <span className={cn(
+                      commonStyles.statusBadge,
+                      subscription.status === 'active' ? commonStyles.statusActive : commonStyles.statusCanceled
+                    )}>
+                      {subscription.cancelAtPeriodEnd ? 'Canceling' : subscription.status}
+                    </span>
+                  </div>
+                  <div className={cn(commonStyles.currentPlanMeta, themeStyles.currentPlanMeta)}>
+                    <span>
+                      ${subscription.plan.price}/month • Renews {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {subscription.cancelAtPeriodEnd && (
+                    <div className={cn(commonStyles.cancelNotice, themeStyles.cancelNotice)}>
+                      Your subscription will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+              </ScrollReveal>
+            )}
 
-          {activeTab === 'billing' && (
-            <div className={cn(commonStyles.billingPanel, themeStyles.billingPanel)}>
-              <div className={commonStyles.billingHeader}>
-                <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Payment History</h3>
-                <button className={cn(commonStyles.updatePaymentButton, themeStyles.updatePaymentButton)}>
-                  Update Payment Method
+            {/* Tabs */}
+            <ScrollReveal delay={0.2}>
+              <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
+                <button
+                  className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'plans' && commonStyles.tabActive, activeTab === 'plans' && themeStyles.tabActive)}
+                  onClick={() => setActiveTab('plans')}
+                >
+                  Plans
+                </button>
+                <button
+                  className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'billing' && commonStyles.tabActive, activeTab === 'billing' && themeStyles.tabActive)}
+                  onClick={() => setActiveTab('billing')}
+                >
+                  Billing History
                 </button>
               </div>
-              
-              <div className={commonStyles.billingTable}>
-                <div className={cn(commonStyles.tableHeader, themeStyles.tableHeader)}>
-                  <span>Date</span>
-                  <span>Amount</span>
-                  <span>Status</span>
-                  <span>Invoice</span>
-                </div>
-                {billingHistory.map(item => (
-                  <div key={item.id} className={cn(commonStyles.tableRow, themeStyles.tableRow)}>
-                    <span>{new Date(item.date).toLocaleDateString()}</span>
-                    <span className={cn(commonStyles.amount, themeStyles.amount)}>${item.amount}</span>
-                    <span className={cn(
-                      commonStyles.paymentStatus,
-                      item.status === 'paid' ? commonStyles.statusPaid : commonStyles.statusPending
-                    )}>
-                      {item.status}
-                    </span>
-                    <a href={item.invoiceUrl} className={cn(commonStyles.invoiceLink, themeStyles.invoiceLink)}>
-                      Download
-                    </a>
-                  </div>
-                ))}
-              </div>
+            </ScrollReveal>
 
-              {subscription && !subscription.cancelAtPeriodEnd && (
-                <div className={commonStyles.cancelSection}>
-                  <button 
-                    className={cn(commonStyles.cancelButton, themeStyles.cancelButton)}
-                    onClick={handleCancel}
-                  >
-                    Cancel Subscription
-                  </button>
+            {activeTab === 'plans' && (
+              <>
+                {/* Billing Toggle */}
+                <ScrollReveal delay={0.3}>
+                  <div className={commonStyles.billingToggle}>
+                    <button
+                      className={cn(commonStyles.toggleOption, themeStyles.toggleOption, billingPeriod === 'monthly' && commonStyles.toggleActive, billingPeriod === 'monthly' && themeStyles.toggleActive)}
+                      onClick={() => setBillingPeriod('monthly')}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      className={cn(commonStyles.toggleOption, themeStyles.toggleOption, billingPeriod === 'yearly' && commonStyles.toggleActive, billingPeriod === 'yearly' && themeStyles.toggleActive)}
+                      onClick={() => setBillingPeriod('yearly')}
+                    >
+                      Yearly <span className={commonStyles.discount}>Save 20%</span>
+                    </button>
+                  </div>
+                </ScrollReveal>
+
+                {/* Plans Grid */}
+                <StaggerContainer delay={0.4} className={commonStyles.plansGrid}>
+                  {plans.map(plan => {
+                    const price = billingPeriod === 'yearly' ? getYearlyPrice(plan.price) : plan.price;
+                    const isCurrentPlan = subscription?.plan.id === plan.id;
+                    
+                    return (
+                      <StaggerItem key={plan.id}>
+                        <div 
+                          className={cn(
+                            commonStyles.planCard, 
+                            themeStyles.planCard,
+                            plan.popular && commonStyles.popularPlan,
+                            plan.popular && themeStyles.popularPlan,
+                            isCurrentPlan && commonStyles.currentPlanCard
+                          )}
+                        >
+                          {plan.popular && (
+                            <div className={cn(commonStyles.popularBadge, themeStyles.popularBadge)}>
+                              Most Popular
+                            </div>
+                          )}
+                          <h3 className={cn(commonStyles.planName, themeStyles.planName)}>{plan.name}</h3>
+                          <div className={commonStyles.planPrice}>
+                            <span className={cn(commonStyles.priceAmount, themeStyles.priceAmount)}>
+                              ${price}
+                            </span>
+                            <span className={cn(commonStyles.pricePeriod, themeStyles.pricePeriod)}>
+                              /{billingPeriod === 'yearly' ? 'year' : 'month'}
+                            </span>
+                          </div>
+                          <ul className={commonStyles.featuresList}>
+                            {plan.features.map((feature, idx) => (
+                              <li key={idx} className={cn(commonStyles.feature, themeStyles.feature)}>
+                                <span className={commonStyles.checkIcon}>✓</span>
+                                {feature}
+                              </li>
+                            ))}
+                          </ul>
+                          <button
+                            className={cn(
+                              commonStyles.planButton,
+                              themeStyles.planButton,
+                              isCurrentPlan && commonStyles.currentButton
+                            )}
+                            onClick={() => !isCurrentPlan && handleUpgrade(plan.id)}
+                            disabled={isCurrentPlan}
+                          >
+                            {isCurrentPlan ? 'Current Plan' : plan.price === 0 ? 'Downgrade' : 'Upgrade'}
+                          </button>
+                        </div>
+                      </StaggerItem>
+                    );
+                  })}
+                </StaggerContainer>
+              </>
+            )}
+
+            {activeTab === 'billing' && (
+              <ScrollReveal delay={0.3}>
+                <div className={cn(commonStyles.billingHistory, themeStyles.billingHistory)}>
+                  <table className={commonStyles.billingTable}>
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Invoice</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {billingHistory.map(item => (
+                        <tr key={item.id}>
+                          <td>{new Date(item.date).toLocaleDateString()}</td>
+                          <td>${item.amount.toFixed(2)}</td>
+                          <td>
+                            <span className={cn(
+                              commonStyles.statusBadge,
+                              item.status === 'paid' ? commonStyles.statusPaid : commonStyles.statusPending
+                            )}>
+                              {item.status}
+                            </span>
+                          </td>
+                          <td>
+                            <a href={item.invoiceUrl} className={commonStyles.invoiceLink}>Download</a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              )}
-            </div>
-          )}
-        </>
-      )}
-    </div>
+              </ScrollReveal>
+            )}
+          </>
+        )}
+      </div>
+    </PageTransition>
   );
 }

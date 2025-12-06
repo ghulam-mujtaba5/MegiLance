@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { useRouter, useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FiArrowLeft, FiDownload, FiExternalLink, FiLoader } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiExternalLink, FiLoader, FiAlertTriangle } from 'react-icons/fi';
 
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
@@ -122,6 +122,11 @@ const ContractDetailsPage: React.FC = () => {
     });
   };
 
+  const handleRaiseDispute = () => {
+    if (!contract) return;
+    router.push(`/portal/disputes/create?contract=${contract.id}&project=${encodeURIComponent(contract.project_title || '')}&party=${encodeURIComponent(contract.client_name || '')}`);
+  };
+
   // Parse milestones
   const milestones: Milestone[] = useMemo(() => {
     if (!contract) return [];
@@ -182,6 +187,16 @@ const ContractDetailsPage: React.FC = () => {
         </Button>
         
         <div className={styles.headerActions}>
+          {contract && !['disputed', 'cancelled', 'terminated'].includes(contract.status.toLowerCase()) && (
+            <Button 
+              variant="danger" 
+              onClick={handleRaiseDispute}
+              aria-label="Raise a dispute"
+              title="Raise a dispute"
+            >
+              <FiAlertTriangle /> Raise Dispute
+            </Button>
+          )}
           <Button 
             variant="secondary" 
             onClick={handleDownload}

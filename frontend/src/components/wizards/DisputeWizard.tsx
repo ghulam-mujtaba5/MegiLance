@@ -715,7 +715,7 @@ export default function DisputeWizard({
       if (onComplete) {
         onComplete(result.id);
       } else {
-        router.push(`/disputes/${result.id}`);
+        router.push(`/portal/disputes/${result.id}`);
       }
     } catch (error) {
       console.error('Error submitting dispute:', error);

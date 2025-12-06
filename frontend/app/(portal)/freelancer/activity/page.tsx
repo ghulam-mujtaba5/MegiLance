@@ -5,6 +5,9 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { activityFeedApi } from '@/lib/api';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Activity.common.module.css';
 import lightStyles from './Activity.light.module.css';
 import darkStyles from './Activity.dark.module.css';
@@ -166,121 +169,125 @@ export default function ActivityPage() {
   );
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.header}>
-        <div className={commonStyles.headerTop}>
-          <div>
-            <h1 className={cn(commonStyles.title, themeStyles.title)}>Activity Feed</h1>
-            <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-              Track all your recent actions and updates
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <div className={commonStyles.headerTop}>
+              <div>
+                <h1 className={cn(commonStyles.title, themeStyles.title)}>Activity Feed</h1>
+                <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                  Track all your recent actions and updates
+                </p>
+              </div>
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  className={cn(commonStyles.markAllButton, themeStyles.markAllButton)}
+                >
+                  Mark all as read ({unreadCount})
+                </button>
+              )}
+            </div>
+
+            <div className={cn(commonStyles.filters, themeStyles.filters)}>
+              {activityFilters.map(filter => (
+                <button
+                  key={filter.type}
+                  onClick={() => setActiveFilter(filter.type)}
+                  className={cn(
+                    commonStyles.filterButton,
+                    themeStyles.filterButton,
+                    activeFilter === filter.type && commonStyles.filterActive,
+                    activeFilter === filter.type && themeStyles.filterActive
+                  )}
+                >
+                  <span className={commonStyles.filterIcon}>{filter.icon}</span>
+                  <span>{filter.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {loading && activities.length === 0 ? (
+          <div className={cn(commonStyles.loading, themeStyles.loading)}>
+            Loading activity...
+          </div>
+        ) : activities.length === 0 ? (
+          <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+            <span className={commonStyles.emptyIcon}>📭</span>
+            <h3 className={cn(commonStyles.emptyTitle, themeStyles.emptyTitle)}>No Activity Yet</h3>
+            <p className={cn(commonStyles.emptyDesc, themeStyles.emptyDesc)}>
+              Your recent actions and updates will appear here
             </p>
           </div>
-          {unreadCount > 0 && (
-            <button
-              onClick={markAllAsRead}
-              className={cn(commonStyles.markAllButton, themeStyles.markAllButton)}
-            >
-              Mark all as read ({unreadCount})
-            </button>
-          )}
-        </div>
-
-        <div className={cn(commonStyles.filters, themeStyles.filters)}>
-          {activityFilters.map(filter => (
-            <button
-              key={filter.type}
-              onClick={() => setActiveFilter(filter.type)}
-              className={cn(
-                commonStyles.filterButton,
-                themeStyles.filterButton,
-                activeFilter === filter.type && commonStyles.filterActive,
-                activeFilter === filter.type && themeStyles.filterActive
-              )}
-            >
-              <span className={commonStyles.filterIcon}>{filter.icon}</span>
-              <span>{filter.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {loading && activities.length === 0 ? (
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>
-          Loading activity...
-        </div>
-      ) : activities.length === 0 ? (
-        <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-          <span className={commonStyles.emptyIcon}>📭</span>
-          <h3 className={cn(commonStyles.emptyTitle, themeStyles.emptyTitle)}>No Activity Yet</h3>
-          <p className={cn(commonStyles.emptyDesc, themeStyles.emptyDesc)}>
-            Your recent actions and updates will appear here
-          </p>
-        </div>
-      ) : (
-        <div className={commonStyles.timeline}>
-          {Array.from(groupedActivities.entries()).map(([dateGroup, items]) => (
-            <div key={dateGroup} className={commonStyles.dateGroup}>
-              <h3 className={cn(commonStyles.dateHeader, themeStyles.dateHeader)}>
-                {dateGroup}
-              </h3>
-              <div className={commonStyles.activities}>
-                {items.map(activity => (
-                  <div
-                    key={activity.id}
-                    className={cn(
-                      commonStyles.activityCard,
-                      themeStyles.activityCard,
-                      !activity.read && commonStyles.unread,
-                      !activity.read && themeStyles.unread
-                    )}
-                    onClick={() => !activity.read && markAsRead(activity.id)}
-                  >
-                    <div className={cn(commonStyles.activityIcon, themeStyles.activityIcon)}>
-                      {getActivityIcon(activity.type)}
-                    </div>
-                    <div className={commonStyles.activityContent}>
-                      <div className={commonStyles.activityTop}>
-                        <span className={cn(commonStyles.activityAction, themeStyles.activityAction)}>
-                          {activity.action}
-                        </span>
-                        <span className={cn(commonStyles.activityTime, themeStyles.activityTime)}>
-                          {getRelativeTime(activity.created_at)}
-                        </span>
-                      </div>
-                      <h4 className={cn(commonStyles.activityTitle, themeStyles.activityTitle)}>
-                        {activity.title}
-                      </h4>
-                      <p className={cn(commonStyles.activityDesc, themeStyles.activityDesc)}>
-                        {activity.description}
-                      </p>
-                      {activity.related_type && (
-                        <span className={cn(commonStyles.relatedLink, themeStyles.relatedLink)}>
-                          View {activity.related_type} →
-                        </span>
+        ) : (
+          <div className={commonStyles.timeline}>
+            {Array.from(groupedActivities.entries()).map(([dateGroup, items]) => (
+              <div key={dateGroup} className={commonStyles.dateGroup}>
+                <h3 className={cn(commonStyles.dateHeader, themeStyles.dateHeader)}>
+                  {dateGroup}
+                </h3>
+                <StaggerContainer className={commonStyles.activities}>
+                  {items.map(activity => (
+                    <StaggerItem
+                      key={activity.id}
+                      className={cn(
+                        commonStyles.activityCard,
+                        themeStyles.activityCard,
+                        !activity.read && commonStyles.unread,
+                        !activity.read && themeStyles.unread
                       )}
-                    </div>
-                    {!activity.read && (
-                      <span className={cn(commonStyles.unreadDot, themeStyles.unreadDot)} />
-                    )}
-                  </div>
-                ))}
+                      onClick={() => !activity.read && markAsRead(activity.id)}
+                    >
+                      <div className={cn(commonStyles.activityIcon, themeStyles.activityIcon)}>
+                        {getActivityIcon(activity.type)}
+                      </div>
+                      <div className={commonStyles.activityContent}>
+                        <div className={commonStyles.activityTop}>
+                          <span className={cn(commonStyles.activityAction, themeStyles.activityAction)}>
+                            {activity.action}
+                          </span>
+                          <span className={cn(commonStyles.activityTime, themeStyles.activityTime)}>
+                            {getRelativeTime(activity.created_at)}
+                          </span>
+                        </div>
+                        <h4 className={cn(commonStyles.activityTitle, themeStyles.activityTitle)}>
+                          {activity.title}
+                        </h4>
+                        <p className={cn(commonStyles.activityDesc, themeStyles.activityDesc)}>
+                          {activity.description}
+                        </p>
+                        {activity.related_type && (
+                          <span className={cn(commonStyles.relatedLink, themeStyles.relatedLink)}>
+                            View {activity.related_type} →
+                          </span>
+                        )}
+                      </div>
+                      {!activity.read && (
+                        <span className={cn(commonStyles.unreadDot, themeStyles.unreadDot)} />
+                      )}
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
               </div>
-            </div>
-          ))}
+            ))}
 
-          {hasMore && (
-            <div className={commonStyles.loadMoreContainer}>
-              <button
-                onClick={() => loadActivities(true)}
-                disabled={loading}
-                className={cn(commonStyles.loadMoreButton, themeStyles.loadMoreButton)}
-              >
-                {loading ? 'Loading...' : 'Load More'}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+            {hasMore && (
+              <div className={commonStyles.loadMoreContainer}>
+                <button
+                  onClick={() => loadActivities(true)}
+                  disabled={loading}
+                  className={cn(commonStyles.loadMoreButton, themeStyles.loadMoreButton)}
+                >
+                  {loading ? 'Loading...' : 'Load More'}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </PageTransition>
   );
 }

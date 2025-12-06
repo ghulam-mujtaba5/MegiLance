@@ -1,4 +1,4 @@
-// @AI-HINT: Project creation wizard - guides clients through posting a project
+// @AI-HINT: Project creation wizard - guides clients through posting a project. Enhanced with premium animations and 3D elements.
 'use client';
 
 import { useState } from 'react';
@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { 
   FaFileAlt, FaMoneyBillWave, FaUsers, FaCheckCircle,
-  FaArrowRight, FaArrowLeft, FaClock 
+  FaArrowRight, FaArrowLeft, FaClock,
+  FaCode, FaMobileAlt, FaPaintBrush, FaPenNib, FaBullhorn, FaChartLine, FaServer, FaEllipsisH
 } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
@@ -16,6 +17,10 @@ import Textarea from '@/app/components/Textarea/Textarea';
 import Select from '@/app/components/Select/Select';
 import TagsInput from '@/app/components/TagsInput/TagsInput';
 import FileUpload from '@/app/components/FileUpload/FileUpload';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 
 import commonStyles from './ProjectWizard.common.module.css';
 import lightStyles from './ProjectWizard.light.module.css';
@@ -42,15 +47,14 @@ const steps = [
 ];
 
 const categories = [
-  { value: '', label: 'Select category' },
-  { value: 'WEB_DEVELOPMENT', label: 'Web Development' },
-  { value: 'MOBILE_DEVELOPMENT', label: 'Mobile Development' },
-  { value: 'DESIGN', label: 'Design & Creative' },
-  { value: 'WRITING', label: 'Writing & Content' },
-  { value: 'MARKETING', label: 'Marketing & Sales' },
-  { value: 'DATA_SCIENCE', label: 'Data Science & Analytics' },
-  { value: 'DEVOPS', label: 'DevOps & Cloud' },
-  { value: 'OTHER', label: 'Other' },
+  { value: 'WEB_DEVELOPMENT', label: 'Web Development', icon: FaCode },
+  { value: 'MOBILE_DEVELOPMENT', label: 'Mobile Development', icon: FaMobileAlt },
+  { value: 'DESIGN', label: 'Design & Creative', icon: FaPaintBrush },
+  { value: 'WRITING', label: 'Writing & Content', icon: FaPenNib },
+  { value: 'MARKETING', label: 'Marketing & Sales', icon: FaBullhorn },
+  { value: 'DATA_SCIENCE', label: 'Data Science & Analytics', icon: FaChartLine },
+  { value: 'DEVOPS', label: 'DevOps & Cloud', icon: FaServer },
+  { value: 'OTHER', label: 'Other', icon: FaEllipsisH },
 ];
 
 const ProjectWizard: React.FC = () => {
@@ -188,266 +192,296 @@ const ProjectWizard: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Post a Project</h1>
-        <p className={styles.subtitle}>
-          Tell us about your project and find the perfect freelancer
-        </p>
-      </div>
+    <PageTransition>
+      <div className={styles.container}>
+        {/* Background Elements */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+           <AnimatedOrb variant="blue" size={400} blur={80} opacity={0.15} className="absolute top-0 right-0" />
+           <AnimatedOrb variant="purple" size={300} blur={60} opacity={0.1} className="absolute bottom-0 left-0" />
+           <ParticlesSystem count={15} className="absolute inset-0" />
+           <div className="absolute top-20 left-10 opacity-20 animate-float-slow">
+             <FloatingCube size={40} />
+           </div>
+           <div className="absolute bottom-40 right-20 opacity-20 animate-float-medium">
+             <FloatingSphere size={30} variant="gradient" />
+           </div>
+        </div>
 
-      {/* Progress Bar */}
-      <div className={styles.progressBar}>
-        <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-      </div>
-
-      {/* Steps Indicator */}
-      <div className={styles.stepsIndicator}>
-        {steps.map((step) => (
-          <div
-            key={step.id}
-            className={cn(
-              styles.step,
-              currentStep === step.id && styles.stepActive,
-              currentStep > step.id && styles.stepCompleted
-            )}
-          >
-            <div className={styles.stepIcon}>
-              {currentStep > step.id ? (
-                <FaCheckCircle size={24} />
-              ) : (
-                <step.icon size={24} />
-              )}
-            </div>
-            <div className={styles.stepTitle}>{step.title}</div>
+        <ScrollReveal>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Post a Project</h1>
+            <p className={styles.subtitle}>
+              Tell us about your project and find the perfect freelancer
+            </p>
           </div>
-        ))}
-      </div>
+        </ScrollReveal>
 
-      {/* Step Content */}
-      <div className={styles.content}>
-        {currentStep === 1 && (
-          <div className={styles.formGrid}>
-            <Input
-              name="title"
-              label="Project Title"
-              placeholder="e.g., Build a responsive e-commerce website"
-              value={projectData.title}
-              onChange={(e) => setProjectData({ ...projectData, title: e.target.value })}
-              error={errors.title}
-              className="col-span-2"
-              helpText={`${projectData.title.length} characters (minimum 10)`}
-            />
-            <Textarea
-              name="description"
-              label="Project Description"
-              placeholder="Describe your project in detail. What needs to be done? What are your requirements? What is the expected outcome?"
-              value={projectData.description}
-              onChange={(e) => setProjectData({ ...projectData, description: e.target.value })}
-              error={errors.description}
-              rows={8}
-              className="col-span-2"
-              helpText={`${projectData.description.length}/1000 characters (minimum 100)`}
-            />
-            <Select
-              id="category"
-              label="Project Category"
-              value={projectData.category}
-              onChange={(e) => setProjectData({ ...projectData, category: e.target.value })}
-              options={categories}
-              className="col-span-2"
-            />
-            <div className="col-span-2">
-              <FileUpload
-                label="Attachments (Optional)"
-                accept="image/*,.pdf,.doc,.docx"
-                maxSize={10}
-                uploadType="document"
-                onUploadComplete={(url) => setProjectData({ 
-                  ...projectData, 
-                  attachments: [...projectData.attachments, url] 
-                })}
-              />
-            </div>
+        {/* Progress Bar */}
+        <ScrollReveal delay={0.1}>
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
           </div>
-        )}
 
-        {currentStep === 2 && (
-          <div className={styles.formGrid}>
-            <div className="col-span-2">
-              <label className="block text-sm font-semibold mb-2">Budget Type</label>
-              <div className={styles.budgetToggle}>
-                <button
-                  type="button"
-                  className={cn(
-                    styles.budgetOption,
-                    projectData.budgetType === 'fixed' && styles.budgetOptionActive
+          {/* Steps Indicator */}
+          <div className={styles.stepsIndicator}>
+            {steps.map((step) => (
+              <div
+                key={step.id}
+                className={cn(
+                  styles.step,
+                  currentStep === step.id && styles.stepActive,
+                  currentStep > step.id && styles.stepCompleted
+                )}
+              >
+                <div className={styles.stepIcon}>
+                  {currentStep > step.id ? (
+                    <FaCheckCircle size={24} />
+                  ) : (
+                    <step.icon size={24} />
                   )}
-                  onClick={() => setProjectData({ ...projectData, budgetType: 'fixed' })}
-                >
-                  <FaMoneyBillWave className="mr-2" />
-                  Fixed Price
-                </button>
-                <button
-                  type="button"
-                  className={cn(
-                    styles.budgetOption,
-                    projectData.budgetType === 'hourly' && styles.budgetOptionActive
-                  )}
-                  onClick={() => setProjectData({ ...projectData, budgetType: 'hourly' })}
-                >
-                  <FaClock className="mr-2" />
-                  Hourly Rate
-                </button>
+                </div>
+                <div className={styles.stepTitle}>{step.title}</div>
               </div>
-            </div>
-            <Input
-              name="budgetMin"
-              type="number"
-              label={`Minimum ${projectData.budgetType === 'hourly' ? 'Hourly Rate' : 'Budget'} (PKR)`}
-              placeholder="10000"
-              value={projectData.budgetMin}
-              onChange={(e) => setProjectData({ ...projectData, budgetMin: e.target.value })}
-              error={errors.budgetMin}
-            />
-            <Input
-              name="budgetMax"
-              type="number"
-              label={`Maximum ${projectData.budgetType === 'hourly' ? 'Hourly Rate' : 'Budget'} (PKR)`}
-              placeholder="50000"
-              value={projectData.budgetMax}
-              onChange={(e) => setProjectData({ ...projectData, budgetMax: e.target.value })}
-              error={errors.budgetMax}
-            />
-            <Select
-              id="duration"
-              label="Project Duration"
-              value={projectData.duration}
-              onChange={(e) => setProjectData({ ...projectData, duration: e.target.value })}
-              options={[
-                { value: '', label: 'Select duration' },
-                { value: 'less-than-week', label: 'Less than 1 week' },
-                { value: '1-2-weeks', label: '1-2 weeks' },
-                { value: '2-4-weeks', label: '2-4 weeks' },
-                { value: '1-3-months', label: '1-3 months' },
-                { value: '3-6-months', label: '3-6 months' },
-                { value: 'more-than-6-months', label: 'More than 6 months' },
-              ]}
-              className="col-span-2"
-            />
+            ))}
           </div>
-        )}
+        </ScrollReveal>
 
-        {currentStep === 3 && (
-          <div className={styles.formGrid}>
-            <div className="col-span-2">
-              <TagsInput
-                id="skills"
-                label="Required Skills (Add at least 2)"
-                placeholder="e.g., React, Node.js, MongoDB"
-                tags={projectData.skills}
-                onTagsChange={(skills) => setProjectData({ ...projectData, skills })}
-                error={errors.skills}
-              />
+        {/* Step Content */}
+        <StaggerContainer className={styles.content} key={currentStep}>
+          {currentStep === 1 && (
+            <div className={styles.formGrid}>
+              <StaggerItem className="col-span-2">
+                <Input
+                  name="title"
+                  label="Project Title"
+                  placeholder="e.g., Build a responsive e-commerce website"
+                  value={projectData.title}
+                  onChange={(e) => setProjectData({ ...projectData, title: e.target.value })}
+                  error={errors.title}
+                  helpText={`${projectData.title.length} characters (minimum 10)`}
+                />
+              </StaggerItem>
+              <StaggerItem className="col-span-2">
+                <Textarea
+                  name="description"
+                  label="Project Description"
+                  placeholder="Describe your project in detail. What needs to be done? What are your requirements? What is the expected outcome?"
+                  value={projectData.description}
+                  onChange={(e) => setProjectData({ ...projectData, description: e.target.value })}
+                  error={errors.description}
+                  rows={8}
+                  helpText={`${projectData.description.length}/1000 characters (minimum 100)`}
+                />
+              </StaggerItem>
+              <StaggerItem className="col-span-2">
+                <Select
+                  id="category"
+                  label="Project Category"
+                  value={projectData.category}
+                  onChange={(e) => setProjectData({ ...projectData, category: e.target.value })}
+                  options={categories}
+                />
+              </StaggerItem>
+              <StaggerItem className="col-span-2">
+                <FileUpload
+                  label="Attachments (Optional)"
+                  accept="image/*,.pdf,.doc,.docx"
+                  maxSize={10}
+                  uploadType="document"
+                  onUploadComplete={(url) => setProjectData({ 
+                    ...projectData, 
+                    attachments: [...projectData.attachments, url] 
+                  })}
+                />
+              </StaggerItem>
             </div>
-            <Select
-              id="experienceLevel"
-              label="Experience Level Required"
-              value={projectData.experienceLevel}
-              onChange={(e) => setProjectData({ ...projectData, experienceLevel: e.target.value })}
-              options={[
-                { value: '', label: 'Select level' },
-                { value: 'ENTRY', label: 'Entry Level - New freelancers welcome' },
-                { value: 'INTERMEDIATE', label: 'Intermediate - Some experience needed' },
-                { value: 'EXPERT', label: 'Expert - Only experienced professionals' },
-              ]}
-              className="col-span-2"
-            />
-          </div>
-        )}
+          )}
 
-        {currentStep === 4 && (
-          <div className={styles.reviewSection}>
-            <h3 className="text-xl font-bold mb-4">Review Your Project</h3>
-            
-            <div className={styles.reviewItem}>
-              <span className={styles.reviewLabel}>Title:</span>
-              <span className={styles.reviewValue}>{projectData.title}</span>
+          {currentStep === 2 && (
+            <div className={styles.formGrid}>
+              <StaggerItem className="col-span-2">
+                <label className="block text-sm font-semibold mb-2">Budget Type</label>
+                <div className={styles.budgetToggle}>
+                  <button
+                    type="button"
+                    className={cn(
+                      styles.budgetOption,
+                      projectData.budgetType === 'fixed' && styles.budgetOptionActive
+                    )}
+                    onClick={() => setProjectData({ ...projectData, budgetType: 'fixed' })}
+                  >
+                    <FaMoneyBillWave className="mr-2" />
+                    Fixed Price
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(
+                      styles.budgetOption,
+                      projectData.budgetType === 'hourly' && styles.budgetOptionActive
+                    )}
+                    onClick={() => setProjectData({ ...projectData, budgetType: 'hourly' })}
+                  >
+                    <FaClock className="mr-2" />
+                    Hourly Rate
+                  </button>
+                </div>
+              </StaggerItem>
+              <StaggerItem>
+                <Input
+                  name="budgetMin"
+                  type="number"
+                  label={`Minimum ${projectData.budgetType === 'hourly' ? 'Hourly Rate' : 'Budget'} (PKR)`}
+                  placeholder="10000"
+                  value={projectData.budgetMin}
+                  onChange={(e) => setProjectData({ ...projectData, budgetMin: e.target.value })}
+                  error={errors.budgetMin}
+                />
+              </StaggerItem>
+              <StaggerItem>
+                <Input
+                  name="budgetMax"
+                  type="number"
+                  label={`Maximum ${projectData.budgetType === 'hourly' ? 'Hourly Rate' : 'Budget'} (PKR)`}
+                  placeholder="50000"
+                  value={projectData.budgetMax}
+                  onChange={(e) => setProjectData({ ...projectData, budgetMax: e.target.value })}
+                  error={errors.budgetMax}
+                />
+              </StaggerItem>
+              <StaggerItem className="col-span-2">
+                <Select
+                  id="duration"
+                  label="Project Duration"
+                  value={projectData.duration}
+                  onChange={(e) => setProjectData({ ...projectData, duration: e.target.value })}
+                  options={[
+                    { value: '', label: 'Select duration' },
+                    { value: 'less-than-week', label: 'Less than 1 week' },
+                    { value: '1-2-weeks', label: '1-2 weeks' },
+                    { value: '2-4-weeks', label: '2-4 weeks' },
+                    { value: '1-3-months', label: '1-3 months' },
+                    { value: '3-6-months', label: '3-6 months' },
+                    { value: 'more-than-6-months', label: 'More than 6 months' },
+                  ]}
+                />
+              </StaggerItem>
             </div>
-            
-            <div className={styles.reviewItem}>
-              <span className={styles.reviewLabel}>Description:</span>
-              <span className={styles.reviewValue}>{projectData.description}</span>
-            </div>
-            
-            <div className={styles.reviewItem}>
-              <span className={styles.reviewLabel}>Category:</span>
-              <span className={styles.reviewValue}>
-                {categories.find(c => c.value === projectData.category)?.label}
-              </span>
-            </div>
-            
-            <div className={styles.reviewItem}>
-              <span className={styles.reviewLabel}>Budget:</span>
-              <span className={styles.reviewValue}>
-                PKR {projectData.budgetMin} - {projectData.budgetMax} ({projectData.budgetType})
-              </span>
-            </div>
-            
-            <div className={styles.reviewItem}>
-              <span className={styles.reviewLabel}>Duration:</span>
-              <span className={styles.reviewValue}>{projectData.duration}</span>
-            </div>
-            
-            <div className={styles.reviewItem}>
-              <span className={styles.reviewLabel}>Required Skills:</span>
-              <span className={styles.reviewValue}>{projectData.skills.join(', ')}</span>
-            </div>
-            
-            <div className={styles.reviewItem}>
-              <span className={styles.reviewLabel}>Experience Level:</span>
-              <span className={styles.reviewValue}>{projectData.experienceLevel}</span>
-            </div>
-          </div>
-        )}
+          )}
 
-        {errors.general && (
-          <div className="text-red-500 text-center mt-4">{errors.general}</div>
-        )}
-      </div>
+          {currentStep === 3 && (
+            <div className={styles.formGrid}>
+              <StaggerItem className="col-span-2">
+                <TagsInput
+                  id="skills"
+                  label="Required Skills (Add at least 2)"
+                  placeholder="e.g., React, Node.js, MongoDB"
+                  tags={projectData.skills}
+                  onTagsChange={(skills) => setProjectData({ ...projectData, skills })}
+                  error={errors.skills}
+                />
+              </StaggerItem>
+              <StaggerItem className="col-span-2">
+                <Select
+                  id="experienceLevel"
+                  label="Experience Level Required"
+                  value={projectData.experienceLevel}
+                  onChange={(e) => setProjectData({ ...projectData, experienceLevel: e.target.value })}
+                  options={[
+                    { value: '', label: 'Select level' },
+                    { value: 'ENTRY', label: 'Entry Level - New freelancers welcome' },
+                    { value: 'INTERMEDIATE', label: 'Intermediate - Some experience needed' },
+                    { value: 'EXPERT', label: 'Expert - Only experienced professionals' },
+                  ]}
+                />
+              </StaggerItem>
+            </div>
+          )}
 
-      {/* Actions */}
-      <div className={styles.actions}>
-        {currentStep > 1 && (
+          {currentStep === 4 && (
+            <div className={styles.reviewSection}>
+              <StaggerItem>
+                <h3 className="text-xl font-bold mb-4">Review Your Project</h3>
+              </StaggerItem>
+              
+              <StaggerItem className={styles.reviewItem}>
+                <span className={styles.reviewLabel}>Title:</span>
+                <span className={styles.reviewValue}>{projectData.title}</span>
+              </StaggerItem>
+              
+              <StaggerItem className={styles.reviewItem}>
+                <span className={styles.reviewLabel}>Description:</span>
+                <span className={styles.reviewValue}>{projectData.description}</span>
+              </StaggerItem>
+              
+              <StaggerItem className={styles.reviewItem}>
+                <span className={styles.reviewLabel}>Category:</span>
+                <span className={styles.reviewValue}>
+                  {categories.find(c => c.value === projectData.category)?.label}
+                </span>
+              </StaggerItem>
+              
+              <StaggerItem className={styles.reviewItem}>
+                <span className={styles.reviewLabel}>Budget:</span>
+                <span className={styles.reviewValue}>
+                  PKR {projectData.budgetMin} - {projectData.budgetMax} ({projectData.budgetType})
+                </span>
+              </StaggerItem>
+              
+              <StaggerItem className={styles.reviewItem}>
+                <span className={styles.reviewLabel}>Duration:</span>
+                <span className={styles.reviewValue}>{projectData.duration}</span>
+              </StaggerItem>
+              
+              <StaggerItem className={styles.reviewItem}>
+                <span className={styles.reviewLabel}>Required Skills:</span>
+                <span className={styles.reviewValue}>{projectData.skills.join(', ')}</span>
+              </StaggerItem>
+              
+              <StaggerItem className={styles.reviewItem}>
+                <span className={styles.reviewLabel}>Experience Level:</span>
+                <span className={styles.reviewValue}>{projectData.experienceLevel}</span>
+              </StaggerItem>
+            </div>
+          )}
+
+          {errors.general && (
+            <StaggerItem className="text-red-500 text-center mt-4">{errors.general}</StaggerItem>
+          )}
+        </StaggerContainer>
+
+        {/* Actions */}
+        <div className={styles.actions}>
+          {currentStep > 1 && (
+            <Button
+              variant="secondary"
+              onClick={handleBack}
+              disabled={loading}
+            >
+              <FaArrowLeft className="mr-2" />
+              Back
+            </Button>
+          )}
           <Button
-            variant="secondary"
-            onClick={handleBack}
+            variant="primary"
+            onClick={handleNext}
+            isLoading={loading}
             disabled={loading}
           >
-            <FaArrowLeft className="mr-2" />
-            Back
+            {currentStep < steps.length ? (
+              <>
+                Next
+                <FaArrowRight className="ml-2" />
+              </>
+            ) : (
+              <>
+                Post Project
+                <FaCheckCircle className="ml-2" />
+              </>
+            )}
           </Button>
-        )}
-        <Button
-          variant="primary"
-          onClick={handleNext}
-          isLoading={loading}
-          disabled={loading}
-        >
-          {currentStep < steps.length ? (
-            <>
-              Next
-              <FaArrowRight className="ml-2" />
-            </>
-          ) : (
-            <>
-              Post Project
-              <FaCheckCircle className="ml-2" />
-            </>
-          )}
-        </Button>
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

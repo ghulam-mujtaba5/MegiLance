@@ -1,3 +1,7 @@
+.container {
+  background-color: var(--bg-primary-dark);
+}
+
 .title {
   color: var(--text-primary-dark);
 }
@@ -6,18 +10,77 @@
   color: var(--text-secondary-dark);
 }
 
+.toggleAllRow {
+  color: var(--text-secondary-dark);
+}
+
+.toggleAllButton {
+  background-color: var(--bg-tertiary-dark);
+  color: var(--text-secondary-dark);
+}
+
+.toggleAllButton:hover {
+  background-color: var(--primary-dark);
+  color: white;
+}
+
+.termsSection {
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.sectionHeader {
+  background-color: var(--bg-secondary-dark);
+  color: var(--text-primary-dark);
+}
+
+.sectionHeader:hover {
+  background-color: var(--bg-tertiary-dark);
+}
+
+.sectionTitleWrapper {
+  color: var(--text-primary-dark);
+}
+
+.sectionIcon {
+  color: var(--primary-dark);
+}
+
 .sectionTitle {
   color: var(--text-primary-dark);
 }
 
 .termsList {
+  background-color: var(--bg-secondary-dark);
+}
+
+.termsItem {
   color: var(--text-secondary-dark);
 }
 
+.itemIcon {
+  color: var(--primary-dark);
+}
+
 .agreement {
-  border-top-color: var(--border-dark);
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.agreementAccepted {
+  background-color: rgba(39, 174, 96, 0.15);
+  border-color: var(--success-dark);
+}
+
+.agreementLabel {
+  color: var(--text-primary-dark);
 }
 
 .error {
   color: var(--error-dark);
+}
+
+.successMessage {
+  background-color: rgba(39, 174, 96, 0.15);
+  color: var(--success-dark);
 }

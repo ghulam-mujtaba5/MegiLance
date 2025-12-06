@@ -3,37 +3,40 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: 2rem; /* Vertical spacing between major sections */
-  padding: 1.5rem; /* Standard page padding */
+  gap: var(--space-8);
+  padding: var(--space-6);
+  min-height: 100vh;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: var(--space-4);
 }
 
 .title {
-  font-size: var(--font-size-xxl);
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
+  font-family: var(--font-heading);
 }
 
 .subtitle {
-  font-size: var(--font-size-md);
-  margin-top: 0.25rem;
+  font-size: 1rem;
+  margin-top: var(--space-1);
+  font-family: var(--font-body);
 }
 
 .actions {
-  flex-shrink: 0; /* Prevent button from shrinking */
+  flex-shrink: 0;
 }
 
 .kpiGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .controls {
@@ -41,42 +44,42 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .searchInput {
   flex-grow: 1;
-  min-width: 250px; /* Ensure it doesn't get too small */
+  min-width: 250px;
   max-width: 400px;
 }
 
 .filters {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex-wrap: wrap;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .skeletonCard {
-  height: 160px; /* Approximate height of a PaymentCard */
-  border-radius: var(--border-radius-lg);
+  height: 160px;
+  border-radius: var(--radius-lg);
 }
 
 .paginationContainer {
   display: flex;
   justify-content: center;
-  padding-top: 1rem; /* Space above pagination */
+  padding-top: var(--space-4);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .page {
-    padding: 1rem;
+    padding: var(--space-4);
   }
 
   .header {
@@ -94,21 +97,19 @@
   }
 
   .grid {
-    grid-template-columns: 1fr; /* Stack cards on mobile */
+    grid-template-columns: 1fr;
   }
 }
 
-.input:focus-visible, .select:focus-visible, .button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
 /* Empty state helper */
-.emptyState { padding: 12px; }
+.emptyState { padding: var(--space-3); }
 
 /* Pagination */
 .paginationBar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--spacing-2);
-  margin-top: 12px;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 .paginationInfo { opacity: .8; }

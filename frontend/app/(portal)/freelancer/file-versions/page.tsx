@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { fileVersionsApi } from '@/lib/api';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { StaggerItem } from '@/app/components/Animations/StaggerItem';
 import commonStyles from './FileVersions.common.module.css';
 import lightStyles from './FileVersions.light.module.css';
 import darkStyles from './FileVersions.dark.module.css';
@@ -164,196 +168,203 @@ export default function FileVersionsPage() {
     });
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.header}>
-        <div>
-          <h1 className={cn(commonStyles.title, themeStyles.title)}>File Versions</h1>
-          <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Track changes and manage file history across projects
-          </p>
-        </div>
-      </div>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <div>
+              <h1 className={cn(commonStyles.title, themeStyles.title)}>File Versions</h1>
+              <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+                Track changes and manage file history across projects
+              </p>
+            </div>
+          </div>
+        </ScrollReveal>
 
-      <div className={commonStyles.controls}>
-        <div className={cn(commonStyles.searchBox, themeStyles.searchBox)}>
-          <span className={commonStyles.searchIcon}>🔍</span>
-          <input
-            type="text"
-            placeholder="Search files..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={cn(commonStyles.searchInput, themeStyles.searchInput)}
-          />
-        </div>
+        <ScrollReveal delay={0.1}>
+          <div className={commonStyles.controls}>
+            <div className={cn(commonStyles.searchBox, themeStyles.searchBox)}>
+              <span className={commonStyles.searchIcon}>🔍</span>
+              <input
+                type="text"
+                placeholder="Search files..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={cn(commonStyles.searchInput, themeStyles.searchInput)}
+              />
+            </div>
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-          className={cn(commonStyles.sortSelect, themeStyles.sortSelect)}
-        >
-          <option value="modified">Recently Modified</option>
-          <option value="name">Name A-Z</option>
-          <option value="versions">Most Versions</option>
-        </select>
-      </div>
-
-      {loading ? (
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>
-          Loading files...
-        </div>
-      ) : filteredFiles.length === 0 ? (
-        <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-          <span className={commonStyles.emptyIcon}>📂</span>
-          <h3 className={cn(commonStyles.emptyTitle, themeStyles.emptyTitle)}>No Files Found</h3>
-          <p className={cn(commonStyles.emptyDesc, themeStyles.emptyDesc)}>
-            {searchQuery ? 'Try a different search term' : 'Files with version history will appear here'}
-          </p>
-        </div>
-      ) : (
-        <div className={commonStyles.fileList}>
-          {filteredFiles.map(file => (
-            <div
-              key={file.id}
-              className={cn(commonStyles.fileCard, themeStyles.fileCard)}
-              onClick={() => loadFileVersions(file.id)}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className={cn(commonStyles.sortSelect, themeStyles.sortSelect)}
             >
-              <div className={commonStyles.fileIcon}>
-                {getFileIcon(file.versions?.[0]?.mime_type || 'application/octet-stream')}
-              </div>
-              <div className={commonStyles.fileInfo}>
-                <h3 className={cn(commonStyles.fileName, themeStyles.fileName)}>{file.name}</h3>
-                <div className={commonStyles.fileMeta}>
-                  <span className={cn(commonStyles.projectName, themeStyles.projectName)}>
-                    📁 {file.project_name}
-                  </span>
-                  <span className={cn(commonStyles.versionCount, themeStyles.versionCount)}>
-                    v{file.current_version} • {file.total_versions} versions
-                  </span>
-                </div>
-              </div>
-              <div className={commonStyles.fileModified}>
-                <span className={cn(commonStyles.modifiedTime, themeStyles.modifiedTime)}>
-                  {getRelativeTime(file.last_modified)}
-                </span>
-              </div>
-              <span className={commonStyles.chevron}>›</span>
-            </div>
-          ))}
-        </div>
-      )}
+              <option value="modified">Recently Modified</option>
+              <option value="name">Name A-Z</option>
+              <option value="versions">Most Versions</option>
+            </select>
+          </div>
+        </ScrollReveal>
 
-      {/* Version History Modal */}
-      {selectedFile && (
-        <div className={commonStyles.modalOverlay} onClick={() => setSelectedFile(null)}>
-          <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={(e) => e.stopPropagation()}>
-            <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-              <div className={commonStyles.modalFileInfo}>
-                <span className={commonStyles.modalFileIcon}>
-                  {getFileIcon(selectedFile.versions?.[0]?.mime_type || '')}
-                </span>
-                <div>
-                  <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>
-                    {selectedFile.name}
-                  </h2>
-                  <p className={cn(commonStyles.modalSubtitle, themeStyles.modalSubtitle)}>
-                    {selectedFile.total_versions} versions • {selectedFile.project_name}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setSelectedFile(null)}
-                className={cn(commonStyles.closeButton, themeStyles.closeButton)}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className={commonStyles.modalContent}>
-              <div className={commonStyles.versionTimeline}>
-                {selectedFile.versions?.map((version, index) => (
-                  <div
-                    key={version.id}
-                    className={cn(
-                      commonStyles.versionItem,
-                      themeStyles.versionItem,
-                      version.is_current && commonStyles.currentVersion,
-                      version.is_current && themeStyles.currentVersion
-                    )}
-                  >
-                    <div className={commonStyles.versionMarker}>
-                      <div className={cn(commonStyles.versionDot, themeStyles.versionDot)} />
-                      {index < selectedFile.versions.length - 1 && (
-                        <div className={cn(commonStyles.versionLine, themeStyles.versionLine)} />
-                      )}
-                    </div>
-
-                    <div className={commonStyles.versionContent}>
-                      <div className={commonStyles.versionHeader}>
-                        <span className={cn(commonStyles.versionNumber, themeStyles.versionNumber)}>
-                          Version {version.version_number}
-                          {version.is_current && (
-                            <span className={cn(commonStyles.currentBadge, themeStyles.currentBadge)}>
-                              Current
-                            </span>
-                          )}
-                        </span>
-                        <span className={cn(commonStyles.versionDate, themeStyles.versionDate)}>
-                          {getRelativeTime(version.created_at)}
-                        </span>
-                      </div>
-
-                      <div className={commonStyles.versionMeta}>
-                        <div className={commonStyles.versionUploader}>
-                          <span className={commonStyles.uploaderAvatar}>
-                            {version.uploaded_by.avatar || version.uploaded_by.name.charAt(0)}
-                          </span>
-                          <span className={cn(commonStyles.uploaderName, themeStyles.uploaderName)}>
-                            {version.uploaded_by.name}
-                          </span>
-                        </div>
-                        <span className={cn(commonStyles.versionSize, themeStyles.versionSize)}>
-                          {formatFileSize(version.size_bytes)}
-                        </span>
-                      </div>
-
-                      {version.changes_description && (
-                        <p className={cn(commonStyles.versionChanges, themeStyles.versionChanges)}>
-                          {version.changes_description}
-                        </p>
-                      )}
-
-                      <div className={commonStyles.versionActions}>
-                        <button
-                          onClick={() => downloadVersion(version.id, version.download_url)}
-                          className={cn(commonStyles.actionBtn, themeStyles.downloadBtn)}
-                        >
-                          ⬇️ Download
-                        </button>
-                        {!version.is_current && (
-                          <>
-                            <button
-                              onClick={() => restoreVersion(selectedFile.id, version.id)}
-                              className={cn(commonStyles.actionBtn, themeStyles.restoreBtn)}
-                            >
-                              ↩️ Restore
-                            </button>
-                            <button
-                              onClick={() => deleteVersion(selectedFile.id, version.id)}
-                              className={cn(commonStyles.actionBtn, themeStyles.deleteBtn)}
-                            >
-                              🗑️
-                            </button>
-                          </>
-                        )}
-                      </div>
+        {loading ? (
+          <div className={cn(commonStyles.loading, themeStyles.loading)}>
+            Loading files...
+          </div>
+        ) : filteredFiles.length === 0 ? (
+          <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+            <span className={commonStyles.emptyIcon}>📂</span>
+            <h3 className={cn(commonStyles.emptyTitle, themeStyles.emptyTitle)}>No Files Found</h3>
+            <p className={cn(commonStyles.emptyDesc, themeStyles.emptyDesc)}>
+              {searchQuery ? 'Try a different search term' : 'Files with version history will appear here'}
+            </p>
+          </div>
+        ) : (
+          <StaggerContainer className={commonStyles.fileList}>
+            {filteredFiles.map(file => (
+              <StaggerItem key={file.id}>
+                <div
+                  className={cn(commonStyles.fileCard, themeStyles.fileCard)}
+                  onClick={() => loadFileVersions(file.id)}
+                >
+                  <div className={commonStyles.fileIcon}>
+                    {getFileIcon(file.versions?.[0]?.mime_type || 'application/octet-stream')}
+                  </div>
+                  <div className={commonStyles.fileInfo}>
+                    <h3 className={cn(commonStyles.fileName, themeStyles.fileName)}>{file.name}</h3>
+                    <div className={commonStyles.fileMeta}>
+                      <span className={cn(commonStyles.projectName, themeStyles.projectName)}>
+                        📁 {file.project_name}
+                      </span>
+                      <span className={cn(commonStyles.versionCount, themeStyles.versionCount)}>
+                        v{file.current_version} • {file.total_versions} versions
+                      </span>
                     </div>
                   </div>
-                ))}
+                  <div className={commonStyles.fileModified}>
+                    <span className={cn(commonStyles.modifiedTime, themeStyles.modifiedTime)}>
+                      {getRelativeTime(file.last_modified)}
+                    </span>
+                  </div>
+                  <span className={commonStyles.chevron}>›</span>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        )}
+
+        {/* Version History Modal */}
+        {selectedFile && (
+          <div className={commonStyles.modalOverlay} onClick={() => setSelectedFile(null)}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={(e) => e.stopPropagation()}>
+              <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
+                <div className={commonStyles.modalFileInfo}>
+                  <span className={commonStyles.modalFileIcon}>
+                    {getFileIcon(selectedFile.versions?.[0]?.mime_type || '')}
+                  </span>
+                  <div>
+                    <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>
+                      {selectedFile.name}
+                    </h2>
+                    <p className={cn(commonStyles.modalSubtitle, themeStyles.modalSubtitle)}>
+                      {selectedFile.total_versions} versions • {selectedFile.project_name}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setSelectedFile(null)}
+                  className={cn(commonStyles.closeButton, themeStyles.closeButton)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className={commonStyles.modalContent}>
+                <div className={commonStyles.versionTimeline}>
+                  {selectedFile.versions?.map((version, index) => (
+                    <div
+                      key={version.id}
+                      className={cn(
+                        commonStyles.versionItem,
+                        themeStyles.versionItem,
+                        version.is_current && commonStyles.currentVersion,
+                        version.is_current && themeStyles.currentVersion
+                      )}
+                    >
+                      <div className={commonStyles.versionMarker}>
+                        <div className={cn(commonStyles.versionDot, themeStyles.versionDot)} />
+                        {index < selectedFile.versions.length - 1 && (
+                          <div className={cn(commonStyles.versionLine, themeStyles.versionLine)} />
+                        )}
+                      </div>
+
+                      <div className={commonStyles.versionContent}>
+                        <div className={commonStyles.versionHeader}>
+                          <span className={cn(commonStyles.versionNumber, themeStyles.versionNumber)}>
+                            Version {version.version_number}
+                            {version.is_current && (
+                              <span className={cn(commonStyles.currentBadge, themeStyles.currentBadge)}>
+                                Current
+                              </span>
+                            )}
+                          </span>
+                          <span className={cn(commonStyles.versionDate, themeStyles.versionDate)}>
+                            {getRelativeTime(version.created_at)}
+                          </span>
+                        </div>
+
+                        <div className={commonStyles.versionMeta}>
+                          <div className={commonStyles.versionUploader}>
+                            <span className={commonStyles.uploaderAvatar}>
+                              {version.uploaded_by.avatar || version.uploaded_by.name.charAt(0)}
+                            </span>
+                            <span className={cn(commonStyles.uploaderName, themeStyles.uploaderName)}>
+                              {version.uploaded_by.name}
+                            </span>
+                          </div>
+                          <span className={cn(commonStyles.versionSize, themeStyles.versionSize)}>
+                            {formatFileSize(version.size_bytes)}
+                          </span>
+                        </div>
+
+                        {version.changes_description && (
+                          <p className={cn(commonStyles.versionChanges, themeStyles.versionChanges)}>
+                            {version.changes_description}
+                          </p>
+                        )}
+
+                        <div className={commonStyles.versionActions}>
+                          <button
+                            onClick={() => downloadVersion(version.id, version.download_url)}
+                            className={cn(commonStyles.actionBtn, themeStyles.downloadBtn)}
+                          >
+                            ⬇️ Download
+                          </button>
+                          {!version.is_current && (
+                            <>
+                              <button
+                                onClick={() => restoreVersion(selectedFile.id, version.id)}
+                                className={cn(commonStyles.actionBtn, themeStyles.restoreBtn)}
+                              >
+                                ↩️ Restore
+                              </button>
+                              <button
+                                onClick={() => deleteVersion(selectedFile.id, version.id)}
+                                className={cn(commonStyles.actionBtn, themeStyles.deleteBtn)}
+                              >
+                                🗑️
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </PageTransition>
   );
 }

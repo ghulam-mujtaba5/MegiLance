@@ -736,6 +736,24 @@ export const milestonesApi = {
     
   delete: (id: string) => 
     apiFetch(`/milestones/${id}`, { method: 'DELETE' }),
+
+  submit: (id: number, data: { deliverables: string; submission_notes?: string }) =>
+    apiFetch(`/milestones/${id}/submit`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  approve: (id: number, data: { approval_notes?: string }) =>
+    apiFetch(`/milestones/${id}/approve`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  reject: (id: number, reason: string) =>
+    apiFetch(`/milestones/${id}/reject`, {
+      method: 'POST',
+      body: JSON.stringify({ rejection_notes: reason }),
+    }),
 };
 
 // ===========================
@@ -1078,6 +1096,8 @@ export const adminApi = {
   
   getAnalytics: () => apiFetch('/admin/analytics/overview'),
   getSettings: () => apiFetch('/admin/settings'),
+  getPlatformReviewStats: () => apiFetch('/admin/dashboard/reviews'),
+  getFraudAlerts: (limit = 10) => apiFetch(`/admin/dashboard/fraud?limit=${limit}`),
 };
 
 // ===========================
@@ -1176,9 +1196,34 @@ export const disputesApi = {
 
   update: (disputeId: number, data: any) =>
     apiFetch(`/disputes/${disputeId}`, {
-      method: 'PUT',
+      method: 'PATCH',
       body: JSON.stringify(data),
     }),
+
+  assign: (disputeId: number, adminId: number) =>
+    apiFetch(`/disputes/${disputeId}/assign?admin_id=${adminId}`, {
+      method: 'POST',
+    }),
+
+  resolve: (disputeId: number, resolution: string, contractStatus?: string) => {
+    const params = new URLSearchParams();
+    params.append('resolution', resolution);
+    if (contractStatus) {
+      params.append('contract_status', contractStatus);
+    }
+    return apiFetch(`/disputes/${disputeId}/resolve?${params}`, {
+      method: 'POST',
+    });
+  },
+
+  uploadEvidence: (disputeId: number, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiFetch(`/disputes/${disputeId}/evidence`, {
+      method: 'POST',
+      body: formData,
+    });
+  },
 };
 
 // ===========================
@@ -1222,7 +1267,7 @@ export const aiApi = {
       risk_level: string;
       risk_factors: string[];
       recommendation: string;
-    }>(`/ai/fraud-check/user/${userId}`),
+    }>(`/fraud-detection/analyze/user/${userId}`),
 };
 
 // ===========================

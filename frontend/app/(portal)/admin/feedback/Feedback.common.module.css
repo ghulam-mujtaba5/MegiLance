@@ -369,18 +369,113 @@
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 1.25rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .exportButton {
+    width: 100%;
+    text-align: center;
   }
 
   .filters {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.75rem;
   }
 
   .tabs {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     padding-bottom: 0.5rem;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .select {
+    width: 100%;
+  }
+
+  .feedbackHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .feedbackMeta {
+    flex-wrap: wrap;
+  }
+
+  .feedbackFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statCard {
+    padding: 1rem;
+  }
+
+  .statValue {
+    font-size: 1.75rem;
+  }
+
+  .feedbackCard {
+    padding: 1rem;
+  }
+
+  .feedbackSubject {
+    font-size: 1rem;
+  }
+
+  .modal {
+    margin: 0.5rem;
+    border-radius: 12px;
+  }
+
+  .modalHeader,
+  .modalContent {
+    padding: 1rem;
+  }
+
+  .detailRow {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .detailLabel {
+    min-width: auto;
   }
 }

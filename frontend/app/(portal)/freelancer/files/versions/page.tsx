@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { StaggerItem } from '@/app/components/Animations/StaggerItem';
 import commonStyles from './FileVersions.common.module.css';
 import lightStyles from './FileVersions.light.module.css';
 import darkStyles from './FileVersions.dark.module.css';
@@ -55,28 +59,67 @@ export default function FileVersionsPage() {
   const fetchFileVersions = async (id: string) => {
     setLoading(true);
     try {
-      const mockFileInfo: FileInfo = {
-        id: id,
-        name: 'project-design-v3.fig',
-        projectId: 'proj_001',
-        projectName: 'E-commerce Website Design',
-        totalVersions: 5,
-        currentVersion: 5,
-        createdAt: '2025-01-05'
-      };
+      // Fetch real file versions from API
+      const { filesApi } = await import('@/lib/api');
+      
+      const [fileData, versionsData] = await Promise.all([
+        filesApi.get(id).catch(() => null),
+        filesApi.getVersions(id).catch(() => null),
+      ]);
 
-      const mockVersions: FileVersion[] = [
-        { id: 'v5', versionNumber: 5, fileName: 'project-design-v3.fig', fileSize: 4520000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-25T14:30:00Z', changeNote: 'Final design with client feedback incorporated', downloadUrl: '#', isCurrent: true },
-        { id: 'v4', versionNumber: 4, fileName: 'project-design-v3.fig', fileSize: 4380000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-23T10:15:00Z', changeNote: 'Updated color scheme and typography', downloadUrl: '#', isCurrent: false },
-        { id: 'v3', versionNumber: 3, fileName: 'project-design-v2.fig', fileSize: 4150000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-20T16:45:00Z', changeNote: 'Added checkout flow screens', downloadUrl: '#', isCurrent: false },
-        { id: 'v2', versionNumber: 2, fileName: 'project-design-v1.fig', fileSize: 3200000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-15T09:00:00Z', changeNote: 'Product listing and detail pages', downloadUrl: '#', isCurrent: false },
-        { id: 'v1', versionNumber: 1, fileName: 'project-design-initial.fig', fileSize: 1800000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-05T11:30:00Z', changeNote: 'Initial design draft', downloadUrl: '#', isCurrent: false }
-      ];
+      // Transform API data or use defaults
+      const fileInfoFromApi: FileInfo | null = fileData ? {
+        id: fileData.id?.toString() || id,
+        name: fileData.name || fileData.file_name || 'Unknown File',
+        projectId: fileData.project_id?.toString() || 'proj_001',
+        projectName: fileData.project_name || 'Project',
+        totalVersions: fileData.total_versions || versionsData?.length || 1,
+        currentVersion: fileData.current_version || 1,
+        createdAt: fileData.created_at || new Date().toISOString()
+      } : null;
 
-      setFileInfo(mockFileInfo);
-      setVersions(mockVersions);
+      const versionsArray = Array.isArray(versionsData) ? versionsData : versionsData?.items || [];
+      const transformedVersions: FileVersion[] = versionsArray.map((v: any, idx: number, arr: any[]) => ({
+        id: v.id?.toString() || `v${idx + 1}`,
+        versionNumber: v.version_number || v.versionNumber || arr.length - idx,
+        fileName: v.file_name || v.fileName || 'file',
+        fileSize: v.file_size || v.fileSize || 0,
+        mimeType: v.mime_type || v.mimeType || 'application/octet-stream',
+        uploadedBy: v.uploaded_by_name || v.uploadedBy || 'Unknown',
+        uploadedAt: v.uploaded_at || v.uploadedAt || new Date().toISOString(),
+        changeNote: v.change_note || v.changeNote,
+        downloadUrl: v.download_url || v.downloadUrl || '#',
+        isCurrent: v.is_current ?? idx === 0,
+      }));
+
+      if (fileInfoFromApi) {
+        setFileInfo(fileInfoFromApi);
+      } else {
+        // Fallback demo data
+        setFileInfo({
+          id: id,
+          name: 'project-design-v3.fig',
+          projectId: 'proj_001',
+          projectName: 'E-commerce Website Design',
+          totalVersions: 5,
+          currentVersion: 5,
+          createdAt: '2025-01-05'
+        });
+      }
+
+      if (transformedVersions.length > 0) {
+        setVersions(transformedVersions);
+      } else {
+        // Fallback demo versions
+        setVersions([
+          { id: 'v5', versionNumber: 5, fileName: 'project-design-v3.fig', fileSize: 4520000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-25T14:30:00Z', changeNote: 'Final design with client feedback incorporated', downloadUrl: '#', isCurrent: true },
+          { id: 'v4', versionNumber: 4, fileName: 'project-design-v3.fig', fileSize: 4380000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-23T10:15:00Z', changeNote: 'Updated color scheme and typography', downloadUrl: '#', isCurrent: false },
+          { id: 'v3', versionNumber: 3, fileName: 'project-design-v2.fig', fileSize: 4150000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-20T16:45:00Z', changeNote: 'Added checkout flow screens', downloadUrl: '#', isCurrent: false },
+        ]);
+      }
     } catch (error) {
       console.error('Failed to fetch file versions:', error);
+      setVersions([]);
     } finally {
       setLoading(false);
     }
@@ -119,143 +162,156 @@ export default function FileVersionsPage() {
 
   if (!fileId) {
     return (
-      <div className={cn(commonStyles.container, themeStyles.container)}>
-        <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-          <div className={commonStyles.emptyIcon}>📁</div>
-          <h2>Select a File</h2>
-          <p>Choose a file from your projects to view its version history</p>
-          <button 
-            className={cn(commonStyles.browseButton, themeStyles.browseButton)}
-            onClick={() => router.push('/freelancer/files')}
-          >
-            Browse Files
-          </button>
+      <PageTransition>
+        <div className={cn(commonStyles.container, themeStyles.container)}>
+          <ScrollReveal>
+            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+              <div className={commonStyles.emptyIcon}>📁</div>
+              <h2>Select a File</h2>
+              <p>Choose a file from your projects to view its version history</p>
+              <button 
+                className={cn(commonStyles.browseButton, themeStyles.browseButton)}
+                onClick={() => router.push('/freelancer/files')}
+              >
+                Browse Files
+              </button>
+            </div>
+          </ScrollReveal>
         </div>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.header}>
-        <button 
-          className={cn(commonStyles.backButton, themeStyles.backButton)}
-          onClick={() => router.back()}
-        >
-          ← Back to Files
-        </button>
-      </div>
-
-      {loading ? (
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading version history...</div>
-      ) : fileInfo && (
-        <>
-          {/* File Info Card */}
-          <div className={cn(commonStyles.fileInfoCard, themeStyles.fileInfoCard)}>
-            <div className={commonStyles.fileIcon}>📄</div>
-            <div className={commonStyles.fileDetails}>
-              <h1 className={cn(commonStyles.fileName, themeStyles.fileName)}>{fileInfo.name}</h1>
-              <p className={cn(commonStyles.projectName, themeStyles.projectName)}>
-                {fileInfo.projectName}
-              </p>
-              <div className={cn(commonStyles.fileMeta, themeStyles.fileMeta)}>
-                <span>{fileInfo.totalVersions} versions</span>
-                <span>•</span>
-                <span>Created {new Date(fileInfo.createdAt).toLocaleDateString()}</span>
-              </div>
-            </div>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <button 
+              className={cn(commonStyles.backButton, themeStyles.backButton)}
+              onClick={() => router.back()}
+            >
+              ← Back to Files
+            </button>
           </div>
+        </ScrollReveal>
 
-          {/* Compare Bar */}
-          {selectedVersions.length > 0 && (
-            <div className={cn(commonStyles.compareBar, themeStyles.compareBar)}>
-              <span>{selectedVersions.length} version(s) selected</span>
-              <div className={commonStyles.compareActions}>
-                <button 
-                  className={cn(commonStyles.clearButton, themeStyles.clearButton)}
-                  onClick={() => setSelectedVersions([])}
-                >
-                  Clear
-                </button>
-                <button 
-                  className={cn(commonStyles.compareButton, themeStyles.compareButton)}
-                  onClick={handleCompare}
-                  disabled={selectedVersions.length !== 2}
-                >
-                  Compare Versions
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Version Timeline */}
-          <div className={commonStyles.versionsList}>
-            {versions.map((version, index) => (
-              <div 
-                key={version.id} 
-                className={cn(
-                  commonStyles.versionCard,
-                  themeStyles.versionCard,
-                  version.isCurrent && commonStyles.currentVersion,
-                  selectedVersions.includes(version.id) && commonStyles.selectedVersion
-                )}
-              >
-                <div className={commonStyles.versionTimeline}>
-                  <div className={cn(commonStyles.versionDot, themeStyles.versionDot, version.isCurrent && commonStyles.dotCurrent)}></div>
-                  {index < versions.length - 1 && <div className={cn(commonStyles.versionLine, themeStyles.versionLine)}></div>}
-                </div>
-                <div className={commonStyles.versionContent}>
-                  <div className={commonStyles.versionHeader}>
-                    <div className={commonStyles.versionInfo}>
-                      <span className={cn(commonStyles.versionNumber, themeStyles.versionNumber)}>
-                        Version {version.versionNumber}
-                        {version.isCurrent && <span className={commonStyles.currentBadge}>Current</span>}
-                      </span>
-                      <span className={cn(commonStyles.versionDate, themeStyles.versionDate)}>
-                        {new Date(version.uploadedAt).toLocaleString()}
-                      </span>
-                    </div>
-                    <label className={commonStyles.checkbox}>
-                      <input 
-                        type="checkbox" 
-                        checked={selectedVersions.includes(version.id)}
-                        onChange={() => handleVersionSelect(version.id)}
-                      />
-                      <span className={cn(commonStyles.checkmark, themeStyles.checkmark)}></span>
-                    </label>
-                  </div>
-                  {version.changeNote && (
-                    <p className={cn(commonStyles.changeNote, themeStyles.changeNote)}>
-                      {version.changeNote}
-                    </p>
-                  )}
-                  <div className={cn(commonStyles.versionMeta, themeStyles.versionMeta)}>
-                    <span>By {version.uploadedBy}</span>
+        {loading ? (
+          <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading version history...</div>
+        ) : fileInfo && (
+          <>
+            {/* File Info Card */}
+            <ScrollReveal delay={0.1}>
+              <div className={cn(commonStyles.fileInfoCard, themeStyles.fileInfoCard)}>
+                <div className={commonStyles.fileIcon}>📄</div>
+                <div className={commonStyles.fileDetails}>
+                  <h1 className={cn(commonStyles.fileName, themeStyles.fileName)}>{fileInfo.name}</h1>
+                  <p className={cn(commonStyles.projectName, themeStyles.projectName)}>
+                    {fileInfo.projectName}
+                  </p>
+                  <div className={cn(commonStyles.fileMeta, themeStyles.fileMeta)}>
+                    <span>{fileInfo.totalVersions} versions</span>
                     <span>•</span>
-                    <span>{formatFileSize(version.fileSize)}</span>
-                  </div>
-                  <div className={commonStyles.versionActions}>
-                    <button className={cn(commonStyles.downloadButton, themeStyles.downloadButton)}>
-                      Download
-                    </button>
-                    {!version.isCurrent && (
-                      <button 
-                        className={cn(commonStyles.restoreButton, themeStyles.restoreButton)}
-                        onClick={() => handleRestore(version.id)}
-                      >
-                        Restore
-                      </button>
-                    )}
-                    <button className={cn(commonStyles.previewButton, themeStyles.previewButton)}>
-                      Preview
-                    </button>
+                    <span>Created {new Date(fileInfo.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+            </ScrollReveal>
+
+            {/* Compare Bar */}
+            {selectedVersions.length > 0 && (
+              <ScrollReveal delay={0.2}>
+                <div className={cn(commonStyles.compareBar, themeStyles.compareBar)}>
+                  <span>{selectedVersions.length} version(s) selected</span>
+                  <div className={commonStyles.compareActions}>
+                    <button 
+                      className={cn(commonStyles.clearButton, themeStyles.clearButton)}
+                      onClick={() => setSelectedVersions([])}
+                    >
+                      Clear
+                    </button>
+                    <button 
+                      className={cn(commonStyles.compareButton, themeStyles.compareButton)}
+                      onClick={handleCompare}
+                      disabled={selectedVersions.length !== 2}
+                    >
+                      Compare Versions
+                    </button>
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
+
+            {/* Version Timeline */}
+            <StaggerContainer className={commonStyles.versionsList} delay={0.3}>
+              {versions.map((version, index) => (
+                <StaggerItem key={version.id}>
+                  <div 
+                    className={cn(
+                      commonStyles.versionCard,
+                      themeStyles.versionCard,
+                      version.isCurrent && commonStyles.currentVersion,
+                      selectedVersions.includes(version.id) && commonStyles.selectedVersion
+                    )}
+                  >
+                    <div className={commonStyles.versionTimeline}>
+                      <div className={cn(commonStyles.versionDot, themeStyles.versionDot, version.isCurrent && commonStyles.dotCurrent)}></div>
+                      {index < versions.length - 1 && <div className={cn(commonStyles.versionLine, themeStyles.versionLine)}></div>}
+                    </div>
+                    <div className={commonStyles.versionContent}>
+                      <div className={commonStyles.versionHeader}>
+                        <div className={commonStyles.versionInfo}>
+                          <span className={cn(commonStyles.versionNumber, themeStyles.versionNumber)}>
+                            Version {version.versionNumber}
+                            {version.isCurrent && <span className={commonStyles.currentBadge}>Current</span>}
+                          </span>
+                          <span className={cn(commonStyles.versionDate, themeStyles.versionDate)}>
+                            {new Date(version.uploadedAt).toLocaleString()}
+                          </span>
+                        </div>
+                        <label className={commonStyles.checkbox}>
+                          <input 
+                            type="checkbox" 
+                            checked={selectedVersions.includes(version.id)}
+                            onChange={() => handleVersionSelect(version.id)}
+                          />
+                          <span className={cn(commonStyles.checkmark, themeStyles.checkmark)}></span>
+                        </label>
+                      </div>
+                      {version.changeNote && (
+                        <p className={cn(commonStyles.changeNote, themeStyles.changeNote)}>
+                          {version.changeNote}
+                        </p>
+                      )}
+                      <div className={cn(commonStyles.versionMeta, themeStyles.versionMeta)}>
+                        <span>By {version.uploadedBy}</span>
+                        <span>•</span>
+                        <span>{formatFileSize(version.fileSize)}</span>
+                      </div>
+                      <div className={commonStyles.versionActions}>
+                        <button className={cn(commonStyles.downloadButton, themeStyles.downloadButton)}>
+                          Download
+                        </button>
+                        {!version.isCurrent && (
+                          <button 
+                            className={cn(commonStyles.restoreButton, themeStyles.restoreButton)}
+                            onClick={() => handleRestore(version.id)}
+                          >
+                            Restore
+                          </button>
+                        )}
+                        <button className={cn(commonStyles.previewButton, themeStyles.previewButton)}>
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </>
+        )}
+      </div>
+    </PageTransition>
   );
 }

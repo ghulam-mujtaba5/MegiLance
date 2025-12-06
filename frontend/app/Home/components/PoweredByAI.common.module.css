@@ -2,7 +2,7 @@
 
 .section {
   position: relative;
-  padding: 8rem 1.5rem;
+  padding: 4rem 1.5rem 8rem; /* Reduced top padding from 8rem */
   overflow: hidden;
   z-index: 1;
   perspective: 1000px;

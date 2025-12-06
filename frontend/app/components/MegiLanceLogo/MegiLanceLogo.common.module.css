@@ -45,3 +45,22 @@
 .foreground {
   transition: fill 0.3s ease;
 }
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 1; } /* Reduced scale, removed opacity drop for solidity */
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes flow {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: 0; }
+}
+
+.aiNode {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulse 4s infinite ease-in-out;
+}
+
+/* Removed 'flow' animation as it adds unnecessary visual noise */

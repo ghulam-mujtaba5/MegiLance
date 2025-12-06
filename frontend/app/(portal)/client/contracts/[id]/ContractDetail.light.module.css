@@ -1,0 +1,20 @@
+/* Light theme */
+.container {
+  background-color: #f8f9fa;
+  color: #1a1a1a;
+}
+
+.title, .sectionTitle {
+  color: #2d3748;
+}
+
+.section {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.milestoneItem {
+  background-color: #f7fafc;
+  border-color: #edf2f7;
+}

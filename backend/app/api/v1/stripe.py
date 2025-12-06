@@ -4,10 +4,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
 from typing import Optional
 import stripe
+import logging
+import json
+from datetime import datetime
 
 from app.core.security import get_current_active_user
 from app.core.rate_limit import api_rate_limit, strict_rate_limit
 from app.db.turso_http import execute_query
+
+logger = logging.getLogger(__name__)
 from app.schemas.stripe_schemas import (
     StripeCustomerCreate,
     StripeCustomerResponse,
@@ -425,6 +430,7 @@ async def stripe_webhook(
     webhook_secret = settings.STRIPE_WEBHOOK_SECRET
     
     if not webhook_secret:
+        logger.error("Stripe webhook secret not configured")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Webhook secret not configured"
@@ -446,43 +452,84 @@ async def stripe_webhook(
         event_data = event.get("data", {}).get("object", {})
         
         # Log webhook event
-        print(f"[STRIPE WEBHOOK] Received event: {event_type}")
+        logger.info(f"[STRIPE WEBHOOK] Received event: {event_type}")
         
         # Handle specific events
         if event_type == "payment_intent.succeeded":
             payment_intent_id = event_data.get("id")
-            amount = event_data.get("amount", 0) / 100  # Convert cents to dollars
+            amount = event_data.get("amount", 0) / 100.0  # Convert cents to dollars
             metadata = event_data.get("metadata", {})
             
             # Update payment record if exists
             if metadata.get("payment_id"):
+                payment_id = int(metadata["payment_id"])
                 execute_query(
                     "UPDATE payments SET status = 'completed', updated_at = datetime('now') WHERE id = ?",
-                    [int(metadata["payment_id"])]
+                    [payment_id]
                 )
-                print(f"[STRIPE WEBHOOK] Payment {metadata['payment_id']} marked as completed")
+                logger.info(f"[STRIPE WEBHOOK] Payment {payment_id} marked as completed")
+                
+                # Send notification to user
+                if metadata.get("user_id"):
+                    user_id = int(metadata["user_id"])
+                    execute_query(
+                        """
+                        INSERT INTO notifications 
+                        (user_id, notification_type, title, content, data, is_read, created_at, priority)
+                        VALUES (?, ?, ?, ?, ?, ?, datetime('now'), 'high')
+                        """,
+                        [
+                            user_id,
+                            'PAYMENT_RECEIVED',
+                            'Payment Successful',
+                            f'Your payment of ${amount:.2f} was successful.',
+                            json.dumps({'payment_id': payment_id, 'amount': amount, 'stripe_id': payment_intent_id}),
+                            0
+                        ]
+                    )
         
         elif event_type == "payment_intent.payment_failed":
             payment_intent_id = event_data.get("id")
             metadata = event_data.get("metadata", {})
             
             if metadata.get("payment_id"):
+                payment_id = int(metadata["payment_id"])
                 execute_query(
                     "UPDATE payments SET status = 'failed', updated_at = datetime('now') WHERE id = ?",
-                    [int(metadata["payment_id"])]
+                    [payment_id]
                 )
-                print(f"[STRIPE WEBHOOK] Payment {metadata['payment_id']} marked as failed")
+                logger.warning(f"[STRIPE WEBHOOK] Payment {payment_id} marked as failed")
+                
+                # Send notification
+                if metadata.get("user_id"):
+                    user_id = int(metadata["user_id"])
+                    execute_query(
+                        """
+                        INSERT INTO notifications 
+                        (user_id, notification_type, title, content, data, is_read, created_at, priority)
+                        VALUES (?, ?, ?, ?, ?, ?, datetime('now'), 'high')
+                        """,
+                        [
+                            user_id,
+                            'PAYMENT_FAILED',
+                            'Payment Failed',
+                            'Your payment failed. Please check your payment method.',
+                            json.dumps({'payment_id': payment_id, 'stripe_id': payment_intent_id}),
+                            0
+                        ]
+                    )
         
         elif event_type == "charge.refunded":
             refund_id = event_data.get("id")
             metadata = event_data.get("metadata", {})
             
             if metadata.get("refund_id"):
+                db_refund_id = int(metadata["refund_id"])
                 execute_query(
                     "UPDATE refunds SET status = 'completed', processed_at = datetime('now') WHERE id = ?",
-                    [int(metadata["refund_id"])]
+                    [db_refund_id]
                 )
-                print(f"[STRIPE WEBHOOK] Refund {metadata['refund_id']} completed")
+                logger.info(f"[STRIPE WEBHOOK] Refund {db_refund_id} completed")
         
         return WebhookResponse(
             status="success",
@@ -491,11 +538,13 @@ async def stripe_webhook(
         )
     
     except stripe.error.SignatureVerificationError as e:
+        logger.error(f"Invalid Stripe signature: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid signature"
         )
     except Exception as e:
+        logger.error(f"Webhook processing error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Webhook processing error: {str(e)}"

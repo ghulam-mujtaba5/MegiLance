@@ -14,7 +14,7 @@ import darkStyles from './AIShowcase.dark.module.css';
 
 // --- SVG Logo Components ---
 const TensorFlowLogo = () => (
-  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TensorFlow</title><path d="M11.964 0L4.536 4.311v15.378l7.428 4.311 7.428-4.31V4.311zm.036 21.536L6.536 18.38V7.577l5.464-3.155 5.464 3.155v10.8l-5.428 3.156zM12 10.433l-3.103-1.792v3.584L12 14.017l3.103-1.792v-3.584zM8.897 6.845L12 5.05l3.103 1.795v3.583L12 12.22l-3.103-1.792z" fill="currentColor"/></svg>
+  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TensorFlow</title><path d="M1.29 8.68L11.36.39c.36-.3.88-.3 1.24 0l10.07 8.29c.37.3.37.79 0 1.1l-10.07 8.29c-.36.3-.88.3-1.24 0L1.29 9.78c-.37-.3-.37-.79 0-1.1zm10.67 8.55l9.1-7.49-9.1-7.49-9.1 7.49 9.1 7.49z" fill="#FF6F00" opacity="0.4"/><path d="M11.964 0L4.536 4.311v15.378l7.428 4.311 7.428-4.31V4.311zm.036 21.536L6.536 18.38V7.577l5.464-3.155 5.464 3.155v10.8l-5.428 3.156zM12 10.433l-3.103-1.792v3.584L12 14.017l3.103-1.792v-3.584zM8.897 6.845L12 5.05l3.103 1.795v3.583L12 12.22l-3.103-1.792z" fill="#FF6F00"/></svg>
 );
 
 const OpenAILogo = () => (
@@ -22,15 +22,15 @@ const OpenAILogo = () => (
 );
 
 const PyTorchLogo = () => (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>PyTorch</title><path d="M12.01 20.312c-2.188 0-4.062-1.344-4.844-3.344l-1.844.781A6.93 6.93 0 0012.01 22a6.93 6.93 0 006.688-5.25l-1.844-.781a5.25 5.25 0 01-4.844 3.344zM4.108 12.906l1.844-.781a5.25 5.25 0 014.844-3.344c2.188 0 4.063 1.344 4.844 3.344l1.844-.781A6.93 6.93 0 0012.01 6.75a6.93 6.93 0 00-6.688 5.25zM12.01 2a.938.938 0 100 1.875.938.938 0 000-1.875zm7.5 10.031a.938.938 0 100-1.875.938.938 0 000 1.875zM4.51 12.03a.938.938 0 100-1.875.938.938 0 000 1.875z" fill="currentColor"/></svg>
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>PyTorch</title><path d="M12.01 20.312c-2.188 0-4.062-1.344-4.844-3.344l-1.844.781A6.93 6.93 0 0012.01 22a6.93 6.93 0 006.688-5.25l-1.844-.781a5.25 5.25 0 01-4.844 3.344zM4.108 12.906l1.844-.781a5.25 5.25 0 014.844-3.344c2.188 0 4.063 1.344 4.844 3.344l1.844-.781A6.93 6.93 0 0012.01 6.75a6.93 6.93 0 00-6.688 5.25zM12.01 2a.938.938 0 100 1.875.938.938 0 000-1.875zm7.5 10.031a.938.938 0 100-1.875.938.938 0 000 1.875zM4.51 12.03a.938.938 0 100-1.875.938.938 0 000 1.875z" fill="#EE4C2C"/></svg>
 );
 
 const HuggingFaceLogo = () => (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Hugging Face</title><path d="M20.56 17.39a8.312 8.312 0 0 1-11.752 0L12 20.561l3.28-3.17zm-1.64-1.64a6.208 6.208 0 0 0-8.784 0l.168.168c.024.024 2.544 2.592 4.224 2.592s4.2-2.568 4.224-2.592l.168-.168zM12 14.24a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zm-3.36-2.52a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zm6.72 0a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zM17.385 3.44a8.312 8.312 0 0 1 0 11.752l-1.63-1.64a6.208 6.208 0 0 0 0-8.472l1.63-1.64zM6.615 3.44a8.312 8.312 0 0 1 10.77 0L15.755 5.08a6.208 6.208 0 0 0-7.512 0L6.615 3.44zM3.44 6.615a8.312 8.312 0 0 1 0-11.752L5.08 6.495a6.208 6.208 0 0 0 0 8.472L3.44 6.615z" fill="currentColor"/></svg>
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Hugging Face</title><path d="M20.56 17.39a8.312 8.312 0 0 1-11.752 0L12 20.561l3.28-3.17zm-1.64-1.64a6.208 6.208 0 0 0-8.784 0l.168.168c.024.024 2.544 2.592 4.224 2.592s4.2-2.568 4.224-2.592l.168-.168zM12 14.24a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zm-3.36-2.52a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zm6.72 0a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zM17.385 3.44a8.312 8.312 0 0 1 0 11.752l-1.63-1.64a6.208 6.208 0 0 0 0-8.472l1.63-1.64zM6.615 3.44a8.312 8.312 0 0 1 10.77 0L15.755 5.08a6.208 6.208 0 0 0-7.512 0L6.615 3.44zM3.44 6.615a8.312 8.312 0 0 1 0-11.752L5.08 6.495a6.208 6.208 0 0 0 0 8.472L3.44 6.615z" fill="#FFD21E"/></svg>
 );
 
 const ScikitLearnLogo = () => (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>scikit-learn</title><path d="M11.13.43a.48.48 0 00-.76.42l1.36 9.84-8.22 3.03a.48.48 0 00-.28.6l7.4 9.23a.48.48 0 00.76-.42L10.03 13.3l8.22-3.03a.48.48 0 00.28-.6L11.13.44zM24 10.1a2.88 2.88 0 00-2.88-2.88h-1.92a.96.96 0 100 1.92h1.92a.96.96 0 110 1.92h-1.92a.96.96 0 100 1.92h1.92A2.88 2.88 0 0024 10.1z" fill="currentColor"/></svg>
+    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>scikit-learn</title><path d="M11.13.43a.48.48 0 00-.76.42l1.36 9.84-8.22 3.03a.48.48 0 00-.28.6l7.4 9.23a.48.48 0 00.76-.42L10.03 13.3l8.22-3.03a.48.48 0 00.28-.6L11.13.44zM24 10.1a2.88 2.88 0 00-2.88-2.88h-1.92a.96.96 0 100 1.92h1.92a.96.96 0 110 1.92h-1.92a.96.96 0 100 1.92h1.92A2.88 2.88 0 0024 10.1z" fill="#F7931E"/><path d="M12 24a2.88 2.88 0 002.88-2.88h1.92a.96.96 0 100-1.92h-1.92a.96.96 0 110-1.92h1.92a.96.96 0 100-1.92h-1.92A2.88 2.88 0 0012 24z" fill="#3498DB"/></svg>
 );
 
 // --- Data Definitions ---
@@ -44,11 +44,11 @@ const aiFeaturesData = [
 ];
 
 const techStackData = [
-  { name: 'TensorFlow', Logo: TensorFlowLogo },
-  { name: 'OpenAI', Logo: OpenAILogo },
-  { name: 'PyTorch', Logo: PyTorchLogo },
-  { name: 'Hugging Face', Logo: HuggingFaceLogo },
-  { name: 'scikit-learn', Logo: ScikitLearnLogo },
+  { name: 'TensorFlow', Logo: TensorFlowLogo, role: 'Deep Learning', desc: 'Powering our complex neural networks for pattern recognition.' },
+  { name: 'OpenAI', Logo: OpenAILogo, role: 'LLM Intelligence', desc: 'Driving our conversational AI and content generation.' },
+  { name: 'PyTorch', Logo: PyTorchLogo, role: 'Model Training', desc: 'Accelerating our research and model development cycles.' },
+  { name: 'Hugging Face', Logo: HuggingFaceLogo, role: 'NLP Transformers', desc: 'State-of-the-art models for text analysis and understanding.' },
+  { name: 'scikit-learn', Logo: ScikitLearnLogo, role: 'Predictive Analytics', desc: 'Robust algorithms for data mining and statistical analysis.' },
 ];
 
 // --- Sub-Components ---
@@ -62,12 +62,23 @@ const TechLogos = () => {
 
   return (
     <div className={cn(commonStyles.techStack, themeStyles.techStack)}>
-      <h3 className={cn(commonStyles.techTitle, themeStyles.techTitle)}>Built with Industry-Leading Technology</h3>
+      <div className={commonStyles.techHeader}>
+        <h3 className={cn(commonStyles.techTitle, themeStyles.techTitle)}>Built with Industry-Leading Technology</h3>
+        <p className={cn(commonStyles.techSubtitle, themeStyles.techSubtitle)}>
+          We leverage the most advanced AI frameworks to deliver a seamless, intelligent freelancing experience.
+        </p>
+      </div>
       <div className={cn(commonStyles.techLogos, themeStyles.techLogos)}>
-        {techStackData.map(({ name, Logo }) => (
+        {techStackData.map(({ name, Logo, role, desc }) => (
           <div key={name} className={cn(commonStyles.techLogo, themeStyles.techLogo)}>
-            <Logo />
-            <span className={cn(themeStyles.techLogoName)}>{name}</span>
+            <div className={commonStyles.techIconWrapper}>
+              <Logo />
+            </div>
+            <div className={commonStyles.techContent}>
+              <span className={cn(themeStyles.techLogoName)}>{name}</span>
+              <span className={cn(commonStyles.techRole)}>{role}</span>
+              <p className={cn(commonStyles.techDesc)}>{desc}</p>
+            </div>
           </div>
         ))}
       </div>

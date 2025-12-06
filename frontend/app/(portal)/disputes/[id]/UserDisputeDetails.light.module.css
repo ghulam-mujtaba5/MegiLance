@@ -1,0 +1,37 @@
+.container {
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.title {
+  color: #1a1a1a;
+}
+
+.meta {
+  color: #666;
+}
+
+.section {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.sectionTitle {
+  border-bottom-color: #eee;
+  color: #444;
+}
+
+.evidenceItem {
+  background-color: #f8f9fa;
+  border-color: #e0e0e0;
+}
+
+.statusBanner {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.loadingState,
+.errorState {
+  color: #666;
+}

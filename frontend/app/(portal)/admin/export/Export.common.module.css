@@ -333,9 +333,15 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .templateGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 1.25rem;
   }
 
   .formGrid {
@@ -345,6 +351,15 @@
   .dateRange {
     flex-direction: column;
     align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .dateRange span {
+    text-align: center;
+  }
+
+  .templateGrid {
+    grid-template-columns: 1fr;
   }
 
   .jobHeader {
@@ -355,5 +370,77 @@
   .jobDates {
     flex-direction: column;
     gap: 0.25rem;
+  }
+
+  .jobMeta {
+    flex-wrap: wrap;
+  }
+
+  .fieldsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .fieldsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .fieldOption {
+    padding: 0.625rem 0.875rem;
+  }
+
+  .jobCard {
+    padding: 1rem;
+  }
+
+  .jobActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .jobActions button {
+    width: 100%;
+  }
+
+  .emptyState {
+    padding: 2rem 1rem;
+  }
+
+  .fieldsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .exportActions {
+    justify-content: center;
+  }
+
+  .exportActions button {
+    width: 100%;
   }
 }

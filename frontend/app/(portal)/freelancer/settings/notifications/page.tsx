@@ -1,7 +1,7 @@
 // @AI-HINT: This is the Notifications Settings page. It allows freelancers to manage their notification preferences using a clean, modern interface with reusable components.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
@@ -13,8 +13,8 @@ import commonStyles from '../Settings.common.module.css';
 import lightStyles from '../Settings.light.module.css';
 import darkStyles from '../Settings.dark.module.css';
 
-// In a real app, this would come from an API
-const initialSettings = {
+// Default settings when API is not available
+const defaultSettings = {
   newJobAlerts: true,
   proposalStatusUpdates: true,
   messageNotifications: true,
@@ -27,23 +27,68 @@ const NotificationSettingsPage = () => {
   const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const toaster = useToaster();
 
-  const [settings, setSettings] = useState(initialSettings);
+  const [settings, setSettings] = useState(defaultSettings);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      const { settingsApi } = await import('@/lib/api');
+      const response = await settingsApi.getNotificationPreferences?.().catch(() => null);
+      
+      if (response) {
+        setSettings({
+          newJobAlerts: response.new_job_alerts ?? response.newJobAlerts ?? defaultSettings.newJobAlerts,
+          proposalStatusUpdates: response.proposal_status_updates ?? response.proposalStatusUpdates ?? defaultSettings.proposalStatusUpdates,
+          messageNotifications: response.message_notifications ?? response.messageNotifications ?? defaultSettings.messageNotifications,
+          paymentConfirmations: response.payment_confirmations ?? response.paymentConfirmations ?? defaultSettings.paymentConfirmations,
+          weeklySummary: response.weekly_summary ?? response.weeklySummary ?? defaultSettings.weeklySummary,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load notification settings:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSettingChange = (key: keyof typeof settings, value: boolean) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
+    
+    try {
+      const { settingsApi } = await import('@/lib/api');
+      await settingsApi.updateNotificationPreferences?.({
+        new_job_alerts: settings.newJobAlerts,
+        proposal_status_updates: settings.proposalStatusUpdates,
+        message_notifications: settings.messageNotifications,
+        payment_confirmations: settings.paymentConfirmations,
+        weekly_summary: settings.weeklySummary,
+      }).catch(() => null);
+      
       toaster.notify({ title: 'Saved', description: 'Notification settings saved!', variant: 'success' });
-      // Here you would persist the `settings` object
-    }, 1500);
+    } catch (error) {
+      toaster.notify({ title: 'Error', description: 'Failed to save settings', variant: 'error' });
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className={cn(commonStyles.formContainer, styles.formContainer)}>
+        <div>Loading settings...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(commonStyles.formContainer, styles.formContainer)}>

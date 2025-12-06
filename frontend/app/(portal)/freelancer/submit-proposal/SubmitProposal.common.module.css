@@ -11,21 +11,62 @@
   gap: 2rem;
 }
 
+/* Progress Bar */
+.progressBar {
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
 .header {
   text-align: center;
   padding-bottom: 1rem;
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .title {
   font-family: var(--font-poppins);
   font-size: 2rem;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
 }
 
 .subtitle {
   font-size: 1.125rem;
   margin: 0;
+}
+
+/* Auto-save indicator */
+.savedIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+}
+
+/* Estimated total preview */
+.estimatedTotal {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-md);
+  font-size: 0.875rem;
+  margin-top: 0.75rem;
 }
 
 .step_indicator_container {
@@ -39,8 +80,38 @@
 .footer {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding-top: 2rem;
   border-top: 1px solid;
+}
+
+.footerLeft,
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footerLeft {
+  flex: 1;
+}
+
+.footerRight {
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .hidden {
@@ -62,12 +133,13 @@
   text-align: center;
   gap: 1rem;
   max-width: 500px;
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
 }
 
 .result_icon {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .result_title {
@@ -80,6 +152,14 @@
 .result_message {
   font-size: 1rem;
   margin: 0 0 1rem 0;
+  line-height: 1.6;
+}
+
+.result_actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .success_icon {
@@ -99,6 +179,11 @@
     gap: 1.5rem;
   }
   
+  .headerTop {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
   .title {
     font-size: 1.5rem;
   }
@@ -112,7 +197,22 @@
     gap: 1rem;
   }
   
+  .footerLeft,
+  .footerRight {
+    width: 100%;
+    justify-content: center;
+  }
+  
   .footer button {
+    width: 100%;
+  }
+  
+  .result_actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .result_actions button {
     width: 100%;
   }
 }

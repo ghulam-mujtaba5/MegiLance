@@ -1,18 +1,19 @@
-// @AI-HINT: Orchestrator for the multi-step job posting flow. Manages state, validation, and navigation between steps.
+// @AI-HINT: Enhanced orchestrator for the multi-step job posting flow with improved validation, error handling, and accessibility.
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CheckCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, AlertTriangle, ArrowLeft, ArrowRight, Send, Loader2, Save, Home } from 'lucide-react';
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 
 import { PostJobData, PostJobErrors, type Category } from './PostJob.types';
 import { loadDraft, saveDraft, clearDraft } from '@/app/mocks/jobs';
-import api from '@/lib/api';
+import api, { APIError } from '@/lib/api';
 
 import Button from '@/app/components/Button/Button';
 import StepIndicator from './components/StepIndicator/StepIndicator';
@@ -28,13 +29,19 @@ import dark from './PostJob.dark.module.css';
 const STEPS = ['Details', 'Scope', 'Budget', 'Review'] as const;
 type Step = typeof STEPS[number];
 
+// Validation constants
+const MIN_TITLE_LENGTH = 10;
+const MIN_DESCRIPTION_LENGTH = 50;
+const MIN_SKILLS = 1;
+
 const PostJob: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
+  const router = useRouter();
 
   const [data, setData] = useState<PostJobData>({
     title: '',
-    category: 'Web Development', // Default to first category to avoid validation issues
+    category: 'Web Development',
     description: '',
     skills: [],
     budgetType: 'Fixed',
@@ -45,11 +52,26 @@ const PostJob: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<Step>('Details');
   const [submitting, setSubmitting] = useState(false);
   const [submissionState, setSubmissionState] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Calculate completion progress
+  const completionProgress = useMemo(() => {
+    let completed = 0;
+    const total = 4;
+    
+    if (data.title.length >= MIN_TITLE_LENGTH && data.category) completed++;
+    if (data.description.length >= MIN_DESCRIPTION_LENGTH && data.skills.length >= MIN_SKILLS) completed++;
+    if (data.budgetAmount && data.budgetAmount > 0 && data.timeline) completed++;
+    if (completed === 3) completed++; // Review step is ready
+    
+    return Math.round((completed / total) * 100);
+  }, [data]);
 
   useEffect(() => {
     const draft = loadDraft();
     if (draft) {
-      // Normalize persisted draft into PostJobData shape
       const CATEGORY_VALUES: readonly Category[] = ['Web Development', 'Mobile Apps', 'UI/UX Design', 'Data Science', 'AI/ML', 'DevOps'] as const;
       const isCategory = (v: unknown): v is Category => (CATEGORY_VALUES as readonly string[]).includes(String(v));
 
@@ -65,14 +87,36 @@ const PostJob: React.FC = () => {
         };
         return { ...prev, ...safe } as PostJobData;
       });
+      setLastSaved(new Date());
     }
   }, []);
+
+  // Auto-save draft periodically
+  useEffect(() => {
+    const saveTimer = setTimeout(() => {
+      if (data.title || data.description || data.skills.length > 0) {
+        setIsSaving(true);
+        saveDraft(data);
+        setLastSaved(new Date());
+        setTimeout(() => setIsSaving(false), 500);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(saveTimer);
+  }, [data]);
 
   const updateData = useCallback((update: Partial<PostJobData>) => {
     setData(prev => {
       const newData = { ...prev, ...update };
-      saveDraft(newData);
       return newData;
+    });
+    // Clear relevant errors when user updates data
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      Object.keys(update).forEach(key => {
+        delete newErrors[key as keyof PostJobErrors];
+      });
+      return newErrors;
     });
   }, []);
 
@@ -80,15 +124,29 @@ const PostJob: React.FC = () => {
     const newErrors: PostJobErrors = {};
     switch (step) {
       case 'Details':
-        if (!data.title.trim()) newErrors.title = 'Job title is required.';
+        if (!data.title.trim()) {
+          newErrors.title = 'Job title is required.';
+        } else if (data.title.trim().length < MIN_TITLE_LENGTH) {
+          newErrors.title = `Title must be at least ${MIN_TITLE_LENGTH} characters.`;
+        }
         if (!data.category) newErrors.category = 'Please select a category.';
         break;
       case 'Scope':
-        if (data.description.trim().length < 50) newErrors.description = 'Description must be at least 50 characters.';
-        if (data.skills.length === 0) newErrors.skills = 'Please add at least one skill.';
+        if (!data.description.trim()) {
+          newErrors.description = 'Description is required.';
+        } else if (data.description.trim().length < MIN_DESCRIPTION_LENGTH) {
+          newErrors.description = `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters.`;
+        }
+        if (data.skills.length < MIN_SKILLS) {
+          newErrors.skills = `Please add at least ${MIN_SKILLS} skill.`;
+        }
         break;
       case 'Budget':
-        if (!data.budgetAmount || data.budgetAmount <= 0) newErrors.budgetAmount = 'Please enter a valid budget amount.';
+        if (!data.budgetAmount || data.budgetAmount <= 0) {
+          newErrors.budgetAmount = 'Please enter a valid budget amount.';
+        } else if (data.budgetAmount > 1000000) {
+          newErrors.budgetAmount = 'Budget cannot exceed $1,000,000.';
+        }
         if (!data.timeline) newErrors.timeline = 'Please select a timeline.';
         break;
     }
@@ -121,30 +179,67 @@ const PostJob: React.FC = () => {
   };
 
   const onSubmit = async () => {
+    // Validate all steps
     for (const step of STEPS) {
       if (!validateStep(step)) {
         setCurrentStep(step);
         return;
       }
     }
+    
     setSubmitting(true);
+    setErrorMessage('');
+    
     try {
       await api.projects.create({
-        title: data.title,
-        description: data.description,
+        title: data.title.trim(),
+        description: data.description.trim(),
         category: data.category || 'Web Development',
         budget_type: data.budgetType.toLowerCase(),
         budget_max: Number(data.budgetAmount ?? 0),
         budget_min: 0,
         experience_level: 'intermediate',
         estimated_duration: data.timeline,
-        skills: data.skills,
+        skills: data.skills.map(s => s.trim()),
         status: 'open'
       });
+      
       setSubmissionState('success');
       clearDraft();
     } catch (err) {
-      console.error(err);
+      console.error('Job submission error:', err);
+      
+      // Extract meaningful error message
+      if (err instanceof APIError) {
+        switch (err.status) {
+          case 400:
+            setErrorMessage(err.message || 'Invalid job data. Please check your inputs.');
+            break;
+          case 401:
+            setErrorMessage('Your session has expired. Please log in again.');
+            break;
+          case 403:
+            setErrorMessage('You do not have permission to post jobs. Please upgrade your account.');
+            break;
+          case 429:
+            setErrorMessage('Too many requests. Please wait a moment and try again.');
+            break;
+          case 500:
+            setErrorMessage('Server error. Our team has been notified. Please try again later.');
+            break;
+          default:
+            setErrorMessage(err.message || 'Something went wrong. Please try again.');
+        }
+      } else if (err instanceof Error) {
+        if (err.message.includes('network') || err.message.includes('fetch')) {
+          setErrorMessage('Network error. Please check your internet connection.');
+        } else {
+          setErrorMessage(err.message || 'Something went wrong. Please try again.');
+        }
+      } else {
+        setErrorMessage('An unexpected error occurred. Please try again.');
+      }
+      
       setSubmissionState('error');
     } finally {
       setSubmitting(false);
@@ -165,11 +260,51 @@ const PostJob: React.FC = () => {
     return (
       <PageTransition>
         <div className={cn(common.centered_container, themed.centered_container)}>
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className={common.result_card}>
-            <CheckCircle className={cn(common.result_icon, common.success_icon, themed.success_icon)} size={48} />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            className={cn(common.result_card, themed.result_card)}
+            role="alert"
+            aria-live="polite"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            >
+              <CheckCircle className={cn(common.result_icon, common.success_icon, themed.success_icon)} size={64} />
+            </motion.div>
             <h2 className={cn(common.result_title, themed.result_title)}>Job Posted Successfully!</h2>
-            <p className={cn(common.result_message, themed.result_message)}>Your job is now live. You will be notified when freelancers start applying.</p>
-            <Button onClick={() => window.location.reload()}>Post Another Job</Button>
+            <p className={cn(common.result_message, themed.result_message)}>
+              Your job &quot;{data.title}&quot; is now live. You will be notified when freelancers start applying.
+            </p>
+            <div className={common.result_actions}>
+              <Button 
+                variant="secondary" 
+                onClick={() => router.push('/client/projects')}
+                iconBefore={<Home size={18} />}
+              >
+                View My Projects
+              </Button>
+              <Button 
+                variant="primary"
+                onClick={() => {
+                  setSubmissionState('idle');
+                  setData({
+                    title: '',
+                    category: 'Web Development',
+                    description: '',
+                    skills: [],
+                    budgetType: 'Fixed',
+                    budgetAmount: null,
+                    timeline: '1-2 weeks',
+                  });
+                  setCurrentStep('Details');
+                }}
+              >
+                Post Another Job
+              </Button>
+            </div>
           </motion.div>
         </div>
       </PageTransition>
@@ -180,11 +315,27 @@ const PostJob: React.FC = () => {
     return (
       <PageTransition>
         <div className={cn(common.centered_container, themed.centered_container)}>
-          <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className={common.result_card}>
-            <AlertTriangle className={cn(common.result_icon, common.error_icon, themed.error_icon)} size={48} />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            className={cn(common.result_card, themed.result_card)}
+            role="alert"
+            aria-live="assertive"
+          >
+            <AlertTriangle className={cn(common.result_icon, common.error_icon, themed.error_icon)} size={64} />
             <h2 className={cn(common.result_title, themed.result_title)}>Submission Failed</h2>
-            <p className={cn(common.result_message, themed.result_message)}>Something went wrong. Please try submitting again.</p>
-            <Button onClick={() => setSubmissionState('idle')}>Try Again</Button>
+            <p className={cn(common.result_message, themed.result_message)}>{errorMessage}</p>
+            <div className={common.result_actions}>
+              <Button 
+                variant="secondary"
+                onClick={() => {
+                  setSubmissionState('idle');
+                  setCurrentStep('Review');
+                }}
+              >
+                Review & Try Again
+              </Button>
+            </div>
           </motion.div>
         </div>
       </PageTransition>
@@ -193,53 +344,98 @@ const PostJob: React.FC = () => {
 
   return (
     <PageTransition>
-      <main className={cn(common.main, themed.main)}>
+      <main className={cn(common.main, themed.main)} role="main" aria-label="Post a Job">
         <div className={common.container}>
           <ScrollReveal>
             <header className={common.header}>
-              <h1 className={cn(common.title, themed.title)}>Post a Job</h1>
-              <p className={cn(common.subtitle, themed.subtitle)}>Follow the steps to get your job posted and find the right talent.</p>
+              <div className={common.headerContent}>
+                <h1 className={cn(common.title, themed.title)}>Post a Job</h1>
+                <p className={cn(common.subtitle, themed.subtitle)}>Follow the steps to get your job posted and find the right talent.</p>
+              </div>
+              
+              {/* Progress and auto-save indicator */}
+              <div className={common.progressSection}>
+                <div className={common.progressInfo}>
+                  <span className={cn(common.progressLabel, themed.progressLabel)}>
+                    {completionProgress}% Complete
+                  </span>
+                  {lastSaved && (
+                    <span className={cn(common.savedIndicator, themed.savedIndicator)}>
+                      {isSaving ? (
+                        <><Loader2 size={12} className={common.spinIcon} /> Saving...</>
+                      ) : (
+                        <><Save size={12} /> Saved {lastSaved.toLocaleTimeString()}</>
+                      )}
+                    </span>
+                  )}
+                </div>
+                <div className={common.progressTrack}>
+                  <motion.div 
+                    className={cn(common.progressFill, themed.progressFill)}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${completionProgress}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+                </div>
+              </div>
             </header>
           </ScrollReveal>
 
           <div className={common.step_indicator_container}>
-          <StepIndicator steps={STEPS} currentStep={currentStep} />
-        </div>
+            <StepIndicator steps={STEPS} currentStep={currentStep} />
+          </div>
 
-        <div className={common.content_container}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-            >
-              {renderStep()}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+          <div className={common.content_container} role="region" aria-label={`Step: ${currentStep}`}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-        <footer className={cn(common.footer, themed.footer)}>
-          <Button
-            variant="secondary"
-            onClick={prevStep}
-            disabled={currentStep === 'Details'}
-            className={cn(currentStep === 'Details' && common.hidden)}
-          >
-            Back
-          </Button>
-          {currentStep !== 'Review' ? (
-            <Button onClick={nextStep}>
-              {currentStep === 'Budget' ? 'Preview' : 'Next'}
-            </Button>
-          ) : (
-            <Button onClick={onSubmit} disabled={submitting}>
-              {submitting ? 'Submitting...' : 'Submit Job'}
-            </Button>
-          )}
-        </footer>
-      </div>
+          <footer className={cn(common.footer, themed.footer)}>
+            <div className={common.footerLeft}>
+              <Button
+                variant="secondary"
+                onClick={prevStep}
+                disabled={currentStep === 'Details'}
+                className={cn(currentStep === 'Details' && common.hidden)}
+                iconBefore={<ArrowLeft size={16} />}
+                aria-label="Go to previous step"
+              >
+                Back
+              </Button>
+            </div>
+            
+            <div className={common.footerRight}>
+              {currentStep !== 'Review' ? (
+                <Button 
+                  onClick={nextStep}
+                  iconAfter={<ArrowRight size={16} />}
+                  aria-label={`Continue to ${STEPS[STEPS.indexOf(currentStep) + 1]} step`}
+                >
+                  {currentStep === 'Budget' ? 'Preview' : 'Continue'}
+                </Button>
+              ) : (
+                <Button 
+                  onClick={onSubmit} 
+                  disabled={submitting}
+                  isLoading={submitting}
+                  iconBefore={!submitting ? <Send size={16} /> : undefined}
+                  aria-label="Submit job posting"
+                >
+                  {submitting ? 'Submitting...' : 'Submit Job'}
+                </Button>
+              )}
+            </div>
+          </footer>
+        </div>
       </main>
     </PageTransition>
   );

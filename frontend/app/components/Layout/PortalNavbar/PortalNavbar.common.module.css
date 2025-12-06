@@ -1,0 +1,97 @@
+/* @AI-HINT: Common styles for the PortalNavbar. */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  height: var(--header-height);
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pageTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .pageTitle {
+    display: block;
+  }
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.actionButton:hover {
+  transform: translateY(-1px);
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--error-e81123);
+}
+
+.searchContainer {
+  display: none;
+  align-items: center;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  width: 300px;
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 1024px) {
+  .searchContainer {
+    display: flex;
+  }
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  margin-left: 0.5rem;
+  font-size: 0.875rem;
+}

@@ -390,9 +390,24 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .tiersGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 1.25rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .progressHeader {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .tiersGrid {
@@ -402,15 +417,79 @@
   .verificationCard {
     flex-direction: column;
     text-align: center;
+    padding: 1rem;
+  }
+
+  .verificationInfo {
+    width: 100%;
   }
 
   .verificationHeader {
     flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .verificationAction {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+  }
+
+  .verifyButton,
+  .retryButton {
+    width: 100%;
+    max-width: 200px;
   }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
   .tiersGrid {
     grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .tierCard {
+    padding: 1rem;
+  }
+
+  .tierIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .progressCard {
+    padding: 1rem;
+  }
+
+  .modal {
+    margin: 0.5rem;
+    border-radius: 12px;
+  }
+
+  .modalHeader,
+  .modalContent,
+  .modalActions {
+    padding: 1rem;
+  }
+
+  .uploadArea {
+    padding: 1.5rem;
+  }
+
+  .modalActions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+
+  .cancelButton,
+  .submitButton {
+    width: 100%;
   }
 }

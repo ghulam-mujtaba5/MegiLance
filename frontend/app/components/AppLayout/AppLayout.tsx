@@ -3,6 +3,8 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
+import PortalNavbar from '../Layout/PortalNavbar/PortalNavbar';
+import PortalFooter from '../Layout/PortalFooter/PortalFooter';
 
 import ErrorBoundary from '@/app/components/ErrorBoundary/ErrorBoundary';
 
@@ -126,7 +128,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
         <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={area === 'general' ? undefined : area} />
         <div className={cn(commonStyles.mainContent, isCollapsed && commonStyles.sidebarCollapsed)}>
-
+          <PortalNavbar />
 
           <ErrorBoundary>
             <main 
@@ -136,6 +138,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               aria-label={`${area === 'general' ? '' : area.charAt(0).toUpperCase() + area.slice(1) + ' '}Dashboard content`}
             >
               {children}
+              <PortalFooter />
             </main>
           </ErrorBoundary>
         </div>

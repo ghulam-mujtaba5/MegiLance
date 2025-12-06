@@ -2,20 +2,20 @@
 
 .aiShowcase {
   position: relative;
-  padding: 8rem 1rem;
+  padding: 6rem 1rem 4rem; /* Reduced bottom padding */
   overflow: hidden;
   perspective: 1000px;
 }
 
 @media (min-width: 768px) {
   .aiShowcase {
-    padding: 10rem 2rem;
+    padding: 8rem 2rem 6rem; /* Reduced bottom padding */
   }
 }
 
 @media (min-width: 1024px) {
   .aiShowcase {
-    padding: 12rem 4rem;
+    padding: 10rem 4rem 8rem; /* Reduced bottom padding */
   }
 }
 
@@ -111,7 +111,7 @@
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 2rem;
-  margin-bottom: 6rem;
+  margin-bottom: 4rem; /* Reduced from 6rem */
 }
 
 @media (min-width: 768px) {
@@ -128,12 +128,13 @@
 
 .techStack {
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3rem 2rem;
   border-radius: 2rem;
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .techStack::before {
@@ -146,60 +147,103 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
 }
 
+.techHeader {
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .techTitle {
   font-family: var(--font-heading);
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
   opacity: 0.9;
 }
 
+.techSubtitle {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  opacity: 0.7;
+  line-height: 1.6;
+}
+
 .techLogos {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 3rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
   margin-top: 1rem;
 }
 
 .techLogo {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1.5rem;
   padding: 1.5rem;
   border-radius: 1.5rem;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
-  width: 140px;
+  text-align: left;
+  width: 100%;
 }
 
 .techLogo:hover {
-  transform: translateY(-10px) scale(1.05);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.techLogo svg {
+.techIconWrapper {
+  flex-shrink: 0;
   width: 3.5rem;
   height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 0.5rem;
   transition: all 0.4s ease;
 }
 
-.techLogo:hover svg {
-  transform: scale(1.1) rotate(5deg);
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+.techLogo:hover .techIconWrapper {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+.techLogo svg {
+  width: 100%;
+  height: 100%;
+  transition: all 0.4s ease;
+}
+
+.techContent {
+  display: flex;
+  flex-direction: column;
 }
 
 .techLogoName {
-  font-size: 0.9rem;
-  font-weight: 600;
-  opacity: 0.8;
-  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: 700;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
 }
 
-.techLogo:hover .techLogoName {
-  opacity: 1;
+.techRole {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4573df;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.techDesc {
+  font-size: 0.9rem;
+  opacity: 0.7;
+  line-height: 1.4;
 }

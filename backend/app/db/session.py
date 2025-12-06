@@ -69,8 +69,8 @@ def get_engine():
                     finally:
                         cursor.close()
         except Exception as e:
-            print(f"⚠️ Database engine creation failed: {e}")
-            print(f"⚠️ Falling back to local SQLite: sqlite:///./local_dev.db")
+            print(f"[WARNING] Database engine creation failed: {e}")
+            print(f"[WARNING] Falling back to local SQLite: sqlite:///./local_dev.db")
             _engine = create_engine("sqlite:///./local_dev.db", connect_args={"check_same_thread": False})
     return _engine
 
@@ -90,7 +90,7 @@ SessionLocal = None
 
 def get_db():
     """Dependency for getting database sessions"""
-    print(f"\n📊 GET_DB: Creating session...")
+    print(f"\n[DB] GET_DB: Creating session...")
     session_factory = get_session_local()
     db = session_factory()
     print(f"   Session created: {db}")

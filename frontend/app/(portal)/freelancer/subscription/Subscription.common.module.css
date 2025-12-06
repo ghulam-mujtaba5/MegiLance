@@ -356,12 +356,58 @@
     padding: 1rem;
   }
 
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .currentPlanHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.5rem;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .billingToggle {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .toggleOption {
+    width: 100%;
+    justify-content: center;
+  }
+
   .plansGrid {
     grid-template-columns: 1fr;
   }
 
   .popularPlan {
     transform: none;
+  }
+
+  .billingHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .updatePaymentButton {
+    width: 100%;
+    text-align: center;
   }
 
   .tableHeader,
@@ -375,5 +421,47 @@
   .tableRow span:nth-child(3),
   .tableRow a {
     display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+
+  .currentPlan {
+    padding: 1rem;
+  }
+
+  .currentPlanName {
+    font-size: 1.25rem;
+  }
+
+  .planCard {
+    padding: 1rem;
+  }
+
+  .priceAmount {
+    font-size: 2rem;
+  }
+
+  .planButton {
+    padding: 0.75rem;
+  }
+
+  .billingPanel {
+    padding: 1rem;
+  }
+
+  .cancelButton {
+    width: 100%;
   }
 }

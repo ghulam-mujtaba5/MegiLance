@@ -52,6 +52,86 @@ class RecommendationEngine:
         # Trending tracking
         self._hourly_views: Dict[int, List[datetime]] = defaultdict(list)
         self._daily_applications: Dict[int, List[datetime]] = defaultdict(list)
+
+        # Load initial data from DB to persist state across restarts
+        self._load_initial_data()
+
+    def _load_initial_data(self):
+        """Load historical data from database to populate recommendation matrices."""
+        try:
+            from app.models.project import Project
+            from app.models.user import User
+            from app.models.proposal import Proposal
+            from app.models.contract import Contract
+            import json
+
+            # 1. Load Projects
+            projects = self.db.query(Project).filter(Project.status == 'open').all()
+            for p in projects:
+                skills = []
+                if p.skills:
+                    try:
+                        skills = json.loads(p.skills) if isinstance(p.skills, str) else p.skills
+                    except:
+                        skills = []
+                
+                self._project_features[p.id] = {
+                    "title": p.title,
+                    "category": p.category,
+                    "skills": skills,
+                    "budget_min": p.budget_min,
+                    "budget_max": p.budget_max,
+                    "experience_level": p.experience_level,
+                    "created_at": p.created_at.isoformat() if p.created_at else datetime.utcnow().isoformat()
+                }
+
+            # 2. Load Freelancers
+            freelancers = self.db.query(User).filter(User.user_type == 'Freelancer').all()
+            for f in freelancers:
+                skills = []
+                if f.skills:
+                    try:
+                        skills = json.loads(f.skills) if isinstance(f.skills, str) else f.skills
+                    except:
+                        skills = []
+                
+                self._freelancer_features[f.id] = {
+                    "name": f.name,
+                    "title": f.profile_data, # Assuming title is in profile_data or similar
+                    "skills": skills,
+                    "hourly_rate": f.hourly_rate,
+                    "rating": 0, # TODO: Calculate from reviews
+                    "experience_years": 0, # TODO: Get from profile
+                    "completed_projects": 0 # TODO: Count completed contracts
+                }
+
+            # 3. Load Applications (Proposals)
+            proposals = self.db.query(Proposal).all()
+            for prop in proposals:
+                self._user_project_applications[prop.freelancer_id].add(prop.project_id)
+                # Update preferences based on applications
+                if prop.project_id in self._project_features:
+                    feats = self._project_features[prop.project_id]
+                    if "category" in feats:
+                        self._user_category_preferences[prop.freelancer_id][feats["category"]] += 0.5
+                    for skill in feats.get("skills", []):
+                        self._user_skill_preferences[prop.freelancer_id][skill] += 0.5
+
+            # 4. Load Hires (Contracts)
+            contracts = self.db.query(Contract).all()
+            for c in contracts:
+                self._user_freelancer_hires[c.client_id].add(c.freelancer_id)
+                # Update client preferences
+                if c.freelancer_id in self._freelancer_features:
+                    feats = self._freelancer_features[c.freelancer_id]
+                    for skill in feats.get("skills", []):
+                        self._user_skill_preferences[c.client_id][skill] += 1.0
+
+            logger.info(f"Recommendation Engine warmed up: {len(self._project_features)} projects, {len(self._freelancer_features)} freelancers")
+
+        except Exception as e:
+            logger.error(f"Error warming up recommendation engine: {e}")
+
     
     # ===================
     # Event Tracking

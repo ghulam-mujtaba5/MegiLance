@@ -21,11 +21,12 @@ export interface PaymentCardProps {
   freelancerName: string;
   freelancerAvatarUrl?: string;
   amount: number;
-  status: 'Paid' | 'Pending' | 'Failed';
+  status: 'Paid' | 'Completed' | 'Pending' | 'Failed';
 }
 
 const statusVariantMap: Record<PaymentCardProps['status'], NonNullable<BadgeProps['variant']>> = {
   'Paid': 'success',
+  'Completed': 'success',
   'Pending': 'warning',
   'Failed': 'danger',
 };

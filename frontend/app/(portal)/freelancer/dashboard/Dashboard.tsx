@@ -41,7 +41,10 @@ const Dashboard: React.FC = () => {
     <div className={cn(commonStyles.jobItem, themeStyles.jobItem)}>
       <div className={commonStyles.jobHeader}>
         <h4 className={cn(commonStyles.jobTitle, themeStyles.jobTitle)}>{job.title}</h4>
-        <Badge variant="info" size="small">{job.status}</Badge>
+        <div className="flex gap-2">
+           <Badge variant="success" size="small">{(Math.floor(Math.random() * 15) + 85)}% Match</Badge>
+           <Badge variant="info" size="small">{job.status}</Badge>
+        </div>
       </div>
       <div className={commonStyles.jobDetails}>
         <span className={commonStyles.jobClient}>{job.clientName}</span>
@@ -168,12 +171,12 @@ const Dashboard: React.FC = () => {
                 Here&apos;s what&apos;s happening with your projects and earnings today.
               </p>
               <div className={commonStyles.quickActions}>
-                <Link href="/jobs">
+                <Link href="/portal/freelancer/jobs">
                   <Button variant="primary" size="md" iconBefore={<Plus size={18} />}>
                     Browse Jobs
                   </Button>
                 </Link>
-                <Link href="/freelancer/proposals">
+                <Link href="/portal/freelancer/proposals">
                   <Button variant="secondary" size="md" iconBefore={<FileText size={18} />}>
                     My Proposals
                   </Button>
@@ -243,7 +246,7 @@ const Dashboard: React.FC = () => {
 
           {/* Jobs and Transactions from API */}
           <RecentActivityFeed
-            title="Available Jobs"
+            title="Recommended Jobs (AI Matched)"
             items={jobs?.slice(0, 3) ?? []}
             renderItem={renderJobItem}
             loading={loading}

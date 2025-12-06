@@ -54,22 +54,30 @@ export default function CurrencySettingsPage() {
         multiCurrencyApi.getSettings().catch(() => null),
       ]);
       
-      const mockCurrencies: Currency[] = currenciesRes?.currencies || [
-        { code: 'USD', name: 'US Dollar', symbol: '$', exchange_rate: 1, is_base: true },
-        { code: 'EUR', name: 'Euro', symbol: '€', exchange_rate: 0.92, is_base: false },
-        { code: 'GBP', name: 'British Pound', symbol: '£', exchange_rate: 0.79, is_base: false },
-        { code: 'JPY', name: 'Japanese Yen', symbol: '¥', exchange_rate: 149.50, is_base: false },
-        { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', exchange_rate: 1.36, is_base: false },
-        { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', exchange_rate: 1.53, is_base: false },
-        { code: 'CHF', name: 'Swiss Franc', symbol: 'Fr', exchange_rate: 0.88, is_base: false },
-        { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', exchange_rate: 7.24, is_base: false },
-        { code: 'INR', name: 'Indian Rupee', symbol: '₹', exchange_rate: 83.12, is_base: false },
-        { code: 'BRL', name: 'Brazilian Real', symbol: 'R$', exchange_rate: 4.97, is_base: false },
-        { code: 'MXN', name: 'Mexican Peso', symbol: '$', exchange_rate: 17.15, is_base: false },
-        { code: 'SGD', name: 'Singapore Dollar', symbol: 'S$', exchange_rate: 1.34, is_base: false },
-      ];
+      // Use API data if available, otherwise fall back to demo data
+      let currencyData: Currency[] = [];
+      
+      if (currenciesRes && (currenciesRes.currencies?.length > 0 || Array.isArray(currenciesRes) && currenciesRes.length > 0)) {
+        currencyData = currenciesRes.currencies || currenciesRes;
+      } else {
+        // Demo currency data - commonly used rates
+        currencyData = [
+          { code: 'USD', name: 'US Dollar', symbol: '$', exchange_rate: 1, is_base: true },
+          { code: 'EUR', name: 'Euro', symbol: '€', exchange_rate: 0.92, is_base: false },
+          { code: 'GBP', name: 'British Pound', symbol: '£', exchange_rate: 0.79, is_base: false },
+          { code: 'JPY', name: 'Japanese Yen', symbol: '¥', exchange_rate: 149.50, is_base: false },
+          { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', exchange_rate: 1.36, is_base: false },
+          { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', exchange_rate: 1.53, is_base: false },
+          { code: 'CHF', name: 'Swiss Franc', symbol: 'Fr', exchange_rate: 0.88, is_base: false },
+          { code: 'CNY', name: 'Chinese Yuan', symbol: '¥', exchange_rate: 7.24, is_base: false },
+          { code: 'INR', name: 'Indian Rupee', symbol: '₹', exchange_rate: 83.12, is_base: false },
+          { code: 'BRL', name: 'Brazilian Real', symbol: 'R$', exchange_rate: 4.97, is_base: false },
+          { code: 'MXN', name: 'Mexican Peso', symbol: '$', exchange_rate: 17.15, is_base: false },
+          { code: 'SGD', name: 'Singapore Dollar', symbol: 'S$', exchange_rate: 1.34, is_base: false },
+        ];
+      }
 
-      setCurrencies(mockCurrencies);
+      setCurrencies(currencyData);
       
       if (settingsRes?.settings) {
         setSettings(settingsRes.settings);

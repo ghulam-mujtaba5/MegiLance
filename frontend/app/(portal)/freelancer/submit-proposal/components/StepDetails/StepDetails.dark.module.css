@@ -1,8 +1,108 @@
+.container {
+  background-color: var(--bg-primary-dark);
+}
+
 .title {
   color: var(--text-primary-dark);
 }
 
 .description {
+  color: var(--text-secondary-dark);
+}
+
+.labelRow {
+  color: var(--text-primary-dark);
+}
+
+.tipButton {
+  background-color: var(--bg-tertiary-dark);
+  color: var(--text-secondary-dark);
+}
+
+.tipButton:hover {
+  background-color: var(--primary-dark);
+  color: white;
+}
+
+.tipsCard {
+  background-color: var(--bg-tertiary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.tipsTitle {
+  color: var(--primary-dark);
+}
+
+.tipsList {
+  color: var(--text-secondary-dark);
+}
+
+.templatesCard {
+  background-color: var(--bg-tertiary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.templatesTitle {
+  color: var(--accent-dark);
+}
+
+.templateItem {
+  background-color: var(--bg-secondary-dark);
+  border-color: var(--border-dark);
+}
+
+.templateItem:hover {
+  background-color: var(--bg-primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.templateName {
+  color: var(--text-primary-dark);
+}
+
+.templatePreview {
+  color: var(--text-secondary-dark);
+}
+
+.charProgress {
+  background-color: var(--bg-tertiary-dark);
+}
+
+.charProgressFill {
+  background-color: var(--primary-dark);
+}
+
+.charCount {
+  color: var(--text-secondary-dark);
+}
+
+.pricingSection {
+  background-color: var(--bg-secondary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.sectionTitle {
+  color: var(--text-primary-dark);
+}
+
+.estimatedCard {
+  background-color: var(--bg-tertiary-dark);
+  border: 1px solid var(--border-dark);
+}
+
+.estimatedRow {
+  color: var(--text-primary-dark);
+}
+
+.estimatedTotal {
+  color: var(--success-dark);
+}
+
+.estimatedBreakdown {
+  color: var(--text-secondary-dark);
+}
+
+.hint {
   color: var(--text-secondary-dark);
 }
 

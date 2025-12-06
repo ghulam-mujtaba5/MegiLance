@@ -12,6 +12,9 @@ import { cn } from '@/lib/utils';
 import commonStyles from './RankPage.common.module.css';
 import lightStyles from './RankPage.light.module.css';
 import darkStyles from './RankPage.dark.module.css';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 interface ReviewStats {
   user_id: number;
@@ -153,49 +156,61 @@ const RankPage: React.FC = () => {
   if (!resolvedTheme) return null;
 
   return (
-    <div className={cn(styles.pageWrapper)}>
-      <header className={cn(styles.header)}>
-        <div className={cn(styles.titleGroup)}>
-          <h1>My Freelancer Rank</h1>
-          <p>Understand your AI-powered rank and how to improve it.</p>
-        </div>
-      </header>
-
-      {error ? (
-        <div className={cn(styles.errorState)}>
-          <h3>Unable to Load Rank Data</h3>
-          <p>{error}</p>
-          <Button variant="primary" onClick={fetchRankData}>Try Again</Button>
-        </div>
-      ) : loading ? (
-        <div className={cn(styles.loadingState)}>
-          <div className={cn(styles.spinner)} />
-          <p>Loading your rank...</p>
-        </div>
-      ) : rankData && (
-        <main className={cn(styles.mainGrid)}>
-          <span className={cn(styles.srOnly)} aria-live="polite">
-            {`Overall rank ${rankData.overallRank}. Rank score ${rankData.rankScore} out of 100.`}
-          </span>
-          <aside>
-            <div className={cn(styles.rankDisplayCard)} role="region" aria-label="Your current rank" title="Your current rank">
-              <h2>Your Current Rank</h2>
-              <p className={cn(styles.scoreText)}>{rankData.overallRank}</p>
-              <RankGauge score={rankData.rankScore} />
+    <PageTransition>
+      <div className={cn(styles.pageWrapper)}>
+        <ScrollReveal>
+          <header className={cn(styles.header)}>
+            <div className={cn(styles.titleGroup)}>
+              <h1>My Freelancer Rank</h1>
+              <p>Understand your AI-powered rank and how to improve it.</p>
             </div>
-          </aside>
+          </header>
+        </ScrollReveal>
 
-          <section className={cn(styles.factorsContainer)} role="region" aria-label="Rank factors" title="Rank factors">
-            <h2>How Your Rank is Calculated</h2>
-            <div className={cn(styles.factorsGrid)}>
-              {rankData.factors.map((factor, index) => (
-                <RankFactor key={index} {...factor} styles={styles} />
-              ))}
+        {error ? (
+          <ScrollReveal>
+            <div className={cn(styles.errorState)}>
+              <h3>Unable to Load Rank Data</h3>
+              <p>{error}</p>
+              <Button variant="primary" onClick={fetchRankData}>Try Again</Button>
             </div>
-          </section>
-        </main>
-      )}
-    </div>
+          </ScrollReveal>
+        ) : loading ? (
+          <div className={cn(styles.loadingState)}>
+            <div className={cn(styles.spinner)} />
+            <p>Loading your rank...</p>
+          </div>
+        ) : rankData && (
+          <main className={cn(styles.mainGrid)}>
+            <span className={cn(styles.srOnly)} aria-live="polite">
+              {`Overall rank ${rankData.overallRank}. Rank score ${rankData.rankScore} out of 100.`}
+            </span>
+            <aside>
+              <ScrollReveal delay={0.1}>
+                <div className={cn(styles.rankDisplayCard)} role="region" aria-label="Your current rank" title="Your current rank">
+                  <h2>Your Current Rank</h2>
+                  <p className={cn(styles.scoreText)}>{rankData.overallRank}</p>
+                  <RankGauge score={rankData.rankScore} />
+                </div>
+              </ScrollReveal>
+            </aside>
+
+            <section className={cn(styles.factorsContainer)} role="region" aria-label="Rank factors" title="Rank factors">
+              <ScrollReveal delay={0.2}>
+                <h2>How Your Rank is Calculated</h2>
+              </ScrollReveal>
+              <StaggerContainer className={cn(styles.factorsGrid)}>
+                {rankData.factors.map((factor, index) => (
+                  <StaggerItem key={index}>
+                    <RankFactor {...factor} styles={styles} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            </section>
+          </main>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

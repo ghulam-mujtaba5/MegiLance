@@ -9,6 +9,9 @@ import { usePersistedState } from '@/app/lib/hooks/usePersistedState';
 import { exportCSV, exportData } from '@/app/lib/csv';
 import TableSkeleton from '@/app/components/DataTableExtras/TableSkeleton';
 import SavedViewsMenu from '@/app/components/DataTableExtras/SavedViewsMenu';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Analytics.common.module.css';
 import lightStyles from './Analytics.light.module.css';
 import darkStyles from './Analytics.dark.module.css';
@@ -89,98 +92,105 @@ const AnalyticsPage: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Your Analytics</h1>
-        <p className={styles.subtitle}>Track your performance and find new opportunities for growth.</p>
-      </header>
+    <PageTransition>
+      <div className={styles.container}>
+        <ScrollReveal>
+          <header className={styles.header}>
+            <h1 className={styles.title}>Your Analytics</h1>
+            <p className={styles.subtitle}>Track your performance and find new opportunities for growth.</p>
+          </header>
+        </ScrollReveal>
 
-      {loading && <div className={styles.loading} aria-busy="true">Loading analytics...</div>}
-      {error && <div className={styles.error}>Failed to load analytics data.</div>}
+        {loading && <div className={styles.loading} aria-busy="true">Loading analytics...</div>}
+        {error && <div className={styles.error}>Failed to load analytics data.</div>}
 
-      {analyticsData && (
-        <main className={styles.mainContent}>
-          <div className={styles.toolbar} role="group" aria-label="Analytics filters and actions">
-            <label htmlFor="range" className={styles.srOnly}>Date range</label>
-            <select
-              id="range"
-              className={styles.select}
-              value={range}
-              onChange={(e) => setRange(e.target.value as typeof range)}
-              aria-label="Select date range"
-              title="Select date range"
-            >
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-            </select>
-            <label htmlFor="analytics-export-format" className={styles.srOnly}>Export format</label>
-            <select
-              id="analytics-export-format"
-              className={styles.select}
-              value={exportFormat}
-              onChange={(e) => setExportFormat(e.target.value as typeof exportFormat)}
-              aria-label="Select export format"
-              title="Select export format"
-            >
-              <option value="csv">CSV</option>
-              <option value="xlsx">XLSX</option>
-              <option value="pdf">PDF</option>
-            </select>
-            <button type="button" onClick={onExport} className={styles.button} aria-label={`Export analytics ${exportFormat.toUpperCase()}`} title={`Export analytics as ${exportFormat.toUpperCase()}`}>Export</button>
-            <span className={styles.toolbarInfo} role="status" aria-live="polite">Showing {range === '7d' ? '7' : range === '30d' ? '30' : '90'}-day trend</span>
+        {analyticsData && (
+          <main className={styles.mainContent}>
+            <ScrollReveal delay={0.1}>
+              <div className={styles.toolbar} role="group" aria-label="Analytics filters and actions">
+                <label htmlFor="range" className={styles.srOnly}>Date range</label>
+                <select
+                  id="range"
+                  className={styles.select}
+                  value={range}
+                  onChange={(e) => setRange(e.target.value as typeof range)}
+                  aria-label="Select date range"
+                  title="Select date range"
+                >
+                  <option value="7d">Last 7 days</option>
+                  <option value="30d">Last 30 days</option>
+                  <option value="90d">Last 90 days</option>
+                </select>
+                <label htmlFor="analytics-export-format" className={styles.srOnly}>Export format</label>
+                <select
+                  id="analytics-export-format"
+                  className={styles.select}
+                  value={exportFormat}
+                  onChange={(e) => setExportFormat(e.target.value as typeof exportFormat)}
+                  aria-label="Select export format"
+                  title="Select export format"
+                >
+                  <option value="csv">CSV</option>
+                  <option value="xlsx">XLSX</option>
+                  <option value="pdf">PDF</option>
+                </select>
+                <button type="button" onClick={onExport} className={styles.button} aria-label={`Export analytics ${exportFormat.toUpperCase()}`} title={`Export analytics as ${exportFormat.toUpperCase()}`}>Export</button>
+                <span className={styles.toolbarInfo} role="status" aria-live="polite">Showing {range === '7d' ? '7' : range === '30d' ? '30' : '90'}-day trend</span>
 
-            <div aria-label="Saved views" role="group" className={styles.savedViewsSlot}>
-              <SavedViewsMenu
-                storageKey="freelancer:analytics:savedViews"
-                buildPayload={() => ({ range })}
-                onApply={(p: { range: typeof range }) => {
-                  if (p?.range) setRange(p.range);
-                }}
-              />
-            </div>
-          </div>
-          <div className={styles.kpiGrid}>
-            <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Profile Views</span>
-              <span className={styles.kpiValue}>{analyticsData.kpis.profileViews}</span>
-            </div>
-            <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Applications Sent</span>
-              <span className={styles.kpiValue}>{analyticsData.kpis.applicationsSent}</span>
-            </div>
-            <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Hire Rate</span>
-              <span className={styles.kpiValue}>{analyticsData.kpis.hireRate}</span>
-            </div>
-            <div className={styles.kpiCard}>
-              <span className={styles.kpiLabel}>Total Earned (USD)</span>
-              <span className={styles.kpiValue}>${analyticsData.kpis.totalEarned.toFixed(2)}</span>
-            </div>
-          </div>
+                <div aria-label="Saved views" role="group" className={styles.savedViewsSlot}>
+                  <SavedViewsMenu
+                    storageKey="freelancer:analytics:savedViews"
+                    buildPayload={() => ({ range })}
+                    onApply={(p: { range: typeof range }) => {
+                      if (p?.range) setRange(p.range);
+                    }}
+                  />
+                </div>
+              </div>
+            </ScrollReveal>
 
-          <div className={styles.chartGrid}>
-            <div className={styles.chartCard}>
-              <h2 className={styles.cardTitle}>Profile Views Over Time</h2>
-              {uiLoading ? (
-                <TableSkeleton rows={6} cols={6} />
-              ) : (
-                <LineChart data={analyticsData.viewsOverTime.data} labels={analyticsData.viewsOverTime.labels} />
-              )}
-            </div>
+            <StaggerContainer className={styles.kpiGrid}>
+              <StaggerItem className={styles.kpiCard}>
+                <span className={styles.kpiLabel}>Profile Views</span>
+                <span className={styles.kpiValue}>{analyticsData.kpis.profileViews}</span>
+              </StaggerItem>
+              <StaggerItem className={styles.kpiCard}>
+                <span className={styles.kpiLabel}>Applications Sent</span>
+                <span className={styles.kpiValue}>{analyticsData.kpis.applicationsSent}</span>
+              </StaggerItem>
+              <StaggerItem className={styles.kpiCard}>
+                <span className={styles.kpiLabel}>Hire Rate</span>
+                <span className={styles.kpiValue}>{analyticsData.kpis.hireRate}</span>
+              </StaggerItem>
+              <StaggerItem className={styles.kpiCard}>
+                <span className={styles.kpiLabel}>Total Earned (USD)</span>
+                <span className={styles.kpiValue}>${analyticsData.kpis.totalEarned.toFixed(2)}</span>
+              </StaggerItem>
+            </StaggerContainer>
 
-            <div className={styles.chartCard}>
-              <h2 className={styles.cardTitle}>Earnings Over Time</h2>
-              {uiLoading ? (
-                <TableSkeleton rows={6} cols={6} />
-              ) : (
-                <LineChart data={analyticsData.earningsOverTime.data} labels={analyticsData.earningsOverTime.labels} />
-              )}
+            <div className={styles.chartGrid}>
+              <ScrollReveal delay={0.2} className={styles.chartCard}>
+                <h2 className={styles.cardTitle}>Profile Views Over Time</h2>
+                {uiLoading ? (
+                  <TableSkeleton rows={6} cols={6} />
+                ) : (
+                  <LineChart data={analyticsData.viewsOverTime.data} labels={analyticsData.viewsOverTime.labels} />
+                )}
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.3} className={styles.chartCard}>
+                <h2 className={styles.cardTitle}>Earnings Over Time</h2>
+                {uiLoading ? (
+                  <TableSkeleton rows={6} cols={6} />
+                ) : (
+                  <LineChart data={analyticsData.earningsOverTime.data} labels={analyticsData.earningsOverTime.labels} />
+                )}
+              </ScrollReveal>
             </div>
-          </div>
-        </main>
-      )}
-    </div>
+          </main>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

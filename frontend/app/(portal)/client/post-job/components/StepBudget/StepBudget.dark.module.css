@@ -1,4 +1,4 @@
-/* AI-HINT: Dark theme styles for the StepBudget component. */
+/* AI-HINT: Dark theme styles for the enhanced StepBudget component. */
 
 .container {
   background-color: var(--background-dark);
@@ -11,4 +11,34 @@
 
 .subtitle {
   color: var(--text-secondary-dark);
+}
+
+.calculatorButton {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+.calculatorButton:hover {
+  background-color: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.calculatorBox {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.calculateBtn {
+  background-color: #10b981;
+  color: white;
+}
+
+.calculateBtn:not(:disabled):hover {
+  background-color: #059669;
+}
+
+.insightsBox {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
 }

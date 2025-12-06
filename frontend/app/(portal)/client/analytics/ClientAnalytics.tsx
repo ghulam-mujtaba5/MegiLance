@@ -10,6 +10,9 @@ import {
   Download, Calendar, ArrowUpRight, ArrowDownRight, Star, Loader2
 } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 
 import common from './ClientAnalytics.common.module.css';
 import light from './ClientAnalytics.light.module.css';
@@ -160,185 +163,193 @@ const ClientAnalytics: React.FC = () => {
   }
 
   return (
-    <main className={cn(common.main, themed.main)}>
-      <header className={common.header}>
-        <div>
-          <h1 className={cn(common.title, themed.title)}>Analytics</h1>
-          <p className={cn(common.subtitle, themed.subtitle)}>
-            Track your spending, project performance, and freelancer collaboration.
-          </p>
-        </div>
-        <div className={common.header_actions}>
-          <select 
-            className={cn(common.date_select, themed.date_select)}
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            aria-label="Select date range"
-            title="Date range filter"
-          >
-            <option value="1m">Last Month</option>
-            <option value="3m">Last 3 Months</option>
-            <option value="6m">Last 6 Months</option>
-            <option value="1y">Last Year</option>
-          </select>
-          <Button variant="secondary">
-            <Download size={16} /> Export Report
-          </Button>
-        </div>
-      </header>
-
-      {error && (
-        <div className={common.error_banner}>
-          Unable to load some analytics data. Showing available information.
-        </div>
-      )}
-
-      {/* Metrics Cards */}
-      <div className={common.metrics_grid}>
-        {metrics.map((metric, idx) => (
-          <div key={idx} className={cn(common.metric_card, themed.metric_card)}>
-            <div className={cn(common.metric_icon, themed.metric_icon)}>
-              {metric.icon}
+    <PageTransition>
+      <main className={cn(common.main, themed.main)}>
+        <ScrollReveal>
+          <header className={common.header}>
+            <div>
+              <h1 className={cn(common.title, themed.title)}>Analytics</h1>
+              <p className={cn(common.subtitle, themed.subtitle)}>
+                Track your spending, project performance, and freelancer collaboration.
+              </p>
             </div>
-            <div className={common.metric_content}>
-              <span className={cn(common.metric_title, themed.metric_title)}>
-                {metric.title}
-              </span>
-              <span className={cn(common.metric_value, themed.metric_value)}>
-                {metric.value}
-              </span>
-              <span className={cn(
-                common.metric_change,
-                metric.trend === 'up' ? common.trend_up : common.trend_down,
-                metric.trend === 'up' ? themed.trend_up : themed.trend_down
-              )}>
-                {metric.trend === 'up' ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                {Math.abs(metric.change)}% vs last period
-              </span>
+            <div className={common.header_actions}>
+              <select 
+                className={cn(common.date_select, themed.date_select)}
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value)}
+                aria-label="Select date range"
+                title="Date range filter"
+              >
+                <option value="1m">Last Month</option>
+                <option value="3m">Last 3 Months</option>
+                <option value="6m">Last 6 Months</option>
+                <option value="1y">Last Year</option>
+              </select>
+              <Button variant="secondary">
+                <Download size={16} /> Export Report
+              </Button>
             </div>
-          </div>
-        ))}
-      </div>
+          </header>
+        </ScrollReveal>
 
-      <div className={common.charts_grid}>
-        {/* Spending Chart */}
-        <div className={cn(common.chart_card, themed.chart_card)}>
-          <div className={common.chart_header}>
-            <h3 className={cn(common.chart_title, themed.chart_title)}>Monthly Spending</h3>
-            <span className={cn(common.chart_subtitle, themed.chart_subtitle)}>
-              Total: ${totalSpendingPeriod.toLocaleString()} this period
-            </span>
+        {error && (
+          <div className={common.error_banner}>
+            Unable to load some analytics data. Showing available information.
           </div>
-          <div className={common.bar_chart}>
-            {spendingData.map((data, idx) => (
-              <div key={idx} className={common.bar_container}>
-                <div 
-                  className={cn(common.bar, themed.bar)}
-                  style={{ height: `${Math.round((data.amount / maxSpending) * 100)}%` }}
-                >
-                  <span className={cn(common.bar_value, themed.bar_value)}>
-                    ${(data.amount / 1000).toFixed(1)}k
-                  </span>
-                </div>
-                <span className={cn(common.bar_label, themed.bar_label)}>
-                  {data.month}
+        )}
+
+        {/* Metrics Cards */}
+        <StaggerContainer className={common.metrics_grid}>
+          {metrics.map((metric, idx) => (
+            <StaggerItem key={idx} className={cn(common.metric_card, themed.metric_card)}>
+              <div className={cn(common.metric_icon, themed.metric_icon)}>
+                {metric.icon}
+              </div>
+              <div className={common.metric_content}>
+                <span className={cn(common.metric_title, themed.metric_title)}>
+                  {metric.title}
+                </span>
+                <span className={cn(common.metric_value, themed.metric_value)}>
+                  {metric.value}
+                </span>
+                <span className={cn(
+                  common.metric_change,
+                  metric.trend === 'up' ? common.trend_up : common.trend_down,
+                  metric.trend === 'up' ? themed.trend_up : themed.trend_down
+                )}>
+                  {metric.trend === 'up' ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                  {Math.abs(metric.change)}% vs last period
                 </span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Project Status */}
-        <div className={cn(common.chart_card, themed.chart_card)}>
-          <div className={common.chart_header}>
-            <h3 className={cn(common.chart_title, themed.chart_title)}>Project Status</h3>
-            <span className={cn(common.chart_subtitle, themed.chart_subtitle)}>
-              {totalProjects} total projects
-            </span>
-          </div>
-          <div className={common.project_stats}>
-            {projectMetrics.map((metric, idx) => (
-              <div key={idx} className={common.project_stat}>
-                <div className={common.stat_header}>
-                  <span 
-                    className={cn(common.stat_dot, common[`stat_dot_${metric.status.toLowerCase().replace(' ', '_')}`])}
-                  />
-                  <span className={cn(common.stat_label, themed.stat_label)}>
-                    {metric.status}
-                  </span>
-                  <span className={cn(common.stat_count, themed.stat_count)}>
-                    {metric.count}
-                  </span>
-                </div>
-                <div className={cn(common.stat_bar_bg, themed.stat_bar_bg)}>
-                  <div 
-                    className={cn(common.stat_bar_fill, common[`stat_bar_${metric.status.toLowerCase().replace(' ', '_')}`])}
-                    style={{ width: `${metric.percentage}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Top Freelancers */}
-      <div className={cn(common.freelancers_section, themed.freelancers_section)}>
-        <div className={common.section_header}>
-          <h3 className={cn(common.section_title, themed.section_title)}>
-            Top Freelancers
-          </h3>
-          <span className={cn(common.section_subtitle, themed.section_subtitle)}>
-            Your most hired collaborators
-          </span>
-        </div>
-        <div className={common.freelancers_list}>
-          {topFreelancers.length === 0 ? (
-            <div className={common.empty_state}>No freelancers hired yet.</div>
-          ) : topFreelancers.map((freelancer, idx) => (
-            <div key={idx} className={cn(common.freelancer_card, themed.freelancer_card)}>
-              <div className={cn(common.freelancer_avatar, themed.freelancer_avatar)}>
-                {freelancer.name.charAt(0)}
-              </div>
-              <div className={common.freelancer_info}>
-                <span className={cn(common.freelancer_name, themed.freelancer_name)}>
-                  {freelancer.name}
-                </span>
-                <span className={cn(common.freelancer_role, themed.freelancer_role)}>
-                  {freelancer.role}
-                </span>
-              </div>
-              <div className={common.freelancer_stats}>
-                <div className={common.freelancer_stat}>
-                  <span className={cn(common.stat_value_sm, themed.stat_value_sm)}>
-                    {freelancer.projects}
-                  </span>
-                  <span className={cn(common.stat_label_sm, themed.stat_label_sm)}>
-                    Projects
-                  </span>
-                </div>
-                <div className={common.freelancer_stat}>
-                  <span className={cn(common.stat_value_sm, themed.stat_value_sm)}>
-                    <Star size={12} fill="currentColor" /> {freelancer.rating}
-                  </span>
-                  <span className={cn(common.stat_label_sm, themed.stat_label_sm)}>
-                    Rating
-                  </span>
-                </div>
-                <div className={common.freelancer_stat}>
-                  <span className={cn(common.stat_value_sm, themed.stat_value_sm)}>
-                    {freelancer.spent}
-                  </span>
-                  <span className={cn(common.stat_label_sm, themed.stat_label_sm)}>
-                    Spent
-                  </span>
-                </div>
-              </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
-      </div>
-    </main>
+        </StaggerContainer>
+
+        <ScrollReveal delay={0.2}>
+          <div className={common.charts_grid}>
+            {/* Spending Chart */}
+            <div className={cn(common.chart_card, themed.chart_card)}>
+              <div className={common.chart_header}>
+                <h3 className={cn(common.chart_title, themed.chart_title)}>Monthly Spending</h3>
+                <span className={cn(common.chart_subtitle, themed.chart_subtitle)}>
+                  Total: ${totalSpendingPeriod.toLocaleString()} this period
+                </span>
+              </div>
+              <div className={common.bar_chart}>
+                {spendingData.map((data, idx) => (
+                  <div key={idx} className={common.bar_container}>
+                    <div 
+                      className={cn(common.bar, themed.bar)}
+                      style={{ height: `${Math.round((data.amount / maxSpending) * 100)}%` }}
+                    >
+                      <span className={cn(common.bar_value, themed.bar_value)}>
+                        ${(data.amount / 1000).toFixed(1)}k
+                      </span>
+                    </div>
+                    <span className={cn(common.bar_label, themed.bar_label)}>
+                      {data.month}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Project Status */}
+            <div className={cn(common.chart_card, themed.chart_card)}>
+              <div className={common.chart_header}>
+                <h3 className={cn(common.chart_title, themed.chart_title)}>Project Status</h3>
+                <span className={cn(common.chart_subtitle, themed.chart_subtitle)}>
+                  {totalProjects} total projects
+                </span>
+              </div>
+              <div className={common.project_stats}>
+                {projectMetrics.map((metric, idx) => (
+                  <div key={idx} className={common.project_stat}>
+                    <div className={common.stat_header}>
+                      <span 
+                        className={cn(common.stat_dot, common[`stat_dot_${metric.status.toLowerCase().replace(' ', '_')}`])}
+                      />
+                      <span className={cn(common.stat_label, themed.stat_label)}>
+                        {metric.status}
+                      </span>
+                      <span className={cn(common.stat_count, themed.stat_count)}>
+                        {metric.count}
+                      </span>
+                    </div>
+                    <div className={cn(common.stat_bar_bg, themed.stat_bar_bg)}>
+                      <div 
+                        className={cn(common.stat_bar_fill, common[`stat_bar_${metric.status.toLowerCase().replace(' ', '_')}`])}
+                        style={{ width: `${metric.percentage}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Top Freelancers */}
+        <ScrollReveal delay={0.3}>
+          <div className={cn(common.freelancers_section, themed.freelancers_section)}>
+            <div className={common.section_header}>
+              <h3 className={cn(common.section_title, themed.section_title)}>
+                Top Freelancers
+              </h3>
+              <span className={cn(common.section_subtitle, themed.section_subtitle)}>
+                Your most hired collaborators
+              </span>
+            </div>
+            <StaggerContainer className={common.freelancers_list}>
+              {topFreelancers.length === 0 ? (
+                <div className={common.empty_state}>No freelancers hired yet.</div>
+              ) : topFreelancers.map((freelancer, idx) => (
+                <StaggerItem key={idx} className={cn(common.freelancer_card, themed.freelancer_card)}>
+                  <div className={cn(common.freelancer_avatar, themed.freelancer_avatar)}>
+                    {freelancer.name.charAt(0)}
+                  </div>
+                  <div className={common.freelancer_info}>
+                    <span className={cn(common.freelancer_name, themed.freelancer_name)}>
+                      {freelancer.name}
+                    </span>
+                    <span className={cn(common.freelancer_role, themed.freelancer_role)}>
+                      {freelancer.role}
+                    </span>
+                  </div>
+                  <div className={common.freelancer_stats}>
+                    <div className={common.freelancer_stat}>
+                      <span className={cn(common.stat_value_sm, themed.stat_value_sm)}>
+                        {freelancer.projects}
+                      </span>
+                      <span className={cn(common.stat_label_sm, themed.stat_label_sm)}>
+                        Projects
+                      </span>
+                    </div>
+                    <div className={common.freelancer_stat}>
+                      <span className={cn(common.stat_value_sm, themed.stat_value_sm)}>
+                        <Star size={12} fill="currentColor" /> {freelancer.rating}
+                      </span>
+                      <span className={cn(common.stat_label_sm, themed.stat_label_sm)}>
+                        Rating
+                      </span>
+                    </div>
+                    <div className={common.freelancer_stat}>
+                      <span className={cn(common.stat_value_sm, themed.stat_value_sm)}>
+                        {freelancer.spent}
+                      </span>
+                      <span className={cn(common.stat_label_sm, themed.stat_label_sm)}>
+                        Spent
+                      </span>
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+        </ScrollReveal>
+      </main>
+    </PageTransition>
   );
 };
 

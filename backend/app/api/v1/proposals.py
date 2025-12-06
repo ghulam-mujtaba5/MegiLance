@@ -1,84 +1,104 @@
 # @AI-HINT: Proposals API - CRUD for freelancer proposals on projects
 # Uses Turso HTTP API directly - NO SQLite fallback
-# Enhanced with input validation and security measures
+# Enhanced with input validation, security measures, and standardized responses
+# Auto-creates contracts when proposals are accepted
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
+import uuid
+import logging
+
+logger = logging.getLogger(__name__)
 
 from app.core.security import get_current_active_user
+from app.core.responses import (
+    success_response,
+    BadRequestException,
+    NotFoundException,
+    ForbiddenException,
+    ConflictException,
+    ServiceUnavailableException,
+    ErrorCodes,
+    validate_required,
+    validate_length,
+    validate_range
+)
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.models.user import User
 from app.schemas.proposal import ProposalCreate, ProposalRead, ProposalUpdate
+from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
 
 router = APIRouter()
 
 # === Input Validation Constants ===
 MAX_COVER_LETTER_LENGTH = 5000
+MIN_COVER_LETTER_LENGTH = 50
 MAX_AVAILABILITY_LENGTH = 500
 MAX_ATTACHMENTS_LENGTH = 2000
 MAX_BID_AMOUNT = 1000000  # $1M max
+MIN_BID_AMOUNT = 1        # $1 min
 MAX_HOURLY_RATE = 1000    # $1000/hr max
+MIN_HOURLY_RATE = 1       # $1/hr min
 MAX_ESTIMATED_HOURS = 10000  # 10,000 hours max
+MIN_ESTIMATED_HOURS = 1   # 1 hour min
 VALID_PROPOSAL_STATUSES = {"draft", "submitted", "accepted", "rejected", "withdrawn"}
 
 
 def _validate_proposal_input(proposal) -> None:
-    """Validate proposal input fields"""
-    if proposal.cover_letter and len(proposal.cover_letter) > MAX_COVER_LETTER_LENGTH:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Cover letter exceeds maximum length of {MAX_COVER_LETTER_LENGTH} characters"
+    """Validate proposal input fields with enhanced error messages"""
+    # Cover letter validation
+    if proposal.cover_letter:
+        validate_length(
+            proposal.cover_letter,
+            "Cover letter",
+            min_length=MIN_COVER_LETTER_LENGTH,
+            max_length=MAX_COVER_LETTER_LENGTH
         )
     
-    if proposal.availability and len(proposal.availability) > MAX_AVAILABILITY_LENGTH:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Availability exceeds maximum length of {MAX_AVAILABILITY_LENGTH} characters"
+    # Availability validation
+    if proposal.availability:
+        validate_length(
+            proposal.availability,
+            "Availability",
+            max_length=MAX_AVAILABILITY_LENGTH
         )
     
-    if proposal.attachments and len(proposal.attachments) > MAX_ATTACHMENTS_LENGTH:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Attachments field exceeds maximum length of {MAX_ATTACHMENTS_LENGTH} characters"
+    # Attachments validation
+    if proposal.attachments:
+        validate_length(
+            proposal.attachments,
+            "Attachments",
+            max_length=MAX_ATTACHMENTS_LENGTH
         )
     
+    # Bid amount validation
     if proposal.bid_amount is not None:
-        if proposal.bid_amount < 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Bid amount cannot be negative"
-            )
-        if proposal.bid_amount > MAX_BID_AMOUNT:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Bid amount exceeds maximum of ${MAX_BID_AMOUNT:,}"
-            )
+        validate_range(
+            proposal.bid_amount,
+            "Bid amount",
+            min_val=MIN_BID_AMOUNT,
+            max_val=MAX_BID_AMOUNT
+        )
     
+    # Hourly rate validation
     if proposal.hourly_rate is not None:
-        if proposal.hourly_rate < 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Hourly rate cannot be negative"
-            )
-        if proposal.hourly_rate > MAX_HOURLY_RATE:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Hourly rate exceeds maximum of ${MAX_HOURLY_RATE}/hr"
-            )
+        validate_range(
+            proposal.hourly_rate,
+            "Hourly rate",
+            min_val=MIN_HOURLY_RATE,
+            max_val=MAX_HOURLY_RATE
+        )
     
+    # Estimated hours validation
     if proposal.estimated_hours is not None:
-        if proposal.estimated_hours < 0:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Estimated hours cannot be negative"
-            )
-        if proposal.estimated_hours > MAX_ESTIMATED_HOURS:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Estimated hours exceeds maximum of {MAX_ESTIMATED_HOURS:,} hours"
-            )
+        validate_range(
+            proposal.estimated_hours,
+            "Estimated hours",
+            min_val=MIN_ESTIMATED_HOURS,
+            max_val=MAX_ESTIMATED_HOURS
+        )
 
 
 def _get_val(row: list, idx: int):
@@ -354,6 +374,14 @@ def create_proposal(
             detail="Cover letter must be at least 50 characters"
         )
     
+    # Check profile completion
+    if not is_profile_complete(current_user):
+        missing = get_missing_profile_fields(current_user)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Please complete your profile before submitting a proposal. Missing: {', '.join(missing)}"
+        )
+    
     # Check if project exists and is open
     result = execute_query("SELECT id, status FROM projects WHERE id = ?", [proposal.project_id])
     if not result or not result.get("rows"):
@@ -529,7 +557,7 @@ def accept_proposal(
     proposal_id: int,
     current_user: User = Depends(get_current_active_user)
 ):
-    """Client accepts a proposal"""
+    """Client accepts a proposal - creates a contract automatically"""
     result = execute_query(
         """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
            estimated_hours, hourly_rate, availability, attachments, status,
@@ -543,14 +571,25 @@ def accept_proposal(
     
     row = result["rows"][0]
     project_id = int(_get_val(row, 1) or 0)
+    freelancer_id = int(_get_val(row, 2) or 0)
+    bid_amount = float(_get_val(row, 4) or 0)
+    hourly_rate = float(_get_val(row, 6) or 0)
     prop_status = _safe_str(_get_val(row, 9))
     
     # Check if user is project owner
-    proj_result = execute_query("SELECT client_id FROM projects WHERE id = ?", [project_id])
+    proj_result = execute_query(
+        "SELECT client_id, title, description, budget_type FROM projects WHERE id = ?", 
+        [project_id]
+    )
     if not proj_result or not proj_result.get("rows"):
         raise HTTPException(status_code=404, detail="Project not found")
     
-    client_id = int(_get_val(proj_result["rows"][0], 0) or 0)
+    proj_row = proj_result["rows"][0]
+    client_id = int(_get_val(proj_row, 0) or 0)
+    project_title = _safe_str(_get_val(proj_row, 1)) or "Untitled Project"
+    project_description = _safe_str(_get_val(proj_row, 2)) or ""
+    budget_type = _safe_str(_get_val(proj_row, 3)) or "fixed"
+    
     if client_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -582,6 +621,42 @@ def accept_proposal(
         "UPDATE proposals SET status = ?, updated_at = ? WHERE project_id = ? AND id != ? AND status = ?",
         ["rejected", now, project_id, proposal_id, "submitted"]
     )
+    
+    # === Create contract automatically ===
+    contract_id = str(uuid.uuid4())
+    contract_amount = bid_amount if bid_amount > 0 else hourly_rate
+    start_date = now
+    # Default end date: 30 days from now
+    end_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
+    
+    try:
+        contract_result = execute_query(
+            """INSERT INTO contracts (id, project_id, freelancer_id, client_id, total_amount, 
+               status, start_date, end_date, description, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            [
+                contract_id,
+                project_id,
+                freelancer_id,
+                current_user.id,
+                contract_amount,
+                "active",
+                start_date,
+                end_date,
+                f"Contract for: {project_title}\n\n{project_description[:500]}",
+                now,
+                now
+            ]
+        )
+        
+        if contract_result:
+            logger.info(f"Contract {contract_id} created for project {project_id} on proposal {proposal_id} acceptance")
+        else:
+            logger.error(f"Failed to create contract for proposal {proposal_id}")
+            
+    except Exception as e:
+        logger.error(f"Contract creation error on proposal {proposal_id}: {str(e)}")
+        # Don't fail the whole operation, the proposal is already accepted
     
     # Return updated proposal
     result = execute_query(

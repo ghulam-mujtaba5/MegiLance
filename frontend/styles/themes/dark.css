@@ -2,27 +2,27 @@
 
 .dark {
   /* Brand & Accent Colors (often remain the same for brand consistency) */
-  --primary-4573df: #4573df;
-  --accent-ff9800: #ff9800;
+  --primary-4573df: var(--ml-blue-light);
+  --accent-ff9800: var(--ml-orange);
 
   /* Semantic Colors */
-  --success-27AE60: #27AE60;
-  --error-e81123: #e81123;
-  --warning-f2c94c: #F2C94C;
+  --success-27AE60: var(--ml-green-light);
+  --error-e81123: var(--ml-red-light);
+  --warning-f2c94c: var(--ml-yellow);
 
   /* UI Surfaces & Backgrounds */
-  --background-1d2127: #1d2127;
-  --surface-272b32: #272b32; /* For cards, forms, etc. */
-  --surface-alt-2c323a: #2c323a; /* A slightly different dark for variation */
-  --container-dark-2c323a: #2c323a; /* This is already a dark color, so it's consistent */
-  --border-3a414a: #3a414a; /* A subtle border for dark mode */
+  --background-1d2127: var(--neutral-950);
+  --surface-272b32: var(--neutral-900); /* For cards, forms, etc. */
+  --surface-alt-2c323a: var(--neutral-800); /* A slightly different dark for variation */
+  --container-dark-2c323a: var(--neutral-800); /* This is already a dark color, so it's consistent */
+  --border-3a414a: var(--neutral-700); /* A subtle border for dark mode */
 
   /* Text Colors */
-  --text-primary-f5f7fa: #f5f7fa;
-  --text-secondary-a9b1bd: #a9b1bd;
+  --text-primary-f5f7fa: var(--neutral-50);
+  --text-secondary-a9b1bd: var(--neutral-400);
   --text-on-primary-ffffff: #ffffff;
   --text-on-accent-ffffff: #ffffff;
-  --text-on-dark-f5f7fa: #f5f7fa;
+  --text-on-dark-f5f7fa: var(--neutral-50);
 
   /* Extended Brand Palette (remain the same) */
   --brand-indigo-3c3c88: #3C3C88;

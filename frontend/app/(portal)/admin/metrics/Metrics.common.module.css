@@ -330,15 +330,19 @@
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .chartsGrid {
     grid-template-columns: 1fr;
   }
+
+  .metricsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 1.25rem;
   }
 
   .header {
@@ -348,6 +352,12 @@
 
   .headerActions {
     flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .headerActions > * {
+    flex: 1;
+    min-width: 120px;
   }
 
   .metricsGrid {
@@ -356,5 +366,74 @@
 
   .bottomGrid {
     grid-template-columns: 1fr;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chartCard {
+    overflow-x: auto;
+  }
+
+  .barChart {
+    min-width: 300px;
+  }
+
+  .lineChart {
+    min-width: 300px;
+  }
+
+  .timeRangeSelector {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .metricCard {
+    padding: 1rem;
+  }
+
+  .metricValue {
+    font-size: 1.5rem;
+  }
+
+  .healthItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .healthMetrics {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .activityMeta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .timeRangeSelector {
+    flex-wrap: wrap;
+  }
+
+  .rangeBtn {
+    flex: 1;
+    min-width: 60px;
+    text-align: center;
   }
 }

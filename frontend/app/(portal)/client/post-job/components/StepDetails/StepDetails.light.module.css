@@ -1,4 +1,4 @@
-/* AI-HINT: Light theme styles for the StepDetails component. */
+/* AI-HINT: Light theme styles for the enhanced StepDetails component. */
 
 .container {
   background-color: var(--background);
@@ -11,4 +11,38 @@
 
 .subtitle {
   color: var(--text-secondary);
+}
+
+.label {
+  color: var(--text-primary);
+}
+
+.exampleButton {
+  background-color: #faf5ff;
+  border-color: #e9d5ff;
+  color: #9333ea;
+}
+
+.exampleButton:hover {
+  background-color: #f3e8ff;
+  border-color: #d8b4fe;
+}
+
+.examplesBox {
+  background-color: #fafafa;
+  border: 1px solid #e5e7eb;
+}
+
+.exampleItem {
+  background-color: white;
+  color: var(--text-primary);
+}
+
+.exampleItem:hover {
+  background-color: #f0f9ff;
+  color: var(--primary);
+}
+
+.help {
+  color: var(--text-tertiary);
 }

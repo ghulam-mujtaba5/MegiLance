@@ -12,10 +12,9 @@ import TrustIndicators from './components/TrustIndicators';
 import WhyMegiLance from './components/WhyMegiLance';
 import Features from './components/Features';
 import HowItWorks from './components/HowItWorks';
-import AIShowcase from './components/AIShowcase';
 import PoweredByAI from './components/PoweredByAI';
 import BlockchainShowcase from './components/BlockchainShowcase';
-import ProductScreenshots from './components/ProductScreenshots';
+import SuccessStories from './components/SuccessStories';
 import GlobalImpact from './components/GlobalImpact';
 import Testimonials from './components/Testimonials';
 import CTA from './components/CTA';
@@ -82,15 +81,6 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* AI Showcase */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" direction="up" distance={80}>
-              <AIShowcase />
-            </ScrollReveal>
-          </div>
-        </div>
-
         {/* Powered By AI */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
@@ -109,11 +99,11 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Product Screenshots */}
+        {/* Success Stories */}
         <div className={commonStyles.homeSection}>
           <div className={commonStyles.sectionContainer}>
             <ScrollReveal width="100%" direction="up">
-              <ProductScreenshots />
+              <SuccessStories />
             </ScrollReveal>
           </div>
         </div>

@@ -273,14 +273,20 @@
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .container {
-    padding: 1rem;
+    padding: 1.25rem;
   }
 
   .fileInfoCard {
     flex-direction: column;
     text-align: center;
+    padding: 1.5rem;
+  }
+
+  .fileMeta {
+    justify-content: center;
+    flex-wrap: wrap;
   }
 
   .compareBar {
@@ -289,7 +295,77 @@
     text-align: center;
   }
 
+  .compareActions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .versionCard {
+    flex-direction: column;
+  }
+
+  .versionTimeline {
+    display: none;
+  }
+
+  .versionContent {
+    margin-left: 0;
+  }
+
+  .versionHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .versionMeta {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
   .versionActions {
     flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .fileName {
+    font-size: 1.25rem;
+  }
+
+  .fileInfoCard {
+    padding: 1rem;
+  }
+
+  .fileIcon {
+    font-size: 2.5rem;
+  }
+
+  .versionContent {
+    padding: 1rem;
+  }
+
+  .versionActions {
+    gap: 0.375rem;
+  }
+
+  .downloadButton,
+  .restoreButton,
+  .previewButton {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .emptyState {
+    padding: 2rem 1rem;
+  }
+
+  .emptyIcon {
+    font-size: 3rem;
   }
 }

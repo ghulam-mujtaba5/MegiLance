@@ -1,8 +1,108 @@
+.container {
+  background-color: var(--bg-primary-light);
+}
+
 .title {
   color: var(--text-primary-light);
 }
 
 .description {
+  color: var(--text-secondary-light);
+}
+
+.labelRow {
+  color: var(--text-primary-light);
+}
+
+.tipButton {
+  background-color: var(--bg-tertiary-light);
+  color: var(--text-secondary-light);
+}
+
+.tipButton:hover {
+  background-color: var(--primary-light);
+  color: white;
+}
+
+.tipsCard {
+  background-color: var(--bg-tertiary-light);
+  border: 1px solid var(--border-light);
+}
+
+.tipsTitle {
+  color: var(--primary-light);
+}
+
+.tipsList {
+  color: var(--text-secondary-light);
+}
+
+.templatesCard {
+  background-color: var(--bg-tertiary-light);
+  border: 1px solid var(--border-light);
+}
+
+.templatesTitle {
+  color: var(--accent-light);
+}
+
+.templateItem {
+  background-color: var(--bg-secondary-light);
+  border-color: var(--border-light);
+}
+
+.templateItem:hover {
+  background-color: var(--bg-primary-light);
+  border-color: var(--primary-light);
+}
+
+.templateName {
+  color: var(--text-primary-light);
+}
+
+.templatePreview {
+  color: var(--text-secondary-light);
+}
+
+.charProgress {
+  background-color: var(--bg-tertiary-light);
+}
+
+.charProgressFill {
+  background-color: var(--primary-light);
+}
+
+.charCount {
+  color: var(--text-secondary-light);
+}
+
+.pricingSection {
+  background-color: var(--bg-secondary-light);
+  border: 1px solid var(--border-light);
+}
+
+.sectionTitle {
+  color: var(--text-primary-light);
+}
+
+.estimatedCard {
+  background-color: var(--bg-tertiary-light);
+  border: 1px solid var(--border-light);
+}
+
+.estimatedRow {
+  color: var(--text-primary-light);
+}
+
+.estimatedTotal {
+  color: var(--success-light);
+}
+
+.estimatedBreakdown {
+  color: var(--text-secondary-light);
+}
+
+.hint {
   color: var(--text-secondary-light);
 }
 

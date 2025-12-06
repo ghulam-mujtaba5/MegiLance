@@ -32,15 +32,15 @@ export default function QuickLogin() {
       switch (role) {
         case 'admin':
           email = 'admin@megilance.com';
-          password = 'admin123';
+          password = 'Test123!';
           break;
         case 'client':
-          email = 'client@example.com';
-          password = 'client123';
+          email = 'client1@example.com';
+          password = 'Test123!';
           break;
         case 'freelancer':
-          email = 'freelancer@example.com';
-          password = 'freelancer123';
+          email = 'freelancer1@example.com';
+          password = 'Test123!';
           break;
       }
 

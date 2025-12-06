@@ -5,10 +5,11 @@ Handles dispute creation, listing, admin assignment, and resolution.
 from typing import List, Optional
 import json
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
 
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.core.security import get_current_active_user
+from app.core.storage import save_file
 from app.models import User
 from app.schemas.dispute import (
     Dispute as DisputeSchema,
@@ -74,6 +75,9 @@ async def create_dispute(
         INSERT INTO disputes (contract_id, raised_by_id, dispute_type, description, status, created_at, updated_at)
         VALUES (?, ?, ?, ?, 'open', ?, ?)
     """, [dispute_data.contract_id, current_user.id, dispute_type, dispute_data.description, now, now])
+    
+    # Update contract status to 'disputed'
+    execute_query("UPDATE contracts SET status = 'disputed', updated_at = ? WHERE id = ?", [now, dispute_data.contract_id])
     
     # Get created dispute
     dispute_result = execute_query("""
@@ -364,6 +368,7 @@ async def assign_dispute(
 async def resolve_dispute(
     dispute_id: int,
     resolution: str,
+    contract_status: Optional[str] = Query(None, description="New status for the contract (e.g., active, terminated, completed)"),
     current_user: User = Depends(get_current_active_user)
 ):
     """Resolve a dispute. Admin-only endpoint."""
@@ -388,6 +393,15 @@ async def resolve_dispute(
         UPDATE disputes SET status = 'resolved', resolution = ?, updated_at = ? WHERE id = ?
     """, [resolution, now, dispute_id])
     
+    # Update contract status if provided
+    if contract_status:
+        # Validate status
+        valid_statuses = ["pending", "active", "completed", "cancelled", "disputed", "terminated", "refunded"]
+        if contract_status not in valid_statuses:
+             raise HTTPException(status_code=400, detail=f"Invalid contract status. Must be one of: {', '.join(valid_statuses)}")
+        
+        execute_query("UPDATE contracts SET status = ?, updated_at = ? WHERE id = ?", [contract_status, now, contract_id])
+    
     # Get contract parties for notification
     contract_result = execute_query("SELECT client_id, freelancer_id FROM contracts WHERE id = ?", [contract_id])
     if contract_result and contract_result.get("rows"):
@@ -407,3 +421,62 @@ async def resolve_dispute(
             )
     
     return await get_dispute(dispute_id, current_user)
+
+
+@router.post("/disputes/{dispute_id}/evidence", response_model=DisputeSchema)
+async def upload_evidence(
+    dispute_id: int,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_user)
+):
+    """Upload evidence for a dispute. Only contract parties and admins can upload."""
+    # Get dispute
+    result = execute_query("SELECT id, contract_id, evidence FROM disputes WHERE id = ?", [dispute_id])
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Dispute not found")
+    
+    row = result["rows"][0]
+    contract_id = int(row[1].get("value"))
+    current_evidence_json = to_str(row[2])
+    
+    # Check permissions
+    user_type = getattr(current_user, 'user_type', None)
+    if hasattr(user_type, 'value'):
+        user_type = user_type.value
+    user_type = str(user_type).lower() if user_type else 'client'
+    
+    if user_type != "admin":
+        contract_result = execute_query("SELECT client_id, freelancer_id FROM contracts WHERE id = ?", [contract_id])
+        if not contract_result or not contract_result.get("rows"):
+            raise HTTPException(status_code=404, detail="Contract not found")
+        
+        contract_row = contract_result["rows"][0]
+        client_id = int(contract_row[0].get("value"))
+        freelancer_id = int(contract_row[1].get("value"))
+        
+        if current_user.id not in [client_id, freelancer_id]:
+            raise HTTPException(status_code=403, detail="You don't have permission to upload evidence for this dispute")
+
+    # Save file
+    file_content = await file.read()
+    file_url = save_file(file_content, f"disputes/{dispute_id}/{file.filename}")
+    
+    # Update evidence list
+    evidence_list = []
+    if current_evidence_json:
+        try:
+            evidence_list = json.loads(current_evidence_json)
+            if not isinstance(evidence_list, list):
+                evidence_list = []
+        except json.JSONDecodeError:
+            evidence_list = []
+            
+    evidence_list.append(file_url)
+    new_evidence_json = json.dumps(evidence_list)
+    
+    now = datetime.utcnow().isoformat()
+    execute_query("UPDATE disputes SET evidence = ?, updated_at = ? WHERE id = ?", 
+                  [new_evidence_json, now, dispute_id])
+    
+    return await get_dispute(dispute_id, current_user)
+
