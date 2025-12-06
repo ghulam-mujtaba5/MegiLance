@@ -38,9 +38,9 @@ services:
     
     health_check:
       http_path: /api/health/live
-      initial_delay_seconds: 60
+      initial_delay_seconds: 120
       period_seconds: 30
-      timeout_seconds: 10
+      timeout_seconds: 30
       success_threshold: 1
       failure_threshold: 5
     
