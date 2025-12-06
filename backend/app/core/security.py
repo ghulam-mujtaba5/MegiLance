@@ -262,6 +262,15 @@ def require_admin(current_user: User = Depends(get_current_active_user)) -> User
     return current_user
 
 
+def check_admin_role(user: User) -> None:
+    """Check if user has admin role, raise 403 if not"""
+    if user.role not in ["admin", "Admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+
+
 def require_role(required_role: str):
     """Generic role requirement"""
     def role_checker(current_user: User = Depends(get_current_active_user)) -> User:
