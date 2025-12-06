@@ -6,11 +6,8 @@ name: megilance
 region: blr
 
 domains:
-  - domain: megilance.site
-    type: PRIMARY
-    zone: megilance.site
   - domain: www.megilance.site
-    type: ALIAS
+    type: PRIMARY
     zone: megilance.site
   - domain: api.megilance.site
     type: ALIAS
