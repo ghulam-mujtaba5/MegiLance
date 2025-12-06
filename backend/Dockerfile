@@ -1,12 +1,13 @@
 # Simplified Dockerfile for MegiLance backend with Turso (libSQL)
 # Security-hardened production build
+# Build context: repo root (when using dockerfile_path: backend/Dockerfile)
 FROM python:3.13-slim AS builder
 
 WORKDIR /app
 
 # Install build dependencies and libmagic
 RUN apt-get update && apt-get install -y --no-install-recommends libmagic1 && rm -rf /var/lib/apt/lists/*
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --user -r requirements.txt
 
 # Final production image
@@ -28,8 +29,8 @@ RUN useradd -m -u 1000 -s /bin/bash appuser
 # Copy installed packages from builder
 COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
 
-# Copy application code with proper ownership
-COPY --chown=appuser:appuser . .
+# Copy application code with proper ownership - from backend subdirectory
+COPY --chown=appuser:appuser backend/ .
 
 # Create uploads directory with correct permissions
 RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads

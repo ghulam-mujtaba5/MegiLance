@@ -1,19 +1,21 @@
 # Frontend Dockerfile for MegiLance with Turso
+# Build context: repo root (when using dockerfile_path: frontend/Dockerfile)
 FROM node:22-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
 
-# Install dependencies
-COPY package.json package-lock.json* ./
+# Install dependencies - copy from frontend subdirectory
+COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm install --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# Copy frontend directory contents
+COPY frontend/ .
 
 # Disable telemetry and Turbopack
 ENV NEXT_TELEMETRY_DISABLED 1
@@ -32,8 +34,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy built application
-COPY public ./public
+# Copy built application - use frontend/ prefix since build context is repo root
+COPY frontend/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
