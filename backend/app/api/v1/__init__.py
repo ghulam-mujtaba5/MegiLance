@@ -10,7 +10,7 @@ from . import (
     email_templates, integrations, push_notifications, invoice_tax,
     contract_builder, skill_graph, social_login, timezone, backup_restore,
     portfolio_builder, compliance, achievement_system, learning_center,
-    analytics_dashboard, marketplace, subscription_billing, multi_currency,
+    analytics_dashboard, marketplace, subscription_billing,
     legal_documents, knowledge_base, workflow_automation, messages,
     notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags,
@@ -22,8 +22,10 @@ from . import (
     review_responses, platform_compliance, notification_settings,
     search_analytics, rate_cards, proposal_templates, portfolio_showcase,
     notes_tags, custom_statuses, skill_taxonomy, search_advanced,
-    realtime_notifications, ai_matching, security, multicurrency, ai_advanced,
-    video_communication, admin_fraud_alerts, admin_analytics, mock
+    realtime_notifications, ai_matching, security, video_communication, mock,
+    # Version 2.0 features
+    multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics,
+    complete_integrations
 )
 
 __all__ = [
@@ -39,7 +41,7 @@ __all__ = [
     "contract_builder", "skill_graph", "social_login", "timezone",
     "backup_restore", "portfolio_builder", "compliance", "achievement_system",
     "learning_center", "analytics_dashboard", "marketplace", "subscription_billing",
-    "multi_currency", "legal_documents", "knowledge_base", "workflow_automation",
+    "legal_documents", "knowledge_base", "workflow_automation",
     "messages", "notifications", "reviews", "disputes", "milestones", "skills",
     "admin", "time_entries", "invoices", "escrow", "categories", "favorites",
     "tags", "support_tickets", "refunds", "search", "websocket", "uploads",
@@ -51,7 +53,7 @@ __all__ = [
     "platform_compliance", "notification_settings", "search_analytics",
     "rate_cards", "proposal_templates", "portfolio_showcase", "notes_tags",
     "custom_statuses", "skill_taxonomy", "search_advanced",
-    "realtime_notifications", "ai_matching", "security", "multicurrency",
-    "ai_advanced", "video_communication", "admin_fraud_alerts", "admin_analytics",
-    "mock"
+    "realtime_notifications", "ai_matching", "security", "video_communication",
+    "mock", "multicurrency", "ai_advanced", "admin_fraud_alerts",
+    "admin_analytics", "complete_integrations"
 ]
