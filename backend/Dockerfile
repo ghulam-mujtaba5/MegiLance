@@ -59,7 +59,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Use gunicorn with uvicorn workers for production
 # Security: Limit worker memory and timeouts
 CMD ["gunicorn", "main:app", \
-     "-w", "4", \
+     "-w", "2", \
      "-k", "uvicorn.workers.UvicornWorker", \
      "--bind", "0.0.0.0:8000", \
      "--access-logfile", "-", \
