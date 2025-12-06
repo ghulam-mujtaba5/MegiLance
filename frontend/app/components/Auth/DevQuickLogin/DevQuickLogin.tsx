@@ -1,4 +1,4 @@
-// @AI-HINT: Development-only quick login component for MegiLance. Shows role-based buttons that auto-fill real credentials from the database for rapid testing. Only visible in development mode (process.env.NODE_ENV === 'development'). Provides one-click login for Admin, Freelancer, and Client roles with actual database credentials.
+// @AI-HINT: Quick login component for MegiLance demo. Shows role-based buttons that auto-fill real credentials for rapid testing. Now works in both development and production for live demo purposes.
 'use client';
 
 import React from 'react';
@@ -19,7 +19,7 @@ interface DevCredential {
   icon: IconType;
 }
 
-// @AI-HINT: Real credentials from the database. Using actual passwords from Turso database
+// @AI-HINT: Demo credentials for quick login. These are real accounts in the database.
 const DEV_CREDENTIALS: DevCredential[] = [
   {
     email: 'admin@megilance.com',
@@ -77,8 +77,8 @@ const DevQuickLogin: React.FC<DevQuickLoginProps> = ({ onCredentialSelect, onAut
     setMounted(true);
   }, []);
 
-  // Only show in development and after mounting
-  if (process.env.NODE_ENV !== 'development' || !mounted) {
+  // Show after mounting (both dev and production for demo)
+  if (!mounted) {
     return null;
   }
 
@@ -94,7 +94,7 @@ const DevQuickLogin: React.FC<DevQuickLoginProps> = ({ onCredentialSelect, onAut
     <div className={styles.container}>
       <div className={styles.header}>
         <FaRocket className={styles.title} />
-        <h3 className={styles.title}>Quick Login (Dev Only)</h3>
+        <h3 className={styles.title}>🚀 Quick Demo Login</h3>
         <p className={styles.subtitle}>
           {autoLoginMode ? 'Click to instantly login' : 'Click to auto-fill credentials'}
         </p>
