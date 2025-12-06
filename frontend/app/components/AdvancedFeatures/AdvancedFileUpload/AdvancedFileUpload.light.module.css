@@ -1,0 +1,64 @@
+/* @AI-HINT: Light theme for file upload */
+
+.dropzone {
+  border-color: #d0d0d0;
+  background-color: #fafafa;
+}
+
+.dropzone:hover {
+  border-color: #4573df;
+  background-color: #f5f7fa;
+}
+
+.dropzoneDragging {
+  border-color: #4573df;
+  background-color: #e3ecfd;
+}
+
+.dropzoneIcon {
+  color: #4573df;
+}
+
+.dropzoneText {
+  color: #333333;
+}
+
+.dropzoneSubtext {
+  color: #666666;
+}
+
+.fileItem {
+  background-color: #ffffff;
+  border-color: #e0e0e0;
+}
+
+.fileItem:hover {
+  border-color: #4573df;
+  background-color: #fafafa;
+}
+
+.fileIcon {
+  background-color: #f0f0f0;
+  color: #4573df;
+}
+
+.fileName {
+  color: #333333;
+}
+
+.fileSize {
+  color: #666666;
+}
+
+.progressBar {
+  background-color: #e0e0e0;
+}
+
+.removeButton {
+  color: #999999;
+}
+
+.removeButton:hover {
+  background-color: #fee;
+  color: #e81123;
+}

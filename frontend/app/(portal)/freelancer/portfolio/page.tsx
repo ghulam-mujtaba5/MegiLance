@@ -14,6 +14,10 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 
+import common from './Portfolio.common.module.css';
+import light from './Portfolio.light.module.css';
+import dark from './Portfolio.dark.module.css';
+
 interface PortfolioItem {
   id: number;
   freelancer_id: number;
@@ -29,6 +33,7 @@ interface PortfolioItem {
 
 const PortfolioPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  const themed = resolvedTheme === 'dark' ? dark : light;
   const toaster = useToaster();
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,13 +90,13 @@ const PortfolioPage: React.FC = () => {
 
   return (
     <PageTransition>
-      <main className="p-6 max-w-7xl mx-auto">
+      <main className={cn(common.container, themed.container)}>
         {/* Header */}
         <ScrollReveal>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">My Portfolio</h1>
-              <p className="text-gray-600 dark:text-gray-400">
+          <div className={common.header}>
+            <div className={common.headerContent}>
+              <h1 className={cn(common.title, themed.title)}>My Portfolio</h1>
+              <p className={cn(common.subtitle, themed.subtitle)}>
                 Showcase your best work to attract clients and land more projects.
               </p>
             </div>
@@ -104,37 +109,37 @@ const PortfolioPage: React.FC = () => {
         </ScrollReveal>
 
         {/* Stats */}
-        <StaggerContainer delay={0.1} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <StaggerContainer delay={0.1} className={common.statsGrid}>
           <Card>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                <FolderOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            <div className={common.statCardContent}>
+              <div className={cn(common.statIconWrapper, themed.statIconBlue)}>
+                <FolderOpen size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Projects</p>
-                <p className="text-2xl font-bold">{stats.totalProjects}</p>
+                <p className={cn(common.statLabel, themed.statLabel)}>Total Projects</p>
+                <p className={cn(common.statValue, themed.statValue)}>{stats.totalProjects}</p>
               </div>
             </div>
           </Card>
           <Card>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-                <Eye className="h-6 w-6 text-green-600 dark:text-green-400" />
+            <div className={common.statCardContent}>
+              <div className={cn(common.statIconWrapper, themed.statIconGreen)}>
+                <Eye size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Profile Views</p>
-                <p className="text-2xl font-bold">{stats.profileViews.toLocaleString()}</p>
+                <p className={cn(common.statLabel, themed.statLabel)}>Profile Views</p>
+                <p className={cn(common.statValue, themed.statValue)}>{stats.profileViews.toLocaleString()}</p>
               </div>
             </div>
           </Card>
           <Card>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <Tag className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+            <div className={common.statCardContent}>
+              <div className={cn(common.statIconWrapper, themed.statIconPurple)}>
+                <Tag size={24} />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Unique Skills</p>
-                <p className="text-2xl font-bold">{stats.uniqueSkills}</p>
+                <p className={cn(common.statLabel, themed.statLabel)}>Unique Skills</p>
+                <p className={cn(common.statValue, themed.statValue)}>{stats.uniqueSkills}</p>
               </div>
             </div>
           </Card>
@@ -144,9 +149,9 @@ const PortfolioPage: React.FC = () => {
         {error && (
           <ScrollReveal>
             <Card>
-              <div className="text-center py-12">
-                <h3 className="text-xl font-semibold mb-2 text-red-600">Error Loading Portfolio</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
+              <div className={common.emptyState}>
+                <h3 className={cn(common.emptyTitle, themed.emptyTitle, "text-red-500")}>Error Loading Portfolio</h3>
+                <p className={cn(common.emptyText, themed.emptyText)}>{error}</p>
                 <Button variant="primary" onClick={fetchPortfolio}>Try Again</Button>
               </div>
             </Card>
@@ -155,9 +160,9 @@ const PortfolioPage: React.FC = () => {
 
         {/* Loading State */}
         {loading && !error && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-            <span className="ml-3 text-gray-600 dark:text-gray-400">Loading portfolio...</span>
+          <div className={cn(common.loadingContainer, themed.loadingContainer)}>
+            <Loader2 className={common.spinIcon} size={32} />
+            <span>Loading portfolio...</span>
           </div>
         )}
 
@@ -165,10 +170,10 @@ const PortfolioPage: React.FC = () => {
         {!loading && !error && portfolioItems.length === 0 ? (
           <ScrollReveal delay={0.2}>
             <Card>
-              <div className="text-center py-12">
-                <FolderOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Portfolio Items Yet</h3>
-                <p className="text-gray-500 dark:text-gray-400 mb-4">
+              <div className={common.emptyState}>
+                <FolderOpen className={cn(common.emptyIcon, themed.emptyIcon)} />
+                <h3 className={cn(common.emptyTitle, themed.emptyTitle)}>No Portfolio Items Yet</h3>
+                <p className={cn(common.emptyText, themed.emptyText)}>
                   Start building your portfolio by adding your best projects and work samples.
                 </p>
                 <Link href="/portal/freelancer/portfolio/add">
@@ -180,56 +185,56 @@ const PortfolioPage: React.FC = () => {
             </Card>
           </ScrollReveal>
         ) : !loading && !error && (
-          <StaggerContainer delay={0.2} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerContainer delay={0.2} className={common.grid}>
             {portfolioItems.map((item) => (
-              <Card key={item.id}>
-                <div className="relative">
+              <Card key={item.id} className="overflow-hidden">
+                <div className={common.cardImageWrapper}>
                   {/* Image or placeholder */}
                   {item.image_url ? (
                     <img 
                       src={item.image_url} 
                       alt={item.title}
-                      className="h-48 w-full object-cover rounded-t-lg"
+                      className={common.cardImage}
                     />
                   ) : (
-                    <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-t-lg flex items-center justify-center">
-                      <FolderOpen className="h-12 w-12 text-gray-400" />
+                    <div className={cn(common.cardPlaceholder, themed.cardPlaceholder)}>
+                      <FolderOpen size={48} />
                     </div>
                   )}
                   
                   {/* Actions */}
-                  <div className="absolute top-2 right-2 flex gap-2">
+                  <div className={common.cardActions}>
                     <Link href={`/portal/freelancer/portfolio/${item.id}/edit`}>
                       <button 
-                        className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-shadow"
+                        className={cn(common.actionButton, themed.actionButton)}
                         aria-label="Edit"
                       >
-                        <Edit className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                        <Edit size={16} />
                       </button>
                     </Link>
                     <button 
-                      className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg transition-shadow"
+                      className={cn(common.actionButton, themed.actionButton, themed.actionButtonDelete)}
                       aria-label="Delete"
                       onClick={() => handleDelete(item.id)}
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
                 
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+                <div className={common.cardContent}>
+                  <h3 className={cn(common.cardTitle, themed.cardTitle)}>{item.title}</h3>
+                  <p className={cn(common.cardDescription, themed.cardDescription)}>
                     {item.description}
                   </p>
                   
                   {/* Tags */}
                   {item.tags && item.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3">
+                    <div className={common.tags}>
                       {item.tags.map((tag) => (
                         <span 
                           key={tag}
-                          className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full"
+                          className={cn(common.tag, themed.tag)}
                         >
                           {tag}
                         </span>
@@ -238,9 +243,9 @@ const PortfolioPage: React.FC = () => {
                   )}
                   
                   {/* Meta */}
-                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
+                  <div className={common.cardFooter}>
+                    <div className={common.date}>
+                      <Calendar size={14} />
                       <span>{new Date(item.created_at).toLocaleDateString()}</span>
                     </div>
                     {item.project_url && (
@@ -248,9 +253,9 @@ const PortfolioPage: React.FC = () => {
                         href={item.project_url} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
+                        className={cn(common.link, themed.link)}
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLink size={14} />
                         View
                       </a>
                     )}

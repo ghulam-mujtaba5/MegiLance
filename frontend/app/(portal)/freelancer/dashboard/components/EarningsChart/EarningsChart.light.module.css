@@ -1,0 +1,10 @@
+/* EarningsChart.light.module.css */
+.tooltip {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  color: #1a1a1a;
+}
+
+.tooltipValue {
+  color: #27AE60;
+}

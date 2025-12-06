@@ -16,6 +16,7 @@ import { useToast } from '@/app/components/Toast/use-toast';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 
 import common from './Contact.common.module.css';
 import light from './Contact.light.module.css';
@@ -80,6 +81,18 @@ const Contact: React.FC = () => {
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+         <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+         <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+         <ParticlesSystem count={15} className="absolute inset-0" />
+         <div className="absolute top-20 left-10 opacity-10 animate-float-slow">
+           <FloatingCube size={40} />
+         </div>
+         <div className="absolute bottom-40 right-20 opacity-10 animate-float-medium">
+           <FloatingSphere size={30} variant="gradient" />
+         </div>
+      </div>
+
       <div className={styles.page}>
         <div className={styles.container}>
           <ScrollReveal>

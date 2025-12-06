@@ -6,8 +6,8 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { searchApi, projectsApi } from '@/lib/api';
 import { Button } from '@/app/components/Button';
-import { Input } from '@/app/components/Input';
-import { Select } from '@/app/components/Select';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
 import JobCard from '@/app/components/JobCard/JobCard';
 import { PageTransition, StaggerContainer, StaggerItem } from '@/app/components/Animations';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
@@ -40,11 +40,14 @@ export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState<'best-matches' | 'most-recent' | 'saved'>('best-matches');
   
   // Filters
   const [category, setCategory] = useState('all');
   const [budgetType, setBudgetType] = useState('all');
   const [minBudget, setMinBudget] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('all');
+  const [projectLength, setProjectLength] = useState('all');
 
   const fetchJobs = useCallback(async () => {
     setLoading(true);
@@ -66,8 +69,18 @@ export default function JobsPage() {
       // Mock AI matching if not present (for demo "Real World" feel)
       const enrichedData = data.map((job: any) => ({
         ...job,
-        match_score: job.match_score || Math.floor(Math.random() * 30) + 70 // Random 70-99 score
+        match_score: job.match_score || Math.floor(Math.random() * 30) + 70, // Random 70-99 score
+        client_rating: job.client_rating || (Math.random() * 2 + 3), // Random 3-5 rating
+        is_verified: Math.random() > 0.3, // 70% verified
+        client_name: job.client_name || 'Tech Corp Inc.'
       }));
+      
+      // Sort based on tab
+      if (activeTab === 'best-matches') {
+        enrichedData.sort((a: any, b: any) => b.match_score - a.match_score);
+      } else if (activeTab === 'most-recent') {
+        enrichedData.sort((a: any, b: any) => new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime());
+      }
       
       setJobs(enrichedData);
     } catch (error) {
@@ -75,7 +88,7 @@ export default function JobsPage() {
     } finally {
       setLoading(false);
     }
-  }, [query, category, minBudget]);
+  }, [query, category, minBudget, activeTab, experienceLevel, projectLength]);
 
   // Debounce search
   useEffect(() => {
@@ -118,6 +131,8 @@ export default function JobsPage() {
                 setCategory('all');
                 setBudgetType('all');
                 setMinBudget('');
+                setExperienceLevel('all');
+                setProjectLength('all');
               }}>Reset</Button>
             </div>
 
@@ -158,10 +173,60 @@ export default function JobsPage() {
                 onChange={(e) => setMinBudget(e.target.value)}
               />
             </div>
+
+            <div className={commonStyles.filterGroup}>
+              <label className={cn(commonStyles.filterLabel, themeStyles.filterLabel)}>Experience Level</label>
+              <Select 
+                value={experienceLevel} 
+                onChange={(e) => setExperienceLevel(e.target.value)}
+                options={[
+                  { value: 'all', label: 'Any Level' },
+                  { value: 'entry', label: 'Entry Level' },
+                  { value: 'intermediate', label: 'Intermediate' },
+                  { value: 'expert', label: 'Expert' },
+                ]}
+              />
+            </div>
+
+            <div className={commonStyles.filterGroup}>
+              <label className={cn(commonStyles.filterLabel, themeStyles.filterLabel)}>Project Length</label>
+              <Select 
+                value={projectLength} 
+                onChange={(e) => setProjectLength(e.target.value)}
+                options={[
+                  { value: 'all', label: 'Any Length' },
+                  { value: 'less_1_month', label: '< 1 Month' },
+                  { value: '1_3_months', label: '1-3 Months' },
+                  { value: '3_6_months', label: '3-6 Months' },
+                  { value: 'more_6_months', label: '> 6 Months' },
+                ]}
+              />
+            </div>
           </aside>
 
           {/* Job Results */}
           <main>
+            <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
+              <button 
+                className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'best-matches' && themeStyles.activeTab)}
+                onClick={() => setActiveTab('best-matches')}
+              >
+                Best Matches
+              </button>
+              <button 
+                className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'most-recent' && themeStyles.activeTab)}
+                onClick={() => setActiveTab('most-recent')}
+              >
+                Most Recent
+              </button>
+              <button 
+                className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'saved' && themeStyles.activeTab)}
+                onClick={() => setActiveTab('saved')}
+              >
+                Saved Jobs
+              </button>
+            </div>
+
             <div className={commonStyles.resultsHeader}>
               <span className={cn(commonStyles.resultsCount, themeStyles.resultsCount)}>
                 {loading ? 'Searching...' : `${jobs.length} jobs found`}
@@ -203,19 +268,28 @@ export default function JobsPage() {
                       <JobCard 
                         id={job.id}
                         title={job.title}
+                        clientName={(job as any).client_name}
                         description={job.description}
-                        budget={job.budget_max || job.budget_min} // Simplified
+                        budget={job.budget_max || job.budget_min}
                         postedAt={job.posted_at}
                         skills={job.skills || []}
                         matchScore={job.match_score}
-                        clientRating={job.client_rating || 5.0}
+                        clientRating={job.client_rating}
+                        isVerified={(job as any).is_verified}
                       />
                     </StaggerItem>
                   ))
                 ) : (
-                  <div className="text-center py-12">
-                    <h3 className="text-xl font-semibold mb-2">No jobs found</h3>
-                    <p className="text-gray-500">Try adjusting your search filters.</p>
+                  <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
+                    <Briefcase size={48} className={commonStyles.emptyIcon} />
+                    <h3 className={commonStyles.emptyTitle}>No jobs found</h3>
+                    <p className={commonStyles.emptyText}>Try adjusting your search filters or keywords.</p>
+                    <Button variant="primary" onClick={() => {
+                      setQuery('');
+                      setCategory('all');
+                      setBudgetType('all');
+                      setMinBudget('');
+                    }}>Clear Filters</Button>
                   </div>
                 )}
               </StaggerContainer>

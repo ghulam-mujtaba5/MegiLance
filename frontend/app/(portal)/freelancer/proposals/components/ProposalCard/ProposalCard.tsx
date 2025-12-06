@@ -5,7 +5,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Badge from '@/app/components/Badge/Badge';
 import Button from '@/app/components/Button/Button';
-import { Eye, Edit3, Trash2, DollarSign, Calendar, Briefcase } from 'lucide-react';
+import { Eye, Edit3, Trash2, DollarSign, Calendar, Briefcase, Sparkles, ShieldCheck } from 'lucide-react';
 
 import commonStyles from './ProposalCard.common.module.css';
 import lightStyles from './ProposalCard.light.module.css';
@@ -18,6 +18,8 @@ export interface Proposal {
   status: 'Draft' | 'Submitted' | 'Interview' | 'Rejected';
   dateSubmitted: string; // ISO or YYYY-MM-DD
   bidAmount: number; // USD
+  matchScore?: number;
+  isClientVerified?: boolean;
 }
 
 export interface ProposalCardProps {
@@ -38,15 +40,26 @@ const ProposalCard: React.FC<ProposalCardProps> = ({ proposal, onView, onEdit, o
   const { resolvedTheme } = useTheme();
   const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  const { id, jobTitle, clientName, status, dateSubmitted, bidAmount } = proposal;
+  const { id, jobTitle, clientName, status, dateSubmitted, bidAmount, matchScore, isClientVerified } = proposal;
 
   return (
     <div className={cn(commonStyles.card, styles.card)}>
       <div className={cn(commonStyles.cardHeader, styles.cardHeader)}>
+        <div className={commonStyles.headerTop}>
+          {matchScore && (
+            <div className={cn(commonStyles.matchBadge, styles.matchBadge)}>
+              <Sparkles size={12} />
+              <span>{matchScore}% Match</span>
+            </div>
+          )}
+        </div>
         <h3 className={cn(commonStyles.jobTitle, styles.jobTitle)}>{jobTitle}</h3>
         <div className={cn(commonStyles.clientInfo, styles.clientInfo)}>
             <Briefcase size={14} />
             <span>{clientName}</span>
+            {isClientVerified && (
+              <ShieldCheck size={14} className={commonStyles.verifiedBadge} aria-label="Verified Client" />
+            )}
         </div>
       </div>
       

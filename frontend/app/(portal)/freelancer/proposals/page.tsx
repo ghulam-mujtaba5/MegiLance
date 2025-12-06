@@ -137,6 +137,8 @@ const ProposalsPage: React.FC = () => {
           status: mapAPIStatus(ap.status, ap.is_draft),
           dateSubmitted: ap.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
           bidAmount: ap.bid_amount,
+          matchScore: Math.floor(Math.random() * 30) + 70, // Mock match score
+          isClientVerified: Math.random() > 0.3, // Mock verification
         };
       });
       

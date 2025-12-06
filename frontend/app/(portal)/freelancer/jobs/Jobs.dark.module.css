@@ -34,6 +34,24 @@
   color: #cbd5e0;
 }
 
+.tabs {
+  border-bottom-color: #374151;
+}
+
+.tab {
+  color: #a0aec0;
+}
+
+.tab:hover {
+  background-color: #374151;
+  color: #e2e8f0;
+}
+
+.activeTab {
+  background-color: rgba(66, 153, 225, 0.15);
+  color: #63b3ed;
+}
+
 .resultsCount {
   color: #a0aec0;
 }

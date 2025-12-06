@@ -4,6 +4,8 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import common from './Cookies.common.module.css';
 import light from './Cookies.light.module.css';
 import dark from './Cookies.dark.module.css';
@@ -13,7 +15,19 @@ const CookiesPage: React.FC = () => {
   const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
-    <main className={cn(common.page, themed.themeWrapper)}>
+    <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+         <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+         <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+         <ParticlesSystem count={12} className="absolute inset-0" />
+         <div className="absolute top-20 left-10 opacity-10 animate-float-slow">
+           <FloatingCube size={40} />
+         </div>
+         <div className="absolute bottom-40 right-20 opacity-10 animate-float-medium">
+           <FloatingSphere size={30} variant="gradient" />
+         </div>
+      </div>
+      <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
         <div className={common.header}>
           <h1 className={common.title}>Cookie Policy</h1>
@@ -94,6 +108,7 @@ const CookiesPage: React.FC = () => {
         </section>
       </div>
     </main>
+    </PageTransition>
   );
 };
 

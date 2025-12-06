@@ -1,0 +1,74 @@
+/* @AI-HINT: Light theme for notifications */
+
+.bellButton {
+  color: #333333;
+}
+
+.bellButton:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.header {
+  background-color: #f9f9f9;
+  border-bottom-color: #e0e0e0;
+}
+
+.headerTitle {
+  color: #333333;
+}
+
+.markAllButton {
+  color: #4573df;
+}
+
+.markAllButton:hover {
+  background-color: #e3ecfd;
+}
+
+.notificationItem {
+  background-color: #ffffff;
+  border-bottom-color: #f0f0f0;
+}
+
+.notificationItem:hover {
+  background-color: #f9f9f9;
+}
+
+.notificationUnread {
+  background-color: #f5f7fa;
+}
+
+.notificationIcon {
+  background-color: #e3ecfd;
+  color: #4573df;
+}
+
+.notificationTitle {
+  color: #333333;
+}
+
+.notificationMessage {
+  color: #666666;
+}
+
+.notificationTime {
+  color: #999999;
+}
+
+.notificationActions {
+  color: #999999;
+}
+
+.notificationActions:hover {
+  background-color: #f0f0f0;
+  color: #e81123;
+}
+
+.emptyState {
+  color: #cccccc;
+}

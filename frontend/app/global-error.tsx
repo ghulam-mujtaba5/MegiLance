@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { AlertTriangle, RefreshCw, Home, MessageCircle } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 
 import common from './GlobalError.common.module.css';
 import light from './GlobalError.light.module.css';
@@ -23,6 +24,17 @@ const ErrorContent = ({ error, reset }: GlobalErrorProps) => {
 
   return (
     <main className={cn(common.page, themed.page)}>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={12} className="absolute inset-0" />
+        <div className="absolute top-20 left-10 opacity-10 animate-float-slow">
+          <FloatingCube size={40} />
+        </div>
+        <div className="absolute bottom-40 right-20 opacity-10 animate-float-medium">
+          <FloatingSphere size={30} variant="gradient" />
+        </div>
+      </div>
       <PageTransition>
         <ScrollReveal>
           <div className={common.container}>

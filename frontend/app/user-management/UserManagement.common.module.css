@@ -1,16 +1,60 @@
-/* AI-HINT: Common styles for User Management page scaffold */
-.page { padding: var(--spacing-10) 0; }
-.container { max-width: 960px; margin: 0 auto; padding: 0 var(--spacing-6); }
-.header { text-align: center; margin-bottom: var(--spacing-8); }
-.title { font-family: var(--font-family-headings); font-weight: var(--font-weight-bold); font-size: clamp(1.6rem, 3vw, 2rem); }
-.subtitle { margin-top: var(--spacing-2); color: var(--text-muted); }
-.buttonPrimary { 
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 10px 14px; border-radius: var(--border-radius-md);
-  background: var(--primary); color: var(--button-on-primary, #fff);
-  font-weight: 600; border: 0; cursor: pointer; transition: transform .12s ease, box-shadow .2s ease;
-  box-shadow: 0 6px 18px rgba(69,115,223,.22);
+.page {
+  min-height: 100vh;
+  padding: var(--spacing-16) var(--spacing-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.buttonPrimary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(69,115,223,.28); }
-.buttonPrimary:active { transform: translateY(0); box-shadow: 0 4px 14px rgba(69,115,223,.2); }
-.buttonPrimary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(69,115,223,.35); }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-12);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.title {
+  font-family: var(--font-family-headings);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-4);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+}
+
+.buttonPrimary {
+  /* Used in EmptyState action prop */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-6);
+  border-radius: var(--border-radius-lg);
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  border: none;
+  background: var(--primary);
+  color: white;
+  box-shadow: var(--shadow-lg);
+}
+
+.buttonPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+.buttonPrimary:active {
+  transform: translateY(0);
+}

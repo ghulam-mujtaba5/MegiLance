@@ -10,7 +10,7 @@ import Badge from '@/app/components/Badge/Badge';
 import Button from '@/app/components/Button/Button';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
-import { Briefcase, MapPin, DollarSign } from 'lucide-react';
+import { Briefcase, MapPin, DollarSign, Sparkles, ShieldCheck, Heart } from 'lucide-react';
 
 import common from './FreelancerCard.common.module.css';
 import light from './FreelancerCard.light.module.css';
@@ -26,6 +26,8 @@ export interface Freelancer {
   skills: string[];
   rating: number;
   availability: 'Full-time' | 'Part-time' | 'Contract';
+  matchScore?: number;
+  isVerified?: boolean;
 }
 
 interface FreelancerCardProps {
@@ -36,13 +38,40 @@ const FreelancerCard: React.FC<FreelancerCardProps> = ({ freelancer }) => {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
   const themed = resolvedTheme === 'dark' ? dark : light;
+  const [isSaved, setIsSaved] = React.useState(false);
 
   return (
     <article className={cn(common.card, themed.card)}>
       <div className={common.cardHeader}>
         <UserAvatar src={freelancer.avatarUrl} name={freelancer.name} size={64} />
         <div className={common.headerText}>
-          <h3 className={cn(common.name, themed.name)}>{freelancer.name}</h3>
+          <div className={common.headerTop}>
+            <div>
+              {freelancer.matchScore && (
+                <div className={cn(common.matchBadge, themed.matchBadge)}>
+                  <Sparkles size={12} />
+                  <span>{freelancer.matchScore}% Match</span>
+                </div>
+              )}
+              <div className={common.nameRow}>
+                <h3 className={cn(common.name, themed.name)}>{freelancer.name}</h3>
+                {freelancer.isVerified && (
+                  <ShieldCheck size={18} className={common.verifiedBadge} aria-label="Verified Freelancer" />
+                )}
+              </div>
+            </div>
+            <button 
+              className={cn(common.saveButton, themed.saveButton, isSaved && themed.saveButtonActive)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsSaved(!isSaved);
+              }}
+              aria-label={isSaved ? "Remove from saved" : "Save freelancer"}
+            >
+              <Heart size={20} fill={isSaved ? "currentColor" : "none"} />
+            </button>
+          </div>
+          
           <p className={cn(common.title, themed.title)}>{freelancer.title}</p>
           <div className={cn(common.ratingContainer, themed.ratingContainer)}>
             <StarRating rating={freelancer.rating} />

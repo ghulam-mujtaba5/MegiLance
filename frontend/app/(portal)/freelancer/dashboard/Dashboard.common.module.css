@@ -75,6 +75,10 @@
   align-items: start;
 }
 
+.chartSection {
+  grid-column: 1 / -1;
+}
+
 .activitySection {
   grid-column: 1 / -1;
 }
@@ -228,7 +232,15 @@
 
 @media (min-width: 1024px) {
   .mainContent {
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
+  }
+  
+  .chartSection {
+    grid-column: auto;
+  }
+
+  .activitySection {
+    grid-column: auto;
   }
 }
 

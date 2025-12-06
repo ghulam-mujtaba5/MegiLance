@@ -15,8 +15,7 @@ import EmptyState from '@/app/components/EmptyState/EmptyState';
 import MegaLoader from '@/app/components/Loading/MegaLoader';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
-import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
-import { StaggerItem } from '@/app/components/Animations/StaggerItem';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { Bell, Trash2, Search, Zap } from 'lucide-react';
 
 import commonStyles from './JobAlerts.common.module.css';

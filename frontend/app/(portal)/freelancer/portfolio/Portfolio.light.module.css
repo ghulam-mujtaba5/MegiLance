@@ -1,0 +1,71 @@
+/* Portfolio.light.module.css */
+.title {
+  color: var(--text-primary, #1a1a1a);
+}
+
+.subtitle {
+  color: var(--text-secondary, #6c757d);
+}
+
+.statIconWrapper {
+  background: var(--surface-hover, #f8f9fa);
+}
+
+.statIconBlue { color: #2563eb; background: #dbeafe; }
+.statIconGreen { color: #16a34a; background: #dcfce7; }
+.statIconPurple { color: #9333ea; background: #f3e8ff; }
+
+.statLabel {
+  color: var(--text-secondary, #6c757d);
+}
+
+.statValue {
+  color: var(--text-primary, #1a1a1a);
+}
+
+.cardPlaceholder {
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  color: #adb5bd;
+}
+
+.actionButton {
+  background: #fff;
+  color: #495057;
+}
+
+.actionButton:hover {
+  color: #228be6;
+}
+
+.actionButtonDelete:hover {
+  color: #fa5252;
+}
+
+.cardTitle {
+  color: var(--text-primary, #1a1a1a);
+}
+
+.cardDescription {
+  color: var(--text-secondary, #6c757d);
+}
+
+.tag {
+  background: #e7f5ff;
+  color: #1971c2;
+}
+
+.link {
+  color: var(--primary, #4573DF);
+}
+
+.emptyIcon {
+  color: #adb5bd;
+}
+
+.emptyTitle {
+  color: var(--text-primary, #1a1a1a);
+}
+
+.emptyText {
+  color: var(--text-secondary, #6c757d);
+}

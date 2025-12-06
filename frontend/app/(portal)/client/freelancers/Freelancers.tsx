@@ -42,6 +42,8 @@ const Freelancers: React.FC = () => {
       skills: Array.isArray(f.skills) ? f.skills : ['UI/UX', 'Web Design', 'Prototyping'],
       rating: f.rating ?? (4.5 + Math.random() * 0.5),
       availability: (f.availability as Freelancer['availability']) ?? 'Contract',
+      matchScore: Math.floor(Math.random() * 30) + 70, // Mock match score
+      isVerified: Math.random() > 0.3, // Mock verification
     }));
   }, [freelancers]);
 

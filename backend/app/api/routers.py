@@ -19,7 +19,8 @@ from .v1 import (
     referral_program, communication_center, metrics_dashboard, data_analytics_export,
     advanced_gamification, availability_calendar, review_responses, platform_compliance,
     notification_settings, search_analytics, rate_cards, proposal_templates,
-    portfolio_showcase, notes_tags, custom_statuses, skill_taxonomy
+    portfolio_showcase, notes_tags, custom_statuses, skill_taxonomy, search_advanced, realtime_notifications,
+    ai_matching
 )
 
 
@@ -71,6 +72,13 @@ api_router.include_router(refunds.router, prefix="", tags=["refunds"])
 
 # Search functionality
 api_router.include_router(search.router, prefix="", tags=["search"])
+api_router.include_router(search_advanced.router, prefix="", tags=["search-advanced"])  # Turso FTS5 search
+
+# Real-time notifications
+api_router.include_router(realtime_notifications.router, prefix="/realtime", tags=["realtime"])
+
+# AI-powered matching
+api_router.include_router(ai_matching.router, prefix="", tags=["ai-matching"])
 
 # Analytics and reporting
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])

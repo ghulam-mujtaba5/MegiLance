@@ -23,6 +23,7 @@ import {
 
 import KeyMetricsGrid from '@/app/(portal)/freelancer/dashboard/components/KeyMetricsGrid/KeyMetricsGrid';
 import RecentActivityFeed from '@/app/(portal)/freelancer/dashboard/components/RecentActivityFeed/RecentActivityFeed';
+import EarningsChart from '@/app/(portal)/freelancer/dashboard/components/EarningsChart/EarningsChart';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
@@ -36,6 +37,16 @@ const Dashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const { analytics, jobs, transactions, loading, error } = useFreelancerData();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  // Mock earnings data for the chart
+  const earningsData = [
+    { month: 'Jan', amount: 1200 },
+    { month: 'Feb', amount: 1900 },
+    { month: 'Mar', amount: 1500 },
+    { month: 'Apr', amount: 2800 },
+    { month: 'May', amount: 2200 },
+    { month: 'Jun', amount: 3500 },
+  ];
 
   const renderJobItem = (job: FreelancerJob) => (
     <div className={cn(commonStyles.jobItem, themeStyles.jobItem)}>
@@ -194,6 +205,15 @@ const Dashboard: React.FC = () => {
             </div>
           </ScrollReveal>
         )}
+
+        {/* Earnings Chart */}
+        <ScrollReveal delay={0.15}>
+          <div className={commonStyles.chartSection}>
+            <Card title="Earnings Overview" icon={DollarSign}>
+              <EarningsChart data={earningsData} />
+            </Card>
+          </div>
+        </ScrollReveal>
 
         {/* Key Metrics from API */}
         <ScrollReveal delay={0.1}>

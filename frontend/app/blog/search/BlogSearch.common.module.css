@@ -1,0 +1,63 @@
+/* BlogSearch.common.module.css */
+.page {
+  min-height: 100vh;
+  padding: var(--spacing-16) var(--spacing-6);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: var(--spacing-12);
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-family-headings);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-4);
+  letter-spacing: -0.02em;
+}
+
+.searchContainer {
+  max-width: 600px;
+  margin: 0 auto var(--spacing-12);
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--spacing-4) var(--spacing-6);
+  padding-left: var(--spacing-12);
+  border-radius: var(--border-radius-full);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-lg);
+  border: 1px solid transparent;
+  outline: none;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-md);
+}
+
+.searchIcon {
+  position: absolute;
+  left: var(--spacing-4);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-8);
+}
+
+.emptyState {
+  text-align: center;
+  padding: var(--spacing-12);
+  opacity: 0.7;
+}

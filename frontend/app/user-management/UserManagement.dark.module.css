@@ -1,0 +1,12 @@
+/* UserManagement.dark.module.css */
+.page {
+  background: var(--background-primary);
+}
+
+.title {
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+}

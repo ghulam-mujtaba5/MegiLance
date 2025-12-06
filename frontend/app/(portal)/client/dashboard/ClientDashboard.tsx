@@ -30,6 +30,7 @@ import ProjectCard from '@/app/components/ProjectCard/ProjectCard';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import ProjectStatusChart from './components/ProjectStatusChart/ProjectStatusChart';
 import SpendingChart from './components/SpendingChart/SpendingChart';
+import RecommendedTalent from './components/RecommendedTalent/RecommendedTalent';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
@@ -290,9 +291,12 @@ const ClientDashboard: React.FC = () => {
             <Card title="Spending Overview" icon={DollarSign}>
               <SpendingChart data={spendingData} />
             </Card>
-            <Card title="Project Status" icon={Briefcase}>
-              <ProjectStatusChart data={projectStatusData} />
-            </Card>
+            <div className="grid gap-6">
+              <Card title="Project Status" icon={Briefcase}>
+                <ProjectStatusChart data={projectStatusData} />
+              </Card>
+              <RecommendedTalent />
+            </div>
           </div>
 
           {/* Recent Activity */}

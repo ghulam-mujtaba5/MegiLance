@@ -1,0 +1,23 @@
+/* EarningsChart.common.module.css */
+.container {
+  width: 100%;
+  height: 300px;
+  position: relative;
+}
+
+.tooltip {
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-size: 12px;
+}
+
+.tooltipLabel {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tooltipValue {
+  font-weight: 700;
+  font-size: 14px;
+}

@@ -1,0 +1,71 @@
+/* Portfolio.dark.module.css */
+.title {
+  color: var(--text-primary, #fff);
+}
+
+.subtitle {
+  color: var(--text-secondary, #a0a0a0);
+}
+
+.statIconWrapper {
+  background: var(--surface-hover, #2a2a2a);
+}
+
+.statIconBlue { color: #60a5fa; background: rgba(37, 99, 235, 0.2); }
+.statIconGreen { color: #4ade80; background: rgba(22, 163, 74, 0.2); }
+.statIconPurple { color: #c084fc; background: rgba(147, 51, 234, 0.2); }
+
+.statLabel {
+  color: var(--text-secondary, #a0a0a0);
+}
+
+.statValue {
+  color: var(--text-primary, #fff);
+}
+
+.cardPlaceholder {
+  background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+  color: #4a4a4a;
+}
+
+.actionButton {
+  background: #2a2a2a;
+  color: #a0a0a0;
+}
+
+.actionButton:hover {
+  color: #60a5fa;
+}
+
+.actionButtonDelete:hover {
+  color: #f87171;
+}
+
+.cardTitle {
+  color: var(--text-primary, #fff);
+}
+
+.cardDescription {
+  color: var(--text-secondary, #a0a0a0);
+}
+
+.tag {
+  background: rgba(25, 113, 194, 0.2);
+  color: #74c0fc;
+}
+
+.link {
+  color: var(--primary, #4573DF);
+}
+
+.emptyIcon {
+  color: #4a4a4a;
+}
+
+.emptyTitle {
+  color: var(--text-primary, #fff);
+}
+
+.emptyText {
+  color: var(--text-secondary, #a0a0a0);
+}

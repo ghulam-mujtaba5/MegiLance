@@ -25,6 +25,23 @@
   border-bottom: 1.5px solid;
 }
 
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.matchBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .jobTitle {
   font-size: 18px;
   font-weight: 600;
@@ -40,6 +57,12 @@
   font-size: 13px;
   letter-spacing: 0.01em;
   opacity: 0.85;
+}
+
+.verifiedBadge {
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
 }
 
 .cardBody {

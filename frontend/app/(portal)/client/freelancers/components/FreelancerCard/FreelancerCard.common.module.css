@@ -15,14 +15,61 @@
 
 .cardHeader {
   display: flex;
-  align-items: center;
   gap: var(--spacing-4);
   margin-bottom: var(--spacing-4);
+  position: relative;
+}
+
+.headerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .headerText {
   display: flex;
   flex-direction: column;
+  flex: 1;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.verifiedBadge {
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+}
+
+.matchBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  align-self: flex-start;
+}
+
+.saveButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .name {

@@ -66,7 +66,7 @@
 
 .filterHeader {
   display: flex;
-  justify_content: space-between;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
 }
@@ -87,9 +87,27 @@
   font-size: 0.9rem;
 }
 
+.tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background: transparent;
+}
+
 .resultsHeader {
   display: flex;
-  justify_content: space-between;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
 }
@@ -107,7 +125,7 @@
 
 .loading {
   display: flex;
-  justify_content: center;
+  justify-content: center;
   padding: 4rem;
 }
 
@@ -224,3 +242,4 @@
     margin-bottom: 2rem;
   }
 }
+
