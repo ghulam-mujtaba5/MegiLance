@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
+import StatusIndicator, { FeatureStatus } from '@/app/components/StatusIndicator/StatusIndicator';
 import commonStyles from './ProfileMenu.common.module.css';
 import lightStyles from './ProfileMenu.light.module.css';
 import darkStyles from './ProfileMenu.dark.module.css';
@@ -17,6 +18,7 @@ export interface ProfileMenuItem {
   label: string;
   icon: React.ReactNode;
   onClick?: () => void;
+  status?: FeatureStatus;
 }
 
 // Define the props for the ProfileMenu component
@@ -75,6 +77,9 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({
   const renderContent = (item: ProfileMenuItem) => (
     <>
       <span className={cn(commonStyles.itemIcon, themeStyles.itemIcon)}>{item.icon}</span>
+      {item.status && (
+        <StatusIndicator status={item.status} className="ml-auto scale-75" />
+      )}
       <span className={cn(commonStyles.itemLabel, themeStyles.itemLabel)}>{item.label}</span>
     </>
   );

@@ -5,6 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import StatusIndicator from '@/app/components/StatusIndicator/StatusIndicator';
 
 import commonStyles from './PortalFooter.common.module.css';
 import lightStyles from './PortalFooter.light.module.css';
@@ -22,13 +23,13 @@ const PortalFooter = () => {
         </p>
         <div className={commonStyles.links}>
           <Link href="/help" className={cn(commonStyles.link, styles.link)}>
-            Help Center
+            Help Center <StatusIndicator status="incomplete" className="ml-1 scale-75" />
           </Link>
           <Link href="/terms" className={cn(commonStyles.link, styles.link)}>
-            Terms
+            Terms <StatusIndicator status="complete" className="ml-1 scale-75" />
           </Link>
           <Link href="/privacy" className={cn(commonStyles.link, styles.link)}>
-            Privacy
+            Privacy <StatusIndicator status="complete" className="ml-1 scale-75" />
           </Link>
         </div>
       </div>

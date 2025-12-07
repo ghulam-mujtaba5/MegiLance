@@ -225,22 +225,24 @@ const Signup: React.FC = () => {
             <p className={styles.formSubtitle}>Join the top-tier network of talent and clients.</p>
           </StaggerItem>
 
-          <StaggerItem>
-            <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
-              <Tabs.List className={styles.roleSelector}>
-                {Object.values(roleConfig).map((role) => (
-                  <Tabs.Tab key={role.id} icon={<role.brandIcon />}>
-                    {role.label}
-                  </Tabs.Tab>
-                ))}
-              </Tabs.List>
-            </Tabs>
-          </StaggerItem>
+          <ClientOnly>
+            <StaggerItem>
+              <Tabs defaultIndex={Object.keys(roleConfig).indexOf(selectedRole)} onTabChange={(index) => setSelectedRole(Object.keys(roleConfig)[index] as UserRole)}>
+                <Tabs.List className={styles.roleSelector}>
+                  {Object.values(roleConfig).map((role) => (
+                    <Tabs.Tab key={role.id} icon={<role.brandIcon />}>
+                      {role.label}
+                    </Tabs.Tab>
+                  ))}
+                </Tabs.List>
+              </Tabs>
+            </StaggerItem>
 
-          <StaggerItem className={styles.socialAuth}>
-            <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
-            <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
-          </StaggerItem>
+            <StaggerItem className={styles.socialAuth}>
+              <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
+              <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
+            </StaggerItem>
+          </ClientOnly>
 
           <StaggerItem className={styles.divider}><span className={styles.dividerText}>OR</span></StaggerItem>
 

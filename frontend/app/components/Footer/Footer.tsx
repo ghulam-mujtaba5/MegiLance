@@ -16,28 +16,28 @@ import darkStyles from './Footer.dark.module.css';
 
 const footerSections = {
   'Product': [
-    { name: 'Features', href: '/#features', status: 'active' },
-    { name: 'Pricing', href: '/pricing', status: 'active' },
-    { name: 'For Clients', href: '/clients', status: 'active' },
-    { name: 'For Freelancers', href: '/freelancers', status: 'active' },
-    { name: 'AI Matching', href: '/ai-matching', status: 'beta' },
+    { name: 'Features', href: '/#features', status: 'complete' },
+    { name: 'Pricing', href: '/pricing', status: 'complete' },
+    { name: 'For Clients', href: '/clients', status: 'complete' },
+    { name: 'For Freelancers', href: '/freelancers', status: 'complete' },
+    { name: 'AI Matching', href: '/ai-matching', status: 'working' },
   ],
   'Company': [
-    { name: 'About Us', href: '/about', status: 'active' },
-    { name: 'Blog', href: '/blog', status: 'dev' },
-    { name: 'Careers', href: '/careers', status: 'planned' },
-    { name: 'Press', href: '/press', status: 'planned' },
+    { name: 'About Us', href: '/about', status: 'complete' },
+    { name: 'Blog', href: '/blog', status: 'working' },
+    { name: 'Careers', href: '/careers', status: 'incomplete' },
+    { name: 'Press', href: '/press', status: 'incomplete' },
   ],
   'Resources': [
-    { name: 'Help Center', href: '/support', status: 'dev' },
-    { name: 'Contact Us', href: '/contact', status: 'active' },
-    { name: 'Community', href: '/community', status: 'planned' },
-    { name: 'System Status', href: '/status', status: 'beta' },
+    { name: 'Help Center', href: '/support', status: 'working' },
+    { name: 'Contact Us', href: '/contact', status: 'complete' },
+    { name: 'Community', href: '/community', status: 'incomplete' },
+    { name: 'System Status', href: '/status', status: 'working' },
   ],
   'Legal': [
-    { name: 'Terms of Service', href: '/terms', status: 'active' },
-    { name: 'Privacy Policy', href: '/privacy', status: 'active' },
-    { name: 'Cookie Policy', href: '/cookies', status: 'active' },
+    { name: 'Terms of Service', href: '/terms', status: 'complete' },
+    { name: 'Privacy Policy', href: '/privacy', status: 'complete' },
+    { name: 'Cookie Policy', href: '/cookies', status: 'complete' },
   ],
 };
 

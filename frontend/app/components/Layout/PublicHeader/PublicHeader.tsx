@@ -9,23 +9,24 @@ import { Menu, X, ChevronDown, Users, Briefcase, Zap, Shield, Sparkles } from 'l
 
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import Button from '@/app/components/Button/Button';
+import StatusIndicator, { FeatureStatus } from '@/app/components/StatusIndicator/StatusIndicator';
 
 import commonStyles from './PublicHeader.common.module.css';
 import lightStyles from './PublicHeader.light.module.css';
 import darkStyles from './PublicHeader.dark.module.css';
 
 const navLinks = [
-  { name: 'Features', href: '/#features' },
-  { name: 'Pricing', href: '/pricing' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Contact', href: '/contact' },
+  { name: 'Features', href: '/#features', status: 'complete' },
+  { name: 'Pricing', href: '/pricing', status: 'complete' },
+  { name: 'Blog', href: '/blog', status: 'working' },
+  { name: 'Contact', href: '/contact', status: 'complete' },
 ];
 
 const servicesDropdown = [
-  { name: 'For Freelancers', href: '/freelancers', icon: Users, description: 'Find work and build your career' },
-  { name: 'For Clients', href: '/clients', icon: Briefcase, description: 'Hire top talent for your projects' },
-  { name: 'AI Tools', href: '/ai', icon: Zap, description: 'Powered by AI matching' },
-  { name: 'Enterprise', href: '/enterprise', icon: Shield, description: 'Scale your team globally' },
+  { name: 'For Freelancers', href: '/freelancers', icon: Users, description: 'Find work and build your career', status: 'complete' },
+  { name: 'For Clients', href: '/clients', icon: Briefcase, description: 'Hire top talent for your projects', status: 'complete' },
+  { name: 'AI Tools', href: '/ai', icon: Zap, description: 'Powered by AI matching', status: 'working' },
+  { name: 'Enterprise', href: '/enterprise', icon: Shield, description: 'Scale your team globally', status: 'incomplete' },
 ];
 
 const PublicHeader = () => {
@@ -126,7 +127,10 @@ const PublicHeader = () => {
                             <item.icon size={20} />
                           </div>
                           <div className={commonStyles.dropdownItemText}>
-                            <div className={cn(commonStyles.dropdownItemTitle, styles.dropdownItemTitle)}>{item.name}</div>
+                            <div className={cn(commonStyles.dropdownItemTitle, styles.dropdownItemTitle)}>
+                              {item.name}
+                              {item.status && <StatusIndicator status={item.status as FeatureStatus} className="ml-2 scale-75" />}
+                            </div>
                             <div className={cn(commonStyles.dropdownItemDesc, styles.dropdownItemDesc)}>{item.description}</div>
                           </div>
                         </Link>
@@ -140,6 +144,7 @@ const PublicHeader = () => {
                 <li key={link.name}>
                   <Link href={link.href} className={cn(commonStyles.navLink, styles.navLink)}>
                     {link.name}
+                    {link.status && <StatusIndicator status={link.status as FeatureStatus} className="ml-1 scale-75" />}
                   </Link>
                 </li>
               ))}
@@ -150,7 +155,7 @@ const PublicHeader = () => {
           <div className={commonStyles.actionsContainer}>
             <Link href="/explore" className={cn(commonStyles.exploreLink, styles.exploreLink)}>
               <Sparkles size={16} />
-              Explore
+              Explore <StatusIndicator status="working" className="ml-1 scale-75" />
             </Link>
             <Link href="/login">
               <Button variant="ghost" className={cn(commonStyles.signInButton, styles.signInButton)}>
@@ -207,7 +212,10 @@ const PublicHeader = () => {
                     >
                       <item.icon size={18} className={commonStyles.mobileNavLinkIcon} />
                       <div>
-                        <div>{item.name}</div>
+                        <div>
+                          {item.name}
+                          {item.status && <StatusIndicator status={item.status as FeatureStatus} className="ml-2 scale-75" />}
+                        </div>
                         <div className={cn(commonStyles.mobileNavLinkDesc, styles.mobileNavLinkDesc)}>{item.description}</div>
                       </div>
                     </Link>
@@ -224,6 +232,7 @@ const PublicHeader = () => {
                   onClick={closeMobileMenu}
                 >
                   {link.name}
+                  {link.status && <StatusIndicator status={link.status as FeatureStatus} className="ml-2 scale-75" />}
                 </Link>
               </li>
             ))}
@@ -231,7 +240,7 @@ const PublicHeader = () => {
           <div className={commonStyles.mobileActions}>
             <Link href="/explore" onClick={closeMobileMenu} className={cn(commonStyles.mobileExploreLink, styles.mobileExploreLink)}>
               <Sparkles size={18} />
-              Explore All Features
+              Explore All Features <StatusIndicator status="working" className="ml-1 scale-75" />
             </Link>
             <Link href="/login" onClick={closeMobileMenu}>
               <Button 

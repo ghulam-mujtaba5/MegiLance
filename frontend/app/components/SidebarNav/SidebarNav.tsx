@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import StatusIndicator, { FeatureStatus } from '@/app/components/StatusIndicator/StatusIndicator';
 import styles from './SidebarNav.common.module.css';
 import lightStyles from './SidebarNav.light.module.css';
 import darkStyles from './SidebarNav.dark.module.css';
@@ -44,6 +45,7 @@ export interface NavItem {
   icon: React.ReactNode;
   badge?: string | number;
   submenu?: NavItem[];
+  status?: FeatureStatus;
 }
 
 // Define the props for the SidebarNav component
@@ -74,55 +76,56 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         switch (userType) {
           case 'admin':
             return [
-              { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-              { href: '/admin/users', label: 'Users', icon: <Users size={18} />, badge: '12' },
-              { href: '/admin/projects', label: 'Projects', icon: <FolderGit2 size={18} /> },
+              { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
+              { href: '/admin/users', label: 'Users', icon: <Users size={18} />, badge: '12', status: 'complete' },
+              { href: '/admin/projects', label: 'Projects', icon: <FolderGit2 size={18} />, status: 'complete' },
               { 
                 href: '/admin/payments', 
                 label: 'Payments', 
                 icon: <CreditCard size={18} />,
                 badge: '3',
+                status: 'complete',
                 submenu: [
-                  { href: '/admin/payments/invoices', label: 'Invoices', icon: <FileText size={14} /> },
-                  { href: '/admin/payments/refunds', label: 'Refunds', icon: <CreditCard size={14} /> },
-                  { href: '/admin/payments/multicurrency', label: 'Multi-Currency', icon: <CreditCard size={14} /> },
+                  { href: '/admin/payments/invoices', label: 'Invoices', icon: <FileText size={14} />, status: 'complete' },
+                  { href: '/admin/payments/refunds', label: 'Refunds', icon: <CreditCard size={14} />, status: 'working' },
+                  { href: '/admin/payments/multicurrency', label: 'Multi-Currency', icon: <CreditCard size={14} />, status: 'incomplete' },
                 ]
               },
-              { href: '/admin/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
-              { href: '/admin/fraud-alerts', label: '🚨 Fraud Alerts', icon: <ShieldAlert size={18} />, badge: '5' },
-              { href: '/admin/security', label: 'Security', icon: <Lock size={18} /> },
-              { href: '/admin/video-calls', label: 'Video Calls', icon: <Phone size={18} /> },
-              { href: '/admin/ai-monitoring', label: 'AI Monitoring', icon: <LineChart size={18} /> },
-              { href: '/admin/calendar', label: 'Calendar', icon: <Calendar size={18} /> },
-              { href: '/admin/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
+              { href: '/admin/analytics', label: 'Analytics', icon: <BarChart3 size={18} />, status: 'working' },
+              { href: '/admin/fraud-alerts', label: '🚨 Fraud Alerts', icon: <ShieldAlert size={18} />, badge: '5', status: 'working' },
+              { href: '/admin/security', label: 'Security', icon: <Lock size={18} />, status: 'incomplete' },
+              { href: '/admin/video-calls', label: 'Video Calls', icon: <Phone size={18} />, status: 'working' },
+              { href: '/admin/ai-monitoring', label: 'AI Monitoring', icon: <LineChart size={18} />, status: 'working' },
+              { href: '/admin/calendar', label: 'Calendar', icon: <Calendar size={18} />, status: 'incomplete' },
+              { href: '/admin/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
             ];
           case 'client':
             return [
-              { href: '/client/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-              { href: '/client/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7' },
-              { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} /> },
-              { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} /> },
-              { href: '/client/video-calls', label: 'Video Calls', icon: <Phone size={18} /> },
-              { href: '/client/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
-              { href: '/client/security', label: 'Security', icon: <Lock size={18} /> },
-              { href: '/client/help', label: 'Help', icon: <HelpCircle size={18} /> },
-              { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
+              { href: '/client/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
+              { href: '/client/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7', status: 'complete' },
+              { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} />, status: 'complete' },
+              { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} />, status: 'complete' },
+              { href: '/client/video-calls', label: 'Video Calls', icon: <Phone size={18} />, status: 'working' },
+              { href: '/client/analytics', label: 'Analytics', icon: <BarChart3 size={18} />, status: 'working' },
+              { href: '/client/security', label: 'Security', icon: <Lock size={18} />, status: 'incomplete' },
+              { href: '/client/help', label: 'Help', icon: <HelpCircle size={18} />, status: 'incomplete' },
+              { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
             ];
           case 'freelancer':
             return [
-              { href: '/freelancer/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-              { href: '/freelancer/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '2' },
-              { href: '/freelancer/projects', label: 'Projects', icon: <Briefcase size={18} /> },
-              { href: '/freelancer/wallet', label: 'Wallet', icon: <Wallet size={18} /> },
-              { href: '/freelancer/video-calls', label: 'Video Calls', icon: <Phone size={18} /> },
-              { href: '/freelancer/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
-              { href: '/freelancer/security', label: 'Security', icon: <Lock size={18} /> },
-              { href: '/freelancer/my-jobs', label: 'My Jobs', icon: <Briefcase size={18} /> },
-              { href: '/freelancer/portfolio', label: 'Portfolio', icon: <User size={18} /> },
-              { href: '/freelancer/reviews', label: 'Reviews', icon: <Star size={18} /> },
-              { href: '/freelancer/rank', label: 'Rank', icon: <TrendingUp size={18} /> },
-              { href: '/freelancer/help', label: 'Help', icon: <HelpCircle size={18} /> },
-              { href: '/freelancer/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
+              { href: '/freelancer/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
+              { href: '/freelancer/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '2', status: 'complete' },
+              { href: '/freelancer/projects', label: 'Projects', icon: <Briefcase size={18} />, status: 'complete' },
+              { href: '/freelancer/wallet', label: 'Wallet', icon: <Wallet size={18} />, status: 'complete' },
+              { href: '/freelancer/video-calls', label: 'Video Calls', icon: <Phone size={18} />, status: 'working' },
+              { href: '/freelancer/analytics', label: 'Analytics', icon: <BarChart3 size={18} />, status: 'working' },
+              { href: '/freelancer/security', label: 'Security', icon: <Lock size={18} />, status: 'incomplete' },
+              { href: '/freelancer/my-jobs', label: 'My Jobs', icon: <Briefcase size={18} />, status: 'complete' },
+              { href: '/freelancer/portfolio', label: 'Portfolio', icon: <User size={18} />, status: 'complete' },
+              { href: '/freelancer/reviews', label: 'Reviews', icon: <Star size={18} />, status: 'complete' },
+              { href: '/freelancer/rank', label: 'Rank', icon: <TrendingUp size={18} />, status: 'working' },
+              { href: '/freelancer/help', label: 'Help', icon: <HelpCircle size={18} />, status: 'incomplete' },
+              { href: '/freelancer/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
             ];
           default:
             return [
@@ -190,6 +193,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                     {!isCollapsed && (
                       <>
                         <span className={styles.sidebarNavLabel}>{item.label}</span>
+                        {item.status && (
+                          <StatusIndicator status={item.status} className="ml-2 scale-75 origin-left" />
+                        )}
                         {item.badge && (
                           <span className={cn(styles.badge, themeStyles.badge)}>{item.badge}</span>
                         )}
@@ -224,6 +230,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                               {subItem.icon}
                             </span>
                             <span className={styles.sidebarNavLabel}>{subItem.label}</span>
+                            {subItem.status && (
+                              <StatusIndicator status={subItem.status} className="ml-1 scale-75 origin-left" />
+                            )}
                           </Link>
                         </li>
                       );

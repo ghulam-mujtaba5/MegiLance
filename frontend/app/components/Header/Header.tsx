@@ -41,16 +41,16 @@ const Header: React.FC = () => {
           <div className={commonStyles.navLinks}>
             <Link href="/explore" className={cn(commonStyles.exploreLink, themeStyles.exploreLink)}>
               <Sparkles size={16} />
-              Explore <StatusIndicator status="beta" />
+              Explore <StatusIndicator status="working" />
             </Link>
             <Link href="/client/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)}>
-              Client <StatusIndicator status="active" />
+              Client <StatusIndicator status="complete" />
             </Link>
             <Link href="/freelancer/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)}>
-              Freelancer <StatusIndicator status="active" />
+              Freelancer <StatusIndicator status="complete" />
             </Link>
             <Link href="/admin/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)}>
-              Admin <StatusIndicator status="dev" />
+              Admin <StatusIndicator status="working" />
             </Link>
             <Link href="/login" className={commonStyles.signInLink}>
               <Button variant="primary" size="sm" className={commonStyles.signInButton}>
@@ -66,16 +66,16 @@ const Header: React.FC = () => {
       <div className={cn(commonStyles.mobileNavMenu, themeStyles.mobileNavMenu, isMenuOpen && commonStyles.mobileNavMenuActive)}>
         <Link href="/explore" className={cn(commonStyles.exploreLink, themeStyles.exploreLink)} onClick={() => setIsMenuOpen(false)}>
           <Sparkles size={16} />
-          Explore All Features <StatusIndicator status="beta" />
+          Explore All Features <StatusIndicator status="working" />
         </Link>
         <Link href="/client/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)} onClick={() => setIsMenuOpen(false)}>
-          Client Portal <StatusIndicator status="active" />
+          Client Portal <StatusIndicator status="complete" />
         </Link>
         <Link href="/freelancer/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)} onClick={() => setIsMenuOpen(false)}>
-          Freelancer Portal <StatusIndicator status="active" />
+          Freelancer Portal <StatusIndicator status="complete" />
         </Link>
         <Link href="/admin/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)} onClick={() => setIsMenuOpen(false)}>
-          Admin Portal <StatusIndicator status="dev" />
+          Admin Portal <StatusIndicator status="working" />
         </Link>
         <Link href="/login" className={commonStyles.signInLinkMobile}>
            <Button variant="primary" size="md" fullWidth>

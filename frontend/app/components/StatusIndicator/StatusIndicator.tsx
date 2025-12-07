@@ -10,7 +10,7 @@ import commonStyles from './StatusIndicator.common.module.css';
 import lightStyles from './StatusIndicator.light.module.css';
 import darkStyles from './StatusIndicator.dark.module.css';
 
-export type FeatureStatus = 'active' | 'beta' | 'dev' | 'planned' | 'new';
+export type FeatureStatus = 'active' | 'beta' | 'dev' | 'planned' | 'new' | 'complete' | 'incomplete' | 'working';
 
 interface StatusIndicatorProps {
   status: FeatureStatus;
@@ -23,6 +23,9 @@ const statusConfig: Record<FeatureStatus, { label: string; variant: BadgeVariant
   dev: { label: 'Dev', variant: 'secondary' },
   planned: { label: 'Planned', variant: 'default' },
   new: { label: 'New', variant: 'info' },
+  complete: { label: 'Complete', variant: 'success' },
+  incomplete: { label: 'Incomplete', variant: 'secondary' },
+  working: { label: 'Working', variant: 'info' },
 };
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({ status, className }) => {
