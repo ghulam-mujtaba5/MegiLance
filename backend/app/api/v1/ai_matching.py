@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -66,6 +67,78 @@ class RecommendationResponse(BaseModel):
 
 
 # Endpoints
+@router.get("/recommendations")
+async def get_general_recommendations(
+    limit: int = Query(3, ge=1, le=10),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_active_user)
+):
+    """
+    Get general freelancer recommendations for the client dashboard.
+    If the client has active projects, recommends based on the most recent one.
+    Otherwise, recommends top-rated freelancers.
+    """
+    from app.models.project import Project
+    from app.models.user import User
+    
+    matching_service = get_matching_service(db)
+    
+    try:
+        # 1. Try to find the most recent active project for this client
+        recent_project = db.query(Project).filter(
+            Project.client_id == current_user["id"],
+            Project.status.in_(["open", "in_progress"])
+        ).order_by(Project.created_at.desc()).first()
+        
+        if recent_project:
+            # Recommend based on this project
+            recommendations = matching_service.get_recommended_freelancers(
+                project_id=recent_project.id,
+                limit=limit,
+                min_score=0.4  # Slightly lower threshold for general dashboard
+            )
+            return {
+                "recommendations": recommendations,
+                "context": f"Based on your project: {recent_project.title}",
+                "project_id": recent_project.id
+            }
+        
+        # 2. If no active projects, recommend top-rated freelancers
+        top_freelancers = db.query(User).filter(
+            User.user_type == "Freelancer",
+            User.is_active == True
+        ).order_by(User.rating.desc().nullslast()).limit(limit).all()
+        
+        recommendations = []
+        for f in top_freelancers:
+            recommendations.append({
+                "freelancer_id": f.id,
+                "freelancer_name": f.name,
+                "freelancer_email": f.email,
+                "freelancer_bio": f.bio,
+                "hourly_rate": f.hourly_rate,
+                "location": f.location,
+                "profile_image_url": f.profile_image_url,
+                "match_score": 0.95 if f.rating and f.rating > 4.5 else 0.85,
+                "match_factors": {
+                    "avg_rating": (f.rating or 0) / 5.0,
+                    "success_rate": 0.9
+                }
+            })
+            
+        return {
+            "recommendations": recommendations,
+            "context": "Top rated freelancers",
+            "project_id": None
+        }
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate recommendations: {str(e)}"
+        )
+
+
 @router.get("/freelancers/{project_id}")
 async def get_freelancer_recommendations(
     project_id: int,
@@ -294,6 +367,3 @@ def _interpret_score(score: float) -> str:
         return "Moderate match - May be suitable"
     else:
         return "Low match - Not recommended"
-
-
-from datetime import datetime

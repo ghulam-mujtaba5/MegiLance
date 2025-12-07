@@ -1,10 +1,9 @@
 // @AI-HINT: ToasterProvider exposes a global context to enqueue/dismiss toasts and renders a portal-based toast stack.
 'use client';
 
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTheme } from 'next-themes';
-import { AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Toast, { ToastProps, ToastVariant } from './Toast';
 import commonStyles from './ToasterProvider.common.module.css';
@@ -37,8 +36,13 @@ export const useToaster = () => {
 
 export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<ToasterItem[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const notify = useCallback((item: Omit<ToasterItem, 'id'>) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -59,26 +63,22 @@ export const ToasterProvider: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <ToasterContext.Provider value={value}>
       {children}
-      {typeof window !== 'undefined'
-        ? createPortal(
-            <div className={cn(commonStyles.stack, themeStyles.stack)} aria-live="polite" aria-atomic="false">
-              <AnimatePresence initial={false} mode="popLayout">
-                {items.map(({ id, title, description, variant = 'info', duration = 4000 }) => (
-                  <Toast
-                    key={id}
-                    title={title}
-                    description={description}
-                    variant={variant}
-                    show={true}
-                    duration={duration}
-                    onClose={() => dismiss(id)}
-                  />
-                ))}
-              </AnimatePresence>
-            </div>,
-            document.body,
-          )
-        : null}
+      {isMounted && createPortal(
+        <div className={cn(commonStyles.stack, themeStyles.stack)} aria-live="polite" aria-atomic="false">
+          {items.map(({ id, title, description, variant = 'info', duration = 4000 }) => (
+            <Toast
+              key={id}
+              title={title}
+              description={description}
+              variant={variant}
+              show={true}
+              duration={duration}
+              onClose={() => dismiss(id)}
+            />
+          ))}
+        </div>,
+        document.body,
+      )}
     </ToasterContext.Provider>
   );
 };

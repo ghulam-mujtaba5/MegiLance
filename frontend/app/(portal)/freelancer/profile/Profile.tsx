@@ -52,6 +52,8 @@ const Profile: React.FC = () => {
   const [status, setStatus] = useState<string>('');
   const [rank, setRank] = useState(defaultProfile.rank);
   const [saving, setSaving] = useState(false);
+  const [rateEstimate, setRateEstimate] = useState<any>(null);
+  const [estimatingRate, setEstimatingRate] = useState(false);
 
   // Fetch user profile from API
   const fetchProfile = useCallback(async () => {
@@ -174,6 +176,30 @@ const Profile: React.FC = () => {
     }
   };
 
+  const getRateEstimate = async () => {
+    setEstimatingRate(true);
+    try {
+      const user = await api.auth.me();
+      const result = await api.ai.estimateFreelancerRate(user.id, {
+        skills: skills.split(',').map(s => s.trim()).filter(Boolean),
+        average_rating: 0, // API will fetch from DB if 0
+        completed_projects: 0 // API will fetch from DB if 0
+      });
+      setRateEstimate(result);
+    } catch (error) {
+      console.error('Failed to get rate estimate:', error);
+    } finally {
+      setEstimatingRate(false);
+    }
+  };
+
+  const applyRateEstimate = () => {
+    if (rateEstimate) {
+      setHourlyRate(rateEstimate.estimated_rate);
+      setRateEstimate(null);
+    }
+  };
+
   const styles = useMemo(() => {
     const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
     return { ...commonStyles, ...themeStyles };
@@ -260,15 +286,57 @@ const Profile: React.FC = () => {
             </StaggerItem>
 
             <StaggerItem className={styles.inlineSection}>
-              <Input
-                label="Hourly Rate ($/hr)"
-                type="number"
-                value={hourlyRate}
-                aria-invalid={errors.hourlyRate ? 'true' : undefined}
-                aria-describedby={errors.hourlyRate ? 'hourlyRate-error' : undefined}
-                title="Enter your hourly rate in USD"
-                onChange={(e) => setHourlyRate(e.target.value)}
-              />
+              <div className="flex flex-col gap-2 w-full">
+                <div className="flex items-end gap-2">
+                  <div className="flex-1">
+                    <Input
+                      label="Hourly Rate ($/hr)"
+                      type="number"
+                      value={hourlyRate}
+                      aria-invalid={errors.hourlyRate ? 'true' : undefined}
+                      aria-describedby={errors.hourlyRate ? 'hourlyRate-error' : undefined}
+                      title="Enter your hourly rate in USD"
+                      onChange={(e) => setHourlyRate(e.target.value)}
+                    />
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={getRateEstimate}
+                    isLoading={estimatingRate}
+                    className="mb-[2px]"
+                  >
+                    AI Estimate
+                  </Button>
+                </div>
+                {rateEstimate && (
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md border border-blue-100 dark:border-blue-800 text-sm">
+                    <p className="font-medium text-blue-800 dark:text-blue-200 mb-1">
+                      AI Suggested Rate: ${rateEstimate.low_estimate} - ${rateEstimate.high_estimate}/hr
+                    </p>
+                    <p className="text-blue-600 dark:text-blue-300 text-xs mb-2">
+                      Based on your skills and experience.
+                    </p>
+                    <div className="flex gap-2">
+                      <button 
+                        type="button"
+                        onClick={applyRateEstimate}
+                        className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded transition-colors"
+                      >
+                        Apply ${rateEstimate.estimated_rate}/hr
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => setRateEstimate(null)}
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
               <Input
                 label="Portfolio URL"
                 type="text"

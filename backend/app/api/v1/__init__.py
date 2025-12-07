@@ -24,7 +24,7 @@ from . import (
     notes_tags, custom_statuses, skill_taxonomy, search_advanced,
     realtime_notifications, ai_matching, security, video_communication, mock,
     # Version 2.0 features
-    multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics,
+    multicurrency, ai_advanced, admin_analytics,  # admin_fraud_alerts temporarily disabled
     # Billion Dollar Upgrade
     scope_change
 )
@@ -57,6 +57,6 @@ __all__ = [
     "rate_cards", "proposal_templates", "portfolio_showcase", "notes_tags",
     "custom_statuses", "skill_taxonomy", "search_advanced",
     "realtime_notifications", "ai_matching", "security", "video_communication",
-    "mock", "multicurrency", "ai_advanced", "admin_fraud_alerts",
-    "admin_analytics", "scope_change"
+    "mock", "multicurrency", "ai_advanced",
+    "admin_analytics", "scope_change"  # admin_fraud_alerts temporarily disabled
 ]

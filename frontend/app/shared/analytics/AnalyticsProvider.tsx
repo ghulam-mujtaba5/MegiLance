@@ -51,17 +51,9 @@ const AnalyticsContent: React.FC<{ children: React.ReactNode }> = ({ children })
 import { Suspense } from 'react';
 
 export const AnalyticsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // For server-side rendering, we provide a fallback that doesn't use hooks
-  if (typeof window === 'undefined') {
-    return (
-      <AnalyticsContext.Provider value={{ track: () => {} }}>
-        {children}
-      </AnalyticsContext.Provider>
-    );
-  }
-
+  // Always use the same structure on both server and client to avoid hydration mismatch
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<AnalyticsContext.Provider value={{ track: () => {} }}>{children}</AnalyticsContext.Provider>}>
       <AnalyticsContent>
         {children}
       </AnalyticsContent>

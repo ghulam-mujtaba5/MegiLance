@@ -3,6 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { PlusCircle, Download, Search, AlertTriangle, SearchX } from 'lucide-react';
 import { useClientData } from '@/hooks/useClient';
@@ -52,6 +53,7 @@ const SORT_OPTIONS = [
 const Projects: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
+  const router = useRouter();
   const { projects: rawProjects, loading, error } = useClientData();
   const projects = useMemo(() => transformProjectData(rawProjects || []), [rawProjects]);
 
@@ -109,7 +111,7 @@ const Projects: React.FC = () => {
             </div>
             <div className={common.actions}>
               <Button variant="secondary" iconBefore={<Download size={16} />}>Export</Button>
-              <Button iconBefore={<PlusCircle size={16} />}>New Project</Button>
+              <Button iconBefore={<PlusCircle size={16} />} onClick={() => router.push('/portal/client/projects/create')}>New Project</Button>
             </div>
           </header>
         </ScrollReveal>

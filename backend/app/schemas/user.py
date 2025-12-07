@@ -55,6 +55,13 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email: EmailStr
     password: str
+    role: Optional[str] = None  # Alias for user_type from frontend
+    
+    def __init__(self, **data):
+        # Handle frontend 'role' field mapping to 'user_type'
+        if 'role' in data and 'user_type' not in data:
+            data['user_type'] = data.pop('role')
+        super().__init__(**data)
 
 
 class UserUpdate(BaseModel):

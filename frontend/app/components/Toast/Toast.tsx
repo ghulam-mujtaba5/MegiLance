@@ -3,7 +3,6 @@
 
 import React, { useEffect } from 'react';
 import { useTheme } from 'next-themes';
-import { motion, PanInfo } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 import commonStyles from './Toast.common.module.css';
@@ -78,12 +77,6 @@ const Toast: React.FC<ToastProps> = ({
     }
   };
 
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (info.offset.x > 100) {
-      onClose?.();
-    }
-  };
-
   if (!resolvedTheme) return null;
 
   const baseClassName = cn(
@@ -115,16 +108,7 @@ const Toast: React.FC<ToastProps> = ({
   );
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, x: 300, scale: 0.9 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-      whileHover={{ scale: 1.02 }}
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={{ right: 0.5 }}
-      onDragEnd={handleDragEnd}
+    <div
       className={baseClassName}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -134,7 +118,7 @@ const Toast: React.FC<ToastProps> = ({
       aria-atomic="true"
     >
       {content}
-    </motion.div>
+    </div>
   );
 };
 

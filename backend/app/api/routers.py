@@ -13,7 +13,7 @@ from .v1 import (
     subscription_billing, legal_documents, knowledge_base, workflow_automation,
     messages, notifications, reviews, disputes, milestones, skills, admin,
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
-    websocket, uploads, portal_endpoints, analytics, job_alerts, ai_services, fraud_detection, stripe,
+    websocket, uploads, portal_endpoints, analytics, job_alerts, ai_services, fraud_detection, stripe, chatbot,
     # New enterprise features
     user_feedback, custom_branding, audit_trail, career_development,
     referral_program, communication_center, metrics_dashboard, data_analytics_export,
@@ -25,8 +25,12 @@ from .v1 import (
     security, video_communication,
     # Now enabled - all modules working
     multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics,
+    # AI Writing Assistant
+    ai_writing,
     # Billion Dollar Upgrade Features
-    scope_change, wallet, community, workroom, feature_flags
+    scope_change, wallet, community, workroom, feature_flags,
+    # Pakistan Payments - USDC, JazzCash, EasyPaisa, Wise, Payoneer
+    pakistan_payments
 )
 # Import separately to avoid circular import in Python 3.13
 from .v1 import complete_integrations
@@ -132,7 +136,7 @@ api_router.include_router(escrow_pro.router, prefix="/escrow-pro", tags=["escrow
 api_router.include_router(notifications_pro.router, prefix="/notifications-pro", tags=["notifications-pro"])
 
 # AI Chatbot - Intelligent support automation
-# api_router.include_router(chatbot.router, prefix="/chatbot", tags=["chatbot"])
+api_router.include_router(chatbot.router, prefix="/chatbot", tags=["chatbot"])
 
 # Team Collaboration - Agency and team management
 api_router.include_router(teams.router, prefix="/teams", tags=["teams"])
@@ -229,7 +233,7 @@ api_router.include_router(contract_builder.router, tags=["contract-builder"])
 api_router.include_router(skill_graph.router, tags=["skill-graph"])
 
 # AI Writing Assistant - Content generation
-# api_router.include_router(ai_writing.router, tags=["ai-writing"])
+api_router.include_router(ai_writing.router, prefix="/ai-writing", tags=["ai-writing"])
 
 # Social Login - OAuth2 social authentication
 api_router.include_router(social_login.router, tags=["social-login"])
@@ -370,6 +374,10 @@ api_router.include_router(workroom.router, prefix="/workroom", tags=["workroom"]
 
 # Feature Flags - A/B Testing and gradual rollouts
 api_router.include_router(feature_flags.router, tags=["feature-flags"])
+
+# Pakistan Payments - USDC, JazzCash, EasyPaisa, AirTM, Wise, Payoneer
+# Stripe is NOT available in Pakistan - these are the alternatives
+api_router.include_router(pakistan_payments.router, prefix="/pk-payments", tags=["pakistan-payments"])
 
 # Mock endpoints (DISABLED - using real database endpoints)
 # api_router.include_router(mock.router, prefix="", tags=["mock"])

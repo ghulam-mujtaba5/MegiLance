@@ -1,0 +1,37 @@
+[
+  {
+    "timestamp": "2025-12-07T20:01:37.628889",
+    "section": "HEALTH",
+    "status": "PASS",
+    "message": "Backend is responding",
+    "details": "Status: 200"
+  },
+  {
+    "timestamp": "2025-12-07T20:01:37.652882",
+    "section": "AUTH",
+    "status": "FAIL",
+    "message": "Login failed: 500",
+    "details": "Response: {\"detail\":\"Authentication failed\"}"
+  },
+  {
+    "timestamp": "2025-12-07T20:01:37.712882",
+    "section": "REGISTRATION",
+    "status": "FAIL",
+    "message": "Registration failed: 500",
+    "details": "Email: test_client@megilance.com"
+  },
+  {
+    "timestamp": "2025-12-07T20:01:37.775883",
+    "section": "REGISTRATION",
+    "status": "FAIL",
+    "message": "Registration failed: 500",
+    "details": "Email: test_freelancer@megilance.com"
+  },
+  {
+    "timestamp": "2025-12-07T20:01:37.843882",
+    "section": "REGISTRATION",
+    "status": "FAIL",
+    "message": "Registration failed: 500",
+    "details": "Email: test_admin@megilance.com"
+  }
+]

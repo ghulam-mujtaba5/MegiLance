@@ -179,7 +179,22 @@ def register_user(request: Request, payload: UserCreate):
         )
     
     # Hash password
-    hashed_password = get_password_hash(payload.password)
+    try:
+        # Ensure password is a string and within bcrypt's 72-byte limit
+        password_str = str(payload.password) if payload.password else ""
+        if len(password_str.encode('utf-8')) > 72:
+            # Truncate to 72 bytes if needed
+            password_bytes = password_str.encode('utf-8')[:72]
+            password_str = password_bytes.decode('utf-8', errors='ignore')
+        hashed_password = get_password_hash(password_str)
+    except Exception as e:
+        print(f"[ERROR] Password hashing failed: {e}")
+        print(f"[ERROR] Password type: {type(payload.password)}")
+        print(f"[ERROR] Password length: {len(str(payload.password)) if payload.password else 0}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Password hashing error: {str(e)}"
+        )
     now = datetime.utcnow().isoformat()
     
     # Prepare profile data
@@ -192,30 +207,56 @@ def register_user(request: Request, payload: UserCreate):
     profile_data_json = json.dumps(profile_data) if profile_data else None
     
     # Insert new user
-    insert_result = execute_query(
-        """INSERT INTO users (email, hashed_password, is_active, name, user_type, 
-           bio, skills, hourly_rate, profile_image_url, location, profile_data, joined_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            payload.email.lower(),  # Store email as lowercase
-            hashed_password,
-            1 if payload.is_active else 0,
-            name,
-            user_type,
-            bio,
-            sanitize_string(payload.skills or "", 500),
-            payload.hourly_rate or 0,
-            sanitize_string(payload.profile_image_url or "", 500),
-            sanitize_string(payload.location or "", 100),
-            profile_data_json,
-            now
-        ]
-    )
-    
-    if not insert_result:
+    try:
+        insert_result = execute_query(
+            """INSERT INTO users (
+                email, hashed_password, is_active, is_verified, email_verified,
+                name, user_type, role, bio, skills, hourly_rate, 
+                profile_image_url, location, profile_data, 
+                two_factor_enabled, account_balance,
+                joined_at, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            [
+                payload.email.lower(),  # email
+                hashed_password,  # hashed_password
+                1 if payload.is_active else 0,  # is_active
+                0,  # is_verified
+                0,  # email_verified
+                name,  # name
+                user_type,  # user_type
+                user_type,  # role (same as user_type)
+                bio,  # bio
+                sanitize_string(payload.skills or "", 500),  # skills
+                payload.hourly_rate or 0,  # hourly_rate
+                sanitize_string(payload.profile_image_url or "", 500),  # profile_image_url
+                sanitize_string(payload.location or "", 100),  # location
+                profile_data_json,  # profile_data
+                0,  # two_factor_enabled
+                0.0,  # account_balance
+                now,  # joined_at
+                now,  # created_at
+                now   # updated_at
+            ]
+        )
+        
+        # Insert returns {"columns": [], "rows": []} for local SQLite
+        # This is considered successful as long as no exception was raised
+        if insert_result is None:
+            print(f"[ERROR] Insert returned None")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to create user"
+            )
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] Database insert failed: {e}")
+        print(f"[ERROR] Exception type: {type(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create user"
+            detail=f"Failed to create user: {str(e)}"
         )
     
     # Get the created user

@@ -169,16 +169,15 @@ const Tabs: TabsComponent = ({ children, defaultIndex = 0, className = '', onTab
   const [selectedIndex, setSelectedIndex] = useState(defaultIndex);
   const tabsId = useId();
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
 
   const handleSetSelectedIndex = (index: number) => {
     setSelectedIndex(index);
     if (onTabChange) onTabChange(index);
   };
 
-  if (!mounted || !resolvedTheme) return null;
-  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
+  // Always render to avoid hydration mismatch
+  // Default to light theme during SSR, will hydrate correctly on client
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <TabsContext.Provider value={{ selectedIndex, setSelectedIndex: handleSetSelectedIndex, tabsId, themeStyles }}>

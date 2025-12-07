@@ -1,0 +1,123 @@
+/* @AI-HINT: Dark theme colors for Pakistan payment options */
+
+.container {
+  background-color: #0f172a;
+}
+
+/* Testnet Banner - Purple theme for development mode */
+.testnetBanner {
+  background-color: #2e1065;
+  border-color: #a855f7;
+  color: #e9d5ff;
+}
+
+.testnetBanner a {
+  color: #c4b5fd;
+}
+
+.header h3 {
+  color: #f1f5f9;
+}
+
+.header p {
+  color: #94a3b8;
+}
+
+.providerCard {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.providerCard:hover {
+  background-color: #293548;
+  border-color: #475569;
+}
+
+.providerCard.selected {
+  border-color: #4573df;
+  background-color: #1e3a5f;
+}
+
+.recommendedBadge {
+  background-color: #422006;
+  color: #fcd34d;
+}
+
+.providerIcon {
+  color: #cbd5e1;
+}
+
+.providerName {
+  color: #f1f5f9;
+}
+
+.detailsSection {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.feeRow {
+  color: #94a3b8;
+}
+
+.feeRow.total {
+  color: #f1f5f9;
+  border-color: #475569;
+}
+
+.instructions {
+  background-color: #1e3a5f;
+  color: #93c5fd;
+}
+
+.connectButton {
+  background-color: #f59e0b;
+  color: #0f172a;
+}
+
+.connectButton:hover {
+  background-color: #fbbf24;
+}
+
+.walletConnected {
+  background-color: #064e3b;
+  color: #6ee7b7;
+}
+
+.addressBox {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+}
+
+.copyButton {
+  color: #94a3b8;
+}
+
+.networkWarning {
+  background-color: #422006;
+  color: #fcd34d;
+}
+
+.mobilePayment {
+  background-color: #064e3b;
+  border: 1px solid #059669;
+}
+
+.payButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.payButton:hover {
+  background-color: #5b88f0;
+}
+
+.continueButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.continueButton:hover {
+  background-color: #5b88f0;
+}

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Github, Twitter, Linkedin } from 'lucide-react';
 
 import MegiLanceLogo from '@/app/components/MegiLanceLogo/MegiLanceLogo';
+import StatusIndicator, { FeatureStatus } from '@/app/components/StatusIndicator/StatusIndicator';
 
 import commonStyles from './Footer.common.module.css';
 import lightStyles from './Footer.light.module.css';
@@ -15,27 +16,28 @@ import darkStyles from './Footer.dark.module.css';
 
 const footerSections = {
   'Product': [
-    { name: 'Features', href: '/#features' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'For Clients', href: '/clients' },
-    { name: 'For Freelancers', href: '/freelancers' },
+    { name: 'Features', href: '/#features', status: 'active' },
+    { name: 'Pricing', href: '/pricing', status: 'active' },
+    { name: 'For Clients', href: '/clients', status: 'active' },
+    { name: 'For Freelancers', href: '/freelancers', status: 'active' },
+    { name: 'AI Matching', href: '/ai-matching', status: 'beta' },
   ],
   'Company': [
-    { name: 'About Us', href: '/about' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Careers', href: '/careers' },
-    { name: 'Press', href: '/press' },
+    { name: 'About Us', href: '/about', status: 'active' },
+    { name: 'Blog', href: '/blog', status: 'dev' },
+    { name: 'Careers', href: '/careers', status: 'planned' },
+    { name: 'Press', href: '/press', status: 'planned' },
   ],
   'Resources': [
-    { name: 'Help Center', href: '/support' },
-    { name: 'Contact Us', href: '/contact' },
-    { name: 'Community', href: '/community' },
-    { name: 'Status', href: '/status' },
+    { name: 'Help Center', href: '/support', status: 'dev' },
+    { name: 'Contact Us', href: '/contact', status: 'active' },
+    { name: 'Community', href: '/community', status: 'planned' },
+    { name: 'System Status', href: '/status', status: 'beta' },
   ],
   'Legal': [
-    { name: 'Terms of Service', href: '/terms' },
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Cookie Policy', href: '/cookies' },
+    { name: 'Terms of Service', href: '/terms', status: 'active' },
+    { name: 'Privacy Policy', href: '/privacy', status: 'active' },
+    { name: 'Cookie Policy', href: '/cookies', status: 'active' },
   ],
 };
 
@@ -70,6 +72,12 @@ const Footer = () => {
                     <li key={link.name}>
                       <Link href={link.href} className={cn(commonStyles.linkItem, styles.linkItem)}>
                         {link.name}
+                        {link.status && (
+                          <StatusIndicator 
+                            status={link.status as FeatureStatus} 
+                            className="ml-2 scale-90 origin-left" 
+                          />
+                        )}
                       </Link>
                     </li>
                   ))}

@@ -8,6 +8,7 @@ import { Menu, X, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import { Button } from '@/app/components/Button/Button';
+import StatusIndicator from '@/app/components/StatusIndicator/StatusIndicator';
 
 import commonStyles from './Header.common.module.css';
 import lightStyles from './Header.light.module.css';
@@ -40,13 +41,17 @@ const Header: React.FC = () => {
           <div className={commonStyles.navLinks}>
             <Link href="/explore" className={cn(commonStyles.exploreLink, themeStyles.exploreLink)}>
               <Sparkles size={16} />
-              Explore
+              Explore <StatusIndicator status="beta" />
             </Link>
-            <Link href="/how-it-works" className={cn(commonStyles.navLink, themeStyles.navLink)}>How It Works</Link>
-            <Link href="/pricing" className={cn(commonStyles.navLink, themeStyles.navLink)}>Pricing</Link>
-            <Link href="/about" className={cn(commonStyles.navLink, themeStyles.navLink)}>About</Link>
-            <Link href="/blog" className={cn(commonStyles.navLink, themeStyles.navLink)}>Blog</Link>
-            <Link href="/contact" className={cn(commonStyles.navLink, themeStyles.navLink)}>Contact</Link>
+            <Link href="/client/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)}>
+              Client <StatusIndicator status="active" />
+            </Link>
+            <Link href="/freelancer/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)}>
+              Freelancer <StatusIndicator status="active" />
+            </Link>
+            <Link href="/admin/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)}>
+              Admin <StatusIndicator status="dev" />
+            </Link>
             <Link href="/login" className={commonStyles.signInLink}>
               <Button variant="primary" size="sm" className={commonStyles.signInButton}>
                 Sign In
@@ -61,13 +66,17 @@ const Header: React.FC = () => {
       <div className={cn(commonStyles.mobileNavMenu, themeStyles.mobileNavMenu, isMenuOpen && commonStyles.mobileNavMenuActive)}>
         <Link href="/explore" className={cn(commonStyles.exploreLink, themeStyles.exploreLink)} onClick={() => setIsMenuOpen(false)}>
           <Sparkles size={16} />
-          Explore All Features
+          Explore All Features <StatusIndicator status="beta" />
         </Link>
-        <Link href="/how-it-works" className={cn(commonStyles.navLink, themeStyles.navLink)}>How It Works</Link>
-        <Link href="/pricing" className={cn(commonStyles.navLink, themeStyles.navLink)}>Pricing</Link>
-        <Link href="/about" className={cn(commonStyles.navLink, themeStyles.navLink)}>About</Link>
-        <Link href="/blog" className={cn(commonStyles.navLink, themeStyles.navLink)}>Blog</Link>
-        <Link href="/contact" className={cn(commonStyles.navLink, themeStyles.navLink)}>Contact</Link>
+        <Link href="/client/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)} onClick={() => setIsMenuOpen(false)}>
+          Client Portal <StatusIndicator status="active" />
+        </Link>
+        <Link href="/freelancer/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)} onClick={() => setIsMenuOpen(false)}>
+          Freelancer Portal <StatusIndicator status="active" />
+        </Link>
+        <Link href="/admin/dashboard" className={cn(commonStyles.navLink, themeStyles.navLink)} onClick={() => setIsMenuOpen(false)}>
+          Admin Portal <StatusIndicator status="dev" />
+        </Link>
         <Link href="/login" className={commonStyles.signInLinkMobile}>
            <Button variant="primary" size="md" fullWidth>
               Sign In

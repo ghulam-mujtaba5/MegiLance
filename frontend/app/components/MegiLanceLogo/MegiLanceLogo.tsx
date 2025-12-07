@@ -13,8 +13,8 @@ export const MegiLanceLogo: React.FC<{ className?: string }> = ({ className }) =
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
-  if (!resolvedTheme) return null;
-
+  // Always render the logo to avoid hydration mismatch
+  // Server will render with default theme, client will hydrate correctly
   return (
     <div className={cn(commonStyles.logoWrapper, className)}>
       <svg

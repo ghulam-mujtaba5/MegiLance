@@ -1,5 +1,5 @@
 # MegiLance Unified App Platform Spec
-# Frontend (Next.js 14) + Backend (FastAPI) + Turso Database
+# Frontend (Next.js 14) + Backend (FastAPI) + AI Service + Turso Database
 # Domain: megilance.site
 
 name: megilance
@@ -12,6 +12,26 @@ domains:
   - domain: api.megilance.site
     type: ALIAS
     zone: megilance.site
+
+ingress:
+  rules:
+    - component:
+        name: backend
+        preserve_path_prefix: true
+      match:
+        path:
+          prefix: /api
+    - component:
+        name: backend
+        preserve_path_prefix: true
+      match:
+        path:
+          prefix: /backend
+    - component:
+        name: frontend
+      match:
+        path:
+          prefix: /
 
 services:
   # ============================================
@@ -26,12 +46,6 @@ services:
     instance_size_slug: basic-s
     instance_count: 1
     http_port: 8000
-    
-    routes:
-      - path: /api
-        preserve_path_prefix: true
-      - path: /backend
-        preserve_path_prefix: true
     
     health_check:
       http_path: /api/health/live
@@ -75,6 +89,43 @@ services:
       - key: SLOWAPI_ENABLED
         value: "true"
         scope: RUN_TIME
+      
+      # AI Service Connection
+      - key: AI_SERVICE_URL
+        value: "http://ai-service:8001"
+        scope: RUN_TIME
+
+  # ============================================
+  # AI SERVICE - Python / FastAPI (Internal only)
+  # ============================================
+  - name: ai-service
+    github:
+      repo: Mwaqarulmulk/MegiLance
+      branch: main
+      deploy_on_push: true
+    dockerfile_path: ai/Dockerfile
+    instance_size_slug: basic-s
+    instance_count: 1
+    http_port: 8001
+    
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 120
+      period_seconds: 30
+      timeout_seconds: 10
+      success_threshold: 1
+      failure_threshold: 5
+      
+    envs:
+      - key: PORT
+        value: "8001"
+        scope: RUN_TIME
+      - key: ML_WORKERS
+        value: "1"
+        scope: RUN_TIME
+      - key: CORS_ORIGINS
+        value: "*"
+        scope: RUN_TIME
 
   # ============================================
   # FRONTEND SERVICE - Next.js 14
@@ -88,9 +139,6 @@ services:
     instance_size_slug: basic-xs
     instance_count: 1
     http_port: 3000
-    
-    routes:
-      - path: /
     
     health_check:
       http_path: /

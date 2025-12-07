@@ -1,0 +1,160 @@
+{
+  "name": "megilance",
+  "services": [
+    {
+      "name": "backend",
+      "github": {
+        "repo": "Mwaqarulmulk/MegiLance",
+        "branch": "main",
+        "deploy_on_push": true
+      },
+      "dockerfile_path": "backend/Dockerfile",
+      "envs": [
+        {
+          "key": "DATABASE_URL",
+          "value": "sqlite:///./local.db",
+          "scope": "RUN_AND_BUILD_TIME"
+        },
+        {
+          "key": "TURSO_DATABASE_URL",
+          "value": "libsql://megilance-db-megilance.aws-ap-south-1.turso.io",
+          "scope": "RUN_TIME"
+        },
+        {
+          "key": "TURSO_AUTH_TOKEN",
+          "value": "EV[1:gybs67XrRqoVRlkacKcjY2OQ90QzIVVV:pTkfp0nEJ4EuItU1ManbhKf8WPtCtMFj6oeAjsi9t6GTfmpM6YrmvVhmnWrtXYIzI9hcqqFHmvhLXDO6ZNdwhOhUcyB1JXyCSYto+WO2Zg8pZGxgDPCoCEn1tf1w80GFmkOYnLxLF1zXYAbJ7wgm2r/CMLzwz3Kus7lfuA/6zBNC0nQZNQH6Pm/hwfANY+ZYFxDeCaCtYQ9PFTxjaRXK2Y4yX/Gi1/fkNq00AuNViWbr+PxeSIjuDGEjPPrtM2pvoRUICqlRgMl55kCwEh9b2cypDTkwM/HLSMi+gRY87N2JJMo//46ztQmAKlM7ABG9YRy0aGL+Y3xeIdSgMtPhKlYE7+6ey/f3gdh3tLuBbxAfgvxcv89WHuzipA==]",
+          "scope": "RUN_TIME",
+          "type": "SECRET"
+        },
+        {
+          "key": "SECRET_KEY",
+          "value": "EV[1:5qQkMqwJa9bKpFe/9eXofTFo1/L7lJGN:ApcekRVw1eD4XUjKwjXjbVLtJWFdsJ3bBC3/xWFq9mmly16n4xgq9Ie243urB7pv2V7d9ai8KAwTQxzV9LfChM4IKk+E2qGVDi9pFQ==]",
+          "scope": "RUN_TIME",
+          "type": "SECRET"
+        },
+        {
+          "key": "ENVIRONMENT",
+          "value": "production",
+          "scope": "RUN_TIME"
+        },
+        {
+          "key": "CORS_ORIGINS",
+          "value": "https://megilance.site,https://www.megilance.site,https://api.megilance.site",
+          "scope": "RUN_TIME"
+        },
+        {
+          "key": "BACKEND_CORS_ORIGINS",
+          "value": "[\"https://megilance.site\",\"https://www.megilance.site\"]",
+          "scope": "RUN_TIME"
+        },
+        {
+          "key": "SLOWAPI_ENABLED",
+          "value": "true",
+          "scope": "RUN_TIME"
+        }
+      ],
+      "instance_size_slug": "basic-s",
+      "instance_count": 1,
+      "http_port": 8000,
+      "health_check": {
+        "initial_delay_seconds": 120,
+        "period_seconds": 30,
+        "timeout_seconds": 30,
+        "success_threshold": 1,
+        "failure_threshold": 5,
+        "http_path": "/api/health/live"
+      }
+    },
+    {
+      "name": "frontend",
+      "github": {
+        "repo": "Mwaqarulmulk/MegiLance",
+        "branch": "main",
+        "deploy_on_push": true
+      },
+      "dockerfile_path": "frontend/Dockerfile",
+      "envs": [
+        {
+          "key": "NODE_ENV",
+          "value": "production",
+          "scope": "RUN_AND_BUILD_TIME"
+        },
+        {
+          "key": "NEXT_TELEMETRY_DISABLED",
+          "value": "1",
+          "scope": "RUN_AND_BUILD_TIME"
+        },
+        {
+          "key": "NEXT_PUBLIC_BACKEND_URL",
+          "value": "https://megilance.site",
+          "scope": "RUN_AND_BUILD_TIME"
+        },
+        {
+          "key": "NEXT_PUBLIC_API_URL",
+          "value": "https://megilance.site/api",
+          "scope": "RUN_AND_BUILD_TIME"
+        }
+      ],
+      "instance_size_slug": "basic-xs",
+      "instance_count": 1,
+      "http_port": 3000,
+      "health_check": {
+        "initial_delay_seconds": 60,
+        "period_seconds": 30,
+        "timeout_seconds": 10,
+        "success_threshold": 1,
+        "failure_threshold": 5,
+        "http_path": "/"
+      }
+    }
+  ],
+  "domains": [
+    {
+      "domain": "www.megilance.site",
+      "type": "PRIMARY",
+      "zone": "megilance.site"
+    },
+    {
+      "domain": "api.megilance.site",
+      "type": "ALIAS",
+      "zone": "megilance.site"
+    }
+  ],
+  "region": "blr",
+  "ingress": {
+    "rules": [
+      {
+        "match": {
+          "path": {
+            "prefix": "/api"
+          }
+        },
+        "component": {
+          "name": "backend",
+          "preserve_path_prefix": true
+        }
+      },
+      {
+        "match": {
+          "path": {
+            "prefix": "/backend"
+          }
+        },
+        "component": {
+          "name": "backend",
+          "preserve_path_prefix": true
+        }
+      },
+      {
+        "match": {
+          "path": {
+            "prefix": "/"
+          }
+        },
+        "component": {
+          "name": "frontend"
+        }
+      }
+    ]
+  }
+}

@@ -3,6 +3,12 @@
   border: 1px solid #e0e0e0;
 }
 
+.chatbotAgentHeader {
+  background-color: #ffffff;
+  color: #333333;
+  border-bottom-color: #e0e0e0;
+}
+
 .chatbotAgentMessages {
   background-color: #f9f9f9;
 }

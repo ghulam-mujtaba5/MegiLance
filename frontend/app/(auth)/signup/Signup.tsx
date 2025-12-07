@@ -15,6 +15,7 @@ import Input from '@/app/components/Input/Input';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
 import Tabs from '@/app/components/Tabs/Tabs';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
+import ClientOnly from '@/app/components/ClientOnly';
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -206,12 +207,13 @@ const Signup: React.FC = () => {
 
   return (
     <PageTransition className={styles.loginPage}>
-      {/* Stunning 3D Background Elements */}
-      <div className={commonStyles.backgroundDecor}>
-        <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
-        <AnimatedOrb variant="purple" size={280} blur={60} opacity={0.25} className={commonStyles.orbBottomLeft} />
-        <ParticlesSystem count={6} className={commonStyles.particlesBg} />
-      </div>
+      <ClientOnly>
+        <div className={commonStyles.backgroundDecor}>
+          <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
+          <AnimatedOrb variant="purple" size={280} blur={60} opacity={0.25} className={commonStyles.orbBottomLeft} />
+          <ParticlesSystem count={6} className={commonStyles.particlesBg} />
+        </div>
+      </ClientOnly>
 
       <div className={styles.brandingSlot}>
         <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />
@@ -283,7 +285,7 @@ const Signup: React.FC = () => {
                 onChange={handleChange}
                 error={errors.agreedToTerms}
               >
-                I agree to the <Link href="/terms" className={styles.forgotPasswordLink}>Terms</Link> & <Link href="/privacy" className={styles.forgotPasswordLink}>Privacy Policy</Link>.
+                I agree to the <Link href="/terms" target="_blank" rel="noopener noreferrer" className={styles.forgotPasswordLink}>Terms</Link> & <Link href="/privacy" target="_blank" rel="noopener noreferrer" className={styles.forgotPasswordLink}>Privacy Policy</Link>.
               </Checkbox>
 
               <Button type="submit" variant="primary" fullWidth className={styles.submitButton} isLoading={loading} disabled={loading}>

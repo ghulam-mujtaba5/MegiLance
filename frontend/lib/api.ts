@@ -1268,6 +1268,57 @@ export const aiApi = {
       risk_factors: string[];
       recommendation: string;
     }>(`/fraud-detection/analyze/user/${userId}`),
+
+  estimatePrice: (data: {
+    category: string;
+    skills_required: string[];
+    description?: string;
+    estimated_hours?: number;
+    complexity?: string;
+  }) =>
+    apiFetch<{
+      estimated_hourly_rate: number;
+      estimated_total: number;
+      estimated_hours: number;
+      low_estimate: number;
+      high_estimate: number;
+      complexity: string;
+      category: string;
+      confidence: number;
+      factors: string[];
+    }>('/ai/estimate-price', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  estimateFreelancerRate: (freelancerId: number, data?: {
+    years_experience?: number;
+    skills?: string[];
+    completed_projects?: number;
+    average_rating?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (data) {
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined) {
+          if (Array.isArray(value)) {
+            value.forEach(v => params.append(key, v));
+          } else {
+            params.append(key, value.toString());
+          }
+        }
+      });
+    }
+    return apiFetch<{
+      freelancer_id: number;
+      current_rate: number | null;
+      estimated_rate: number;
+      low_estimate: number;
+      high_estimate: number;
+      factors: any;
+      confidence: number;
+    }>(`/ai/estimate-freelancer-rate/${freelancerId}?${params}`);
+  },
 };
 
 // ===========================
@@ -1992,7 +2043,9 @@ export const matchingApi = {
 // FRAUD DETECTION
 // ===========================
 export const fraudDetectionApi = {
-  checkUser: (userId: number) => apiFetch(`/fraud-detection/user/${userId}`),
+  checkUser: (userId: number) => apiFetch(`/fraud-detection/analyze/user/${userId}`),
+  checkProject: (projectId: number) => apiFetch(`/fraud-detection/analyze/project/${projectId}`),
+  checkProposal: (proposalId: number) => apiFetch(`/fraud-detection/analyze/proposal/${proposalId}`),
   checkTransaction: (transactionId: string) =>
     apiFetch(`/fraud-detection/transaction/${transactionId}`),
   reportSuspicious: (data: { type: string; target_id: string; reason: string; details?: string }) =>

@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { getAuthToken } from '@/lib/api';
 import { Send, Sparkles, MoreVertical, Trash2, Settings, Paperclip } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
@@ -41,10 +42,12 @@ const Chatbot: React.FC = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -53,6 +56,43 @@ const Chatbot: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping, scrollToBottom]);
+
+  useEffect(() => {
+    // Start conversation
+    const startConversation = async () => {
+      try {
+        const token = getAuthToken();
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const res = await fetch(`${API_URL}/v1/chatbot/start`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({})
+        });
+        if (res.ok) {
+            const data = await res.json();
+            setConversationId(data.conversation_id);
+            // Optionally set initial greeting from backend if provided
+            if (data.response) {
+                 setMessages([{ 
+                    id: Date.now(), 
+                    text: data.response, 
+                    sender: 'bot',
+                    timestamp: new Date()
+                  }]);
+            }
+        }
+      } catch (err) {
+        console.error("Failed to start conversation", err);
+      }
+    };
+    startConversation();
+  }, [API_URL]);
 
   if (!resolvedTheme) return null;
 
@@ -76,27 +116,67 @@ const Chatbot: React.FC = () => {
     setShowSuggestions(false);
     setIsTyping(true);
 
-    // Simulate AI thinking time
-    const thinkingTime = Math.random() * 1500 + 1000;
-    
-    setTimeout(() => {
-      setIsTyping(false);
-      const responses = [
-        'I understand your question. Let me help you with that. MegiLance offers a comprehensive platform for both freelancers and clients.',
-        'That\'s a great question! Our platform provides secure escrow payments, verified freelancer profiles, and AI-powered matching.',
-        'I\'d be happy to assist you with that. You can navigate to your dashboard to access all project management features.',
-        'Based on your query, I recommend checking out our Help Center for detailed guides, or I can walk you through the process step by step.',
-        'Thanks for reaching out! Our team has designed the platform to make your freelancing or hiring experience as smooth as possible.',
-      ];
-      
-      const botResponse: Message = { 
-        id: Date.now() + 1, 
-        text: responses[Math.floor(Math.random() * responses.length)], 
-        sender: 'bot',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
-    }, thinkingTime);
+    try {
+        const token = getAuthToken();
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        let currentConversationId = conversationId;
+        if (!currentConversationId) {
+             const startRes = await fetch(`${API_URL}/v1/chatbot/start`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({})
+            });
+            if (startRes.ok) {
+                const startData = await startRes.json();
+                currentConversationId = startData.conversation_id;
+                setConversationId(currentConversationId);
+            } else {
+                throw new Error("Failed to start conversation");
+            }
+        }
+
+        const res = await fetch(`${API_URL}/v1/chatbot/${currentConversationId}/message`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ message: trimmedInput })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            const botResponse: Message = { 
+                id: Date.now() + 1, 
+                text: data.response, 
+                sender: 'bot',
+                timestamp: new Date()
+            };
+            setMessages(prev => [...prev, botResponse]);
+        } else {
+             const botResponse: Message = { 
+                id: Date.now() + 1, 
+                text: "Sorry, I'm having trouble connecting to the server.", 
+                sender: 'bot',
+                timestamp: new Date()
+            };
+            setMessages(prev => [...prev, botResponse]);
+        }
+    } catch (err) {
+        console.error("Failed to send message", err);
+         const botResponse: Message = { 
+            id: Date.now() + 1, 
+            text: "Sorry, I'm having trouble connecting to the server.", 
+            sender: 'bot',
+            timestamp: new Date()
+        };
+        setMessages(prev => [...prev, botResponse]);
+    } finally {
+        setIsTyping(false);
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {

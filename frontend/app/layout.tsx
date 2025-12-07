@@ -7,7 +7,7 @@ import '../styles/animations.css';
 import '../styles/effects.css';
 import './styles/theme.css';
 
-import ClientRoot from './ClientRoot';
+import ClientRoot from './ClientRoot.minimal';
 import GoogleAnalytics from './components/Analytics/GoogleAnalytics';
 import { BASE_URL, SITE_NAME } from '../lib/seo';
 

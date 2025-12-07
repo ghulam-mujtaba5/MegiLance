@@ -599,16 +599,49 @@ class AIChatbotService:
             response["actions"] = [{"type": "log_feedback"}]
         
         else:
-            # Default response
-            response["message"] = "I'm not quite sure I understood that. Could you rephrase or choose from these topics?"
-            response["suggestions"] = [
-                "Account help",
-                "Project questions",
-                "Payment issues",
-                "Speak to support"
-            ]
+            # Try to generate response using local AI service
+            ai_response = await self._generate_ai_response(message)
+            if ai_response:
+                response["message"] = ai_response
+            else:
+                # Default fallback if AI fails
+                response["message"] = "I'm not quite sure I understood that. Could you rephrase or choose from these topics?"
+                response["suggestions"] = [
+                    "Account help",
+                    "Project questions",
+                    "Payment issues",
+                    "Speak to support"
+                ]
         
         return response
+
+    async def _generate_ai_response(self, prompt: str) -> Optional[str]:
+        """Generate response using local AI service."""
+        import httpx
+        import os
+        
+        ai_service_url = os.getenv("AI_SERVICE_URL", "http://localhost:8001")
+        try:
+            async with httpx.AsyncClient() as client:
+                # Add context to the prompt to keep it focused
+                context_prompt = f"You are MegiBot, a helpful AI assistant for a freelancing platform called MegiLance. Answer the following user question politely and concisely: {prompt}"
+                
+                response = await client.post(
+                    f"{ai_service_url}/ai/generate",
+                    json={
+                        "prompt": context_prompt,
+                        "max_length": 150
+                    },
+                    timeout=5.0
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get("text")
+        except Exception as e:
+            logger.error(f"AI generation failed: {e}")
+            return None
+
     
     async def _escalate_to_agent(
         self,

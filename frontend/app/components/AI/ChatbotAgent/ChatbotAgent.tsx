@@ -1,10 +1,10 @@
 // @AI-HINT: This component provides a fully theme-aware chat interface for interacting with an AI agent. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
-import { MessageSquare, X } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import commonStyles from './ChatbotAgent.common.module.css';
 import lightStyles from './ChatbotAgent.light.module.css';
@@ -22,38 +22,93 @@ const ChatbotAgent: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: 'Hello! How can I help you with your project today?', sender: 'bot' },
-    { id: 2, text: 'I need to find a developer skilled in Next.js and Web3.', sender: 'user' },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (inputValue.trim() === '') return;
+  useEffect(() => {
+    if (isOpen && !conversationId) {
+      startConversation();
+    }
+  }, [isOpen]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const startConversation = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/backend/api/chatbot/start', { method: 'POST' });
+      if (!res.ok) throw new Error('Failed to start conversation');
+      const data = await res.json();
+      setConversationId(data.conversation_id);
+      setMessages([{ id: 1, text: data.response, sender: 'bot' }]);
+    } catch (error) {
+      console.error('Failed to start conversation:', error);
+      setMessages([{ 
+        id: 1, 
+        text: 'Hello! I am currently offline. Please try again later.', 
+        sender: 'bot' 
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputValue.trim() === '' || !conversationId) return;
+
+    const userText = inputValue;
     const newUserMessage: Message = {
-      id: messages.length + 1,
-      text: inputValue,
+      id: Date.now(),
+      text: userText,
       sender: 'user',
     };
 
-    setMessages([...messages, newUserMessage]);
+    setMessages(prev => [...prev, newUserMessage]);
     setInputValue('');
+    setIsLoading(true);
 
-    // Mock bot response
-    setTimeout(() => {
+    try {
+      const res = await fetch(`/backend/api/chatbot/${conversationId}/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText }),
+      });
+      
+      if (!res.ok) throw new Error('Failed to send message');
+      
+      const data = await res.json();
+      
       const botResponse: Message = {
-        id: messages.length + 2,
-        text: 'Searching for top-rated Next.js and Web3 developers for you...',
+        id: Date.now() + 1,
+        text: data.response,
         sender: 'bot',
       };
-      setMessages(prevMessages => [...prevMessages, botResponse]);
-    }, 1000);
+      setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        text: 'Sorry, I encountered an error. Please try again.',
+        sender: 'bot',
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!mounted) {
@@ -74,6 +129,13 @@ const ChatbotAgent: React.FC = () => {
     <div className={commonStyles.chatbotContainer}>
       {isOpen && (
         <div className={cn(commonStyles.chatbotAgent, themeStyles.chatbotAgent)}>
+          <div className={cn(commonStyles.chatbotAgentHeader, themeStyles.chatbotAgentHeader)}>
+            <h3>MegiBot AI</h3>
+            <button onClick={() => setIsOpen(false)} className={commonStyles.closeButton}>
+              <X size={18} />
+            </button>
+          </div>
+          
           <div className={cn(commonStyles.chatbotAgentMessages, themeStyles.chatbotAgentMessages)}>
             {messages.map(message => (
               <div key={message.id} className={cn(
@@ -85,7 +147,14 @@ const ChatbotAgent: React.FC = () => {
                 <p>{message.text}</p>
               </div>
             ))}
+            {isLoading && (
+              <div className={cn(commonStyles.message, themeStyles.messageBot)}>
+                <Loader2 className="animate-spin" size={16} />
+              </div>
+            )}
+            <div ref={messagesEndRef} />
           </div>
+          
           <form className={cn(commonStyles.chatbotAgentInputForm, themeStyles.chatbotAgentInputForm)} onSubmit={handleSendMessage}>
             <input
               type="text"
@@ -93,8 +162,16 @@ const ChatbotAgent: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Ask me anything..."
               className={cn(commonStyles.chatbotAgentInput, themeStyles.chatbotAgentInput)}
+              disabled={isLoading || !conversationId}
             />
-            <Button type="submit" variant="primary">Send</Button>
+            <Button 
+              type="submit" 
+              variant="primary" 
+              size="sm"
+              disabled={isLoading || !inputValue.trim() || !conversationId}
+            >
+              <Send size={16} />
+            </Button>
           </form>
         </div>
       )}

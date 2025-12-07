@@ -6,7 +6,6 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 import commonStyles from './Button.common.module.css';
 import lightStyles from './Button.light.module.css';
@@ -50,16 +49,14 @@ const Button = <C extends React.ElementType = 'button'>({
   const Component = (as || 'button') as React.ElementType;
   const isButton = !as || as === 'button';
 
-  if (!resolvedTheme) return null; // Or a loading skeleton
-
+  // Always render to avoid hydration mismatch
+  // Default to light theme during SSR, will hydrate correctly on client
+  
   // normalize legacy size values
   const normalizedSize: 'sm' | 'md' | 'lg' | 'icon' =
     size === 'small' ? 'sm' : size === 'medium' ? 'md' : size === 'large' ? 'lg' : (size as 'sm' | 'md' | 'lg' | 'icon');
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
-
-  // Create a motion component dynamically but memoized to prevent remounts
-  const MotionComponent = React.useMemo(() => motion(Component as any), [Component]);
 
   // Handle click with loading state
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -73,10 +70,7 @@ const Button = <C extends React.ElementType = 'button'>({
   const accessibleLabel = (!children && (iconBefore || iconAfter)) ? (ariaFromProps ?? titleFromProps) : undefined;
 
   return (
-    <MotionComponent
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+    <Component
       className={cn(
         commonStyles.button,
         // Support both prefixed and non-prefixed variant and size class names
@@ -109,7 +103,7 @@ const Button = <C extends React.ElementType = 'button'>({
         {children}
       </span>
       {iconAfter && !isLoading && <span className={commonStyles.iconAfter} aria-hidden="true">{iconAfter}</span>}
-    </MotionComponent>
+    </Component>
   );
 };
 

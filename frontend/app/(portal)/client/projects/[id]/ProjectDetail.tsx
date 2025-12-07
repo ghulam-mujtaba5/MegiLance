@@ -11,7 +11,7 @@ import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import { PageTransition, ScrollReveal } from '@/components/Animations';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
-import { User, DollarSign, Clock, CheckCircle, XCircle, MessageSquare, Star } from 'lucide-react';
+import { User, DollarSign, Clock, CheckCircle, XCircle, MessageSquare, Star, ShieldAlert } from 'lucide-react';
 import common from './ProjectDetail.common.module.css';
 import light from './ProjectDetail.light.module.css';
 import dark from './ProjectDetail.dark.module.css';
@@ -41,6 +41,8 @@ const ProjectDetail: React.FC = () => {
   const [proposalsLoading, setProposalsLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState<number | null>(null);
+  const [fraudCheckResults, setFraudCheckResults] = useState<Record<number, any>>({});
+  const [checkingFraud, setCheckingFraud] = useState<number | null>(null);
 
   const projectId = useMemo(() => {
     if (!rawId) return null;
@@ -127,6 +129,30 @@ const ProjectDetail: React.FC = () => {
       alert('Failed to reject proposal. Please try again.');
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleCheckFraud = async (proposalId: number) => {
+    setCheckingFraud(proposalId);
+    try {
+      // Use the aiApi.fraudDetection (which we updated in api.ts)
+      // Note: api.ts exports fraudDetectionApi, but default export has it as api.fraudDetection
+      // We need to make sure we are using the right one.
+      // Let's use api.fraudDetection if available, or import fraudDetectionApi directly.
+      // Since we imported api, let's check if api.fraudDetection is available.
+      // Based on api.ts, it is available as api.fraudDetection.
+      
+      // However, we updated fraudDetectionApi in api.ts, but did we update the default export?
+      // Yes, the default export includes fraudDetection: fraudDetectionApi.
+      
+      const result = await api.fraudDetection.checkProposal(proposalId);
+      // The API returns { analysis: ... } wrapper
+      setFraudCheckResults(prev => ({ ...prev, [proposalId]: result.analysis || result }));
+    } catch (err) {
+      console.error('Failed to check fraud:', err);
+      alert('Failed to check fraud risk.');
+    } finally {
+      setCheckingFraud(null);
     }
   };
 
@@ -298,6 +324,16 @@ const ProjectDetail: React.FC = () => {
                               <MessageSquare size={16} /> Message
                             </Button>
                             <Button 
+                              variant="ghost" 
+                              size="sm"
+                              isLoading={checkingFraud === proposal.id}
+                              onClick={() => handleCheckFraud(proposal.id)}
+                              title="Check for fraud risk"
+                            >
+                              <ShieldAlert size={16} className={fraudCheckResults[proposal.id]?.risk_level === 'high' ? 'text-red-500' : ''} /> 
+                              {fraudCheckResults[proposal.id] ? 'Risk Checked' : 'Check Risk'}
+                            </Button>
+                            <Button 
                               variant="danger" 
                               size="sm"
                               isLoading={actionLoading === proposal.id}
@@ -313,6 +349,27 @@ const ProjectDetail: React.FC = () => {
                             >
                               <CheckCircle size={16} /> Accept & Hire
                             </Button>
+                          </div>
+                        )}
+                        
+                        {fraudCheckResults[proposal.id] && (
+                          <div className={`mt-3 p-3 rounded-md text-sm border ${
+                            fraudCheckResults[proposal.id].risk_level === 'high' ? 'bg-red-50 border-red-200 text-red-800' :
+                            fraudCheckResults[proposal.id].risk_level === 'medium' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
+                            'bg-green-50 border-green-200 text-green-800'
+                          }`}>
+                            <div className="font-bold flex items-center gap-2">
+                              Risk Level: {fraudCheckResults[proposal.id].risk_level.toUpperCase()} 
+                              (Score: {fraudCheckResults[proposal.id].risk_score}/100)
+                            </div>
+                            {fraudCheckResults[proposal.id].risk_factors.length > 0 && (
+                              <ul className="list-disc list-inside mt-1">
+                                {fraudCheckResults[proposal.id].risk_factors.map((factor: string, i: number) => (
+                                  <li key={i}>{factor}</li>
+                                ))}
+                              </ul>
+                            )}
+                            <div className="mt-1 font-medium">Recommendation: {fraudCheckResults[proposal.id].recommendation}</div>
                           </div>
                         )}
                         

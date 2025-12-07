@@ -1,0 +1,106 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section {
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+}
+
+.col {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.aiEstimate {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.aiIcon {
+  flex-shrink: 0;
+}
+
+.aiContent {
+  flex: 1;
+}
+
+.aiTitle {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aiText {
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.estimateGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.estimateItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.estimateLabel {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.estimateValue {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
