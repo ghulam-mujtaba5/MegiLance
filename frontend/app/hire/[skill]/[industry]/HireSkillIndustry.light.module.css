@@ -1,0 +1,165 @@
+/* @AI-HINT: Light theme colors for hire SEO landing pages */
+
+/* ============ PAGE ============ */
+.page {
+  background-color: #ffffff;
+  color: #1a1a2e;
+}
+
+/* ============ HERO ============ */
+.hero {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+}
+
+.heroTitle {
+  color: #1a1a2e;
+}
+
+.heroHighlight {
+  color: #4573df;
+}
+
+.heroSubtitle {
+  color: #4a5568;
+}
+
+.breadcrumbLink {
+  color: #4573df;
+}
+
+.breadcrumbCurrent {
+  color: #1a1a2e;
+}
+
+/* ============ STATS ============ */
+.statItem {
+  color: #1a1a2e;
+}
+
+/* ============ SECTION ============ */
+.section {
+  background-color: #ffffff;
+}
+
+.sectionTitle {
+  color: #1a1a2e;
+}
+
+/* ============ FREELANCER CARDS ============ */
+.freelancerCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.freelancerCard:hover {
+  box-shadow: 0 8px 24px rgba(69, 115, 223, 0.12);
+}
+
+.avatar {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.freelancerName {
+  color: #1a1a2e;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.freelancerHeadline {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.rating {
+  color: #f59e0b;
+}
+
+.jobCount {
+  color: #64748b;
+}
+
+.rate {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* ============ WHY SECTION ============ */
+.whySection {
+  background-color: #f8fafc;
+}
+
+/* ============ BENEFIT CARDS ============ */
+.benefitCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.benefitTitle {
+  color: #1a1a2e;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.benefitDesc {
+  color: #64748b;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* ============ FAQ ============ */
+.faqItem {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.faqQuestion {
+  background-color: #f8fafc;
+  color: #1a1a2e;
+}
+
+.faqQuestion:hover {
+  background-color: #f1f5f9;
+}
+
+.faqAnswer {
+  color: #4a5568;
+  background-color: #ffffff;
+}
+
+/* ============ RELATED ============ */
+.relatedCard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.relatedCard:hover {
+  background-color: #f1f5f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.relatedName {
+  color: #1a1a2e;
+  font-weight: 500;
+}
+
+.relatedRate {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+/* ============ CTA SECTION ============ */
+.ctaSection {
+  background: linear-gradient(135deg, #4573df 0%, #3b5ec9 100%);
+}
+
+.ctaTitle {
+  color: #ffffff;
+}
+
+.ctaSubtitle {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.5rem;
+}

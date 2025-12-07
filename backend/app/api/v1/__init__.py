@@ -24,7 +24,9 @@ from . import (
     notes_tags, custom_statuses, skill_taxonomy, search_advanced,
     realtime_notifications, ai_matching, security, video_communication, mock,
     # Version 2.0 features
-    multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics
+    multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics,
+    # Billion Dollar Upgrade
+    scope_change
 )
 
 # complete_integrations imported separately in routers.py to avoid circular import
@@ -56,5 +58,5 @@ __all__ = [
     "custom_statuses", "skill_taxonomy", "search_advanced",
     "realtime_notifications", "ai_matching", "security", "video_communication",
     "mock", "multicurrency", "ai_advanced", "admin_fraud_alerts",
-    "admin_analytics"
+    "admin_analytics", "scope_change"
 ]

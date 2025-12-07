@@ -39,10 +39,12 @@ interface ContractData {
   endDate: string;
   
   // Step 2: Payment
-  paymentType: 'fixed' | 'hourly';
+  paymentType: 'fixed' | 'hourly' | 'retainer';
   totalAmount: string;
   hourlyRate: string;
   estimatedHours: string;
+  retainerAmount: string;
+  retainerFrequency: 'weekly' | 'monthly';
   milestones: Milestone[];
   
   // Step 3: Legal
@@ -85,6 +87,8 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
     totalAmount: proposalData?.bidAmount?.toString() || '',
     hourlyRate: proposalData?.hourlyRate?.toString() || '',
     estimatedHours: proposalData?.estimatedHours?.toString() || '',
+    retainerAmount: '',
+    retainerFrequency: 'monthly',
     milestones: [],
     ipRights: 'client',
     confidentiality: true,
@@ -206,13 +210,18 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
         alert('Please add at least one milestone for payment tracking');
         return false;
       }
-    } else {
+    } else if (contractData.paymentType === 'hourly') {
       if (!contractData.hourlyRate || parseFloat(contractData.hourlyRate) <= 0) {
         alert('Please enter a valid hourly rate');
         return false;
       }
       if (!contractData.estimatedHours || parseFloat(contractData.estimatedHours) <= 0) {
         alert('Please enter estimated hours');
+        return false;
+      }
+    } else if (contractData.paymentType === 'retainer') {
+      if (!contractData.retainerAmount || parseFloat(contractData.retainerAmount) <= 0) {
+        alert('Please enter a valid retainer amount');
         return false;
       }
     }
@@ -235,10 +244,35 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
 
     setSubmitting(true);
     try {
-      const contract: any = await api.contracts.create({
-        ...contractData,
-        deliverables: contractData.deliverables.filter(d => d.trim()),
-      });
+      const payload = {
+        project_id: contractData.projectId ? parseInt(contractData.projectId) : undefined,
+        freelancer_id: contractData.freelancerId ? parseInt(contractData.freelancerId) : undefined,
+        contract_type: contractData.paymentType,
+        amount: contractData.paymentType === 'fixed' 
+            ? parseFloat(contractData.totalAmount) 
+            : contractData.paymentType === 'hourly'
+                ? parseFloat(contractData.estimatedHours) * parseFloat(contractData.hourlyRate)
+                : parseFloat(contractData.retainerAmount),
+        hourly_rate: contractData.hourlyRate ? parseFloat(contractData.hourlyRate) : null,
+        retainer_amount: contractData.retainerAmount ? parseFloat(contractData.retainerAmount) : null,
+        retainer_frequency: contractData.retainerFrequency,
+        description: contractData.scope,
+        start_date: contractData.startDate ? new Date(contractData.startDate).toISOString() : null,
+        end_date: contractData.endDate ? new Date(contractData.endDate).toISOString() : null,
+        terms: JSON.stringify({
+            title: contractData.title,
+            deliverables: contractData.deliverables.filter(d => d.trim()),
+            ip_rights: contractData.ipRights,
+            confidentiality: contractData.confidentiality,
+            termination_notice: contractData.terminationNotice,
+            revision_rounds: contractData.revisionRounds,
+            client_signature: contractData.clientSignature,
+            freelancer_signature: contractData.freelancerSignature
+        }),
+        milestones: JSON.stringify(contractData.milestones)
+      };
+
+      const contract: any = await api.contracts.create(payload);
 
       if (contract && contract.id) {
         router.push(`/contracts/${contract.id}`);
@@ -363,6 +397,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
           options={[
             { value: 'fixed', label: 'Fixed Price' },
             { value: 'hourly', label: 'Hourly Rate' },
+            { value: 'retainer', label: 'Retainer' },
           ]}
         />
       </div>
@@ -431,7 +466,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
             </Button>
           </div>
         </>
-      ) : (
+      ) : contractData.paymentType === 'hourly' ? (
         <div className={styles.gridCols2}>
           <Input
             id="hourlyRate"
@@ -450,6 +485,28 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
             onChange={(e) => setContractData(prev => ({ ...prev, estimatedHours: e.target.value }))}
             placeholder="100"
             required
+          />
+        </div>
+      ) : (
+        <div className={styles.gridCols2}>
+          <Input
+            id="retainerAmount"
+            type="number"
+            label="Retainer Amount (USD)"
+            value={contractData.retainerAmount}
+            onChange={(e) => setContractData(prev => ({ ...prev, retainerAmount: e.target.value }))}
+            placeholder="2000"
+            required
+          />
+          <Select
+            id="retainerFrequency"
+            label="Frequency"
+            value={contractData.retainerFrequency}
+            onChange={(e) => setContractData(prev => ({ ...prev, retainerFrequency: e.target.value as any }))}
+            options={[
+              { value: 'weekly', label: 'Weekly' },
+              { value: 'monthly', label: 'Monthly' },
+            ]}
           />
         </div>
       )}
@@ -533,7 +590,9 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
           <strong>Payment:</strong>{' '}
           {contractData.paymentType === 'fixed' 
             ? `$${contractData.totalAmount} (Fixed)` 
-            : `$${contractData.hourlyRate}/hr (Estimated ${contractData.estimatedHours} hours)`}
+            : contractData.paymentType === 'hourly'
+            ? `$${contractData.hourlyRate}/hr (Estimated ${contractData.estimatedHours} hours)`
+            : `$${contractData.retainerAmount} / ${contractData.retainerFrequency} (Retainer)`}
         </div>
         <div className={styles.mb4}>
           <strong>Deliverables:</strong>

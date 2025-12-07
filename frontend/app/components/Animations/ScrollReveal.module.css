@@ -1,0 +1,17 @@
+/* @AI-HINT: CSS module for ScrollReveal component - replaces inline styles */
+
+.widthFit {
+  width: fit-content;
+}
+
+.widthFull {
+  width: 100%;
+}
+
+.overflowHidden {
+  overflow: hidden;
+}
+
+.overflowVisible {
+  overflow: visible;
+}

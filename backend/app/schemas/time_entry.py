@@ -28,6 +28,15 @@ class TimeEntryUpdate(BaseModel):
     end_time: Optional[datetime] = None
     status: Optional[str] = None
 
+class TimeEntrySubmit(BaseModel):
+    """Schema for submitting time entries"""
+    time_entry_ids: list[int] = Field(..., description="List of time entry IDs to submit")
+
+class TimeEntryReview(BaseModel):
+    """Schema for approving/rejecting time entries"""
+    time_entry_ids: list[int] = Field(..., description="List of time entry IDs to review")
+    rejection_reason: Optional[str] = Field(None, description="Reason for rejection (required if rejecting)")
+
 class TimeEntryRead(TimeEntryBase):
     """Schema for reading a time entry (response)"""
     id: int

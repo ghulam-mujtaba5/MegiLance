@@ -33,3 +33,13 @@
   background-color: rgba(255, 255, 255, 0.9);
   border-color: rgba(0, 0, 0, 0.05);
 }
+
+.exploreLink {
+  background: linear-gradient(135deg, #4573df 0%, #6b8ceb 100%);
+  color: #fff;
+}
+
+.exploreLink:hover {
+  background: linear-gradient(135deg, #3a62c4 0%, #4573df 100%);
+  box-shadow: 0 4px 20px rgba(69, 115, 223, 0.4);
+}

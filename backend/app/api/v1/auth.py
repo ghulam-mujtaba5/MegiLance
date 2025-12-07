@@ -23,6 +23,8 @@ from app.core.rate_limit import (
     email_rate_limit,
 )
 from app.db.turso_http import execute_query, parse_rows, to_str, parse_date
+from app.db.session import get_db
+from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.auth import AuthResponse, LoginRequest, RefreshTokenRequest, Token
 from app.schemas.user import UserCreate, UserRead, UserUpdate
@@ -253,7 +255,7 @@ def register_user(request: Request, payload: UserCreate):
 
 @router.post("/login", response_model=AuthResponse)
 @auth_rate_limit()
-def login_user(request: Request, credentials: LoginRequest):
+def login_user(request: Request, credentials: LoginRequest, db: Session = Depends(get_db)):
     """
     User login endpoint with 2FA support
     
@@ -261,8 +263,13 @@ def login_user(request: Request, credentials: LoginRequest):
     """
     print(f"\n[LOGIN ATTEMPT]:")
     print(f"   Email: {credentials.email}")
+    print(f"   DB Session: {db}")
     
-    user = authenticate_user(None, credentials.email, credentials.password)
+    if db is None:
+        print("CRITICAL: DB Session is None in login_user endpoint")
+        raise HTTPException(status_code=500, detail="Database connection failed")
+
+    user = authenticate_user(db, credentials.email, credentials.password)
     print(f"   Auth Result: {'SUCCESS' if user else 'FAILED'}")
     
     if not user:

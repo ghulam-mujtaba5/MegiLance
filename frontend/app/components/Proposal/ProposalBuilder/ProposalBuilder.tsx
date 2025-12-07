@@ -15,6 +15,8 @@ import Textarea from '@/app/components/Textarea/Textarea';
 import Select from '@/app/components/Select/Select';
 import FileUpload from '@/app/components/FileUpload/FileUpload';
 import api from '@/lib/api';
+import ProposalAICopilot from './ProposalAICopilot';
+import UpsellSuggestions from '../UpsellSuggestions/UpsellSuggestions';
 
 import commonStyles from './ProposalBuilder.common.module.css';
 import lightStyles from './ProposalBuilder.light.module.css';
@@ -39,6 +41,7 @@ interface Milestone {
 interface ProposalBuilderProps {
   projectId: number;
   projectTitle: string;
+  projectDescription: string;
   projectBudget: { min: number; max: number };
   onSubmit?: () => void;
 }
@@ -117,6 +120,7 @@ Best`
 
 const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
   projectId,
+  projectDescription,
   projectTitle,
   projectBudget,
   onSubmit
@@ -251,6 +255,16 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
   const useTemplate = (template: typeof proposalTemplates[0]) => {
     setProposalData({ ...proposalData, coverLetter: template.content });
   };
+  const handleAIApply = (content: string) => {
+    setProposalData({ ...proposalData, coverLetter: content });
+  };
+
+  const handleAddUpsell = (suggestion: { title: string; description: string }) => {
+    setProposalData(prev => ({
+      ...prev,
+      coverLetter: prev.coverLetter + `\n\n**Proposed Add-on: ${suggestion.title}**\n${suggestion.description}`
+    }));
+  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -341,7 +355,13 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
 
         {/* Main Form */}
         <div className={styles.mainForm}>
-          <div className={styles.formSection}>
+            <ProposalAICopilot 
+              projectTitle={projectTitle}
+              projectDescription={projectDescription}
+              onApply={handleAIApply}
+            />
+
+            <div className={styles.formSection}>
             <h3 className={styles.sectionTitle}>
               <FaFileAlt className="mr-2" />
               Cover Letter
@@ -354,6 +374,12 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
               error={errors.coverLetter}
               rows={12}
               helpText={`${proposalData.coverLetter.length} characters (minimum 100)`}
+            />
+            
+            <UpsellSuggestions 
+              projectDescription={projectDescription}
+              proposalContent={proposalData.coverLetter}
+              onAdd={handleAddUpsell}
             />
           </div>
 

@@ -1,0 +1,94 @@
+/* @AI-HINT: Dark theme for System Health Dashboard */
+
+.themeWrapper {
+  background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  color: #e6edf3;
+}
+
+.subtitle {
+  color: #8b949e;
+}
+
+.refreshBtn {
+  background: #58a6ff;
+  color: #0d1117;
+}
+
+.refreshBtn:hover {
+  background: #79b8ff;
+}
+
+.healthCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.healthCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.metric {
+  background: #30363d;
+}
+
+.metricValue {
+  color: #58a6ff;
+}
+
+.apiCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.apiCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.apiCount {
+  color: #58a6ff;
+}
+
+.endpointList {
+  background: #161b22;
+  border: 1px solid #30363d;
+}
+
+.endpointItem {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.techCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.techCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.techIcon {
+  background: linear-gradient(135deg, #58a6ff 0%, #4573df 100%);
+  color: #fff;
+}
+
+.actionBtn {
+  background: #58a6ff;
+  color: #0d1117;
+}
+
+.actionBtn:hover {
+  background: #79b8ff;
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+}
+
+.actionBtnSecondary {
+  background: #21262d;
+  color: #58a6ff;
+  border: 2px solid #58a6ff;
+}
+
+.actionBtnSecondary:hover {
+  background: #58a6ff;
+  color: #0d1117;
+}

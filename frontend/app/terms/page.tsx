@@ -1,16 +1,20 @@
-// @AI-HINT: This is the Next.js route file for the Terms of Service page. It delegates to the Terms component.
-'use client';
+import type { Metadata } from 'next';
+import TermsClient from './TermsClient';
+import { BASE_URL } from '@/lib/seo';
 
-import dynamic from 'next/dynamic';
-import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
-
-// Dynamically import the Terms component with SSR disabled
-const Terms = dynamic(() => import('./Terms'), {
-  loading: () => <Skeleton className="w-full h-96" />
-});
-
-const TermsPage = () => {
-  return <Terms />;
+export const metadata: Metadata = {
+  title: 'Terms of Service - MegiLance',
+  description: 'Read our Terms of Service to understand the rules and regulations for using the MegiLance platform.',
+  openGraph: {
+    title: 'MegiLance Terms of Service',
+    description: 'User agreement and terms of use for MegiLance.',
+    url: `${BASE_URL}/terms`,
+  },
+  alternates: {
+    canonical: `${BASE_URL}/terms`,
+  },
 };
 
-export default TermsPage;
+export default function Page() {
+  return <TermsClient />;
+}

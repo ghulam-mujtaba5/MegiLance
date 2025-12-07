@@ -1,0 +1,38 @@
+.title {
+  color: #f9fafb;
+}
+
+.card {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.card:hover {
+  background-color: #374151;
+}
+
+.name {
+  color: #f9fafb;
+}
+
+.titleRole {
+  color: #9ca3af;
+}
+
+.matchScore {
+  background-color: #064e3b;
+  color: #6ee7b7;
+}
+
+.stats {
+  color: #9ca3af;
+}
+
+.skill {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+.reasons {
+  color: #9ca3af;
+}

@@ -1,0 +1,104 @@
+/* @AI-HINT: Dark theme for FYP Evaluation page */
+
+.themeWrapper {
+  background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  color: #e6edf3;
+}
+
+.subtitle {
+  color: #8b949e;
+}
+
+.infoBadge {
+  background: #21262d;
+  color: #58a6ff;
+  border: 1px solid #30363d;
+}
+
+.demoStep {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.demoStep:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.stepNumber {
+  background: linear-gradient(135deg, #58a6ff 0%, #4573df 100%);
+  color: #fff;
+}
+
+.stepLink {
+  background: #30363d;
+  color: #58a6ff;
+}
+
+.stepLink:hover {
+  background: #58a6ff;
+  color: #0d1117;
+}
+
+.metricCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.metricCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.metricValue {
+  color: #58a6ff;
+}
+
+.highlightCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.highlightCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.highlightIcon {
+  background: linear-gradient(135deg, #58a6ff 0%, #4573df 100%);
+  color: #fff;
+}
+
+.checklistItem {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.checklistItem:hover {
+  background: #30363d;
+}
+
+.quickLinkCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+}
+
+.quickLinkCard:hover {
+  background: #58a6ff;
+  color: #0d1117;
+  border-color: #58a6ff;
+}
+
+.quickLinkIcon {
+  background: #30363d;
+  color: #58a6ff;
+}
+
+.quickLinkCard:hover .quickLinkIcon {
+  background: rgba(0, 0, 0, 0.2);
+  color: #0d1117;
+}
+
+.codeBlock {
+  background: #0d1117;
+  color: #e6edf3;
+  border: 1px solid #30363d;
+}

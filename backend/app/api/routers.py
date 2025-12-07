@@ -24,7 +24,9 @@ from .v1 import (
     # Version 2.0 Advanced Features
     security, video_communication,
     # Now enabled - all modules working
-    multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics
+    multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics,
+    # Billion Dollar Upgrade Features
+    scope_change, wallet, community, workroom, feature_flags
 )
 # Import separately to avoid circular import in Python 3.13
 from .v1 import complete_integrations
@@ -48,6 +50,7 @@ api_router.include_router(projects.router, prefix="/projects", tags=["projects"]
 api_router.include_router(proposals.router, prefix="/proposals", tags=["proposals"])
 api_router.include_router(contracts.router, prefix="/contracts", tags=["contracts"])
 api_router.include_router(milestones.router, prefix="/milestones", tags=["milestones"])
+api_router.include_router(scope_change.router, prefix="/scope-changes", tags=["scope-changes"])
 
 # Communication
 api_router.include_router(messages.router, prefix="", tags=["messages"])
@@ -61,6 +64,7 @@ api_router.include_router(disputes.router, prefix="/disputes", tags=["disputes"]
 api_router.include_router(payments.router, prefix="/payments", tags=["payments"])
 api_router.include_router(stripe.router, prefix="/stripe", tags=["stripe"])
 api_router.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
+api_router.include_router(wallet.router, prefix="/wallet", tags=["wallet"])
 
 # Time tracking, invoices, and escrow
 api_router.include_router(time_entries.router, prefix="", tags=["time-tracking"])
@@ -194,7 +198,8 @@ api_router.include_router(custom_fields.router, prefix="/custom-fields", tags=["
 api_router.include_router(templates.router, tags=["templates"])
 
 # Calendar - Meeting scheduling and availability
-api_router.include_router(calendar.router, tags=["calendar"])
+# TEMPORARILY DISABLED - calendar.py shadows built-in calendar module
+# api_router.include_router(calendar.router, tags=["calendar"])
 
 # Organizations - Multi-tenant workspace management
 api_router.include_router(organizations.router, tags=["organizations"])
@@ -259,7 +264,7 @@ api_router.include_router(marketplace.router, tags=["marketplace"])
 # Subscription & Billing - Premium plans and payments
 api_router.include_router(subscription_billing.router, tags=["subscriptions"])
 
-# Multi-Currency - DISABLED (will fix imports)
+# Multi-Currency - Enabled
 # api_router.include_router(multi_currency.router, tags=["currencies"])
 
 # Legal Document Center - NDAs, contracts, e-signatures
@@ -352,6 +357,19 @@ api_router.include_router(admin_fraud_alerts.router, prefix="/admin/fraud-alerts
 
 # Admin Analytics - Dashboard and insights
 api_router.include_router(admin_analytics.router, prefix="/admin", tags=["admin-analytics"])
+
+# ========================================
+# BILLION DOLLAR UPGRADE FEATURES
+# ========================================
+
+# Community Hub - Q&A, Playbooks, Office Hours
+api_router.include_router(community.router, prefix="/community", tags=["community"])
+
+# Collaboration Workroom - Kanban, Files, Discussions
+api_router.include_router(workroom.router, prefix="/workroom", tags=["workroom"])
+
+# Feature Flags - A/B Testing and gradual rollouts
+api_router.include_router(feature_flags.router, tags=["feature-flags"])
 
 # Mock endpoints (DISABLED - using real database endpoints)
 # api_router.include_router(mock.router, prefix="", tags=["mock"])

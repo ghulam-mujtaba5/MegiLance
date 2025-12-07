@@ -29,18 +29,19 @@ export default function QuickLogin() {
       let email = '';
       let password = '';
 
+      // Updated to match actual demo users in local_dev.db
       switch (role) {
         case 'admin':
           email = 'admin@megilance.com';
-          password = 'Test123!';
+          password = 'Password123';
           break;
         case 'client':
-          email = 'client1@example.com';
-          password = 'Test123!';
+          email = 'client@demo.com';
+          password = 'Password123';
           break;
         case 'freelancer':
-          email = 'freelancer1@example.com';
-          password = 'Test123!';
+          email = 'freelancer@demo.com';
+          password = 'Password123';
           break;
       }
 

@@ -248,6 +248,34 @@ Best regards"""
             "generated_at": datetime.utcnow().isoformat()
         }
     
+    async def generate_upsell_suggestions(
+        self,
+        user_id: int,
+        project_description: str,
+        proposal_content: str
+    ) -> Dict[str, Any]:
+        """Generate upsell suggestions."""
+        # Mock logic
+        suggestions = [
+            {
+                "title": "Monthly Maintenance",
+                "description": "Offer ongoing support and updates for a fixed monthly fee.",
+                "type": "retainer"
+            },
+            {
+                "title": "SEO Optimization",
+                "description": "Add an SEO package to improve visibility.",
+                "type": "milestone"
+            },
+            {
+                "title": "Performance Audit",
+                "description": "Include a performance audit after launch.",
+                "type": "milestone"
+            }
+        ]
+        
+        return {"suggestions": suggestions}
+
     # Content Enhancement
     async def improve_content(
         self,
@@ -329,6 +357,28 @@ Best regards"""
             "processed_at": datetime.utcnow().isoformat()
         }
     
+    async def analyze_feasibility(
+        self,
+        user_id: int,
+        project_description: str,
+        budget_min: float,
+        budget_max: float,
+        timeline_days: int
+    ) -> Dict[str, Any]:
+        """Analyze project feasibility."""
+        # Mock logic for now
+        complexity_score = random.randint(1, 10)
+        budget_realism = "High" if budget_max > 1000 else "Low"
+        timeline_realism = "Realistic" if timeline_days > 7 else "Tight"
+        
+        return {
+            "complexity_score": complexity_score,
+            "budget_realism": budget_realism,
+            "timeline_realism": timeline_realism,
+            "flags": ["Budget might be too low for this scope"] if budget_realism == "Low" else [],
+            "recommendations": ["Increase budget", "Extend timeline"] if budget_realism == "Low" else ["Looks good!"]
+        }
+
     # Analysis
     async def analyze_content(
         self,

@@ -110,16 +110,24 @@ def _contract_from_row(row: list) -> dict:
         "client_id": int(_get_val(row, 3) or 0),
         "amount": float(_get_val(row, 4) or 0),
         "contract_amount": float(_get_val(row, 4) or 0),
-        "status": _safe_str(_get_val(row, 5)),
-        "start_date": parse_date(_get_val(row, 6)),
-        "end_date": parse_date(_get_val(row, 7)),
-        "description": _safe_str(_get_val(row, 8)),
-        "milestones": _safe_str(_get_val(row, 9)),
-        "terms": _safe_str(_get_val(row, 10)),
-        "created_at": parse_date(_get_val(row, 11)),
-        "updated_at": parse_date(_get_val(row, 12)),
-        "job_title": _safe_str(_get_val(row, 13)),
-        "client_name": _safe_str(_get_val(row, 14))
+        
+        # New fields
+        "contract_type": _safe_str(_get_val(row, 5)),
+        "currency": _safe_str(_get_val(row, 6)),
+        "hourly_rate": float(_get_val(row, 7) or 0) if _get_val(row, 7) else None,
+        "retainer_amount": float(_get_val(row, 8) or 0) if _get_val(row, 8) else None,
+        "retainer_frequency": _safe_str(_get_val(row, 9)),
+        
+        "status": _safe_str(_get_val(row, 10)),
+        "start_date": parse_date(_get_val(row, 11)),
+        "end_date": parse_date(_get_val(row, 12)),
+        "description": _safe_str(_get_val(row, 13)),
+        "milestones": _safe_str(_get_val(row, 14)),
+        "terms": _safe_str(_get_val(row, 15)),
+        "created_at": parse_date(_get_val(row, 16)),
+        "updated_at": parse_date(_get_val(row, 17)),
+        "job_title": _safe_str(_get_val(row, 18)),
+        "client_name": _safe_str(_get_val(row, 19))
     }
 
 
@@ -147,7 +155,9 @@ def list_contracts(
     
     query = f"""
         SELECT 
-            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount, c.status,
+            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount,
+            c.contract_type, c.currency, c.hourly_rate, c.retainer_amount, c.retainer_frequency,
+            c.status,
             c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
             p.title as job_title,
             u.full_name as client_name
@@ -186,7 +196,9 @@ def get_contract(
     
     query = """
         SELECT 
-            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount, c.status,
+            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount,
+            c.contract_type, c.currency, c.hourly_rate, c.retainer_amount, c.retainer_frequency,
+            c.status,
             c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
             p.title as job_title,
             u.full_name as client_name
@@ -317,16 +329,37 @@ def create_direct_contract(
         # 3. Create Contract
         contract_id = str(uuid.uuid4())
         
+        # Determine contract type and fields
+        contract_type = "fixed"
+        hourly_rate = None
+        retainer_amount = None
+        retainer_frequency = None
+        
+        rt = hire_data.rate_type.lower()
+        if rt == "hourly":
+            contract_type = "hourly"
+            hourly_rate = hire_data.rate
+        elif rt in ["monthly", "weekly"]:
+            contract_type = "retainer"
+            retainer_amount = hire_data.rate
+            retainer_frequency = rt
+        
         insert_result = execute_query(
             """INSERT INTO contracts (id, project_id, freelancer_id, client_id, total_amount, 
+               contract_type, currency, hourly_rate, retainer_amount, retainer_frequency,
                status, start_date, end_date, description, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [
                 contract_id,
                 project_id,
                 hire_data.freelancer_id,
                 current_user.id,
                 hire_data.rate,
+                contract_type,
+                "USD",
+                hourly_rate,
+                retainer_amount,
+                retainer_frequency,
                 "active",
                 hire_data.start_date.isoformat() if hire_data.start_date else now,
                 hire_data.end_date.isoformat() if hire_data.end_date else None,
@@ -348,6 +381,11 @@ def create_direct_contract(
             "client_id": current_user.id,
             "amount": hire_data.rate,
             "contract_amount": hire_data.rate,
+            "contract_type": contract_type,
+            "currency": "USD",
+            "hourly_rate": hourly_rate,
+            "retainer_amount": retainer_amount,
+            "retainer_frequency": retainer_frequency,
             "status": "active",
             "start_date": hire_data.start_date,
             "end_date": hire_data.end_date,
@@ -479,14 +517,20 @@ def create_contract(
     try:
         insert_result = execute_query(
             """INSERT INTO contracts (id, project_id, freelancer_id, client_id, total_amount, 
+               contract_type, currency, hourly_rate, retainer_amount, retainer_frequency,
                status, start_date, end_date, description, milestones, terms, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [
                 contract_id,
                 contract.project_id,
                 contract.freelancer_id,
                 current_user.id,
                 contract.amount,
+                contract.contract_type.value,
+                contract.currency,
+                contract.hourly_rate,
+                contract.retainer_amount,
+                contract.retainer_frequency,
                 "active",
                 contract.start_date.isoformat() if contract.start_date else now,
                 contract.end_date.isoformat() if contract.end_date else None,
@@ -514,6 +558,11 @@ def create_contract(
             "client_id": current_user.id,
             "amount": contract.amount,
             "contract_amount": contract.amount,
+            "contract_type": contract.contract_type,
+            "currency": contract.currency,
+            "hourly_rate": contract.hourly_rate,
+            "retainer_amount": contract.retainer_amount,
+            "retainer_frequency": contract.retainer_frequency,
             "status": "active",
             "start_date": contract.start_date,
             "end_date": contract.end_date,

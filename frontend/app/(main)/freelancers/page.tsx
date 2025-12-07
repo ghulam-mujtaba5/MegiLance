@@ -1,12 +1,42 @@
 // @AI-HINT: Public Freelancers list page.
 import React from 'react';
 import PublicFreelancers from './PublicFreelancers';
+import { BASE_URL } from '@/lib/seo';
 
 export const metadata = {
   title: 'Find Freelancers | MegiLance',
-  description: 'Browse and hire top freelancers on MegiLance.',
+  description: 'Browse and hire top freelancers on MegiLance. Connect with experts in development, design, marketing, and more.',
+  openGraph: {
+    title: 'Hire Top Freelancers - MegiLance',
+    description: 'Find the perfect talent for your project. AI matching, verified profiles, and secure payments.',
+    url: `${BASE_URL}/freelancers`,
+  },
+  alternates: {
+    canonical: `${BASE_URL}/freelancers`,
+  },
 };
 
 export default function Page() {
-  return <PublicFreelancers />;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Find Freelancers',
+    description: 'Browse and hire top freelancers on MegiLance.',
+    url: `${BASE_URL}/freelancers`,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'MegiLance',
+      url: BASE_URL,
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PublicFreelancers />
+    </>
+  );
 }

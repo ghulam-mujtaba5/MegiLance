@@ -1,6 +1,6 @@
 # All Application Pages
 
-Total Pages: 148
+Total Pages: 152
 
 | Route | Description | Status |
 |-------|-------------|--------|
@@ -175,6 +175,10 @@ Total Pages: 148
 | `/settings/notifications` | Notification settings | 🔒 Portal (Skipped) |
 | `/settings/payout-methods/add` | Add payout method | 🔒 Portal (Skipped) |
 | `/settings/security/2fa` | 2FA settings | 🔒 Portal (Skipped) |
+| `/showcase` | Showcase index (redirects) | ✅ Updated |
+| `/showcase/fyp` | FYP Evaluation Guide | ✅ Updated |
+| `/showcase/health` | System Health Dashboard | ✅ Updated |
+| `/showcase/modules` | Module Showcase with Status Pills | ✅ Updated |
 | `/signup` | Signup page | ✅ Updated |
 | `/status` | System status page | ✅ Updated |
 | `/support` | Support page | 🔒 Portal (Skipped) |

@@ -74,9 +74,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   
   // Experimental features for performance
   experimental: {

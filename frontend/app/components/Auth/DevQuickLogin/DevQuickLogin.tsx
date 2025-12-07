@@ -20,24 +20,25 @@ interface DevCredential {
 }
 
 // @AI-HINT: Demo credentials for quick login. These are real accounts in the database.
+// Updated to match actual demo users in local_dev.db
 const DEV_CREDENTIALS: DevCredential[] = [
   {
     email: 'admin@megilance.com',
-    password: 'Test123!',
+    password: 'Password123',
     role: 'admin',
     label: 'Admin',
     icon: FaUserShield,
   },
   {
-    email: 'freelancer1@example.com',
-    password: 'Test123!',
+    email: 'freelancer@demo.com',
+    password: 'Password123',
     role: 'freelancer',
     label: 'Freelancer',
     icon: FaUserTie,
   },
   {
-    email: 'client1@example.com',
-    password: 'Test123!',
+    email: 'client@demo.com',
+    password: 'Password123',
     role: 'client',
     label: 'Client',
     icon: FaBriefcase,

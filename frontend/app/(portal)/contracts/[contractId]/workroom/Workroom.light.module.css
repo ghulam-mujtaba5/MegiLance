@@ -1,0 +1,155 @@
+/* @AI-HINT: Light theme colors for Workroom */
+
+/* ============ PAGE ============ */
+.page {
+  background-color: #f8fafc;
+  color: #1a1a2e;
+}
+
+/* ============ HEADER ============ */
+.header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.pageTitle {
+  color: #1a1a2e;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.contractId {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* ============ TABS ============ */
+.tabs {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.tab {
+  color: #64748b;
+  background-color: transparent;
+}
+
+.tab:hover {
+  background-color: #f1f5f9;
+  color: #1a1a2e;
+}
+
+.activeTab {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.activeTab:hover {
+  background-color: #3b5ec9;
+  color: #ffffff;
+}
+
+/* ============ KANBAN ============ */
+.kanbanColumn {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.columnTitle {
+  color: #1a1a2e;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.columnCount {
+  color: #64748b;
+  font-size: 0.75rem;
+  background-color: #e2e8f0;
+  padding: 0.125rem 0.5rem;
+  border-radius: 10px;
+}
+
+.taskCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.taskCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.taskTitle {
+  color: #1a1a2e;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0 0 0.25rem;
+}
+
+.taskDesc {
+  color: #64748b;
+  font-size: 0.8125rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.assignee {
+  color: #4573df;
+  font-weight: 500;
+}
+
+.dueDate {
+  color: #64748b;
+}
+
+/* ============ FILES ============ */
+.fileCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.fileName {
+  color: #1a1a2e;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0 0 0.25rem;
+}
+
+.fileMeta {
+  color: #64748b;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+/* ============ DISCUSSIONS ============ */
+.discussionCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.resolvedBadge {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.replyCount {
+  color: #64748b;
+}
+
+.discussionTitle {
+  color: #1a1a2e;
+}
+
+.discussionContent {
+  color: #64748b;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.discussionAuthor {
+  color: #94a3b8;
+  font-size: 0.8125rem;
+}

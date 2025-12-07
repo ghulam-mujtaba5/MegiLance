@@ -1,0 +1,52 @@
+.container {
+  background-color: #f8f9fa;
+  color: #1a1a1a;
+}
+
+.title {
+  color: #1a1a1a;
+}
+
+.subtitle {
+  color: #4a4a4a;
+}
+
+.statCard {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.section {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.sectionTitle {
+  color: #1a1a1a;
+}
+
+.linkBox {
+  background-color: #f8f9fa;
+  border-color: #e0e0e0;
+}
+
+.linkText {
+  color: #4573df;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.table th {
+  border-bottom-color: #e0e0e0;
+  color: #4a4a4a;
+}
+
+.table td {
+  border-bottom-color: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.emptyText {
+  color: #666;
+  text-align: center;
+  padding: 2rem;
+}

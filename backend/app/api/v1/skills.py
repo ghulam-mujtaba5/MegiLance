@@ -7,16 +7,41 @@ Handles:
 - User skill management
 - Skill verification
 - Admin skill CRUD
+- Industry metadata
+- Freelancer search by skill/industry
 """
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from datetime import datetime
+import json
 
 from app.db.turso_http import execute_query, parse_rows
 from app.core.security import get_current_user_from_token
 
 router = APIRouter()
 
+# ============ CONSTANTS ============
+
+INDUSTRIES = {
+  'healthcare': {'name': 'Healthcare', 'icon': '🏥', 'growth': 'high'},
+  'fintech': {'name': 'FinTech', 'icon': '💰', 'growth': 'high'},
+  'ecommerce': {'name': 'E-commerce', 'icon': '🛒', 'growth': 'medium'},
+  'education': {'name': 'Education', 'icon': '📚', 'growth': 'high'},
+  'real-estate': {'name': 'Real Estate', 'icon': '🏠', 'growth': 'medium'},
+  'saas': {'name': 'SaaS', 'icon': '☁️', 'growth': 'high'},
+  'gaming': {'name': 'Gaming', 'icon': '🎮', 'growth': 'high'},
+  'travel': {'name': 'Travel & Hospitality', 'icon': '✈️', 'growth': 'medium'},
+  'logistics': {'name': 'Logistics', 'icon': '📦', 'growth': 'medium'},
+  'media': {'name': 'Media & Entertainment', 'icon': '🎬', 'growth': 'medium'},
+  'automotive': {'name': 'Automotive', 'icon': '🚗', 'growth': 'medium'},
+  'startup': {'name': 'Startups', 'icon': '🚀', 'growth': 'high'},
+  'enterprise': {'name': 'Enterprise', 'icon': '🏢', 'growth': 'stable'},
+  'nonprofit': {'name': 'Non-Profit', 'icon': '❤️', 'growth': 'stable'},
+  'government': {'name': 'Government', 'icon': '🏛️', 'growth': 'stable'},
+  'crypto': {'name': 'Cryptocurrency', 'icon': '₿', 'growth': 'volatile'},
+  'ai': {'name': 'AI & Machine Learning', 'icon': '🤖', 'growth': 'explosive'},
+  'sustainability': {'name': 'Sustainability', 'icon': '🌱', 'growth': 'high'},
+}
 
 def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
     """Get current user from token"""
@@ -92,6 +117,100 @@ async def list_skill_categories():
         categories = [row.get("category") for row in rows if row.get("category")]
     
     return {"categories": categories}
+
+
+@router.get("/industries")
+async def list_industries():
+    """
+    Get list of all industries.
+    
+    Public endpoint.
+    """
+    return INDUSTRIES
+
+
+@router.get("/freelancers/match", response_model=List[dict])
+async def match_freelancers(
+    skill_slug: str = Query(..., description="Skill slug or name"),
+    industry_slug: Optional[str] = Query(None, description="Industry slug"),
+    limit: int = Query(10, ge=1, le=50)
+):
+    """
+    Find freelancers matching a skill and optionally an industry.
+    Used for Programmatic SEO pages.
+    """
+    # 1. Find skill ID
+    skill_result = execute_query(
+        "SELECT id, name FROM skills WHERE LOWER(name) = LOWER(?) OR LOWER(name) = LOWER(?)",
+        [skill_slug.replace("-", " "), skill_slug]
+    )
+    
+    if not skill_result or not skill_result.get("rows"):
+        # Try partial match
+        skill_result = execute_query(
+            "SELECT id, name FROM skills WHERE name LIKE ? LIMIT 1",
+            [f"%{skill_slug.replace('-', ' ')}%"]
+        )
+        if not skill_result or not skill_result.get("rows"):
+            return []
+            
+    skill_rows = parse_rows(skill_result)
+    skill_id = skill_rows[0]["id"]
+    
+    # 2. Find users with this skill
+    # We join user_skills with users to get profile info
+    query = """
+        SELECT u.id, u.name, u.bio, u.profile_image_url, u.hourly_rate, u.location, u.profile_data,
+               us.proficiency_level, us.years_experience, us.is_verified
+        FROM users u
+        JOIN user_skills us ON u.id = us.user_id
+        WHERE us.skill_id = ? AND u.user_type = 'freelancer' AND u.is_active = 1
+    """
+    params = [skill_id]
+    
+    # 3. Filter by industry (if provided)
+    # Since we don't have an industry column, we search in bio or profile_data
+    if industry_slug:
+        industry_name = INDUSTRIES.get(industry_slug, {}).get('name', industry_slug)
+        query += " AND (LOWER(u.bio) LIKE ? OR LOWER(u.profile_data) LIKE ?)"
+        params.extend([f"%{industry_name.lower()}%", f"%{industry_name.lower()}%"])
+        
+    query += " ORDER BY us.proficiency_level DESC, us.is_verified DESC LIMIT ?"
+    params.append(limit)
+    
+    result = execute_query(query, params)
+    
+    if not result:
+        return []
+        
+    rows = parse_rows(result)
+    
+    # Process rows
+    freelancers = []
+    for row in rows:
+        # Parse profile data if needed
+        profile_data = {}
+        if row.get("profile_data"):
+            try:
+                profile_data = json.loads(row["profile_data"])
+            except:
+                pass
+                
+        freelancers.append({
+            "id": row["id"],
+            "name": row["name"],
+            "title": profile_data.get("title", f"{skill_rows[0]['name']} Specialist"),
+            "bio": row["bio"],
+            "avatar": row["profile_image_url"],
+            "hourly_rate": row["hourly_rate"],
+            "location": row["location"],
+            "rating": 5.0, # Mock rating for now
+            "reviews_count": 0, # Mock count
+            "skills": [skill_rows[0]["name"]], # Just the matched skill for now
+            "verified": bool(row["is_verified"])
+        })
+        
+    return freelancers
 
 
 @router.get("/{skill_id}", response_model=dict)

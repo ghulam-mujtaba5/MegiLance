@@ -83,3 +83,25 @@
 .mobileNavLinkDesc {
   color: var(--text-secondary-dark);
 }
+
+/* Explore Link */
+.exploreLink {
+  background: linear-gradient(135deg, #58a6ff 0%, #4573df 100%);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(88, 166, 255, 0.35);
+}
+
+.exploreLink:hover {
+  background: linear-gradient(135deg, #79b8ff 0%, #6b8ceb 100%);
+  box-shadow: 0 4px 20px rgba(88, 166, 255, 0.5);
+}
+
+.mobileExploreLink {
+  background: linear-gradient(135deg, #58a6ff 0%, #4573df 100%);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(88, 166, 255, 0.35);
+}
+
+.mobileExploreLink:hover {
+  background: linear-gradient(135deg, #79b8ff 0%, #6b8ceb 100%);
+}

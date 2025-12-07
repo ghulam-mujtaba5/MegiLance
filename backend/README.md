@@ -14,6 +14,10 @@ This is the FastAPI backend for MegiLance. It provides a comprehensive API for t
 - **Payments**: Transaction tracking and USDC payment support
 - **Portfolio**: Freelancer portfolio management
 - **AWS Integration**: S3 for file uploads, RDS for database, Secrets Manager for credentials
+- **AI & Machine Learning**:
+  - **Hybrid Matching Engine**: Combines heuristic scoring with **Turso Native Vector Search** for semantic matching.
+  - **Fraud Detection**: ML-based anomaly detection for transactions and behavior.
+  - **Content Moderation**: Automated screening of job posts and messages.
 
 ## Structure
 

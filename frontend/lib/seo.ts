@@ -10,14 +10,16 @@ export type MetaInput = {
   noindex?: boolean;
 };
 
-const SITE_NAME = 'MegiLance';
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.megilance.com';
+export const SITE_NAME = 'MegiLance';
+export const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.com';
 
 function toAbsoluteUrl(path?: string) {
   if (!path) return BASE_URL;
   if (path.startsWith('http')) return path;
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
+
+export const canonical = (path?: string) => toAbsoluteUrl(path);
 
 export function buildMeta(input: MetaInput): Metadata {
   const url = toAbsoluteUrl(input.path);

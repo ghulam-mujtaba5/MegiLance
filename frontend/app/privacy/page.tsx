@@ -1,16 +1,20 @@
-// @AI-HINT: This is the Next.js route file for the Privacy Policy page. It delegates to the Privacy component.
-'use client';
+import type { Metadata } from 'next';
+import PrivacyClient from './PrivacyClient';
+import { BASE_URL } from '@/lib/seo';
 
-import dynamic from 'next/dynamic';
-import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
-
-// Dynamically import the Privacy component with SSR disabled
-const Privacy = dynamic(() => import('./Privacy'), {
-  loading: () => <Skeleton className="w-full h-96" />
-});
-
-const PrivacyPage = () => {
-  return <Privacy />;
+export const metadata: Metadata = {
+  title: 'Privacy Policy - MegiLance',
+  description: 'Read our Privacy Policy to understand how we collect, use, and protect your personal information.',
+  openGraph: {
+    title: 'MegiLance Privacy Policy',
+    description: 'Your privacy matters. Learn how we protect your data.',
+    url: `${BASE_URL}/privacy`,
+  },
+  alternates: {
+    canonical: `${BASE_URL}/privacy`,
+  },
 };
 
-export default PrivacyPage;
+export default function Page() {
+  return <PrivacyClient />;
+}

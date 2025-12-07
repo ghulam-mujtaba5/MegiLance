@@ -1,0 +1,11 @@
+.link {
+  color: var(--text-secondary);
+}
+
+.link:hover {
+  color: var(--primary);
+}
+
+.current {
+  color: var(--text-primary);
+}

@@ -365,6 +365,17 @@ async def approve_milestone(
     payment_id = None
     if payment_result and payment_result.get("rows"):
         payment_id = int(payment_result["rows"][0][0].get("value"))
+        
+    # Create Invoice
+    invoice_number = f"INV-{contract_id}-{milestone_id}-{int(datetime.utcnow().timestamp())}"
+    items = json.dumps([{"description": f"Milestone: {title}", "amount": amount}])
+    
+    execute_query("""
+        INSERT INTO invoices (invoice_number, contract_id, from_user_id, to_user_id, 
+                              subtotal, total, status, payment_id, items, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'paid', ?, ?, ?, ?)
+    """, [invoice_number, contract_id, freelancer_id, client_id, 
+          amount, amount, payment_id, items, now, now])
     
     # Notify freelancer
     _send_notification_turso(

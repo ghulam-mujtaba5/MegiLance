@@ -2,15 +2,27 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
 from datetime import datetime
+import json
 
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.schemas.time_entry import (
     TimeEntryCreate, TimeEntryUpdate, TimeEntryRead, 
-    TimeEntryStop, TimeEntrySummary
+    TimeEntryStop, TimeEntrySummary, TimeEntrySubmit, TimeEntryReview
 )
 from app.core.security import get_current_user
 
 router = APIRouter(prefix="/time-entries", tags=["time-tracking"])
+
+
+def _send_notification_turso(user_id: int, notification_type: str, title: str, 
+                              content: str, data: dict, priority: str, action_url: str):
+    """Send notification using Turso"""
+    now = datetime.utcnow().isoformat()
+    execute_query("""
+        INSERT INTO notifications (user_id, notification_type, title, content, data, 
+                                   priority, action_url, is_read, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)
+    """, [user_id, notification_type, title, content, json.dumps(data), priority, action_url, now])
 
 
 def row_to_time_entry(row: list) -> dict:
@@ -488,3 +500,259 @@ async def delete_time_entry(
     execute_query("DELETE FROM time_entries WHERE id = ?", [time_entry_id])
     
     return None
+
+
+@router.post("/submit", status_code=status.HTTP_200_OK)
+async def submit_time_entries(
+    submission: TimeEntrySubmit,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Submit time entries for approval
+    - Only freelancer can submit their own entries
+    - Only 'draft' entries can be submitted
+    - Entries must belong to the same contract (optional validation, but good practice)
+    """
+    if not submission.time_entry_ids:
+        raise HTTPException(status_code=400, detail="No time entries provided")
+    
+    # Verify ownership and status
+    placeholders = ",".join(["?" for _ in submission.time_entry_ids])
+    query = f"""
+        SELECT id, user_id, contract_id, status 
+        FROM time_entries 
+        WHERE id IN ({placeholders})
+    """
+    
+    result = execute_query(query, submission.time_entry_ids)
+    
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Time entries not found")
+    
+    rows = result["rows"]
+    if len(rows) != len(submission.time_entry_ids):
+        raise HTTPException(status_code=400, detail="Some time entries were not found")
+    
+    contract_ids = set()
+    
+    for row in rows:
+        entry_id = row[0].get("value")
+        user_id = row[1].get("value")
+        contract_id = row[2].get("value")
+        status_val = to_str(row[3])
+        
+        if user_id != current_user["id"]:
+            raise HTTPException(status_code=403, detail=f"Not authorized for entry {entry_id}")
+        
+        if status_val != "draft":
+            raise HTTPException(status_code=400, detail=f"Entry {entry_id} is not in draft status")
+            
+        contract_ids.add(contract_id)
+    
+    # Update status to submitted
+    now = datetime.utcnow().isoformat()
+    execute_query(
+        f"UPDATE time_entries SET status = 'submitted', updated_at = ? WHERE id IN ({placeholders})",
+        [now] + submission.time_entry_ids
+    )
+    
+    # Notify client(s)
+    for contract_id in contract_ids:
+        contract_res = execute_query("SELECT client_id FROM contracts WHERE id = ?", [contract_id])
+        if contract_res and contract_res.get("rows"):
+            client_id = contract_res["rows"][0][0].get("value")
+            _send_notification_turso(
+                user_id=client_id,
+                notification_type="timesheet",
+                title="Timesheet Submitted",
+                content=f"Freelancer submitted {len(rows)} time entries for review",
+                data={"contract_id": contract_id, "count": len(rows)},
+                priority="high",
+                action_url=f"/contracts/{contract_id}/timesheet"
+            )
+            
+    return {"message": f"Submitted {len(rows)} time entries"}
+
+
+@router.post("/approve", status_code=status.HTTP_200_OK)
+async def approve_time_entries(
+    review: TimeEntryReview,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Approve time entries and generate invoice
+    - Only client can approve
+    - Only 'submitted' entries can be approved
+    - Generates an invoice for the total amount
+    """
+    if not review.time_entry_ids:
+        raise HTTPException(status_code=400, detail="No time entries provided")
+        
+    placeholders = ",".join(["?" for _ in review.time_entry_ids])
+    query = f"""
+        SELECT id, contract_id, status, amount, user_id
+        FROM time_entries 
+        WHERE id IN ({placeholders})
+    """
+    
+    result = execute_query(query, review.time_entry_ids)
+    
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Time entries not found")
+        
+    rows = result["rows"]
+    contract_ids = set()
+    total_amount = 0.0
+    freelancer_id = None
+    
+    for row in rows:
+        contract_id = row[1].get("value")
+        status_val = to_str(row[2])
+        amount = float(row[3].get("value")) if row[3].get("type") != "null" else 0.0
+        f_id = row[4].get("value")
+        
+        if freelancer_id is None:
+            freelancer_id = f_id
+        elif freelancer_id != f_id:
+             raise HTTPException(status_code=400, detail="Cannot approve entries from different freelancers at once")
+        
+        if status_val != "submitted":
+            raise HTTPException(status_code=400, detail=f"Entry {row[0].get('value')} is not submitted")
+            
+        contract_ids.add(contract_id)
+        total_amount += amount
+        
+    if len(contract_ids) > 1:
+        raise HTTPException(status_code=400, detail="Cannot approve entries from multiple contracts at once")
+        
+    contract_id = list(contract_ids)[0]
+    
+    # Verify client ownership
+    contract_res = execute_query("SELECT client_id FROM contracts WHERE id = ?", [contract_id])
+    if not contract_res or not contract_res.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
+        
+    client_id = contract_res["rows"][0][0].get("value")
+    if client_id != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Only contract client can approve time entries")
+        
+    # Update status
+    now = datetime.utcnow().isoformat()
+    execute_query(
+        f"UPDATE time_entries SET status = 'approved', updated_at = ? WHERE id IN ({placeholders})",
+        [now] + review.time_entry_ids
+    )
+    
+    # Create Invoice
+    if total_amount > 0:
+        invoice_number = f"INV-HR-{contract_id}-{int(datetime.utcnow().timestamp())}"
+        
+        items_list = []
+        for row in rows:
+            items_list.append({
+                "description": f"Time Entry #{row[0].get('value')}",
+                "amount": float(row[3].get("value")) if row[3].get("type") != "null" else 0.0
+            })
+        items_json = json.dumps(items_list)
+        
+        # Create invoice record
+        execute_query("""
+            INSERT INTO invoices (invoice_number, contract_id, from_user_id, to_user_id, 
+                                  subtotal, total, status, items, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, 'due', ?, ?, ?)
+        """, [invoice_number, contract_id, freelancer_id, client_id, 
+              total_amount, total_amount, items_json, now, now])
+              
+        # Notify freelancer
+        _send_notification_turso(
+            user_id=freelancer_id,
+            notification_type="invoice",
+            title="Time Entries Approved",
+            content=f"Client approved {len(rows)} time entries. Invoice {invoice_number} generated.",
+            data={"contract_id": contract_id, "amount": total_amount, "invoice_number": invoice_number},
+            priority="high",
+            action_url=f"/contracts/{contract_id}/invoices"
+        )
+        
+    return {"message": f"Approved {len(rows)} entries", "invoice_amount": total_amount}
+
+
+@router.post("/reject", status_code=status.HTTP_200_OK)
+async def reject_time_entries(
+    review: TimeEntryReview,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Reject time entries
+    - Only client can reject
+    - Returns entries to 'rejected' status (or 'draft'?) -> usually rejected so they can be fixed or deleted
+    """
+    if not review.time_entry_ids:
+        raise HTTPException(status_code=400, detail="No time entries provided")
+    
+    if not review.rejection_reason:
+        raise HTTPException(status_code=400, detail="Rejection reason is required")
+        
+    placeholders = ",".join(["?" for _ in review.time_entry_ids])
+    query = f"""
+        SELECT id, contract_id, status, user_id
+        FROM time_entries 
+        WHERE id IN ({placeholders})
+    """
+    
+    result = execute_query(query, review.time_entry_ids)
+    
+    if not result or not result.get("rows"):
+        raise HTTPException(status_code=404, detail="Time entries not found")
+        
+    rows = result["rows"]
+    contract_ids = set()
+    freelancer_id = None
+    
+    for row in rows:
+        contract_id = row[1].get("value")
+        status_val = to_str(row[2])
+        f_id = row[3].get("value")
+        
+        if freelancer_id is None:
+            freelancer_id = f_id
+        
+        if status_val != "submitted":
+            raise HTTPException(status_code=400, detail=f"Entry {row[0].get('value')} is not submitted")
+            
+        contract_ids.add(contract_id)
+        
+    if len(contract_ids) > 1:
+        raise HTTPException(status_code=400, detail="Cannot reject entries from multiple contracts at once")
+        
+    contract_id = list(contract_ids)[0]
+    
+    # Verify client ownership
+    contract_res = execute_query("SELECT client_id FROM contracts WHERE id = ?", [contract_id])
+    if not contract_res or not contract_res.get("rows"):
+        raise HTTPException(status_code=404, detail="Contract not found")
+        
+    client_id = contract_res["rows"][0][0].get("value")
+    if client_id != current_user["id"]:
+        raise HTTPException(status_code=403, detail="Only contract client can reject time entries")
+        
+    # Update status
+    now = datetime.utcnow().isoformat()
+    execute_query(
+        f"UPDATE time_entries SET status = 'rejected', updated_at = ? WHERE id IN ({placeholders})",
+        [now] + review.time_entry_ids
+    )
+    
+    # Notify freelancer
+    _send_notification_turso(
+        user_id=freelancer_id,
+        notification_type="timesheet",
+        title="Time Entries Rejected",
+        content=f"Client rejected {len(rows)} time entries: {review.rejection_reason}",
+        data={"contract_id": contract_id, "reason": review.rejection_reason},
+        priority="high",
+        action_url=f"/contracts/{contract_id}/timesheet"
+    )
+    
+    return {"message": f"Rejected {len(rows)} entries"}
+

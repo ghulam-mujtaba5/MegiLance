@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import { Button } from '@/app/components/Button/Button';
@@ -38,6 +38,10 @@ const Header: React.FC = () => {
             <span className={commonStyles.brandName}>MegiLance</span>
           </Link>
           <div className={commonStyles.navLinks}>
+            <Link href="/explore" className={cn(commonStyles.exploreLink, themeStyles.exploreLink)}>
+              <Sparkles size={16} />
+              Explore
+            </Link>
             <Link href="/how-it-works" className={cn(commonStyles.navLink, themeStyles.navLink)}>How It Works</Link>
             <Link href="/pricing" className={cn(commonStyles.navLink, themeStyles.navLink)}>Pricing</Link>
             <Link href="/about" className={cn(commonStyles.navLink, themeStyles.navLink)}>About</Link>
@@ -55,6 +59,10 @@ const Header: React.FC = () => {
         </nav>
       </header>
       <div className={cn(commonStyles.mobileNavMenu, themeStyles.mobileNavMenu, isMenuOpen && commonStyles.mobileNavMenuActive)}>
+        <Link href="/explore" className={cn(commonStyles.exploreLink, themeStyles.exploreLink)} onClick={() => setIsMenuOpen(false)}>
+          <Sparkles size={16} />
+          Explore All Features
+        </Link>
         <Link href="/how-it-works" className={cn(commonStyles.navLink, themeStyles.navLink)}>How It Works</Link>
         <Link href="/pricing" className={cn(commonStyles.navLink, themeStyles.navLink)}>Pricing</Link>
         <Link href="/about" className={cn(commonStyles.navLink, themeStyles.navLink)}>About</Link>

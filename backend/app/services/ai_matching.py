@@ -11,6 +11,8 @@ from datetime import datetime
 from app.models.user import User, UserType
 from app.models.project import Project, ProjectStatus
 from app.models.proposal import Proposal
+from app.services.vector_embeddings import VectorEmbeddingService
+from app.services.turso_vector_search import TursoVectorSearchService
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +22,8 @@ class AIMatchingService:
     
     def __init__(self, db: Session):
         self.db = db
+        self.vector_service = VectorEmbeddingService()
+        self.turso_search = TursoVectorSearchService()
         
     async def find_matching_freelancers(
         self, 
@@ -28,6 +32,7 @@ class AIMatchingService:
     ) -> List[Dict[str, Any]]:
         """
         Find freelancers that match a project's requirements
+        Uses Hybrid Search: Vector Similarity + Heuristic Scoring
         
         Args:
             project_id: ID of the project
@@ -42,27 +47,59 @@ class AIMatchingService:
             if not project:
                 logger.error(f"Project {project_id} not found")
                 return []
+
+            # 1. Try Vector Search First (Candidate Generation)
+            vector_matches = []
+            try:
+                # Generate embedding if missing (lazy generation)
+                project_embedding = await self.vector_service.generate_project_embedding(project.__dict__)
+                vector_matches = await self.turso_search.search_similar_freelancers(project_embedding, limit=limit*2)
+            except Exception as e:
+                logger.warning(f"Vector search failed (falling back to heuristic): {e}")
+
+            # 2. Get Heuristic Candidates (if vector search returned few/no results)
+            heuristic_freelancers = []
+            if len(vector_matches) < limit:
+                heuristic_freelancers = self.db.query(User).filter(
+                    User.user_type == UserType.FREELANCER,
+                    User.is_active == True,
+                    User.is_verified == True
+                ).limit(50).all() # Limit to 50 for performance
             
-            # Get active freelancers
-            freelancers = self.db.query(User).filter(
-                User.user_type == UserType.FREELANCER,
-                User.is_active == True,
-                User.is_verified == True
-            ).all()
+            # Combine candidates
+            candidate_ids = set([m['id'] for m in vector_matches] + [f.id for f in heuristic_freelancers])
+            candidates = self.db.query(User).filter(User.id.in_(candidate_ids)).all()
             
-            if not freelancers:
+            if not candidates:
                 return []
             
-            # Calculate match scores
+            # 3. Calculate Final Hybrid Scores
             matches = []
-            for freelancer in freelancers:
-                score = await self._calculate_match_score(freelancer, project)
-                if score > 0.3:  # Minimum threshold
+            for freelancer in candidates:
+                # Base heuristic score
+                heuristic_score = await self._calculate_match_score(freelancer, project)
+                
+                # Vector score (if available)
+                vector_score = 0.0
+                v_match = next((m for m in vector_matches if m['id'] == freelancer.id), None)
+                if v_match and 'distance' in v_match:
+                    # Convert distance to similarity (0 to 1)
+                    # Assuming cosine distance (0=identical, 2=opposite)
+                    vector_score = max(0.0, 1.0 - v_match['distance'])
+                
+                # Weighted Hybrid Score: 70% Heuristic (Hard constraints), 30% Vector (Semantic)
+                # If vector search failed, use 100% heuristic
+                if vector_matches:
+                    final_score = (heuristic_score * 0.7) + (vector_score * 0.3)
+                else:
+                    final_score = heuristic_score
+
+                if final_score > 0.3:  # Minimum threshold
                     matches.append({
                         'freelancer_id': freelancer.id,
                         'freelancer_name': f"{freelancer.first_name} {freelancer.last_name}",
                         'email': freelancer.email,
-                        'match_score': round(score, 2),
+                        'match_score': round(final_score, 2),
                         'reasons': self._get_match_reasons(freelancer, project),
                         'profile_data': freelancer.profile_data or {}
                     })

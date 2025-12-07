@@ -1,0 +1,285 @@
+/* @AI-HINT: Common styles for Workroom - layout, Kanban board, structure */
+
+/* ============ PAGE LAYOUT ============ */
+.page {
+  min-height: 100vh;
+  width: 100%;
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid transparent;
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ HEADER ============ */
+.header {
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.headerContent {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ============ TABS ============ */
+.tabContainer {
+  padding: 0 1.5rem;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.tab {
+  padding: 0.625rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.activeTab {
+  font-weight: 600;
+}
+
+/* ============ CONTENT ============ */
+.content {
+  padding: 1.5rem;
+}
+
+/* ============ KANBAN BOARD ============ */
+.kanbanContainer {
+  overflow-x: auto;
+}
+
+.kanbanHeader {
+  margin-bottom: 1rem;
+}
+
+.kanbanBoard {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(280px, 1fr));
+  gap: 1rem;
+  min-width: max-content;
+}
+
+.kanbanColumn {
+  padding: 1rem;
+  border-radius: 12px;
+  min-height: 400px;
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+}
+
+.columnDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.taskCard {
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: grab;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.taskCard:hover {
+  transform: translateY(-2px);
+}
+
+.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.taskPriority {
+  margin-bottom: 0.5rem;
+}
+
+.priorityDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.priority_high {
+  background-color: #ef4444;
+}
+
+.priority_medium {
+  background-color: #f59e0b;
+}
+
+.priority_low {
+  background-color: #22c55e;
+}
+
+.taskMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+}
+
+/* ============ FILES ============ */
+.filesContainer {
+  max-width: 900px;
+}
+
+.filesHeader {
+  margin-bottom: 1rem;
+}
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fileCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.fileIcon {
+  font-size: 1.5rem;
+  width: 40px;
+  text-align: center;
+}
+
+.fileInfo {
+  flex: 1;
+}
+
+.fileActions {
+  flex-shrink: 0;
+}
+
+/* ============ DISCUSSIONS ============ */
+.discussionsContainer {
+  max-width: 900px;
+}
+
+.discussionsHeader {
+  margin-bottom: 1rem;
+}
+
+.discussionList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.discussionCard {
+  padding: 1.25rem;
+  border-radius: 12px;
+}
+
+.discussionMeta {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.resolvedBadge {
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.discussionTitle {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.discussionFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 1024px) {
+  .kanbanBoard {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+  }
+
+  .kanbanBoard {
+    grid-template-columns: minmax(280px, 1fr);
+  }
+
+  .kanbanColumn {
+    min-height: 300px;
+  }
+
+  .fileCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fileActions {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}

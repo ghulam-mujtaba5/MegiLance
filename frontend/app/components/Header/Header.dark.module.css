@@ -37,3 +37,13 @@
   background-color: rgba(10, 10, 12, 0.8);
   border-color: rgba(255, 255, 255, 0.08);
 }
+
+.exploreLink {
+  background: linear-gradient(135deg, #58a6ff 0%, #4573df 100%);
+  color: #0d1117;
+}
+
+.exploreLink:hover {
+  background: linear-gradient(135deg, #79b8ff 0%, #58a6ff 100%);
+  box-shadow: 0 4px 20px rgba(88, 166, 255, 0.4);
+}

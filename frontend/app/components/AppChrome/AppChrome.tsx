@@ -12,6 +12,7 @@ import ChatbotAgent from '@/app/components/AI/ChatbotAgent/ChatbotAgent';
 import InstallAppBanner from '@/app/components/PWA/InstallAppBanner/InstallAppBanner';
 import UpdateNotification from '@/app/components/PWA/UpdateNotification/UpdateNotification';
 import PageTransition from '@/app/components/Transitions/PageTransition';
+import Breadcrumbs from '@/app/components/Breadcrumbs/Breadcrumbs';
 
 // Separate client component for the logic that uses hooks
 const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -70,6 +71,9 @@ const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) 
   return (
     <div className="min-h-screen flex flex-col">
       <PublicHeader />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <Breadcrumbs />
+      </div>
       <main id="main-content" role="main" className="flex-grow">
         <PageTransition variant="fade">
           {children}

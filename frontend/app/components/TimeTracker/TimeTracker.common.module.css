@@ -1,0 +1,47 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.timerDisplay {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  min-width: 120px;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.selectContainer {
+  min-width: 200px;
+}
+
+.descriptionInput {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid;
+}
+
+.activeIndicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #27AE60;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}

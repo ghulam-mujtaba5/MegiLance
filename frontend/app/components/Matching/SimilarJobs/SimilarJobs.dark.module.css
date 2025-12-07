@@ -1,0 +1,30 @@
+.title {
+  color: #f9fafb;
+}
+
+.card {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.card:hover {
+  background-color: #374151;
+}
+
+.jobTitle {
+  color: #f9fafb;
+}
+
+.matchScore {
+  background-color: #064e3b;
+  color: #6ee7b7;
+}
+
+.budget {
+  color: #9ca3af;
+}
+
+.skill {
+  background-color: #374151;
+  color: #d1d5db;
+}

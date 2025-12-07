@@ -26,6 +26,12 @@ class ContractStatus(enum.Enum):
     TERMINATED = "terminated"
     REFUNDED = "refunded"
 
+class ContractType(enum.Enum):
+    """Contract type enumeration"""
+    FIXED = "fixed"
+    HOURLY = "hourly"
+    RETAINER = "retainer"
+
 class Contract(Base):
     __tablename__ = "contracts"
 
@@ -35,8 +41,16 @@ class Contract(Base):
     freelancer_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     client_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     winning_bid_id: Mapped[int] = mapped_column(ForeignKey("proposals.id"), nullable=True)
-    amount: Mapped[float] = mapped_column(Float, nullable=False)  # Total contract amount
-    contract_amount: Mapped[float] = mapped_column(Float)  # USDC value
+    
+    # Financials
+    contract_type: Mapped[str] = mapped_column(String(20), default=ContractType.FIXED.value, index=True)
+    amount: Mapped[float] = mapped_column(Float, nullable=False)  # Total contract amount / Budget cap
+    currency: Mapped[str] = mapped_column(String(10), default="USD")
+    hourly_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    retainer_amount: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    retainer_frequency: Mapped[Optional[str]] = mapped_column(String(20), nullable=True) # weekly, monthly
+    
+    contract_amount: Mapped[float] = mapped_column(Float)  # USDC value (Legacy/Crypto specific)
     platform_fee: Mapped[float] = mapped_column(Float, default=0.0)
     status: Mapped[str] = mapped_column(String(20), default=ContractStatus.PENDING.value, index=True)
     start_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)

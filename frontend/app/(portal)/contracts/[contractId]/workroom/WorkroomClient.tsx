@@ -1,0 +1,309 @@
+// @AI-HINT: Workroom client component - Kanban board, Files, Discussions for project collaboration
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import Button from '@/app/components/Button/Button';
+import commonStyles from './Workroom.common.module.css';
+import lightStyles from './Workroom.light.module.css';
+import darkStyles from './Workroom.dark.module.css';
+
+type TabType = 'kanban' | 'files' | 'discussions';
+type TaskStatus = 'todo' | 'in_progress' | 'review' | 'done';
+
+interface Task {
+  id: number;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: 'low' | 'medium' | 'high';
+  assignee_name: string | null;
+  due_date: string | null;
+  created_at: string;
+}
+
+interface WorkroomFile {
+  id: number;
+  filename: string;
+  file_size: number;
+  file_type: string;
+  uploaded_by_name: string;
+  created_at: string;
+}
+
+interface Discussion {
+  id: number;
+  title: string;
+  content: string;
+  author_name: string;
+  reply_count: number;
+  created_at: string;
+  is_resolved: boolean;
+}
+
+interface WorkroomClientProps {
+  contractId: string;
+}
+
+export default function WorkroomClient({ contractId }: WorkroomClientProps) {
+  const { resolvedTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState<TabType>('kanban');
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [files, setFiles] = useState<WorkroomFile[]>([]);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Mock data - in production, fetch from /api/workroom/{contractId}/*
+      setTasks([
+        { id: 1, title: 'Design homepage mockup', description: 'Create Figma designs for the homepage', status: 'done', priority: 'high', assignee_name: 'Elena R.', due_date: '2025-01-10', created_at: '2025-01-05T10:00:00Z' },
+        { id: 2, title: 'Implement user authentication', description: 'Set up JWT auth with login/signup', status: 'in_progress', priority: 'high', assignee_name: 'Marcus J.', due_date: '2025-01-15', created_at: '2025-01-06T09:00:00Z' },
+        { id: 3, title: 'Database schema design', description: 'Design PostgreSQL schema for core entities', status: 'review', priority: 'medium', assignee_name: 'Sarah C.', due_date: '2025-01-12', created_at: '2025-01-06T11:00:00Z' },
+        { id: 4, title: 'API documentation', description: 'Write OpenAPI specs for all endpoints', status: 'todo', priority: 'medium', assignee_name: null, due_date: '2025-01-20', created_at: '2025-01-07T08:00:00Z' },
+        { id: 5, title: 'Unit tests for auth module', description: 'Write comprehensive tests', status: 'todo', priority: 'low', assignee_name: null, due_date: null, created_at: '2025-01-08T14:00:00Z' },
+      ]);
+
+      setFiles([
+        { id: 1, filename: 'project_requirements.pdf', file_size: 2456000, file_type: 'application/pdf', uploaded_by_name: 'Client', created_at: '2025-01-05T09:00:00Z' },
+        { id: 2, filename: 'homepage_mockup_v2.fig', file_size: 8500000, file_type: 'application/figma', uploaded_by_name: 'Elena R.', created_at: '2025-01-08T15:30:00Z' },
+        { id: 3, filename: 'api_endpoints.xlsx', file_size: 125000, file_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', uploaded_by_name: 'Marcus J.', created_at: '2025-01-09T11:00:00Z' },
+      ]);
+
+      setDiscussions([
+        { id: 1, title: 'Clarification on payment gateway integration', content: 'Do we need to support multiple payment providers or just Stripe?', author_name: 'Marcus J.', reply_count: 5, created_at: '2025-01-06T14:00:00Z', is_resolved: true },
+        { id: 2, title: 'Timeline adjustment request', content: 'The auth module is taking longer than expected due to 2FA requirements...', author_name: 'Sarah C.', reply_count: 3, created_at: '2025-01-08T10:00:00Z', is_resolved: false },
+      ]);
+    } catch {
+      console.error('Failed to fetch workroom data');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      fetchData();
+    }
+  }, [mounted, fetchData]);
+
+  const handleDragStart = (task: Task) => {
+    setDraggedTask(task);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (newStatus: TaskStatus) => {
+    if (draggedTask && draggedTask.status !== newStatus) {
+      setTasks(prev => prev.map(t => 
+        t.id === draggedTask.id ? { ...t, status: newStatus } : t
+      ));
+      // In production, call API to update task status
+    }
+    setDraggedTask(null);
+  };
+
+  if (!mounted || !resolvedTheme) {
+    return (
+      <div className={commonStyles.loadingContainer}>
+        <div className={commonStyles.loadingSpinner}></div>
+      </div>
+    );
+  }
+
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const tasksByStatus: Record<TaskStatus, Task[]> = {
+    todo: tasks.filter(t => t.status === 'todo'),
+    in_progress: tasks.filter(t => t.status === 'in_progress'),
+    review: tasks.filter(t => t.status === 'review'),
+    done: tasks.filter(t => t.status === 'done'),
+  };
+
+  const columns: { key: TaskStatus; label: string; color: string }[] = [
+    { key: 'todo', label: 'To Do', color: '#94a3b8' },
+    { key: 'in_progress', label: 'In Progress', color: '#3b82f6' },
+    { key: 'review', label: 'In Review', color: '#f59e0b' },
+    { key: 'done', label: 'Done', color: '#22c55e' },
+  ];
+
+  return (
+    <main className={cn(commonStyles.page, themeStyles.page)}>
+      {/* Header */}
+      <header className={cn(commonStyles.header, themeStyles.header)}>
+        <div className={commonStyles.headerContent}>
+          <h1 className={themeStyles.pageTitle}>Project Workroom</h1>
+          <span className={themeStyles.contractId}>Contract #{contractId}</span>
+        </div>
+        <div className={commonStyles.headerActions}>
+          <Button variant="secondary" size="sm">Invite Member</Button>
+          <Button variant="primary" size="sm">Activity Log</Button>
+        </div>
+      </header>
+
+      {/* Tabs */}
+      <div className={commonStyles.tabContainer}>
+        <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
+          <button
+            className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'kanban' && commonStyles.activeTab, activeTab === 'kanban' && themeStyles.activeTab)}
+            onClick={() => setActiveTab('kanban')}
+          >
+            📋 Kanban Board
+          </button>
+          <button
+            className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'files' && commonStyles.activeTab, activeTab === 'files' && themeStyles.activeTab)}
+            onClick={() => setActiveTab('files')}
+          >
+            📁 Files ({files.length})
+          </button>
+          <button
+            className={cn(commonStyles.tab, themeStyles.tab, activeTab === 'discussions' && commonStyles.activeTab, activeTab === 'discussions' && themeStyles.activeTab)}
+            onClick={() => setActiveTab('discussions')}
+          >
+            💬 Discussions ({discussions.length})
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <section className={commonStyles.content}>
+        {loading ? (
+          <div className={commonStyles.loadingContainer}>
+            <div className={commonStyles.loadingSpinner}></div>
+          </div>
+        ) : (
+          <>
+            {/* Kanban Board */}
+            {activeTab === 'kanban' && (
+              <div className={commonStyles.kanbanContainer}>
+                <div className={commonStyles.kanbanHeader}>
+                  <Button variant="primary" size="sm">+ Add Task</Button>
+                </div>
+                <div className={commonStyles.kanbanBoard}>
+                  {columns.map(col => (
+                    <div
+                      key={col.key}
+                      className={cn(commonStyles.kanbanColumn, themeStyles.kanbanColumn)}
+                      onDragOver={handleDragOver}
+                      onDrop={() => handleDrop(col.key)}
+                    >
+                      <div className={commonStyles.columnHeader}>
+                        <span className={commonStyles.columnDot} style={{ backgroundColor: col.color }}></span>
+                        <h3 className={themeStyles.columnTitle}>{col.label}</h3>
+                        <span className={themeStyles.columnCount}>{tasksByStatus[col.key].length}</span>
+                      </div>
+                      <div className={commonStyles.taskList}>
+                        {tasksByStatus[col.key].map(task => (
+                          <article
+                            key={task.id}
+                            className={cn(commonStyles.taskCard, themeStyles.taskCard, draggedTask?.id === task.id && commonStyles.dragging)}
+                            draggable
+                            onDragStart={() => handleDragStart(task)}
+                          >
+                            <div className={commonStyles.taskPriority}>
+                              <span className={cn(commonStyles.priorityDot, commonStyles[`priority_${task.priority}`])}></span>
+                            </div>
+                            <h4 className={themeStyles.taskTitle}>{task.title}</h4>
+                            <p className={themeStyles.taskDesc}>{task.description}</p>
+                            <div className={commonStyles.taskMeta}>
+                              {task.assignee_name && (
+                                <span className={themeStyles.assignee}>{task.assignee_name}</span>
+                              )}
+                              {task.due_date && (
+                                <span className={themeStyles.dueDate}>📅 {formatDate(task.due_date)}</span>
+                              )}
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Files */}
+            {activeTab === 'files' && (
+              <div className={commonStyles.filesContainer}>
+                <div className={commonStyles.filesHeader}>
+                  <Button variant="primary" size="sm">📤 Upload File</Button>
+                </div>
+                <div className={commonStyles.fileList}>
+                  {files.map(file => (
+                    <div key={file.id} className={cn(commonStyles.fileCard, themeStyles.fileCard)}>
+                      <div className={commonStyles.fileIcon}>
+                        {file.file_type.includes('pdf') ? '📄' : 
+                         file.file_type.includes('image') ? '🖼️' : 
+                         file.file_type.includes('figma') ? '🎨' : '📁'}
+                      </div>
+                      <div className={commonStyles.fileInfo}>
+                        <h4 className={themeStyles.fileName}>{file.filename}</h4>
+                        <p className={themeStyles.fileMeta}>
+                          {formatFileSize(file.file_size)} • Uploaded by {file.uploaded_by_name} • {formatDate(file.created_at)}
+                        </p>
+                      </div>
+                      <div className={commonStyles.fileActions}>
+                        <Button variant="ghost" size="sm">Download</Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Discussions */}
+            {activeTab === 'discussions' && (
+              <div className={commonStyles.discussionsContainer}>
+                <div className={commonStyles.discussionsHeader}>
+                  <Button variant="primary" size="sm">+ New Discussion</Button>
+                </div>
+                <div className={commonStyles.discussionList}>
+                  {discussions.map(disc => (
+                    <article key={disc.id} className={cn(commonStyles.discussionCard, themeStyles.discussionCard)}>
+                      <div className={commonStyles.discussionMeta}>
+                        {disc.is_resolved && (
+                          <span className={cn(commonStyles.resolvedBadge, themeStyles.resolvedBadge)}>✓ Resolved</span>
+                        )}
+                        <span className={themeStyles.replyCount}>{disc.reply_count} replies</span>
+                      </div>
+                      <h3 className={cn(commonStyles.discussionTitle, themeStyles.discussionTitle)}>
+                        {disc.title}
+                      </h3>
+                      <p className={themeStyles.discussionContent}>{disc.content}</p>
+                      <div className={commonStyles.discussionFooter}>
+                        <span className={themeStyles.discussionAuthor}>
+                          {disc.author_name} • {formatDate(disc.created_at)}
+                        </span>
+                        <Button variant="ghost" size="sm">View Thread</Button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+    </main>
+  );
+}

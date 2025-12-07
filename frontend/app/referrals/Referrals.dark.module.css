@@ -1,0 +1,52 @@
+.container {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.title {
+  color: #ffffff;
+}
+
+.subtitle {
+  color: #b0b0b0;
+}
+
+.statCard {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+}
+
+.section {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+}
+
+.sectionTitle {
+  color: #ffffff;
+}
+
+.linkBox {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+.linkText {
+  color: #6ea8fe;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.table th {
+  border-bottom-color: #333;
+  color: #b0b0b0;
+}
+
+.table td {
+  border-bottom-color: #2d2d2d;
+  color: #e0e0e0;
+}
+
+.emptyText {
+  color: #888;
+  text-align: center;
+  padding: 2rem;
+}

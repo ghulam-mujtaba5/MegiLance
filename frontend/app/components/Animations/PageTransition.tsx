@@ -1,9 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export const PageTransition = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  // During SSR or initial hydration, render without animation wrapper
+  if (!isClient) {
+    return <div className={className}>{children}</div>;
+  }
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

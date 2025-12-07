@@ -1,0 +1,21 @@
+.container {
+  background-color: #0c4a6e;
+  border-color: #075985;
+}
+
+.title {
+  color: #e0f2fe;
+}
+
+.item {
+  background-color: #082f49;
+  border: 1px solid #0c4a6e;
+}
+
+.itemTitle {
+  color: #e0f2fe;
+}
+
+.itemDesc {
+  color: #94a3b8;
+}

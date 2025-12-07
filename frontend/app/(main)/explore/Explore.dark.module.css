@@ -1,0 +1,227 @@
+/* @AI-HINT: Dark theme styles for Explore page */
+
+.themeWrapper {
+  background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+  color: #e6edf3;
+}
+
+.subtitle {
+  color: #8b949e;
+}
+
+.statCard {
+  background: #21262d;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid #30363d;
+}
+
+.statValue {
+  color: #58a6ff;
+}
+
+.quickLink {
+  background: #4573df;
+  color: #fff;
+}
+
+.quickLink:hover {
+  background: #6b8ceb;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.4);
+}
+
+.quickLinkSecondary {
+  background: #21262d;
+  color: #58a6ff;
+  border: 2px solid #58a6ff;
+}
+
+.quickLinkSecondary:hover {
+  background: #4573df;
+  color: #fff;
+}
+
+.filterTab {
+  color: #8b949e;
+  background: #21262d;
+}
+
+.filterTab:hover {
+  background: #30363d;
+}
+
+.filterTabActive {
+  background: #4573df;
+  color: #fff;
+}
+
+.searchInput {
+  background: #21262d;
+  color: #e6edf3;
+  border-color: #30363d;
+}
+
+.searchInput:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+}
+
+.searchInput::placeholder {
+  color: #6e7681;
+}
+
+.sectionTitle {
+  color: #e6edf3;
+}
+
+.featureCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.featureCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: #58a6ff;
+}
+
+.featureRoute {
+  background: #30363d;
+  color: #58a6ff;
+}
+
+.featureLink {
+  color: #58a6ff;
+}
+
+.featureLink:hover {
+  color: #79b8ff;
+}
+
+.moduleCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.moduleCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.moduleIcon {
+  background: linear-gradient(135deg, #58a6ff 0%, #4573df 100%);
+  color: #fff;
+}
+
+.progressBar {
+  background: #30363d;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #58a6ff 0%, #3fb950 100%);
+}
+
+/* URL Cards */
+.urlCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.urlCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: #58a6ff;
+}
+
+.urlValue {
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+/* API Endpoints */
+.categoryHeader {
+  border-color: rgba(88, 166, 255, 0.2);
+}
+
+.endpoint {
+  background: #161b22;
+  border: 1px solid #30363d;
+}
+
+.endpoint:hover {
+  background: #21262d;
+  border-color: #58a6ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Database Tables */
+.tableCard {
+  background: #21262d;
+  border: 1px solid #30363d;
+}
+
+.tableCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: #58a6ff;
+}
+
+.column {
+  background: #0d1117;
+  color: #58a6ff;
+}
+
+/* API Card */
+.apiCard {
+  background: #161b22;
+  border: 1px solid #30363d;
+}
+
+.apiCard:hover {
+  background: #21262d;
+  border-color: #58a6ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Terminal */
+.terminalBox {
+  background: #0d1117;
+  border: 1px solid #30363d;
+}
+
+.terminal {
+  background: #0d1117;
+  border: 1px solid #30363d;
+}
+
+.terminalHeader {
+  background: #161b22;
+  color: #e6edf3;
+}
+
+.terminalContent {
+  background: #0d1117;
+  color: #e6edf3;
+}
+
+.commandList {
+  background: #0d1117;
+}
+
+.commandText {
+  background: #21262d;
+  color: #e6edf3;
+}
+
+/* Pages List */
+.pageItem {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #e6edf3;
+}
+
+.pageItem:hover {
+  background: #30363d;
+  border-color: #58a6ff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.pageStatus {
+  background: #3fb950;
+  color: #0d1117;
+}

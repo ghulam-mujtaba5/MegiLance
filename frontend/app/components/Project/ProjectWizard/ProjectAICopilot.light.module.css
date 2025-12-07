@@ -1,0 +1,16 @@
+.container {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.inputArea {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.fieldValue {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  color: #334155;
+}

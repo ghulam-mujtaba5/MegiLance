@@ -88,24 +88,32 @@ def _create_token(data: dict, expires_delta: timedelta, token_type: str) -> str:
     return token
 
 
-def create_access_token(subject: str, expires_delta_minutes: Optional[int] = None) -> str:
+def create_access_token(subject: str, expires_delta_minutes: Optional[int] = None, custom_claims: Optional[dict] = None) -> str:
     """Create access token"""
     settings = get_settings()
     if expires_delta_minutes is None:
         expires_delta_minutes = settings.access_token_expire_minutes
     
+    data = {"sub": subject}
+    if custom_claims:
+        data.update(custom_claims)
+    
     return _create_token(
-        {"sub": subject},
+        data,
         timedelta(minutes=expires_delta_minutes),
         "access"
     )
 
 
-def create_refresh_token(subject: str) -> str:
+def create_refresh_token(subject: str, custom_claims: Optional[dict] = None) -> str:
     """Create refresh token"""
     settings = get_settings()
+    data = {"sub": subject}
+    if custom_claims:
+        data.update(custom_claims)
+    
     return _create_token(
-        {"sub": subject},
+        data,
         timedelta(minutes=settings.refresh_token_expire_minutes),
         "refresh"
     )

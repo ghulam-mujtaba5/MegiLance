@@ -8,20 +8,22 @@ import '../styles/effects.css';
 import './styles/theme.css';
 
 import ClientRoot from './ClientRoot';
+import GoogleAnalytics from './components/Analytics/GoogleAnalytics';
+import { BASE_URL, SITE_NAME } from '../lib/seo';
 
 // Structured data for SEO (JSON-LD)
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'MegiLance',
+  name: SITE_NAME,
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   description: 'AI-powered freelancing platform connecting top talent with global opportunities. Secure blockchain payments, smart matching, and seamless collaboration.',
-  url: 'https://megilance.com',
+  url: BASE_URL,
   author: {
     '@type': 'Organization',
-    name: 'MegiLance',
-    url: 'https://megilance.com',
+    name: SITE_NAME,
+    url: BASE_URL,
   },
   offers: {
     '@type': 'Offer',
@@ -35,11 +37,42 @@ const jsonLd = {
   },
 };
 
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE_NAME,
+  url: BASE_URL,
+  logo: `${BASE_URL}/icon-512.png`,
+  sameAs: [
+    'https://www.linkedin.com/company/megilance',
+    'https://twitter.com/megilance',
+  ],
+  contactPoint: [
+    {
+      '@type': 'ContactPoint',
+      contactType: 'customer support',
+      email: 'support@megilance.com',
+    },
+  ],
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  url: BASE_URL,
+  name: SITE_NAME,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${BASE_URL}/search?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.com'),
+  metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MegiLance - AI-Powered Freelance Platform | Find Top Talent',
-    template: '%s | MegiLance',
+    default: `${SITE_NAME} - AI-Powered Freelance Platform | Find Top Talent`,
+    template: `%s | ${SITE_NAME}`,
   },
   description: 'Connect with world-class freelancers and clients on MegiLance. AI-powered matching, secure blockchain payments, real-time collaboration. Start your journey today!',
   keywords: [
@@ -78,9 +111,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://megilance.com',
-    siteName: 'MegiLance',
-    title: 'MegiLance - AI-Powered Freelance Platform',
+    url: BASE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} - AI-Powered Freelance Platform`,
     description: 'Connect with world-class freelancers and clients. AI-powered matching, secure blockchain payments, real-time collaboration.',
     images: [
       {
@@ -96,7 +129,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@megilance',
     creator: '@megilance',
-    title: 'MegiLance - AI-Powered Freelance Platform',
+    title: `${SITE_NAME} - AI-Powered Freelance Platform`,
     description: 'Connect with world-class freelancers and clients. AI-powered matching, secure blockchain payments.',
     images: ['/twitter-image.png'],
   },
@@ -119,9 +152,9 @@ export const metadata: Metadata = {
   },
   
   alternates: {
-    canonical: 'https://megilance.com',
+    canonical: BASE_URL,
     languages: {
-      'en-US': 'https://megilance.com',
+      'en-US': BASE_URL,
     },
   },
   
@@ -149,6 +182,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google Analytics - FREE forever */}
+        <GoogleAnalytics />
+        
         {/* Preconnect to important third-party origins */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -160,6 +196,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         
         {/* Theme initialization - prevent flash */}

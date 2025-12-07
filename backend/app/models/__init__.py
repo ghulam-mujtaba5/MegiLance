@@ -25,6 +25,10 @@ from .tag import Tag
 from .project_tag import ProjectTag
 from .support_ticket import SupportTicket
 from .refund import Refund
+from .scope_change import ScopeChangeRequest
+from .analytics import AnalyticsEvent
+from .embedding import ProjectEmbedding, UserEmbedding
+from .verification import UserVerification
 
 __all__ = [
     "User",
@@ -67,4 +71,9 @@ __all__ = [
     "ProjectTag",
     "SupportTicket",
     "Refund",
+    "ScopeChangeRequest",
+    "AnalyticsEvent",
+    "ProjectEmbedding",
+    "UserEmbedding",
+    "UserVerification",
 ]

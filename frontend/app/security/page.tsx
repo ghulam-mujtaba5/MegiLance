@@ -1,11 +1,20 @@
-// @AI-HINT: This is the Next.js route file for the Security page. It delegates to the Security component.
-'use client';
+import type { Metadata } from 'next';
+import SecurityClient from './SecurityClient';
+import { BASE_URL } from '@/lib/seo';
 
-import React from 'react';
-import Security from '@/app/security/Security';
-
-const SecurityPage = () => {
-  return <Security />;
+export const metadata: Metadata = {
+  title: 'Security - MegiLance | Safe & Secure Freelancing',
+  description: 'Learn about our industry-leading security measures, including blockchain payments, identity verification, and data protection.',
+  openGraph: {
+    title: 'MegiLance Security Center',
+    description: 'Your safety is our priority. Secure payments, verified users, and data encryption.',
+    url: `${BASE_URL}/security`,
+  },
+  alternates: {
+    canonical: `${BASE_URL}/security`,
+  },
 };
 
-export default SecurityPage;
+export default function Page() {
+  return <SecurityClient />;
+}

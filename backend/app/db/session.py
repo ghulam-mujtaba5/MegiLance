@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool, QueuePool
 from app.core.config import get_settings
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -94,21 +95,45 @@ def get_session_local():
 
 def get_db():
     """Dependency for getting database sessions"""
-    session_factory = get_session_local()
-    db = session_factory()
     try:
+        session_factory = get_session_local()
+        if session_factory is None:
+            logger.error("get_db: session_factory is None")
+            raise Exception("session_factory is None")
+            
+        db = session_factory()
+        if db is None:
+            logger.error("get_db: db session is None")
+            raise Exception("db session is None")
+            
         yield db
     except Exception as e:
         logger.error(f"Database session error: {e}")
-        db.rollback()
+        if 'db' in locals() and db:
+            db.rollback()
         raise
     finally:
-        db.close()
+        if 'db' in locals() and db:
+            db.close()
 
 
 # Legacy compatibility
 engine = None
 SessionLocal = None
+
+
+def get_turso_client():
+    """Get Turso HTTP client if configured for production"""
+    if settings.environment != "production":
+        return None
+    if not settings.turso_database_url or not settings.turso_auth_token:
+        return None
+    try:
+        from app.db.turso_http import get_turso_http
+        return get_turso_http()
+    except Exception as e:
+        logger.warning(f"Failed to get Turso client: {e}")
+        return None
 
 
 def execute_query(query: str, params: dict = None):

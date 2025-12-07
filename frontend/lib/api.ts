@@ -2189,6 +2189,107 @@ export const userFeedbackApi = {
     }),
 };
 
+// ===========================
+// VERIFICATION
+// ===========================
+export const verificationApi = {
+  getStatus: () => apiFetch('/verification/status'),
+  getDocuments: (type?: string, status?: string) => {
+    const params = new URLSearchParams();
+    if (type) params.append('document_type', type);
+    if (status) params.append('status', status);
+    return apiFetch(`/verification/documents?${params}`);
+  },
+  uploadDocument: (data: FormData) => 
+    apiFetch('/verification/upload-document', {
+      method: 'POST',
+      body: data,
+    }),
+  uploadSelfie: (data: FormData) => 
+    apiFetch('/verification/upload-selfie', {
+      method: 'POST',
+      body: data,
+    }),
+  getTiers: () => apiFetch('/verification/tiers'),
+  getSupportedDocuments: () => apiFetch('/verification/supported-documents'),
+  sendPhoneCode: (phoneNumber: string) => 
+    apiFetch('/verification/phone/send-code', {
+      method: 'POST',
+      body: JSON.stringify({ phone_number: phoneNumber }),
+    }),
+  verifyPhoneCode: (phoneNumber: string, code: string) => 
+    apiFetch('/verification/phone/verify', {
+      method: 'POST',
+      body: JSON.stringify({ phone_number: phoneNumber, verification_code: code }),
+    }),
+};
+
+// ===========================
+// AI WRITING
+// ===========================
+export const aiWritingApi = {
+  generateProposal: (data: {
+    project_title: string;
+    project_description: string;
+    user_skills: string[];
+    user_experience?: string;
+    tone?: string;
+    highlight_points?: string[];
+  }) =>
+    apiFetch<{ content: string }>('/ai-writing/generate/proposal', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  generateProjectDescription: (data: {
+    project_type: string;
+    key_features: string[];
+    target_audience?: string;
+    budget_range?: string;
+    tone?: string;
+  }) =>
+    apiFetch<{ content: string }>('/ai-writing/generate/project-description', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  improveText: (data: {
+    content: string;
+    content_type: string;
+    improvements?: string[];
+  }) =>
+    apiFetch<{ content: string }>('/ai-writing/improve', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  analyzeFeasibility: (data: {
+    project_description: string;
+    budget_min: number;
+    budget_max: number;
+    timeline_days: number;
+  }) =>
+    apiFetch<{
+      complexity_score: number;
+      budget_realism: string;
+      timeline_realism: string;
+      flags: string[];
+      recommendations: string[];
+    }>('/ai-writing/analyze/feasibility', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  generateUpsellSuggestions: (data: {
+    project_description: string;
+    proposal_content: string;
+  }) =>
+    apiFetch<{ suggestions: { title: string; description: string; type: string }[] }>('/ai-writing/generate/upsell', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+};
+
 export default {
   auth: authApi,
   analytics: analyticsApi,
@@ -2221,7 +2322,9 @@ export default {
   disputes: disputesApi,
   searches: searchesApi,
   uploads: uploadsApi,
+  verification: verificationApi,
   ai: aiApi,
+  aiWriting: aiWritingApi,
   // New API integrations
   gamification: gamificationApi,
   referral: referralApi,

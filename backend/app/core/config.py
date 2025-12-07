@@ -74,6 +74,24 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: Optional[str] = None
     STRIPE_PLATFORM_FEE_PERCENT: float = 10.0  # Platform fee percentage (default 10%)
     
+    # OAuth Configuration - Google (FREE forever)
+    # Get from: https://console.cloud.google.com/apis/credentials
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    
+    # OAuth Configuration - GitHub (FREE forever)
+    # Get from: https://github.com/settings/developers
+    GITHUB_CLIENT_ID: Optional[str] = None
+    GITHUB_CLIENT_SECRET: Optional[str] = None
+    
+    # OAuth Configuration - LinkedIn (FREE)
+    LINKEDIN_CLIENT_ID: Optional[str] = None
+    LINKEDIN_CLIENT_SECRET: Optional[str] = None
+    
+    # Resend Email Service (FREE 3,000/month)
+    # Get from: https://resend.com/api-keys
+    RESEND_API_KEY: Optional[str] = None
+    
     # Monitoring
     sentry_dsn: Optional[str] = None
     log_level: str = "INFO"

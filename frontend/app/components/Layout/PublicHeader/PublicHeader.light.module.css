@@ -83,3 +83,22 @@
 .mobileNavLinkDesc {
   color: var(--text-secondary-light);
 }
+
+.exploreLink {
+  background: linear-gradient(135deg, #4573df 0%, #6b8ceb 100%);
+  color: #fff;
+}
+
+.exploreLink:hover {
+  background: linear-gradient(135deg, #3a62c4 0%, #4573df 100%);
+  box-shadow: 0 4px 20px rgba(69, 115, 223, 0.4);
+}
+
+.mobileExploreLink {
+  background: linear-gradient(135deg, #4573df 0%, #6b8ceb 100%);
+  color: #fff;
+}
+
+.mobileExploreLink:hover {
+  background: linear-gradient(135deg, #3a62c4 0%, #4573df 100%);
+}

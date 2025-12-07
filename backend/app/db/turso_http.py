@@ -20,6 +20,13 @@ class TursoHTTP:
     _token: str = None
     _is_local: bool = False
     _local_db_path: str = None
+    _initialized: bool = False
+    
+    @classmethod
+    def reset_instance(cls):
+        """Reset singleton instance - used when settings change"""
+        cls._instance = None
+        cls._initialized = False
     
     @classmethod
     def get_instance(cls) -> Optional['TursoHTTP']:
@@ -30,7 +37,15 @@ class TursoHTTP:
             
             # Check if we should use local SQLite
             # If TURSO_DATABASE_URL is not set, or if we explicitly want local
-            if not settings.turso_database_url or not settings.turso_auth_token:
+            # Also check for placeholder tokens and development environment
+            use_local = (
+                not settings.turso_database_url or 
+                not settings.turso_auth_token or
+                settings.environment == "development" or
+                "CHANGE_ME" in (settings.turso_auth_token or "")
+            )
+            
+            if use_local:
                 cls._is_local = True
                 # Extract path from "file:./local.db" or "sqlite:///./local.db"
                 db_url = settings.database_url or "file:./local.db"

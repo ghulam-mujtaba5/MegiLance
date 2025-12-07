@@ -21,6 +21,8 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
+import ProjectAICopilot from './ProjectAICopilot';
+import FeasibilityAnalyzer from '../FeasibilityAnalyzer/FeasibilityAnalyzer';
 
 import commonStyles from './ProjectWizard.common.module.css';
 import lightStyles from './ProjectWizard.light.module.css';
@@ -104,6 +106,30 @@ const ProjectWizard: React.FC = () => {
   };
 
   const progress = (currentStep / steps.length) * 100;
+
+  const getDurationDays = (duration: string): number => {
+    switch (duration) {
+      case 'less-than-week': return 5;
+      case '1-2-weeks': return 10;
+      case '2-4-weeks': return 20;
+      case '1-3-months': return 60;
+      case '3-6-months': return 120;
+      case 'more-than-6-months': return 180;
+      default: return 30;
+    }
+  };
+
+  const handleAIApply = (data: any) => {
+    setProjectData(prev => ({
+      ...prev,
+      title: data.title || prev.title,
+      description: data.description || prev.description,
+      skills: data.skills || prev.skills,
+      category: data.category || prev.category,
+      budgetMin: data.budgetMin || prev.budgetMin,
+      budgetMax: data.budgetMax || prev.budgetMax,
+    }));
+  };
 
   const handleNext = () => {
     if (validateStep()) {
@@ -364,6 +390,15 @@ const ProjectWizard: React.FC = () => {
                     { value: 'more-than-6-months', label: 'More than 6 months' },
                   ]}
                 />
+              </StaggerItem>
+
+              <StaggerItem className="col-span-2 mt-4">
+                 <FeasibilityAnalyzer 
+                    projectDescription={projectData.description}
+                    budgetMin={parseFloat(projectData.budgetMin) || 0}
+                    budgetMax={parseFloat(projectData.budgetMax) || 0}
+                    timelineDays={getDurationDays(projectData.duration)}
+                 />
               </StaggerItem>
             </div>
           )}

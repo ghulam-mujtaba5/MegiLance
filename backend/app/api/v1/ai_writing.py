@@ -59,6 +59,11 @@ class GenerateMessageRequest(BaseModel):
     tone: ToneStyle = ToneStyle.FRIENDLY
 
 
+class GenerateUpsellRequest(BaseModel):
+    project_description: str
+    proposal_content: str
+
+
 class ImproveContentRequest(BaseModel):
     content: str
     content_type: ContentType
@@ -83,6 +88,13 @@ class SummarizeContentRequest(BaseModel):
 
 class AnalyzeContentRequest(BaseModel):
     content: str
+
+
+class AnalyzeFeasibilityRequest(BaseModel):
+    project_description: str
+    budget_min: float
+    budget_max: float
+    timeline_days: int
 
 
 class CheckGrammarRequest(BaseModel):
@@ -179,6 +191,24 @@ async def generate_message(
     return result
 
 
+@router.post("/generate/upsell")
+async def generate_upsell(
+    request: GenerateUpsellRequest,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Generate upsell suggestions."""
+    service = get_ai_writing_service(db)
+    
+    result = await service.generate_upsell_suggestions(
+        user_id=current_user["id"],
+        project_description=request.project_description,
+        proposal_content=request.proposal_content
+    )
+    
+    return result
+
+
 # Enhancement Endpoints
 @router.post("/improve")
 async def improve_content(
@@ -267,6 +297,26 @@ async def analyze_content(
     result = await service.analyze_content(
         user_id=current_user["id"],
         content=request.content
+    )
+    
+    return result
+
+
+@router.post("/analyze/feasibility")
+async def analyze_feasibility(
+    request: AnalyzeFeasibilityRequest,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_active_user)
+):
+    """Analyze project feasibility."""
+    service = get_ai_writing_service(db)
+    
+    result = await service.analyze_feasibility(
+        user_id=current_user["id"],
+        project_description=request.project_description,
+        budget_min=request.budget_min,
+        budget_max=request.budget_max,
+        timeline_days=request.timeline_days
     )
     
     return result

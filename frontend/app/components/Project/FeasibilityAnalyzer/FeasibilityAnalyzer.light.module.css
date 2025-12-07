@@ -1,0 +1,25 @@
+.container {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  color: #111827;
+}
+
+.scoreLabel {
+  color: #4b5563;
+}
+
+.scoreValue {
+  color: #111827;
+}
+
+.flagItem {
+  color: #b91c1c;
+}
+
+.recommendations {
+  border-color: #e5e7eb;
+}

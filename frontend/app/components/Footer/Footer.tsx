@@ -27,7 +27,7 @@ const footerSections = {
     { name: 'Press', href: '/press' },
   ],
   'Resources': [
-    { name: 'Help Center', href: '/help' },
+    { name: 'Help Center', href: '/support' },
     { name: 'Contact Us', href: '/contact' },
     { name: 'Community', href: '/community' },
     { name: 'Status', href: '/status' },

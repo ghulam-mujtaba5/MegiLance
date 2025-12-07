@@ -1,0 +1,269 @@
+/* @AI-HINT: Dark theme colors for Wallet page */
+
+.page {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Balance Cards */
+.balanceCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.balanceCardPrimary {
+  background: linear-gradient(135deg, var(--primary) 0%, #6b8de8 100%);
+  border: none;
+  box-shadow: 0 4px 16px rgba(69, 115, 223, 0.35);
+}
+
+.balanceLabel {
+  color: #94a3b8;
+}
+
+.balanceAmount {
+  color: #f1f5f9;
+}
+
+.balanceSubtext {
+  color: #64748b;
+}
+
+/* Tabs */
+.tabsContainer {
+  border-color: #334155;
+}
+
+.tab {
+  color: #94a3b8;
+}
+
+.tab:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+
+.tabActive {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* Content */
+.content {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sectionTitle {
+  color: #f1f5f9;
+}
+
+/* Action Buttons */
+.actionButton {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.actionButton:hover {
+  background: #1e293b;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Transactions */
+.transactionItem {
+  background: #0f172a;
+}
+
+.transactionItem:hover {
+  background: #1a2744;
+}
+
+.transactionDesc {
+  color: #f1f5f9;
+}
+
+.transactionDate {
+  color: #64748b;
+}
+
+.amountPositive {
+  color: #34d399;
+}
+
+.amountNegative {
+  color: #f87171;
+}
+
+.statusCompleted {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}
+
+.statusPending {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.statusFailed {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+/* View All Button */
+.viewAllButton {
+  color: #60a5fa;
+}
+
+.viewAllButton:hover {
+  color: #93c5fd;
+}
+
+/* Filter Select */
+.filterSelect {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.filterSelect:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* Form Styles */
+.formSubtitle {
+  color: #94a3b8;
+}
+
+.formLabel {
+  color: #e2e8f0;
+}
+
+.formInput {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.formInput:focus {
+  border-color: var(--primary);
+  background: #1e293b;
+}
+
+/* Quick Amount Buttons */
+.quickAmountBtn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+.quickAmountBtn:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+/* Payout Methods */
+.payoutMethod {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.payoutMethod:hover {
+  background: #1a2744;
+}
+
+.payoutMethodSelected {
+  background: rgba(69, 115, 223, 0.15);
+  border-color: var(--primary);
+}
+
+.payoutName {
+  color: #f1f5f9;
+}
+
+.payoutLast4 {
+  color: #94a3b8;
+}
+
+/* Submit Button */
+.submitButton {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* Disclaimer */
+.disclaimer {
+  color: #64748b;
+}
+
+/* Payment Info */
+.paymentInfo {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.changeButton {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.changeButton:hover {
+  background: #475569;
+}
+
+/* Settings */
+.payoutMethodCard {
+  background: #0f172a;
+  border: 1px solid #334155;
+}
+
+.actionLink {
+  color: #60a5fa;
+}
+
+.actionLink:hover {
+  text-decoration: underline;
+}
+
+.addMethodButton {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.addMethodButton:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(69, 115, 223, 0.1);
+}
+
+.settingsSection {
+  border-color: #334155;
+}
+
+.settingsSubtitle {
+  color: #f1f5f9;
+}
+
+.settingRow {
+  background: #0f172a;
+}
+
+.settingLabel {
+  color: #e2e8f0;
+}
+
+.settingDesc {
+  color: #64748b;
+}

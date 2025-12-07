@@ -1,11 +1,20 @@
-// @AI-HINT: Next.js route for Teams page delegating to Teams component.
-'use client';
+import type { Metadata } from 'next';
+import TeamsClient from './TeamsClient';
+import { BASE_URL } from '@/lib/seo';
 
-import React from 'react';
-import Teams from './Teams';
-
-const TeamsPage = () => {
-  return <Teams />;
+export const metadata: Metadata = {
+  title: 'For Teams - MegiLance | Scale Your Workforce',
+  description: 'Build and manage remote teams with ease. Enterprise-grade tools for collaboration and payments.',
+  openGraph: {
+    title: 'MegiLance for Teams',
+    description: 'Scale your business with on-demand remote teams.',
+    url: `${BASE_URL}/teams`,
+  },
+  alternates: {
+    canonical: `${BASE_URL}/teams`,
+  },
 };
 
-export default TeamsPage;
+export default function Page() {
+  return <TeamsClient />;
+}
