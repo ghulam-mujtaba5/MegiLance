@@ -30,23 +30,15 @@ except ImportError as e:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load models on startup
-    global embedding_model, generator_pipeline, sentiment_pipeline
+    # Load only the embedding model on startup (most critical)
+    # Other models will be lazy-loaded on first use to reduce memory
+    global embedding_model
     if ML_AVAILABLE:
         try:
             logger.info("Loading embedding model (all-MiniLM-L6-v2)...")
             # Small, fast, high-quality embeddings (384 dim)
             embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-            logger.info("Embedding model loaded.")
-            
-            logger.info("Loading text generation model (flan-t5-small)...")
-            # Instruction-tuned model, better for proposals/tasks than GPT2
-            generator_pipeline = pipeline("text2text-generation", model="google/flan-t5-small")
-            logger.info("Text generation model loaded.")
-
-            logger.info("Loading sentiment model...")
-            sentiment_pipeline = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
-            logger.info("Sentiment model loaded.")
+            logger.info("✅ Embedding model loaded. Other models will load on-demand.")
         except Exception as e:
             logger.error(f"Failed to load ML models: {e}")
     yield
@@ -125,7 +117,18 @@ async def generate_embeddings(request: EmbeddingRequest):
 
 @app.post("/ai/generate")
 async def generate_text(request: GenerateRequest):
-    """Generate text using instruction-tuned model"""
+    """Generate text using instruction-tuned model (lazy loaded)"""
+    global generator_pipeline
+    
+    # Lazy load on first use
+    if not generator_pipeline and ML_AVAILABLE:
+        try:
+            logger.info("Loading text generation model (flan-t5-small) on-demand...")
+            generator_pipeline = pipeline("text2text-generation", model="google/flan-t5-small", device=-1)
+            logger.info("✅ Text generation model loaded")
+        except Exception as e:
+            logger.error(f"Failed to load generation model: {e}")
+    
     if not generator_pipeline:
         # Fallback if model fails
         return {"text": "AI service is currently initializing. Please try again in a moment.", "method": "fallback"}
@@ -148,7 +151,18 @@ async def generate_text(request: GenerateRequest):
 
 @app.post("/ai/sentiment")
 async def analyze_sentiment(request: SentimentRequest):
-    """Analyze sentiment of text"""
+    """Analyze sentiment of text (lazy loaded)"""
+    global sentiment_pipeline
+    
+    # Lazy load on first use
+    if not sentiment_pipeline and ML_AVAILABLE:
+        try:
+            logger.info("Loading sentiment model on-demand...")
+            sentiment_pipeline = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english", device=-1)
+            logger.info("✅ Sentiment model loaded")
+        except Exception as e:
+            logger.error(f"Failed to load sentiment model: {e}")
+    
     if not sentiment_pipeline:
         raise HTTPException(status_code=503, detail="Sentiment model not loaded")
     

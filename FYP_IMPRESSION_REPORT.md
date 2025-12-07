@@ -30,6 +30,8 @@
 - **Navigate**: Click on `Analytics`, `Fraud Alerts`, `Calendar`, `Security`.
 - **Script**: *"As you can see, the platform is fully comprehensive, covering all administrative needs from security to financial monitoring."*
 
+
+kkkk
 ### Step 2: The AI Showcase
 - **Switch to Freelancer**: Login and go to `/freelancer/rank`.
 - **Explain**: *"This isn't just a static profile. Our AI analyzes job success, quality, and communication to generate a dynamic 'Rank Score' that affects matching visibility."*
