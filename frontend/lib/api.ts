@@ -238,6 +238,12 @@ export const authApi = {
     body: JSON.stringify(data),
   }),
 
+  changePassword: (currentPassword: string, newPassword: string): Promise<{ message: string }> =>
+    apiFetch<{ message: string }>('/users/me/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    }),
+
   get2FAStatus: (): Promise<TwoFactorStatus> => apiFetch<TwoFactorStatus>('/auth/2fa/status'),
 
   enable2FA: (): Promise<TwoFactorEnableResponse> => apiFetch<TwoFactorEnableResponse>('/auth/2fa/enable', { method: 'POST' }),

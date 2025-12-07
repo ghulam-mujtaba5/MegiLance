@@ -233,6 +233,54 @@ def get_current_user_profile(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+@router.post("/me/change-password")
+def change_password(
+    current_password: str,
+    new_password: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Change user password"""
+    from app.core.security import verify_password, get_password_hash
+    from app.db.turso_http import execute_query
+    
+    # Get current hashed password
+    result = execute_query(
+        "SELECT hashed_password FROM users WHERE id = ?",
+        [current_user.id]
+    )
+    
+    if not result or not result.get("rows"):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    current_hash = _to_str(result["rows"][0][0])
+    
+    # Verify current password
+    if not verify_password(current_password, current_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+    
+    # Validate new password strength
+    if len(new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be at least 8 characters long"
+        )
+    
+    # Hash and update password
+    new_hash = get_password_hash(new_password)
+    execute_query(
+        "UPDATE users SET hashed_password = ? WHERE id = ?",
+        [new_hash, current_user.id]
+    )
+    
+    return {"message": "Password changed successfully"}
+
+
 @router.put("/me/complete-profile", response_model=UserRead)
 def complete_user_profile(
     profile_data: ProfileCompleteUpdate,

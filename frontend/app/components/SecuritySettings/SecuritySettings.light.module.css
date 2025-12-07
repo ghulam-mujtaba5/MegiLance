@@ -1,0 +1,73 @@
+.container {
+  background-color: transparent;
+}
+
+.title {
+  color: #111827;
+}
+
+.subtitle {
+  color: #4b5563;
+}
+
+.section {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  color: #1f2937;
+}
+
+.label {
+  color: #374151;
+}
+
+.input {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.input:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 2px rgba(69, 115, 223, 0.2);
+  outline: none;
+}
+
+.button {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.button:hover {
+  background-color: #3b63c1;
+}
+
+.row {
+  border-color: #f3f4f6;
+}
+
+.rowTitle {
+  color: #1f2937;
+}
+
+.rowDesc {
+  color: #6b7280;
+}
+
+.historyItem {
+  background-color: #f9fafb;
+  color: #374151;
+}
+
+.badgeSuccess {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.badgeWarning {
+  background-color: #fef9c3;
+  color: #854d0e;
+}

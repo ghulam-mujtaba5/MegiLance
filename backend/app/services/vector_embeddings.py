@@ -1,49 +1,60 @@
 """
 Vector Embedding Service
-Generates vector embeddings for text using a transformer model or API.
-For a billion-dollar scale, this would typically use OpenAI's text-embedding-3-small or a dedicated high-performance model.
+Generates vector embeddings for text using the external AI microservice.
+Uses all-MiniLM-L6-v2 (384 dimensions) via the /ai/embeddings endpoint.
 """
 
 import logging
 from typing import List, Optional
-import json
-
-# In a real scenario, we would import openai or sentence_transformers
-# from sentence_transformers import SentenceTransformer
+import os
+import httpx
 
 logger = logging.getLogger(__name__)
 
 class VectorEmbeddingService:
     def __init__(self):
-        # self.model = SentenceTransformer('all-MiniLM-L6-v2') # Example local model
-        pass
+        self.ai_service_url = os.getenv("AI_SERVICE_URL", "http://localhost:7860")
 
     async def generate_embedding(self, text: str) -> List[float]:
         """
-        Generate a vector embedding for the given text.
+        Generate a vector embedding for the given text by calling the AI service.
         Returns a list of floats (the vector).
         """
+        if not text:
+            return []
+            
         try:
-            # Mock implementation for demonstration
-            # In production, call OpenAI API or local model
-            # return self.model.encode(text).tolist()
-            
-            # Simulating a 1536-dimensional vector (OpenAI standard)
-            # For now, we return a dummy vector based on hash to be deterministic
-            import hashlib
-            hash_object = hashlib.md5(text.encode())
-            hash_int = int(hash_object.hexdigest(), 16)
-            
-            # Generate pseudo-random vector
-            vector = []
-            for i in range(1536):
-                val = ((hash_int >> (i % 16)) & 1) * 2 - 1 # -1 or 1
-                vector.append(float(val) * 0.01)
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.ai_service_url}/ai/embeddings",
+                    json={"text": text},
+                    timeout=10.0
+                )
                 
-            return vector
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get("embedding", [])
+                else:
+                    logger.error(f"AI Service returned {response.status_code}: {response.text}")
+                    # Fallback to mock if AI service is down (to prevent app crash)
+                    return self._generate_mock_embedding(text)
+                    
         except Exception as e:
             logger.error(f"Error generating embedding: {e}")
-            return []
+            return self._generate_mock_embedding(text)
+
+    def _generate_mock_embedding(self, text: str) -> List[float]:
+        """Fallback mock embedding (deterministic hash)"""
+        import hashlib
+        hash_object = hashlib.md5(text.encode())
+        hash_int = int(hash_object.hexdigest(), 16)
+        
+        # Generate pseudo-random vector (384 dimensions to match MiniLM)
+        vector = []
+        for i in range(384):
+            val = ((hash_int >> (i % 16)) & 1) * 2 - 1 # -1 or 1
+            vector.append(float(val) * 0.01)
+        return vector
 
     async def generate_profile_embedding(self, profile_data: dict) -> List[float]:
         """

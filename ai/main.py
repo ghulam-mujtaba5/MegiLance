@@ -15,13 +15,13 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Global models
-sentiment_pipeline = None
+embedding_model = None
 generator_pipeline = None
+sentiment_pipeline = None
 
 # Try importing ML libraries
 try:
-    from sklearn.feature_extraction.text import TfidfVectorizer
-    from sklearn.metrics.pairwise import cosine_similarity
+    from sentence_transformers import SentenceTransformer
     from transformers import pipeline
     ML_AVAILABLE = True
 except ImportError as e:
@@ -31,28 +31,34 @@ except ImportError as e:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Load models on startup
-    global sentiment_pipeline, generator_pipeline
+    global embedding_model, generator_pipeline, sentiment_pipeline
     if ML_AVAILABLE:
         try:
-            logger.info("Loading sentiment analysis model...")
+            logger.info("Loading embedding model (all-MiniLM-L6-v2)...")
+            # Small, fast, high-quality embeddings (384 dim)
+            embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            logger.info("Embedding model loaded.")
+            
+            logger.info("Loading text generation model (flan-t5-small)...")
+            # Instruction-tuned model, better for proposals/tasks than GPT2
+            generator_pipeline = pipeline("text2text-generation", model="google/flan-t5-small")
+            logger.info("Text generation model loaded.")
+
+            logger.info("Loading sentiment model...")
             sentiment_pipeline = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
             logger.info("Sentiment model loaded.")
-            
-            logger.info("Loading text generation model...")
-            # Use a very small model for CPU inference
-            generator_pipeline = pipeline("text-generation", model="distilgpt2")
-            logger.info("Text generation model loaded.")
         except Exception as e:
             logger.error(f"Failed to load ML models: {e}")
     yield
     # Clean up on shutdown
-    sentiment_pipeline = None
+    embedding_model = None
     generator_pipeline = None
+    sentiment_pipeline = None
 
 app = FastAPI(
     title="MegiLance AI Service",
-    description="AI-powered features for MegiLance platform",
-    version="1.0.0",
+    description="AI-powered features for MegiLance platform (Embeddings, Generation, Sentiment)",
+    version="2.0.0",
     lifespan=lifespan
 )
 
@@ -68,36 +74,91 @@ app.add_middleware(
 
 # --- Pydantic Models ---
 
-class AnalyzeRequest(BaseModel):
+class EmbeddingRequest(BaseModel):
     text: str
-    context: Optional[str] = None
+
+class EmbeddingResponse(BaseModel):
+    embedding: List[float]
+    dimensions: int
 
 class GenerateRequest(BaseModel):
     prompt: str
     max_length: int = 200
+    temperature: float = 0.7
 
-class FreelancerProfile(BaseModel):
-    id: str
-    name: str
-    bio: str
-    skills: List[str]
-
-class MatchRequest(BaseModel):
-    job_description: str
-    required_skills: List[str]
-    freelancers: List[FreelancerProfile]
-
-class MatchResult(BaseModel):
-    freelancer_id: str
-    score: float
-    match_reasons: List[str]
+class SentimentRequest(BaseModel):
+    text: str
 
 # --- Endpoints ---
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for container orchestration"""
+    """Health check endpoint"""
     return {
+        "status": "healthy",
+        "service": "megilance-ai",
+        "version": "2.0.0",
+        "ml_available": ML_AVAILABLE,
+        "models": {
+            "embeddings": "all-MiniLM-L6-v2" if embedding_model else "unavailable",
+            "generation": "google/flan-t5-small" if generator_pipeline else "unavailable",
+            "sentiment": "distilbert" if sentiment_pipeline else "unavailable"
+        }
+    }
+
+@app.post("/ai/embeddings", response_model=EmbeddingResponse)
+async def generate_embeddings(request: EmbeddingRequest):
+    """Generate vector embeddings for semantic search"""
+    if not embedding_model:
+        raise HTTPException(status_code=503, detail="Embedding model not loaded")
+    
+    try:
+        # Generate embedding
+        embedding = embedding_model.encode(request.text).tolist()
+        return {
+            "embedding": embedding,
+            "dimensions": len(embedding)
+        }
+    except Exception as e:
+        logger.error(f"Embedding generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/ai/generate")
+async def generate_text(request: GenerateRequest):
+    """Generate text using instruction-tuned model"""
+    if not generator_pipeline:
+        # Fallback if model fails
+        return {"text": "AI service is currently initializing. Please try again in a moment.", "method": "fallback"}
+    
+    try:
+        # Flan-T5 is text2text, so we pass the prompt directly
+        response = generator_pipeline(
+            request.prompt, 
+            max_length=request.max_length, 
+            do_sample=True,
+            temperature=request.temperature
+        )
+        return {
+            "text": response[0]['generated_text'],
+            "method": "flan-t5-small"
+        }
+    except Exception as e:
+        logger.error(f"Generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/ai/sentiment")
+async def analyze_sentiment(request: SentimentRequest):
+    """Analyze sentiment of text"""
+    if not sentiment_pipeline:
+        raise HTTPException(status_code=503, detail="Sentiment model not loaded")
+    
+    try:
+        result = sentiment_pipeline(request.text)[0]
+        return result
+    except Exception as e:
+        logger.error(f"Sentiment analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
         "status": "healthy",
         "service": "megilance-ai",
         "version": "1.0.0",

@@ -35,13 +35,13 @@ RUN useradd -m -u 1000 aiuser && chown -R aiuser:aiuser /app
 USER aiuser
 
 ENV PYTHONUNBUFFERED=1
-ENV PORT=8001
+ENV PORT=7860
 
-EXPOSE 8001
+EXPOSE 7860
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8001/health || exit 1
+    CMD curl -f http://localhost:7860/health || exit 1
 
 # Start AI service with uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "2"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860", "--workers", "2"]
