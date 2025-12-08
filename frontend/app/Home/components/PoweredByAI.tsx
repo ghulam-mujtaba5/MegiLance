@@ -10,7 +10,7 @@ import {
   TrendingUp,
   ShieldCheck,
   MessageCircle,
-  BarChart,
+  BarChart2,
   Zap,
   Sparkles,
   ArrowRight,
