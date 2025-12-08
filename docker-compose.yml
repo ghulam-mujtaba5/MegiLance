@@ -25,7 +25,6 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./db:/data/db:ro
       - uploads_data:/app/uploads  # Named volume for persistence
     env_file:
       - ./backend/.env

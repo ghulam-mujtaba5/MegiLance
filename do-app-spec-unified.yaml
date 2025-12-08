@@ -56,15 +56,12 @@ services:
       failure_threshold: 5
     
     envs:
-      # Database - Turso (libSQL)
-      - key: DATABASE_URL
-        value: "sqlite:///./local.db"
-        scope: RUN_AND_BUILD_TIME
+      # Database - Turso (libSQL) REMOTE ONLY
       - key: TURSO_DATABASE_URL
         value: "libsql://megilance-db-megilance.aws-ap-south-1.turso.io"
         scope: RUN_TIME
       - key: TURSO_AUTH_TOKEN
-        value: "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjM5MjA2NTcsImlkIjoiZGVmMGE2NzYtMGZiNC00MDAzLTkyNmItMDhlYzA4NjY4MWFkIiwicmlkIjoiYTliOGUwMzctZGQwNi00NTRiLTlmYzgtNGFmMzcxYTg0ODdiIn0.DbIrBHumR_y96cNkQGoUEwyeCqXQuM7y7hWm0UFWluRmIAgb2tGf-lExHqrkAspA_pmSp1tVjELrxw0dmxfgCQ"
+        value: "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjUyMjY1NTksImlkIjoiZGVmMGE2NzYtMGZiNC00MDAzLTkyNmItMDhlYzA4NjY4MWFkIiwicmlkIjoiYTliOGUwMzctZGQwNi00NTRiLTlmYzgtNGFmMzcxYTg0ODdiIn0.qt4d8AZ587-_i6QWt8f2oUCXuN2w4w0m6YvveN_BSVRFJVH1GM9DL8TuxQfzptpt7HiGBlvGsnbq7zwRrYCyDA"
         scope: RUN_TIME
         type: SECRET
       

@@ -29,9 +29,6 @@ region: blr
 services:
 - dockerfile_path: backend/Dockerfile
   envs:
-  - key: DATABASE_URL
-    scope: RUN_AND_BUILD_TIME
-    value: sqlite:///./local.db
   - key: TURSO_DATABASE_URL
     scope: RUN_TIME
     value: libsql://megilance-db-megilance.aws-ap-south-1.turso.io

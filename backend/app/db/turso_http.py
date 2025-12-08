@@ -37,12 +37,12 @@ class TursoHTTP:
             
             # Check if we should use local SQLite
             # If TURSO_DATABASE_URL is not set, or if we explicitly want local
-            # Also check for placeholder tokens and development environment
+            # Also check for placeholder tokens
             use_local = (
                 not settings.turso_database_url or 
                 not settings.turso_auth_token or
-                settings.environment == "development" or
-                "CHANGE_ME" in (settings.turso_auth_token or "")
+                "CHANGE_ME" in (settings.turso_auth_token or "") or
+                len(settings.turso_auth_token or "") < 50  # Token should be JWT, so much longer
             )
             
             if use_local:

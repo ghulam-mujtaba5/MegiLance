@@ -3,7 +3,7 @@ from .v1 import (
     health, users, mock, projects, proposals, contracts, portfolio, payments, 
     auth, client, upload, assessments, interviews, verification,
     analytics_pro, escrow_pro, notifications_pro, teams, audit, features,
-    export_import, i18n, rate_limiting, webhooks, gamification, scheduler, reports, referrals, moderation,
+    export_import, i18n, rate_limiting, webhooks, scheduler, reports, referrals, moderation,
     bulk_operations, saved_searches, activity_feed, api_keys, comments, file_versions, custom_fields,
     templates, calendar, organizations, notification_preferences, two_factor, email_templates, integrations,
     push_notifications, invoice_tax, contract_builder, skill_graph,
@@ -17,7 +17,7 @@ from .v1 import (
     # New enterprise features
     user_feedback, custom_branding, audit_trail, career_development,
     referral_program, communication_center, metrics_dashboard, data_analytics_export,
-    advanced_gamification, availability_calendar, review_responses, platform_compliance,
+    availability_calendar, review_responses, platform_compliance,
     notification_settings, search_analytics, rate_cards, proposal_templates,
     portfolio_showcase, notes_tags, custom_statuses, skill_taxonomy, search_advanced, realtime_notifications,
     ai_matching,
@@ -164,9 +164,6 @@ api_router.include_router(rate_limiting.router, prefix="/rate-limits", tags=["ra
 # Webhooks - Third-party integrations
 api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
 
-# Gamification - Points, badges, achievements
-api_router.include_router(gamification.router, prefix="/gamification", tags=["gamification"])
-
 # Background Task Scheduler - Job queue management
 api_router.include_router(scheduler.router, prefix="/scheduler", tags=["scheduler"])
 
@@ -305,9 +302,6 @@ api_router.include_router(metrics_dashboard.router, tags=["metrics"])
 
 # Data Analytics Export - BI and reporting exports
 api_router.include_router(data_analytics_export.router, tags=["data-export"])
-
-# Advanced Gamification - Points, levels, achievements
-api_router.include_router(advanced_gamification.router, tags=["advanced-gamification"])
 
 # Availability Calendar - Freelancer scheduling
 api_router.include_router(availability_calendar.router, tags=["availability"])

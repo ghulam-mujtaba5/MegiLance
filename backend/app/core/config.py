@@ -19,11 +19,14 @@ class Settings(BaseSettings):
     ]
 
     # Database - Turso (libSQL) Database as a Service
-    # Format: libsql://your-database.turso.io?authToken=your-token
-    # Or local development: file:./local.db
-    database_url: str = "file:./local.db"
-    turso_database_url: Optional[str] = None
-    turso_auth_token: Optional[str] = None
+    # Format: libsql://your-database.turso.io (auth token added separately)
+    # REQUIRED: Must set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN
+    database_url: Optional[str] = None  # Deprecated, use Turso
+    turso_database_url: str  # Required Turso database URL
+    turso_auth_token: str  # Required Turso auth token
+    
+    # Debug mode for verbose logging
+    debug: bool = False
 
     # MongoDB Configuration
     MONGODB_URL: str = "mongodb+srv://megilanceofficial_db_user:S0oNYXR4UggeiooT@cluster0.8is4jam.mongodb.net/?appName=Cluster0"
@@ -123,6 +126,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
         case_sensitive = False
         extra = "ignore"  # Ignore extra fields from .env
 
