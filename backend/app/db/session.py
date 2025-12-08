@@ -1,11 +1,11 @@
 """
-@AI-HINT: Database session management - TURSO REMOTE DATABASE ONLY
-No local SQLite fallback - all environments use Turso remote database
+@AI-HINT: Database session management - SQLite for dev, Turso for production
+Supports both SQLite local development and Turso remote database.
 """
 
 from sqlalchemy import create_engine, event, Engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import QueuePool
+from sqlalchemy.pool import QueuePool, StaticPool
 from app.core.config import get_settings
 import logging
 from typing import Optional
@@ -22,57 +22,84 @@ def get_engine():
     """
     Create and return database engine.
     
-    TURSO REMOTE DATABASE ONLY - No local SQLite fallback.
-    Requires TURSO_DATABASE_URL and TURSO_AUTH_TOKEN to be configured.
+    Uses Turso if configured, otherwise falls back to SQLite for local development.
     """
     global _engine
     if _engine is None:
         try:
-            # Validate Turso configuration - REQUIRED
-            if not settings.turso_database_url or not settings.turso_auth_token:
-                raise ValueError(
-                    "❌ TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are REQUIRED. "
-                    "Local SQLite database is NOT supported."
+            # Check if Turso is configured
+            if settings.turso_database_url and settings.turso_auth_token:
+                # Verify sqlalchemy-libsql is installed
+                try:
+                    import sqlalchemy_libsql
+                except ImportError:
+                    print("[WARNING] sqlalchemy-libsql not installed, falling back to SQLite")
+                    raise ImportError("sqlalchemy-libsql not installed")
+                
+                # Construct Turso URL with auth token
+                base_url = settings.turso_database_url
+                auth_token = settings.turso_auth_token
+                
+                # Add auth token as query parameter if not already present
+                if "authToken" not in base_url and "?" not in base_url:
+                    db_url = f"{base_url}?authToken={auth_token}"
+                elif "authToken" not in base_url:
+                    db_url = f"{base_url}&authToken={auth_token}"
+                else:
+                    db_url = base_url
+                
+                logger.info(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
+                print(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
+                
+                _engine = create_engine(
+                    db_url,
+                    connect_args={},
+                    poolclass=QueuePool,
+                    echo=settings.debug,
+                    pool_pre_ping=True,
+                    pool_recycle=3600,
                 )
-            
-            # Verify sqlalchemy-libsql is installed
-            try:
-                import sqlalchemy_libsql
-            except ImportError:
-                raise ImportError(
-                    "❌ sqlalchemy-libsql is REQUIRED for Turso connectivity. "
-                    "Install with: pip install sqlalchemy-libsql"
-                )
-            
-            # Construct Turso URL with auth token
-            base_url = settings.turso_database_url
-            auth_token = settings.turso_auth_token
-            
-            # Add auth token as query parameter if not already present
-            if "authToken" not in base_url and "?" not in base_url:
-                db_url = f"{base_url}?authToken={auth_token}"
-            elif "authToken" not in base_url:
-                db_url = f"{base_url}&authToken={auth_token}"
+                
+                logger.info("[TURSO] Database engine created successfully")
             else:
-                db_url = base_url
+                # Fallback to SQLite for local development
+                db_url = getattr(settings, 'database_url', None) or "sqlite:///./local_dev.db"
+                logger.info(f"[SQLITE] Using local database: {db_url}")
+                print(f"[SQLITE] Using local database: {db_url}")
+                
+                _engine = create_engine(
+                    db_url,
+                    connect_args={"check_same_thread": False} if "sqlite" in db_url else {},
+                    poolclass=StaticPool if "sqlite" in db_url else QueuePool,
+                    echo=settings.debug,
+                )
+                
+                logger.info("[SQLITE] Database engine created successfully")
             
-            logger.info(f"✅ Connecting to Turso remote database: {base_url.split('?')[0]}")
-            print(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
+        except ImportError as ie:
+            # SQLite fallback when sqlalchemy-libsql is not installed
+            db_url = getattr(settings, 'database_url', None) or "sqlite:///./local_dev.db"
+            logger.info(f"[SQLITE] Falling back to local database: {db_url}")
+            print(f"[SQLITE] Using local database: {db_url}")
             
             _engine = create_engine(
                 db_url,
-                connect_args={},
-                poolclass=QueuePool,
+                connect_args={"check_same_thread": False},
+                poolclass=StaticPool,
                 echo=settings.debug,
-                pool_pre_ping=True,  # Verify connections before using
-                pool_recycle=3600,   # Recycle connections hourly
             )
-            
-            logger.info("✅ Turso database engine created successfully")
-            
         except Exception as e:
-            logger.error(f"❌ Failed to create Turso database engine: {e}")
-            raise RuntimeError(f"Database connection failed: {e}")
+            logger.error(f"Failed to create database engine: {e}")
+            # Final fallback to SQLite
+            db_url = "sqlite:///./local_dev.db"
+            print(f"[SQLITE] Emergency fallback to: {db_url}")
+            
+            _engine = create_engine(
+                db_url,
+                connect_args={"check_same_thread": False},
+                poolclass=StaticPool,
+                echo=False,
+            )
 
     return _engine
 
