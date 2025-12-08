@@ -407,7 +407,7 @@ Once the registration bug is resolved, the platform is well-positioned for compr
 ```env
 # OAuth
 GOOGLE_CLIENT_ID=334576604932-n9g48l5qrtcblunb1jkin7161bdokmpg.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
 GITHUB_CLIENT_ID=Ov23ctGBUJFmDM3FHRCO
 GITHUB_CLIENT_SECRET=f952f535dbda3c20d99d5cbf2f1167c9aad7cdd6
 

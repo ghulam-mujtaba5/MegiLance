@@ -127,7 +127,7 @@ doctl apps logs c11a4609-da2f-4a63-bbe4-bebc5829c54d --type run
 3. ✅ `ai/Dockerfile` - Fixed port for HF Spaces
 4. ✅ `backend/.env` - Added AI_SERVICE_URL
 5. ✅ `current-app-spec.json` - Updated DO app spec
-6. ✅ `HF_DEPLOYMENT_COMPLETE.md` - Deployment documentation
+6. ✅ `hf_YOUR_HUGGING_FACE_TOKEN_COMPLETE.md` - Deployment documentation
 7. ✅ `COMPLETE_DEPLOYMENT_REPORT.md` - This file
 
 ---
@@ -227,7 +227,7 @@ curl https://megilance.site/api/health/ready
 
 ```powershell
 # Redeploy HF Space
-python deploy_to_hf.py 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
+python deploy_to_hf.py hf_YOUR_HUGGING_FACE_TOKEN
 
 # Test AI integration
 python test_ai_integration.py
