@@ -62,7 +62,7 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'standalone', // Disabled for dev - only needed for production Docker builds
+  output: 'standalone', // Required for Docker deployment
   
   // Production optimizations
   poweredByHeader: false, // Security: Remove X-Powered-By header
