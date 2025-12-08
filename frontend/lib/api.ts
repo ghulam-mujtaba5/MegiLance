@@ -1360,33 +1360,6 @@ export const analyticsApi = {
 };
 
 // ===========================
-// GAMIFICATION
-// ===========================
-export const gamificationApi = {
-  getProfile: () => apiFetch('/gamification/profile'),
-  getUserProfile: (userId: number) => apiFetch(`/gamification/profile/${userId}`),
-  getBadges: () => apiFetch('/gamification/badges'),
-  getBadgeInfo: (badgeType: string) => apiFetch(`/gamification/badges/${badgeType}`),
-  getLeaderboard: (category = 'all', period = 'all_time', limit = 50) =>
-    apiFetch(`/gamification/leaderboard?category=${category}&period=${period}&limit=${limit}`),
-  getMyRank: () => apiFetch('/gamification/rank'),
-  getStreak: () => apiFetch('/gamification/streak'),
-  checkIn: () => apiFetch('/gamification/streak/check-in', { method: 'POST' }),
-  getLevels: () => apiFetch('/gamification/levels'),
-  getActivityLog: (limit = 20) => apiFetch(`/gamification/activity?limit=${limit}`),
-  adminAwardPoints: (userId: number, points: number, reason: string) =>
-    apiFetch('/gamification/admin/award-points', {
-      method: 'POST',
-      body: JSON.stringify({ user_id: userId, points, reason }),
-    }),
-  adminAwardBadge: (userId: number, badgeType: string, reason?: string) =>
-    apiFetch('/gamification/admin/award-badge', {
-      method: 'POST',
-      body: JSON.stringify({ user_id: userId, badge_type: badgeType, reason }),
-    }),
-};
-
-// ===========================
 // REFERRAL PROGRAM
 // ===========================
 export const referralApi = {
@@ -1839,26 +1812,6 @@ export const complianceApi = {
       body: JSON.stringify({ granted }),
     }),
   getAuditReport: (reportType: string) => apiFetch(`/compliance/reports/${reportType}`),
-};
-
-// ===========================
-// ADVANCED GAMIFICATION
-// ===========================
-export const advancedGamificationApi = {
-  getAchievements: () => apiFetch('/advanced-gamification/achievements'),
-  getAchievementProgress: (achievementId: string) =>
-    apiFetch(`/advanced-gamification/achievements/${achievementId}/progress`),
-  getChallenges: (status?: string) => {
-    const params = status ? `?status=${status}` : '';
-    return apiFetch(`/advanced-gamification/challenges${params}`);
-  },
-  joinChallenge: (challengeId: string) =>
-    apiFetch(`/advanced-gamification/challenges/${challengeId}/join`, { method: 'POST' }),
-  getSeasons: () => apiFetch('/advanced-gamification/seasons'),
-  getSeasonProgress: (seasonId: string) => apiFetch(`/advanced-gamification/seasons/${seasonId}/progress`),
-  getRewards: () => apiFetch('/advanced-gamification/rewards'),
-  claimReward: (rewardId: string) =>
-    apiFetch(`/advanced-gamification/rewards/${rewardId}/claim`, { method: 'POST' }),
 };
 
 // ===========================
@@ -2395,7 +2348,6 @@ export default {
   ai: aiApi,
   aiWriting: aiWritingApi,
   // New API integrations
-  gamification: gamificationApi,
   referral: referralApi,
   career: careerApi,
   availability: availabilityApi,
@@ -2407,7 +2359,6 @@ export default {
   metrics: metricsApi,
   searchAnalytics: searchAnalyticsApi,
   compliance: complianceApi,
-  advancedGamification: advancedGamificationApi,
   twoFactor: twoFactorApi,
   webhooks: webhooksApi,
   apiKeys: apiKeysApi,

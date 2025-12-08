@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { Menu, X, ChevronDown, Users, Briefcase, Zap, Shield, Sparkles } from 'lucide-react';
+import { Menu, X, ChevronDown, Users, Briefcase, Zap, Shield } from 'lucide-react';
 
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import Button from '@/app/components/Button/Button';
@@ -184,10 +184,6 @@ const PublicHeader = () => {
           
           {/* Desktop Actions */}
           <div className={commonStyles.actionsContainer}>
-            <Link href="/explore" className={cn(commonStyles.exploreLink, styles.exploreLink)}>
-              <Sparkles size={16} />
-              Explore <StatusIndicator status="working" className="ml-1 scale-75" />
-            </Link>
             <Link href="/login">
               <Button variant="ghost" className={cn(commonStyles.signInButton, styles.signInButton)}>
                 Sign In
@@ -269,10 +265,6 @@ const PublicHeader = () => {
             ))}
           </ul>
           <div className={commonStyles.mobileActions}>
-            <Link href="/explore" onClick={closeMobileMenu} className={cn(commonStyles.mobileExploreLink, styles.mobileExploreLink)}>
-              <Sparkles size={18} />
-              Explore All Features <StatusIndicator status="working" className="ml-1 scale-75" />
-            </Link>
             <Link href="/login" onClick={closeMobileMenu}>
               <Button 
                 variant="ghost" 
