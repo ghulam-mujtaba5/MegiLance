@@ -18,7 +18,7 @@ import {
   Brain
 } from 'lucide-react';
 import PublicHeader from '../components/Layout/PublicHeader/PublicHeader';
-import Footer from '../components/Layout/Footer/Footer';
+import Footer from '../components/Footer/Footer';
 
 const aiFeatures = [
   {
