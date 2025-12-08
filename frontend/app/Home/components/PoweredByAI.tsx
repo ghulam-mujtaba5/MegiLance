@@ -1,4 +1,4 @@
-// @AI-HINT: "Powered by Enterprise-Grade AI" section component showcasing MegiLance's AI infrastructure, machine learning capabilities, and AI-driven features. Includes interactive feature cards, tech stack display, and performance metrics.
+// @AI-HINT: "AI-Powered Features" section showing MegiLance's actual deployed AI capabilities with honest status indicators.
 
 'use client';
 
@@ -14,47 +14,51 @@ import {
   Zap,
   Sparkles,
   ArrowRight,
-  Database,
+  FileText,
+  Search,
+  CheckCircle2,
 } from 'lucide-react';
 
 import commonStyles from './PoweredByAI.common.module.css';
 import lightStyles from './PoweredByAI.light.module.css';
 import darkStyles from './PoweredByAI.dark.module.css';
 
-// --- SVG Logo Components for Tech Stack ---
-const TensorFlowIcon = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11.964 0L4.536 4.311v15.378l7.428 4.311 7.428-4.31V4.311zm.036 21.536L6.536 18.38V7.577l5.464-3.155 5.464 3.155v10.8l-5.428 3.156zM12 10.433l-3.103-1.792v3.584L12 14.017l3.103-1.792v-3.584zM8.897 6.845L12 5.05l3.103 1.795v3.583L12 12.22l-3.103-1.792z" fill="currentColor"/>
-  </svg>
-);
-
-const OpenAIIcon = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364l2.0201-1.1638a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.4046-.6813zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997z" fill="currentColor"/>
-  </svg>
-);
-
-const PyTorchIcon = () => (
-  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.005 0L4.952 7.053a9.865 9.865 0 000 13.94 9.866 9.866 0 0013.94 0 9.865 9.865 0 000-13.94l-1.39 1.39a7.893 7.893 0 010 11.16 7.893 7.893 0 01-11.16 0 7.893 7.893 0 010-11.16l4.27-4.27v4.27a3.945 3.945 0 00-2.786 6.73 3.945 3.945 0 005.58 0 3.945 3.945 0 000-5.58 3.945 3.945 0 00-2.794-1.154V0h-.607zm4.27 3.945a.986.986 0 100 1.972.986.986 0 000-1.972z" fill="currentColor"/>
-  </svg>
-);
-
+// --- SVG Logo Components for Tech Stack (Actual technologies used) ---
 const HuggingFaceIcon = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 1.5a8.5 8.5 0 110 17 8.5 8.5 0 010-17zm-3.5 6a1.25 1.25 0 100 2.5 1.25 1.25 0 000-2.5zm7 0a1.25 1.25 0 100 2.5 1.25 1.25 0 000-2.5zM12 13c-2.5 0-4 1.5-4 3h8c0-1.5-1.5-3-4-3z" fill="currentColor"/>
   </svg>
 );
 
-const OracleIcon = () => (
+const FastAPIIcon = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7.076 7.076C4.952 7.076 3.217 8.81 3.217 10.936v2.128c0 2.125 1.735 3.86 3.86 3.86h9.847c2.125 0 3.86-1.735 3.86-3.86v-2.128c0-2.125-1.735-3.86-3.86-3.86H7.076zm9.847 1.5h.001c1.287 0 2.36 1.072 2.36 2.36v2.128c0 1.287-1.073 2.36-2.36 2.36H7.076c-1.288 0-2.36-1.073-2.36-2.36v-2.128c0-1.288 1.072-2.36 2.36-2.36h9.847z" fill="currentColor"/>
+    <path d="M12 0C5.375 0 0 5.375 0 12c0 6.627 5.375 12 12 12 6.626 0 12-5.373 12-12 0-6.625-5.373-12-12-12zm-.624 21.62v-7.528H7.19L13.203 2.38v7.528h4.029L11.376 21.62z" fill="currentColor"/>
   </svg>
 );
 
-const ScikitLearnIcon = () => (
+const PythonIcon = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11.13.43a.48.48 0 00-.76.42l1.36 9.84-8.22 3.03a.48.48 0 00-.28.6l7.4 9.23a.48.48 0 00.76-.42L10.03 13.3l8.22-3.03a.48.48 0 00.28-.6L11.13.44zM24 10.1a2.88 2.88 0 00-2.88-2.88h-1.92a.96.96 0 100 1.92h1.92a.96.96 0 110 1.92h-1.92a.96.96 0 100 1.92h1.92A2.88 2.88 0 0024 10.1z" fill="currentColor"/>
+    <path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05z" fill="currentColor"/>
+  </svg>
+);
+
+const TursoIcon = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/>
+  </svg>
+);
+
+const NextJSIcon = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18.665 21.978C16.758 23.255 14.465 24 12 24 5.377 24 0 18.623 0 12S5.377 0 12 0s12 5.377 12 12c0 3.583-1.574 6.801-4.067 9.001L9.219 7.2H7.2v9.596h1.615V9.251l9.85 12.727z" fill="currentColor"/>
+  </svg>
+);
+
+const SentenceTransformersIcon = () => (
+  <svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none"/>
+    <path d="M12 6v12M6 12h12" stroke="currentColor" strokeWidth="2"/>
+    <circle cx="12" cy="12" r="3" fill="currentColor"/>
   </svg>
 );
 
@@ -66,88 +70,104 @@ interface AIFeature {
   metric: string;
   metricValue: string;
   variant: 'blue' | 'green' | 'orange' | 'purple' | 'red' | 'teal' | 'pink';
+  status: 'live' | 'beta' | 'smart';
+  endpoint: string;
 }
 
 const aiFeatures: AIFeature[] = [
   {
     id: 'matching',
     icon: <BrainCircuit />,
-    title: 'Intelligent Job Matching',
+    title: 'Smart Job Matching',
     description:
-      'Our AI analyzes your skills, experience, and portfolio to match you with high-value projects that perfectly align with your expertise.',
-    metric: 'Match Accuracy',
-    metricValue: '97%',
+      'Skill-based matching algorithm analyzes your expertise and compares it with project requirements for accurate job recommendations.',
+    metric: 'Algorithm',
+    metricValue: 'Skill Overlap',
     variant: 'blue',
+    status: 'live',
+    endpoint: '/api/ai/match-freelancers/{project_id}'
   },
   {
     id: 'pricing',
     icon: <TrendingUp />,
-    title: 'Dynamic Price Modeling',
+    title: 'Price Estimation',
     description:
-      'Get data-driven pricing recommendations based on real-time market trends, demand signals, and historical project data to maximize earnings.',
-    metric: 'Earning Potential',
-    metricValue: '+25%',
+      'Data-driven pricing based on category averages, complexity multipliers, and market rates from completed projects in our database.',
+    metric: 'Data Source',
+    metricValue: 'Market Rates',
     variant: 'green',
+    status: 'live',
+    endpoint: '/api/ai/estimate-price'
   },
   {
     id: 'fraud',
     icon: <ShieldCheck />,
-    title: 'Proactive Fraud Shield',
+    title: 'Fraud Detection',
     description:
-      'Advanced machine learning algorithms continuously monitor transactions and user behavior to protect you from scams and fraudulent activity.',
-    metric: 'Security Level',
-    metricValue: '99.9%',
+      'Multi-layer protection with keyword analysis, pattern detection, and risk scoring for users, projects, and proposals.',
+    metric: 'Coverage',
+    metricValue: 'Full Stack',
     variant: 'red',
+    status: 'live',
+    endpoint: '/api/ai/fraud-check'
   },
   {
-    id: 'support',
+    id: 'chatbot',
     icon: <MessageCircle />,
-    title: 'Contextual AI Assist',
+    title: 'AI Chatbot',
     description:
-      '24/7 intelligent chatbot support for platform guidance, proposal generation, dispute resolution, and strategic career advice.',
-    metric: 'Response Time',
-    metricValue: '<1min',
+      'Intelligent assistant that helps with platform navigation, pricing queries, freelancer recommendations, and general support.',
+    metric: 'Response',
+    metricValue: 'Instant',
     variant: 'purple',
+    status: 'live',
+    endpoint: '/api/ai/chat'
   },
   {
-    id: 'analytics',
-    icon: <BarChart />,
-    title: 'Performance Analytics',
+    id: 'embeddings',
+    icon: <Search />,
+    title: 'Semantic Search',
     description:
-      'AI-powered insights help you optimize your profile, track performance trends, identify strengths, and accelerate career growth with actionable recommendations.',
-    metric: 'Growth Impact',
-    metricValue: '3x Faster',
-    variant: 'orange',
-  },
-  {
-    id: 'automation',
-    icon: <Zap />,
-    title: 'Automated Workflows',
-    description:
-      'Intelligent automation handles routine tasks like invoicing, milestone tracking, payment processing, and project updates—freeing you to focus on your craft.',
-    metric: 'Time Saved Weekly',
-    metricValue: '10+ Hours',
+      'Vector embeddings for semantic similarity matching, powered by sentence-transformers (all-MiniLM-L6-v2) with 384 dimensions.',
+    metric: 'Dimensions',
+    metricValue: '384',
     variant: 'teal',
+    status: 'beta',
+    endpoint: '/ai/embeddings'
   },
   {
-    id: 'insights',
-    icon: <Sparkles />,
-    title: 'Predictive Career Insights',
+    id: 'proposals',
+    icon: <FileText />,
+    title: 'Proposal Generator',
     description:
-      'Machine learning models predict market trends, emerging skills in demand, and optimal project timing to keep you ahead of the competition.',
-    metric: 'Accuracy',
-    metricValue: '96%',
+      'Professional proposal templates generated based on project context, using intelligent templating for high-quality cover letters.',
+    metric: 'Quality',
+    metricValue: 'Professional',
+    variant: 'orange',
+    status: 'live',
+    endpoint: '/ai/generate'
+  },
+  {
+    id: 'sentiment',
+    icon: <Sparkles />,
+    title: 'Sentiment Analysis',
+    description:
+      'Analyze text sentiment for reviews and feedback using keyword-based classification with positive/negative/neutral labels.',
+    metric: 'Classification',
+    metricValue: '3 Classes',
     variant: 'pink',
+    status: 'live',
+    endpoint: '/ai/sentiment'
   },
 ];
 
 const techStackData = [
-  { name: 'TensorFlow', type: 'Deep Learning', Icon: TensorFlowIcon },
-  { name: 'OpenAI', type: 'Language Models', Icon: OpenAIIcon },
-  { name: 'PyTorch', type: 'ML Framework', Icon: PyTorchIcon },
-  { name: 'Hugging Face', type: 'NLP Models', Icon: HuggingFaceIcon },
-  { name: 'Oracle 26ai', type: 'AI Database', Icon: OracleIcon },
-  { name: 'scikit-learn', type: 'ML Tools', Icon: ScikitLearnIcon },
+  { name: 'Hugging Face', type: 'AI Hosting', Icon: HuggingFaceIcon },
+  { name: 'FastAPI', type: 'AI Backend', Icon: FastAPIIcon },
+  { name: 'Python', type: 'ML Engine', Icon: PythonIcon },
+  { name: 'Sentence Transformers', type: 'Embeddings', Icon: SentenceTransformersIcon },
+  { name: 'Turso', type: 'Edge Database', Icon: TursoIcon },
+  { name: 'Next.js', type: 'Frontend', Icon: NextJSIcon },
 ];
 
 interface FeatureCardProps {
@@ -165,6 +185,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 }) => {
   const variantClass = `variant${feature.variant.charAt(0).toUpperCase() + feature.variant.slice(1)}`;
 
+  const statusConfig = {
+    live: { label: 'Live', className: commonStyles.statusLive },
+    beta: { label: 'Beta', className: commonStyles.statusBeta },
+    smart: { label: 'Smart Rules', className: commonStyles.statusSmart },
+  };
+
+  const currentStatus = statusConfig[feature.status];
+
   return (
     <div
       className={cn(
@@ -178,6 +206,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
     >
       {/* Gradient Accent Line */}
       <div className={commonStyles.accentLine} />
+
+      {/* Status Badge */}
+      <div className={cn(commonStyles.statusBadge, currentStatus.className)}>
+        <CheckCircle2 size={12} />
+        <span>{currentStatus.label}</span>
+      </div>
 
       {/* Icon */}
       <div className={cn(commonStyles.iconWrapper, commonStyles[variantClass as keyof typeof commonStyles])}>
@@ -198,6 +232,8 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         <p className={cn(commonStyles.cardDescription, themeStyles.cardDescription)}>
           {feature.description}
         </p>
+        {/* API Endpoint hint */}
+        <code className={commonStyles.endpointHint}>{feature.endpoint}</code>
       </div>
 
       {/* CTA Arrow (Visible on Hover) */}
@@ -231,15 +267,14 @@ const PoweredByAI: React.FC = () => {
           </div>
 
           <h2 className={cn(commonStyles.heading, themeStyles.heading)}>
-            Powered by
+            Smart Features
             <br />
-            <span className={commonStyles.highlightText}>Enterprise-Grade AI</span>
+            <span className={commonStyles.highlightText}>Actually Deployed</span>
           </h2>
 
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Your AI Co-Pilot for Freelance Success. MegiLance integrates cutting-edge machine
-            learning to automate the mundane and amplify your potential. Our models are trained
-            on millions of successful projects to give you a competitive edge.
+            Real AI services running on our infrastructure. Our platform uses intelligent algorithms 
+            for job matching, fraud detection, and content generation. All features are live and working.
           </p>
         </div>
 
@@ -259,16 +294,16 @@ const PoweredByAI: React.FC = () => {
         {/* Capabilities Summary */}
         <div className={cn(commonStyles.capabilitiesSection, themeStyles.capabilitiesSection)}>
           <h3 className={cn(commonStyles.capabilitiesTitle, themeStyles.capabilitiesTitle)}>
-            AI Capabilities
+            What&apos;s Working Now
           </h3>
           <div className={commonStyles.capabilitiesGrid}>
             {[
-              { icon: '🎯', text: 'Smart skill-based job matching' },
-              { icon: '📊', text: 'Real-time market analysis' },
-              { icon: '🛡️', text: 'Continuous fraud monitoring' },
-              { icon: '💡', text: 'Intelligent proposal suggestions' },
-              { icon: '⚡', text: 'Automated task completion' },
-              { icon: '📈', text: 'Predictive performance insights' },
+              { icon: '✓', text: 'Skill-based job matching' },
+              { icon: '✓', text: 'Market-rate price estimation' },
+              { icon: '✓', text: 'Multi-layer fraud detection' },
+              { icon: '✓', text: 'Intelligent chatbot support' },
+              { icon: '✓', text: 'Professional proposal templates' },
+              { icon: 'β', text: 'Semantic vector embeddings' },
             ].map((item, idx) => (
               <div key={idx} className={commonStyles.capabilityItem}>
                 <span className={commonStyles.capabilityIcon}>{item.icon}</span>

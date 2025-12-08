@@ -1,3 +1,12 @@
+---
+title: MegiLance AI Service
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+---
+
 # MegiLance AI Microservice
 
 This service provides real AI capabilities using open-source models.

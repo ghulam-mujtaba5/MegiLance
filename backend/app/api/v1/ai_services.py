@@ -586,3 +586,413 @@ async def check_proposal_fraud_risk(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error analyzing proposal: {str(e)}"
         )
+
+
+# ============ Skill Extraction Endpoint ============
+
+@router.post("/extract-skills")
+async def extract_skills_from_text(
+    text: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    AI Skill Extraction - extracts skills from project description or profile text
+    
+    - **text**: Text to analyze for skills
+    """
+    # Common skill keywords organized by category
+    skill_categories = {
+        "programming": ["python", "javascript", "typescript", "java", "c++", "c#", "ruby", "go", "rust", "php", "swift", "kotlin"],
+        "web_development": ["html", "css", "react", "vue", "angular", "node.js", "express", "django", "flask", "fastapi", "nextjs", "gatsby"],
+        "mobile": ["ios", "android", "flutter", "react native", "swift", "kotlin", "xamarin"],
+        "database": ["sql", "mysql", "postgresql", "mongodb", "redis", "elasticsearch", "sqlite", "oracle"],
+        "cloud": ["aws", "azure", "gcp", "docker", "kubernetes", "terraform", "ci/cd", "devops"],
+        "data_science": ["machine learning", "deep learning", "tensorflow", "pytorch", "pandas", "numpy", "data analysis", "nlp", "computer vision"],
+        "design": ["figma", "sketch", "adobe xd", "photoshop", "illustrator", "ui/ux", "wireframing", "prototyping"],
+        "soft_skills": ["communication", "leadership", "project management", "agile", "scrum", "team collaboration"]
+    }
+    
+    text_lower = text.lower()
+    extracted_skills = []
+    skill_details = []
+    
+    for category, skills in skill_categories.items():
+        for skill in skills:
+            if skill in text_lower:
+                extracted_skills.append(skill)
+                skill_details.append({
+                    "skill": skill,
+                    "category": category.replace("_", " ").title(),
+                    "confidence": 0.9 if skill.lower() in text_lower.split() else 0.7
+                })
+    
+    # Remove duplicates while preserving order
+    seen = set()
+    unique_skills = []
+    unique_details = []
+    for skill, detail in zip(extracted_skills, skill_details):
+        if skill not in seen:
+            seen.add(skill)
+            unique_skills.append(skill)
+            unique_details.append(detail)
+    
+    return {
+        "skills": unique_skills,
+        "details": unique_details,
+        "total_found": len(unique_skills),
+        "text_length": len(text)
+    }
+
+
+# ============ Proposal Generation Endpoint ============
+
+@router.post("/generate-proposal")
+async def generate_proposal(
+    project_title: str,
+    project_description: str,
+    freelancer_name: str = "Professional",
+    years_experience: int = 3,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    AI Proposal Generator - generates professional cover letter for a project
+    
+    - **project_title**: Title of the project
+    - **project_description**: Description of the project requirements
+    - **freelancer_name**: Name of the freelancer
+    - **years_experience**: Years of relevant experience
+    """
+    # Detect key project aspects for personalization
+    desc_lower = project_description.lower()
+    
+    # Detect project type
+    if "web" in desc_lower or "website" in desc_lower:
+        project_type = "web development"
+        expertise = "building responsive, user-friendly web applications"
+    elif "mobile" in desc_lower or "app" in desc_lower:
+        project_type = "mobile application"
+        expertise = "developing intuitive mobile experiences"
+    elif "data" in desc_lower or "analytics" in desc_lower:
+        project_type = "data analytics"
+        expertise = "transforming data into actionable insights"
+    elif "design" in desc_lower or "ui" in desc_lower:
+        project_type = "design"
+        expertise = "creating visually stunning and functional designs"
+    else:
+        project_type = "software development"
+        expertise = "delivering high-quality technical solutions"
+    
+    # Generate proposal
+    proposal = f"""Dear Hiring Manager,
+
+I am writing to express my strong interest in the "{project_title}" project. After carefully reviewing your requirements, I am confident that my {years_experience}+ years of experience in {project_type} make me an excellent fit for this opportunity.
+
+Your project particularly caught my attention because it aligns with my passion for {expertise}. I have successfully completed similar projects in the past, consistently delivering results that exceed client expectations.
+
+Here's what I bring to the table:
+
+• Proven expertise in {project_type} with a track record of on-time delivery
+• Strong communication skills ensuring you're always updated on progress
+• Attention to detail and commitment to quality in every aspect
+• Flexibility to adapt to your specific requirements and feedback
+
+I would love the opportunity to discuss how I can contribute to the success of this project. I am available to start immediately and can adjust my schedule to meet your timeline.
+
+Looking forward to collaborating with you!
+
+Best regards,
+{freelancer_name}"""
+
+    return {
+        "proposal": proposal,
+        "word_count": len(proposal.split()),
+        "project_type_detected": project_type,
+        "personalization_level": "high" if len(project_description) > 100 else "medium"
+    }
+
+
+# ============ Sentiment Analysis Endpoint ============
+
+@router.post("/analyze-sentiment")
+async def analyze_sentiment(
+    text: str,
+):
+    """
+    AI Sentiment Analysis - analyzes text sentiment for reviews and feedback
+    
+    **No authentication required** - can be used for review analysis
+    """
+    positive_words = ['excellent', 'great', 'good', 'amazing', 'awesome', 'wonderful', 
+                     'fantastic', 'love', 'best', 'perfect', 'outstanding', 'brilliant',
+                     'satisfied', 'happy', 'pleased', 'impressed', 'recommend', 'professional',
+                     'quality', 'helpful', 'responsive', 'talented', 'skilled', 'efficient']
+    negative_words = ['bad', 'poor', 'terrible', 'awful', 'horrible', 'worst', 'hate',
+                     'disappointed', 'unsatisfied', 'unprofessional', 'late', 'never',
+                     'waste', 'refund', 'scam', 'avoid', 'slow', 'rude', 'incomplete',
+                     'missing', 'wrong', 'fail', 'failed', 'problem', 'issue']
+    
+    text_lower = text.lower()
+    
+    positive_matches = [word for word in positive_words if word in text_lower]
+    negative_matches = [word for word in negative_words if word in text_lower]
+    
+    positive_count = len(positive_matches)
+    negative_count = len(negative_matches)
+    
+    if positive_count > negative_count:
+        sentiment = "POSITIVE"
+        score = min(0.95, 0.6 + (positive_count * 0.08))
+    elif negative_count > positive_count:
+        sentiment = "NEGATIVE"
+        score = min(0.95, 0.6 + (negative_count * 0.08))
+    else:
+        sentiment = "NEUTRAL"
+        score = 0.5
+    
+    return {
+        "sentiment": sentiment,
+        "score": round(score, 2),
+        "confidence": "high" if abs(positive_count - negative_count) > 2 else "medium" if positive_count + negative_count > 0 else "low",
+        "positive_indicators": positive_matches[:5],
+        "negative_indicators": negative_matches[:5]
+    }
+
+
+# ============ Profile Optimization Endpoint ============
+
+@router.get("/profile-suggestions/{user_id}")
+async def get_profile_optimization_suggestions(
+    user_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    AI Profile Optimizer - provides suggestions to improve freelancer profile
+    
+    - **user_id**: ID of the user to analyze
+    """
+    # Only allow self or admin
+    user_type = current_user.user_type.lower() if current_user.user_type else ""
+    is_admin = user_type == "admin" or current_user.role.lower() == "admin"
+    
+    if current_user.id != user_id and not is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to view this profile"
+        )
+    
+    try:
+        result = execute_query(
+            """SELECT id, full_name, bio, skills, hourly_rate, portfolio_url,
+                      profile_image, completed_projects, rating, years_experience
+               FROM users WHERE id = ?""",
+            [user_id]
+        )
+        
+        if not result or not result.get("rows"):
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        row = result["rows"][0]
+        bio = to_str(row[2]) or ""
+        skills_str = to_str(row[3]) or ""
+        hourly_rate = row[4].get("value") if row[4].get("type") != "null" else None
+        portfolio_url = to_str(row[5])
+        profile_image = to_str(row[6])
+        completed_projects = row[7].get("value") if row[7].get("type") != "null" else 0
+        
+        suggestions = []
+        profile_score = 100
+        
+        # Check bio
+        if not bio:
+            suggestions.append({
+                "area": "Bio",
+                "priority": "high",
+                "suggestion": "Add a professional bio describing your expertise and experience",
+                "impact": "+15 profile visibility"
+            })
+            profile_score -= 15
+        elif len(bio) < 100:
+            suggestions.append({
+                "area": "Bio",
+                "priority": "medium",
+                "suggestion": "Expand your bio to at least 150 words for better engagement",
+                "impact": "+10 profile visibility"
+            })
+            profile_score -= 10
+        
+        # Check skills
+        import json
+        try:
+            skills = json.loads(skills_str) if skills_str else []
+        except:
+            skills = skills_str.split(",") if skills_str else []
+        
+        if len(skills) < 3:
+            suggestions.append({
+                "area": "Skills",
+                "priority": "high",
+                "suggestion": "Add at least 5 relevant skills to improve job matching",
+                "impact": "+20 match accuracy"
+            })
+            profile_score -= 20
+        elif len(skills) < 5:
+            suggestions.append({
+                "area": "Skills",
+                "priority": "medium",
+                "suggestion": "Consider adding more skills to broaden your opportunities",
+                "impact": "+10 match accuracy"
+            })
+            profile_score -= 10
+        
+        # Check hourly rate
+        if not hourly_rate:
+            suggestions.append({
+                "area": "Hourly Rate",
+                "priority": "high",
+                "suggestion": "Set your hourly rate to appear in project searches",
+                "impact": "+15 search visibility"
+            })
+            profile_score -= 15
+        
+        # Check portfolio
+        if not portfolio_url:
+            suggestions.append({
+                "area": "Portfolio",
+                "priority": "medium",
+                "suggestion": "Add a portfolio link to showcase your work",
+                "impact": "+10 client trust"
+            })
+            profile_score -= 10
+        
+        # Check profile image
+        if not profile_image:
+            suggestions.append({
+                "area": "Profile Image",
+                "priority": "high",
+                "suggestion": "Upload a professional profile photo",
+                "impact": "+15 client engagement"
+            })
+            profile_score -= 15
+        
+        return {
+            "user_id": user_id,
+            "profile_score": max(0, profile_score),
+            "suggestions": suggestions,
+            "suggestion_count": len(suggestions),
+            "next_steps": suggestions[0]["suggestion"] if suggestions else "Your profile looks great!"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error analyzing profile: {str(e)}"
+        )
+
+
+# ============ Job Recommendation Endpoint ============
+
+@router.get("/recommend-jobs/{user_id}")
+async def recommend_jobs_for_user(
+    user_id: int,
+    limit: int = 10,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    AI Job Recommender - recommends suitable projects based on user skills
+    
+    - **user_id**: ID of the freelancer
+    - **limit**: Maximum number of recommendations
+    """
+    # Only allow self or admin
+    user_type = current_user.user_type.lower() if current_user.user_type else ""
+    is_admin = user_type == "admin" or current_user.role.lower() == "admin"
+    
+    if current_user.id != user_id and not is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized"
+        )
+    
+    try:
+        # Get user skills
+        user_result = execute_query(
+            "SELECT skills, hourly_rate FROM users WHERE id = ?",
+            [user_id]
+        )
+        
+        if not user_result or not user_result.get("rows"):
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        user_row = user_result["rows"][0]
+        skills_str = to_str(user_row[0]) or ""
+        hourly_rate = user_row[1].get("value") if user_row[1].get("type") != "null" else 0
+        
+        import json
+        try:
+            user_skills = json.loads(skills_str) if skills_str else []
+        except:
+            user_skills = skills_str.split(",") if skills_str else []
+        
+        user_skills_lower = [s.lower().strip() for s in user_skills if s]
+        
+        # Get open projects
+        projects_result = execute_query(
+            """SELECT id, title, description, skills_required, budget_min, budget_max, category
+               FROM projects
+               WHERE status = 'open'
+               ORDER BY created_at DESC
+               LIMIT ?""",
+            [limit * 3]
+        )
+        
+        recommendations = []
+        if projects_result and projects_result.get("rows"):
+            for row in projects_result["rows"]:
+                project_id = row[0].get("value") if row[0].get("type") != "null" else None
+                title = to_str(row[1])
+                description = to_str(row[2]) or ""
+                proj_skills_str = to_str(row[3]) or ""
+                budget_min = row[4].get("value") if row[4].get("type") != "null" else 0
+                budget_max = row[5].get("value") if row[5].get("type") != "null" else 0
+                category = to_str(row[6])
+                
+                try:
+                    proj_skills = json.loads(proj_skills_str) if proj_skills_str else []
+                except:
+                    proj_skills = proj_skills_str.split(",") if proj_skills_str else []
+                
+                proj_skills_lower = [s.lower().strip() for s in proj_skills if s]
+                
+                # Calculate match score
+                matching_skills = set(user_skills_lower) & set(proj_skills_lower)
+                match_score = len(matching_skills) / max(len(proj_skills_lower), 1) * 100
+                
+                if match_score > 0:
+                    recommendations.append({
+                        "project_id": project_id,
+                        "title": title,
+                        "category": category,
+                        "budget_range": f"${budget_min}-${budget_max}",
+                        "matching_skills": list(matching_skills),
+                        "match_score": round(match_score, 1),
+                        "match_reason": f"Matched {len(matching_skills)} of {len(proj_skills_lower)} required skills"
+                    })
+        
+        # Sort by match score
+        recommendations.sort(key=lambda x: x["match_score"], reverse=True)
+        recommendations = recommendations[:limit]
+        
+        return {
+            "user_id": user_id,
+            "recommendations": recommendations,
+            "total_recommendations": len(recommendations),
+            "user_skills": user_skills[:10]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error recommending jobs: {str(e)}"
+        )

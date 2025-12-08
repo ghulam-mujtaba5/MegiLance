@@ -1,14 +1,14 @@
-# @AI-HINT: Production-ready AI service main entry point
-# FastAPI-based AI service with health checks and integration with backend
+# @AI-HINT: Ultra-lightweight AI service with smart fallbacks
+# Optimized for 2GB free tier: Uses hash-based embeddings if ML unavailable
 
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
 import os
 import logging
-import numpy as np
-from contextlib import asynccontextmanager
+import hashlib
+import math
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -16,62 +16,46 @@ logger = logging.getLogger(__name__)
 
 # Global models
 embedding_model = None
-generator_pipeline = None
-sentiment_pipeline = None
+ML_AVAILABLE = False
 
-# Try importing ML libraries
+# Try importing ML libraries (optional)
 try:
     from sentence_transformers import SentenceTransformer
-    from transformers import pipeline
     ML_AVAILABLE = True
+    logger.info("sentence-transformers available")
 except ImportError as e:
-    logger.warning(f"ML libraries not found: {e}. AI features will run in degraded mode.")
-    ML_AVAILABLE = False
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Load only the embedding model on startup (most critical)
-    # Other models will be lazy-loaded on first use to reduce memory
-    global embedding_model
-    if ML_AVAILABLE:
-        try:
-            logger.info("Loading embedding model (all-MiniLM-L6-v2)...")
-            # Small, fast, high-quality embeddings (384 dim)
-            embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-            logger.info("✅ Embedding model loaded. Other models will load on-demand.")
-        except Exception as e:
-            logger.error(f"Failed to load ML models: {e}")
-    yield
-    # Clean up on shutdown
-    embedding_model = None
-    generator_pipeline = None
-    sentiment_pipeline = None
+    logger.warning(f"ML libraries not available: {e}. Using smart fallbacks.")
 
 app = FastAPI(
     title="MegiLance AI Service",
-    description="AI-powered features for MegiLance platform (Embeddings, Generation, Sentiment)",
-    version="2.0.0",
-    lifespan=lifespan
+    description="AI-powered features for MegiLance platform",
+    version="1.1.0"
 )
 
-# CORS configuration
-origins = os.getenv("CORS_ORIGINS", "*").split(",")
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# --- Pydantic Models ---
+# Lazy load embedding model
+def get_embedding_model():
+    global embedding_model
+    if ML_AVAILABLE and embedding_model is None:
+        try:
+            logger.info("Loading embedding model...")
+            embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            logger.info("✅ Embedding model loaded")
+        except Exception as e:
+            logger.error(f"Failed to load model: {e}")
+    return embedding_model
 
+# Request Models
 class EmbeddingRequest(BaseModel):
     text: str
-
-class EmbeddingResponse(BaseModel):
-    embedding: List[float]
-    dimensions: int
 
 class GenerateRequest(BaseModel):
     prompt: str
@@ -81,102 +65,46 @@ class GenerateRequest(BaseModel):
 class SentimentRequest(BaseModel):
     text: str
 
-# --- Endpoints ---
+class SkillExtractionRequest(BaseModel):
+    text: str
 
+class ProposalRequest(BaseModel):
+    project_title: str
+    project_description: str
+    freelancer_name: str = "Professional"
+    years_experience: int = 3
+
+# Utility functions
+def text_to_embedding(text: str, dim: int = 384) -> List[float]:
+    """Generate deterministic embedding from text using hash"""
+    # Create a deterministic but distributed embedding
+    text_bytes = text.encode('utf-8')
+    embeddings = []
+    for i in range(dim):
+        h = hashlib.md5(text_bytes + str(i).encode()).hexdigest()
+        # Convert to float between -1 and 1
+        val = (int(h[:8], 16) / 0xFFFFFFFF) * 2 - 1
+        embeddings.append(round(val, 6))
+    
+    # Normalize to unit length
+    magnitude = math.sqrt(sum(x*x for x in embeddings))
+    if magnitude > 0:
+        embeddings = [x / magnitude for x in embeddings]
+    
+    return embeddings
+
+# Endpoints
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
+    model = get_embedding_model()
     return {
         "status": "healthy",
         "service": "megilance-ai",
-        "version": "2.0.0",
+        "version": "1.1.0",
         "ml_available": ML_AVAILABLE,
-        "models": {
-            "embeddings": "all-MiniLM-L6-v2" if embedding_model else "unavailable",
-            "generation": "google/flan-t5-small" if generator_pipeline else "unavailable",
-            "sentiment": "distilbert" if sentiment_pipeline else "unavailable"
-        }
-    }
-
-@app.post("/ai/embeddings", response_model=EmbeddingResponse)
-async def generate_embeddings(request: EmbeddingRequest):
-    """Generate vector embeddings for semantic search"""
-    if not embedding_model:
-        raise HTTPException(status_code=503, detail="Embedding model not loaded")
-    
-    try:
-        # Generate embedding
-        embedding = embedding_model.encode(request.text).tolist()
-        return {
-            "embedding": embedding,
-            "dimensions": len(embedding)
-        }
-    except Exception as e:
-        logger.error(f"Embedding generation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/ai/generate")
-async def generate_text(request: GenerateRequest):
-    """Generate text using instruction-tuned model (lazy loaded)"""
-    global generator_pipeline
-    
-    # Lazy load on first use
-    if not generator_pipeline and ML_AVAILABLE:
-        try:
-            logger.info("Loading text generation model (flan-t5-small) on-demand...")
-            generator_pipeline = pipeline("text2text-generation", model="google/flan-t5-small", device=-1)
-            logger.info("✅ Text generation model loaded")
-        except Exception as e:
-            logger.error(f"Failed to load generation model: {e}")
-    
-    if not generator_pipeline:
-        # Fallback if model fails
-        return {"text": "AI service is currently initializing. Please try again in a moment.", "method": "fallback"}
-    
-    try:
-        # Flan-T5 is text2text, so we pass the prompt directly
-        response = generator_pipeline(
-            request.prompt, 
-            max_length=request.max_length, 
-            do_sample=True,
-            temperature=request.temperature
-        )
-        return {
-            "text": response[0]['generated_text'],
-            "method": "flan-t5-small"
-        }
-    except Exception as e:
-        logger.error(f"Generation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/ai/sentiment")
-async def analyze_sentiment(request: SentimentRequest):
-    """Analyze sentiment of text (lazy loaded)"""
-    global sentiment_pipeline
-    
-    # Lazy load on first use
-    if not sentiment_pipeline and ML_AVAILABLE:
-        try:
-            logger.info("Loading sentiment model on-demand...")
-            sentiment_pipeline = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english", device=-1)
-            logger.info("✅ Sentiment model loaded")
-        except Exception as e:
-            logger.error(f"Failed to load sentiment model: {e}")
-    
-    if not sentiment_pipeline:
-        raise HTTPException(status_code=503, detail="Sentiment model not loaded")
-    
-    try:
-        result = sentiment_pipeline(request.text)[0]
-        return result
-    except Exception as e:
-        logger.error(f"Sentiment analysis failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-        "status": "healthy",
-        "service": "megilance-ai",
-        "version": "1.0.0",
-        "ml_available": ML_AVAILABLE
+        "embedding_model_loaded": model is not None,
+        "mode": "ml" if model else "fallback"
     }
 
 @app.get("/")
@@ -185,166 +113,160 @@ async def root():
     return {
         "service": "MegiLance AI Service",
         "status": "operational",
+        "version": "1.1.0",
         "endpoints": {
             "health": "/health",
-            "analyze": "/ai/analyze",
-            "match": "/ai/match"
+            "embeddings": "/ai/embeddings",
+            "generate": "/ai/generate",
+            "sentiment": "/ai/sentiment",
+            "skills": "/ai/extract-skills",
+            "proposal": "/ai/generate-proposal"
         }
     }
 
-@app.post("/ai/analyze")
-async def analyze_content(request: AnalyzeRequest):
-    """
-    Analyze content to extract keywords and sentiment.
-    """
-    text = request.text
+@app.post("/ai/embeddings")
+async def generate_embeddings(request: EmbeddingRequest):
+    """Generate semantic embeddings"""
+    model = get_embedding_model()
     
-    # Simple heuristic analysis
-    word_count = len(text.split())
-    sentiment_score = 0.0
-    sentiment_label = "NEUTRAL"
-    
-    # Basic keyword extraction
-    keywords = []
-    
-    if ML_AVAILABLE:
+    if model:
         try:
-            # Sentiment Analysis
-            if sentiment_pipeline:
-                # Truncate text to 512 tokens approx (chars/4) to avoid errors
-                truncated_text = text[:2000] 
-                result = sentiment_pipeline(truncated_text)[0]
-                sentiment_label = result['label']
-                # Convert to -1 to 1 scale
-                score = result['score']
-                if sentiment_label == 'NEGATIVE':
-                    sentiment_score = -score
-                else:
-                    sentiment_score = score
-
-            # Keyword Extraction (TF-IDF)
-            # We need a corpus to make TF-IDF meaningful, but for single doc we can just use frequency
-            # or if we had a reference corpus.
-            # For now, let's stick to the frequency method but make it robust
-            from collections import Counter
-            import re
-            
-            # Remove common stop words (simplified list)
-            stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'}
-            
-            words = re.findall(r'\w+', text.lower())
-            words = [w for w in words if len(w) > 3 and w not in stop_words]
-            
-            common = Counter(words).most_common(10)
-            keywords = [w[0] for w in common]
-            
+            embedding = model.encode(request.text).tolist()
+            return {
+                "embedding": embedding,
+                "dimensions": len(embedding),
+                "method": "sentence-transformer"
+            }
         except Exception as e:
-            logger.error(f"Analysis error: {e}")
-            keywords = ["error"]
-            
+            logger.error(f"Embedding failed: {e}")
+    
+    # Fallback: hash-based embeddings
+    embedding = text_to_embedding(request.text)
     return {
-        "sentiment_score": sentiment_score,
-        "sentiment_label": sentiment_label,
-        "complexity_score": min(1.0, word_count / 1000),
-        "keywords": keywords,
-        "word_count": word_count
+        "embedding": embedding,
+        "dimensions": 384,
+        "method": "hash-based"
     }
 
 @app.post("/ai/generate")
 async def generate_text(request: GenerateRequest):
-    """
-    Generate text using a local LLM.
-    """
-    if not ML_AVAILABLE or not generator_pipeline:
-        return {"text": "AI generation unavailable. Please configure ML libraries.", "method": "fallback"}
+    """Generate text using template-based approach"""
+    prompt_lower = request.prompt.lower()
     
-    try:
-        # Generate text
-        output = generator_pipeline(request.prompt, max_length=request.max_length, num_return_sequences=1)
-        generated_text = output[0]['generated_text']
-        return {"text": generated_text, "method": "local_llm"}
-    except Exception as e:
-        logger.error(f"Generation error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    if "proposal" in prompt_lower or "project" in prompt_lower:
+        text = """Thank you for considering my services for this project. 
 
-@app.post("/ai/match", response_model=List[MatchResult])
-async def match_freelancers(request: MatchRequest):
-    """
-    Match freelancers to a job description using Cosine Similarity on TF-IDF vectors.
-    """
-    if not request.freelancers:
-        return []
+I have carefully reviewed your requirements and I'm confident I can deliver exceptional results. With my expertise and attention to detail, I will ensure the project meets all specifications and exceeds your expectations.
 
-    if not ML_AVAILABLE:
-        # Fallback: Simple skill overlap
-        results = []
-        req_skills = set(s.lower() for s in request.required_skills)
-        for f in request.freelancers:
-            f_skills = set(s.lower() for s in f.skills)
-            overlap = len(req_skills.intersection(f_skills))
-            score = overlap / len(req_skills) if req_skills else 0
-            results.append(MatchResult(
-                freelancer_id=f.id,
-                score=score,
-                match_reasons=[f"Matched {overlap} skills"]
-            ))
-        return sorted(results, key=lambda x: x.score, reverse=True)
+I propose to complete this work with high quality standards, clear communication throughout, and timely delivery. I'm available to discuss any questions or specific requirements you may have.
 
-    try:
-        # Prepare corpus
-        # Doc 0 is the Job Description
-        # Docs 1..N are Freelancers (Bio + Skills)
+Looking forward to working with you on this exciting project!"""
+    elif "describe" in prompt_lower or "summary" in prompt_lower:
+        text = "This is a professional description tailored to your requirements, highlighting key features and benefits that align with your project goals."
+    elif "write" in prompt_lower:
+        text = "Based on your request, here is a professional response that addresses your needs with clarity and attention to detail."
+    else:
+        text = f"I understand you're looking for: {request.prompt[:100]}. I can provide comprehensive assistance with this requirement and deliver quality results."
+    
+    if len(text) > request.max_length:
+        text = text[:request.max_length] + "..."
         
-        job_text = f"{request.job_description} {' '.join(request.required_skills)}"
-        
-        freelancer_texts = []
-        for f in request.freelancers:
-            # Boost skills by repeating them
-            skills_text = " ".join(f.skills) * 3 
-            freelancer_texts.append(f"{f.bio} {skills_text}")
-            
-        corpus = [job_text] + freelancer_texts
-        
-        # Vectorize
-        vectorizer = TfidfVectorizer(stop_words='english')
-        tfidf_matrix = vectorizer.fit_transform(corpus)
-        
-        # Calculate Cosine Similarity
-        # similarity of job (index 0) with all others
-        cosine_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
-        
-        results = []
-        for i, score in enumerate(cosine_sim):
-            freelancer = request.freelancers[i]
-            
-            # Hybrid score: 70% Content Match + 30% Skill Overlap
-            req_skills = set(s.lower() for s in request.required_skills)
-            f_skills = set(s.lower() for s in freelancer.skills)
-            skill_overlap = len(req_skills.intersection(f_skills))
-            skill_score = skill_overlap / len(req_skills) if req_skills else 0
-            
-            final_score = (score * 0.7) + (skill_score * 0.3)
-            
-            reasons = []
-            if skill_overlap > 0:
-                reasons.append(f"Matches {skill_overlap} required skills")
-            if score > 0.3:
-                reasons.append("Strong profile text match")
-                
-            results.append(MatchResult(
-                freelancer_id=freelancer.id,
-                score=float(final_score),
-                match_reasons=reasons
-            ))
-            
-        # Sort by score descending
-        return sorted(results, key=lambda x: x.score, reverse=True)
-        
-    except Exception as e:
-        logger.error(f"Matching error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+    return {"text": text, "method": "template-based"}
+
+@app.post("/ai/sentiment")
+async def analyze_sentiment(request: SentimentRequest):
+    """Analyze sentiment using keyword-based approach"""
+    text_lower = request.text.lower()
+    
+    positive_words = ['excellent', 'great', 'good', 'amazing', 'awesome', 'wonderful', 
+                     'fantastic', 'love', 'best', 'perfect', 'outstanding', 'brilliant',
+                     'satisfied', 'happy', 'pleased', 'impressed', 'recommend', 'professional']
+    negative_words = ['bad', 'poor', 'terrible', 'awful', 'horrible', 'worst', 'hate',
+                     'disappointed', 'unsatisfied', 'unprofessional', 'late', 'never',
+                     'waste', 'refund', 'scam', 'avoid']
+    
+    positive_count = sum(1 for word in positive_words if word in text_lower)
+    negative_count = sum(1 for word in negative_words if word in text_lower)
+    
+    if positive_count > negative_count:
+        sentiment = "POSITIVE"
+        score = min(0.95, 0.6 + (positive_count * 0.1))
+    elif negative_count > positive_count:
+        sentiment = "NEGATIVE"
+        score = min(0.95, 0.6 + (negative_count * 0.1))
+    else:
+        sentiment = "NEUTRAL"
+        score = 0.5
+    
+    return {"label": sentiment, "score": round(score, 2)}
+
+@app.post("/ai/extract-skills")
+async def extract_skills(request: SkillExtractionRequest):
+    """Extract skills from text"""
+    skill_categories = {
+        "programming": ["python", "javascript", "typescript", "java", "c++", "c#", "ruby", "go", "rust", "php"],
+        "web": ["html", "css", "react", "vue", "angular", "node.js", "django", "flask", "fastapi", "nextjs"],
+        "mobile": ["ios", "android", "flutter", "react native", "swift", "kotlin"],
+        "database": ["sql", "mysql", "postgresql", "mongodb", "redis", "elasticsearch"],
+        "cloud": ["aws", "azure", "gcp", "docker", "kubernetes", "terraform"],
+        "data": ["machine learning", "deep learning", "tensorflow", "pytorch", "pandas", "numpy"],
+        "design": ["figma", "sketch", "adobe xd", "photoshop", "illustrator", "ui/ux"]
+    }
+    
+    text_lower = request.text.lower()
+    found_skills = []
+    
+    for category, skills in skill_categories.items():
+        for skill in skills:
+            if skill in text_lower and skill not in [s["skill"] for s in found_skills]:
+                found_skills.append({
+                    "skill": skill,
+                    "category": category,
+                    "confidence": 0.9
+                })
+    
+    return {
+        "skills": [s["skill"] for s in found_skills],
+        "details": found_skills,
+        "total": len(found_skills)
+    }
+
+@app.post("/ai/generate-proposal")
+async def generate_proposal(request: ProposalRequest):
+    """Generate professional proposal"""
+    desc_lower = request.project_description.lower()
+    
+    if "web" in desc_lower or "website" in desc_lower:
+        expertise = "web development"
+    elif "mobile" in desc_lower or "app" in desc_lower:
+        expertise = "mobile development"
+    elif "data" in desc_lower:
+        expertise = "data solutions"
+    else:
+        expertise = "software development"
+    
+    proposal = f"""Dear Hiring Manager,
+
+I am excited to apply for the "{request.project_title}" project. With {request.years_experience}+ years of experience in {expertise}, I am confident I can deliver outstanding results.
+
+I have carefully reviewed your requirements and believe my skills align perfectly with what you're looking for. My approach focuses on:
+
+• Clear communication and regular updates
+• High-quality deliverables that exceed expectations
+• On-time delivery within budget
+
+I would love to discuss this opportunity further and learn more about your specific needs.
+
+Best regards,
+{request.freelancer_name}"""
+
+    return {
+        "proposal": proposal,
+        "word_count": len(proposal.split()),
+        "expertise_detected": expertise
+    }
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8001))
+    port = int(os.getenv("PORT", 7860))
     uvicorn.run(app, host="0.0.0.0", port=port)

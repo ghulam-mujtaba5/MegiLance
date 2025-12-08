@@ -1,10 +1,13 @@
-// @AI-HINT: This component showcases AI-powered features using a modern, animated grid layout and highlights the underlying technology stack with premium visuals.
+// @AI-HINT: This component showcases AI-powered features with accurate status indicators showing what's actually deployed and working.
 
 'use client';
 
 import React from 'react';
 import { useTheme } from 'next-themes';
-import { BrainCircuit, TrendingUp, ShieldCheck, MessageCircle, BarChart, Cpu, Zap } from 'lucide-react';
+import { 
+  BrainCircuit, TrendingUp, ShieldCheck, MessageCircle, BarChart, Cpu, Zap,
+  CheckCircle2, Cloud, FileText, Search
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 import AIShowcaseCard from './AIShowcaseCard';
@@ -12,43 +15,99 @@ import commonStyles from './AIShowcase.common.module.css';
 import lightStyles from './AIShowcase.light.module.css';
 import darkStyles from './AIShowcase.dark.module.css';
 
-// --- SVG Logo Components ---
-const TensorFlowLogo = () => (
-  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TensorFlow</title><path d="M1.29 8.68L11.36.39c.36-.3.88-.3 1.24 0l10.07 8.29c.37.3.37.79 0 1.1l-10.07 8.29c-.36.3-.88.3-1.24 0L1.29 9.78c-.37-.3-.37-.79 0-1.1zm10.67 8.55l9.1-7.49-9.1-7.49-9.1 7.49 9.1 7.49z" fill="#FF6F00" opacity="0.4"/><path d="M11.964 0L4.536 4.311v15.378l7.428 4.311 7.428-4.31V4.311zm.036 21.536L6.536 18.38V7.577l5.464-3.155 5.464 3.155v10.8l-5.428 3.156zM12 10.433l-3.103-1.792v3.584L12 14.017l3.103-1.792v-3.584zM8.897 6.845L12 5.05l3.103 1.795v3.583L12 12.22l-3.103-1.792z" fill="#FF6F00"/></svg>
-);
-
-const OpenAILogo = () => (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>OpenAI</title><path d="M22.2819 12.875C22.0719 14.12 21.3919 15.23 20.4019 16.015C19.4119 16.8 18.1919 17.225 16.8919 17.225C15.5919 17.225 14.3719 16.8 13.3819 16.015C12.3919 15.23 11.7119 14.12 11.5019 12.875H16.8919V11.375H11.5019C11.7119 10.13 12.3919 9.02 13.3819 8.235C14.3719 7.45 15.5919 7.025 16.8919 7.025C18.1919 7.025 20.4019 7.45 20.4019 8.235C21.3919 9.02 22.0719 10.13 22.2819 11.375H24V12.875H22.2819ZM9.50188 12.875H1.71188V11.375H9.50188V12.875ZM9.50188 18.725H1.71188V17.225H9.50188V18.725ZM1.71188 8.525H9.50188V7.025H1.71188V8.525Z" fill="currentColor"/></svg>
-);
-
-const PyTorchLogo = () => (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>PyTorch</title><path d="M12.01 20.312c-2.188 0-4.062-1.344-4.844-3.344l-1.844.781A6.93 6.93 0 0012.01 22a6.93 6.93 0 006.688-5.25l-1.844-.781a5.25 5.25 0 01-4.844 3.344zM4.108 12.906l1.844-.781a5.25 5.25 0 014.844-3.344c2.188 0 4.063 1.344 4.844 3.344l1.844-.781A6.93 6.93 0 0012.01 6.75a6.93 6.93 0 00-6.688 5.25zM12.01 2a.938.938 0 100 1.875.938.938 0 000-1.875zm7.5 10.031a.938.938 0 100-1.875.938.938 0 000 1.875zM4.51 12.03a.938.938 0 100-1.875.938.938 0 000 1.875z" fill="#EE4C2C"/></svg>
-);
-
+// --- SVG Logo Components (Only showing what we actually use) ---
 const HuggingFaceLogo = () => (
     <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Hugging Face</title><path d="M20.56 17.39a8.312 8.312 0 0 1-11.752 0L12 20.561l3.28-3.17zm-1.64-1.64a6.208 6.208 0 0 0-8.784 0l.168.168c.024.024 2.544 2.592 4.224 2.592s4.2-2.568 4.224-2.592l.168-.168zM12 14.24a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zm-3.36-2.52a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zm6.72 0a.84.84 0 1 1 0-1.68.84.84 0 0 1 0 1.68zM17.385 3.44a8.312 8.312 0 0 1 0 11.752l-1.63-1.64a6.208 6.208 0 0 0 0-8.472l1.63-1.64zM6.615 3.44a8.312 8.312 0 0 1 10.77 0L15.755 5.08a6.208 6.208 0 0 0-7.512 0L6.615 3.44zM3.44 6.615a8.312 8.312 0 0 1 0-11.752L5.08 6.495a6.208 6.208 0 0 0 0 8.472L3.44 6.615z" fill="#FFD21E"/></svg>
 );
 
-const ScikitLearnLogo = () => (
-    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>scikit-learn</title><path d="M11.13.43a.48.48 0 00-.76.42l1.36 9.84-8.22 3.03a.48.48 0 00-.28.6l7.4 9.23a.48.48 0 00.76-.42L10.03 13.3l8.22-3.03a.48.48 0 00.28-.6L11.13.44zM24 10.1a2.88 2.88 0 00-2.88-2.88h-1.92a.96.96 0 100 1.92h1.92a.96.96 0 110 1.92h-1.92a.96.96 0 100 1.92h1.92A2.88 2.88 0 0024 10.1z" fill="#F7931E"/><path d="M12 24a2.88 2.88 0 002.88-2.88h1.92a.96.96 0 100-1.92h-1.92a.96.96 0 110-1.92h1.92a.96.96 0 100-1.92h-1.92A2.88 2.88 0 0012 24z" fill="#3498DB"/></svg>
+const FastAPILogo = () => (
+  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>FastAPI</title><path d="M12 0C5.375 0 0 5.375 0 12c0 6.627 5.375 12 12 12 6.626 0 12-5.373 12-12 0-6.625-5.373-12-12-12zm-.624 21.62v-7.528H7.19L13.203 2.38v7.528h4.029L11.376 21.62z" fill="#009688"/></svg>
 );
 
-// --- Data Definitions ---
+const PythonLogo = () => (
+  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Python</title><path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z" fill="#3776AB"/></svg>
+);
+
+const TursoLogo = () => (
+  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Turso (libSQL)</title><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none"/></svg>
+);
+
+const NextJSLogo = () => (
+  <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Next.js</title><path d="M18.665 21.978C16.758 23.255 14.465 24 12 24 5.377 24 0 18.623 0 12S5.377 0 12 0s12 5.377 12 12c0 3.583-1.574 6.801-4.067 9.001L9.219 7.2H7.2v9.596h1.615V9.251l9.85 12.727Zm-3.332-8.533 1.6 2.061V7.2h-1.6v6.245Z" fill="currentColor"/></svg>
+);
+
+// --- Status Badge Component ---
+interface StatusBadgeProps {
+  status: 'live' | 'beta' | 'smart';
+  className?: string;
+}
+
+const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className }) => {
+  const labels = {
+    live: '✓ Live',
+    beta: 'β Beta',
+    smart: '⚡ Smart Rules'
+  };
+  
+  return (
+    <span className={cn(commonStyles.statusBadge, commonStyles[`status${status.charAt(0).toUpperCase() + status.slice(1)}`], className)}>
+      {labels[status]}
+    </span>
+  );
+};
+
+// --- Data Definitions (Accurate to what's deployed) ---
 const aiFeaturesData = [
-  { icon: <BrainCircuit />, title: 'Intelligent Job Matching', description: 'Our AI analyzes your skills and portfolio to match you with high-value projects, eliminating manual search.', stats: '97% Match Accuracy' },
-  { icon: <TrendingUp />, title: 'Dynamic Price Modeling', description: 'Get data-driven pricing recommendations based on market trends to maximize your earnings on every project.', stats: '+25% Earning Potential' },
-  { icon: <ShieldCheck />, title: 'Proactive Fraud Shield', description: 'Advanced ML algorithms protect you from scams and fraudulent activity, ensuring a secure marketplace.', stats: '99.9% Secure' },
-  { icon: <MessageCircle />, title: 'Contextual AI Assist', description: '24/7 intelligent support for platform guidance, proposal generation, and dispute resolution.', stats: '<1min Response' },
-  { icon: <BarChart />, title: 'Performance Analytics', description: 'AI-powered insights help you optimize your profile, track your performance, and accelerate your career growth.', stats: '3x Faster Growth' },
-  { icon: <Cpu />, title: 'Automated Workflows', description: 'Smart automation handles routine tasks like invoicing and project updates, freeing you to focus on your craft.', stats: '10+ Hours Saved Weekly' },
+  { 
+    icon: <BrainCircuit />, 
+    title: 'Smart Job Matching', 
+    description: 'Skill-based matching algorithm compares your expertise with project requirements for optimal matches.', 
+    stats: 'Skill Overlap Scoring',
+    status: 'live' as const
+  },
+  { 
+    icon: <TrendingUp />, 
+    title: 'Price Estimation', 
+    description: 'Data-driven pricing based on category averages, complexity factors, and market rates from our database.', 
+    stats: 'Market-Based',
+    status: 'live' as const
+  },
+  { 
+    icon: <ShieldCheck />, 
+    title: 'Fraud Detection', 
+    description: 'Multi-layer protection: keyword analysis, pattern detection, and risk scoring for users, projects, and proposals.', 
+    stats: 'Real-time Checks',
+    status: 'live' as const
+  },
+  { 
+    icon: <MessageCircle />, 
+    title: 'AI Chatbot', 
+    description: 'Intelligent assistant that helps with platform navigation, pricing queries, and freelancer recommendations.', 
+    stats: 'Instant Response',
+    status: 'live' as const
+  },
+  { 
+    icon: <FileText />, 
+    title: 'Proposal Generator', 
+    description: 'Professional proposal templates generated based on project context and industry best practices.', 
+    stats: 'Template-Based',
+    status: 'live' as const
+  },
+  { 
+    icon: <Search />, 
+    title: 'Semantic Embeddings', 
+    description: 'Vector embeddings for semantic search and similarity matching powered by sentence-transformers.', 
+    stats: '384 Dimensions',
+    status: 'beta' as const
+  },
 ];
 
 const techStackData = [
-  { name: 'TensorFlow', Logo: TensorFlowLogo, role: 'Deep Learning', desc: 'Powering our complex neural networks for pattern recognition.' },
-  { name: 'OpenAI', Logo: OpenAILogo, role: 'LLM Intelligence', desc: 'Driving our conversational AI and content generation.' },
-  { name: 'PyTorch', Logo: PyTorchLogo, role: 'Model Training', desc: 'Accelerating our research and model development cycles.' },
-  { name: 'Hugging Face', Logo: HuggingFaceLogo, role: 'NLP Transformers', desc: 'State-of-the-art models for text analysis and understanding.' },
-  { name: 'scikit-learn', Logo: ScikitLearnLogo, role: 'Predictive Analytics', desc: 'Robust algorithms for data mining and statistical analysis.' },
+  { name: 'Hugging Face', Logo: HuggingFaceLogo, role: 'Model Hosting', desc: 'Hosting our AI microservice with sentence-transformers embeddings.' },
+  { name: 'FastAPI', Logo: FastAPILogo, role: 'AI Backend', desc: 'High-performance Python API for ML inference and routing.' },
+  { name: 'Python', Logo: PythonLogo, role: 'AI Engine', desc: 'Powering our intelligent algorithms and data processing.' },
+  { name: 'Turso', Logo: TursoLogo, role: 'Edge Database', desc: 'SQLite-compatible database for fast queries and analytics.' },
+  { name: 'Next.js', Logo: NextJSLogo, role: 'Frontend', desc: 'React framework with server components for optimal UX.' },
 ];
 
 // --- Sub-Components ---
@@ -63,9 +122,9 @@ const TechLogos = () => {
   return (
     <div className={cn(commonStyles.techStack, themeStyles.techStack)}>
       <div className={commonStyles.techHeader}>
-        <h3 className={cn(commonStyles.techTitle, themeStyles.techTitle)}>Built with Industry-Leading Technology</h3>
+        <h3 className={cn(commonStyles.techTitle, themeStyles.techTitle)}>Our Technology Stack</h3>
         <p className={cn(commonStyles.techSubtitle, themeStyles.techSubtitle)}>
-          We leverage the most advanced AI frameworks to deliver a seamless, intelligent freelancing experience.
+          Built with modern, production-ready technologies for reliability and performance.
         </p>
       </div>
       <div className={cn(commonStyles.techLogos, themeStyles.techLogos)}>
@@ -98,13 +157,14 @@ const AIShowcase: React.FC = () => {
         <div className={cn(commonStyles.header)}>
           <div className={cn(commonStyles.badge, themeStyles.badge)}>
             <Zap className={cn(commonStyles.badgeIcon)} />
-            <span>Powered by Enterprise-Grade AI</span>
+            <span>AI-Powered Platform</span>
           </div>
           <h2 className={cn(commonStyles.title, themeStyles.title)}>
-            Your AI Co-Pilot for Freelance Success
+            Smart Features for Freelance Success
           </h2>
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            MegiLance integrates cutting-edge AI to automate the mundane and amplify your potential. Our models are trained on millions of successful projects to give you a competitive edge.
+            MegiLance uses intelligent algorithms and machine learning to streamline your workflow. 
+            Our AI services are live and continuously improving to give you a competitive edge.
           </p>
         </div>
 
@@ -116,6 +176,7 @@ const AIShowcase: React.FC = () => {
               title={feature.title}
               description={feature.description}
               stats={feature.stats}
+              status={feature.status}
             />
           ))}
         </div>
