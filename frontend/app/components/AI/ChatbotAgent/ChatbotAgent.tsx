@@ -37,6 +37,7 @@ const ChatbotAgent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -88,6 +89,9 @@ const ChatbotAgent: React.FC = () => {
       }]);
     } catch (error) {
       console.error('Failed to start conversation:', error);
+      // Enter offline mode - allow local responses
+      setIsOfflineMode(true);
+      setConversationId('offline-' + Date.now()); // Set a fake ID to enable input
       setMessages([{ 
         id: 1, 
         text: 'Hello! I\'m MegiBot, your AI assistant. I\'m currently in offline mode, but I can still help with basic questions. How can I assist you today?', 
@@ -106,6 +110,35 @@ const ChatbotAgent: React.FC = () => {
     inputRef.current?.focus();
   }, []);
 
+  // Offline mode response generator
+  const getOfflineResponse = (userMessage: string): { text: string; sentiment: string; suggestedActions?: string[] } => {
+    const msg = userMessage.toLowerCase();
+    
+    if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+      return { text: "Hello! How can I help you today?", sentiment: 'positive', suggestedActions: ['How do I get started?', 'Find freelancers', 'Post a project'] };
+    }
+    if (msg.includes('get started') || msg.includes('how to start') || msg.includes('begin')) {
+      return { text: "To get started with MegiLance:\n1. Sign up for a free account\n2. Complete your profile\n3. Browse projects or post a job\n4. Connect with clients or freelancers!", sentiment: 'positive' };
+    }
+    if (msg.includes('find freelancer') || msg.includes('hire')) {
+      return { text: "To find freelancers:\n1. Go to Talent Directory from the menu\n2. Use filters to narrow by skill, rating, or rate\n3. Review profiles and portfolios\n4. Send a message or invite to a project!", sentiment: 'positive' };
+    }
+    if (msg.includes('post') || msg.includes('project') || msg.includes('job')) {
+      return { text: "To post a project:\n1. Sign in to your client dashboard\n2. Click 'Post a Job'\n3. Fill in project details and budget\n4. Review proposals from talented freelancers!", sentiment: 'positive' };
+    }
+    if (msg.includes('payment') || msg.includes('pay') || msg.includes('usdc')) {
+      return { text: "MegiLance supports secure payments via USDC stablecoin on Polygon network. Enjoy low fees (< 1%) and instant settlements with blockchain-backed security!", sentiment: 'positive' };
+    }
+    if (msg.includes('fee') || msg.includes('price') || msg.includes('cost')) {
+      return { text: "MegiLance charges only 5-10% platform fees, compared to 20-27% on traditional platforms. Check our Pricing page for detailed plans!", sentiment: 'positive' };
+    }
+    if (msg.includes('tips') || msg.includes('advice')) {
+      return { text: "Quick tips for success:\n• Complete your profile 100%\n• Add a professional portfolio\n• Respond to messages within 24 hours\n• Ask clarifying questions before bidding\n• Deliver quality work on time!", sentiment: 'positive' };
+    }
+    
+    return { text: "I'm currently in offline mode with limited capabilities. For full assistance, please ensure the backend server is running or try again later. Is there anything basic I can help with?", sentiment: 'neutral' };
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim() === '' || !conversationId) return;
@@ -122,6 +155,24 @@ const ChatbotAgent: React.FC = () => {
     setInputValue('');
     setIsLoading(true);
     setIsTyping(true);
+
+    // Handle offline mode with local responses
+    if (isOfflineMode) {
+      await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 500));
+      const offlineData = getOfflineResponse(userText);
+      const botResponse: Message = {
+        id: Date.now() + 1,
+        text: offlineData.text,
+        sender: 'bot',
+        timestamp: new Date(),
+        sentiment: offlineData.sentiment as 'positive' | 'neutral' | 'negative',
+        suggestedActions: offlineData.suggestedActions,
+      };
+      setMessages(prev => [...prev, botResponse]);
+      setIsLoading(false);
+      setIsTyping(false);
+      return;
+    }
 
     try {
       const res = await fetch(`/backend/api/chatbot/${conversationId}/message`, {
@@ -152,12 +203,15 @@ const ChatbotAgent: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to send message:', error);
+      // Fall back to offline mode on error
+      const offlineData = getOfflineResponse(userText);
       const errorMessage: Message = {
         id: Date.now() + 1,
-        text: 'I apologize, but I encountered an issue processing your request. Please try again in a moment.',
+        text: offlineData.text,
         sender: 'bot',
         timestamp: new Date(),
-        sentiment: 'negative',
+        sentiment: offlineData.sentiment as 'positive' | 'neutral' | 'negative',
+        suggestedActions: offlineData.suggestedActions,
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
@@ -202,8 +256,8 @@ const ChatbotAgent: React.FC = () => {
               <div className={commonStyles.headerInfo}>
                 <h3>MegiBot AI</h3>
                 <span className={cn(commonStyles.headerStatus, themeStyles.headerStatus)}>
-                  <span className={cn(commonStyles.statusDot, themeStyles.statusDot)} />
-                  {isTyping ? 'Typing...' : 'Online'}
+                  <span className={cn(commonStyles.statusDot, themeStyles.statusDot, isOfflineMode && commonStyles.statusDotOffline)} />
+                  {isTyping ? 'Typing...' : isOfflineMode ? 'Offline Mode' : 'Online'}
                 </span>
               </div>
             </div>

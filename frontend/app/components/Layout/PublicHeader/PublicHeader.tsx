@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { Menu, X, ChevronDown, Users, Briefcase, Zap, Shield } from 'lucide-react';
+import { Menu, X, ChevronDown, Users, Briefcase, Zap, Shield, Sparkles } from 'lucide-react';
 
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import Button from '@/app/components/Button/Button';
