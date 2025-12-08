@@ -15,22 +15,30 @@ import darkStyles from './PublicFooter.dark.module.css';
 
 const footerSections = {
   'Product': [
+    { name: 'How It Works', href: '/how-it-works' },
     { name: 'Features', href: '/#features' },
     { name: 'Pricing', href: '/pricing' },
     { name: 'For Clients', href: '/clients' },
     { name: 'For Freelancers', href: '/freelancers' },
+    { name: 'Talent Directory', href: '/talent' },
+    { name: 'Teams', href: '/teams' },
+    { name: 'Success Stories', href: '/testimonials' },
+    { name: 'Download App', href: '/install' },
   ],
   'Company': [
     { name: 'About Us', href: '/about' },
     { name: 'Blog', href: '/blog' },
     { name: 'Careers', href: '/careers' },
     { name: 'Press', href: '/press' },
+    { name: 'Security', href: '/security' },
   ],
   'Resources': [
     { name: 'Help Center', href: '/help' },
+    { name: 'Support', href: '/support' },
     { name: 'Contact Us', href: '/contact' },
     { name: 'Community', href: '/community' },
     { name: 'Status', href: '/status' },
+    { name: 'Referral Program', href: '/referral' },
   ],
   'Legal': [
     { name: 'Terms of Service', href: '/terms' },

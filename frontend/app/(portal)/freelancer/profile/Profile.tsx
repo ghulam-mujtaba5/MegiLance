@@ -8,6 +8,7 @@ import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea'; // Using the reusable Textarea component
+import { AIRateEstimator } from '@/app/components/AI';
 import commonStyles from './Profile.common.module.css';
 import lightStyles from './Profile.light.module.css';
 import darkStyles from './Profile.dark.module.css';
@@ -310,32 +311,11 @@ const Profile: React.FC = () => {
                     AI Estimate
                   </Button>
                 </div>
-                {rateEstimate && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md border border-blue-100 dark:border-blue-800 text-sm">
-                    <p className="font-medium text-blue-800 dark:text-blue-200 mb-1">
-                      AI Suggested Rate: ${rateEstimate.low_estimate} - ${rateEstimate.high_estimate}/hr
-                    </p>
-                    <p className="text-blue-600 dark:text-blue-300 text-xs mb-2">
-                      Based on your skills and experience.
-                    </p>
-                    <div className="flex gap-2">
-                      <button 
-                        type="button"
-                        onClick={applyRateEstimate}
-                        className="text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded transition-colors"
-                      >
-                        Apply ${rateEstimate.estimated_rate}/hr
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={() => setRateEstimate(null)}
-                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <AIRateEstimator 
+                  estimate={rateEstimate}
+                  onApply={applyRateEstimate}
+                  onDismiss={() => setRateEstimate(null)}
+                />
               </div>
               <Input
                 label="Portfolio URL"

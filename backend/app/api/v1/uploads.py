@@ -25,7 +25,10 @@ DOCUMENT_DIR = UPLOAD_DIR / "documents"
 
 # Create directories if they don't exist
 for directory in [AVATAR_DIR, PORTFOLIO_DIR, DOCUMENT_DIR]:
-    directory.mkdir(parents=True, exist_ok=True)
+    try:
+        directory.mkdir(parents=True, exist_ok=True)
+    except (FileExistsError, OSError):
+        pass  # Directory already exists or permission issue
 
 # Allowed file types (MIME types)
 ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
@@ -192,7 +195,7 @@ def save_uploaded_file(file_content: bytes, original_filename: str, directory: P
 @api_rate_limit
 async def upload_avatar(
     file: UploadFile = File(...),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Upload user avatar image.
@@ -243,7 +246,7 @@ async def upload_avatar(
 @api_rate_limit
 async def upload_portfolio_image(
     file: UploadFile = File(...),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Upload portfolio image.
@@ -269,7 +272,7 @@ async def upload_portfolio_image(
 @api_rate_limit
 async def upload_document(
     file: UploadFile = File(...),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Upload document (PDF, DOCX, TXT).
@@ -299,7 +302,7 @@ async def upload_document(
 @api_rate_limit
 async def delete_uploaded_file(
     file_path: str,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Delete uploaded file.

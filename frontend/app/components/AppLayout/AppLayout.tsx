@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import PortalNavbar from '../Layout/PortalNavbar/PortalNavbar';
 import PortalFooter from '../Layout/PortalFooter/PortalFooter';
+import { ChatbotAgent } from '@/app/components/AI';
 
 import ErrorBoundary from '@/app/components/ErrorBoundary/ErrorBoundary';
 
@@ -141,6 +142,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <PortalFooter />
             </main>
           </ErrorBoundary>
+          <ChatbotAgent />
         </div>
       </div>
     </>

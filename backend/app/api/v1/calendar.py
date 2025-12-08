@@ -98,7 +98,7 @@ class CalendarSettingsRequest(BaseModel):
 async def set_availability(
     request: SetAvailabilityRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Set user's availability slots."""
     service = get_calendar_service(db)
@@ -116,7 +116,7 @@ async def get_my_availability(
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's availability."""
     service = get_calendar_service(db)
@@ -137,7 +137,7 @@ async def get_user_availability(
     date_to: Optional[date] = None,
     duration_minutes: int = 30,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get another user's available booking slots."""
     service = get_calendar_service(db)
@@ -161,7 +161,7 @@ async def get_user_availability(
 async def schedule_meeting(
     request: ScheduleMeetingRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Schedule a new meeting."""
     service = get_calendar_service(db)
@@ -190,7 +190,7 @@ async def get_my_meetings(
     date_to: Optional[date] = None,
     status: Optional[MeetingStatus] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's meetings."""
     service = get_calendar_service(db)
@@ -209,7 +209,7 @@ async def get_my_meetings(
 async def get_meeting(
     meeting_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get a specific meeting."""
     service = get_calendar_service(db)
@@ -236,7 +236,7 @@ async def update_meeting(
     meeting_id: str,
     request: UpdateMeetingRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update a meeting."""
     service = get_calendar_service(db)
@@ -261,7 +261,7 @@ async def update_meeting(
 async def confirm_meeting(
     meeting_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Confirm attendance for a meeting."""
     service = get_calendar_service(db)
@@ -285,7 +285,7 @@ async def cancel_meeting(
     meeting_id: str,
     request: CancelMeetingRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Cancel a meeting."""
     service = get_calendar_service(db)
@@ -310,7 +310,7 @@ async def complete_meeting(
     meeting_id: str,
     request: CompleteMeetingRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Mark a meeting as completed."""
     service = get_calendar_service(db)
@@ -334,7 +334,7 @@ async def complete_meeting(
 async def propose_meeting_times(
     request: ProposeTimesRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Propose meeting times based on all participants' availability."""
     service = get_calendar_service(db)
@@ -354,7 +354,7 @@ async def propose_meeting_times(
 async def get_upcoming_reminders(
     within_minutes: int = 60,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get upcoming meeting reminders."""
     service = get_calendar_service(db)
@@ -370,7 +370,7 @@ async def get_upcoming_reminders(
 @router.get("/settings")
 async def get_calendar_settings(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's calendar settings."""
     service = get_calendar_service(db)
@@ -383,7 +383,7 @@ async def get_calendar_settings(
 async def update_calendar_settings(
     request: CalendarSettingsRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update user's calendar settings."""
     service = get_calendar_service(db)
@@ -400,7 +400,7 @@ async def update_calendar_settings(
 async def get_calendar_stats(
     days: int = 30,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get calendar statistics."""
     service = get_calendar_service(db)

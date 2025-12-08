@@ -1,0 +1,60 @@
+/* @AI-HINT: Light theme for AI Price Estimator */
+
+.container {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.iconWrapper {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.iconPulse {
+  background: #3b82f6;
+}
+
+.title {
+  color: #1e293b;
+}
+
+.description {
+  color: #64748b;
+}
+
+.estimateGrid {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.estimateLabel {
+  color: #64748b;
+}
+
+.estimateValue {
+  color: #0f172a;
+}
+
+.actionButton {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.actionButton:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.primaryButton {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.primaryButton:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+}

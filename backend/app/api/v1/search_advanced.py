@@ -62,7 +62,7 @@ class AutocompleteResponse(BaseModel):
 async def search_projects(
     request: ProjectSearchRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_optional)
+    current_user = Depends(get_current_user_optional)
 ):
     """
     Advanced project search with full-text search and filters
@@ -93,7 +93,7 @@ async def search_projects(
 async def search_freelancers(
     request: FreelancerSearchRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_optional)
+    current_user = Depends(get_current_user_optional)
 ):
     """
     Advanced freelancer search with full-text search and filters
@@ -152,7 +152,7 @@ async def autocomplete(
 async def get_search_analytics(
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_optional)
+    current_user = Depends(get_current_user_optional)
 ):
     """
     Get search analytics (admin only)
@@ -174,7 +174,7 @@ async def get_search_analytics(
 @router.post("/reindex")
 async def reindex_search(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_optional)
+    current_user = Depends(get_current_user_optional)
 ):
     """
     Reindex all searchable content (admin only)

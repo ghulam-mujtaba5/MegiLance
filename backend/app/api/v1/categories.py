@@ -10,7 +10,7 @@ from app.core.security import get_current_user_from_token
 router = APIRouter(prefix="/categories", tags=["categories"])
 
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -25,7 +25,7 @@ def generate_slug(name: str) -> str:
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_category(
     category: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Create a new category
@@ -209,7 +209,7 @@ async def get_category(slug: str):
 async def update_category(
     category_id: int,
     update_data: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Update a category
@@ -300,7 +300,7 @@ async def update_category(
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
     category_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Delete a category

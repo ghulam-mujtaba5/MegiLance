@@ -218,7 +218,7 @@ async def get_page_help(
 async def submit_feedback(
     request: FeedbackRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Mark content as helpful or not helpful."""
     service = get_knowledge_base_service(db)
@@ -235,7 +235,7 @@ async def submit_feedback(
 @router.get("/quick-help")
 async def get_quick_help(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get quick help resources for current user."""
     service = get_knowledge_base_service(db)
@@ -257,7 +257,7 @@ async def get_quick_help(
 async def admin_create_article(
     request: CreateArticleRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Create a new article."""
     if current_user.get("role") != "admin":
@@ -273,7 +273,7 @@ async def admin_update_article(
     article_id: str,
     updates: Dict[str, Any],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Update an article."""
     if current_user.get("role") != "admin":
@@ -288,7 +288,7 @@ async def admin_update_article(
 async def admin_delete_article(
     article_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Delete an article."""
     if current_user.get("role") != "admin":
@@ -302,7 +302,7 @@ async def admin_delete_article(
 @router.get("/admin/stats")
 async def admin_get_kb_stats(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Get knowledge base statistics."""
     if current_user.get("role") != "admin":

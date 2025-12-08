@@ -1,8 +1,11 @@
-// @AI-HINT: Component to display recommended freelancers using the Matching Engine
-import { useState, useEffect } from 'react';
+// @AI-HINT: Premium component displaying AI-powered freelancer recommendations with match visualization, skill matching, and interactive cards
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
+import { Sparkles, RefreshCw, DollarSign, Star, Clock, MessageSquare, Eye, CheckCircle, User } from 'lucide-react';
 import commonStyles from './RecommendedFreelancers.common.module.css';
 import lightStyles from './RecommendedFreelancers.light.module.css';
 import darkStyles from './RecommendedFreelancers.dark.module.css';
@@ -10,6 +13,9 @@ import darkStyles from './RecommendedFreelancers.dark.module.css';
 interface RecommendedFreelancersProps {
   projectId: string;
   limit?: number;
+  projectSkills?: string[];
+  onViewProfile?: (freelancerId: string) => void;
+  onContact?: (freelancerId: string) => void;
 }
 
 interface FreelancerMatch {
@@ -21,147 +27,373 @@ interface FreelancerMatch {
   skills: string[];
   match_score: number;
   match_reasons: string[];
+  rating?: number;
+  completed_projects?: number;
+  available?: boolean;
 }
 
-export default function RecommendedFreelancers({ projectId, limit = 3 }: RecommendedFreelancersProps) {
+export default function RecommendedFreelancers({ 
+  projectId, 
+  limit = 3, 
+  projectSkills = [],
+  onViewProfile,
+  onContact
+}: RecommendedFreelancersProps) {
   const { resolvedTheme } = useTheme();
   const [freelancers, setFreelancers] = useState<FreelancerMatch[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchFreelancers = useCallback(async () => {
+    if (!projectId) return;
+    
+    setLoading(true);
+    try {
+      const response = await api.matching.findFreelancers({ 
+        project_id: projectId, 
+        limit 
+      });
+      
+      if (response && response.matches && response.matches.length > 0) {
+        setFreelancers(response.matches);
+      } else {
+        // Fallback demo data
+        setFreelancers([
+          {
+            id: '1',
+            name: 'Sarah Jenkins',
+            title: 'Senior React Developer',
+            hourly_rate: 85,
+            skills: ['React', 'TypeScript', 'Node.js', 'GraphQL'],
+            match_score: 0.96,
+            match_reasons: ['Strong React experience', 'Within budget range', 'Excellent reviews'],
+            rating: 4.9,
+            completed_projects: 47,
+            available: true
+          },
+          {
+            id: '2',
+            name: 'Michael Chen',
+            title: 'Full Stack Engineer',
+            hourly_rate: 95,
+            skills: ['Vue.js', 'Python', 'AWS', 'Docker'],
+            match_score: 0.89,
+            match_reasons: ['Backend expertise', 'High success rate'],
+            rating: 4.8,
+            completed_projects: 62,
+            available: true
+          },
+          {
+            id: '3',
+            name: 'Jessica Wu',
+            title: 'UI/UX Developer',
+            hourly_rate: 75,
+            skills: ['Figma', 'CSS', 'React', 'Tailwind'],
+            match_score: 0.84,
+            match_reasons: ['Design skills match', 'Available immediately'],
+            rating: 4.7,
+            completed_projects: 31,
+            available: true
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch recommended freelancers:', error);
+      // Fallback demo data on error
+      setFreelancers([
+        {
+          id: '1',
+          name: 'Sarah Jenkins',
+          title: 'Senior React Developer',
+          hourly_rate: 85,
+          skills: ['React', 'TypeScript', 'Node.js', 'GraphQL'],
+          match_score: 0.96,
+          match_reasons: ['Strong React experience', 'Within budget range', 'Excellent reviews'],
+          rating: 4.9,
+          completed_projects: 47,
+          available: true
+        },
+        {
+          id: '2',
+          name: 'Michael Chen',
+          title: 'Full Stack Engineer',
+          hourly_rate: 95,
+          skills: ['Vue.js', 'Python', 'AWS', 'Docker'],
+          match_score: 0.89,
+          match_reasons: ['Backend expertise', 'High success rate'],
+          rating: 4.8,
+          completed_projects: 62,
+          available: true
+        },
+        {
+          id: '3',
+          name: 'Jessica Wu',
+          title: 'UI/UX Developer',
+          hourly_rate: 75,
+          skills: ['Figma', 'CSS', 'React', 'Tailwind'],
+          match_score: 0.84,
+          match_reasons: ['Design skills match', 'Available immediately'],
+          rating: 4.7,
+          completed_projects: 31,
+          available: true
+        }
+      ]);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [projectId, limit]);
 
   useEffect(() => {
-    const fetchFreelancers = async () => {
-      if (!projectId) return;
-      
-      setLoading(true);
-      try {
-        // Try to fetch from API
-        const response = await api.matching.findFreelancers({ 
-            project_id: projectId, 
-            limit 
-        });
-        
-        if (response && response.matches && response.matches.length > 0) {
-             setFreelancers(response.matches);
-        } else {
-            // Fallback to mock data for demo purposes
-             setFreelancers([
-                {
-                    id: '1',
-                    name: 'Sarah Jenkins',
-                    title: 'Senior React Developer',
-                    hourly_rate: 85,
-                    skills: ['React', 'TypeScript', 'Node.js'],
-                    match_score: 0.96,
-                    match_reasons: ['Strong React experience', 'Within budget range']
-                },
-                {
-                    id: '2',
-                    name: 'Michael Chen',
-                    title: 'Full Stack Engineer',
-                    hourly_rate: 95,
-                    skills: ['Vue.js', 'Python', 'AWS'],
-                    match_score: 0.89,
-                    match_reasons: ['Backend expertise', 'High success rate']
-                },
-                {
-                    id: '3',
-                    name: 'Jessica Wu',
-                    title: 'UI/UX Developer',
-                    hourly_rate: 75,
-                    skills: ['Figma', 'CSS', 'React'],
-                    match_score: 0.84,
-                    match_reasons: ['Design skills match', 'Available immediately']
-                }
-            ]);
-        }
-       
-      } catch (error) {
-        console.error('Failed to fetch recommended freelancers:', error);
-         // Fallback to mock data on error
-         setFreelancers([
-            {
-                id: '1',
-                name: 'Sarah Jenkins',
-                title: 'Senior React Developer',
-                hourly_rate: 85,
-                skills: ['React', 'TypeScript', 'Node.js'],
-                match_score: 0.96,
-                match_reasons: ['Strong React experience', 'Within budget range']
-            },
-            {
-                id: '2',
-                name: 'Michael Chen',
-                title: 'Full Stack Engineer',
-                hourly_rate: 95,
-                skills: ['Vue.js', 'Python', 'AWS'],
-                match_score: 0.89,
-                match_reasons: ['Backend expertise', 'High success rate']
-            },
-            {
-                id: '3',
-                name: 'Jessica Wu',
-                title: 'UI/UX Developer',
-                hourly_rate: 75,
-                skills: ['Figma', 'CSS', 'React'],
-                match_score: 0.84,
-                match_reasons: ['Design skills match', 'Available immediately']
-            }
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchFreelancers();
-  }, [projectId, limit]);
+  }, [fetchFreelancers]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchFreelancers();
+  };
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  };
+
+  const isSkillMatched = (skill: string) => {
+    return projectSkills.some(ps => ps.toLowerCase() === skill.toLowerCase());
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 0.9) return '#27AE60';
+    if (score >= 0.8) return '#4573df';
+    if (score >= 0.7) return '#F2C94C';
+    return '#94a3b8';
+  };
 
   if (!resolvedTheme) return null;
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
-  if (loading) {
-    return <div className={cn(commonStyles.container, themeStyles.title)}>Finding best matches...</div>;
+  if (loading && !isRefreshing) {
+    return (
+      <div className={cn(commonStyles.container, commonStyles.loadingContainer)}>
+        <div className={cn(commonStyles.loadingSpinner, themeStyles.loadingSpinner)} />
+        <span className={cn(commonStyles.loadingText, themeStyles.loadingText)}>
+          Finding best matches...
+        </span>
+        <span className={cn(commonStyles.loadingSubtext, themeStyles.loadingSubtext)}>
+          AI is analyzing skills, availability, and past performance
+        </span>
+      </div>
+    );
   }
 
-  if (freelancers.length === 0) return null;
+  if (freelancers.length === 0) {
+    return (
+      <div className={cn(commonStyles.container, commonStyles.emptyState)}>
+        <div className={cn(commonStyles.emptyIcon, themeStyles.emptyIcon)}>
+          <User size={28} />
+        </div>
+        <h4 className={cn(commonStyles.emptyTitle, themeStyles.emptyTitle)}>
+          No matches found yet
+        </h4>
+        <p className={cn(commonStyles.emptyDescription, themeStyles.emptyDescription)}>
+          We&apos;re still searching for the perfect freelancers for your project.
+        </p>
+      </div>
+    );
+  }
+
+  // Calculate stroke dasharray for circular progress
+  const radius = 22;
+  const circumference = 2 * Math.PI * radius;
 
   return (
-    <div className={cn(commonStyles.container)}>
-      <h3 className={cn(commonStyles.title, themeStyles.title)}>Recommended Freelancers</h3>
-      <div className={cn(commonStyles.grid)}>
-        {freelancers.map((freelancer) => (
-          <div key={freelancer.id} className={cn(commonStyles.card, themeStyles.card)}>
-            <div className={cn(commonStyles.header)}>
-                <div className={cn(commonStyles.userInfo)}>
-                    <div className={cn(commonStyles.avatar)} style={{backgroundColor: '#ccc'}}></div> {/* Placeholder for avatar */}
-                    <div>
-                        <div className={cn(commonStyles.name, themeStyles.name)}>{freelancer.name}</div>
-                        <div className={cn(commonStyles.titleRole, themeStyles.titleRole)}>{freelancer.title}</div>
+    <div className={commonStyles.container}>
+      {/* SVG Gradient Definitions */}
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <linearGradient id="matchGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#4573df" />
+            <stop offset="100%" stopColor="#9b59b6" />
+          </linearGradient>
+          <linearGradient id="matchGradientDark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#6b93e8" />
+            <stop offset="100%" stopColor="#c9a0dc" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      {/* Header */}
+      <div className={commonStyles.header}>
+        <div className={commonStyles.titleSection}>
+          <div className={cn(commonStyles.aiIcon, themeStyles.aiIcon)}>
+            <Sparkles size={16} />
+            <div className={cn(commonStyles.aiIconPulse, themeStyles.aiIconPulse)} />
+          </div>
+          <div>
+            <h3 className={cn(commonStyles.title, themeStyles.title)}>
+              AI-Recommended Freelancers
+            </h3>
+            <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+              Matched based on skills, budget, and availability
+            </p>
+          </div>
+        </div>
+        <button 
+          className={cn(commonStyles.refreshButton, themeStyles.refreshButton)}
+          onClick={handleRefresh}
+          disabled={isRefreshing}
+        >
+          <RefreshCw 
+            size={14} 
+            className={commonStyles.refreshIcon}
+            style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }}
+          />
+          Refresh
+        </button>
+      </div>
+
+      {/* Freelancer Cards Grid */}
+      <div className={commonStyles.grid}>
+        {freelancers.map((freelancer) => {
+          const scorePercent = Math.round(freelancer.match_score * 100);
+          const strokeDashoffset = circumference - (freelancer.match_score * circumference);
+          
+          return (
+            <div key={freelancer.id} className={cn(commonStyles.card, themeStyles.card)}>
+              {/* Card Header */}
+              <div className={commonStyles.cardHeader}>
+                <div className={commonStyles.userInfo}>
+                  <div className={commonStyles.avatarWrapper}>
+                    <div className={cn(commonStyles.avatar, themeStyles.avatar)}>
+                      {freelancer.avatar_url ? (
+                        <img src={freelancer.avatar_url} alt={freelancer.name} />
+                      ) : (
+                        getInitials(freelancer.name)
+                      )}
                     </div>
+                    {freelancer.available && (
+                      <div className={cn(commonStyles.onlineIndicator, themeStyles.onlineIndicator)} />
+                    )}
+                  </div>
+                  <div className={commonStyles.userDetails}>
+                    <h4 className={cn(commonStyles.name, themeStyles.name)}>{freelancer.name}</h4>
+                    <p className={cn(commonStyles.titleRole, themeStyles.titleRole)}>{freelancer.title}</p>
+                  </div>
                 </div>
-              <div className={cn(commonStyles.matchScore, themeStyles.matchScore)}>
-                {Math.round(freelancer.match_score * 100)}% Match
+                
+                {/* Match Score Circle */}
+                <div className={commonStyles.matchScoreWrapper}>
+                  <svg 
+                    className={commonStyles.matchScoreCircle}
+                    width="56" 
+                    height="56" 
+                    viewBox="0 0 56 56"
+                  >
+                    <circle
+                      className={cn(commonStyles.matchScoreBg, themeStyles.matchScoreBg)}
+                      cx="28"
+                      cy="28"
+                      r={radius}
+                    />
+                    <circle
+                      className={cn(commonStyles.matchScoreProgress, themeStyles.matchScoreProgress)}
+                      cx="28"
+                      cy="28"
+                      r={radius}
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                      stroke={getScoreColor(freelancer.match_score)}
+                    />
+                  </svg>
+                  <div className={commonStyles.matchScoreText}>
+                    <span className={cn(commonStyles.matchPercent, themeStyles.matchPercent)}>
+                      {scorePercent}%
+                    </span>
+                    <span className={cn(commonStyles.matchLabel, themeStyles.matchLabel)}>
+                      match
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats Row */}
+              <div className={cn(commonStyles.statsRow, themeStyles.statsRow)}>
+                <div className={cn(commonStyles.stat, themeStyles.stat)}>
+                  <DollarSign size={14} className={commonStyles.statIcon} />
+                  <span className={cn(commonStyles.statValue, themeStyles.statValue)}>
+                    ${freelancer.hourly_rate}/hr
+                  </span>
+                </div>
+                {freelancer.rating && (
+                  <div className={cn(commonStyles.stat, themeStyles.stat)}>
+                    <Star size={14} className={commonStyles.statIcon} />
+                    <span className={cn(commonStyles.statValue, themeStyles.statValue)}>
+                      {freelancer.rating}
+                    </span>
+                  </div>
+                )}
+                {freelancer.completed_projects && (
+                  <div className={cn(commonStyles.stat, themeStyles.stat)}>
+                    <Clock size={14} className={commonStyles.statIcon} />
+                    <span className={cn(commonStyles.statValue, themeStyles.statValue)}>
+                      {freelancer.completed_projects} jobs
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Skills */}
+              <div className={commonStyles.skills}>
+                {freelancer.skills.slice(0, 4).map((skill) => (
+                  <span 
+                    key={skill} 
+                    className={cn(
+                      commonStyles.skill, 
+                      themeStyles.skill,
+                      isSkillMatched(skill) && cn(commonStyles.skillMatched, themeStyles.skillMatched)
+                    )}
+                  >
+                    {isSkillMatched(skill) && <CheckCircle size={10} />}
+                    {skill}
+                  </span>
+                ))}
+              </div>
+
+              {/* AI Reasons */}
+              {freelancer.match_reasons && freelancer.match_reasons.length > 0 && (
+                <div className={commonStyles.aiReasons}>
+                  <span className={cn(commonStyles.aiReasonsLabel, themeStyles.aiReasonsLabel)}>
+                    <Sparkles size={12} /> AI Insights
+                  </span>
+                  <div className={commonStyles.reasonsList}>
+                    {freelancer.match_reasons.slice(0, 2).map((reason, idx) => (
+                      <span key={idx} className={cn(commonStyles.reason, themeStyles.reason)}>
+                        <CheckCircle size={10} /> {reason}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className={commonStyles.cardActions}>
+                <button 
+                  className={cn(commonStyles.actionButton, commonStyles.secondaryAction, themeStyles.secondaryAction)}
+                  onClick={() => onViewProfile?.(freelancer.id)}
+                >
+                  <Eye size={14} />
+                  View Profile
+                </button>
+                <button 
+                  className={cn(commonStyles.actionButton, commonStyles.primaryAction, themeStyles.primaryAction)}
+                  onClick={() => onContact?.(freelancer.id)}
+                >
+                  <MessageSquare size={14} />
+                  Contact
+                </button>
               </div>
             </div>
-            
-            <div className={cn(commonStyles.stats, themeStyles.stats)}>
-                <span>${freelancer.hourly_rate}/hr</span>
-            </div>
-
-            <div className={cn(commonStyles.skills)}>
-              {freelancer.skills.map((skill) => (
-                <span key={skill} className={cn(commonStyles.skill, themeStyles.skill)}>
-                  {skill}
-                </span>
-              ))}
-            </div>
-            
-            {freelancer.match_reasons && freelancer.match_reasons.length > 0 && (
-                <div className={cn(commonStyles.reasons, themeStyles.reasons)}>
-                    Why: {freelancer.match_reasons.join(', ')}
-                </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

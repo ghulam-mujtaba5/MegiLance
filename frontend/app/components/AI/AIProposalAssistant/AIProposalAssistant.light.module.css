@@ -1,0 +1,71 @@
+/* @AI-HINT: Light theme for AI Proposal Assistant */
+
+.container {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.icon {
+  color: #8b5cf6;
+}
+
+.title {
+  color: #1e293b;
+}
+
+.controlButton {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.controlButton:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.primaryControl {
+  background: #8b5cf6;
+  color: #ffffff;
+  border-color: #8b5cf6;
+}
+
+.primaryControl:hover {
+  background: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.resultArea {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.resultText {
+  color: #334155;
+}
+
+.resultActions {
+  border-top-color: #e2e8f0;
+}
+
+.actionButton {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+.actionButton:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.primaryAction {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #ffffff;
+}
+
+.primaryAction:hover {
+  background: #7c3aed;
+}

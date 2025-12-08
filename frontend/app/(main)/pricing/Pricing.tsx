@@ -17,62 +17,62 @@ import darkStyles from './Pricing.dark.module.css';
 const pricingData = {
   monthly: [
     {
-      tier: 'Starter',
-      description: 'For individuals and hobbyists getting started.',
-      price: '$0',
-      pricePeriod: '/ forever',
-      features: ['Unlimited project browsing', 'Standard messaging tools', 'Access to community forum'],
+      tier: 'Basic',
+      description: 'For freelancers starting their journey.',
+      price: '5%',
+      pricePeriod: ' fee',
+      features: ['Unlimited project browsing', 'Standard messaging tools', 'Access to community forum', 'Basic AI matching'],
       ctaText: 'Start for Free',
-      ctaLink: '/signup?plan=starter',
+      ctaLink: '/signup?plan=basic',
     },
     {
-      tier: 'Pro',
-      description: 'For professional freelancers and small businesses.',
-      price: '$29',
-      pricePeriod: '/ month',
-      features: ['Everything in Starter', 'Priority project invites', 'Advanced search filters', 'Verified freelancer badge', 'AI-powered proposal assistant'],
+      tier: 'Standard',
+      description: 'For professional freelancers.',
+      price: '3%',
+      pricePeriod: ' fee',
+      features: ['Everything in Basic', 'Priority project invites', 'Advanced search filters', 'Verified freelancer badge', 'AI-powered proposal assistant'],
       isPopular: true,
-      ctaText: 'Start Your Trial',
-      ctaLink: '/signup?plan=pro',
+      ctaText: 'Join Now',
+      ctaLink: '/signup?plan=standard',
     },
     {
-      tier: 'Teams',
-      description: 'For agencies and teams collaborating on projects.',
-      price: '$99',
-      pricePeriod: '/ month',
-      features: ['Everything in Pro', 'Up to 5 team seats', 'Shared team wallet', 'Dedicated account manager', 'Priority support'],
+      tier: 'Premium',
+      description: 'For agencies and top-tier talent.',
+      price: '1%',
+      pricePeriod: ' fee',
+      features: ['Everything in Standard', 'Zero withdrawal fees', 'Dedicated account manager', 'Priority support', 'Premium AI analytics'],
       ctaText: 'Contact Sales',
-      ctaLink: '/contact?plan=teams',
+      ctaLink: '/contact?plan=premium',
     },
   ],
   annually: [
     {
-      tier: 'Starter',
-      description: 'For individuals and hobbyists getting started.',
-      price: '$0',
-      pricePeriod: '/ forever',
-      features: ['Unlimited project browsing', 'Standard messaging tools', 'Access to community forum'],
+      tier: 'Basic',
+      description: 'For freelancers starting their journey.',
+      price: '5%',
+      pricePeriod: ' fee',
+      features: ['Unlimited project browsing', 'Standard messaging tools', 'Access to community forum', 'Basic AI matching'],
       ctaText: 'Start for Free',
-      ctaLink: '/signup?plan=starter',
+      ctaLink: '/signup?plan=basic',
     },
     {
-      tier: 'Pro',
-      description: 'For professional freelancers and small businesses.',
-      price: '$24',
-      pricePeriod: '/ month',
-      features: ['Everything in Starter', 'Priority project invites', 'Advanced search filters', 'Verified freelancer badge', 'AI-powered proposal assistant'],
+      tier: 'Standard',
+      description: 'For professional freelancers.',
+      price: '2.5%',
+      pricePeriod: ' fee',
+      features: ['Everything in Basic', 'Priority project invites', 'Advanced search filters', 'Verified freelancer badge', 'AI-powered proposal assistant'],
       isPopular: true,
-      ctaText: 'Start Your Trial',
-      ctaLink: '/signup?plan=pro-annual',
+      ctaText: 'Join Now',
+      ctaLink: '/signup?plan=standard',
     },
     {
-      tier: 'Teams',
-      description: 'For agencies and teams collaborating on projects.',
-      price: '$83',
-      pricePeriod: '/ month',
-      features: ['Everything in Pro', 'Up to 5 team seats', 'Shared team wallet', 'Dedicated account manager', 'Priority support'],
+      tier: 'Premium',
+      description: 'For agencies and top-tier talent.',
+      price: '0.5%',
+      pricePeriod: ' fee',
+      features: ['Everything in Standard', 'Zero withdrawal fees', 'Dedicated account manager', 'Priority support', 'Premium AI analytics'],
       ctaText: 'Contact Sales',
-      ctaLink: '/contact?plan=teams-annual',
+      ctaLink: '/contact?plan=premium',
     },
   ],
 };
@@ -102,8 +102,11 @@ const Pricing: React.FC = () => {
       <main id="main-content" className={styles.root}>
         <ScrollReveal>
           <div className={styles.header}>
-            <h1 className={styles.title}>Find the perfect plan</h1>
-            <p className={styles.subtitle}>Start for free, then upgrade or downgrade anytime. No hidden fees.</p>
+            <h1 className={styles.title}>Transparent, Low Fees</h1>
+            <p className={styles.subtitle}>
+              As an FYP project, MegiLance demonstrates how blockchain can reduce platform fees to 5-10% 
+              compared to the industry standard of 20%+.
+            </p>
           </div>
         </ScrollReveal>
 

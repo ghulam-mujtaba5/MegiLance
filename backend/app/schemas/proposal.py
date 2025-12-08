@@ -10,6 +10,7 @@ class ProposalBase(BaseModel):
     hourly_rate: float = Field(gt=0, description="Hourly rate for this proposal")
     availability: str = Field(description="immediate, 1-2_weeks, 1_month, flexible")
     attachments: Optional[str] = None
+    bid_amount: Optional[float] = Field(None, description="Total bid amount (optional, calculated from hours * rate if not provided)")
 
 
 class ProposalCreate(ProposalBase):

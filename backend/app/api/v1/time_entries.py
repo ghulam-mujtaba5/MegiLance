@@ -47,7 +47,7 @@ def row_to_time_entry(row: list) -> dict:
 @router.post("/", response_model=TimeEntryRead, status_code=status.HTTP_201_CREATED)
 async def create_time_entry(
     time_entry: TimeEntryCreate,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Start a new time entry (start timer)
@@ -137,7 +137,7 @@ async def create_time_entry(
 async def stop_time_entry(
     time_entry_id: int,
     stop_data: TimeEntryStop,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Stop a running time entry (stop timer)
@@ -202,7 +202,7 @@ async def list_time_entries(
     end_date: Optional[datetime] = Query(None, description="Filter by end date (to)"),
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     List time entries with filters
@@ -269,7 +269,7 @@ async def list_time_entries(
 @router.get("/summary", response_model=TimeEntrySummary)
 async def get_time_summary(
     contract_id: int = Query(..., description="Contract ID for summary"),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Get time entry summary for a contract
@@ -340,7 +340,7 @@ async def get_time_summary(
 @router.get("/{time_entry_id}", response_model=TimeEntryRead)
 async def get_time_entry(
     time_entry_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get a single time entry by ID"""
     result = execute_query(
@@ -375,7 +375,7 @@ async def get_time_entry(
 async def update_time_entry(
     time_entry_id: int,
     update_data: TimeEntryUpdate,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Update a time entry
@@ -469,7 +469,7 @@ async def update_time_entry(
 @router.delete("/{time_entry_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_time_entry(
     time_entry_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Delete a time entry
@@ -505,7 +505,7 @@ async def delete_time_entry(
 @router.post("/submit", status_code=status.HTTP_200_OK)
 async def submit_time_entries(
     submission: TimeEntrySubmit,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Submit time entries for approval
@@ -577,7 +577,7 @@ async def submit_time_entries(
 @router.post("/approve", status_code=status.HTTP_200_OK)
 async def approve_time_entries(
     review: TimeEntryReview,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Approve time entries and generate invoice
@@ -680,7 +680,7 @@ async def approve_time_entries(
 @router.post("/reject", status_code=status.HTTP_200_OK)
 async def reject_time_entries(
     review: TimeEntryReview,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Reject time entries

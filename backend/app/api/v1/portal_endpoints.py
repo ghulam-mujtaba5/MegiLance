@@ -348,6 +348,53 @@ async def get_client_payments(
     return {"total": total, "payments": payments}
 
 
+@router.get("/client/spending/monthly")
+async def get_client_monthly_spending(
+    months: int = Query(6, ge=1, le=12),
+    client: User = Depends(get_client_user)
+):
+    """Get client's monthly spending for chart display"""
+    from datetime import datetime, timedelta
+    
+    # Get spending grouped by month for the last N months
+    result = execute_query(
+        """SELECT 
+            strftime('%Y-%m', created_at) as month,
+            COALESCE(SUM(amount), 0) as total
+           FROM payments 
+           WHERE from_user_id = ? 
+             AND status = 'completed'
+             AND created_at >= date('now', '-' || ? || ' months')
+           GROUP BY strftime('%Y-%m', created_at)
+           ORDER BY month ASC""",
+        [client.id, months]
+    )
+    
+    monthly_data = {}
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            month_key = _safe_str(_get_val(row, 0))
+            amount = float(_get_val(row, 1) or 0)
+            if month_key:
+                monthly_data[month_key] = amount
+    
+    # Build response with all months (fill gaps with 0)
+    spending = []
+    today = datetime.now()
+    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    for i in range(months - 1, -1, -1):
+        target_date = today - timedelta(days=i * 30)
+        month_key = target_date.strftime('%Y-%m')
+        month_name = month_names[target_date.month - 1]
+        spending.append({
+            "name": month_name,
+            "spending": monthly_data.get(month_key, 0)
+        })
+    
+    return {"spending": spending}
+
+
 @router.get("/client/wallet")
 async def get_client_wallet(client: User = Depends(get_client_user)):
     """Get client's wallet balance and transactions"""
@@ -714,6 +761,53 @@ async def get_freelancer_wallet(freelancer: User = Depends(get_freelancer_user))
         "pending_earnings": pending_earnings,
         "total_earned": total_earned
     }
+
+
+@router.get("/freelancer/earnings/monthly")
+async def get_freelancer_monthly_earnings(
+    months: int = Query(6, ge=1, le=12),
+    freelancer: User = Depends(get_freelancer_user)
+):
+    """Get freelancer's monthly earnings for chart display"""
+    from datetime import datetime, timedelta
+    
+    # Get earnings grouped by month for the last N months
+    result = execute_query(
+        """SELECT 
+            strftime('%Y-%m', created_at) as month,
+            COALESCE(SUM(amount), 0) as total
+           FROM payments 
+           WHERE to_user_id = ? 
+             AND status = 'completed'
+             AND created_at >= date('now', '-' || ? || ' months')
+           GROUP BY strftime('%Y-%m', created_at)
+           ORDER BY month ASC""",
+        [freelancer.id, months]
+    )
+    
+    monthly_data = {}
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            month_key = _safe_str(_get_val(row, 0))
+            amount = float(_get_val(row, 1) or 0)
+            if month_key:
+                monthly_data[month_key] = amount
+    
+    # Build response with all months (fill gaps with 0)
+    earnings = []
+    today = datetime.now()
+    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    for i in range(months - 1, -1, -1):
+        target_date = today - timedelta(days=i * 30)
+        month_key = target_date.strftime('%Y-%m')
+        month_name = month_names[target_date.month - 1]
+        earnings.append({
+            "month": month_name,
+            "amount": monthly_data.get(month_key, 0)
+        })
+    
+    return {"earnings": earnings}
 
 
 @router.get("/freelancer/payments")

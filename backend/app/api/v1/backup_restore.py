@@ -61,7 +61,7 @@ class CleanupRequest(BaseModel):
 async def create_backup(
     request: CreateBackupRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a new backup."""
     service = get_backup_restore_service(db)
@@ -81,7 +81,7 @@ async def create_backup(
 async def get_backup_status(
     backup_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get status of a backup."""
     service = get_backup_restore_service(db)
@@ -94,7 +94,7 @@ async def list_backups(
     status: Optional[BackupStatus] = None,
     limit: int = 10,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """List user's backups."""
     service = get_backup_restore_service(db)
@@ -106,7 +106,7 @@ async def list_backups(
 async def download_backup(
     backup_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get download link for backup."""
     service = get_backup_restore_service(db)
@@ -118,7 +118,7 @@ async def download_backup(
 async def delete_backup(
     backup_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a backup."""
     service = get_backup_restore_service(db)
@@ -131,7 +131,7 @@ async def delete_backup(
 async def restore_from_backup(
     request: RestoreRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Restore data from backup."""
     service = get_backup_restore_service(db)
@@ -150,7 +150,7 @@ async def restore_from_backup(
 async def get_restore_status(
     restore_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get status of a restore operation."""
     service = get_backup_restore_service(db)
@@ -162,7 +162,7 @@ async def get_restore_status(
 async def preview_restore(
     backup_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Preview what will be restored."""
     service = get_backup_restore_service(db)
@@ -174,7 +174,7 @@ async def preview_restore(
 @router.get("/schedule")
 async def get_backup_schedule(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's backup schedule."""
     service = get_backup_restore_service(db)
@@ -186,7 +186,7 @@ async def get_backup_schedule(
 async def set_backup_schedule(
     request: SetScheduleRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Set user's backup schedule."""
     service = get_backup_restore_service(db)
@@ -210,7 +210,7 @@ async def set_backup_schedule(
 @router.get("/storage")
 async def get_storage_usage(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get backup storage usage."""
     service = get_backup_restore_service(db)
@@ -222,7 +222,7 @@ async def get_storage_usage(
 async def cleanup_old_backups(
     request: CleanupRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Clean up old backups."""
     service = get_backup_restore_service(db)
@@ -235,7 +235,7 @@ async def cleanup_old_backups(
 async def export_for_migration(
     format: str = "json",
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Export all data for platform migration."""
     service = get_backup_restore_service(db)

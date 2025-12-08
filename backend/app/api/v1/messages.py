@@ -34,7 +34,7 @@ def sanitize_content(content: Optional[str], max_length: int = MAX_MESSAGE_LENGT
     return content
 
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -84,7 +84,7 @@ class MessageUpdate(BaseModel):
 @router.post("/conversations", response_model=dict, status_code=status.HTTP_201_CREATED)
 def create_conversation(
     conversation: ConversationCreate,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Create a new conversation"""
     user_id = current_user.get("user_id")
@@ -197,7 +197,7 @@ def get_conversations(
     limit: int = Query(20, ge=1, le=100),
     status: Optional[str] = Query(None, pattern=r'^(active|closed|blocked)$'),
     archived: Optional[bool] = Query(None),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get all conversations for current user"""
     user_id = current_user.get("user_id")
@@ -286,7 +286,7 @@ def get_conversations(
 @router.get("/conversations/{conversation_id}", response_model=dict)
 def get_conversation(
     conversation_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get a specific conversation"""
     user_id = current_user.get("user_id")
@@ -333,7 +333,7 @@ def get_conversation(
 def update_conversation(
     conversation_id: int,
     conversation_update: ConversationUpdate,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Update a conversation"""
     user_id = current_user.get("user_id")
@@ -402,7 +402,7 @@ def update_conversation(
 @router.post("/messages", response_model=dict, status_code=status.HTTP_201_CREATED)
 def send_message(
     message: MessageCreate,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Send a new message"""
     user_id = current_user.get("user_id")
@@ -577,7 +577,7 @@ def get_messages(
     conversation_id: int = Query(...),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get messages for a conversation"""
     user_id = current_user.get("user_id")
@@ -634,7 +634,7 @@ def get_messages(
 @router.get("/messages/{message_id}", response_model=dict)
 def get_message(
     message_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get a specific message"""
     user_id = current_user.get("user_id")
@@ -675,7 +675,7 @@ def get_message(
 def update_message(
     message_id: int,
     message_update: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Update a message"""
     user_id = current_user.get("user_id")
@@ -738,7 +738,7 @@ def update_message(
 @router.delete("/messages/{message_id}")
 def delete_message(
     message_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Soft delete a message"""
     user_id = current_user.get("user_id")
@@ -765,7 +765,7 @@ def delete_message(
 
 @router.get("/messages/unread/count")
 def get_unread_count(
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get count of unread messages for current user"""
     user_id = current_user.get("user_id")

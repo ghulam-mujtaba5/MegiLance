@@ -50,7 +50,7 @@ class ReactionRequest(BaseModel):
 @router.post("")
 async def create_comment(
     request: CreateCommentRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -82,7 +82,7 @@ async def get_comments(
     include_deleted: bool = Query(False),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -107,7 +107,7 @@ async def get_threaded_comments(
     resource_type: str = Query(...),
     resource_id: str = Query(...),
     include_deleted: bool = Query(False),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -127,7 +127,7 @@ async def get_threaded_comments(
 @router.get("/{comment_id}")
 async def get_comment(
     comment_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get a single comment by ID."""
@@ -142,7 +142,7 @@ async def get_comment(
 async def update_comment(
     comment_id: str,
     request: UpdateCommentRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -165,7 +165,7 @@ async def update_comment(
 @router.delete("/{comment_id}")
 async def delete_comment(
     comment_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -192,7 +192,7 @@ async def delete_comment(
 async def add_reaction(
     comment_id: str,
     request: ReactionRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -217,7 +217,7 @@ async def add_reaction(
 async def remove_reaction(
     comment_id: str,
     reaction: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Remove a reaction from a comment."""
@@ -238,7 +238,7 @@ async def remove_reaction(
 @router.post("/{comment_id}/pin")
 async def pin_comment(
     comment_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Pin a comment (admin only)."""
@@ -258,7 +258,7 @@ async def pin_comment(
 @router.delete("/{comment_id}/pin")
 async def unpin_comment(
     comment_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Unpin a comment."""
@@ -278,7 +278,7 @@ async def unpin_comment(
 @router.post("/{comment_id}/resolve")
 async def resolve_comment(
     comment_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Mark a comment thread as resolved."""
@@ -298,7 +298,7 @@ async def resolve_comment(
 @router.get("/{comment_id}/history")
 async def get_edit_history(
     comment_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get edit history for a comment."""
@@ -312,7 +312,7 @@ async def get_edit_history(
 @router.get("/mentions/me")
 async def get_my_mentions(
     limit: int = Query(50, ge=1, le=100),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get comments where you are mentioned."""
@@ -330,7 +330,7 @@ async def get_my_mentions(
 async def get_comment_stats(
     resource_type: str = Query(...),
     resource_id: str = Query(...),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get comment statistics for a resource."""
@@ -346,7 +346,7 @@ async def get_comment_stats(
 
 @router.get("/info/reactions")
 async def get_available_reactions(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get available reaction types."""

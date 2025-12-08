@@ -116,7 +116,7 @@ class SEORequest(BaseModel):
 async def create_portfolio(
     request: CreatePortfolioRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a new portfolio."""
     service = get_portfolio_builder_service(db)
@@ -134,7 +134,7 @@ async def create_portfolio(
 @router.get("/list")
 async def list_portfolios(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """List user's portfolios."""
     service = get_portfolio_builder_service(db)
@@ -146,7 +146,7 @@ async def list_portfolios(
 async def get_portfolio(
     portfolio_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get portfolio by ID."""
     service = get_portfolio_builder_service(db)
@@ -159,7 +159,7 @@ async def update_portfolio(
     portfolio_id: str,
     request: UpdatePortfolioRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update portfolio settings."""
     service = get_portfolio_builder_service(db)
@@ -175,7 +175,7 @@ async def update_portfolio(
 async def delete_portfolio(
     portfolio_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a portfolio."""
     service = get_portfolio_builder_service(db)
@@ -189,7 +189,7 @@ async def add_section(
     portfolio_id: str,
     request: AddSectionRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Add a section to portfolio."""
     service = get_portfolio_builder_service(db)
@@ -211,7 +211,7 @@ async def update_section(
     section_id: str,
     request: UpdateSectionRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update a portfolio section."""
     service = get_portfolio_builder_service(db)
@@ -229,7 +229,7 @@ async def delete_section(
     portfolio_id: str,
     section_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a portfolio section."""
     service = get_portfolio_builder_service(db)
@@ -242,7 +242,7 @@ async def reorder_sections(
     portfolio_id: str,
     section_orders: List[Dict[str, Any]],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Reorder portfolio sections."""
     service = get_portfolio_builder_service(db)
@@ -256,7 +256,7 @@ async def add_showcase_project(
     portfolio_id: str,
     request: ShowcaseProjectRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Add a project to showcase."""
     service = get_portfolio_builder_service(db)
@@ -270,7 +270,7 @@ async def create_case_study(
     project_id: str,
     request: CaseStudyRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a case study for a project."""
     service = get_portfolio_builder_service(db)
@@ -289,7 +289,7 @@ async def add_testimonial(
     portfolio_id: str,
     request: TestimonialRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Add a testimonial to portfolio."""
     service = get_portfolio_builder_service(db)
@@ -302,7 +302,7 @@ async def request_testimonial(
     portfolio_id: str,
     request: TestimonialRequestRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Request testimonial from a client."""
     service = get_portfolio_builder_service(db)
@@ -322,7 +322,7 @@ async def update_theme(
     portfolio_id: str,
     request: ThemeRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update portfolio theme."""
     service = get_portfolio_builder_service(db)
@@ -334,7 +334,7 @@ async def update_theme(
 async def preview_template(
     template: PortfolioTemplate,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Preview a template."""
     service = get_portfolio_builder_service(db)
@@ -348,7 +348,7 @@ async def set_custom_domain(
     portfolio_id: str,
     request: CustomDomainRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Set custom domain for portfolio."""
     service = get_portfolio_builder_service(db)
@@ -360,7 +360,7 @@ async def set_custom_domain(
 async def verify_custom_domain(
     portfolio_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Verify custom domain DNS setup."""
     service = get_portfolio_builder_service(db)
@@ -373,7 +373,7 @@ async def verify_custom_domain(
 async def publish_portfolio(
     portfolio_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Publish portfolio."""
     service = get_portfolio_builder_service(db)
@@ -385,7 +385,7 @@ async def publish_portfolio(
 async def unpublish_portfolio(
     portfolio_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Unpublish portfolio."""
     service = get_portfolio_builder_service(db)
@@ -399,7 +399,7 @@ async def get_portfolio_analytics(
     portfolio_id: str,
     days: int = 30,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get portfolio analytics."""
     service = get_portfolio_builder_service(db)
@@ -413,7 +413,7 @@ async def update_seo_settings(
     portfolio_id: str,
     request: SEORequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update SEO settings."""
     service = get_portfolio_builder_service(db)
@@ -427,7 +427,7 @@ async def export_portfolio(
     portfolio_id: str,
     format: str = "html",
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Export portfolio as static site."""
     service = get_portfolio_builder_service(db)

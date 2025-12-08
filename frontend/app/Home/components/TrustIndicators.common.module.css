@@ -64,13 +64,20 @@
   transform: scale(1.1) rotate(5deg);
 }
 
+.indicatorContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .indicatorValue {
   font-family: var(--font-poppins);
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.1;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   font-variant-numeric: tabular-nums;
+  display: block;
 }
 
 .indicatorLabel {

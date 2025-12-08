@@ -87,9 +87,14 @@ const Footer = () => {
           </div>
         </div>
         <div className={cn(commonStyles.bottomBar, styles.bottomBar)}>
-          <p className={cn(commonStyles.copyright, styles.copyright)}>
-            &copy; {new Date().getFullYear()} MegiLance, Inc. All rights reserved.
-          </p>
+          <div className={commonStyles.copyrightWrapper}>
+            <p className={cn(commonStyles.copyright, styles.copyright)}>
+              &copy; {new Date().getFullYear()} MegiLance. Final Year Project (FYP) 2022-2026.
+            </p>
+            <p className={cn(commonStyles.university, styles.university)}>
+              COMSATS University Islamabad, Lahore Campus.
+            </p>
+          </div>
           <div className={commonStyles.socialLinks}>
             {socialLinks.map((link) => (
               <a key={link.name} href={link.href} aria-label={link.name} className={cn(commonStyles.socialLink, styles.socialLink)}>

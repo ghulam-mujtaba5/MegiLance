@@ -47,7 +47,7 @@ class SubmitQuizRequest(BaseModel):
 @router.get("/featured")
 async def get_featured_content(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get featured learning content."""
     service = get_learning_service(db)
@@ -64,7 +64,7 @@ async def search_content(
     limit: int = 20,
     offset: int = 0,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Search learning content."""
     service = get_learning_service(db)
@@ -76,7 +76,7 @@ async def search_content(
 async def get_content_by_category(
     category: LearningCategory,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get content by category."""
     service = get_learning_service(db)
@@ -88,7 +88,7 @@ async def get_content_by_category(
 async def get_content(
     content_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get content details."""
     service = get_learning_service(db)
@@ -104,7 +104,7 @@ async def get_content(
 @router.get("/paths")
 async def get_learning_paths(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get available learning paths."""
     service = get_learning_service(db)
@@ -116,7 +116,7 @@ async def get_learning_paths(
 async def get_learning_path(
     path_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get learning path details."""
     service = get_learning_service(db)
@@ -132,7 +132,7 @@ async def get_learning_path(
 async def enroll_in_path(
     path_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Enroll in a learning path."""
     service = get_learning_service(db)
@@ -144,7 +144,7 @@ async def enroll_in_path(
 @router.get("/progress")
 async def get_user_progress(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's learning progress."""
     service = get_learning_service(db)
@@ -157,7 +157,7 @@ async def update_progress(
     content_id: str,
     request: UpdateProgressRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update learning progress."""
     service = get_learning_service(db)
@@ -176,7 +176,7 @@ async def mark_content_complete(
     content_id: str,
     request: CompleteContentRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Mark content as complete."""
     service = get_learning_service(db)
@@ -190,7 +190,7 @@ async def get_quiz(
     content_id: str,
     lesson_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get quiz for content."""
     service = get_learning_service(db)
@@ -203,7 +203,7 @@ async def submit_quiz(
     quiz_id: str,
     request: SubmitQuizRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Submit quiz answers."""
     service = get_learning_service(db)
@@ -215,7 +215,7 @@ async def submit_quiz(
 @router.get("/webinars")
 async def get_upcoming_webinars(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get upcoming webinars."""
     service = get_learning_service(db)
@@ -227,7 +227,7 @@ async def get_upcoming_webinars(
 async def register_for_webinar(
     webinar_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Register for a webinar."""
     service = get_learning_service(db)
@@ -239,7 +239,7 @@ async def register_for_webinar(
 @router.get("/certifications")
 async def get_available_certifications(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get available certifications."""
     service = get_learning_service(db)
@@ -250,7 +250,7 @@ async def get_available_certifications(
 @router.get("/certifications/me")
 async def get_my_certifications(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's earned certifications."""
     service = get_learning_service(db)
@@ -262,7 +262,7 @@ async def get_my_certifications(
 @router.get("/bookmarks")
 async def get_bookmarks(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's bookmarked content."""
     service = get_learning_service(db)
@@ -274,7 +274,7 @@ async def get_bookmarks(
 async def bookmark_content(
     content_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Bookmark content for later."""
     service = get_learning_service(db)
@@ -286,7 +286,7 @@ async def bookmark_content(
 async def remove_bookmark(
     content_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Remove bookmark."""
     service = get_learning_service(db)

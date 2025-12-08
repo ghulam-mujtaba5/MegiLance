@@ -289,7 +289,7 @@ def list_proposals(
         f"""SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
             p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
             p.is_draft, p.created_at, p.updated_at,
-            pr.title as job_title, u.full_name as client_name
+            pr.title as job_title, u.name as client_name
             FROM proposals p
             LEFT JOIN projects pr ON p.project_id = pr.id
             LEFT JOIN users u ON pr.client_id = u.id
@@ -318,7 +318,7 @@ def get_proposal(
         """SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
            p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
            p.is_draft, p.created_at, p.updated_at,
-           pr.title as job_title, u.full_name as client_name
+           pr.title as job_title, u.name as client_name
            FROM proposals p
            LEFT JOIN projects pr ON p.project_id = pr.id
            LEFT JOIN users u ON pr.client_id = u.id
@@ -623,34 +623,39 @@ def accept_proposal(
     )
     
     # === Create contract automatically ===
-    contract_id = str(uuid.uuid4())
     contract_amount = bid_amount if bid_amount > 0 else hourly_rate
+    platform_fee = contract_amount * 0.1  # 10% platform fee
     start_date = now
     # Default end date: 30 days from now
     end_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
     
     try:
         contract_result = execute_query(
-            """INSERT INTO contracts (id, project_id, freelancer_id, client_id, total_amount, 
+            """INSERT INTO contracts (project_id, freelancer_id, client_id, winning_bid_id,
+               contract_type, amount, currency, contract_amount, platform_fee,
                status, start_date, end_date, description, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [
-                contract_id,
                 project_id,
                 freelancer_id,
                 current_user.id,
+                proposal_id,
+                "fixed",
                 contract_amount,
+                "USD",
+                contract_amount,
+                platform_fee,
                 "active",
                 start_date,
                 end_date,
-                f"Contract for: {project_title}\n\n{project_description[:500]}",
+                f"Contract for: {project_title}\n\n{project_description[:500] if project_description else 'N/A'}",
                 now,
                 now
             ]
         )
         
         if contract_result:
-            logger.info(f"Contract {contract_id} created for project {project_id} on proposal {proposal_id} acceptance")
+            logger.info(f"Contract created for project {project_id} on proposal {proposal_id} acceptance")
         else:
             logger.error(f"Failed to create contract for proposal {proposal_id}")
             

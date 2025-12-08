@@ -41,7 +41,7 @@ class CheckDeviceRequest(BaseModel):
 @router.get("/status")
 async def get_2fa_status(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current 2FA status."""
     service = get_two_factor_service(db)
@@ -52,7 +52,7 @@ async def get_2fa_status(
 @router.post("/totp/setup")
 async def start_totp_setup(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Start TOTP authenticator setup. Returns QR code data."""
     service = get_two_factor_service(db)
@@ -72,7 +72,7 @@ async def start_totp_setup(
 async def verify_totp_setup(
     request: VerifyCodeRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Verify TOTP setup with a code from authenticator app."""
     service = get_two_factor_service(db)
@@ -95,7 +95,7 @@ async def verify_totp_setup(
 async def verify_2fa_code(
     request: VerifyCodeRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Verify a 2FA code (TOTP or backup code)."""
     service = get_two_factor_service(db)
@@ -119,7 +119,7 @@ async def verify_2fa_code(
 async def disable_2fa(
     request: VerifyCodeRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Disable 2FA (requires valid code)."""
     service = get_two_factor_service(db)
@@ -142,7 +142,7 @@ async def disable_2fa(
 async def regenerate_backup_codes(
     request: VerifyCodeRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Regenerate backup codes (requires valid TOTP code)."""
     service = get_two_factor_service(db)
@@ -165,7 +165,7 @@ async def regenerate_backup_codes(
 @router.get("/devices")
 async def get_trusted_devices(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get all trusted devices."""
     service = get_two_factor_service(db)
@@ -178,7 +178,7 @@ async def trust_device(
     request: TrustDeviceRequest,
     req: Request,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Add current device as trusted."""
     service = get_two_factor_service(db)
@@ -202,7 +202,7 @@ async def trust_device(
 async def check_device_trusted(
     request: CheckDeviceRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Check if a device is trusted."""
     service = get_two_factor_service(db)
@@ -219,7 +219,7 @@ async def check_device_trusted(
 async def revoke_device(
     device_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Revoke a trusted device."""
     service = get_two_factor_service(db)
@@ -241,7 +241,7 @@ async def revoke_device(
 @router.delete("/devices")
 async def revoke_all_devices(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Revoke all trusted devices."""
     service = get_two_factor_service(db)

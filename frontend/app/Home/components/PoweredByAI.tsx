@@ -194,50 +194,54 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 
   return (
     <div
-      className={cn(
-        commonStyles.featureCard,
-        commonStyles[variantClass as keyof typeof commonStyles],
-        themeStyles.featureCard,
-        isHovered && commonStyles.featureCardHovered
-      )}
+      className={commonStyles.featureCardWrapper}
       onMouseEnter={() => onHover(feature.id)}
       onMouseLeave={() => onHover(null)}
     >
-      {/* Gradient Accent Line */}
-      <div className={commonStyles.accentLine} />
+      <div
+        className={cn(
+          commonStyles.featureCard,
+          commonStyles[variantClass as keyof typeof commonStyles],
+          themeStyles.featureCard,
+          isHovered && commonStyles.featureCardHovered
+        )}
+      >
+        {/* Gradient Accent Line */}
+        <div className={commonStyles.accentLine} />
 
-      {/* Status Badge */}
-      <div className={cn(commonStyles.statusBadge, currentStatus.className)}>
-        <CheckCircle2 size={12} />
-        <span>{currentStatus.label}</span>
-      </div>
+        {/* Status Badge */}
+        <div className={cn(commonStyles.statusBadge, currentStatus.className)}>
+          <CheckCircle2 size={12} />
+          <span>{currentStatus.label}</span>
+        </div>
 
-      {/* Icon */}
-      <div className={cn(commonStyles.iconWrapper, commonStyles[variantClass as keyof typeof commonStyles])}>
-        {feature.icon}
-      </div>
+        {/* Icon */}
+        <div className={cn(commonStyles.iconWrapper, commonStyles[variantClass as keyof typeof commonStyles])}>
+          {feature.icon}
+        </div>
 
-      {/* Metric Badge */}
-      <div className={commonStyles.metricBadge}>
-        <span className={commonStyles.metricValue}>{feature.metricValue}</span>
-        <span className={commonStyles.metricLabel}>{feature.metric}</span>
-      </div>
+        {/* Metric Badge */}
+        <div className={commonStyles.metricBadge}>
+          <span className={commonStyles.metricValue}>{feature.metricValue}</span>
+          <span className={commonStyles.metricLabel}>{feature.metric}</span>
+        </div>
 
-      {/* Content */}
-      <div className={commonStyles.cardContent}>
-        <h3 className={cn(commonStyles.cardTitle, themeStyles.cardTitle)}>
-          {feature.title}
-        </h3>
-        <p className={cn(commonStyles.cardDescription, themeStyles.cardDescription)}>
-          {feature.description}
-        </p>
-        {/* API Endpoint hint */}
-        <code className={commonStyles.endpointHint}>{feature.endpoint}</code>
-      </div>
+        {/* Content */}
+        <div className={commonStyles.cardContent}>
+          <h3 className={cn(commonStyles.cardTitle, themeStyles.cardTitle)}>
+            {feature.title}
+          </h3>
+          <p className={cn(commonStyles.cardDescription, themeStyles.cardDescription)}>
+            {feature.description}
+          </p>
+          {/* API Endpoint hint */}
+          <code className={commonStyles.endpointHint}>{feature.endpoint}</code>
+        </div>
 
-      {/* CTA Arrow (Visible on Hover) */}
-      <div className={cn(commonStyles.ctaArrow, isHovered && commonStyles.ctaArrowVisible)}>
-        <ArrowRight size={20} />
+        {/* CTA Arrow (Visible on Hover) */}
+        <div className={cn(commonStyles.ctaArrow, isHovered && commonStyles.ctaArrowVisible)}>
+          <ArrowRight size={20} />
+        </div>
       </div>
     </div>
   );
@@ -268,12 +272,13 @@ const PoweredByAI: React.FC = () => {
           <h2 className={cn(commonStyles.heading, themeStyles.heading)}>
             Smart Features
             <br />
-            <span className={commonStyles.highlightText}>Actually Deployed</span>
+            <span className={commonStyles.highlightText}>Research Implementation</span>
           </h2>
 
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            Real AI services running on our infrastructure. Our platform uses intelligent algorithms 
-            for job matching, fraud detection, and content generation. All features are live and working.
+            Our FYP implementation leverages state-of-the-art AI models for intelligent job matching, 
+            fraud detection, and automated pricing estimation. These features demonstrate the practical application 
+            of machine learning in modern marketplace platforms.
           </p>
         </div>
 

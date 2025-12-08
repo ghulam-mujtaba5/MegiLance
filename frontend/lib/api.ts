@@ -1,7 +1,15 @@
 // @AI-HINT: Comprehensive API client for MegiLance backend integration
 // Provides type-safe methods for all backend endpoints with proper error handling
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// FIX: The environment variable was being set without /api suffix in some cached builds
+// Force the /api suffix to ensure correct API routing
+const envUrl = process.env.NEXT_PUBLIC_API_URL || '';
+// For production: use environment URL, for development: localhost
+const API_BASE_URL = envUrl 
+  ? (envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`)
+  : (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+    ? '/backend/api' 
+    : 'http://localhost:8000/api');
 
 // Token storage keys - use constants to prevent typos
 const TOKEN_STORAGE_KEY = 'auth_token';
@@ -961,6 +969,7 @@ export const portalApi = {
     },
     getPayments: (skip = 0, limit = 50) => 
       apiFetch(`/portal/client/payments?skip=${skip}&limit=${limit}`),
+    getMonthlySpending: (months = 6) => apiFetch<{spending: {name: string; spending: number}[]}>(`/portal/client/spending/monthly?months=${months}`),
     getWallet: () => apiFetch('/portal/client/wallet'),
   },
   freelancer: {
@@ -1012,6 +1021,7 @@ export const portalApi = {
     getPortfolio: () => apiFetch('/portal/freelancer/portfolio'),
     getSkills: () => apiFetch('/portal/freelancer/skills'),
     getEarnings: () => apiFetch('/portal/freelancer/earnings'),
+    getMonthlyEarnings: (months = 6) => apiFetch<{earnings: {month: string; amount: number}[]}>(`/portal/freelancer/earnings/monthly?months=${months}`),
     getWallet: () => apiFetch('/portal/freelancer/wallet'),
     getPayments: (skip = 0, limit = 50) => 
       apiFetch(`/portal/freelancer/payments?skip=${skip}&limit=${limit}`),
@@ -2034,7 +2044,7 @@ export const multiCurrencyApi = {
 export const matchingApi = {
   findFreelancers: (projectId: number, limit = 20) =>
     apiFetch(`/matching/project/${projectId}/freelancers?limit=${limit}`),
-  findJobs: (limit = 20) => apiFetch(`/matching/jobs?limit=${limit}`),
+  findJobs: (limit = 20) => apiFetch(`/matching/projects?limit=${limit}`),
   getMatchScore: (projectId: number, freelancerId: number) =>
     apiFetch(`/matching/score?project_id=${projectId}&freelancer_id=${freelancerId}`),
   getRecommendations: () => apiFetch('/matching/recommendations'),

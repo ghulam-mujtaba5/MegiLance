@@ -10,7 +10,7 @@ from app.core.security import get_current_user_from_token
 router = APIRouter(prefix="/tags", tags=["tags"])
 
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -25,7 +25,7 @@ def generate_slug(name: str) -> str:
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_tag(
     tag: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Create a new tag
@@ -168,7 +168,7 @@ async def get_tag(slug: str):
 async def update_tag(
     tag_id: int,
     update_data: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Update a tag
@@ -228,7 +228,7 @@ async def update_tag(
 @router.delete("/{tag_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_tag(
     tag_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Delete a tag
@@ -256,7 +256,7 @@ async def delete_tag(
 async def add_tag_to_project(
     project_id: int,
     tag_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Add tag to project
@@ -308,7 +308,7 @@ async def add_tag_to_project(
 async def remove_tag_from_project(
     project_id: int,
     tag_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Remove tag from project

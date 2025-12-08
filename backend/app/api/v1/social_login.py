@@ -94,7 +94,7 @@ async def complete_oauth(
 @router.get("/linked-accounts")
 async def get_linked_accounts(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's linked social accounts."""
     service = get_social_login_service(db)
@@ -106,7 +106,7 @@ async def get_linked_accounts(
 async def unlink_account(
     provider: SocialProvider,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Unlink a social account."""
     service = get_social_login_service(db)
@@ -129,7 +129,7 @@ async def unlink_account(
 async def sync_profile_from_social(
     request: SyncProfileRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Sync profile data from a linked social account."""
     service = get_social_login_service(db)

@@ -89,7 +89,7 @@ class SendToTopicRequest(BaseModel):
 async def register_device(
     request: RegisterDeviceRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Register a device for push notifications."""
     service = get_push_notification_service(db)
@@ -108,7 +108,7 @@ async def register_device(
 async def unregister_device(
     device_token: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Unregister a device from push notifications."""
     service = get_push_notification_service(db)
@@ -130,7 +130,7 @@ async def unregister_device(
 @router.get("/devices")
 async def get_user_devices(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get all registered devices for the current user."""
     service = get_push_notification_service(db)
@@ -142,7 +142,7 @@ async def get_user_devices(
 async def update_device_token(
     request: UpdateTokenRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update a device token (token refresh)."""
     service = get_push_notification_service(db)
@@ -166,7 +166,7 @@ async def update_device_token(
 async def send_notification(
     request: SendNotificationRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Send push notification to all current user's devices."""
     service = get_push_notification_service(db)
@@ -189,7 +189,7 @@ async def send_notification(
 async def send_to_device(
     request: SendToDeviceRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Send push notification to a specific device."""
     service = get_push_notification_service(db)
@@ -209,7 +209,7 @@ async def send_to_device(
 async def send_batch_notifications(
     request: SendBatchRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Send push notification to multiple users (admin only)."""
     # In production, check admin role
@@ -230,7 +230,7 @@ async def send_batch_notifications(
 async def send_silent_push(
     request: SilentPushRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Send silent push for background data sync."""
     service = get_push_notification_service(db)
@@ -246,7 +246,7 @@ async def send_silent_push(
 @router.get("/templates")
 async def get_notification_templates(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get predefined notification templates."""
     service = get_push_notification_service(db)
@@ -258,7 +258,7 @@ async def get_notification_templates(
 async def send_from_template(
     request: SendFromTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Send notification using a template."""
     service = get_push_notification_service(db)
@@ -282,7 +282,7 @@ async def send_from_template(
 async def get_notification_stats(
     days: int = 30,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get push notification statistics."""
     service = get_push_notification_service(db)
@@ -298,7 +298,7 @@ async def mark_notification_opened(
     notification_id: str,
     device_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Mark a notification as opened for analytics."""
     service = get_push_notification_service(db)
@@ -315,7 +315,7 @@ async def mark_notification_opened(
 async def subscribe_to_topic(
     request: TopicSubscriptionRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Subscribe device to a topic."""
     service = get_push_notification_service(db)
@@ -332,7 +332,7 @@ async def subscribe_to_topic(
 async def unsubscribe_from_topic(
     request: TopicSubscriptionRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Unsubscribe device from a topic."""
     service = get_push_notification_service(db)
@@ -349,7 +349,7 @@ async def unsubscribe_from_topic(
 async def send_to_topic(
     request: SendToTopicRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Send notification to all devices subscribed to a topic."""
     service = get_push_notification_service(db)

@@ -71,7 +71,7 @@ class PIARequest(BaseModel):
 async def get_compliance_status(
     organization_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get overall compliance status."""
     service = get_compliance_service(db)
@@ -83,7 +83,7 @@ async def get_compliance_status(
 async def get_framework_requirements(
     framework: ComplianceFramework,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get requirements for a compliance framework."""
     service = get_compliance_service(db)
@@ -95,7 +95,7 @@ async def get_framework_requirements(
 @router.get("/consents")
 async def get_user_consents(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's consent status."""
     service = get_compliance_service(db)
@@ -107,7 +107,7 @@ async def get_user_consents(
 async def update_consent(
     request: UpdateConsentRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update user consent."""
     service = get_compliance_service(db)
@@ -124,7 +124,7 @@ async def update_consent(
 async def create_data_request(
     request: CreateDataRequestRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a data subject request (GDPR rights)."""
     service = get_compliance_service(db)
@@ -140,7 +140,7 @@ async def create_data_request(
 async def list_data_requests(
     status: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """List user's data requests."""
     service = get_compliance_service(db)
@@ -152,7 +152,7 @@ async def list_data_requests(
 async def get_data_request(
     request_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get data request by ID."""
     service = get_compliance_service(db)
@@ -165,7 +165,7 @@ async def get_data_request(
 async def export_user_data(
     format: str = "json",
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Export all user data for portability."""
     service = get_compliance_service(db)
@@ -178,7 +178,7 @@ async def export_user_data(
 async def request_data_deletion(
     request: DataDeletionRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Request account and data deletion."""
     service = get_compliance_service(db)
@@ -191,7 +191,7 @@ async def confirm_data_deletion(
     deletion_id: str,
     request: ConfirmDeletionRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Confirm data deletion request."""
     service = get_compliance_service(db)
@@ -207,7 +207,7 @@ async def confirm_data_deletion(
 async def cancel_data_deletion(
     deletion_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Cancel data deletion request."""
     service = get_compliance_service(db)
@@ -219,7 +219,7 @@ async def cancel_data_deletion(
 @router.get("/retention-policies")
 async def get_retention_policies(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get data retention policies."""
     service = get_compliance_service(db)
@@ -231,7 +231,7 @@ async def get_retention_policies(
 @router.get("/cookies")
 async def get_cookie_preferences(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's cookie preferences."""
     service = get_compliance_service(db)
@@ -243,7 +243,7 @@ async def get_cookie_preferences(
 async def update_cookie_preferences(
     request: CookiePreferencesRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update cookie preferences."""
     service = get_compliance_service(db)
@@ -259,7 +259,7 @@ async def update_cookie_preferences(
 async def create_privacy_impact_assessment(
     request: PIARequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a privacy impact assessment."""
     service = get_compliance_service(db)
@@ -279,7 +279,7 @@ async def generate_compliance_report(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Generate compliance report."""
     service = get_compliance_service(db)

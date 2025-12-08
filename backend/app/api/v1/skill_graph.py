@@ -71,7 +71,7 @@ class SubmitTestRequest(BaseModel):
 @router.get("/categories")
 async def get_skill_categories(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get skill categories."""
     service = get_skill_graph_service(db)
@@ -84,7 +84,7 @@ async def get_skills(
     category: Optional[str] = None,
     search: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get skills from taxonomy."""
     service = get_skill_graph_service(db)
@@ -96,7 +96,7 @@ async def get_skills(
 async def get_skill_relationships(
     skill_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get skill relationships."""
     service = get_skill_graph_service(db)
@@ -108,7 +108,7 @@ async def get_skill_relationships(
 @router.get("/user/skills")
 async def get_user_skills(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's skills."""
     service = get_skill_graph_service(db)
@@ -120,7 +120,7 @@ async def get_user_skills(
 async def get_other_user_skills(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get another user's skills."""
     service = get_skill_graph_service(db)
@@ -132,7 +132,7 @@ async def get_other_user_skills(
 async def add_user_skill(
     request: AddSkillRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Add a skill to user's profile."""
     service = get_skill_graph_service(db)
@@ -152,7 +152,7 @@ async def update_user_skill(
     skill_id: str,
     request: UpdateSkillRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update user's skill."""
     service = get_skill_graph_service(db)
@@ -171,7 +171,7 @@ async def update_user_skill(
 async def remove_user_skill(
     skill_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Remove a skill from user's profile."""
     service = get_skill_graph_service(db)
@@ -184,7 +184,7 @@ async def remove_user_skill(
 async def get_endorsements(
     skill_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get endorsements for current user."""
     service = get_skill_graph_service(db)
@@ -197,7 +197,7 @@ async def get_user_endorsements(
     user_id: int,
     skill_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get endorsements for another user."""
     service = get_skill_graph_service(db)
@@ -209,7 +209,7 @@ async def get_user_endorsements(
 async def request_endorsement(
     request: RequestEndorsementRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Request an endorsement."""
     service = get_skill_graph_service(db)
@@ -229,7 +229,7 @@ async def request_endorsement(
 async def give_endorsement(
     request: GiveEndorsementRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Give an endorsement to another user."""
     service = get_skill_graph_service(db)
@@ -251,7 +251,7 @@ async def respond_to_endorsement_request(
     request_id: str,
     request: RespondEndorsementRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Respond to an endorsement request."""
     service = get_skill_graph_service(db)
@@ -269,7 +269,7 @@ async def respond_to_endorsement_request(
 @router.get("/endorsements/requests/pending")
 async def get_pending_endorsement_requests(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get pending endorsement requests for user to respond to."""
     service = get_skill_graph_service(db)
@@ -282,7 +282,7 @@ async def get_pending_endorsement_requests(
 async def get_verification_tests(
     skill_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get available verification tests for a skill."""
     service = get_skill_graph_service(db)
@@ -294,7 +294,7 @@ async def get_verification_tests(
 async def start_verification_test(
     request: StartTestRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Start a skill verification test."""
     service = get_skill_graph_service(db)
@@ -313,7 +313,7 @@ async def submit_verification_test(
     attempt_id: str,
     request: SubmitTestRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Submit verification test answers."""
     service = get_skill_graph_service(db)
@@ -331,7 +331,7 @@ async def submit_verification_test(
 async def get_verification_history(
     skill_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's verification test history."""
     service = get_skill_graph_service(db)
@@ -343,7 +343,7 @@ async def get_verification_history(
 @router.get("/recommendations")
 async def get_skill_recommendations(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get skill recommendations."""
     service = get_skill_graph_service(db)
@@ -355,7 +355,7 @@ async def get_skill_recommendations(
 @router.get("/analytics")
 async def get_skill_analytics(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get analytics about user's skills."""
     service = get_skill_graph_service(db)
@@ -368,7 +368,7 @@ async def get_skill_analytics(
 async def get_learning_paths(
     skill_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get learning paths for a skill."""
     service = get_skill_graph_service(db)

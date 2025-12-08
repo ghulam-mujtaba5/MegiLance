@@ -66,7 +66,7 @@ class QuickFeedbackRequest(BaseModel):
 async def submit_feedback(
     request: SubmitFeedbackRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Submit feedback."""
     service = get_user_feedback_service(db)
@@ -87,7 +87,7 @@ async def get_my_feedback(
     type_filter: Optional[FeedbackType] = None,
     limit: int = Query(50, le=100),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's submitted feedback."""
     service = get_user_feedback_service(db)
@@ -104,7 +104,7 @@ async def get_my_feedback(
 async def get_feedback(
     feedback_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get specific feedback details."""
     service = get_user_feedback_service(db)
@@ -122,7 +122,7 @@ async def vote_on_feedback(
     feedback_id: str,
     request: VoteRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Vote on feedback (upvote/downvote)."""
     if request.vote not in [1, -1]:
@@ -141,7 +141,7 @@ async def vote_on_feedback(
 async def remove_vote(
     feedback_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Remove vote from feedback."""
     service = get_user_feedback_service(db)
@@ -174,7 +174,7 @@ async def get_public_feedback_board(
 async def submit_feature_request(
     request: FeatureRequestRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Submit a feature request."""
     service = get_user_feedback_service(db)
@@ -212,7 +212,7 @@ async def get_survey_templates(
 @router.get("/surveys/active")
 async def get_active_surveys(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get active surveys for current user."""
     service = get_user_feedback_service(db)
@@ -225,7 +225,7 @@ async def submit_survey_response(
     survey_id: str,
     request: SurveyResponseRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Submit survey response."""
     service = get_user_feedback_service(db)
@@ -242,7 +242,7 @@ async def submit_survey_response(
 async def get_nps_score(
     period_days: int = Query(30, ge=7, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get Net Promoter Score (admin)."""
     if current_user.get("role") != "admin":
@@ -258,7 +258,7 @@ async def get_nps_trend(
     periods: int = Query(6, ge=1, le=12),
     period_type: str = Query("month", enum=["week", "month"]),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get NPS trend over time (admin)."""
     if current_user.get("role") != "admin":
@@ -274,7 +274,7 @@ async def get_nps_trend(
 async def get_csat_score(
     period_days: int = Query(30, ge=7, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get Customer Satisfaction Score (admin)."""
     if current_user.get("role") != "admin":
@@ -290,7 +290,7 @@ async def get_csat_score(
 async def submit_quick_feedback(
     request: QuickFeedbackRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Submit quick in-app feedback."""
     if not 1 <= request.rating <= 5:
@@ -311,7 +311,7 @@ async def submit_quick_feedback(
 async def get_feedback_analytics(
     period_days: int = Query(30, ge=7, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get feedback analytics (admin)."""
     if current_user.get("role") != "admin":
@@ -326,7 +326,7 @@ async def get_feedback_analytics(
 async def get_sentiment_analysis(
     period_days: int = Query(30, ge=7, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get feedback sentiment analysis (admin)."""
     if current_user.get("role") != "admin":
@@ -342,7 +342,7 @@ async def admin_update_feedback(
     feedback_id: str,
     updates: Dict[str, Any],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update feedback status (admin)."""
     if current_user.get("role") != "admin":
@@ -357,7 +357,7 @@ async def admin_update_feedback(
 async def admin_create_survey(
     request: CreateSurveyRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a new survey (admin)."""
     if current_user.get("role") != "admin":
@@ -379,7 +379,7 @@ async def admin_create_survey(
 async def get_satisfaction_by_feature(
     period_days: int = Query(30, ge=7, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get satisfaction breakdown by feature (admin)."""
     if current_user.get("role") != "admin":

@@ -79,6 +79,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
               { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
               { href: '/admin/users', label: 'Users', icon: <Users size={18} />, badge: '12', status: 'complete' },
               { href: '/admin/projects', label: 'Projects', icon: <FolderGit2 size={18} />, status: 'complete' },
+              { href: '/admin/blog', label: 'Blog & News', icon: <FileText size={18} />, status: 'complete' },
               { 
                 href: '/admin/payments', 
                 label: 'Payments', 

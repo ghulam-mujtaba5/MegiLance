@@ -1,0 +1,345 @@
+/* @AI-HINT: AI Match Card - Layout, structure, and animations for displaying AI-powered match results */
+
+/* Container & Card Layout */
+.container {
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-xl, 1rem);
+  padding: var(--space-5, 1.25rem);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal, 300ms) var(--ease-premium, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.card:hover {
+  transform: translateY(var(--hover-lift, -4px));
+}
+
+/* AI Badge */
+.aiBadge {
+  position: absolute;
+  top: var(--space-3, 0.75rem);
+  right: var(--space-3, 0.75rem);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.aiBadge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4, 1rem);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-xl, 1rem);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-heading, 'Poppins', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-1, 0.25rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  margin-bottom: var(--space-2, 0.5rem);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  font-size: 0.8rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+}
+
+.metaItem svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+/* Match Score Section */
+.scoreSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4, 1rem);
+  padding: var(--space-4, 1rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.scoreCircle {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.scoreCircleSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.scoreCircleTrack {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.scoreCircleProgress {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 188.4; /* 2 * PI * 30 */
+  stroke-dashoffset: 188.4;
+  transition: stroke-dashoffset 1s var(--ease-premium, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.scoreValue {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-heading, 'Poppins', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.scoreDetails {
+  flex: 1;
+}
+
+.scoreLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  margin-bottom: var(--space-1, 0.25rem);
+}
+
+.scoreConfidence {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.confidenceBar {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+}
+
+.confidenceFill {
+  height: 100%;
+  border-radius: var(--radius-full, 9999px);
+  transition: width 0.8s var(--ease-premium, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Skills Section */
+.skillsSection {
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.sectionTitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  margin-bottom: var(--space-2, 0.5rem);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.sectionTitle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.skillsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+}
+
+.skill {
+  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+  border-radius: var(--radius-full, 9999px);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: transform var(--duration-fast, 200ms) var(--ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1));
+}
+
+.skill:hover {
+  transform: scale(1.05);
+}
+
+.skillMatched {
+  /* Highlighted for matched skills */
+}
+
+/* AI Insights Section */
+.insightsSection {
+  padding: var(--space-3, 0.75rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.insightsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.insightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 0.5rem);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.insightIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Actions Section */
+.actions {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+  padding-top: var(--space-3, 0.75rem);
+  border-top: 1px solid transparent;
+}
+
+.actionBtn {
+  flex: 1;
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  border-radius: var(--radius-lg, 0.75rem);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all var(--duration-fast, 200ms) var(--ease-smooth, cubic-bezier(0.25, 0.1, 0.25, 1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+.actionBtn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.actionBtn:hover {
+  transform: translateY(-2px);
+}
+
+.actionBtn:active {
+  transform: scale(0.98);
+}
+
+.primaryBtn {
+  /* Primary action styling from theme */
+}
+
+.secondaryBtn {
+  /* Secondary action styling from theme */
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.aiProcessing {
+  animation: pulse 2s infinite;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .scoreSection {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+}

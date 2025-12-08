@@ -55,7 +55,7 @@ class ValidateKeyRequest(BaseModel):
 @router.post("")
 async def create_api_key(
     request: CreateAPIKeyRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -99,7 +99,7 @@ async def create_api_key(
 @router.get("")
 async def list_api_keys(
     include_inactive: bool = Query(False, description="Include revoked keys"),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -118,7 +118,7 @@ async def list_api_keys(
 
 @router.get("/scopes")
 async def get_available_scopes(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get all available API scopes and tiers."""
@@ -129,7 +129,7 @@ async def get_available_scopes(
 @router.get("/{key_id}")
 async def get_api_key(
     key_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get details of a specific API key."""
@@ -150,7 +150,7 @@ async def get_api_key(
 async def update_api_key(
     key_id: str,
     request: UpdateAPIKeyRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -178,7 +178,7 @@ async def update_api_key(
 @router.delete("/{key_id}")
 async def revoke_api_key(
     key_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -201,7 +201,7 @@ async def revoke_api_key(
 @router.post("/{key_id}/rotate")
 async def rotate_api_key(
     key_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -229,7 +229,7 @@ async def rotate_api_key(
 @router.get("/{key_id}/usage")
 async def get_key_usage(
     key_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -321,7 +321,7 @@ async def verify_api_key(
 
 @router.get("/info/limits")
 async def get_rate_limits_info(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get information about rate limit tiers."""
@@ -353,7 +353,7 @@ async def get_rate_limits_info(
 
 @router.get("/info/best-practices")
 async def get_best_practices(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get API key best practices and security recommendations."""

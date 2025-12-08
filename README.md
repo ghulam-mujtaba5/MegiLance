@@ -18,6 +18,40 @@ description: High-level platform overview, quick start, architecture summary, an
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform Version](https://img.shields.io/badge/version-2.0-brightgreen)](docs/IMPLEMENTATION_COMPLETE.md)
 
+## 🎓 Project Background (FYP)
+
+**MegiLance** is a Final Year Project (Session 2022-2026) from the Department of Computer Science at COMSATS University Islamabad, Lahore Campus. Supervised by **Dr. Junaid**, this project addresses critical inefficiencies in the global gig economy.
+
+### The Problem
+The global gig economy (forecast to surpass **$455 billion**) is hindered by:
+- **Financial Friction**: Platform fees of 10-20%, steep withdrawal costs, poor exchange rates
+- **Payment Barriers**: Pakistani freelancers can't access PayPal, forced to use slower alternatives
+- **Trust Deficit**: Centralized platforms with opaque ranking algorithms and dispute resolution
+- **Market Opacity**: New freelancers underprice work due to lack of market intelligence
+
+### Our Solution: Hybrid Decentralized Platform
+| Layer | Technology | Purpose |
+|-------|------------|---------|
+| **Web2** | Next.js 16 + FastAPI | Speed, UX, scalability for profiles/projects/messaging |
+| **Web3** | Solidity Smart Contracts | Trustless escrow, USDC payments, on-chain reputation |
+| **AI** | Python ML Services | Talent ranking, sentiment analysis, price forecasting |
+
+### Key Objectives
+1. ✅ **Smart Contract Escrow** - Guarantee low-cost, trustless payments
+2. ✅ **AI Ranking System** - Objective freelancer scoring based on verified metrics
+3. ✅ **Sentiment Analysis** - Protect reputation from malicious reviews
+4. ✅ **Price Prediction** - Data-driven pricing guidance for new freelancers
+
+### Team
+- **Team Lead**: Architecture design, AI integration, full-stack development
+- **Muhammad Waqar Ul Mulk**: Backend development, database design, security
+- **Mujtaba**: Frontend development, UI/UX design, theme implementation
+
+### Documentation
+- **Complete FYP Report**: See **[docs/FYP_COMPLETE_REPORT.md](docs/FYP_COMPLETE_REPORT.md)** for the full academic report with all diagrams and details
+- **Report Summary**: See **[docs/FYP_REPORT_SUMMARY.md](docs/FYP_REPORT_SUMMARY.md)** for abstract and architecture overview
+- **Test Cases**: See **[docs/TEST_CASES.md](docs/TEST_CASES.md)** for 28 system acceptance test cases
+
 **The only freelancing platform with:**
 - 🤖 Deep Learning AI Matching (Neural Networks)
 - 💰 150+ Currencies + 7 Cryptocurrencies

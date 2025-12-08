@@ -3,10 +3,19 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
 from typing import Optional
-import stripe
 import logging
 import json
 from datetime import datetime
+
+# Lazy import stripe to avoid typing issues with Python 3.12
+stripe = None
+
+def get_stripe():
+    global stripe
+    if stripe is None:
+        import stripe as _stripe
+        stripe = _stripe
+    return stripe
 
 from app.core.security import get_current_active_user
 from app.core.rate_limit import api_rate_limit, strict_rate_limit
@@ -43,7 +52,7 @@ router = APIRouter()
 def create_stripe_customer(
     request: Request,
     payload: StripeCustomerCreate,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Create a Stripe customer
@@ -80,7 +89,7 @@ def create_stripe_customer(
 def get_stripe_customer(
     request: Request,
     customer_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Get Stripe customer details"""
     try:
@@ -106,7 +115,7 @@ def get_stripe_customer(
 def create_payment_intent(
     request: Request,
     payload: PaymentIntentCreate,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Create a payment intent
@@ -148,7 +157,7 @@ def create_payment_intent(
 def get_payment_intent(
     request: Request,
     payment_intent_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Get payment intent details"""
     try:
@@ -174,7 +183,7 @@ def confirm_payment_intent(
     request: Request,
     payment_intent_id: str,
     payload: PaymentIntentConfirm,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Confirm a payment intent"""
     try:
@@ -203,7 +212,7 @@ def capture_payment_intent(
     request: Request,
     payment_intent_id: str,
     payload: PaymentIntentCapture,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Capture a payment intent (release escrow)
@@ -240,7 +249,7 @@ def capture_payment_intent(
 def cancel_payment_intent(
     request: Request,
     payment_intent_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Cancel a payment intent"""
     try:
@@ -267,7 +276,7 @@ def cancel_payment_intent(
 def create_refund(
     request: Request,
     payload: RefundCreate,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Create a refund
@@ -303,7 +312,7 @@ def create_refund(
 def get_refund(
     request: Request,
     refund_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Get refund details"""
     try:
@@ -330,7 +339,7 @@ def attach_payment_method(
     request: Request,
     customer_id: str,
     payload: PaymentMethodAttach,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Attach a payment method to a customer"""
     try:
@@ -358,7 +367,7 @@ def attach_payment_method(
 def create_subscription(
     request: Request,
     payload: SubscriptionCreate,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Create a subscription for platform fees"""
     try:
@@ -391,7 +400,7 @@ def cancel_subscription(
     request: Request,
     subscription_id: str,
     at_period_end: bool = True,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """Cancel a subscription"""
     try:

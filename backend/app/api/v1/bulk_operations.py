@@ -126,7 +126,7 @@ async def process_bulk_operation(
 async def bulk_project_operation(
     request: BulkProjectOperation,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -190,7 +190,7 @@ async def bulk_project_operation(
 async def bulk_user_operation(
     request: BulkUserOperation,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -251,7 +251,7 @@ async def bulk_user_operation(
 async def bulk_payment_operation(
     request: BulkPaymentOperation,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -310,7 +310,7 @@ async def bulk_payment_operation(
 @router.post("/tags")
 async def bulk_tag_operation(
     request: BulkTagOperation,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -340,7 +340,7 @@ async def bulk_tag_operation(
 async def bulk_export(
     request: BulkExportRequest,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -375,7 +375,7 @@ async def bulk_import(
     item_type: str,
     file: UploadFile = File(...),
     background_tasks: BackgroundTasks = None,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -410,7 +410,7 @@ async def bulk_import(
 @router.get("/operations/{operation_id}")
 async def get_operation_status(
     operation_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -433,7 +433,7 @@ async def list_operations(
     status: Optional[str] = None,
     operation_type: Optional[str] = None,
     limit: int = 20,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -466,7 +466,7 @@ async def list_operations(
 @router.delete("/operations/{operation_id}")
 async def cancel_operation(
     operation_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -497,7 +497,7 @@ async def bulk_delete(
     item_ids: List[str],
     permanent: bool = False,
     background_tasks: BackgroundTasks = None,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -527,7 +527,7 @@ async def bulk_update(
     item_type: str,
     item_ids: List[str],
     updates: Dict[str, Any],
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """

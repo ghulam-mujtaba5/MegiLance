@@ -10,7 +10,7 @@ from app.core.security import get_current_user_from_token
 router = APIRouter()
 
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -18,7 +18,7 @@ def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
 @router.post("/", response_model=dict)
 def create_notification(
     notification: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Create a new notification (admin/system use)"""
     user_id = notification.get("user_id")
@@ -82,7 +82,7 @@ def get_notifications(
     is_read: Optional[bool] = Query(None),
     notification_type: Optional[str] = Query(None),
     priority: Optional[str] = Query(None),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get all notifications for current user"""
     user_id = current_user.get("user_id")
@@ -161,7 +161,7 @@ def get_notifications(
 @router.get("/{notification_id}", response_model=dict)
 def get_notification(
     notification_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get a specific notification"""
     user_id = current_user.get("user_id")
@@ -210,7 +210,7 @@ def get_notification(
 def update_notification(
     notification_id: int,
     notification_update: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Update a notification (mark as read/unread)"""
     user_id = current_user.get("user_id")
@@ -274,7 +274,7 @@ def update_notification(
 
 @router.post("/mark-all-read")
 def mark_all_read(
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Mark all notifications as read for current user"""
     user_id = current_user.get("user_id")
@@ -291,7 +291,7 @@ def mark_all_read(
 @router.delete("/{notification_id}")
 def delete_notification(
     notification_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Delete a notification"""
     user_id = current_user.get("user_id")
@@ -318,7 +318,7 @@ def delete_notification(
 
 @router.get("/unread/count")
 def get_unread_count(
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get count of unread notifications for current user"""
     user_id = current_user.get("user_id")

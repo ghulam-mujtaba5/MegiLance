@@ -1,11 +1,11 @@
-// @AI-HINT: This component provides a premium, visual representation of a freelancer's rank within a DashboardWidget, featuring an SVG radial progress indicator and theme-aware styling.
+// @AI-HINT: Premium visualizer for freelancer rank with radial progress, animations, and detailed stats
 'use client';
 
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import DashboardWidget from '@/app/components/DashboardWidget/DashboardWidget';
-import { Award, Gem, Medal, Shield, Trophy } from 'lucide-react';
+import { Award, Gem, Medal, Shield, Trophy, TrendingUp, Star, Zap } from 'lucide-react';
 
 import commonStyles from './FreelancerRankVisualizer.common.module.css';
 import lightStyles from './FreelancerRankVisualizer.light.module.css';
@@ -15,46 +15,28 @@ interface FreelancerRankVisualizerProps {
   rank: 'Bronze' | 'Silver' | 'Gold' | 'Platinum' | 'Diamond' | 'N/A';
   score: number; // A score from 0 to 1000
   className?: string;
+  percentile?: number;
+  projectsCompleted?: number;
 }
 
 const rankTiers = {
-  'Bronze': { icon: Medal, color: '#cd7f32', next: 'Silver', goal: 450 },
-  'Silver': { icon: Award, color: '#c0c0c0', next: 'Gold', goal: 650 },
-  'Gold': { icon: Trophy, color: '#ffd700', next: 'Platinum', goal: 850 },
-  'Platinum': { icon: Shield, color: '#e5e4e2', next: 'Diamond', goal: 950 },
-  'Diamond': { icon: Gem, color: '#b9f2ff', next: null, goal: 1000 },
-  'N/A': { icon: Medal, color: '#9ca3af', next: 'Bronze', goal: 250 },
+  'Bronze': { icon: Medal, next: 'Silver', goal: 450, styleClass: 'rankBronze' },
+  'Silver': { icon: Award, next: 'Gold', goal: 650, styleClass: 'rankSilver' },
+  'Gold': { icon: Trophy, next: 'Platinum', goal: 850, styleClass: 'rankGold' },
+  'Platinum': { icon: Shield, next: 'Diamond', goal: 950, styleClass: 'rankPlatinum' },
+  'Diamond': { icon: Gem, next: null, goal: 1000, styleClass: 'rankDiamond' },
+  'N/A': { icon: Medal, next: 'Bronze', goal: 250, styleClass: 'rankBronze' },
 };
 
-const RadialProgress: React.FC<{ radius: number; stroke: number; theme: string }> = ({ radius, stroke, theme }) => {
-  const themed = theme === 'dark' ? darkStyles : lightStyles;
-  const normalizedRadius = radius - stroke * 2;
-  const circumference = normalizedRadius * 2 * Math.PI;
-
-  return (
-    <svg height={radius * 2} width={radius * 2} className={commonStyles.radialSvg}>
-      <circle
-        className={cn(commonStyles.radialBg, themed.radialBg)}
-        strokeWidth={stroke}
-        r={normalizedRadius}
-        cx={radius}
-        cy={radius}
-      />
-      <circle
-        className={cn(commonStyles.radialProgress, themed.radialProgress)}
-        strokeWidth={stroke}
-        strokeDasharray={circumference + ' ' + circumference}
-        r={normalizedRadius}
-        cx={radius}
-        cy={radius}
-      />
-    </svg>
-  );
-};
-
-const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({ rank, score, className }) => {
+const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({ 
+  rank, 
+  score, 
+  className,
+  percentile = 0,
+  projectsCompleted = 0
+}) => {
   const { resolvedTheme } = useTheme();
-  if (!resolvedTheme) return null; // Or a loading skeleton
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const currentRank = rankTiers[rank] || rankTiers['N/A'];
   const RankIcon = currentRank.icon;
@@ -62,45 +44,99 @@ const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({ ran
   const normalizedScore = Math.min(Math.max(score, 0), 1000);
   const progressPercentage = (normalizedScore / 1000) * 100;
   const pointsToNext = currentRank.next ? currentRank.goal - score : 0;
+  const nextRankGoal = currentRank.goal;
+  const prevRankGoal = rank === 'Bronze' || rank === 'N/A' ? 0 : 
+    Object.values(rankTiers).find(r => r.next === rank)?.goal || 0;
+  
+  // Calculate progress within current tier for the bar
+  const tierProgress = currentRank.next 
+    ? Math.max(0, Math.min(100, ((score - prevRankGoal) / (nextRankGoal - prevRankGoal)) * 100))
+    : 100;
 
-  const radius = 50;
+  const radius = 70;
   const stroke = 8;
   const normalizedRadius = radius - stroke * 2;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
-  const dynamicStyles = {
-    '--progress-color': currentRank.color,
-    '--stroke-offset': `${strokeDashoffset}px`,
-    '--rank-color': currentRank.color,
-  } as React.CSSProperties;
-
   return (
     <DashboardWidget 
-      title="Current Rank" 
+      title="Freelancer Rank" 
       icon={RankIcon} 
-      className={cn(commonStyles.widgetContainer, className)} 
-      iconColor={currentRank.color}
-      style={dynamicStyles}
+      className={cn(commonStyles.widgetContainer, themeStyles[currentRank.styleClass], className)}
     >
       <div className={commonStyles.contentWrapper}>
         <div className={commonStyles.progressContainer}>
-          <RadialProgress radius={radius} stroke={stroke} theme={resolvedTheme} />
+          <svg height={radius * 2} width={radius * 2} className={commonStyles.radialSvg}>
+            <circle
+              className={cn(commonStyles.radialBg, themeStyles.radialBg)}
+              strokeWidth={stroke}
+              r={normalizedRadius}
+              cx={radius}
+              cy={radius}
+            />
+            <circle
+              className={cn(commonStyles.radialProgress, themeStyles.radialProgress)}
+              strokeWidth={stroke}
+              strokeDasharray={circumference + ' ' + circumference}
+              style={{ strokeDashoffset }}
+              stroke="var(--rank-color)"
+              r={normalizedRadius}
+              cx={radius}
+              cy={radius}
+            />
+          </svg>
+          
           <div className={commonStyles.progressTextContainer}>
-            <p className={cn(commonStyles.scoreValue, resolvedTheme === 'dark' ? darkStyles.scoreValue : lightStyles.scoreValue)}>{score}</p>
-            <p className={cn(commonStyles.scoreLabel, resolvedTheme === 'dark' ? darkStyles.scoreLabel : lightStyles.scoreLabel)}>Score</p>
+            <div className={commonStyles.rankIconWrapper} style={{ color: 'var(--rank-color)' }}>
+              <RankIcon size={24} />
+            </div>
+            <p className={cn(commonStyles.scoreValue, themeStyles.scoreValue)}>{score}</p>
+            <p className={cn(commonStyles.scoreLabel, themeStyles.scoreLabel)}>Reputation</p>
           </div>
         </div>
+
         <div className={commonStyles.detailsContainer}>
           <h3 className={commonStyles.rankName}>{rank} Tier</h3>
-          {currentRank.next && (
-            <p className={cn(commonStyles.nextRankInfo, resolvedTheme === 'dark' ? darkStyles.nextRankInfo : lightStyles.nextRankInfo)}>
-              {pointsToNext > 0 ? 
-                `+${pointsToNext} points to ${currentRank.next}` :
-                `You've reached the top tier!`
-              }
+          
+          {currentRank.next ? (
+            <>
+              <div className={cn(commonStyles.nextRankInfo, themeStyles.nextRankInfo)}>
+                <span>{score}</span>
+                <div className={cn(commonStyles.progressBarContainer, themeStyles.progressBarContainer)}>
+                  <div 
+                    className={commonStyles.progressBarFill} 
+                    style={{ width: `${tierProgress}%` }}
+                  />
+                </div>
+                <span>{currentRank.goal}</span>
+              </div>
+              <p className={cn(commonStyles.scoreLabel, themeStyles.scoreLabel)} style={{ marginTop: '0.5rem' }}>
+                {pointsToNext} points to {currentRank.next}
+              </p>
+            </>
+          ) : (
+            <p className={cn(commonStyles.nextRankInfo, themeStyles.nextRankInfo)}>
+              Max Rank Achieved!
             </p>
           )}
+
+          <div className={cn(commonStyles.statsGrid, themeStyles.statsGrid)}>
+            <div className={commonStyles.statItem}>
+              <TrendingUp size={16} className={themeStyles.statLabel} />
+              <span className={cn(commonStyles.statValue, themeStyles.statValue)}>Top {100 - percentile}%</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Percentile</span>
+            </div>
+            <div className={commonStyles.statItem}>
+              <Zap size={16} className={themeStyles.statLabel} />
+              <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{projectsCompleted}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Projects</span>
+            </div>
+          </div>
+
+          <button className={cn(commonStyles.benefitsButton, themeStyles.benefitsButton)}>
+            View Tier Benefits
+          </button>
         </div>
       </div>
     </DashboardWidget>
@@ -108,3 +144,4 @@ const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({ ran
 };
 
 export default FreelancerRankVisualizer;
+

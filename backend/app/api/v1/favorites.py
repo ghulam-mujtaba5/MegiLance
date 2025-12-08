@@ -9,7 +9,7 @@ from app.core.security import get_current_user_from_token
 router = APIRouter(prefix="/favorites", tags=["favorites"])
 
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -17,7 +17,7 @@ def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_favorite(
     favorite: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Add item to favorites
@@ -80,7 +80,7 @@ async def create_favorite(
 @router.get("/", response_model=List[dict])
 async def list_favorites(
     target_type: Optional[Literal["project", "freelancer"]] = Query(None, description="Filter by type"),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     List user's favorites
@@ -113,7 +113,7 @@ async def list_favorites(
 @router.delete("/{favorite_id}", response_model=dict)
 async def delete_favorite(
     favorite_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Remove item from favorites"""
     user_id = current_user.get("user_id")
@@ -150,7 +150,7 @@ async def delete_favorite(
 async def remove_favorite_by_target(
     target_type: Literal["project", "freelancer"],
     target_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Remove item from favorites by type and ID"""
     user_id = current_user.get("user_id")
@@ -179,7 +179,7 @@ async def remove_favorite_by_target(
 async def check_favorite(
     target_type: Literal["project", "freelancer"],
     target_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Check if item is favorited"""
     user_id = current_user.get("user_id")

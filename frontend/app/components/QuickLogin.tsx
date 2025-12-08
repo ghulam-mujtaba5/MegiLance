@@ -14,11 +14,9 @@ export default function QuickLogin() {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
 
-  // Only show in development
+  // Show in all environments for demo purposes
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      setIsVisible(true);
-    }
+    setIsVisible(true);
   }, []);
 
   if (!isVisible) return null;
@@ -111,7 +109,7 @@ export default function QuickLogin() {
             </Button>
           </div>
           <div className="mt-3 text-xs text-muted-foreground text-center">
-            Passwords: admin123 / client123 / freelancer123
+            Password for all: Password123
           </div>
         </Card>
       )}

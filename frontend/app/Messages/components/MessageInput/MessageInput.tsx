@@ -2,10 +2,11 @@
 
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { Send, Paperclip } from 'lucide-react';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import api from '@/lib/api';
+import { SentimentAnalyzer } from '@/app/components/AI';
 import commonStyles from './MessageInput.common.module.css';
 import lightStyles from './MessageInput.light.module.css';
 import darkStyles from './MessageInput.dark.module.css';
@@ -20,6 +21,25 @@ const MessageInput: React.FC<MessageInputProps> = ({ conversationId, onMessageSe
   const [text, setText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const sentimentScore = useMemo(() => {
+    if (!text) return 0;
+    const positiveWords = ['good', 'great', 'excellent', 'thanks', 'happy', 'excited', 'love', 'best', 'appreciate', 'glad'];
+    const negativeWords = ['bad', 'terrible', 'worst', 'hate', 'sad', 'angry', 'issue', 'problem', 'error', 'fail', 'disappointed', 'upset'];
+    
+    const lowerText = text.toLowerCase();
+    let score = 0;
+    
+    positiveWords.forEach(word => {
+      if (lowerText.includes(word)) score += 0.25;
+    });
+    
+    negativeWords.forEach(word => {
+      if (lowerText.includes(word)) score -= 0.25;
+    });
+    
+    return Math.max(-1, Math.min(1, score));
+  }, [text]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +87,12 @@ const MessageInput: React.FC<MessageInputProps> = ({ conversationId, onMessageSe
   };
 
   return (
-    <form className="MessageInput-form" onSubmit={handleSubmit} aria-label="Send message form">
+    <form className="MessageInput-form" onSubmit={handleSubmit} aria-label="Send message form" style={{ position: 'relative' }}>
+      {text.length > 5 && (
+        <div style={{ position: 'absolute', bottom: '100%', right: 0, marginBottom: '8px', zIndex: 10 }}>
+          <SentimentAnalyzer score={sentimentScore} className="w-64 shadow-lg bg-white dark:bg-gray-800" />
+        </div>
+      )}
       <div role="status" aria-live="polite" className="MessageInput-status">
         {isSending ? 'Sending…' : ''}
       </div>

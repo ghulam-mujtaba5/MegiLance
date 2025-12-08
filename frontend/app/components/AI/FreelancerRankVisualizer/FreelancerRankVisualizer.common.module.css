@@ -1,130 +1,158 @@
-.container {
-  padding: 1.5rem;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 400px;
-  /* background-color and border are handled by theme-specific styles */
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 1rem;
-}
-
-.rankName {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  /* color is handled by theme-specific styles */
-}
-
-.score {
-  font-size: 1rem;
-  font-weight: 500;
-  margin: 0;
-  /* color is handled by theme-specific styles */
-}
-
-.progressBarContainer {
-  width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  overflow: hidden;
-  /* background-color is handled by theme-specific styles */
-}
-
-.progressBar {
-  width: var(--progress-width, 0%);
-  height: 100%;
-  background-color: var(--progress-color, #c0c0c0);
-  transition: width 0.5s ease-in-out;
-  border-radius: 5px;
-}
+/* @AI-HINT: Premium Freelancer Rank Visualizer styling */
 
 .widgetContainer {
-  /* The DashboardWidget provides the outer container styles */
+  /* Inherits from DashboardWidget but we can add specific overrides */
+  overflow: visible;
 }
 
 .contentWrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   gap: 1.5rem;
-  width: 100%;
+  padding: 0.5rem 0;
 }
 
 .progressContainer {
   position: relative;
+  width: 160px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
 .radialSvg {
   transform: rotate(-90deg);
+  overflow: visible;
 }
 
 .radialBg {
   fill: none;
+  transition: stroke 0.3s ease;
 }
 
 .radialProgress {
   fill: none;
-  stroke: var(--progress-color);
   stroke-linecap: round;
-  stroke-dashoffset: var(--stroke-offset);
-  transition: stroke-dashoffset 0.5s ease-out;
+  transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 0 4px var(--rank-color));
 }
 
 .progressTextContainer {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
+.rankIconWrapper {
+  margin-bottom: 0.25rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
 .scoreValue {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1;
   margin: 0;
 }
 
 .scoreLabel {
   font-size: 0.75rem;
-  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
+  letter-spacing: 1px;
+  margin: 0.25rem 0 0;
   opacity: 0.7;
 }
 
 .detailsContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex-grow: 1;
-  min-width: 0; /* Prevents text overflow issues in flexbox */
+  width: 100%;
+  text-align: center;
 }
 
 .rankName {
   font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem 0;
-  color: var(--rank-color);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  background: linear-gradient(90deg, var(--rank-color), var(--rank-color-secondary, var(--rank-color)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .nextRankInfo {
   font-size: 0.875rem;
   margin: 0;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  margin-top: 1rem;
+  position: relative;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--rank-color);
+  transition: width 1s ease-out;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.statValue {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.benefitsButton {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.benefitsButton:hover {
+  opacity: 1;
 }

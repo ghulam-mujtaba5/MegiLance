@@ -10,6 +10,7 @@ import api, { aiApi } from '@/lib/api';
 import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import Button from '@/app/components/Button/Button';
+import { AIPriceEstimator } from '@/app/components/AI';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import common from './CreateProject.common.module.css';
 import light from './CreateProject.light.module.css';
@@ -188,55 +189,13 @@ export default function CreateProjectPage() {
           </div>
 
           {/* AI Price Estimation */}
-          {(isEstimating || estimate) && (
-            <div className={cn(common.aiEstimate, theme.aiEstimate)}>
-              <div className={common.aiIcon}>
-                {isEstimating ? (
-                  <Loader2 className="animate-spin" size={24} />
-                ) : (
-                  <Sparkles size={24} />
-                )}
-              </div>
-              <div className={common.aiContent}>
-                <h3 className={common.aiTitle}>
-                  AI Price Estimation
-                  {isEstimating && <span className="text-xs font-normal opacity-70 ml-2">Analyzing...</span>}
-                </h3>
-                
-                {estimate && !isEstimating && (
-                  <>
-                    <p className={common.aiText}>
-                      Based on your project description and market rates, here is an estimated budget range.
-                    </p>
-                    <div className={common.estimateGrid}>
-                      <div className={common.estimateItem}>
-                        <span className={common.estimateLabel}>Hourly Rate</span>
-                        <span className={common.estimateValue}>${estimate.estimated_hourly_rate}/hr</span>
-                      </div>
-                      <div className={common.estimateItem}>
-                        <span className={common.estimateLabel}>Total Budget</span>
-                        <span className={common.estimateValue}>${estimate.low_estimate} - ${estimate.high_estimate}</span>
-                      </div>
-                      <div className={common.estimateItem}>
-                        <span className={common.estimateLabel}>Est. Hours</span>
-                        <span className={common.estimateValue}>{estimate.estimated_hours} hrs</span>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <Button 
-                        type="button" 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={applyEstimate}
-                      >
-                        Apply Suggested Budget
-                      </Button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+          <AIPriceEstimator 
+            estimate={estimate}
+            isLoading={isEstimating}
+            onApply={applyEstimate}
+            onDismiss={() => setEstimate(null)}
+            className="mb-6"
+          />
 
           <div className={cn(common.section, theme.section)}>
             <h2 className={common.sectionTitle}>Budget</h2>

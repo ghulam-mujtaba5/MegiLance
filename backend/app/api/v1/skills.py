@@ -43,7 +43,7 @@ INDUSTRIES = {
   'sustainability': {'name': 'Sustainability', 'icon': '🌱', 'growth': 'high'},
 }
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -241,7 +241,7 @@ async def get_skill(skill_id: int):
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_skill(
     skill_data: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Create a new skill (admin only).
@@ -304,7 +304,7 @@ async def create_skill(
 async def update_skill(
     skill_id: int,
     skill_data: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Update a skill (admin only).
@@ -368,7 +368,7 @@ async def update_skill(
 @router.delete("/{skill_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_skill(
     skill_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Delete a skill (admin only).
@@ -398,7 +398,7 @@ async def list_user_skills(
     skill_category: Optional[str] = Query(None, description="Filter by skill category"),
     min_proficiency: Optional[int] = Query(None, ge=1, le=5, description="Minimum proficiency level"),
     verified_only: bool = Query(False, description="Only verified skills"),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     List user skills.
@@ -447,7 +447,7 @@ async def list_user_skills(
 @router.post("/user-skills", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def add_user_skill(
     user_skill_data: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Add a skill to current user's profile.
@@ -513,7 +513,7 @@ async def add_user_skill(
 async def update_user_skill(
     user_skill_id: int,
     user_skill_data: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Update a user skill.
@@ -596,7 +596,7 @@ async def update_user_skill(
 @router.delete("/user-skills/{user_skill_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user_skill(
     user_skill_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Remove a skill from user's profile.

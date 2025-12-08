@@ -70,7 +70,7 @@ class RecordSearchRequest(BaseModel):
 @router.post("")
 async def save_search(
     request: SaveSearchRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -102,7 +102,7 @@ async def save_search(
 async def get_saved_searches(
     category: Optional[str] = Query(None, description="Filter by category"),
     alerts_only: bool = Query(False, description="Only searches with alerts enabled"),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -124,7 +124,7 @@ async def get_saved_searches(
 @router.get("/{search_id}")
 async def get_saved_search(
     search_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get a specific saved search by ID."""
@@ -144,7 +144,7 @@ async def get_saved_search(
 async def update_saved_search(
     search_id: str,
     request: UpdateSearchRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Update a saved search."""
@@ -164,7 +164,7 @@ async def update_saved_search(
 @router.delete("/{search_id}")
 async def delete_saved_search(
     search_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Delete a saved search."""
@@ -182,7 +182,7 @@ async def delete_saved_search(
 @router.post("/{search_id}/execute")
 async def execute_saved_search(
     search_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -207,7 +207,7 @@ async def execute_saved_search(
 async def toggle_search_alert(
     search_id: str,
     request: ToggleAlertRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -231,7 +231,7 @@ async def toggle_search_alert(
 
 @router.get("/alerts/active")
 async def get_active_alerts(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get all saved searches with alerts enabled."""
@@ -249,7 +249,7 @@ async def get_active_alerts(
 async def get_search_history(
     category: Optional[str] = Query(None),
     limit: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get user's recent search history."""
@@ -265,7 +265,7 @@ async def get_search_history(
 @router.post("/history/record")
 async def record_search(
     request: RecordSearchRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Record a search in user's history."""
@@ -282,7 +282,7 @@ async def record_search(
 @router.delete("/history/clear")
 async def clear_search_history(
     category: Optional[str] = Query(None, description="Only clear specific category"),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Clear search history."""
@@ -299,7 +299,7 @@ async def clear_search_history(
 @router.get("/templates/list")
 async def get_search_templates(
     category: Optional[str] = Query(None),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -321,7 +321,7 @@ async def get_search_templates(
 @router.post("/templates/create")
 async def create_from_template(
     request: CreateFromTemplateRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -350,7 +350,7 @@ async def create_from_template(
 async def get_popular_searches(
     category: Optional[str] = Query(None),
     limit: int = Query(10, ge=1, le=50),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get most popular searches across the platform."""
@@ -364,7 +364,7 @@ async def get_popular_searches(
 
 @router.get("/analytics/me")
 async def get_my_search_analytics(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get search analytics for the current user."""
@@ -379,7 +379,7 @@ async def get_my_search_analytics(
 
 @router.get("/categories/list")
 async def get_search_categories(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get available search categories."""

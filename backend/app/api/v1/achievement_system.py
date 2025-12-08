@@ -40,7 +40,7 @@ async def get_all_achievements(
     category: Optional[AchievementCategory] = None,
     include_hidden: bool = False,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get all available achievements."""
     service = get_achievement_service(db)
@@ -52,7 +52,7 @@ async def get_all_achievements(
 async def get_achievement_details(
     achievement_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get detailed achievement information."""
     service = get_achievement_service(db)
@@ -69,7 +69,7 @@ async def get_achievement_details(
 async def get_my_achievements(
     include_progress: bool = True,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's achievements."""
     service = get_achievement_service(db)
@@ -82,7 +82,7 @@ async def get_user_achievements(
     user_id: int,
     include_progress: bool = False,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get another user's achievements (public view)."""
     service = get_achievement_service(db)
@@ -94,7 +94,7 @@ async def get_user_achievements(
 async def check_achievement_progress(
     achievement_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Check progress on a specific achievement."""
     service = get_achievement_service(db)
@@ -109,7 +109,7 @@ async def get_leaderboard(
     period: str = "all_time",
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get achievement leaderboard."""
     service = get_achievement_service(db)
@@ -121,7 +121,7 @@ async def get_leaderboard(
 async def get_my_ranking(
     category: Optional[AchievementCategory] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's ranking."""
     service = get_achievement_service(db)
@@ -133,7 +133,7 @@ async def get_my_ranking(
 @router.get("/certificates")
 async def get_my_certificates(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's achievement certificates."""
     service = get_achievement_service(db)
@@ -145,7 +145,7 @@ async def get_my_certificates(
 async def generate_certificate(
     achievement_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Generate a certificate for an achievement."""
     service = get_achievement_service(db)
@@ -157,7 +157,7 @@ async def generate_certificate(
 @router.get("/showcase")
 async def get_showcase_settings(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's achievement showcase settings."""
     service = get_achievement_service(db)
@@ -169,7 +169,7 @@ async def get_showcase_settings(
 async def update_showcase_settings(
     request: ShowcaseSettingsRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update showcase settings."""
     service = get_achievement_service(db)
@@ -181,7 +181,7 @@ async def update_showcase_settings(
 @router.get("/stats")
 async def get_achievement_stats(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's achievement statistics."""
     service = get_achievement_service(db)

@@ -1,9 +1,22 @@
 /* Community Page Dark Theme */
 .themeWrapper {
-  background: var(--background);
-  color: var(--text-primary);
+  background: #0f172a;
+  color: #f8fafc;
+  --card-bg: #1e293b;
+  --card-border: #475569;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --primary-color: #4573df;
+  --primary-hover: #6b93f5;
 }
 
 .subtitle {
-  color: var(--text-secondary);
+  color: #cbd5e1;
+}
+
+/* Fix card borders visibility in dark mode */
+.themeWrapper .communityCard,
+.themeWrapper .socialCard {
+  border-color: #475569;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 } 

@@ -1,9 +1,10 @@
-// @AI-HINT: This component provides a fully theme-aware visual display for text sentiment. It uses per-component CSS modules, the cn utility, and brand-aligned colors for robust, maintainable styling.
+// @AI-HINT: Premium sentiment analysis component with gauge visualization, keywords, and detailed feedback
 'use client';
 
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { Smile, Meh, Frown, Activity } from 'lucide-react';
 import commonStyles from './SentimentAnalyzer.common.module.css';
 import lightStyles from './SentimentAnalyzer.light.module.css';
 import darkStyles from './SentimentAnalyzer.dark.module.css';
@@ -12,34 +13,94 @@ interface SentimentAnalyzerProps {
   // A score from -1 (very negative) to 1 (very positive)
   score: number;
   className?: string;
+  keywords?: string[];
+  analysis?: string;
 }
 
-const SentimentAnalyzer: React.FC<SentimentAnalyzerProps> = ({ score, className }) => {
+const SentimentAnalyzer: React.FC<SentimentAnalyzerProps> = ({ 
+  score, 
+  className,
+  keywords = [],
+  analysis
+}) => {
   const { resolvedTheme } = useTheme();
-  if (!resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
-  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  // Normalize score to 0-100 for gauge
+  const percentage = Math.min(100, Math.max(0, ((score + 1) / 2) * 100));
 
   const getSentimentDetails = (score: number) => {
     if (score > 0.2) {
-      return { label: 'Positive', styleClass: themeStyles.positive };
+      return { 
+        label: 'Positive', 
+        icon: Smile, 
+        styleClass: themeStyles.positive,
+        fillClass: themeStyles.positiveFill
+      };
     }
     if (score < -0.2) {
-      return { label: 'Negative', styleClass: themeStyles.negative };
+      return { 
+        label: 'Negative', 
+        icon: Frown, 
+        styleClass: themeStyles.negative,
+        fillClass: themeStyles.negativeFill
+      };
     }
-    return { label: 'Neutral', styleClass: themeStyles.neutral };
+    return { 
+      label: 'Neutral', 
+      icon: Meh, 
+      styleClass: themeStyles.neutral,
+      fillClass: themeStyles.neutralFill
+    };
   };
 
-  const { label, styleClass } = getSentimentDetails(score);
+  const { label, icon: Icon, styleClass, fillClass } = getSentimentDetails(score);
 
   return (
     <div className={cn(commonStyles.container, themeStyles.container, className)}>
-      <span className={cn(commonStyles.label, themeStyles.label)}>Sentiment:</span>
-      <span className={cn(commonStyles.indicator, styleClass)}>
-        {label}
-      </span>
+      <div className={commonStyles.header}>
+        <div className={cn(commonStyles.title, themeStyles.title)}>
+          <Activity size={16} />
+          Tone Analysis
+        </div>
+        <div className={cn(commonStyles.scoreBadge, styleClass)}>
+          <Icon size={12} />
+          {label}
+        </div>
+      </div>
+
+      <div className={cn(commonStyles.gaugeContainer, themeStyles.gaugeContainer)}>
+        <div 
+          className={cn(commonStyles.gaugeFill, fillClass)} 
+          style={{ width: `${percentage}%` }}
+        />
+        <div className={commonStyles.marker} style={{ left: '50%' }} />
+      </div>
+
+      <div className={commonStyles.labels}>
+        <span>Negative</span>
+        <span>Neutral</span>
+        <span>Positive</span>
+      </div>
+
+      {analysis && (
+        <p className={cn(commonStyles.analysisText, themeStyles.analysisText)}>
+          {analysis}
+        </p>
+      )}
+
+      {keywords.length > 0 && (
+        <div className={commonStyles.keywordsContainer}>
+          {keywords.map((keyword, index) => (
+            <span key={index} className={cn(commonStyles.keyword, themeStyles.keyword)}>
+              #{keyword}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 export default SentimentAnalyzer;
+

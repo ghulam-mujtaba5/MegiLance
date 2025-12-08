@@ -31,7 +31,7 @@ from app.schemas.analytics_schemas import (
 router = APIRouter()
 
 
-def require_admin(current_user: dict = Depends(get_current_user)):
+def require_admin(current_user = Depends(get_current_user)):
     """Check if user is admin"""
     user_type = current_user.get("user_type", "").lower()
     role = current_user.get("role", "").lower()
@@ -51,7 +51,7 @@ async def get_registration_trends(
     start_date: datetime = Query(..., description="Start date for analysis"),
     end_date: datetime = Query(..., description="End date for analysis"),
     interval: IntervalEnum = Query(default=IntervalEnum.day, description="Aggregation interval"),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get user registration trends over a specified time period. Admin only."""
     # Use date function for grouping
@@ -94,7 +94,7 @@ async def get_registration_trends(
 )
 async def get_active_user_stats(
     days: int = Query(default=30, ge=1, le=365, description="Number of days to look back"),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get active user statistics for the specified period. Admin only."""
     cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
@@ -152,7 +152,7 @@ async def get_active_user_stats(
     summary="Get user location distribution"
 )
 async def get_location_distribution(
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get user distribution by location. Admin only."""
     result = execute_query(
@@ -184,7 +184,7 @@ async def get_location_distribution(
     summary="Get project statistics"
 )
 async def get_project_stats(
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get overall project statistics. Admin only."""
     # Status counts
@@ -245,7 +245,7 @@ async def get_project_stats(
     summary="Get project completion rate"
 )
 async def get_completion_rate(
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get project completion rate. Admin only."""
     result = execute_query(
@@ -288,7 +288,7 @@ async def get_completion_rate(
 )
 async def get_popular_categories(
     limit: int = Query(default=10, ge=1, le=50),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get most popular project categories. Admin only."""
     result = execute_query(
@@ -322,7 +322,7 @@ async def get_popular_categories(
 async def get_revenue_stats(
     start_date: datetime = Query(..., description="Start date"),
     end_date: datetime = Query(..., description="End date"),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get revenue statistics for a date range. Admin only."""
     result = execute_query(
@@ -372,7 +372,7 @@ async def get_revenue_trends(
     start_date: datetime = Query(..., description="Start date"),
     end_date: datetime = Query(..., description="End date"),
     interval: IntervalEnum = Query(default=IntervalEnum.day),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get revenue trends over time. Admin only."""
     if interval.value == "day":
@@ -415,7 +415,7 @@ async def get_revenue_trends(
 async def get_top_freelancers(
     limit: int = Query(default=10, ge=1, le=100),
     sort_by: SortByEnum = Query(default=SortByEnum.earnings),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get top performing freelancers. Admin only."""
     order_by = {
@@ -465,7 +465,7 @@ async def get_top_freelancers(
 )
 async def get_freelancer_success_rate(
     freelancer_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get success metrics for a specific freelancer. Accessible by freelancer or admin."""
     user_type = current_user.get("user_type", "").lower()
@@ -540,7 +540,7 @@ async def get_freelancer_success_rate(
 )
 async def get_top_clients(
     limit: int = Query(default=10, ge=1, le=100),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get top clients by spending. Admin only."""
     result = execute_query(
@@ -582,7 +582,7 @@ async def get_top_clients(
     summary="Get platform health metrics"
 )
 async def get_platform_health(
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get platform health metrics. Admin only."""
     # Active disputes
@@ -634,7 +634,7 @@ async def get_platform_health(
 )
 async def get_engagement_metrics(
     days: int = Query(default=30, ge=1, le=365),
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get user engagement metrics. Admin only."""
     cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
@@ -691,7 +691,7 @@ async def get_engagement_metrics(
     summary="Get dashboard summary"
 )
 async def get_dashboard_summary(
-    current_user: dict = Depends(require_admin)
+    current_user = Depends(require_admin)
 ):
     """Get comprehensive dashboard summary. Admin only."""
     now = datetime.utcnow()

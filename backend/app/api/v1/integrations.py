@@ -75,7 +75,7 @@ async def list_available_integrations(
 @router.get("/connected")
 async def get_connected_integrations(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's connected integrations."""
     service = get_integrations_service(db)
@@ -87,7 +87,7 @@ async def get_connected_integrations(
 async def get_integration_details(
     integration_type: IntegrationType,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get details for a specific integration."""
     service = get_integrations_service(db)
@@ -114,7 +114,7 @@ async def get_integration_details(
 async def start_oauth_flow(
     request: StartOAuthRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Start OAuth flow for an integration."""
     service = get_integrations_service(db)
@@ -137,7 +137,7 @@ async def start_oauth_flow(
 async def complete_oauth_flow(
     request: CompleteOAuthRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Complete OAuth flow and connect integration."""
     service = get_integrations_service(db)
@@ -160,7 +160,7 @@ async def complete_oauth_flow(
 async def disconnect_integration(
     integration_type: IntegrationType,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Disconnect an integration."""
     service = get_integrations_service(db)
@@ -183,7 +183,7 @@ async def update_integration_settings(
     integration_type: IntegrationType,
     request: UpdateSettingsRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update integration settings."""
     service = get_integrations_service(db)
@@ -207,7 +207,7 @@ async def update_integration_settings(
 async def test_integration(
     integration_type: IntegrationType,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Test an integration connection."""
     service = get_integrations_service(db)
@@ -231,7 +231,7 @@ async def test_integration(
 async def send_slack_message(
     request: SlackMessageRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Send a message to Slack."""
     service = get_integrations_service(db)
@@ -256,7 +256,7 @@ async def send_slack_message(
 async def create_github_issue(
     request: GitHubIssueRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a GitHub issue."""
     service = get_integrations_service(db)
@@ -282,7 +282,7 @@ async def create_github_issue(
 async def create_trello_card(
     request: TrelloCardRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a Trello card."""
     service = get_integrations_service(db)
@@ -308,7 +308,7 @@ async def create_trello_card(
 async def sync_google_calendar(
     request: CalendarSyncRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Sync events to Google Calendar."""
     service = get_integrations_service(db)

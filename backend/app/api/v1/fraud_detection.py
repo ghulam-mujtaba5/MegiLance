@@ -58,7 +58,7 @@ class FraudAlertResponse(BaseModel):
 async def analyze_user_fraud_risk(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Analyze a user for potential fraudulent behavior.
@@ -77,7 +77,7 @@ async def analyze_user_fraud_risk(
 async def get_user_fraud_history(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get fraud analysis history for a user."""
     # Placeholder - would store historical analyses
@@ -94,7 +94,7 @@ async def get_user_fraud_history(
 async def analyze_project_fraud_risk(
     project_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Analyze a project for fraudulent characteristics.
@@ -114,7 +114,7 @@ async def analyze_project_fraud_risk(
 async def analyze_proposal_fraud_risk(
     proposal_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Analyze a proposal for suspicious activity.
@@ -134,7 +134,7 @@ async def analyze_proposal_fraud_risk(
 async def bulk_fraud_analysis(
     request: BulkAnalysisRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Perform bulk fraud analysis on multiple entities.
@@ -190,7 +190,7 @@ async def bulk_fraud_analysis(
 @router.get("/my-risk-profile")
 async def get_my_risk_profile(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get the current user's fraud risk profile."""
     service = get_fraud_detection_service(db)
@@ -207,7 +207,7 @@ async def get_my_risk_profile(
 async def report_fraud(
     request: FraudReportRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Report suspected fraud for manual review."""
     return {
@@ -227,7 +227,7 @@ async def get_fraud_reports(
     entity_type: Optional[str] = Query(None, description="Filter by entity type"),
     limit: int = Query(50, le=100),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get fraud reports (admin only)."""
     # Check if user is admin
@@ -248,7 +248,7 @@ async def get_fraud_reports(
 @router.get("/config/thresholds")
 async def get_risk_thresholds(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current risk threshold configuration."""
     service = get_fraud_detection_service(db)
@@ -268,7 +268,7 @@ async def get_risk_thresholds(
 async def get_fraud_statistics(
     period_days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get fraud detection statistics."""
     return {
@@ -293,7 +293,7 @@ async def get_fraud_statistics(
 @router.get("/dashboard")
 async def get_fraud_dashboard(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get fraud detection dashboard data."""
     return {

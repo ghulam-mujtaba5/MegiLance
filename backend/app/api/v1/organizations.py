@@ -66,7 +66,7 @@ class TransferOwnershipRequest(BaseModel):
 async def create_organization(
     request: CreateOrganizationRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a new organization."""
     service = get_organization_service(db)
@@ -85,7 +85,7 @@ async def create_organization(
 @router.get("")
 async def get_my_organizations(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get all organizations the current user belongs to."""
     service = get_organization_service(db)
@@ -111,7 +111,7 @@ async def get_available_roles():
 async def get_organization(
     org_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get organization details."""
     service = get_organization_service(db)
@@ -139,7 +139,7 @@ async def update_organization(
     org_id: str,
     request: UpdateOrganizationRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update organization details."""
     service = get_organization_service(db)
@@ -164,7 +164,7 @@ async def update_organization(
 async def delete_organization(
     org_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete an organization (owner only)."""
     service = get_organization_service(db)
@@ -184,7 +184,7 @@ async def delete_organization(
 async def get_organization_stats(
     org_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get organization statistics."""
     service = get_organization_service(db)
@@ -206,7 +206,7 @@ async def get_organization_stats(
 async def get_members(
     org_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get all members of an organization."""
     service = get_organization_service(db)
@@ -228,7 +228,7 @@ async def invite_member(
     org_id: str,
     request: InviteMemberRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Invite a new member to the organization."""
     service = get_organization_service(db)
@@ -258,7 +258,7 @@ async def invite_member(
 async def get_pending_invites(
     org_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get all pending invites for an organization."""
     service = get_organization_service(db)
@@ -279,7 +279,7 @@ async def get_pending_invites(
 async def accept_invite(
     request: AcceptInviteRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Accept an organization invite."""
     service = get_organization_service(db)
@@ -302,7 +302,7 @@ async def accept_invite(
 async def decline_invite(
     request: AcceptInviteRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Decline an organization invite."""
     service = get_organization_service(db)
@@ -324,7 +324,7 @@ async def update_member_role(
     user_id: str,
     request: UpdateMemberRoleRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update a member's role."""
     service = get_organization_service(db)
@@ -350,7 +350,7 @@ async def remove_member(
     org_id: str,
     user_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Remove a member from the organization."""
     service = get_organization_service(db)
@@ -374,7 +374,7 @@ async def remove_member(
 async def leave_organization(
     org_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Leave an organization."""
     service = get_organization_service(db)
@@ -395,7 +395,7 @@ async def transfer_ownership(
     org_id: str,
     request: TransferOwnershipRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Transfer organization ownership to another member."""
     service = get_organization_service(db)

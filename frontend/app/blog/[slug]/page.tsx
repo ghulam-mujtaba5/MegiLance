@@ -1,21 +1,25 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import BlogPostClient from './BlogPostClient';
-import { mockPosts } from '../data';
 import { buildArticleMeta, BASE_URL } from '@/lib/seo';
 
 type Props = {
   params: { slug: string };
 };
 
-export async function generateStaticParams() {
-  return mockPosts.map((post) => ({
-    slug: post.slug,
-  }));
+async function getPost(slug: string) {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+  try {
+    const res = await fetch(`${API_URL}/blog/${slug}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    return res.json();
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = mockPosts.find((p) => p.slug === params.slug);
+  const post = await getPost(params.slug);
 
   if (!post) {
     return {
@@ -27,13 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: post.title,
     description: post.excerpt,
     path: `/blog/${post.slug}`,
-    image: post.imageUrl,
-    publishedTime: new Date(post.date).toISOString(),
+    image: post.image_url,
+    publishedTime: post.created_at,
   });
 }
 
-export default function Page({ params }: Props) {
-  const post = mockPosts.find((p) => p.slug === params.slug);
+export default async function Page({ params }: Props) {
+  const post = await getPost(params.slug);
 
   if (!post) {
     notFound();
@@ -45,8 +49,8 @@ export default function Page({ params }: Props) {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    image: post.imageUrl ? `${BASE_URL}${post.imageUrl}` : undefined,
-    datePublished: new Date(post.date).toISOString(),
+    image: post.image_url ? `${BASE_URL}${post.image_url}` : undefined,
+    datePublished: post.created_at,
     author: {
       '@type': 'Person',
       name: post.author,

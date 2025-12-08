@@ -97,7 +97,7 @@ async def get_template(
 async def generate_document(
     request: GenerateDocumentRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Generate a legal document from template."""
     service = get_legal_document_service(db)
@@ -139,7 +139,7 @@ async def get_my_documents(
     doc_type_filter: Optional[DocumentType] = None,
     limit: int = Query(50, le=100),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's legal documents."""
     service = get_legal_document_service(db)
@@ -156,7 +156,7 @@ async def get_my_documents(
 async def get_document(
     document_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get a specific document."""
     service = get_legal_document_service(db)
@@ -173,7 +173,7 @@ async def update_document(
     document_id: str,
     updates: Dict[str, Any],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update a draft document."""
     service = get_legal_document_service(db)
@@ -189,7 +189,7 @@ async def update_document(
 async def delete_document(
     document_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a draft document."""
     service = get_legal_document_service(db)
@@ -203,7 +203,7 @@ async def request_signature(
     document_id: str,
     request: RequestSignatureRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Request e-signature on a document."""
     service = get_legal_document_service(db)
@@ -223,7 +223,7 @@ async def sign_document(
     document_id: str,
     request: SignDocumentRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Sign a document."""
     service = get_legal_document_service(db)
@@ -243,7 +243,7 @@ async def void_document(
     document_id: str,
     request: VoidDocumentRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Void a document."""
     service = get_legal_document_service(db)
@@ -259,7 +259,7 @@ async def void_document(
 async def get_document_signatures(
     document_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get signatures for a document."""
     return {
@@ -273,7 +273,7 @@ async def get_document_signatures(
 @router.get("/signature-requests")
 async def get_pending_signature_requests(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get pending signature requests for current user."""
     return {
@@ -288,7 +288,7 @@ async def attach_to_contract(
     document_id: str,
     request: AttachToContractRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Attach document to a contract."""
     service = get_legal_document_service(db)
@@ -308,7 +308,7 @@ async def attach_to_contract(
 async def get_contract_documents(
     contract_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get documents attached to a contract."""
     service = get_legal_document_service(db)
@@ -322,7 +322,7 @@ async def export_document(
     document_id: str,
     format: str = Query("pdf", enum=["pdf", "docx", "html"]),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Export document to specified format."""
     service = get_legal_document_service(db)
@@ -339,7 +339,7 @@ async def export_document(
 async def get_audit_trail(
     document_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get audit trail for a document."""
     service = get_legal_document_service(db)
@@ -354,7 +354,7 @@ async def create_quick_nda(
     other_party_email: str,
     purpose: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Quickly create and send an NDA."""
     service = get_legal_document_service(db)

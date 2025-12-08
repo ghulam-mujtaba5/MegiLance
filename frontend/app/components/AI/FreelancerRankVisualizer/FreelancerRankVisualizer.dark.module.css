@@ -1,33 +1,59 @@
-.container {
-  background-color: #2c2c2c;
-  border: 1px solid #444444;
-}
+/* @AI-HINT: Premium Dark Theme for Rank Visualizer */
 
-.rankName {
-  color: #f0f0f0;
-}
-
-.score {
-  color: #cccccc;
-}
-
-.progressBarContainer {
-  background-color: #444444;
-}
-
-/* @AI-HINT: Dark theme styles for FreelancerRankVisualizer radial progress and text. */
 .radialBg {
   stroke: #334155;
 }
 
 .scoreValue {
-  color: #f7fafc;
+  color: #f8fafc;
 }
 
 .scoreLabel {
-  color: #a0aec0;
+  color: #94a3b8;
 }
 
-.nextRankInfo {
-  color: #a0aec0;
+.statsGrid {
+  border-color: #334155;
+}
+
+.statValue {
+  color: #f8fafc;
+}
+
+.statLabel {
+  color: #94a3b8;
+}
+
+.benefitsButton {
+  color: #60a5fa;
+}
+
+.progressBarContainer {
+  background: #334155;
+}
+
+/* Rank-specific colors (Dark) */
+.rankBronze {
+  --rank-color: #d97706;
+  --rank-color-secondary: #b45309;
+}
+
+.rankSilver {
+  --rank-color: #cbd5e1;
+  --rank-color-secondary: #94a3b8;
+}
+
+.rankGold {
+  --rank-color: #fcd34d;
+  --rank-color-secondary: #fbbf24;
+}
+
+.rankPlatinum {
+  --rank-color: #38bdf8;
+  --rank-color-secondary: #0ea5e9;
+}
+
+.rankDiamond {
+  --rank-color: #a78bfa;
+  --rank-color-secondary: #8b5cf6;
 }

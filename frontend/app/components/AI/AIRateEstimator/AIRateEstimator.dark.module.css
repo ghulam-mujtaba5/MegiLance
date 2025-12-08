@@ -1,0 +1,36 @@
+/* @AI-HINT: Dark theme for AI Rate Estimator */
+
+.container {
+  background: rgba(30, 58, 138, 0.2);
+  border-color: rgba(30, 58, 138, 0.4);
+}
+
+.iconWrapper {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.title {
+  color: #bfdbfe;
+}
+
+.estimateText {
+  color: #dbeafe;
+}
+
+.subText {
+  color: #93c5fd;
+}
+
+.actionButton {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.actionButton:hover {
+  background: #2563eb;
+}
+
+.dismissButton {
+  color: #60a5fa;
+}

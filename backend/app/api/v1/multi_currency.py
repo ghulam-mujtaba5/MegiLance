@@ -169,7 +169,7 @@ async def quick_convert(
 @router.get("/preferences/my")
 async def get_my_currency_preference(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's preferred currency."""
     service = get_multi_currency_service(db)
@@ -181,7 +181,7 @@ async def get_my_currency_preference(
 async def set_my_currency_preference(
     request: SetCurrencyRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Set current user's preferred currency."""
     service = get_multi_currency_service(db)
@@ -198,7 +198,7 @@ async def set_my_currency_preference(
 async def get_price_display(
     amount_usd: float = Query(..., description="Amount in USD"),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get price display in user's preferred currency."""
     service = get_multi_currency_service(db)
@@ -230,7 +230,7 @@ async def format_currency_amount(
 async def create_rate_alert(
     request: CreateRateAlertRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create an exchange rate alert."""
     service = get_multi_currency_service(db)
@@ -247,7 +247,7 @@ async def create_rate_alert(
 @router.get("/alerts/my")
 async def get_my_rate_alerts(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's rate alerts."""
     # Placeholder
@@ -261,7 +261,7 @@ async def get_my_rate_alerts(
 async def delete_rate_alert(
     alert_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a rate alert."""
     return {
@@ -274,7 +274,7 @@ async def delete_rate_alert(
 @router.get("/admin/usage")
 async def admin_get_currency_usage(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Get currency usage statistics."""
     if current_user.get("role") != "admin":
@@ -291,7 +291,7 @@ async def admin_get_currency_usage(
 @router.put("/admin/rates")
 async def admin_update_exchange_rates(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Manually refresh exchange rates."""
     if current_user.get("role") != "admin":

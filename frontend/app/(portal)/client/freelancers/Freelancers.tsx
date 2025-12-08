@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { useClientData } from '@/hooks/useClient';
-import FreelancerCard, { Freelancer } from './components/FreelancerCard/FreelancerCard';
+import { AIMatchCard } from '@/app/components/AI';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
@@ -30,20 +30,22 @@ const Freelancers: React.FC = () => {
   const gridId = useId();
   const resultsId = useId();
 
-  const rows: Freelancer[] = useMemo(() => {
+  const rows = useMemo(() => {
     if (!Array.isArray(freelancers)) return [];
     return (freelancers as any[]).map((f, idx) => ({
       id: String(f.id ?? idx),
       name: f.name ?? 'Unknown',
       avatarUrl: f.avatarUrl ?? '',
       title: f.title ?? f.role ?? 'Freelancer',
-      rate: f.hourlyRate ?? f.rate ?? '$0/hr',
+      hourlyRate: typeof f.rate === 'number' ? f.rate : parseFloat(String(f.rate || '0').replace(/[^0-9.]/g, '')),
       location: f.location ?? 'Remote',
-      skills: Array.isArray(f.skills) ? f.skills : ['UI/UX', 'Web Design', 'Prototyping'],
-      rating: f.rating ?? (4.5 + Math.random() * 0.5),
-      availability: (f.availability as Freelancer['availability']) ?? 'Contract',
-      matchScore: Math.floor(Math.random() * 30) + 70, // Mock match score
-      isVerified: Math.random() > 0.3, // Mock verification
+      skills: Array.isArray(f.skills) ? f.skills : [],
+      rating: f.rating ?? 4.5,
+      availability: (f.availability as any) ?? 'available',
+      matchScore: f.matchScore ?? Math.floor(Math.random() * 30) + 70, // Mock match score if missing
+      isVerified: f.isVerified ?? false,
+      confidenceLevel: 85 + Math.floor(Math.random() * 10),
+      matchReasons: ['Skills match project requirements', 'High client satisfaction', 'Available immediately']
     }));
   }, [freelancers]);
 
@@ -76,7 +78,7 @@ const Freelancers: React.FC = () => {
       switch (sortKey) {
         case 'name': av = a.name; bv = b.name; break;
         case 'title': av = a.title; bv = b.title; break;
-        case 'rate': av = parseRate(a.rate); bv = parseRate(b.rate); break;
+        case 'rate': av = a.hourlyRate; bv = b.hourlyRate; break;
         case 'location': av = a.location; bv = b.location; break;
         case 'availability': av = a.availability; bv = b.availability; break;
         case 'rating': av = a.rating ?? 0; bv = b.rating ?? 0; break;
@@ -151,7 +153,7 @@ const Freelancers: React.FC = () => {
               variant="secondary"
               onClick={() => {
                 const header = ['ID','Name','Title','Rate','Location','Availability','Skills', 'Rating'];
-                const data = sorted.map(f => [f.id, f.name, f.title, f.rate, f.location, f.availability, f.skills.join(' | '), f.rating.toFixed(1)]);
+                const data = sorted.map(f => [f.id, f.name, f.title, f.hourlyRate, f.location, f.availability, f.skills.join(' | '), f.rating.toFixed(1)]);
                 const csv = [header, ...data]
                   .map(r => r.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
                   .join('\n');
@@ -189,7 +191,11 @@ const Freelancers: React.FC = () => {
           )}
           {!loading && error && <div className={common.error}>Failed to load freelancers.</div>}
           {!loading && !error && paged.map(f => (
-            <FreelancerCard key={f.id} freelancer={f} />
+            <AIMatchCard 
+              key={f.id} 
+              freelancer={f} 
+              requiredSkills={['React', 'TypeScript', 'Node.js']} // Mock required skills for demo
+            />
           ))}
           {!loading && sorted.length === 0 && (
             <div className={cn(common.emptyState, themed.emptyState)}>

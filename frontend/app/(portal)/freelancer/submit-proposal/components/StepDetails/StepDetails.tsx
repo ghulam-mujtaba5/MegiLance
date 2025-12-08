@@ -4,15 +4,15 @@
 import React, { useState, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Lightbulb, Calculator, CheckCircle, AlertCircle, Sparkles, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Calculator, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
 import { ProposalData, ProposalErrors } from '../../SubmitProposal.types';
 import Textarea from '@/app/components/Textarea/Textarea';
 import Input from '@/app/components/Input/Input';
 import { Label } from '@/app/components/Label/Label';
 import Select from '@/app/components/Select/Select';
-import Button from '@/app/components/Button/Button';
+import { AIProposalAssistant } from '@/app/components/AI';
 
 import common from './StepDetails.common.module.css';
 import light from './StepDetails.light.module.css';
@@ -34,34 +34,9 @@ const availabilityOptions = [
   { value: 'flexible', label: 'Flexible - Open to discussion' },
 ];
 
-const writingTips = [
-  "Start with a personalized greeting that shows you read the job post",
-  "Highlight 2-3 specific skills that match this job's requirements",
-  "Include a brief example of similar work you've completed",
-  "Ask a clarifying question to show genuine interest",
-  "End with a clear call-to-action",
-];
-
-const coverLetterTemplates = [
-  {
-    name: "Professional Introduction",
-    text: "I'm excited to submit my proposal for your project. With [X] years of experience in [field], I've successfully completed similar projects including [example]. I'm confident I can deliver exceptional results.",
-  },
-  {
-    name: "Problem-Solver Approach",
-    text: "I understand you need [project goal]. Based on my experience with [relevant skill], I can help you achieve this by [approach]. I've handled similar challenges for [previous client/project].",
-  },
-  {
-    name: "Direct Value Proposition",
-    text: "Here's what I bring to your project: [Skill 1] to ensure quality, [Skill 2] for efficient delivery, and [Skill 3] to exceed expectations. My recent work on [project] demonstrates my capability.",
-  },
-];
-
 const StepDetails: React.FC<StepDetailsProps> = ({ data, updateData, errors }) => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
-  const [showTips, setShowTips] = useState(false);
-  const [showTemplates, setShowTemplates] = useState(false);
 
   // Character count and progress
   const charCount = data.coverLetter.length;
@@ -74,10 +49,8 @@ const StepDetails: React.FC<StepDetailsProps> = ({ data, updateData, errors }) =
     return (data.hourlyRate || 0) * (data.estimatedHours || 0);
   }, [data.hourlyRate, data.estimatedHours]);
 
-  // Use template
-  const useTemplate = (template: typeof coverLetterTemplates[0]) => {
-    updateData({ coverLetter: template.text });
-    setShowTemplates(false);
+  const handleAIGenerate = (content: string) => {
+    updateData({ coverLetter: content });
   };
 
   return (
@@ -94,83 +67,16 @@ const StepDetails: React.FC<StepDetailsProps> = ({ data, updateData, errors }) =
         <div className={common.formGroup}>
           <div className={cn(common.labelRow, themed.labelRow)}>
             <Label htmlFor="coverLetter">Cover Letter</Label>
-            <div className={common.labelActions}>
-              <button 
-                type="button"
-                className={cn(common.tipButton, themed.tipButton)}
-                onClick={() => setShowTips(!showTips)}
-                aria-expanded={showTips}
-              >
-                <Lightbulb size={14} />
-                Writing Tips
-              </button>
-              <button 
-                type="button"
-                className={cn(common.tipButton, themed.tipButton)}
-                onClick={() => setShowTemplates(!showTemplates)}
-                aria-expanded={showTemplates}
-              >
-                <Sparkles size={14} />
-                Templates
-              </button>
-            </div>
           </div>
 
-          {/* Writing Tips Panel */}
-          <AnimatePresence>
-            {showTips && (
-              <motion.div 
-                className={cn(common.tipsCard, themed.tipsCard)}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-              >
-                <h4 className={cn(common.tipsTitle, themed.tipsTitle)}>
-                  <Lightbulb size={16} />
-                  Writing Tips for a Winning Proposal
-                </h4>
-                <ul className={cn(common.tipsList, themed.tipsList)}>
-                  {writingTips.map((tip, index) => (
-                    <li key={index}>{tip}</li>
-                  ))}
-                </ul>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Templates Panel */}
-          <AnimatePresence>
-            {showTemplates && (
-              <motion.div 
-                className={cn(common.templatesCard, themed.templatesCard)}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-              >
-                <h4 className={cn(common.templatesTitle, themed.templatesTitle)}>
-                  <Sparkles size={16} />
-                  Quick Start Templates
-                </h4>
-                <div className={common.templatesList}>
-                  {coverLetterTemplates.map((template, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      className={cn(common.templateItem, themed.templateItem)}
-                      onClick={() => useTemplate(template)}
-                    >
-                      <span className={cn(common.templateName, themed.templateName)}>
-                        {template.name}
-                      </span>
-                      <span className={cn(common.templatePreview, themed.templatePreview)}>
-                        {template.text.substring(0, 60)}...
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="mb-4">
+            <AIProposalAssistant 
+              jobDescription="Please review the job description and write a proposal." // Ideally this should come from props
+              currentProposal={data.coverLetter}
+              onGenerate={handleAIGenerate}
+              onImprove={handleAIGenerate}
+            />
+          </div>
 
           <Textarea
             id="coverLetter"

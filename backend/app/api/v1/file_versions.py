@@ -44,7 +44,7 @@ async def create_versioned_file(
     resource_type: Optional[str] = Form(None),
     resource_id: Optional[str] = Form(None),
     description: Optional[str] = Form(None),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -73,7 +73,7 @@ async def search_files(
     resource_type: Optional[str] = Query(None),
     resource_id: Optional[str] = Query(None),
     limit: int = Query(50, ge=1, le=100),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Search and list versioned files."""
@@ -91,7 +91,7 @@ async def search_files(
 @router.get("/{file_id}")
 async def get_file(
     file_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get file metadata and version summary."""
@@ -109,7 +109,7 @@ async def upload_new_version(
     file_id: str,
     file: UploadFile = File(...),
     comment: Optional[str] = Form(None),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -136,7 +136,7 @@ async def upload_new_version(
 async def get_version_history(
     file_id: str,
     limit: int = Query(50, ge=1, le=100),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get version history for a file."""
@@ -155,7 +155,7 @@ async def get_version_history(
 async def get_version(
     file_id: str,
     version_number: int,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -180,7 +180,7 @@ async def get_version(
 async def delete_version(
     file_id: str,
     version_number: int,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -206,7 +206,7 @@ async def delete_version(
 async def rollback_to_version(
     file_id: str,
     version_number: int = Query(..., description="Version number to rollback to"),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -232,7 +232,7 @@ async def rollback_to_version(
 async def compare_versions(
     file_id: str,
     request: CompareVersionsRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -257,7 +257,7 @@ async def compare_versions(
 @router.post("/{file_id}/lock")
 async def lock_file(
     file_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -280,7 +280,7 @@ async def lock_file(
 async def unlock_file(
     file_id: str,
     force: bool = Query(False, description="Force unlock (admin only)"),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Unlock a file."""
@@ -304,7 +304,7 @@ async def unlock_file(
 
 @router.get("/info/config")
 async def get_versioning_config(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get file versioning configuration."""

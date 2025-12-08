@@ -12,19 +12,24 @@ description: High-level and deployment architecture (C4-lite) plus operational o
 
 > @AI-HINT: This document defines the current platform structure (context, containers, components), deployment topology, cross-cutting concerns, and tracked technical debt. It is the canonical source for system-wide architectural decisions.
 
-## 1. Logical Architecture (Context & Containers)
+## 1. Hybrid Microservices Architecture (Logical View)
+MegiLance employs a **Hybrid Microservices Deployment Architecture** to achieve the necessary separation of concerns, scalability, and security required for integrating Web2 and Web3 technologies.
+
 ```
-+---------------+        HTTPS        +----------------+        Wallet TLS        +---------------------------+
-|   Frontend    |  ─────────────────▶ |    Backend     |  ─────────────────────▶  | Turso (libSQL – distributed SQLite) |
-| Next.js 14    |                     | FastAPI / Uvicorn|                         | (Managed, encrypted)      |
-+---------------+                     +----------------+                          +---------------------------+
-        │                                      │
-        │                                      │ (Future)
-        │                                      └──────────▶ AI Service (ML Inference) 
-        │
-        ▼
-  End Users (Client / Freelancer)
++---------------------+       HTTPS / JSON        +----------------------+       RPC / Web3        +---------------------------+
+|   Web2 Frontend     |  ───────────────────────▶ |    Web2 Backend      |  ─────────────────────▶ |   Web3 / Blockchain       |
+|   (Next.js 16)      |                           |   (FastAPI / Python) |                         | (Smart Contract Escrow)   |
++---------------------+                           +----------------------+                         +---------------------------+
+        │                                                    │                                                ▲
+        │                                                    │ SQL                                            │
+        ▼                                                    ▼                                                │
+  End Users (UI)                                  Turso (libSQL) Database                               Immutable Ledger
 ```
+
+### Core Components
+1.  **Web2 Layer (Performance)**: Handles user profiles, project discovery, messaging, and business logic using **Next.js** and **FastAPI**.
+2.  **Web3 Layer (Trust)**: Handles critical financial transactions (Escrow funding, release) and immutable reputation logging using **Solidity Smart Contracts**.
+3.  **AI Layer (Intelligence)**: Provides "AI Service Stubs" and active modules for **Sentiment Analysis** (Reviews) and **Price Prediction** (Projects).
 
 ## 2. Deployment Architecture (Profiles)
 Current supported deployment profiles:

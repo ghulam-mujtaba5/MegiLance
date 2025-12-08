@@ -71,10 +71,10 @@ const websiteJsonLd = {
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: `${SITE_NAME} - AI-Powered Freelance Platform | Find Top Talent`,
+    default: `${SITE_NAME} - Hybrid Decentralized Freelancing Platform (FYP)`,
     template: `%s | ${SITE_NAME}`,
   },
-  description: 'Connect with world-class freelancers and clients on MegiLance. AI-powered matching, secure blockchain payments, real-time collaboration. Start your journey today!',
+  description: 'MegiLance is a Final Year Project (FYP) at COMSATS University Islamabad. A hybrid freelancing platform combining AI-powered matching with blockchain-secured payments.',
   keywords: [
     'freelance platform',
     'hire freelancers',
@@ -88,6 +88,9 @@ export const metadata: Metadata = {
     'digital marketing',
     'software development',
     'freelance jobs',
+    'FYP',
+    'COMSATS',
+    'MegiLance'
   ],
   manifest: '/manifest.json',
   icons: {

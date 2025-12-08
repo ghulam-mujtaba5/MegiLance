@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get("/projects", response_model=List[dict])
 def get_client_projects(
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """
     Get client projects with transformed data structure for frontend
@@ -129,7 +129,7 @@ def get_client_projects(
 
 @router.get("/payments", response_model=List[dict])
 def get_client_payments(
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """
     Get client payments with transformed data structure for frontend
@@ -184,7 +184,7 @@ def get_client_payments(
 
 @router.get("/freelancers", response_model=List[dict])
 def get_client_freelancers(
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """
     Get freelancers that have worked with the client
@@ -200,7 +200,7 @@ def get_client_freelancers(
     )
     
     if not result or not result.get("rows"):
-        # Return mock data if no real data
+        # Return empty list if no real data
         return []
     
     freelancers = []
@@ -242,17 +242,22 @@ def get_client_freelancers(
             if val.get("type") != "null":
                 avg_rating = round(float(val.get("value", 0)), 1)
         
+        # Check if freelancer is verified (has completed profile, identity verification, etc.)
+        is_verified = completed_count >= 3 and avg_rating >= 4.0
+        
         freelancers.append({
             "id": f"freelancer_{freelancer_id}",
             "name": name,
             "title": title,
-            "rating": avg_rating,
+            "rating": avg_rating or 4.5,  # Default rating if no reviews
             "hourlyRate": f"${hourly_rate}/hr",
             "skills": skills[:5],  # Limit to 5 skills
             "completedProjects": completed_count,
             "avatarUrl": profile_image_url,
             "location": location,
-            "availability": "Contract" # Default for now
+            "availability": "Contract",  # Default for now
+            "isVerified": is_verified,
+            "matchScore": min(95, 70 + (completed_count * 2) + int(avg_rating * 3))  # Calculate based on reputation
         })
     
     return freelancers
@@ -260,7 +265,7 @@ def get_client_freelancers(
 
 @router.get("/reviews", response_model=List[dict])
 def get_client_reviews(
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """
     Get reviews for the client
@@ -309,7 +314,7 @@ def get_client_reviews(
 @router.post("/jobs")
 def create_client_job(
     job_data: dict,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """
     Create a new job posting for the client

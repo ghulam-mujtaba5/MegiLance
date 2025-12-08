@@ -457,3 +457,93 @@ CREATE TABLE refunds (
 	FOREIGN KEY(approved_by) REFERENCES users (id)
 );
 
+-- Scope Change Requests table for contract modifications
+CREATE TABLE scope_change_requests (
+	id INTEGER NOT NULL, 
+	contract_id INTEGER NOT NULL, 
+	requested_by INTEGER NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT NOT NULL, 
+	reason TEXT, 
+	status VARCHAR(20) NOT NULL DEFAULT 'pending', 
+	old_amount FLOAT, 
+	new_amount FLOAT, 
+	old_deadline DATETIME, 
+	new_deadline DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	resolved_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(contract_id) REFERENCES contracts (id), 
+	FOREIGN KEY(requested_by) REFERENCES users (id)
+);
+
+-- Referrals table for referral program
+CREATE TABLE referrals (
+	id INTEGER NOT NULL, 
+	referrer_id INTEGER NOT NULL, 
+	referred_email VARCHAR(255) NOT NULL, 
+	referred_user_id INTEGER, 
+	status VARCHAR(20) NOT NULL DEFAULT 'pending', 
+	referral_code VARCHAR(50) NOT NULL UNIQUE, 
+	reward_amount FLOAT NOT NULL DEFAULT 0.0, 
+	is_paid BOOLEAN NOT NULL DEFAULT 0, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	completed_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(referrer_id) REFERENCES users (id), 
+	FOREIGN KEY(referred_user_id) REFERENCES users (id)
+);
+CREATE INDEX ix_referrals_referred_email ON referrals (referred_email);
+CREATE INDEX ix_referrals_referral_code ON referrals (referral_code);
+
+-- User Verifications table for KYC
+CREATE TABLE user_verifications (
+	user_id INTEGER NOT NULL, 
+	kyc_status VARCHAR(20) NOT NULL DEFAULT 'pending', 
+	identity_doc_url VARCHAR(500), 
+	company_name VARCHAR(255), 
+	company_reg_number VARCHAR(100), 
+	tax_id VARCHAR(100), 
+	verified_at DATETIME, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (user_id), 
+	FOREIGN KEY(user_id) REFERENCES users (id)
+);
+
+-- Analytics Events table for tracking
+CREATE TABLE analytics_events (
+	id INTEGER NOT NULL, 
+	event_type VARCHAR(50) NOT NULL, 
+	user_id INTEGER, 
+	session_id VARCHAR(255), 
+	entity_type VARCHAR(50), 
+	entity_id INTEGER, 
+	event_data TEXT, 
+	ip_address VARCHAR(45), 
+	user_agent VARCHAR(500), 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+);
+
+-- Project Embeddings table for AI matching
+CREATE TABLE project_embeddings (
+	project_id INTEGER NOT NULL, 
+	embedding_vector BLOB, 
+	model_version VARCHAR(50), 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (project_id), 
+	FOREIGN KEY(project_id) REFERENCES projects (id)
+);
+
+-- User Embeddings table for AI matching
+CREATE TABLE user_embeddings (
+	user_id INTEGER NOT NULL, 
+	embedding_vector BLOB, 
+	model_version VARCHAR(50), 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (user_id), 
+	FOREIGN KEY(user_id) REFERENCES users (id)
+);
+

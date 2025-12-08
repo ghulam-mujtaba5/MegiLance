@@ -53,6 +53,7 @@ class UserProxy:
         self.is_verified = bool(row.get('is_verified', 0))
         self.name = row.get('name')
         self.user_type = row.get('user_type') or row.get('role', 'client')
+        self.role = row.get('role') or row.get('user_type', 'client')  # Ensure role is always set
         self.bio = row.get('bio')
         self.skills = row.get('skills')
         self.hourly_rate = row.get('hourly_rate', 0)
@@ -238,7 +239,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     try:
         # Fetch user from Turso database using HTTP API (not SQLAlchemy which falls back to local SQLite)
         result = execute_query(
-            "SELECT id, email, full_name, hashed_password, role, is_active, is_verified, created_at, updated_at FROM users WHERE email = ?",
+            """SELECT id, email, name, hashed_password, role, user_type, is_active, is_verified, 
+                      bio, skills, hourly_rate, profile_image_url, location, profile_data,
+                      two_factor_enabled, joined_at FROM users WHERE email = ?""",
             [email]
         )
         rows = parse_rows(result)

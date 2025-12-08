@@ -39,6 +39,14 @@ export interface BlogPostCardProps {
    */
   date: string;
   /**
+   * Number of views.
+   */
+  views?: number;
+  /**
+   * Estimated reading time in minutes.
+   */
+  readingTime?: number;
+  /**
    * The full HTML content of the blog post.
    */
   content?: string;
@@ -48,7 +56,7 @@ export interface BlogPostCardProps {
   className?: string;
 }
 
-const BlogPostCard: React.FC<BlogPostCardProps> = ({ slug, title, excerpt, imageUrl, author, date, className }) => {
+const BlogPostCard: React.FC<BlogPostCardProps> = ({ slug, title, excerpt, imageUrl, author, date, views, readingTime, className }) => {
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
@@ -64,6 +72,20 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ slug, title, excerpt, image
           <div className={cn(commonStyles.meta, themeStyles.meta)}>
             <span className={commonStyles.author}>By {author}</span>
             <span className={commonStyles.date}>{date}</span>
+          </div>
+          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
+             {views !== undefined && (
+               <span className="flex items-center gap-1">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                 {views} views
+               </span>
+             )}
+             {readingTime !== undefined && (
+               <span className="flex items-center gap-1">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                 {readingTime} min read
+               </span>
+             )}
           </div>
         </div>
       </div>

@@ -107,18 +107,21 @@ const ValueCard: React.FC<ValueCardProps> = ({
   const variantClass = `variant${prop.variant.charAt(0).toUpperCase() + prop.variant.slice(1)}`;
 
   return (
-    <div
-      className={cn(
-        commonStyles.valueCard,
-        commonStyles[variantClass as keyof typeof commonStyles],
-        themeStyles.valueCard,
-        isHovered && commonStyles.valueCardHovered
-      )}
+    <div 
+      className={commonStyles.cardWrapper}
       onMouseEnter={() => onHover(prop.id)}
       onMouseLeave={() => onHover(null)}
     >
-      {/* Gradient Border Effect */}
-      <div className={commonStyles.cardGradientBorder} />
+      <div
+        className={cn(
+          commonStyles.valueCard,
+          commonStyles[variantClass as keyof typeof commonStyles],
+          themeStyles.valueCard,
+          isHovered && commonStyles.valueCardHovered
+        )}
+      >
+        {/* Gradient Border Effect */}
+        <div className={commonStyles.cardGradientBorder} />
 
       {/* Icon Container */}
       <div className={cn(commonStyles.iconContainer, themeStyles.iconContainer)}>
@@ -164,8 +167,12 @@ const ValueCard: React.FC<ValueCardProps> = ({
           ))}
         </div>
 
-        {/* CTA Button */}
-        <button
+        {/* CTA Button - Links to relevant sections */}
+        <a
+          href={prop.id === 'ai-precision' ? '/ai/chatbot' : 
+                prop.id === 'bulletproof-security' ? '/security' :
+                prop.id === 'borderless-opportunities' ? '/jobs' : 
+                '/pricing'}
           className={cn(
             commonStyles.cardCta,
             commonStyles[`cta${prop.variant.charAt(0).toUpperCase() + prop.variant.slice(1)}` as keyof typeof commonStyles],
@@ -174,8 +181,9 @@ const ValueCard: React.FC<ValueCardProps> = ({
         >
           <span>Learn More</span>
           <ArrowRight size={16} />
-        </button>
+        </a>
       </div>
+    </div>
     </div>
   );
 };

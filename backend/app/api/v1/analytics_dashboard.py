@@ -74,7 +74,7 @@ class ExportDataRequest(BaseModel):
 async def create_dashboard(
     request: CreateDashboardRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a custom dashboard."""
     service = get_analytics_dashboard_service(db)
@@ -90,7 +90,7 @@ async def create_dashboard(
 @router.get("/dashboards")
 async def list_dashboards(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """List user's dashboards."""
     service = get_analytics_dashboard_service(db)
@@ -102,7 +102,7 @@ async def list_dashboards(
 async def get_dashboard(
     dashboard_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get dashboard by ID."""
     service = get_analytics_dashboard_service(db)
@@ -119,7 +119,7 @@ async def update_dashboard(
     dashboard_id: str,
     updates: Dict[str, Any],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update dashboard settings."""
     service = get_analytics_dashboard_service(db)
@@ -131,7 +131,7 @@ async def update_dashboard(
 async def delete_dashboard(
     dashboard_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a dashboard."""
     service = get_analytics_dashboard_service(db)
@@ -145,7 +145,7 @@ async def add_widget(
     dashboard_id: str,
     request: AddWidgetRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Add a widget to dashboard."""
     service = get_analytics_dashboard_service(db)
@@ -165,7 +165,7 @@ async def update_widget(
     widget_id: str,
     updates: Dict[str, Any],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update widget settings."""
     service = get_analytics_dashboard_service(db)
@@ -178,7 +178,7 @@ async def delete_widget(
     dashboard_id: str,
     widget_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a widget."""
     service = get_analytics_dashboard_service(db)
@@ -190,7 +190,7 @@ async def delete_widget(
 @router.get("/metrics")
 async def get_available_metrics(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get list of available metrics."""
     service = get_analytics_dashboard_service(db)
@@ -205,7 +205,7 @@ async def get_metric(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get metric data."""
     service = get_analytics_dashboard_service(db)
@@ -220,7 +220,7 @@ async def get_metric(
 @router.get("/realtime")
 async def get_realtime_metrics(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get real-time metrics snapshot."""
     service = get_analytics_dashboard_service(db)
@@ -233,7 +233,7 @@ async def get_realtime_metrics(
 async def set_kpi_target(
     request: SetKPITargetRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Set a KPI target."""
     service = get_analytics_dashboard_service(db)
@@ -249,7 +249,7 @@ async def set_kpi_target(
 @router.get("/kpis/progress")
 async def get_kpi_progress(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get KPI progress."""
     service = get_analytics_dashboard_service(db)
@@ -262,7 +262,7 @@ async def get_kpi_progress(
 async def create_alert_rule(
     request: CreateAlertRuleRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create an alert rule."""
     service = get_analytics_dashboard_service(db)
@@ -279,7 +279,7 @@ async def create_alert_rule(
 @router.get("/alerts")
 async def get_alert_rules(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's alert rules."""
     service = get_analytics_dashboard_service(db)
@@ -292,7 +292,7 @@ async def get_alert_rules(
 async def generate_report(
     request: GenerateReportRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Generate analytics report."""
     service = get_analytics_dashboard_service(db)
@@ -311,7 +311,7 @@ async def generate_report(
 async def export_data(
     request: ExportDataRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Export analytics data."""
     service = get_analytics_dashboard_service(db)
@@ -331,7 +331,7 @@ async def get_comparison(
     metric_name: str,
     compare_with: str = "previous_period",
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Compare metrics."""
     service = get_analytics_dashboard_service(db)
@@ -343,7 +343,7 @@ async def get_comparison(
 async def get_industry_benchmarks(
     category: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get industry benchmark comparison."""
     service = get_analytics_dashboard_service(db)
@@ -357,7 +357,7 @@ async def get_forecast(
     metric_name: str,
     forecast_days: int = 30,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get metric forecast."""
     service = get_analytics_dashboard_service(db)
@@ -368,7 +368,7 @@ async def get_forecast(
 @router.get("/recommendations")
 async def get_recommendations(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get AI-powered recommendations."""
     service = get_analytics_dashboard_service(db)

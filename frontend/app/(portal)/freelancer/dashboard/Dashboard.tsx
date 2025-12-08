@@ -24,6 +24,8 @@ import {
 import KeyMetricsGrid from '@/app/(portal)/freelancer/dashboard/components/KeyMetricsGrid/KeyMetricsGrid';
 import RecentActivityFeed from '@/app/(portal)/freelancer/dashboard/components/RecentActivityFeed/RecentActivityFeed';
 import EarningsChart from '@/app/(portal)/freelancer/dashboard/components/EarningsChart/EarningsChart';
+import TimeTracker from '@/app/components/TimeTracker/TimeTracker';
+import FreelancerRankVisualizer from '@/app/components/AI/FreelancerRankVisualizer/FreelancerRankVisualizer';
 import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
@@ -35,25 +37,31 @@ import darkStyles from './Dashboard.dark.module.css';
 
 const Dashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
-  const { analytics, jobs, transactions, loading, error } = useFreelancerData();
+  const { analytics, jobs, recommendedJobs, transactions, monthlyEarnings, loading, error } = useFreelancerData();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  // Mock earnings data for the chart
-  const earningsData = [
-    { month: 'Jan', amount: 1200 },
-    { month: 'Feb', amount: 1900 },
-    { month: 'Mar', amount: 1500 },
-    { month: 'Apr', amount: 2800 },
-    { month: 'May', amount: 2200 },
-    { month: 'Jun', amount: 3500 },
-  ];
+  // Use real earnings data from API
+  const earningsData = useMemo(() => {
+    if (monthlyEarnings && monthlyEarnings.length > 0) {
+      return monthlyEarnings;
+    }
+    // Return empty chart data if no real data
+    return [
+      { month: 'Jan', amount: 0 },
+      { month: 'Feb', amount: 0 },
+      { month: 'Mar', amount: 0 },
+      { month: 'Apr', amount: 0 },
+      { month: 'May', amount: 0 },
+      { month: 'Jun', amount: 0 },
+    ];
+  }, [monthlyEarnings]);
 
   const renderJobItem = (job: FreelancerJob) => (
     <div className={cn(commonStyles.jobItem, themeStyles.jobItem)}>
       <div className={commonStyles.jobHeader}>
         <h4 className={cn(commonStyles.jobTitle, themeStyles.jobTitle)}>{job.title}</h4>
         <div className="flex gap-2">
-           <Badge variant="success" size="small">{(Math.floor(Math.random() * 15) + 85)}% Match</Badge>
+           {job.matchScore && <Badge variant="success" size="small">{job.matchScore}% Match</Badge>}
            <Badge variant="info" size="small">{job.status}</Badge>
         </div>
       </div>
@@ -206,12 +214,23 @@ const Dashboard: React.FC = () => {
           </ScrollReveal>
         )}
 
-        {/* Earnings Chart */}
+        {/* Earnings Chart and Productivity */}
         <ScrollReveal delay={0.15}>
-          <div className={commonStyles.chartSection}>
-            <Card title="Earnings Overview" icon={DollarSign}>
-              <EarningsChart data={earningsData} />
-            </Card>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="lg:col-span-2">
+              <Card title="Earnings Overview" icon={DollarSign}>
+                <EarningsChart data={earningsData} />
+              </Card>
+            </div>
+            <div className="space-y-6">
+              <TimeTracker />
+              <FreelancerRankVisualizer 
+                rank={analytics?.rank || "Silver"} 
+                score={analytics ? Math.round((analytics.successRate || 85) * 10) : 850} 
+                percentile={85}
+                projectsCompleted={analytics?.completedProjects || 0}
+              />
+            </div>
           </div>
         </ScrollReveal>
 
@@ -267,10 +286,10 @@ const Dashboard: React.FC = () => {
           {/* Jobs and Transactions from API */}
           <RecentActivityFeed
             title="Recommended Jobs (AI Matched)"
-            items={jobs?.slice(0, 3) ?? []}
+            items={recommendedJobs?.slice(0, 3) ?? []}
             renderItem={renderJobItem}
             loading={loading}
-            emptyStateMessage="No jobs available at the moment. Check back soon!"
+            emptyStateMessage="No AI recommendations yet. Complete your profile to get better matches!"
           />
           <RecentActivityFeed
             title="Recent Transactions"

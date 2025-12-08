@@ -1,0 +1,99 @@
+/* @AI-HINT: AI Loading Indicator - Dark theme */
+
+.spinnerRing {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-color: var(--ml-blue-light, #6b93e8);
+}
+
+.aiBrainIcon {
+  color: var(--ml-blue-light, #6b93e8);
+}
+
+.aiBrainGlow {
+  background: linear-gradient(135deg, var(--ml-blue, #4573df), var(--ml-purple, #9b59b6));
+}
+
+.dot {
+  background: var(--ml-blue-light, #6b93e8);
+}
+
+.progressBar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.progressBarIndeterminate::after {
+  background: linear-gradient(90deg, var(--ml-blue, #4573df), var(--ml-purple, #9b59b6));
+}
+
+.progressFill {
+  background: linear-gradient(90deg, var(--ml-blue, #4573df), var(--ml-purple, #9b59b6));
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sublabel {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.statusProcessing .spinnerRing {
+  border-top-color: var(--ml-blue-light, #6b93e8);
+}
+
+.statusProcessing .label {
+  color: var(--ml-blue-light, #6b93e8);
+}
+
+.statusSuccess .successCheck {
+  background: var(--ml-green, #27AE60);
+  color: #ffffff;
+}
+
+.statusSuccess .label {
+  color: var(--ml-green-light, #4cd787);
+}
+
+.statusWarning .spinnerRing {
+  border-top-color: var(--ml-warning, #F2C94C);
+}
+
+.statusWarning .label {
+  color: var(--ml-warning, #F2C94C);
+}
+
+.statusError .label {
+  color: #ff6b7a;
+}
+
+.confidenceLabel {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.confidenceValue {
+  color: #f8fafc;
+}
+
+.confidenceBar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.confidenceFill {
+  background: linear-gradient(90deg, var(--ml-blue, #4573df), var(--ml-purple, #9b59b6));
+}
+
+.confidenceFillLow {
+  background: #ff6b7a;
+}
+
+.confidenceFillMedium {
+  background: var(--ml-warning, #F2C94C);
+}
+
+.confidenceFillHigh {
+  background: var(--ml-green-light, #4cd787);
+}
+
+.skeleton {
+  background: rgba(255, 255, 255, 0.1);
+}

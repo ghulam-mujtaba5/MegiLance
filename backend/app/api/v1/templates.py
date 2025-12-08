@@ -68,7 +68,7 @@ class DuplicateTemplateRequest(BaseModel):
 async def create_template(
     request: CreateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a new template."""
     service = get_templates_service(db)
@@ -93,7 +93,7 @@ async def create_template(
 async def get_my_templates(
     template_type: Optional[TemplateType] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get all templates owned by current user."""
     service = get_templates_service(db)
@@ -134,7 +134,7 @@ async def get_public_templates(
 @router.get("/stats")
 async def get_template_stats(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get template statistics for current user."""
     service = get_templates_service(db)
@@ -145,7 +145,7 @@ async def get_template_stats(
 @router.get("/favorites")
 async def get_favorite_templates(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's favorite templates."""
     service = get_templates_service(db)
@@ -157,7 +157,7 @@ async def get_favorite_templates(
 async def get_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get a specific template."""
     service = get_templates_service(db)
@@ -184,7 +184,7 @@ async def update_template(
     template_id: str,
     request: UpdateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update an existing template."""
     service = get_templates_service(db)
@@ -209,7 +209,7 @@ async def update_template(
 async def delete_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a template."""
     service = get_templates_service(db)
@@ -233,7 +233,7 @@ async def duplicate_template(
     template_id: str,
     request: DuplicateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Duplicate a template to your library."""
     service = get_templates_service(db)
@@ -258,7 +258,7 @@ async def apply_template(
     template_id: str,
     request: ApplyTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Apply a template with variables to generate content."""
     service = get_templates_service(db)
@@ -282,7 +282,7 @@ async def rate_template(
     template_id: str,
     request: RateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Rate a template (1-5 stars)."""
     service = get_templates_service(db)
@@ -306,7 +306,7 @@ async def rate_template(
 async def add_to_favorites(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Add template to favorites."""
     service = get_templates_service(db)
@@ -329,7 +329,7 @@ async def add_to_favorites(
 async def remove_from_favorites(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Remove template from favorites."""
     service = get_templates_service(db)

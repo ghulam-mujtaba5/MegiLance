@@ -44,6 +44,8 @@ interface APIProject {
   title: string;
   client_id: number;
   client_name?: string;
+  budget_max?: number;
+  client_verified?: boolean;
 }
 
 const sortOptions: SortOption[] = [
@@ -130,6 +132,10 @@ const ProposalsPage: React.FC = () => {
       // Transform API data to UI format
       const transformedProposals: Proposal[] = apiProposals.map((ap) => {
         const project = projectMap.get(ap.project_id);
+        // Calculate match score based on bid vs budget alignment
+        const budgetMatch = project?.budget_max ? 
+          Math.min(100, Math.round((1 - Math.abs(ap.bid_amount - project.budget_max) / project.budget_max) * 100)) : 
+          75;
         return {
           id: String(ap.id),
           jobTitle: project?.title || `Project #${ap.project_id}`,
@@ -137,8 +143,8 @@ const ProposalsPage: React.FC = () => {
           status: mapAPIStatus(ap.status, ap.is_draft),
           dateSubmitted: ap.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
           bidAmount: ap.bid_amount,
-          matchScore: Math.floor(Math.random() * 30) + 70, // Mock match score
-          isClientVerified: Math.random() > 0.3, // Mock verification
+          matchScore: Math.max(60, Math.min(95, budgetMatch)),  // Real score based on bid alignment
+          isClientVerified: project?.client_verified ?? true,  // Use real client verification status
         };
       });
       

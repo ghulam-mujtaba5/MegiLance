@@ -71,7 +71,7 @@ class RecommendationResponse(BaseModel):
 async def get_general_recommendations(
     limit: int = Query(3, ge=1, le=10),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Get general freelancer recommendations for the client dashboard.
@@ -145,7 +145,7 @@ async def get_freelancer_recommendations(
     limit: int = Query(10, ge=1, le=50, description="Number of recommendations"),
     min_score: float = Query(0.5, ge=0.0, le=1.0, description="Minimum match score"),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Get AI-powered freelancer recommendations for a project
@@ -189,7 +189,7 @@ async def get_project_recommendations(
     limit: int = Query(10, ge=1, le=50),
     min_score: float = Query(0.5, ge=0.0, le=1.0),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Get AI-powered project recommendations for the current freelancer
@@ -230,7 +230,7 @@ async def get_match_score(
     project_id: int,
     freelancer_id: int,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Get detailed match score between a specific project and freelancer
@@ -274,7 +274,7 @@ async def track_recommendation_click(
     item_id: int = Query(...),
     score: float = Query(...),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Track when a user clicks on a recommendation

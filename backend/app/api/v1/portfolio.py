@@ -12,7 +12,7 @@ from app.core.security import get_current_user_from_token
 router = APIRouter()
 
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -37,7 +37,7 @@ def list_portfolio_items(
     user_id: Optional[int] = Query(None, description="Filter by freelancer ID"),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """List portfolio items for a user"""
     target_user_id = user_id if user_id else current_user.get("user_id")
@@ -77,7 +77,7 @@ def list_portfolio_items(
 @router.get("/{portfolio_item_id}", response_model=dict)
 def get_portfolio_item(
     portfolio_item_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get a specific portfolio item"""
     result = execute_query(
@@ -101,7 +101,7 @@ def get_portfolio_item(
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 def create_portfolio_item(
     portfolio_item: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Create a new portfolio item (JSON)"""
     user_role = current_user.get("role", "")
@@ -158,7 +158,7 @@ def create_portfolio_item(
 @router.post("/items", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_portfolio_item_wizard(
     request: Request,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Create a new portfolio item from wizard (multipart/form-data)"""
     user_role = current_user.get("role", "")
@@ -257,7 +257,7 @@ async def create_portfolio_item_wizard(
 def update_portfolio_item(
     portfolio_item_id: int,
     portfolio_item: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Update a portfolio item"""
     user_id = current_user.get("user_id")
@@ -324,7 +324,7 @@ def update_portfolio_item(
 @router.delete("/{portfolio_item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_portfolio_item(
     portfolio_item_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Delete a portfolio item"""
     user_id = current_user.get("user_id")

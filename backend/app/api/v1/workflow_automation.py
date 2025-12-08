@@ -108,7 +108,7 @@ async def get_template(
 async def create_workflow(
     request: CreateWorkflowRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a new workflow."""
     service = get_workflow_automation_service(db)
@@ -131,7 +131,7 @@ async def create_workflow(
 async def create_from_template(
     request: CreateFromTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create workflow from template."""
     service = get_workflow_automation_service(db)
@@ -153,7 +153,7 @@ async def get_my_workflows(
     status_filter: Optional[WorkflowStatus] = None,
     limit: int = Query(50, le=100),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's workflows."""
     service = get_workflow_automation_service(db)
@@ -169,7 +169,7 @@ async def get_my_workflows(
 async def get_workflow(
     workflow_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get a specific workflow."""
     service = get_workflow_automation_service(db)
@@ -186,7 +186,7 @@ async def update_workflow(
     workflow_id: str,
     request: UpdateWorkflowRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update a workflow."""
     service = get_workflow_automation_service(db)
@@ -204,7 +204,7 @@ async def update_workflow(
 async def delete_workflow(
     workflow_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a workflow."""
     service = get_workflow_automation_service(db)
@@ -217,7 +217,7 @@ async def delete_workflow(
 async def activate_workflow(
     workflow_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Activate a workflow."""
     service = get_workflow_automation_service(db)
@@ -229,7 +229,7 @@ async def activate_workflow(
 async def pause_workflow(
     workflow_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Pause a workflow."""
     service = get_workflow_automation_service(db)
@@ -243,7 +243,7 @@ async def execute_workflow(
     workflow_id: str,
     request: Optional[ExecuteWorkflowRequest] = None,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Manually execute a workflow."""
     service = get_workflow_automation_service(db)
@@ -261,7 +261,7 @@ async def get_execution_history(
     workflow_id: Optional[str] = None,
     limit: int = Query(50, le=100),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get workflow execution history."""
     service = get_workflow_automation_service(db)
@@ -277,7 +277,7 @@ async def get_execution_history(
 async def get_execution_details(
     execution_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get details of a workflow execution."""
     service = get_workflow_automation_service(db)
@@ -328,7 +328,7 @@ async def get_condition_operators(
 async def get_workflow_stats(
     period_days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get workflow statistics."""
     service = get_workflow_automation_service(db)
@@ -343,7 +343,7 @@ async def admin_get_all_workflows(
     status_filter: Optional[WorkflowStatus] = None,
     limit: int = Query(100, le=500),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Get all workflows."""
     if current_user.get("role") != "admin":
@@ -360,7 +360,7 @@ async def admin_get_all_workflows(
 async def admin_get_global_stats(
     period_days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Admin: Get global workflow statistics."""
     if current_user.get("role") != "admin":

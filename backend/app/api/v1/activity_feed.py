@@ -55,7 +55,7 @@ class PrivacySettingsRequest(BaseModel):
 async def get_my_feed(
     include_own: bool = Query(True, description="Include own activities"),
     limit: int = Query(50, ge=1, le=100),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -78,7 +78,7 @@ async def get_my_activities(
     activity_types: Optional[str] = Query(None, description="Comma-separated types"),
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get current user's own activities."""
@@ -101,7 +101,7 @@ async def get_user_activities(
     activity_types: Optional[str] = Query(None),
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -126,7 +126,7 @@ async def get_user_activities(
 @router.post("/activities")
 async def create_activity(
     request: CreateActivityRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -156,7 +156,7 @@ async def create_activity(
 @router.delete("/activities/{activity_id}")
 async def delete_activity(
     activity_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Delete own activity."""
@@ -176,7 +176,7 @@ async def delete_activity(
 @router.post("/follow/{user_id}")
 async def follow_user(
     user_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Follow a user to see their activities in your feed."""
@@ -194,7 +194,7 @@ async def follow_user(
 @router.delete("/follow/{user_id}")
 async def unfollow_user(
     user_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Unfollow a user."""
@@ -210,7 +210,7 @@ async def unfollow_user(
 async def get_my_followers(
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get list of users following you."""
@@ -227,7 +227,7 @@ async def get_my_followers(
 async def get_my_following(
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get list of users you're following."""
@@ -245,7 +245,7 @@ async def get_user_followers(
     user_id: str,
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get followers of a specific user."""
@@ -263,7 +263,7 @@ async def get_user_following(
     user_id: str,
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get users that a specific user follows."""
@@ -281,7 +281,7 @@ async def get_user_following(
 @router.post("/activities/{activity_id}/like")
 async def like_activity(
     activity_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Like an activity."""
@@ -299,7 +299,7 @@ async def like_activity(
 @router.delete("/activities/{activity_id}/like")
 async def unlike_activity(
     activity_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Unlike an activity."""
@@ -318,7 +318,7 @@ async def unlike_activity(
 async def comment_on_activity(
     activity_id: str,
     request: CommentRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Add a comment to an activity."""
@@ -338,7 +338,7 @@ async def comment_on_activity(
 
 @router.get("/privacy")
 async def get_privacy_settings(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get current privacy settings."""
@@ -352,7 +352,7 @@ async def get_privacy_settings(
 @router.put("/privacy")
 async def update_privacy_settings(
     request: PrivacySettingsRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -379,7 +379,7 @@ async def update_privacy_settings(
 
 @router.get("/stats")
 async def get_activity_stats(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get activity statistics for current user."""
@@ -393,7 +393,7 @@ async def get_activity_stats(
 @router.get("/users/{user_id}/stats")
 async def get_user_activity_stats(
     user_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get activity statistics for a specific user."""
@@ -408,7 +408,7 @@ async def get_user_activity_stats(
 async def get_trending_activities(
     hours: int = Query(24, ge=1, le=168, description="Time range in hours"),
     limit: int = Query(20, ge=1, le=50),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -428,7 +428,7 @@ async def get_trending_activities(
 
 @router.get("/types")
 async def get_activity_types(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get all available activity types."""

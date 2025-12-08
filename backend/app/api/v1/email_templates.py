@@ -57,7 +57,7 @@ class PreviewTemplateRequest(BaseModel):
 async def list_templates(
     include_inactive: bool = False,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """List all email templates."""
     # Admin only
@@ -76,7 +76,7 @@ async def list_templates(
 @router.get("/types")
 async def list_template_types(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """List all available template types."""
     types = [
@@ -90,7 +90,7 @@ async def list_template_types(
 async def get_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get a specific template."""
     if current_user.get("role") != "admin":
@@ -115,7 +115,7 @@ async def get_template(
 async def create_template(
     request: CreateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Create a custom email template."""
     if current_user.get("role") != "admin":
@@ -144,7 +144,7 @@ async def update_template(
     template_id: str,
     request: UpdateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update an email template."""
     if current_user.get("role") != "admin":
@@ -171,7 +171,7 @@ async def update_template(
 async def delete_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Delete a custom template (system templates cannot be deleted)."""
     if current_user.get("role") != "admin":
@@ -198,7 +198,7 @@ async def preview_template(
     template_id: str,
     request: PreviewTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Preview a template with sample data."""
     if current_user.get("role") != "admin":
@@ -227,7 +227,7 @@ async def preview_template(
 async def duplicate_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Duplicate a template."""
     if current_user.get("role") != "admin":
@@ -257,7 +257,7 @@ async def render_template(
     template_type: EmailTemplateType,
     request: RenderTemplateRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Render a template with provided variables."""
     service = get_email_templates_service(db)

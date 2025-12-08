@@ -1,23 +1,55 @@
+/* @AI-HINT: Premium Light Theme for Sentiment Analyzer */
+
 .container {
-  background-color: #f1f2f6;
-  border: 1px solid #dfe4ea;
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.label {
-  color: #576574;
+.title {
+  color: #1e293b;
 }
 
+.gaugeContainer {
+  background: #f1f5f9;
+}
+
+.analysisText {
+  color: #475569;
+}
+
+.keyword {
+  color: #64748b;
+}
+
+/* Sentiment Colors (Light) */
 .positive {
-  background-color: #27AE60; /* Success Green */
-  color: #ffffff;
+  color: #15803d;
+  background: #dcfce7;
+  border-color: #bbf7d0;
 }
 
-.negative {
-  background-color: #e81123; /* Error Red */
-  color: #ffffff;
+.positiveFill {
+  background: #22c55e;
 }
 
 .neutral {
-  background-color: #f2f2f2;
-  color: #576574;
+  color: #475569;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
 }
+
+.neutralFill {
+  background: #94a3b8;
+}
+
+.negative {
+  color: #b91c1c;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+.negativeFill {
+  background: #ef4444;
+}
+

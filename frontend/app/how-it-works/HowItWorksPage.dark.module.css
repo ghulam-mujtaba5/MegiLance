@@ -16,3 +16,41 @@
 .sectionTitle {
   color: #ffffff;
 }
+
+.statCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 30px rgba(69, 115, 223, 0.2);
+  border-color: rgba(69, 115, 223, 0.3);
+}
+
+.featureCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.featureCard:hover {
+  box-shadow: 0 8px 30px rgba(69, 115, 223, 0.2);
+  border-color: rgba(69, 115, 223, 0.3);
+}
+
+.architectureCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.archLayer {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ctaSection {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.15) 0%, rgba(69, 115, 223, 0.08) 100%);
+  border: 1px solid rgba(69, 115, 223, 0.2);
+}

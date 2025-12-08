@@ -103,7 +103,7 @@ const Hero: React.FC = () => {
           <div className={commonStyles.leftColumn}>
             {/* Announcement badge */}
             <Link 
-              href="/blog/ai-matching-2025" 
+              href="/features" 
               className={cn(
                 commonStyles.announcementBadge, 
                 styles.announcementBadge,
@@ -144,9 +144,9 @@ const Hero: React.FC = () => {
               )}
               style={{ animationDelay: '0.3s' }}
             >
-              MegiLance combines AI-powered talent matching with blockchain-secured payments
-              to create the world&apos;s most trusted freelance marketplace. Join 50,000+ professionals 
-              building their future.
+              MegiLance is a hybrid decentralized freelancing platform combining AI-powered talent matching 
+              with blockchain-secured payments. Pay only 5-10% fees vs 20-27% on traditional platforms.
+              Built as a Final Year Project at COMSATS University.
             </p>
 
             {/* CTA buttons */}
@@ -270,7 +270,7 @@ const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats grid with glassmorphism - Full Width Bottom */}
+        {/* Stats grid with glassmorphism - Full Width Bottom (FYP Report Statistics) */}
         <div 
           className={cn(
             commonStyles.statsContainer,
@@ -280,20 +280,23 @@ const Hero: React.FC = () => {
         >
           <div className={cn(commonStyles.statsGrid, styles.statsGrid)}>
             <StatItem 
-              value={50000} 
-              label="Active Freelancers" 
-              icon={<Users size={20} />} 
+              value={455} 
+              label="Global Market (Billions)" 
+              prefix="$"
+              suffix="B+"
+              icon={<TrendingUp size={20} />} 
             />
             <StatItem 
-              value={125000} 
-              label="Projects Completed" 
+              value={75} 
+              label="Fee Savings vs Competitors" 
+              suffix="%"
               icon={<Award size={20} />} 
             />
             <StatItem 
-              value={2500000} 
-              label="Paid to Freelancers" 
-              prefix="$" 
-              icon={<TrendingUp size={20} />} 
+              value={1000000} 
+              label="Pakistani Freelancers" 
+              suffix="+"
+              icon={<Users size={20} />} 
             />
             <StatItem 
               value={45} 

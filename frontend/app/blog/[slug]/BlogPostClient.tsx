@@ -1,12 +1,12 @@
 // @AI-HINT: This page displays an individual blog post with theme support and animations, fetching data from a centralized source.
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
-import { mockPosts } from '../data';
+import { blogApi, BlogPost } from '@/lib/api/blog';
 import { PageTransition, ScrollReveal } from '@/components/Animations';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import { cn } from '@/lib/utils';
@@ -18,10 +18,37 @@ import darkStyles from './BlogPost.dark.module.css';
 const BlogPostClient: React.FC = () => {
   const params = useParams();
   const slug = params.slug as string;
-  const post = mockPosts.find((p) => p.slug === slug);
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const data = await blogApi.getBySlug(slug);
+        setPost(data);
+      } catch (error) {
+        console.error('Failed to fetch post:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (slug) {
+      fetchPost();
+    }
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <main id="main-content" role="main" className={commonStyles.container}>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        </div>
+      </main>
+    );
+  }
 
   if (!post) {
     return (
@@ -53,12 +80,24 @@ const BlogPostClient: React.FC = () => {
                 <h1 id="post-title" className={cn(commonStyles.title, themeStyles.title)}>{post.title}</h1>
                 <div className={cn(commonStyles.meta, themeStyles.meta)}>
                   <span className={commonStyles.author}>By {post.author}</span>
-                  <span>{post.date}</span>
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                  {post.views !== undefined && (
+                    <span className="flex items-center gap-1 ml-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                      {post.views} views
+                    </span>
+                  )}
+                  {post.reading_time !== undefined && (
+                    <span className="flex items-center gap-1 ml-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      {post.reading_time} min read
+                    </span>
+                  )}
                 </div>
               </header>
 
               <figure className={commonStyles.imageWrapper}>
-                <Image src={post.imageUrl} alt={post.title} layout="fill" objectFit="cover" />
+                <Image src={post.image_url || '/images/blog/default.jpg'} alt={post.title} layout="fill" objectFit="cover" />
               </figure>
 
               <section

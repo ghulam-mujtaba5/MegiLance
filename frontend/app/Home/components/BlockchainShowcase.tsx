@@ -78,14 +78,15 @@ const BlockchainShowcase: React.FC = () => {
         <div className={commonStyles.header}>
           <div className={commonStyles.badge}>
             <FaBitcoin className={commonStyles.badgeIcon} />
-            <span>Blockchain-Powered Platform</span>
+            <span>Web3 Integration (FYP Module)</span>
           </div>
           <h2 className={commonStyles.title}>
             The Future of <span className={commonStyles.titleHighlight}>Secure Payments</span>
           </h2>
           <p className={commonStyles.subtitle}>
-            Experience the power of blockchain technology with instant USDC payments, smart contract escrow, 
-            and transparent reputation systems. Built for the modern freelancer who demands security and speed.
+            Our hybrid architecture integrates Ethereum/Polygon smart contracts to solve the trust deficit 
+            in freelancing. This FYP module demonstrates how blockchain can eliminate payment disputes 
+            and reduce platform fees to under 10%.
           </p>
         </div>
 

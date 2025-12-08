@@ -155,12 +155,12 @@ def list_contracts(
     
     query = f"""
         SELECT 
-            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount,
+            c.id, c.project_id, c.freelancer_id, c.client_id, c.amount as total_amount,
             c.contract_type, c.currency, c.hourly_rate, c.retainer_amount, c.retainer_frequency,
             c.status,
             c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
             p.title as job_title,
-            u.full_name as client_name
+            u.name as client_name
         FROM contracts c
         LEFT JOIN projects p ON c.project_id = p.id
         LEFT JOIN users u ON c.client_id = u.id
@@ -196,12 +196,12 @@ def get_contract(
     
     query = """
         SELECT 
-            c.id, c.project_id, c.freelancer_id, c.client_id, c.total_amount,
+            c.id, c.project_id, c.freelancer_id, c.client_id, c.amount as total_amount,
             c.contract_type, c.currency, c.hourly_rate, c.retainer_amount, c.retainer_frequency,
             c.status,
             c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
             p.title as job_title,
-            u.full_name as client_name
+            u.name as client_name
         FROM contracts c
         LEFT JOIN projects p ON c.project_id = p.id
         LEFT JOIN users u ON c.client_id = u.id
@@ -345,12 +345,11 @@ def create_direct_contract(
             retainer_frequency = rt
         
         insert_result = execute_query(
-            """INSERT INTO contracts (id, project_id, freelancer_id, client_id, total_amount, 
+            """INSERT INTO contracts (project_id, freelancer_id, client_id, amount, 
                contract_type, currency, hourly_rate, retainer_amount, retainer_frequency,
-               status, start_date, end_date, description, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               contract_amount, platform_fee, status, start_date, end_date, description, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [
-                contract_id,
                 project_id,
                 hire_data.freelancer_id,
                 current_user.id,
@@ -360,6 +359,8 @@ def create_direct_contract(
                 hourly_rate,
                 retainer_amount,
                 retainer_frequency,
+                hire_data.rate,  # contract_amount
+                hire_data.rate * 0.1,  # platform_fee 10%
                 "active",
                 hire_data.start_date.isoformat() if hire_data.start_date else now,
                 hire_data.end_date.isoformat() if hire_data.end_date else None,
@@ -393,7 +394,7 @@ def create_direct_contract(
             "created_at": now,
             "updated_at": now,
             "job_title": title,
-            "client_name": current_user.full_name
+            "client_name": getattr(current_user, 'name', None)
         }
     except HTTPException:
         raise
@@ -516,12 +517,11 @@ def create_contract(
     
     try:
         insert_result = execute_query(
-            """INSERT INTO contracts (id, project_id, freelancer_id, client_id, total_amount, 
+            """INSERT INTO contracts (project_id, freelancer_id, client_id, amount, 
                contract_type, currency, hourly_rate, retainer_amount, retainer_frequency,
-               status, start_date, end_date, description, milestones, terms, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               contract_amount, platform_fee, status, start_date, end_date, description, milestones, terms, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [
-                contract_id,
                 contract.project_id,
                 contract.freelancer_id,
                 current_user.id,
@@ -531,6 +531,8 @@ def create_contract(
                 contract.hourly_rate,
                 contract.retainer_amount,
                 contract.retainer_frequency,
+                contract.amount,  # contract_amount
+                contract.amount * 0.1,  # platform_fee 10%
                 "active",
                 contract.start_date.isoformat() if contract.start_date else now,
                 contract.end_date.isoformat() if contract.end_date else None,
@@ -572,7 +574,7 @@ def create_contract(
             "created_at": now,
             "updated_at": now,
             "job_title": project_title,
-            "client_name": current_user.full_name
+            "client_name": getattr(current_user, 'name', None)
         }
     except HTTPException:
         raise
@@ -602,7 +604,7 @@ def update_contract(
     
     # Get existing contract
     result = execute_query(
-        """SELECT id, project_id, freelancer_id, client_id, total_amount, status,
+        """SELECT id, project_id, freelancer_id, client_id, amount, status,
            start_date, end_date, description, milestones, terms, created_at, updated_at
            FROM contracts WHERE id = ?""",
         [contract_id]

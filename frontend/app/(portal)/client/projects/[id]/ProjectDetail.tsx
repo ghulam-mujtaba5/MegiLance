@@ -12,6 +12,7 @@ import { PageTransition, ScrollReveal } from '@/components/Animations';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
 import { User, DollarSign, Clock, CheckCircle, XCircle, MessageSquare, Star, ShieldAlert } from 'lucide-react';
+import { FraudAlertBanner } from '@/app/components/AI';
 import common from './ProjectDetail.common.module.css';
 import light from './ProjectDetail.light.module.css';
 import dark from './ProjectDetail.dark.module.css';
@@ -353,23 +354,17 @@ const ProjectDetail: React.FC = () => {
                         )}
                         
                         {fraudCheckResults[proposal.id] && (
-                          <div className={`mt-3 p-3 rounded-md text-sm border ${
-                            fraudCheckResults[proposal.id].risk_level === 'high' ? 'bg-red-50 border-red-200 text-red-800' :
-                            fraudCheckResults[proposal.id].risk_level === 'medium' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' :
-                            'bg-green-50 border-green-200 text-green-800'
-                          }`}>
-                            <div className="font-bold flex items-center gap-2">
-                              Risk Level: {fraudCheckResults[proposal.id].risk_level.toUpperCase()} 
-                              (Score: {fraudCheckResults[proposal.id].risk_score}/100)
-                            </div>
-                            {fraudCheckResults[proposal.id].risk_factors.length > 0 && (
-                              <ul className="list-disc list-inside mt-1">
-                                {fraudCheckResults[proposal.id].risk_factors.map((factor: string, i: number) => (
-                                  <li key={i}>{factor}</li>
-                                ))}
-                              </ul>
-                            )}
-                            <div className="mt-1 font-medium">Recommendation: {fraudCheckResults[proposal.id].recommendation}</div>
+                          <div className="mt-3">
+                            <FraudAlertBanner 
+                              message={`Risk Score: ${fraudCheckResults[proposal.id].risk_score}/100. ${fraudCheckResults[proposal.id].recommendation}`}
+                              severity={fraudCheckResults[proposal.id].risk_level as 'high' | 'medium' | 'low'}
+                              details={fraudCheckResults[proposal.id].risk_factors}
+                              onDismiss={() => {
+                                const newResults = {...fraudCheckResults};
+                                delete newResults[proposal.id];
+                                setFraudCheckResults(newResults);
+                              }}
+                            />
                           </div>
                         )}
                         

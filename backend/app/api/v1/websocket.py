@@ -38,7 +38,7 @@ class SendNotificationRequest(BaseModel):
 
 @router.get("/status", response_model=WebSocketStatusResponse)
 def get_websocket_status(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Get WebSocket server status
@@ -56,7 +56,7 @@ def get_websocket_status(
 
 @router.get("/online-users", response_model=OnlineUsersResponse)
 def get_online_users(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Get list of online users
@@ -74,7 +74,7 @@ def get_online_users(
 @router.get("/user/{user_id}/online")
 def check_user_online(
     user_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Check if a specific user is online
@@ -90,7 +90,7 @@ def check_user_online(
 @router.post("/send-notification")
 async def send_test_notification(
     request: SendNotificationRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
 ):
     """
     Send a test notification to a user (for testing WebSocket)

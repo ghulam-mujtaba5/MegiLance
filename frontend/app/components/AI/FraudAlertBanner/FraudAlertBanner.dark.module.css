@@ -1,16 +1,81 @@
-.fraudAlertBanner {
-  background-color: #3e341a;
-  border: 1px solid #8d6e3a;
+/* @AI-HINT: Premium Fraud Alert Banner - Dark theme */
+
+.container {
+  background: #1a202c;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.fraudAlertBannerIcon {
-  color: #ffc53d;
+.containerHigh {
+  background: rgba(155, 44, 44, 0.2);
+  border-color: rgba(252, 129, 129, 0.3);
+  color: #fc8181;
 }
 
-.fraudAlertBannerContent strong {
-  color: #ffc53d;
+.containerHigh::before {
+  background: #fc8181;
 }
 
-.fraudAlertBannerContent p {
-  color: #e6dcb9;
+.containerMedium {
+  background: rgba(192, 86, 33, 0.2);
+  border-color: rgba(246, 173, 85, 0.3);
+  color: #f6ad55;
+}
+
+.containerMedium::before {
+  background: #f6ad55;
+}
+
+.containerLow {
+  background: rgba(44, 82, 130, 0.2);
+  border-color: rgba(99, 179, 237, 0.3);
+  color: #63b3ed;
+}
+
+.containerLow::before {
+  background: #63b3ed;
+}
+
+.iconWrapper {
+  color: inherit;
+}
+
+.title {
+  color: inherit;
+}
+
+.severityBadge {
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+}
+
+.message {
+  color: inherit;
+  opacity: 0.9;
+}
+
+.detailsButton {
+  color: inherit;
+}
+
+.detailsPanel {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.detailItem {
+  color: inherit;
+  opacity: 0.85;
+}
+
+.actionButton {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: currentColor;
+  color: inherit;
+}
+
+.actionButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dismissButton {
+  color: inherit;
 }

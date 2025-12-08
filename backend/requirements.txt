@@ -44,3 +44,6 @@ pytest-cov==6.0.0
 # Uses libsql-client HTTP API for direct queries (authentication, etc.)
 # libsql-client>=0.3.1
 requests==2.31.0
+
+# MongoDB
+motor==3.3.2

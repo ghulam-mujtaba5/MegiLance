@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     database_url: str = "file:./local.db"
     turso_database_url: Optional[str] = None
     turso_auth_token: Optional[str] = None
+
+    # MongoDB Configuration
+    MONGODB_URL: str = "mongodb+srv://megilanceofficial_db_user:S0oNYXR4UggeiooT@cluster0.8is4jam.mongodb.net/?appName=Cluster0"
+    MONGODB_DB_NAME: str = "megilance_blog"
     
     # Path to mounted JSON data directory (for mock/admin/demo endpoints)
     json_data_dir: str = "/data/db"

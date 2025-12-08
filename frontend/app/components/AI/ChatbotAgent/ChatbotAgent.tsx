@@ -1,10 +1,9 @@
-// @AI-HINT: This component provides a fully theme-aware chat interface for interacting with an AI agent. It uses per-component CSS modules and the cn utility for robust, maintainable styling.
+// @AI-HINT: Enhanced AI chatbot interface with typing indicators, suggested actions, sentiment analysis display, and premium styling matching backend ai_chatbot.py capabilities
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from 'next-themes';
-import Button from '@/app/components/Button/Button';
-import { MessageSquare, X, Send, Loader2 } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, Zap, HelpCircle, FileText, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import commonStyles from './ChatbotAgent.common.module.css';
 import lightStyles from './ChatbotAgent.light.module.css';
@@ -14,7 +13,17 @@ interface Message {
   id: number;
   text: string;
   sender: 'user' | 'bot';
+  timestamp: Date;
+  sentiment?: 'positive' | 'neutral' | 'negative';
+  suggestedActions?: string[];
 }
+
+const SUGGESTED_ACTIONS = [
+  { icon: HelpCircle, text: 'How do I get started?' },
+  { icon: FileText, text: 'View my projects' },
+  { icon: User, text: 'Find freelancers' },
+  { icon: Zap, text: 'Quick tips' },
+];
 
 const ChatbotAgent: React.FC = () => {
   const { resolvedTheme } = useTheme();
@@ -26,7 +35,10 @@ const ChatbotAgent: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -36,35 +48,63 @@ const ChatbotAgent: React.FC = () => {
     if (isOpen && !conversationId) {
       startConversation();
     }
+    if (isOpen) {
+      setUnreadCount(0);
+      inputRef.current?.focus();
+    }
   }, [isOpen]);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   const startConversation = async () => {
     setIsLoading(true);
+    setIsTyping(true);
     try {
       const res = await fetch('/backend/api/chatbot/start', { method: 'POST' });
       if (!res.ok) throw new Error('Failed to start conversation');
       const data = await res.json();
       setConversationId(data.conversation_id);
-      setMessages([{ id: 1, text: data.response, sender: 'bot' }]);
+      
+      // Simulate typing delay for more natural feel
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      setMessages([{ 
+        id: 1, 
+        text: data.response, 
+        sender: 'bot',
+        timestamp: new Date(),
+        sentiment: 'positive',
+        suggestedActions: ['How do I get started?', 'Find freelancers', 'Post a project']
+      }]);
     } catch (error) {
       console.error('Failed to start conversation:', error);
       setMessages([{ 
         id: 1, 
-        text: 'Hello! I am currently offline. Please try again later.', 
-        sender: 'bot' 
+        text: 'Hello! I\'m MegiBot, your AI assistant. I\'m currently in offline mode, but I can still help with basic questions. How can I assist you today?', 
+        sender: 'bot',
+        timestamp: new Date(),
+        sentiment: 'neutral'
       }]);
     } finally {
       setIsLoading(false);
+      setIsTyping(false);
     }
   };
+
+  const handleSuggestedAction = useCallback((action: string) => {
+    setInputValue(action);
+    inputRef.current?.focus();
+  }, []);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,11 +115,13 @@ const ChatbotAgent: React.FC = () => {
       id: Date.now(),
       text: userText,
       sender: 'user',
+      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, newUserMessage]);
     setInputValue('');
     setIsLoading(true);
+    setIsTyping(true);
 
     try {
       const res = await fetch(`/backend/api/chatbot/${conversationId}/message`, {
@@ -92,22 +134,43 @@ const ChatbotAgent: React.FC = () => {
       
       const data = await res.json();
       
+      // Simulate natural typing delay
+      await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 800));
+      
       const botResponse: Message = {
         id: Date.now() + 1,
         text: data.response,
         sender: 'bot',
+        timestamp: new Date(),
+        sentiment: data.sentiment || 'neutral',
+        suggestedActions: data.suggested_actions,
       };
       setMessages(prev => [...prev, botResponse]);
+      
+      if (!isOpen) {
+        setUnreadCount(prev => prev + 1);
+      }
     } catch (error) {
       console.error('Failed to send message:', error);
       const errorMessage: Message = {
         id: Date.now() + 1,
-        text: 'Sorry, I encountered an error. Please try again.',
+        text: 'I apologize, but I encountered an issue processing your request. Please try again in a moment.',
         sender: 'bot',
+        timestamp: new Date(),
+        sentiment: 'negative',
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      setIsTyping(false);
+    }
+  };
+
+  const getSentimentClass = (sentiment?: string) => {
+    switch (sentiment) {
+      case 'positive': return themeStyles.sentimentBadge;
+      case 'negative': return cn(commonStyles.sentimentBadge, themeStyles.sentimentBadgeNegative);
+      default: return cn(commonStyles.sentimentBadge, themeStyles.sentimentBadgeNeutral);
     }
   };
 
@@ -129,58 +192,137 @@ const ChatbotAgent: React.FC = () => {
     <div className={commonStyles.chatbotContainer}>
       {isOpen && (
         <div className={cn(commonStyles.chatbotAgent, themeStyles.chatbotAgent)}>
+          {/* Enhanced Header */}
           <div className={cn(commonStyles.chatbotAgentHeader, themeStyles.chatbotAgentHeader)}>
-            <h3>MegiBot AI</h3>
-            <button onClick={() => setIsOpen(false)} className={commonStyles.closeButton}>
+            <div className={commonStyles.headerLeft}>
+              <div className={cn(commonStyles.aiAvatar, themeStyles.aiAvatar)}>
+                <Sparkles size={18} />
+                <div className={cn(commonStyles.aiAvatarPulse, themeStyles.aiAvatarPulse)} />
+              </div>
+              <div className={commonStyles.headerInfo}>
+                <h3>MegiBot AI</h3>
+                <span className={cn(commonStyles.headerStatus, themeStyles.headerStatus)}>
+                  <span className={cn(commonStyles.statusDot, themeStyles.statusDot)} />
+                  {isTyping ? 'Typing...' : 'Online'}
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsOpen(false)} 
+              className={cn(commonStyles.closeButton, themeStyles.closeButton)}
+              aria-label="Close chat"
+            >
               <X size={18} />
             </button>
           </div>
           
+          {/* Messages Area */}
           <div className={cn(commonStyles.chatbotAgentMessages, themeStyles.chatbotAgentMessages)}>
+            {messages.length === 0 && !isTyping && (
+              <div className={commonStyles.suggestedActions}>
+                {SUGGESTED_ACTIONS.map((action, index) => (
+                  <button
+                    key={index}
+                    className={cn(commonStyles.suggestedAction, themeStyles.suggestedAction)}
+                    onClick={() => handleSuggestedAction(action.text)}
+                  >
+                    <action.icon size={14} />
+                    {action.text}
+                  </button>
+                ))}
+              </div>
+            )}
+            
             {messages.map(message => (
-              <div key={message.id} className={cn(
-                commonStyles.message,
-                message.sender === 'bot'
-                  ? themeStyles.messageBot
-                  : themeStyles.messageUser
-              )}>
-                <p>{message.text}</p>
+              <div 
+                key={message.id} 
+                className={cn(
+                  commonStyles.message,
+                  message.sender === 'bot' ? commonStyles.messageBot : commonStyles.messageUser,
+                  message.sender === 'bot' ? themeStyles.messageBot : themeStyles.messageUser
+                )}
+              >
+                <div className={cn(commonStyles.messageBubble, themeStyles.messageBubble)}>
+                  <p>{message.text}</p>
+                  {message.sender === 'bot' && message.sentiment && (
+                    <span className={getSentimentClass(message.sentiment)}>
+                      {message.sentiment === 'positive' ? '😊' : message.sentiment === 'negative' ? '😔' : '😐'}
+                    </span>
+                  )}
+                </div>
+                <span className={cn(commonStyles.messageTime, themeStyles.messageTime)}>
+                  {formatTime(message.timestamp)}
+                </span>
+                
+                {/* Suggested Actions after bot message */}
+                {message.sender === 'bot' && message.suggestedActions && message.suggestedActions.length > 0 && (
+                  <div className={commonStyles.suggestedActions}>
+                    {message.suggestedActions.map((action, idx) => (
+                      <button
+                        key={idx}
+                        className={cn(commonStyles.suggestedAction, themeStyles.suggestedAction)}
+                        onClick={() => handleSuggestedAction(action)}
+                      >
+                        {action}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
-            {isLoading && (
-              <div className={cn(commonStyles.message, themeStyles.messageBot)}>
-                <Loader2 className="animate-spin" size={16} />
+            
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className={cn(commonStyles.message, commonStyles.messageBot)}>
+                <div className={cn(commonStyles.typingIndicator, themeStyles.typingIndicator)}>
+                  <div className={commonStyles.typingDots}>
+                    <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                    <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                    <span className={cn(commonStyles.typingDot, themeStyles.typingDot)} />
+                  </div>
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
           
+          {/* Enhanced Input Form */}
           <form className={cn(commonStyles.chatbotAgentInputForm, themeStyles.chatbotAgentInputForm)} onSubmit={handleSendMessage}>
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask me anything..."
-              className={cn(commonStyles.chatbotAgentInput, themeStyles.chatbotAgentInput)}
-              disabled={isLoading || !conversationId}
-            />
-            <Button 
-              type="submit" 
-              variant="primary" 
-              size="sm"
-              disabled={isLoading || !inputValue.trim() || !conversationId}
-            >
-              <Send size={16} />
-            </Button>
+            <div className={cn(commonStyles.inputWrapper, themeStyles.inputWrapper)}>
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Ask me anything..."
+                className={cn(commonStyles.chatbotAgentInput, themeStyles.chatbotAgentInput)}
+                disabled={isLoading || !conversationId}
+              />
+              <button 
+                type="submit" 
+                className={cn(commonStyles.sendButton, themeStyles.sendButton)}
+                disabled={isLoading || !inputValue.trim() || !conversationId}
+                aria-label="Send message"
+              >
+                <Send size={16} />
+              </button>
+            </div>
           </form>
         </div>
       )}
+      
+      {/* Toggle Button with Notification Badge */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(commonStyles.toggleButton, themeStyles.toggleButton)}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
+        {!isOpen && unreadCount > 0 && (
+          <span className={cn(commonStyles.notificationBadge, themeStyles.notificationBadge)}>
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
       </button>
     </div>
   );

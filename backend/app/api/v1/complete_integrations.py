@@ -61,7 +61,7 @@ class InvoiceCreateRequest(BaseModel):
 @router.post("/reviews", status_code=status.HTTP_201_CREATED)
 async def create_review(
     review: ReviewCreateRequest,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Create a new review"""
     service = get_review_service()
@@ -87,7 +87,7 @@ async def get_user_reviews(
     user_id: int,
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get reviews for a user"""
     service = get_review_service()
@@ -113,7 +113,7 @@ async def search_projects(
     sort_by: str = Query("relevance"),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Search projects with FTS5"""
     service = get_search_service()
@@ -139,7 +139,7 @@ async def search_freelancers(
     sort_by: str = Query("relevance"),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Search freelancers with FTS5"""
     service = get_search_service()
@@ -178,7 +178,7 @@ async def get_trending_searches(limit: int = Query(10, ge=1, le=50)):
 @router.post("/conversations", status_code=status.HTTP_201_CREATED)
 async def create_conversation(
     receiver_id: int,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Create or get conversation"""
     service = get_messaging_service()
@@ -191,7 +191,7 @@ async def create_conversation(
 @router.post("/messages", status_code=status.HTTP_201_CREATED)
 async def send_message(
     message: MessageCreateRequest,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Send a message"""
     service = get_messaging_service()
@@ -211,7 +211,7 @@ async def get_messages(
     conversation_id: int,
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get messages in a conversation"""
     service = get_messaging_service()
@@ -227,7 +227,7 @@ async def get_messages(
 async def get_conversations(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get user's conversations"""
     service = get_messaging_service()
@@ -243,7 +243,7 @@ async def get_conversations(
 @router.post("/invoices", status_code=status.HTTP_201_CREATED)
 async def create_invoice(
     invoice: InvoiceCreateRequest,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Create an invoice with tax calculation"""
     service = get_invoicing_service()
@@ -277,7 +277,7 @@ async def create_invoice(
 @router.get("/invoices/{invoice_id}")
 async def get_invoice(
     invoice_id: int,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get invoice details"""
     service = get_invoicing_service()
@@ -290,7 +290,7 @@ async def get_invoice(
 
 @router.get("/admin/stats")
 async def get_platform_stats(
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get platform statistics (admin only)"""
     if current_user.get("role") != "admin":
@@ -301,7 +301,7 @@ async def get_platform_stats(
 
 @router.get("/admin/fraud-alerts")
 async def get_fraud_alerts(
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get fraud alerts (admin only)"""
     if current_user.get("role") != "admin":
@@ -315,7 +315,7 @@ async def get_fraud_alerts(
 @router.get("/analytics/dashboard")
 async def get_analytics_dashboard(
     days: int = Query(30, ge=1, le=365),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get analytics dashboard data"""
     service = get_analytics_service()
@@ -324,7 +324,7 @@ async def get_analytics_dashboard(
 @router.get("/analytics/revenue-trend")
 async def get_revenue_trend(
     days: int = Query(30, ge=1, le=365),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get revenue trend"""
     service = get_analytics_service()
@@ -333,7 +333,7 @@ async def get_revenue_trend(
 @router.get("/analytics/top-categories")
 async def get_top_categories(
     limit: int = Query(10, ge=1, le=50),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get top categories"""
     service = get_analytics_service()
@@ -342,7 +342,7 @@ async def get_top_categories(
 @router.get("/analytics/top-freelancers")
 async def get_top_freelancers(
     limit: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get top freelancers"""
     service = get_analytics_service()
@@ -355,7 +355,7 @@ async def get_freelancer_matches(
     project_id: int,
     limit: int = Query(10, ge=1, le=50),
     min_score: float = Query(0.5, ge=0.0, le=1.0),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get AI-powered freelancer matches for a project"""
     service = get_ai_matching_service()
@@ -367,7 +367,7 @@ async def get_project_matches(
     freelancer_id: int,
     limit: int = Query(10, ge=1, le=50),
     min_score: float = Query(0.5, ge=0.0, le=1.0),
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get AI-powered project matches for a freelancer"""
     service = get_ai_matching_service()
@@ -379,7 +379,7 @@ async def recommend_pricing(
     skills: List[str] = Query(...),
     experience_level: str = Query("intermediate"),
     location: Optional[str] = None,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Get AI pricing recommendations"""
     service = get_pricing_service()
@@ -393,7 +393,7 @@ async def recommend_pricing(
 @router.post("/ai/fraud-check/{user_id}")
 async def check_fraud_risk(
     user_id: int,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Check fraud risk for a user"""
     service = get_fraud_detection_service()

@@ -23,6 +23,28 @@
   --ml-pink: #fd79a8;
 
   /* ========================================
+     LIGHT THEME COLORS
+     ======================================== */
+  --bg-primary-light: #ffffff;
+  --bg-secondary-light: #f8fafc;
+  --bg-tertiary-light: #f1f5f9;
+  --text-primary-light: #0f172a;
+  --text-secondary-light: #475569;
+  --text-tertiary-light: #94a3b8;
+  --border-light: #e2e8f0;
+
+  /* ========================================
+     DARK THEME COLORS
+     ======================================== */
+  --bg-primary-dark: #0f172a;
+  --bg-secondary-dark: #1e293b;
+  --bg-tertiary-dark: #334155;
+  --text-primary-dark: #f8fafc;
+  --text-secondary-dark: #cbd5e1;
+  --text-tertiary-dark: #94a3b8;
+  --border-dark: #334155;
+
+  /* ========================================
      NEUTRAL COLORS - Slate Scale
      ======================================== */
   --neutral-50: #f8fafc;

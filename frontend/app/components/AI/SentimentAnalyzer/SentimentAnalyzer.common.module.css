@@ -1,23 +1,90 @@
+/* @AI-HINT: Premium Sentiment Analyzer styling */
+
 .container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px; /* Pill shape */
-  width: fit-content;
-  /* background-color and border are handled by theme-specific styles */
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  width: 100%;
 }
 
-.label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  /* color is handled by theme-specific styles */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
 }
 
-.indicator {
-  font-size: 0.9rem;
+.title {
+  font-size: 0.875rem;
   font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 15px;
-  /* color and background-color are handled by theme-specific styles */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
+.scoreBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.gaugeContainer {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.gaugeFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+}
+
+.marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 1;
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.analysisText {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+.keywordsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+}
+
+.keyword {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(128, 128, 128, 0.1);
+  border: 1px solid rgba(128, 128, 128, 0.2);
+}
+

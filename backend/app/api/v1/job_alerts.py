@@ -34,7 +34,7 @@ class JobAlert(JobAlertBase):
 # --- Endpoints ---
 
 @router.get("/", response_model=List[JobAlert])
-def get_job_alerts(current_user: dict = Depends(get_current_user_from_token)):
+def get_job_alerts(current_user = Depends(get_current_user_from_token)):
     """Get all job alerts for the current user"""
     user_id = current_user.get("user_id")
     
@@ -55,7 +55,7 @@ def get_job_alerts(current_user: dict = Depends(get_current_user_from_token)):
 @router.post("/", response_model=JobAlert, status_code=status.HTTP_201_CREATED)
 def create_job_alert(
     alert: JobAlertCreate,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Create a new job alert"""
     user_id = current_user.get("user_id")
@@ -92,7 +92,7 @@ def create_job_alert(
 @router.delete("/{alert_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_job_alert(
     alert_id: int,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Delete a job alert"""
     user_id = current_user.get("user_id")
@@ -113,7 +113,7 @@ def delete_job_alert(
 def update_job_alert(
     alert_id: int,
     alert_update: JobAlertUpdate,
-    current_user: dict = Depends(get_current_user_from_token)
+    current_user = Depends(get_current_user_from_token)
 ):
     """Update a job alert"""
     user_id = current_user.get("user_id")

@@ -83,7 +83,7 @@ class CreateFieldGroupRequest(BaseModel):
 @router.post("/definitions")
 async def create_field_definition(
     request: CreateFieldDefinitionRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
@@ -141,7 +141,7 @@ async def create_field_definition(
 async def get_field_definitions(
     entity_type: str = Query(..., description="Entity type to get fields for"),
     include_hidden: bool = Query(False),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get all field definitions for an entity type."""
@@ -159,7 +159,7 @@ async def get_field_definitions(
 @router.get("/definitions/{field_id}")
 async def get_field_definition(
     field_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get a specific field definition."""
@@ -173,7 +173,7 @@ async def get_field_definition(
 async def update_field_definition(
     field_id: str,
     request: UpdateFieldDefinitionRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Update a field definition (admin only)."""
@@ -196,7 +196,7 @@ async def update_field_definition(
 @router.delete("/definitions/{field_id}")
 async def delete_field_definition(
     field_id: str,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Delete a field definition (admin only)."""
@@ -221,7 +221,7 @@ async def set_field_value(
     entity_type: str,
     entity_id: str,
     request: SetFieldValueRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Set a custom field value for an entity."""
@@ -244,7 +244,7 @@ async def set_multiple_field_values(
     entity_type: str,
     entity_id: str,
     request: SetMultipleValuesRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Set multiple custom field values at once."""
@@ -263,7 +263,7 @@ async def get_field_values(
     entity_type: str,
     entity_id: str,
     include_empty: bool = Query(True, description="Include fields with no value"),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get all custom field values for an entity."""
@@ -281,7 +281,7 @@ async def get_field_values(
 @router.post("/groups")
 async def create_field_group(
     request: CreateFieldGroupRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Create a field group for organizing fields (admin only)."""
@@ -305,7 +305,7 @@ async def create_field_group(
 @router.get("/groups")
 async def get_field_groups(
     entity_type: str = Query(...),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get all field groups for an entity type."""
@@ -321,7 +321,7 @@ async def get_field_groups(
 @router.get("/export")
 async def export_field_definitions(
     entity_type: Optional[str] = Query(None),
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Export field definitions (admin only)."""
@@ -339,7 +339,7 @@ async def export_field_definitions(
 
 @router.get("/info/types")
 async def get_field_types(
-    current_user: dict = Depends(get_current_active_user),
+    current_user = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get available field types and entity types."""

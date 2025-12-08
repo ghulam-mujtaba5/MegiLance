@@ -19,7 +19,7 @@ from app.core.security import get_current_user_from_token
 
 router = APIRouter()
 
-def get_current_user(token_data: dict = Depends(get_current_user_from_token)):
+def get_current_user(token_data = Depends(get_current_user_from_token)):
     """Get current user from token"""
     return token_data
 
@@ -30,7 +30,7 @@ def generate_referral_code():
 # ============ ENDPOINTS ============
 
 @router.get("/stats", response_model=dict)
-async def get_referral_stats(current_user: dict = Depends(get_current_user)):
+async def get_referral_stats(current_user = Depends(get_current_user)):
     """
     Get referral statistics for the current user.
     """
@@ -78,7 +78,7 @@ async def get_referral_stats(current_user: dict = Depends(get_current_user)):
 
 @router.get("/", response_model=List[dict])
 async def list_referrals(
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     List all referrals sent by the current user.
@@ -102,7 +102,7 @@ async def list_referrals(
 async def invite_friend(
     invite_data: dict,
     background_tasks: BackgroundTasks,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Invite a friend via email.

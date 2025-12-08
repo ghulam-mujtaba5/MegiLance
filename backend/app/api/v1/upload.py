@@ -48,7 +48,7 @@ def validate_file(file: UploadFile, allowed_extensions: set) -> None:
 @router.post("/profile-image", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def upload_profile_image(
     file: UploadFile = File(..., description="Profile image file"),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Upload user profile image
@@ -103,7 +103,7 @@ async def upload_profile_image(
 async def upload_portfolio_image(
     file: UploadFile = File(..., description="Portfolio image file"),
     portfolio_item_id: Optional[str] = Form(None),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Upload portfolio item image
@@ -140,7 +140,7 @@ async def upload_portfolio_image(
 async def upload_proposal_attachment(
     file: UploadFile = File(..., description="Proposal attachment"),
     proposal_id: str = Form(..., description="Proposal ID"),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Upload proposal attachment (PDF, documents)
@@ -207,7 +207,7 @@ async def upload_proposal_attachment(
 async def upload_project_file(
     file: UploadFile = File(..., description="Project file"),
     project_id: str = Form(..., description="Project ID"),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Upload project-related files
@@ -265,7 +265,7 @@ async def upload_multiple_files(
     files: List[UploadFile] = File(..., description="Multiple files"),
     file_type: str = Form(..., description="Type: profile, portfolio, proposal, project"),
     reference_id: Optional[str] = Form(None, description="Related entity ID"),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Upload multiple files at once
@@ -310,7 +310,7 @@ async def upload_multiple_files(
 @router.delete("/file", response_model=dict)
 async def delete_uploaded_file(
     file_path: str = Query(..., description="File path to delete"),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Delete a file from local storage
@@ -337,7 +337,7 @@ async def delete_uploaded_file(
 @router.get("/file-url", response_model=dict)
 async def get_file_access_url(
     file_path: str = Query(..., description="File path"),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """
     Get file URL for secure file access

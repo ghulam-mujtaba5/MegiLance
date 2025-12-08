@@ -50,7 +50,7 @@ async def search_projects(
     page: int = 1,
     limit: int = 20,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_optional)
+    current_user = Depends(get_current_user_optional)
 ):
     """Search projects with advanced filters."""
     service = get_marketplace_service(db)
@@ -101,11 +101,11 @@ async def search_freelancers(
     language: Optional[str] = None,
     experience_level: Optional[str] = None,
     availability: Optional[str] = None,
-    sort_by: FreelancerSort = FreelancerSort.RELEVANCE,
+    sort_by: str = "relevance",
     page: int = 1,
     limit: int = 20,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user_optional)
+    current_user = Depends(get_current_user_optional)
 ):
     """Search freelancers with advanced filters."""
     service = get_marketplace_service(db)
@@ -194,7 +194,7 @@ async def get_skill_demand(
 async def get_personalized_projects(
     limit: int = 20,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get personalized project recommendations."""
     service = get_marketplace_service(db)
@@ -207,7 +207,7 @@ async def get_recommended_freelancers(
     project_id: Optional[str] = None,
     limit: int = 10,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get recommended freelancers for a client."""
     service = get_marketplace_service(db)
@@ -245,7 +245,7 @@ async def get_autocomplete(
 async def get_recent_searches(
     limit: int = 10,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get user's recent searches."""
     service = get_marketplace_service(db)
@@ -257,7 +257,7 @@ async def get_recent_searches(
 async def save_search(
     request: SaveSearchRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Save a search for later."""
     service = get_marketplace_service(db)

@@ -10,6 +10,7 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import KeyMetrics from './components/KeyMetrics/KeyMetrics';
+import { FraudAlertBanner, AIInsightsPanel } from '@/app/components/AI';
 import { 
   Briefcase, 
   CheckCircle, 
@@ -239,6 +240,43 @@ const ClientDashboard: React.FC = () => {
     return activities.slice(0, 4);
   }, [projects, payments, metrics.activeProjects]);
 
+  // Generate AI Insights
+  const aiInsights = useMemo(() => {
+    const insights = [];
+    
+    if (metrics.activeProjects > 0) {
+      insights.push({
+        id: '1',
+        type: 'success' as const,
+        title: 'Project Velocity',
+        description: `You have ${metrics.activeProjects} active projects. Consider reviewing milestones for "Website Redesign".`,
+        confidence: 92,
+        tags: ['Productivity']
+      });
+    }
+
+    if (metrics.pendingPayments > 0) {
+      insights.push({
+        id: '2',
+        type: 'warning' as const,
+        title: 'Pending Actions',
+        description: `You have ${metrics.pendingPayments} pending payments that require your attention.`,
+        tags: ['Finance']
+      });
+    }
+
+    insights.push({
+      id: '3',
+      type: 'tip' as const,
+      title: 'Market Trend',
+      description: 'React developers are in high demand. Consider increasing your budget for the "Frontend" role.',
+      confidence: 85,
+      tags: ['Market Data']
+    });
+
+    return insights;
+  }, [metrics]);
+
   return (
     <PageTransition>
       <main className={cn(common.page, themed.themeWrapper)}>
@@ -246,6 +284,13 @@ const ClientDashboard: React.FC = () => {
           {liveRegionMessage}
         </div>
         <div className={common.container}>
+          {/* Fraud Alert Banner */}
+          {error && (
+            <div className="mb-6">
+              <FraudAlertBanner message={error} />
+            </div>
+          )}
+
           {/* Welcome Banner */}
           <ScrollReveal>
             <div className={cn(common.welcomeBanner, themed.welcomeBanner)}>
@@ -269,6 +314,20 @@ const ClientDashboard: React.FC = () => {
                   </Link>
                 </div>
               </div>
+            </div>
+          </ScrollReveal>
+
+          {/* AI Insights Panel */}
+          <ScrollReveal delay={0.05}>
+            <div className="mb-6">
+              <AIInsightsPanel 
+                insights={aiInsights}
+                stats={{
+                  matchRate: 88,
+                  activeMatches: 12,
+                  successRate: 95
+                }}
+              />
             </div>
           </ScrollReveal>
 

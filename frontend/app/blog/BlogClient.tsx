@@ -1,12 +1,12 @@
 // @AI-HINT: This is the main page for the blog, which displays a grid of recent articles with theme support and animations.
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 
 import BlogPostCard from '@/app/components/Public/BlogPostCard/BlogPostCard';
 import { cn } from '@/lib/utils';
-import { mockPosts } from './data';
+import { blogApi, BlogPost } from '@/lib/api/blog';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -19,6 +19,22 @@ import darkStyles from './Blog.dark.module.css';
 const BlogPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const data = await blogApi.getAll(true); // Fetch published posts
+        setPosts(data);
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
   return (
     <PageTransition>
@@ -44,13 +60,29 @@ const BlogPage: React.FC = () => {
           </header>
         </ScrollReveal>
 
-        <StaggerContainer className={commonStyles.grid} aria-label="Recent posts">
-          {mockPosts.map((post) => (
-            <StaggerItem key={post.slug}>
-              <BlogPostCard {...post} />
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : (
+          <StaggerContainer className={commonStyles.grid} aria-label="Recent posts">
+            {posts.map((post) => (
+              <StaggerItem key={post.slug}>
+                <BlogPostCard 
+                  slug={post.slug}
+                  title={post.title}
+                  excerpt={post.excerpt}
+                  imageUrl={post.image_url || '/images/blog/default.jpg'}
+                  author={post.author}
+                  date={new Date(post.created_at).toLocaleDateString()}
+                  content={post.content}
+                  views={post.views}
+                  readingTime={post.reading_time}
+                />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        )}
       </main>
     </PageTransition>
   );

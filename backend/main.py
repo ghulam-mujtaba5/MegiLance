@@ -18,6 +18,7 @@ from app.core.config import get_settings
 from app.core.rate_limit import limiter
 from app.db.init_db import init_db
 from app.db.session import get_engine
+from app.db.mongodb import connect_to_mongo, close_mongo_connection
 from sqlalchemy import text
 
 # Configure logging
@@ -45,9 +46,20 @@ logger.propagate = False
 settings = get_settings()
 
 app = FastAPI(
-    title=settings.app_name,
-    description="MegiLance backend API - A comprehensive freelancing platform with AI-powered features and blockchain-based payments",
-    version="1.0.0",
+    title="MegiLance API (FYP)",
+    description="""
+    MegiLance Backend API
+    
+    A Hybrid Decentralized Freelancing Platform developed as a Final Year Project (FYP) 
+    at COMSATS University Islamabad, Lahore Campus (Session 2022-2026).
+    
+    Key Features:
+    - AI-Powered Freelancer Matching
+    - Blockchain-Based Escrow Payments
+    - Secure Authentication & Role Management
+    - Real-time Messaging & Notifications
+    """,
+    version="1.0.0-beta",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json"
@@ -119,8 +131,19 @@ async def on_startup():
         engine = get_engine()
         init_db(engine)
         logger.info("startup.database_initialized")
+        try:
+            await connect_to_mongo()
+        except Exception as mongo_error:
+            logger.warning(f"startup.mongodb_connection_failed error={mongo_error} - continuing without MongoDB")
     except Exception as e:
         logger.error(f"startup.database_failed error={e}")
+
+@app.on_event("shutdown")
+async def on_shutdown():
+    try:
+        await close_mongo_connection()
+    except Exception as e:
+        pass  # Ignore shutdown errors
 
 
 @app.exception_handler(StarletteHTTPException)

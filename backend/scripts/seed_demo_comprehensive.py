@@ -20,7 +20,8 @@ from app.models.review import Review
 from app.models.portfolio import PortfolioItem
 from app.models.skill import Skill
 from app.models.notification import Notification
-from app.models.message import Message, Conversation
+from app.models.message import Message
+from app.models.conversation import Conversation
 from app.core.security import get_password_hash
 from datetime import datetime, timedelta
 import random

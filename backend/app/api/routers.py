@@ -30,7 +30,9 @@ from .v1 import (
     # Billion Dollar Upgrade Features
     scope_change, wallet, community, workroom, feature_flags,
     # Pakistan Payments - USDC, JazzCash, EasyPaisa, Wise, Payoneer
-    pakistan_payments
+    pakistan_payments,
+    # Blog & News
+    blog
 )
 # Import separately to avoid circular import in Python 3.13
 from .v1 import complete_integrations
@@ -144,8 +146,8 @@ api_router.include_router(teams.router, prefix="/teams", tags=["teams"])
 # Audit Trail - Compliance and security logging
 api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
 
-# Feature Flags & A/B Testing - Controlled rollout
-api_router.include_router(features.router, prefix="/features", tags=["features"])
+# Feature Flags & A/B Testing - Controlled rollout (disabled due to Python 3.14 compat)
+# api_router.include_router(features.router, prefix="/features", tags=["features"])
 
 # Recommendation Engine - AI-powered suggestions
 # api_router.include_router(recommendations.router, prefix="/recommendations", tags=["recommendations"])
@@ -386,3 +388,6 @@ api_router.include_router(pakistan_payments.router, prefix="/pk-payments", tags=
 # COMPLETE IMPLEMENTATIONS WITH TURSO SUPPORT - All fixed endpoints
 # ============================================================================
 api_router.include_router(complete_integrations.router, prefix="", tags=["complete-integrations"])
+
+# Blog & News
+api_router.include_router(blog.router, prefix="/blog", tags=["blog"])

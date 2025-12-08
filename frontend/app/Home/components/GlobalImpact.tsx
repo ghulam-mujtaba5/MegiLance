@@ -19,12 +19,12 @@ const ImpactGlobe = dynamic(() => import('./ImpactGlobe'), {
   loading: () => <div className={commonStyles.globePlaceholder} />
 });
 
-// --- Data Definitions ---
+// --- Data Definitions (FYP Report Statistics) ---
 const impactStats = [
-  { icon: Users, number: "50,000+", label: "Pakistani Freelancers", description: "Breaking barriers and accessing global opportunities." },
-  { icon: Globe, number: "45+", label: "Countries Served", description: "Connecting Pakistan's top talent across continents." },
-  { icon: LineChart, number: "$270M+", label: "Foreign Exchange Earned", description: "Contributing to Pakistan's growing digital economy." },
-  { icon: Star, number: "4.9/5", label: "Average Project Rating", description: "A testament to the quality and dedication of our talent." }
+  { icon: Users, number: "1M+", label: "Pakistani Freelancers", description: "Pakistan ranks 4th globally in freelancing, contributing $500M+ annually to the economy." },
+  { icon: Globe, number: "45+", label: "Countries Served", description: "Connecting Pakistan's top talent across continents with global opportunities." },
+  { icon: LineChart, number: "$455B+", label: "Global Market Size", description: "The freelancing industry continues to grow at 15% annually worldwide." },
+  { icon: Star, number: "60-75%", label: "Fee Savings", description: "MegiLance charges 5-10% vs traditional platforms' 20-27% commissions." }
 ];
 
 const successStories = [
@@ -63,17 +63,18 @@ const GlobalImpact: React.FC = () => {
     <section className={cn(commonStyles.globalImpact, themeStyles.globalImpact)}>
       <div className={commonStyles.container}>
         
-        {/* --- Header --- */}
+        {/* --- Header (FYP Mission Statement) --- */}
         <div className={commonStyles.header}>
           <div className={cn(commonStyles.badge, themeStyles.badge)}>
             <Flag size={14} />
-            <span>Proudly Pakistani, Globally Connected</span>
+            <span>FYP 2022-2026 | COMSATS University Islamabad</span>
           </div>
           <h2 className={cn(commonStyles.title, themeStyles.title)}>
             Where <span className={cn(commonStyles.highlight, themeStyles.highlight)}>Pakistani Talent</span> Meets Global Opportunity
           </h2>
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-            We are on a mission to dissolve economic borders, empowering the next generation of Pakistani freelancers with AI-driven tools and frictionless cross-border payments.
+            Our mission is to democratize access to the global freelance economy by eliminating payment barriers, 
+            reducing exploitative fees, and creating a transparent, merit-based marketplace powered by AI and blockchain technology.
           </p>
         </div>
 

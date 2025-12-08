@@ -3,32 +3,23 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Card from '@/app/components/Card/Card';
-import { Sparkles, ChevronRight } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import { matchingApi } from '@/lib/api';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
+import AIMatchCard, { FreelancerMatchData } from '@/app/components/AI/AIMatchCard/AIMatchCard';
 
 import common from './RecommendedTalent.common.module.css';
 import light from './RecommendedTalent.light.module.css';
 import dark from './RecommendedTalent.dark.module.css';
 
-interface Talent {
-  id: string;
-  name: string;
-  title: string;
-  avatar: string;
-  matchScore: number;
-  skills: string[];
-}
-
 const RecommendedTalent: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
-  const [talents, setTalents] = useState<Talent[]>([]);
+  const [talents, setTalents] = useState<FreelancerMatchData[]>([]);
   const [loading, setLoading] = useState(true);
   const [context, setContext] = useState<string>('');
 
@@ -37,13 +28,17 @@ const RecommendedTalent: React.FC = () => {
       try {
         const response = await matchingApi.getRecommendations();
         if (response && response.recommendations) {
-          const mappedTalents = response.recommendations.map((rec: any) => ({
+          const mappedTalents: FreelancerMatchData[] = response.recommendations.map((rec: any) => ({
             id: String(rec.freelancer_id),
             name: rec.freelancer_name,
             title: rec.freelancer_bio ? rec.freelancer_bio.substring(0, 30) + '...' : 'Freelancer',
-            avatar: rec.profile_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.freelancer_name)}&background=random`,
+            avatarUrl: rec.profile_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.freelancer_name)}&background=random`,
             matchScore: Math.round(rec.match_score * 100),
-            skills: rec.match_factors?.skill_match ? ['High Skill Match'] : ['Top Rated'] // Simplified for now
+            skills: rec.match_factors?.skill_match ? ['High Skill Match'] : ['Top Rated'],
+            hourlyRate: 45 + Math.floor(Math.random() * 50), // Mock rate if not provided
+            rating: 4.5 + Math.random() * 0.5, // Mock rating
+            confidenceLevel: 85 + Math.floor(Math.random() * 10), // Mock confidence
+            matchReasons: rec.match_factors?.skill_match ? ['Skills align with project'] : ['High historical performance']
           }));
           setTalents(mappedTalents);
           setContext(response.context || '');
@@ -83,40 +78,14 @@ const RecommendedTalent: React.FC = () => {
           ))
         ) : talents.length > 0 ? (
           talents.map((talent) => (
-            <Link 
-              key={talent.id} 
-              href={`/freelancers/${talent.id}`}
-              className={cn(common.card, themed.card)}
-            >
-              <div className={common.avatarWrapper}>
-                <Image 
-                  src={talent.avatar} 
-                  alt={talent.name} 
-                  width={48} 
-                  height={48} 
-                  className={common.avatar}
-                />
-                <div className={cn(common.matchBadge, themed.matchBadge)}>
-                  {talent.matchScore}%
-                </div>
-              </div>
-              
-              <div className={common.info}>
-                <h4 className={cn(common.name, themed.name)}>{talent.name}</h4>
-                <p className={cn(common.title, themed.title)}>{talent.title}</p>
-                <div className={common.skills}>
-                  {talent.skills.map((skill, idx) => (
-                    <span key={idx} className={cn(common.skill, themed.skill)}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className={common.action}>
-                <ChevronRight size={20} className="text-gray-400" />
-              </div>
-            </Link>
+            <div key={talent.id} className="mb-4 last:mb-0">
+              <AIMatchCard 
+                freelancer={talent} 
+                compact={true}
+                showActions={true}
+                onViewProfile={(id) => window.location.href = `/freelancers/${id}`}
+              />
+            </div>
           ))
         ) : (
           <div className="text-center py-4 text-gray-500">

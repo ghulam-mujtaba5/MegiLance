@@ -33,7 +33,7 @@ def row_to_ticket(row: list) -> dict:
 @router.post("/", response_model=SupportTicketRead, status_code=status.HTTP_201_CREATED)
 async def create_support_ticket(
     ticket: SupportTicketCreate,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Create a new support ticket
@@ -83,7 +83,7 @@ async def list_support_tickets(
     assigned_to_me: bool = Query(False, description="Show tickets assigned to me (admin only)"),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     List support tickets
@@ -150,7 +150,7 @@ async def list_support_tickets(
 @router.get("/{ticket_id}", response_model=SupportTicketRead)
 async def get_support_ticket(
     ticket_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """Get a support ticket by ID"""
     result = execute_query(
@@ -175,7 +175,7 @@ async def get_support_ticket(
 async def update_support_ticket(
     ticket_id: int,
     update_data: SupportTicketUpdate,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Update a support ticket
@@ -235,7 +235,7 @@ async def update_support_ticket(
 async def assign_support_ticket(
     ticket_id: int,
     assign_data: SupportTicketAssign,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Assign ticket to support agent
@@ -288,7 +288,7 @@ async def assign_support_ticket(
 async def resolve_support_ticket(
     ticket_id: int,
     resolve_data: SupportTicketResolve,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Resolve a support ticket
@@ -325,7 +325,7 @@ async def resolve_support_ticket(
 @router.post("/{ticket_id}/close", response_model=SupportTicketRead)
 async def close_support_ticket(
     ticket_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Close a support ticket
@@ -368,7 +368,7 @@ async def close_support_ticket(
 @router.delete("/{ticket_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_support_ticket(
     ticket_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Delete a support ticket

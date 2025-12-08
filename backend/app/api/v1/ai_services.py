@@ -93,7 +93,7 @@ async def fraud_detection(
 async def match_freelancers_to_project(
     project_id: int,
     limit: int = 10,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Get AI-powered freelancer matches for a project
@@ -191,7 +191,7 @@ async def estimate_project_price(
     description: str = "",
     estimated_hours: Optional[int] = None,
     complexity: str = "moderate",
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Get AI-powered price estimation for a project
@@ -282,7 +282,7 @@ async def estimate_freelancer_hourly_rate(
     skills: Optional[List[str]] = None,
     completed_projects: Optional[int] = None,
     average_rating: Optional[float] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Get AI-powered rate estimation for a freelancer
@@ -357,7 +357,7 @@ async def estimate_freelancer_hourly_rate(
 @router.get("/fraud-check/user/{user_id}")
 async def check_user_fraud_risk(
     user_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Analyze user for fraudulent behavior
@@ -448,7 +448,7 @@ async def check_user_fraud_risk(
 @router.get("/fraud-check/project/{project_id}")
 async def check_project_fraud_risk(
     project_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Analyze project for fraudulent characteristics
@@ -518,7 +518,7 @@ async def check_project_fraud_risk(
 @router.get("/fraud-check/proposal/{proposal_id}")
 async def check_proposal_fraud_risk(
     proposal_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     Analyze proposal for suspicious activity
@@ -593,7 +593,7 @@ async def check_proposal_fraud_risk(
 @router.post("/extract-skills")
 async def extract_skills_from_text(
     text: str,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     AI Skill Extraction - extracts skills from project description or profile text
@@ -652,7 +652,7 @@ async def generate_proposal(
     project_description: str,
     freelancer_name: str = "Professional",
     years_experience: int = 3,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     AI Proposal Generator - generates professional cover letter for a project
@@ -763,7 +763,7 @@ async def analyze_sentiment(
 @router.get("/profile-suggestions/{user_id}")
 async def get_profile_optimization_suggestions(
     user_id: int,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     AI Profile Optimizer - provides suggestions to improve freelancer profile
@@ -896,7 +896,7 @@ async def get_profile_optimization_suggestions(
 async def recommend_jobs_for_user(
     user_id: int,
     limit: int = 10,
-    current_user: dict = Depends(get_current_user)
+    current_user = Depends(get_current_user)
 ):
     """
     AI Job Recommender - recommends suitable projects based on user skills

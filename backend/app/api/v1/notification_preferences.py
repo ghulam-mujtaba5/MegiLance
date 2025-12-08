@@ -70,7 +70,7 @@ class RegisterPushTokenRequest(BaseModel):
 @router.get("")
 async def get_notification_settings(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get current user's notification settings."""
     service = get_notification_preferences_service(db)
@@ -82,7 +82,7 @@ async def get_notification_settings(
 async def update_notification_settings(
     request: UpdateSettingsRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update notification settings."""
     service = get_notification_preferences_service(db)
@@ -126,7 +126,7 @@ async def update_category_preference(
     category: NotificationCategory,
     request: CategoryPreferenceRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Update preference for a specific notification category."""
     service = get_notification_preferences_service(db)
@@ -145,7 +145,7 @@ async def update_category_preference(
 async def update_bulk_preferences(
     request: BulkPreferencesRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Bulk update multiple category preferences."""
     service = get_notification_preferences_service(db)
@@ -162,7 +162,7 @@ async def update_bulk_preferences(
 async def register_push_token(
     request: RegisterPushTokenRequest,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Register a push notification token."""
     service = get_notification_preferences_service(db)
@@ -179,7 +179,7 @@ async def register_push_token(
 @router.delete("/push")
 async def unregister_push_token(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Unregister push notification token."""
     service = get_notification_preferences_service(db)
@@ -194,7 +194,7 @@ async def test_notification_delivery(
     category: NotificationCategory,
     channel: NotificationChannel,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Test if a notification would be delivered."""
     service = get_notification_preferences_service(db)
@@ -221,7 +221,7 @@ async def test_notification_delivery(
 @router.post("/disable-all")
 async def disable_all_notifications(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Disable all notifications (except security alerts)."""
     service = get_notification_preferences_service(db)
@@ -237,7 +237,7 @@ async def disable_all_notifications(
 @router.post("/enable-all")
 async def enable_all_notifications(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Enable all notifications with defaults."""
     service = get_notification_preferences_service(db)
@@ -253,7 +253,7 @@ async def enable_all_notifications(
 @router.get("/quiet-hours/status")
 async def get_quiet_hours_status(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Check if currently in quiet hours."""
     service = get_notification_preferences_service(db)

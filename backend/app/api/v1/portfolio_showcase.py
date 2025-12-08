@@ -204,12 +204,12 @@ async def get_portfolio_settings(
 
 @router.put("/settings")
 async def update_portfolio_settings(
-    layout: Optional[str] = None,
-    theme: Optional[str] = None,
-    show_client_names: Optional[bool] = None,
-    show_dates: Optional[bool] = None,
-    enable_comments: Optional[bool] = None,
-    custom_css: Optional[str] = None,
+    layout: Optional[str] = Query(None),
+    theme: Optional[str] = Query(None),
+    show_client_names: Optional[bool] = Query(None),
+    show_dates: Optional[bool] = Query(None),
+    enable_comments: Optional[bool] = Query(None),
+    custom_css: Optional[str] = Query(None),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
