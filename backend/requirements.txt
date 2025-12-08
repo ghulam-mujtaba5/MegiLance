@@ -19,7 +19,7 @@ qrcode[pil]==8.0
 
 # Version 2.0 Advanced Features
 twilio==8.11.1  # SMS MFA
-web3==6.15.1    # Blockchain integration
+# web3==6.15.1    # Blockchain integration (optional - not needed for MVP)
 httpx==0.28.1   # Async HTTP client (already in testing, moved here)
 
 # Rate Limiting
