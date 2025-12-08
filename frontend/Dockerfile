@@ -18,8 +18,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY frontend/ .
 
 # Build arguments for Next.js public env vars
-ARG NEXT_PUBLIC_BACKEND_URL=https://megilance.site
-ARG NEXT_PUBLIC_API_URL=https://megilance.site/api
+ARG NEXT_PUBLIC_BACKEND_URL=https://www.megilance.site
+ARG NEXT_PUBLIC_API_URL=https://www.megilance.site/api
 
 # Set as environment variables for the build
 ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
