@@ -20,9 +20,9 @@
 }
 
 .value {
-  color: var(--color-text-primary-light);
+  color: #1e293b;
 }
 
 .trend {
-  color: var(--color-success-light);
+  color: #27AE60;
 }

@@ -74,8 +74,22 @@ const Security: React.FC = () => {
               vulnerabilities.
             </p>
             <div className={common.cta}>
-              <button className={common.button} aria-label="Email security team">Contact Security</button>
-              <button className={cn(common.button, common.buttonSecondary)} aria-label="View security policy">View Policy</button>
+              <a 
+                href="mailto:security@megilance.com" 
+                className={common.button} 
+                aria-label="Email security team"
+              >
+                Contact Security
+              </a>
+              <a 
+                href="/docs/security-policy.pdf" 
+                className={cn(common.button, common.buttonSecondary)} 
+                aria-label="View security policy"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Policy
+              </a>
             </div>
           </ScrollReveal>
         </div>

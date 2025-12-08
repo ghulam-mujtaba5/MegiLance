@@ -97,7 +97,7 @@ const BlogPostClient: React.FC = () => {
               </header>
 
               <figure className={commonStyles.imageWrapper}>
-                <Image src={post.image_url || '/images/blog/default.jpg'} alt={post.title} layout="fill" objectFit="cover" />
+                <Image src={post.image_url || '/images/blog/productivity.jpg'} alt={post.title} layout="fill" objectFit="cover" />
               </figure>
 
               <section

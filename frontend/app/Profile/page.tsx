@@ -3,32 +3,63 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Profile from '../components/Profile/UserProfile/UserProfile';
+import Profile from './Profile';
 
-// @AI-HINT: Public /Profile redirects to portal-scoped profile if a portal area is known
+// @AI-HINT: Public /profile redirects to portal-scoped profile if a portal area is known
 export default function ProfilePage() {
   const router = useRouter();
-  const [redirected, setRedirected] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    try {
-      const area = window.localStorage.getItem('portal_area');
-      if (area === 'client') {
-        router.replace('/client/profile');
-        setRedirected(true);
-      } else if (area === 'freelancer') {
-        router.replace('/freelancer/profile');
-        setRedirected(true);
-      } else if (area === 'admin') {
-        router.replace('/admin/profile');
-        setRedirected(true);
+    // Check if user is authenticated and redirect to appropriate portal profile
+    const checkAndRedirect = async () => {
+      try {
+        const area = window.localStorage.getItem('portal_area');
+        const token = window.localStorage.getItem('access_token');
+        
+        if (token && area === 'client') {
+          router.replace('/client/profile');
+          return;
+        } else if (token && area === 'freelancer') {
+          router.replace('/freelancer/profile');
+          return;
+        } else if (token && area === 'admin') {
+          router.replace('/admin/profile');
+          return;
+        } else if (token) {
+          // Has token but no portal area - determine from user role or default to client
+          router.replace('/client/profile');
+          return;
+        } else {
+          // No token - redirect to login
+          router.replace('/login?redirect=/profile');
+          return;
+        }
+      } catch (_) {
+        // On error, redirect to login
+        router.replace('/login?redirect=/profile');
       }
-    } catch (_) {
-      // ignore
-    }
+      setChecking(false);
+    };
+    
+    checkAndRedirect();
   }, [router]);
 
-  // Fallback: render public profile if no portal area
-  if (redirected) return null;
-  return <Profile userId="0" />;
+  // Show loading while checking authentication
+  if (checking) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        background: 'var(--bg-primary, #f8fafc)'
+      }}>
+        <p>Redirecting to your profile...</p>
+      </div>
+    );
+  }
+
+  // Fallback: render profile component (should not reach here normally)
+  return <Profile />;
 }

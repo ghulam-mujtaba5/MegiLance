@@ -54,6 +54,7 @@
 /* Pure CSS Chevron Icon */
 .accordionIcon {
   position: relative;
+  display: inline-block;
   width: 0.75rem; /* 12px */
   height: 0.75rem; /* 12px */
   margin-left: 1rem; /* 16px */
@@ -64,13 +65,14 @@
 .accordionIcon::before {
   content: '';
   position: absolute;
-  top: 25%;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 15%;
+  left: 15%;
+  width: 60%;
+  height: 60%;
   border-style: solid;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
+  display: block;
 }
 
 /* Animated Content Panel */

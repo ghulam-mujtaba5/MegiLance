@@ -37,6 +37,7 @@ const PublicHeader = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const servicesTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   // Close mobile menu when window is resized to desktop
   useEffect(() => {
@@ -70,6 +71,15 @@ const PublicHeader = () => {
     };
   }, [isMobileMenuOpen]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (servicesTimeoutRef.current) {
+        clearTimeout(servicesTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -82,7 +92,26 @@ const PublicHeader = () => {
     setIsServicesOpen(!isServicesOpen);
   };
 
+  const handleServicesEnter = () => {
+    // Clear any pending close timeout
+    if (servicesTimeoutRef.current) {
+      clearTimeout(servicesTimeoutRef.current);
+      servicesTimeoutRef.current = null;
+    }
+    setIsServicesOpen(true);
+  };
+
+  const handleServicesLeave = () => {
+    // Add a small delay before closing to make it more forgiving
+    servicesTimeoutRef.current = setTimeout(() => {
+      setIsServicesOpen(false);
+    }, 150);
+  };
+
   const closeServicesDropdown = () => {
+    if (servicesTimeoutRef.current) {
+      clearTimeout(servicesTimeoutRef.current);
+    }
     setIsServicesOpen(false);
   };
 
@@ -102,8 +131,8 @@ const PublicHeader = () => {
               {/* Services Dropdown */}
               <li 
                 className={commonStyles.dropdownContainer}
-                onMouseEnter={() => setIsServicesOpen(true)}
-                onMouseLeave={() => setIsServicesOpen(false)}
+                onMouseEnter={handleServicesEnter}
+                onMouseLeave={handleServicesLeave}
               >
                 <button 
                   className={cn(commonStyles.navLink, styles.navLink, commonStyles.dropdownTrigger)}

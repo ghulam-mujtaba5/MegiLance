@@ -72,7 +72,7 @@ const BlogPage: React.FC = () => {
                   slug={post.slug}
                   title={post.title}
                   excerpt={post.excerpt}
-                  imageUrl={post.image_url || '/images/blog/default.jpg'}
+                  imageUrl={post.image_url || '/images/blog/productivity.jpg'}
                   author={post.author}
                   date={new Date(post.created_at).toLocaleDateString()}
                   content={post.content}

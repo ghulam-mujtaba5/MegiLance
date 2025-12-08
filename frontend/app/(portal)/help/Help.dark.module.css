@@ -1,14 +1,31 @@
 /* AI-HINT: Dark theme overrides for portal Help page. */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
-.subtitle { color: var(--text-secondary); }
+.themeWrapper { 
+  background: #0f172a; 
+  color: #f8fafc; 
+  --surface: #0f172a;
+  --surface-elev: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --border: #334155;
+  --primary: #4573df;
+  --text-on-primary: #ffffff;
+}
+.subtitle { color: #cbd5e1; }
 
-.card { background: var(--surface-elev); border: 1px solid var(--border); }
-.cardTitle { color: var(--text-primary); }
-.cardDesc { color: var(--text-secondary); }
-.item { background: var(--surface-elev); border: 1px solid var(--border); }
+.card { background: #1e293b; border: 1px solid #334155; }
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.3); transform: translateY(-2px); }
+.cardTitle { color: #f8fafc; }
+.cardDesc { color: #cbd5e1; }
+.item { background: #1e293b; border: 1px solid #334155; }
+.item:hover { background: #334155; }
 
-.button { background: var(--primary); color: var(--text-on-primary); }
+.button { 
+  background: #4573df; 
+  color: #ffffff; 
+  text-decoration: none;
+  display: inline-block;
+}
 .button:hover { filter: brightness(1.06); }
-.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
-.buttonSecondary:hover { background: var(--surface); }
+.buttonSecondary { color: #f8fafc; border: 1px solid #334155; }
+.buttonSecondary:hover { background: #1e293b; }

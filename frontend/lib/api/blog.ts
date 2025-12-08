@@ -1,6 +1,12 @@
 import { BlogPostCardProps } from '@/app/components/Public/BlogPostCard/BlogPostCard';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// Build API URL with proper fallback for production
+const envUrl = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = envUrl 
+  ? (envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`)
+  : (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+    ? '/backend/api' 
+    : 'http://localhost:8000/api');
 
 export interface BlogPost {
   id: string;

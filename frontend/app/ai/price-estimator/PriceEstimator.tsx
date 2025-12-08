@@ -3,6 +3,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import Input from '@/app/components/Input/Input';
@@ -57,6 +58,7 @@ type LoadingStep = {
 
 const PriceEstimator: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<EstimationResult | null>(null);
   const [loadingSteps, setLoadingSteps] = useState<LoadingStep[]>([]);
@@ -69,6 +71,20 @@ const PriceEstimator: React.FC = () => {
   });
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  const handlePostProject = useCallback(() => {
+    // Store the form data in sessionStorage to prefill the post-job form
+    if (formData.title || formData.description) {
+      sessionStorage.setItem('prefill_project', JSON.stringify({
+        title: formData.title,
+        description: formData.description,
+        industry: formData.industry,
+        estimatedBudgetMin: result?.minPrice,
+        estimatedBudgetMax: result?.maxPrice
+      }));
+    }
+    router.push('/client/post-job');
+  }, [formData, result, router]);
 
   const simulateLoading = useCallback(async () => {
     const steps: LoadingStep[] = [
@@ -453,7 +469,10 @@ const PriceEstimator: React.FC = () => {
 
                     {/* Actions */}
                     <div className={cn(commonStyles.actionsSection, themeStyles.actionsSection)}>
-                      <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
+                      <button 
+                        className={cn(commonStyles.actionButton, themeStyles.actionButton)}
+                        onClick={handlePostProject}
+                      >
                         <ArrowRight />
                         Post This Project
                       </button>
