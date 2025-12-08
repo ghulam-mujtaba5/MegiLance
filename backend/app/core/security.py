@@ -7,7 +7,7 @@
 """
 
 from datetime import datetime, timedelta
-from typing import Optional, Set
+from typing import Optional, Set, Any
 import logging
 
 from fastapi import Depends, HTTPException, status
@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.db.session import get_db
+from app.db.turso_http import execute_query, parse_rows
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -42,26 +43,68 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
-    """Authenticate user - check credentials and return user if valid"""
+class UserProxy:
+    """Lightweight user object from Turso query results"""
+    def __init__(self, row: dict):
+        self.id = row.get('id')
+        self.email = row.get('email')
+        self.hashed_password = row.get('hashed_password')
+        self.is_active = bool(row.get('is_active', 0))
+        self.is_verified = bool(row.get('is_verified', 0))
+        self.name = row.get('name')
+        self.user_type = row.get('user_type') or row.get('role', 'client')
+        self.bio = row.get('bio')
+        self.skills = row.get('skills')
+        self.hourly_rate = row.get('hourly_rate', 0)
+        self.profile_image_url = row.get('profile_image_url')
+        self.location = row.get('location')
+        self.profile_data = row.get('profile_data')
+        self.two_factor_enabled = bool(row.get('two_factor_enabled', 0))
+        self.joined_at = row.get('joined_at')
+
+
+def authenticate_user(db: Session, email: str, password: str) -> Optional[Any]:
+    """Authenticate user - check credentials and return user if valid
+    
+    Uses Turso HTTP API directly to ensure consistency with registration.
+    """
     try:
-        # Query user by email
-        user = db.query(User).filter(User.email == email).first()
+        # Normalize email to lowercase
+        email_lower = email.lower().strip()
         
-        if not user:
+        # Query user by email using Turso HTTP API
+        result = execute_query(
+            """SELECT id, email, hashed_password, is_active, is_verified, 
+                      name, user_type, role, bio, skills, hourly_rate,
+                      profile_image_url, location, profile_data, 
+                      two_factor_enabled, joined_at
+               FROM users WHERE email = ?""",
+            [email_lower]
+        )
+        
+        rows = parse_rows(result)
+        
+        if not rows or len(rows) == 0:
             logger.warning(f"Login attempt with non-existent email: {email}")
             return None
         
-        if not verify_password(password, user.hashed_password):
+        user_data = rows[0]
+        
+        # Get hashed password (handle bytes if returned)
+        hashed_pw = user_data.get('hashed_password')
+        if isinstance(hashed_pw, bytes):
+            hashed_pw = hashed_pw.decode('utf-8')
+        
+        if not hashed_pw or not verify_password(password, hashed_pw):
             logger.warning(f"Failed login attempt for user: {email}")
             return None
         
-        if not user.is_active:
+        if not user_data.get('is_active', True):
             logger.warning(f"Login attempt for inactive user: {email}")
             return None
         
         logger.info(f"Successful authentication for user: {email}")
-        return user
+        return UserProxy(user_data)
         
     except Exception as e:
         logger.error(f"Authentication error: {e}")
@@ -193,15 +236,25 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
 
     try:
-        # Fetch user from database
-        user = db.query(User).filter(User.email == email).first()
-        if not user:
+        # Fetch user from Turso database using HTTP API (not SQLAlchemy which falls back to local SQLite)
+        result = execute_query(
+            "SELECT id, email, full_name, hashed_password, role, is_active, is_verified, created_at, updated_at FROM users WHERE email = ?",
+            [email]
+        )
+        rows = parse_rows(result)
+        
+        if not rows:
+            logger.warning(f"User not found for email: {email}")
             raise credentials_exception
         
-        return user
+        row = rows[0]
+        # Return UserProxy that mimics User model
+        return UserProxy(row)
         
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error fetching user: {e}")
+        logger.error(f"Error fetching user from Turso: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to fetch user"
