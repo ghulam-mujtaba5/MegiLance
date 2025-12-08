@@ -5,7 +5,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { 
-  BrainCircuit, TrendingUp, ShieldCheck, MessageCircle, BarChart, Cpu, Zap,
+  BrainCircuit, TrendingUp, ShieldCheck, MessageCircle, Cpu, Zap,
   CheckCircle2, Cloud, FileText, Search
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
