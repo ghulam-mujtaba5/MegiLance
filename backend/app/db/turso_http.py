@@ -2,24 +2,20 @@
 @AI-HINT: Turso HTTP API client for synchronous database queries
 This module provides a simple HTTP-based interface to Turso/libSQL database
 without using async/await to avoid event loop issues in FastAPI sync contexts.
-Now supports local SQLite fallback for development.
+Turso remote database ONLY - no local fallback.
 """
 
 import requests
-import sqlite3
-import os
 from typing import Optional, List, Dict, Any
 from app.core.config import get_settings
 
 
 class TursoHTTP:
-    """Synchronous HTTP client for Turso database with SQLite fallback"""
+    """Synchronous HTTP client for Turso remote database ONLY"""
     
     _instance = None
     _url: str = None
     _token: str = None
-    _is_local: bool = False
-    _local_db_path: str = None
     _initialized: bool = False
     
     @classmethod
@@ -30,82 +26,41 @@ class TursoHTTP:
     
     @classmethod
     def get_instance(cls) -> Optional['TursoHTTP']:
-        """Get singleton instance of TursoHTTP client - supports both Turso and local SQLite"""
+        """Get singleton instance of TursoHTTP client - Turso remote database ONLY"""
         if cls._instance is None:
             settings = get_settings()
             cls._instance = cls()
             
-            # Check if Turso is configured
-            if settings.turso_database_url and settings.turso_auth_token:
-                # Check for placeholder tokens
-                if "CHANGE_ME" in (settings.turso_auth_token or "") or len(settings.turso_auth_token or "") < 50:
-                    print(f"[TURSO] Invalid auth token, falling back to local SQLite")
-                else:
-                    cls._is_local = False
-                    cls._url = settings.turso_database_url.replace("libsql://", "https://")
-                    if not cls._url.endswith("/"):
-                        cls._url += "/"
-                    cls._token = settings.turso_auth_token
-                    print(f"[TURSO] HTTP client initialized: {cls._url[:50]}...")
-                    return cls._instance
+            # Require Turso configuration
+            if not settings.turso_database_url or not settings.turso_auth_token:
+                raise RuntimeError(
+                    "Turso database not configured. "
+                    "Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN environment variables."
+                )
             
-            # Use local SQLite fallback for development
-            cls._is_local = True
-            db_url = settings.database_url or "sqlite:///./local_dev.db"
-            # Extract path from SQLite URL
-            if db_url.startswith("sqlite:///"):
-                cls._local_db_path = db_url.replace("sqlite:///", "")
-            elif db_url.startswith("sqlite://"):
-                cls._local_db_path = db_url.replace("sqlite://", "")
-            else:
-                cls._local_db_path = db_url
-            print(f"[SQLITE] Using local database: {cls._local_db_path}")
+            # Check for placeholder tokens
+            if "CHANGE_ME" in (settings.turso_auth_token or "") or len(settings.turso_auth_token or "") < 50:
+                raise RuntimeError(
+                    "Invalid Turso auth token. "
+                    "Please set a valid TURSO_AUTH_TOKEN in environment variables."
+                )
+            
+            cls._url = settings.turso_database_url.replace("libsql://", "https://")
+            if not cls._url.endswith("/"):
+                cls._url += "/"
+            cls._token = settings.turso_auth_token
+            print(f"[TURSO] HTTP client initialized: {cls._url[:50]}...")
                 
         return cls._instance
     
     def execute(self, sql: str, params: List[Any] = None) -> Dict[str, Any]:
         """
-        Execute a SQL query against Turso remote database or local SQLite
+        Execute a SQL query against Turso remote database
         """
         if params is None:
             params = []
         
-        if self._is_local:
-            return self._execute_local(sql, params)
         return self._execute_remote(sql, params)
-
-    def _execute_local(self, sql: str, params: List[Any]) -> Dict[str, Any]:
-        """Execute query against local SQLite"""
-        try:
-            # Connect to local DB
-            conn = sqlite3.connect(self._local_db_path)
-            conn.row_factory = sqlite3.Row # Allow accessing columns by name
-            cursor = conn.cursor()
-            
-            cursor.execute(sql, params)
-            
-            if sql.strip().upper().startswith("SELECT"):
-                rows = cursor.fetchall()
-                columns = [description[0] for description in cursor.description]
-                
-                # Convert rows to list of lists (to match Turso format somewhat)
-                result_rows = []
-                for row in rows:
-                    result_rows.append(list(row))
-                
-                conn.close()
-                return {
-                    "columns": columns,
-                    "rows": result_rows
-                }
-            else:
-                conn.commit()
-                conn.close()
-                return {"columns": [], "rows": []}
-                
-        except Exception as e:
-            print(f"[SQLITE] Error: {e}")
-            raise Exception(f"SQLite error: {e}")
 
     def _execute_remote(self, sql: str, params: List[Any]) -> Dict[str, Any]:
         """Execute query against Turso HTTP API"""
@@ -138,48 +93,29 @@ class TursoHTTP:
         }
     
     def execute_many(self, statements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        if self._is_local:
-            # Naive implementation for local
-            results = []
-            conn = sqlite3.connect(self._local_db_path)
-            cursor = conn.cursor()
-            try:
-                for stmt in statements:
-                    sql = stmt["q"]
-                    params = stmt.get("params", [])
-                    cursor.execute(sql, params)
-                    results.append({"columns": [], "rows": []})
-                conn.commit()
-            except Exception as e:
-                conn.rollback()
-                raise e
-            finally:
-                conn.close()
-            return results
-        else:
-            # Remote implementation
-            response = requests.post(
-                self._url,
-                headers={
-                    "Authorization": f"Bearer {self._token}",
-                    "Content-Type": "application/json"
-                },
-                json={"statements": statements},
-                timeout=15
-            )
-            
-            if response.status_code != 200:
-                raise Exception(f"Turso HTTP error: {response.status_code} - {response.text}")
-            
-            data = response.json()
-            results = []
-            for item in data:
-                result = item.get("results", {})
-                results.append({
-                    "columns": result.get("columns", []),
-                    "rows": result.get("rows", [])
-                })
-            return results
+        """Execute multiple statements against Turso remote database"""
+        response = requests.post(
+            self._url,
+            headers={
+                "Authorization": f"Bearer {self._token}",
+                "Content-Type": "application/json"
+            },
+            json={"statements": statements},
+            timeout=15
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"Turso HTTP error: {response.status_code} - {response.text}")
+        
+        data = response.json()
+        results = []
+        for item in data:
+            result = item.get("results", {})
+            results.append({
+                "columns": result.get("columns", []),
+                "rows": result.get("rows", [])
+            })
+        return results
     
     def fetch_one(self, sql: str, params: List[Any] = None) -> Optional[List[Any]]:
         """Execute query and return first row or None"""

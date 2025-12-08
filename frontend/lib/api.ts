@@ -1,15 +1,13 @@
 // @AI-HINT: Comprehensive API client for MegiLance backend integration
 // Provides type-safe methods for all backend endpoints with proper error handling
 
-// FIX: The environment variable was being set without /api suffix in some cached builds
-// Force the /api suffix to ensure correct API routing
+// FIX: Always use the Next.js proxy to avoid CORS issues
+// The proxy is configured in next.config.js: /backend/* -> http://localhost:8000/*
 const envUrl = process.env.NEXT_PUBLIC_API_URL || '';
-// For production: use environment URL, for development: localhost
+// Use the proxy path for all requests (both dev and prod)
 const API_BASE_URL = envUrl 
   ? (envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`)
-  : (typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
-    ? '/backend/api' 
-    : 'http://localhost:8000/api');
+  : '/backend/api';
 
 // Token storage keys - use constants to prevent typos
 const TOKEN_STORAGE_KEY = 'auth_token';

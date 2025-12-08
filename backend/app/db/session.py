@@ -1,11 +1,11 @@
 """
-@AI-HINT: Database session management - Consolidated to SQLite for dev, Turso for production
-Supports both local SQLite (development) and Turso (production)
+@AI-HINT: Database session management - TURSO REMOTE DATABASE ONLY
+No local SQLite fallback - all environments use Turso remote database
 """
 
 from sqlalchemy import create_engine, event, Engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool, QueuePool
+from sqlalchemy.pool import QueuePool
 from app.core.config import get_settings
 import logging
 from typing import Optional
@@ -22,73 +22,56 @@ def get_engine():
     """
     Create and return database engine.
     
-    Supports both local SQLite (development) and Turso (production).
-    Falls back to SQLite if Turso is not configured.
+    TURSO REMOTE DATABASE ONLY - No local SQLite fallback.
+    Requires TURSO_DATABASE_URL and TURSO_AUTH_TOKEN to be configured.
     """
     global _engine
     if _engine is None:
         try:
-            # Check if Turso is configured (production mode)
-            if settings.turso_database_url and settings.turso_auth_token:
-                # Verify sqlalchemy-libsql is installed
-                try:
-                    import sqlalchemy_libsql
-                except ImportError:
-                    logger.warning(
-                        "sqlalchemy-libsql not installed, falling back to SQLite. "
-                        "Install with: pip install sqlalchemy-libsql"
-                    )
-                    raise ImportError("sqlalchemy-libsql not available")
-                
-                # Construct Turso URL with auth token
-                base_url = settings.turso_database_url
-                auth_token = settings.turso_auth_token
-                
-                # Add auth token as query parameter if not already present
-                if "authToken" not in base_url and "?" not in base_url:
-                    db_url = f"{base_url}?authToken={auth_token}"
-                elif "authToken" not in base_url:
-                    db_url = f"{base_url}&authToken={auth_token}"
-                else:
-                    db_url = base_url
-                
-                logger.info(f"✅ Connecting to Turso remote database: {base_url.split('?')[0]}")
-                pool_class = QueuePool
-                connect_args = {}
+            # Validate Turso configuration - REQUIRED
+            if not settings.turso_database_url or not settings.turso_auth_token:
+                raise ValueError(
+                    "❌ TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are REQUIRED. "
+                    "Local SQLite database is NOT supported."
+                )
+            
+            # Verify sqlalchemy-libsql is installed
+            try:
+                import sqlalchemy_libsql
+            except ImportError:
+                raise ImportError(
+                    "❌ sqlalchemy-libsql is REQUIRED for Turso connectivity. "
+                    "Install with: pip install sqlalchemy-libsql"
+                )
+            
+            # Construct Turso URL with auth token
+            base_url = settings.turso_database_url
+            auth_token = settings.turso_auth_token
+            
+            # Add auth token as query parameter if not already present
+            if "authToken" not in base_url and "?" not in base_url:
+                db_url = f"{base_url}?authToken={auth_token}"
+            elif "authToken" not in base_url:
+                db_url = f"{base_url}&authToken={auth_token}"
             else:
-                # Use local SQLite for development
-                db_url = settings.database_url or "sqlite:///./local_dev.db"
-                print(f"[DB] Using local SQLite: {db_url}")
-                logger.info(f"✅ Using local SQLite database: {db_url}")
-                pool_class = StaticPool
-                connect_args = {"check_same_thread": False}
+                db_url = base_url
+            
+            logger.info(f"✅ Connecting to Turso remote database: {base_url.split('?')[0]}")
+            print(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
             
             _engine = create_engine(
                 db_url,
-                connect_args=connect_args,
-                poolclass=pool_class,
+                connect_args={},
+                poolclass=QueuePool,
                 echo=settings.debug,
                 pool_pre_ping=True,  # Verify connections before using
                 pool_recycle=3600,   # Recycle connections hourly
             )
-
-            # Enable SQLite optimizations for development
-            if db_url.startswith("sqlite") or db_url.startswith("file:"):
-                @event.listens_for(_engine, "connect")
-                def set_sqlite_pragma(dbapi_conn, connection_record):
-                    try:
-                        cursor = dbapi_conn.cursor()
-                        cursor.execute("PRAGMA foreign_keys=ON")
-                        cursor.execute("PRAGMA journal_mode=WAL")
-                        cursor.execute("PRAGMA synchronous=NORMAL")
-                        cursor.close()
-                    except Exception as e:
-                        logger.warning(f"Failed to set SQLite PRAGMA: {e}")
             
-            logger.info("✅ Database engine created successfully")
+            logger.info("✅ Turso database engine created successfully")
             
         except Exception as e:
-            logger.error(f"❌ Failed to create database engine: {e}")
+            logger.error(f"❌ Failed to create Turso database engine: {e}")
             raise RuntimeError(f"Database connection failed: {e}")
 
     return _engine
