@@ -22,43 +22,46 @@ def get_engine():
     """
     Create and return database engine.
     
-    TURSO REMOTE DATABASE ONLY - No local SQLite fallback
-    Requires TURSO_DATABASE_URL and TURSO_AUTH_TOKEN to be configured
+    Supports both local SQLite (development) and Turso (production).
+    Falls back to SQLite if Turso is not configured.
     """
     global _engine
     if _engine is None:
         try:
-            # Validate Turso configuration
-            if not settings.turso_database_url or not settings.turso_auth_token:
-                raise ValueError(
-                    "❌ TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are required. "
-                    "Local database is not supported in this configuration."
-                )
-            
-            # Verify sqlalchemy-libsql is installed
-            try:
-                import sqlalchemy_libsql
-            except ImportError:
-                raise ImportError(
-                    "❌ sqlalchemy-libsql is required for Turso connectivity. "
-                    "Install with: pip install sqlalchemy-libsql"
-                )
-            
-            # Construct Turso URL with auth token
-            base_url = settings.turso_database_url
-            auth_token = settings.turso_auth_token
-            
-            # Add auth token as query parameter if not already present
-            if "authToken" not in base_url and "?" not in base_url:
-                db_url = f"{base_url}?authToken={auth_token}"
-            elif "authToken" not in base_url:
-                db_url = f"{base_url}&authToken={auth_token}"
+            # Check if Turso is configured (production mode)
+            if settings.turso_database_url and settings.turso_auth_token:
+                # Verify sqlalchemy-libsql is installed
+                try:
+                    import sqlalchemy_libsql
+                except ImportError:
+                    logger.warning(
+                        "sqlalchemy-libsql not installed, falling back to SQLite. "
+                        "Install with: pip install sqlalchemy-libsql"
+                    )
+                    raise ImportError("sqlalchemy-libsql not available")
+                
+                # Construct Turso URL with auth token
+                base_url = settings.turso_database_url
+                auth_token = settings.turso_auth_token
+                
+                # Add auth token as query parameter if not already present
+                if "authToken" not in base_url and "?" not in base_url:
+                    db_url = f"{base_url}?authToken={auth_token}"
+                elif "authToken" not in base_url:
+                    db_url = f"{base_url}&authToken={auth_token}"
+                else:
+                    db_url = base_url
+                
+                logger.info(f"✅ Connecting to Turso remote database: {base_url.split('?')[0]}")
+                pool_class = QueuePool
+                connect_args = {}
             else:
-                db_url = base_url
-            
-            logger.info(f"✅ Connecting to Turso remote database: {base_url.split('?')[0]}")
-            pool_class = QueuePool
-            connect_args = {}
+                # Use local SQLite for development
+                db_url = settings.database_url or "sqlite:///./local_dev.db"
+                print(f"[DB] Using local SQLite: {db_url}")
+                logger.info(f"✅ Using local SQLite database: {db_url}")
+                pool_class = StaticPool
+                connect_args = {"check_same_thread": False}
             
             _engine = create_engine(
                 db_url,
@@ -85,9 +88,7 @@ def get_engine():
             logger.info("✅ Database engine created successfully")
             
         except Exception as e:
-            logger.error(f"❌ Failed to create Turso database engine: {e}")
-            logger.error("🚨 Cannot proceed without Turso database connection")
-            logger.error("💡 Verify TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set correctly")
+            logger.error(f"❌ Failed to create database engine: {e}")
             raise RuntimeError(f"Database connection failed: {e}")
 
     return _engine

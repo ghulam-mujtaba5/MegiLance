@@ -30,40 +30,48 @@ class TursoHTTP:
     
     @classmethod
     def get_instance(cls) -> Optional['TursoHTTP']:
-        """Get singleton instance of TursoHTTP client - Turso only, no local SQLite"""
+        """Get singleton instance of TursoHTTP client - supports both Turso and local SQLite"""
         if cls._instance is None:
             settings = get_settings()
             cls._instance = cls()
             
-            # Validate Turso configuration - no local SQLite fallback
-            if not settings.turso_database_url or not settings.turso_auth_token:
-                raise ValueError(
-                    "❌ TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are required. "
-                    "Local database is not supported."
-                )
+            # Check if Turso is configured
+            if settings.turso_database_url and settings.turso_auth_token:
+                # Check for placeholder tokens
+                if "CHANGE_ME" in (settings.turso_auth_token or "") or len(settings.turso_auth_token or "") < 50:
+                    print(f"[TURSO] Invalid auth token, falling back to local SQLite")
+                else:
+                    cls._is_local = False
+                    cls._url = settings.turso_database_url.replace("libsql://", "https://")
+                    if not cls._url.endswith("/"):
+                        cls._url += "/"
+                    cls._token = settings.turso_auth_token
+                    print(f"[TURSO] HTTP client initialized: {cls._url[:50]}...")
+                    return cls._instance
             
-            # Check for placeholder tokens
-            if "CHANGE_ME" in (settings.turso_auth_token or "") or len(settings.turso_auth_token or "") < 50:
-                raise ValueError(
-                    "❌ Invalid TURSO_AUTH_TOKEN. Please provide a valid Turso auth token."
-                )
-            
-            cls._is_local = False
-            cls._url = settings.turso_database_url.replace("libsql://", "https://")
-            if not cls._url.endswith("/"):
-                cls._url += "/"
-            cls._token = settings.turso_auth_token
-            print(f"[TURSO] HTTP client initialized: {cls._url[:50]}...")
+            # Use local SQLite fallback for development
+            cls._is_local = True
+            db_url = settings.database_url or "sqlite:///./local_dev.db"
+            # Extract path from SQLite URL
+            if db_url.startswith("sqlite:///"):
+                cls._local_db_path = db_url.replace("sqlite:///", "")
+            elif db_url.startswith("sqlite://"):
+                cls._local_db_path = db_url.replace("sqlite://", "")
+            else:
+                cls._local_db_path = db_url
+            print(f"[SQLITE] Using local database: {cls._local_db_path}")
                 
         return cls._instance
     
     def execute(self, sql: str, params: List[Any] = None) -> Dict[str, Any]:
         """
-        Execute a SQL query against Turso remote database
+        Execute a SQL query against Turso remote database or local SQLite
         """
         if params is None:
             params = []
         
+        if self._is_local:
+            return self._execute_local(sql, params)
         return self._execute_remote(sql, params)
 
     def _execute_local(self, sql: str, params: List[Any]) -> Dict[str, Any]:

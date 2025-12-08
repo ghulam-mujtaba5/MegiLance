@@ -18,11 +18,12 @@ class Settings(BaseSettings):
         "https://api.megilance.site"
     ]
 
-    # Database - Turso (libSQL) Database as a Service ONLY
-    # Format: libsql://your-database.turso.io (auth token added separately)
-    # REQUIRED: Must set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN in production
-    turso_database_url: Optional[str] = None  # Required Turso database URL
-    turso_auth_token: Optional[str] = None  # Required Turso auth token
+    # Database - Turso (libSQL) Database as a Service OR local SQLite
+    # For production: set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN
+    # For development: set DATABASE_URL=sqlite:///./local_dev.db
+    database_url: Optional[str] = "sqlite:///./local_dev.db"  # Local SQLite for development
+    turso_database_url: Optional[str] = None  # Optional Turso database URL (production)
+    turso_auth_token: Optional[str] = None  # Optional Turso auth token (production)
     
     # Debug mode for verbose logging
     debug: bool = False
