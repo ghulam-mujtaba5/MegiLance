@@ -8,7 +8,15 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     app_name: str = "MegiLance API"
     environment: str = "development"
-    backend_cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001"]
+    backend_cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "https://megilance.site",
+        "https://www.megilance.site",
+        "https://api.megilance.site"
+    ]
 
     # Database - Turso (libSQL) Database as a Service
     # Format: libsql://your-database.turso.io?authToken=your-token
