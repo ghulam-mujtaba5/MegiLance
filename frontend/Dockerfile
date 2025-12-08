@@ -17,6 +17,14 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy frontend directory contents
 COPY frontend/ .
 
+# Build arguments for Next.js public env vars
+ARG NEXT_PUBLIC_BACKEND_URL=https://megilance.site
+ARG NEXT_PUBLIC_API_URL=https://megilance.site/api
+
+# Set as environment variables for the build
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
 # Disable telemetry and Turbopack
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV TURBOPACK 0
