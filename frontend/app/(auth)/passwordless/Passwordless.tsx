@@ -103,7 +103,8 @@ const Passwordless: React.FC = () => {
         return;
       }
       
-      console.log('Passwordless login requested for:', { email, role: selectedRole });
+      // TODO: Implement passwordless login API call
+      // await api.auth.sendMagicLink(email, selectedRole);
       setSubmitted(true);
       setCountdown(30);
     } catch (error) {
@@ -120,7 +121,8 @@ const Passwordless: React.FC = () => {
     try {
       // Simulate API call for resend
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log('Resending magic link to:', email);
+      // TODO: Implement resend magic link API call
+      // await api.auth.resendMagicLink(email);
       setCountdown(30);
     } catch (error) {
       setErrors({ email: '', general: 'Failed to resend magic link. Please try again.' });

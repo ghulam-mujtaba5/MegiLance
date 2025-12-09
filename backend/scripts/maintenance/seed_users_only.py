@@ -36,7 +36,7 @@ else:
             bio="Experienced full-stack developer with 5+ years of experience.",
             skills="React,Node.js,Python,PostgreSQL,MongoDB",
             hourly_rate=50.0,
-            profile_image_url="/avatars/alice.jpg",
+            profile_image_url="/avatars/alice.png",
             location="San Francisco, CA",
             joined_at=datetime.utcnow()
         ),

@@ -56,9 +56,70 @@
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 600;
-  margin-top: 1rem;
   background: linear-gradient(135deg, #27AE60 0%, #2ecc71 100%);
   color: #fff;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: rgba(128, 128, 128, 0.2);
+  color: #888;
+  transition: all 0.3s ease;
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.statusOnline {
+  background: rgba(39, 174, 96, 0.15);
+  color: #27AE60;
+}
+
+.statusOnline .statusDot {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.statusOffline {
+  background: rgba(232, 17, 35, 0.15);
+  color: #e81123;
+}
+
+.statusChecking {
+  background: rgba(242, 201, 76, 0.15);
+  color: #F2C94C;
+}
+
+.statusChecking .statusDot {
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
 
 /* Stats Overview */

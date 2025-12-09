@@ -188,8 +188,7 @@ const Login: React.FC = () => {
         router.push(roleConfig[role].redirectPath);
       }
     } catch (error: any) {
-      console.error('Auto-login error:', error);
-      setErrors({ email: '', password: '', general: error.message || 'Login failed. Please try again.' });
+      setErrors({ email: '', password: '', general: error.message || 'Auto-login failed. Please try again.' });
     } finally {
       setLoading(false);
     }
@@ -232,7 +231,6 @@ const Login: React.FC = () => {
         router.push(roleConfig[selectedRole].redirectPath);
       }
     } catch (error: any) {
-      console.error('Login error:', error);
       setErrors({ email: '', password: '', general: error.message || 'Login failed. Please check your credentials.' });
     } finally {
       setLoading(false);
@@ -271,7 +269,6 @@ const Login: React.FC = () => {
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
       router.push(roleConfig[selectedRole].redirectPath);
     } catch (error: any) {
-      console.error('2FA verification error:', error);
       setErrors({ email: '', password: '', general: error.message || 'Verification failed. Please try again.' });
     } finally {
       setLoading(false);
@@ -282,7 +279,8 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log(`${provider} login successful for role:`, selectedRole);
+      // TODO: Implement social OAuth flow
+      // window.location.href = `/api/auth/${provider}?role=${selectedRole}`;
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
       router.push(roleConfig[selectedRole].redirectPath);
     } catch (error) {

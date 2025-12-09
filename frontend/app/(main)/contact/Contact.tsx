@@ -68,15 +68,23 @@ const Contact: React.FC = () => {
   });
 
   const onSubmit = async (data: ContactFormData) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log('Form submitted:', data);
-    toast({
-      title: 'Message Sent!',
-      description: "Thanks for reaching out. We'll get back to you shortly.",
-      variant: 'success',
-    });
-    reset();
+    try {
+      // TODO: Implement contact form API call
+      // await api.contact.send(data);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      toast({
+        title: 'Message Sent!',
+        description: "Thanks for reaching out. We'll get back to you shortly.",
+        variant: 'success',
+      });
+      reset();
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to send message. Please try again.',
+        variant: 'error',
+      });
+    }
   };
 
   return (

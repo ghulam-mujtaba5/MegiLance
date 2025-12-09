@@ -45,15 +45,20 @@ const AISettings: React.FC = () => {
     setHasChanges(true);
   };
 
-  const handleSave = () => {
-    console.log('Saving settings:', {
-      ...settings,
-      fraudDetectionThreshold: settings.fraudDetectionThreshold[0],
-      matchmakingRankWeight: settings.matchmakingRankWeight[0],
-    });
-    setIsSaved(true);
-    setHasChanges(false);
-    setTimeout(() => setIsSaved(false), 3000);
+  const handleSave = async () => {
+    try {
+      // TODO: Implement AI settings save API call
+      // await api.admin.updateAISettings({
+      //   fraudDetectionThreshold: settings.fraudDetectionThreshold[0],
+      //   matchmakingRankWeight: settings.matchmakingRankWeight[0],
+      //   sentimentAnalysisModel: settings.sentimentAnalysisModel,
+      // });
+      setIsSaved(true);
+      setHasChanges(false);
+      setTimeout(() => setIsSaved(false), 3000);
+    } catch (error) {
+      // Handle save error
+    }
   };
 
   return (

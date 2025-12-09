@@ -59,16 +59,21 @@ const ResetPassword: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
       setLoading(true);
-      console.log('Password reset submitted');
-      // Simulate API call
-      setTimeout(() => {
-        setLoading(false);
+      try {
+        // TODO: Implement password reset API call with token from URL
+        // const token = new URLSearchParams(window.location.search).get('token');
+        // await api.auth.resetPassword(token, formData.password);
+        await new Promise(resolve => setTimeout(resolve, 1500));
         setSubmitted(true);
-      }, 1500);
+      } catch (error) {
+        setErrors({ password: '', confirmPassword: 'Failed to reset password. Please try again.' });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

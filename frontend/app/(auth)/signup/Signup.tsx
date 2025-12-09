@@ -127,7 +127,6 @@ const Signup: React.FC = () => {
     // Dev preview bypass: allow proceeding with empty credentials
     if (isPreviewMode()) {
       setLoading(true);
-      console.log('Preview signup bypass:', { selectedRole, formData });
       setTimeout(() => {
         setLoading(false);
         router.push(selectedRole === 'client' ? '/client/dashboard' : '/freelancer/dashboard');
@@ -147,7 +146,6 @@ const Signup: React.FC = () => {
         // Show verification notice
         router.push('/verify-email?registered=true');
       } catch (error: any) {
-        console.error('Signup error:', error);
         setErrors({ email: error.message || 'Registration failed. Please try again.' });
       } finally {
         setLoading(false);
@@ -159,14 +157,14 @@ const Signup: React.FC = () => {
   const handleSocialLogin = (provider: 'google' | 'github') => {
     if (isPreviewMode()) {
       setLoading(true);
-      console.log(`Preview social signup via ${provider} as ${selectedRole}`);
       setTimeout(() => {
         setLoading(false);
         router.push(selectedRole === 'client' ? '/client/dashboard' : '/freelancer/dashboard');
       }, 300);
       return;
     }
-    console.log('Social signup clicked:', provider, 'role:', selectedRole);
+    // TODO: Implement social OAuth flow
+    // window.location.href = `/api/auth/${provider}?role=${selectedRole}`;
   };
 
   const styles = useMemo(() => {

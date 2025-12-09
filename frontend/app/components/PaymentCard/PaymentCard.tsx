@@ -37,8 +37,8 @@ const PaymentCard: React.FC<PaymentCardProps> = (props) => {
   const themed = resolvedTheme === 'dark' ? dark : light;
 
   const menuItems = [
-    { label: 'Download Receipt', icon: FileText, onClick: () => console.log('Download receipt for', id) },
-    { label: 'Report Issue', icon: AlertTriangle, onClick: () => console.log('Report issue for', id) },
+    { label: 'Download Receipt', icon: FileText, href: `/client/payments/${id}/receipt` },
+    { label: 'Report Issue', icon: AlertTriangle, href: `/client/support/new?payment=${id}` },
   ];
 
   return (

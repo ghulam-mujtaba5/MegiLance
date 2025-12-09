@@ -4,7 +4,7 @@
 
 import React from 'react';
 
-import PublicHeader from '@/app/components/Layout/PublicHeader/PublicHeader';
+import Header from '@/app/components/Header/Header';
 import PublicFooter from '@/app/components/Layout/PublicFooter/PublicFooter';
 import ThemeToggleButton from '@/app/components/ThemeToggleButton';
 import FloatingActionButtons from '@/app/components/FloatingActionButtons/FloatingActionButtons';
@@ -70,7 +70,7 @@ const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) 
   // and render the full public header and footer.
   return (
     <div className="min-h-screen flex flex-col">
-      <PublicHeader />
+      <Header />
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         <Breadcrumbs />
       </div>

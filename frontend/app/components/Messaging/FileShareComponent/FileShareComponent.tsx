@@ -28,11 +28,15 @@ const FileShareComponent: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  const handleSendFile = () => {
+  const handleSendFile = async () => {
     if (selectedFile) {
-      console.log('Sending file:', selectedFile.name);
-      // In a real app, this would trigger an upload API call
-      setSelectedFile(null);
+      try {
+        // TODO: Implement file upload API call
+        // await api.messages.uploadFile(selectedFile);
+        setSelectedFile(null);
+      } catch (error) {
+        // Handle upload error
+      }
     }
   };
 

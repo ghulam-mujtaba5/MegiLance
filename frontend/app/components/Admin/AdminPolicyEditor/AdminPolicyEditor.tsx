@@ -46,16 +46,20 @@ const AdminPolicyEditor: React.FC = () => {
     setContent(mockPolicies[selectedPolicy].content);
   }, [selectedPolicy]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    console.log(`Saving ${selectedPolicy} policy:`, content);
-    // In a real app, this would be an API call
-    setTimeout(() => {
+    try {
+      // TODO: Implement policy save API call
+      // await api.admin.updatePolicy(selectedPolicy, content);
+      await new Promise(resolve => setTimeout(resolve, 1500));
       mockPolicies[selectedPolicy].content = content;
-      setIsSaving(false);
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 3000);
-    }, 1500);
+    } catch (error) {
+      // Handle save error
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

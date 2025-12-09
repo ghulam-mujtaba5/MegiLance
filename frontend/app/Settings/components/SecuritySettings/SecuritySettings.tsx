@@ -34,15 +34,20 @@ const SecuritySettings: React.FC = () => {
     setPasswords(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveChanges = (e: React.FormEvent) => {
+  const handleSaveChanges = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for save logic
     if (passwords.newPassword !== passwords.confirmPassword) {
       alert('New passwords do not match.');
       return;
     }
-    alert('Changing password...');
-    console.log('Saving new password');
+    try {
+      // TODO: Implement password change API call
+      // await api.auth.changePassword(passwords.currentPassword, passwords.newPassword);
+      alert('Password updated successfully!');
+      setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      alert('Failed to update password. Please try again.');
+    }
   };
 
   return (

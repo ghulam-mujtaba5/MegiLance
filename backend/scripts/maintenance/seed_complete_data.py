@@ -88,7 +88,7 @@ try:
             bio="Full-stack developer specializing in React, Node.js, and AI integration. 8+ years experience.",
             skills="React,Node.js,Python,FastAPI,PostgreSQL,MongoDB,AWS,Docker",
             hourly_rate=85.0,
-            profile_image_url="/avatars/alice.jpg",
+            profile_image_url="/avatars/alice.png",
             location="San Francisco, CA",
             joined_at=datetime.utcnow() - timedelta(days=365)
         ),

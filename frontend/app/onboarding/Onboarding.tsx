@@ -22,8 +22,9 @@ const Onboarding: React.FC = () => {
 
   const nextStep = () => setStep(prev => prev + 1);
   const finishOnboarding = () => {
-    // Redirect to dashboard or another page
-    console.log('Onboarding complete!');
+    // Mark onboarding as complete and redirect to dashboard
+    localStorage.setItem('onboarding_complete', 'true');
+    window.location.href = '/freelancer/dashboard';
   };
 
   const renderStep = () => {

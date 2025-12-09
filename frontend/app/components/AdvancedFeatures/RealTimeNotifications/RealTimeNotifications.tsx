@@ -86,7 +86,6 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
       const websocket = new WebSocket(wsUrl);
 
       websocket.onopen = () => {
-        console.log('WebSocket connected');
         setConnectionStatus('connected');
       };
 
@@ -114,18 +113,16 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
               });
             }
           }
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
+        } catch {
+          // Silently ignore malformed messages
         }
       };
 
-      websocket.onerror = (error) => {
-        console.error('WebSocket error:', error);
+      websocket.onerror = () => {
         setConnectionStatus('disconnected');
       };
 
       websocket.onclose = () => {
-        console.log('WebSocket disconnected');
         setConnectionStatus('disconnected');
         // Attempt to reconnect after 5 seconds
         setTimeout(connectWebSocket, 5000);

@@ -39,10 +39,7 @@ const InstallAppBanner: React.FC = () => {
       return;
     }
     await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('User accepted the PWA installation prompt');
-    }
+    await deferredPrompt.userChoice;
     setDeferredPrompt(null);
   };
 

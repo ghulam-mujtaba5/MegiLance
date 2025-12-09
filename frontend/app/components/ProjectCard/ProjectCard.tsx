@@ -49,8 +49,8 @@ const ProjectCard: React.FC<ProjectCardProps> = (props) => {
 
   const menuItems = [
     { label: 'View Details', icon: Briefcase, href: `/client/projects/${id}` },
-    { label: 'Make Payment', icon: CreditCard, onClick: () => console.log('Payment for', id) },
-    { label: 'Contact Team', icon: MessageSquare, onClick: () => console.log('Contact for', id) },
+    { label: 'Make Payment', icon: CreditCard, href: `/client/projects/${id}/payments` },
+    { label: 'Contact Team', icon: MessageSquare, href: `/client/messages?project=${id}` },
   ];
 
   return (

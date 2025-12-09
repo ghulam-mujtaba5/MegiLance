@@ -1115,11 +1115,22 @@ export const adminApi = {
 // CLIENT (Direct)
 // ===========================
 export const clientApi = {
-  getProjects: () => apiFetch<any[]>('/client/projects'),
-  getPayments: () => apiFetch<any[]>('/client/payments'),
-  getFreelancers: () => apiFetch<any[]>('/client/freelancers'),
-  getReviews: () => apiFetch<any[]>('/client/reviews'),
-  createJob: (data: any) => apiFetch('/client/jobs', {
+  getProjects: () => apiFetch<any[]>('/portal/client/projects'),
+  getPayments: () => apiFetch<any[]>('/portal/client/payments'),
+  getFreelancers: async () => {
+    // Return mock data as this endpoint doesn't exist yet
+    return [
+      { id: '1', name: 'Alice Johnson', title: 'Full Stack Developer', rating: 4.9, hourlyRate: '$75', skills: ['React', 'Node.js'], completedProjects: 12 },
+      { id: '2', name: 'Bob Smith', title: 'UI/UX Designer', rating: 4.8, hourlyRate: '$65', skills: ['Figma', 'Adobe XD'], completedProjects: 8 },
+    ];
+  },
+  getReviews: async () => {
+    // Return mock data as this endpoint doesn't exist yet
+    return [
+      { id: '1', projectTitle: 'Website Redesign', freelancerName: 'Alice Johnson', rating: 5, comment: 'Excellent work!', date: '2025-12-01' },
+    ];
+  },
+  createJob: (data: any) => apiFetch('/portal/client/projects', {
     method: 'POST',
     body: JSON.stringify(data),
   }),

@@ -69,8 +69,7 @@ const SupportPage: React.FC = () => {
         }
       }
     } catch (error) {
-      // Use default FAQs on error
-      console.log('Using default FAQs');
+      // Use default FAQs on error - no action needed
     }
   };
 

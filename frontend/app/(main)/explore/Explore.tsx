@@ -1,7 +1,7 @@
-// @AI-HINT: Comprehensive Explore/Demo page with ALL real routes, API endpoints, and working navigation links
+// @AI-HINT: Comprehensive Explore/Demo page with ALL real routes, API endpoints, and working navigation links. Enterprise-level feature showcase.
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -13,14 +13,23 @@ import {
   Shield, Search, Brain, FileText, BarChart3, Settings,
   ExternalLink, CheckCircle2, Lock, Zap, Globe,
   Briefcase, Award, Bell, Upload, Star, Play,
-  Terminal, Server, HardDrive, Activity
+  Terminal, Server, HardDrive, Activity, RefreshCw,
+  CheckCircle, XCircle, AlertCircle, Clock, TrendingUp
 } from 'lucide-react';
 
 import common from './Explore.common.module.css';
 import light from './Explore.light.module.css';
 import dark from './Explore.dark.module.css';
 
-const API_BASE = 'http://localhost:8000';
+// Dynamic API base URL for production/development
+const getApiBase = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.hostname === 'localhost' 
+      ? 'http://localhost:8000'
+      : `https://${window.location.hostname.replace('www.', 'api.')}`;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+};
 
 // ============================================
 // ALL REAL PAGE ROUTES FROM THE CODEBASE
@@ -349,6 +358,26 @@ const Explore: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showApiEndpoints, setShowApiEndpoints] = useState(false);
   const [showDatabaseTables, setShowDatabaseTables] = useState(false);
+  const [apiStatus, setApiStatus] = useState<'checking' | 'online' | 'offline'>('checking');
+  
+  // Dynamic API base URL for production/development
+  const API_BASE = getApiBase();
+
+  // Check API health status on mount
+  useEffect(() => {
+    const checkApiHealth = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/health/ready`, {
+          method: 'GET',
+          signal: AbortSignal.timeout(5000)
+        });
+        setApiStatus(response.ok ? 'online' : 'offline');
+      } catch {
+        setApiStatus('offline');
+      }
+    };
+    checkApiHealth();
+  }, [API_BASE]);
 
   const filteredPages = useMemo(() => {
     return allPages.filter(page => {
@@ -404,9 +433,22 @@ const Explore: React.FC = () => {
                 Complete interactive map of all {allPages.length} pages, {apiEndpoints.length}+ API endpoints, 
                 and {databaseTables.length} database tables. Click any link to navigate directly.
               </p>
-              <div className={common.badge}>
-                <Zap size={16} />
-                {avgProgress}% Overall Completion
+              <div className={common.badgeRow}>
+                <div className={common.badge}>
+                  <Zap size={16} />
+                  {avgProgress}% Overall Completion
+                </div>
+                <div className={cn(
+                  common.statusBadge,
+                  apiStatus === 'online' && common.statusOnline,
+                  apiStatus === 'offline' && common.statusOffline,
+                  apiStatus === 'checking' && common.statusChecking
+                )}>
+                  <span className={common.statusDot} />
+                  {apiStatus === 'checking' && 'Checking API...'}
+                  {apiStatus === 'online' && 'API Online'}
+                  {apiStatus === 'offline' && 'API Offline'}
+                </div>
               </div>
             </div>
           </ScrollReveal>

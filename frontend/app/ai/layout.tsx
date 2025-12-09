@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import PublicHeader from '../components/Layout/PublicHeader/PublicHeader';
+import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 
 interface AILayoutProps {
@@ -12,7 +12,7 @@ interface AILayoutProps {
 export default function AILayout({ children }: AILayoutProps) {
   return (
     <>
-      <PublicHeader />
+      <Header />
       <div className="min-h-screen pt-16">
         {children}
       </div>

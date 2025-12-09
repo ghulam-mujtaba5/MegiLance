@@ -154,9 +154,14 @@ export default function SubscriptionPage() {
     return Math.round(monthlyPrice * 12 * 0.8); // 20% discount for yearly
   };
 
-  const handleUpgrade = (planId: string) => {
-    console.log('Upgrading to:', planId);
-    // API call would go here
+  const handleUpgrade = async (planId: string) => {
+    try {
+      // TODO: Implement subscription upgrade API call
+      // await paymentsApi.upgradePlan(planId);
+      await fetchSubscriptionData();
+    } catch (error) {
+      // Handle upgrade error
+    }
   };
 
   const handleCancel = () => {
