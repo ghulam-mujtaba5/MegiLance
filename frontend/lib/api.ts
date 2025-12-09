@@ -278,10 +278,14 @@ export const authApi = {
 export const socialAuthApi = {
   getProviders: () => apiFetch('/social-auth/providers'),
   
-  start: (provider: string, redirectUri: string) => 
+  start: (provider: string, redirectUri: string, portalArea?: string) => 
     apiFetch('/social-auth/start', {
       method: 'POST',
-      body: JSON.stringify({ provider, redirect_uri: redirectUri }),
+      body: JSON.stringify({ 
+        provider, 
+        redirect_uri: redirectUri,
+        ...(portalArea ? { portal_area: portalArea } : {}),
+      }),
     }),
     
   complete: (code: string, state: string) =>

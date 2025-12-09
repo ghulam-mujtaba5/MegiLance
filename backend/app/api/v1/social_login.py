@@ -25,6 +25,7 @@ router = APIRouter(prefix="/social-auth", tags=["social-auth"])
 class StartOAuthRequest(BaseModel):
     provider: SocialProvider
     redirect_uri: str
+    portal_area: Optional[str] = None
 
 
 class CompleteOAuthRequest(BaseModel):
@@ -62,7 +63,8 @@ async def start_oauth(
     result = await service.start_oauth(
         provider=request.provider,
         redirect_uri=request.redirect_uri,
-        user_id=user_id
+        user_id=user_id,
+        portal_area=request.portal_area
     )
     
     return result
@@ -98,7 +100,7 @@ async def get_linked_accounts(
 ):
     """Get user's linked social accounts."""
     service = get_social_login_service(db)
-    accounts = await service.get_linked_accounts(current_user["id"])
+    accounts = await service.get_linked_accounts(current_user.id)
     return {"accounts": accounts}
 
 
@@ -112,7 +114,7 @@ async def unlink_account(
     service = get_social_login_service(db)
     
     result = await service.unlink_account(
-        user_id=current_user["id"],
+        user_id=current_user.id,
         provider=provider
     )
     
@@ -135,7 +137,7 @@ async def sync_profile_from_social(
     service = get_social_login_service(db)
     
     result = await service.sync_profile_from_social(
-        user_id=current_user["id"],
+        user_id=current_user.id,
         provider=request.provider,
         fields=request.fields
     )

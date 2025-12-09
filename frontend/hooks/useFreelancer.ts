@@ -100,6 +100,7 @@ export function useFreelancerData() {
           fetchWithFallback(api.portal.freelancer.getDashboardStats(), {}),
           fetchWithFallback(api.portal.freelancer.getMonthlyEarnings(6), { earnings: [] }),
           fetchWithFallback(api.gamification.getMyRank(), { rank: 'Silver', percentile: 50 }),
+          // Try AI matching first, but fallback is handled below
           fetchWithFallback(api.matching.findJobs(5), { recommendations: [] }),
           fetchWithFallback(api.portal.freelancer.getProposals({ limit: 5 }), { proposals: [] }),
         ]);
@@ -132,18 +133,31 @@ export function useFreelancerData() {
         }));
         setJobs(mappedJobs);
 
-        // Map Recommended Jobs
-        const mappedRecommendedJobs: FreelancerJob[] = (recommendedJson.recommendations || []).map((r: any) => ({
-          id: String(r.project_id),
-          title: r.project_title,
-          clientName: 'AI Matched', 
-          description: r.project_description,
-          budget: r.budget_max || r.budget_min || 0,
-          postedTime: r.created_at,
-          skills: [], 
-          status: 'Open',
-          matchScore: Math.round((r.match_score || 0) * 100)
-        }));
+        // Map Recommended Jobs - if AI matching returns empty, use regular jobs as fallback
+        let mappedRecommendedJobs: FreelancerJob[] = [];
+        const aiRecommendations = recommendedJson.recommendations || [];
+        
+        if (aiRecommendations.length > 0) {
+          // Use AI-matched recommendations
+          mappedRecommendedJobs = aiRecommendations.map((r: any) => ({
+            id: String(r.project_id),
+            title: r.project_title,
+            clientName: 'AI Matched', 
+            description: r.project_description,
+            budget: r.budget_max || r.budget_min || 0,
+            postedTime: r.created_at,
+            skills: [], 
+            status: 'Open' as const,
+            matchScore: Math.round((r.match_score || 0) * 100)
+          }));
+        } else {
+          // Fallback to regular jobs when AI matching is unavailable
+          mappedRecommendedJobs = mappedJobs.slice(0, 5).map(job => ({
+            ...job,
+            clientName: job.clientName || 'Available Job',
+            matchScore: undefined // No AI score available
+          }));
+        }
         setRecommendedJobs(mappedRecommendedJobs);
 
         // Map Proposals

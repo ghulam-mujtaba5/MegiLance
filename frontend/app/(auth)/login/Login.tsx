@@ -287,7 +287,7 @@ const Login: React.FC = () => {
       // Store selected role in localStorage to be used after callback
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
       
-      const response = await api.socialAuth.start(provider, redirectUri);
+      const response = await api.socialAuth.start(provider, redirectUri, selectedRole);
       
       if (response.authorization_url) {
         window.location.href = response.authorization_url;
