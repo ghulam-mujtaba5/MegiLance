@@ -48,7 +48,7 @@ pytest-cov==6.0.0
 sqlalchemy-libsql>=0.2.0
 requests==2.31.0
 
-# MongoDB - Pin pymongo version for motor compatibility
-# motor 3.3.2 requires pymongo<5.0
-pymongo>=4.3.3,<5.0
-motor==3.3.2
+# MongoDB - Motor 3.7.1 requires pymongo>=4.9,<5
+# Use latest motor for Python 3.13 compatibility
+pymongo>=4.9,<5.0
+motor>=3.7.0
