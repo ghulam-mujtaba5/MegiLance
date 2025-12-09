@@ -1,0 +1,26 @@
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.title {
+  color: #6b7280;
+}
+
+.iconWrapper {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.value {
+  color: #111827;
+}
+
+.trendLabel {
+  color: #6b7280;
+}
