@@ -1,6 +1,6 @@
 // @AI-HINT: This is the root Next.js home route. It delegates to the main Home component.
 import type { Metadata } from 'next';
-import Home from './home/Home';
+import Home from './Home/Home';
 import { BASE_URL, SITE_NAME } from '@/lib/seo';
 
 export const metadata: Metadata = {
