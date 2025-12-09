@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { Github, Twitter, Linkedin } from 'lucide-react';
 
 import MegiLanceLogo from '@/app/components/MegiLanceLogo/MegiLanceLogo';
-import StatusIndicator, { FeatureStatus } from '@/app/components/StatusIndicator/StatusIndicator';
 
 import commonStyles from './Footer.common.module.css';
 import lightStyles from './Footer.light.module.css';
@@ -16,28 +15,32 @@ import darkStyles from './Footer.dark.module.css';
 
 const footerSections = {
   'Product': [
-    { name: 'Features', href: '/#features', status: 'complete' },
-    { name: 'Pricing', href: '/pricing', status: 'complete' },
+    { name: 'Features', href: '/#features', status: 'verified' },
+    { name: 'Pricing', href: '/pricing', status: 'verified' },
     { name: 'For Clients', href: '/clients', status: 'complete' },
     { name: 'For Freelancers', href: '/freelancers', status: 'complete' },
-    { name: 'AI Matching', href: '/ai-matching', status: 'working' },
+    { name: 'AI Matching', href: '/ai-matching', status: 'verified' },
+    { name: 'Blockchain Escrow', href: '/#blockchain', status: 'verified' },
   ],
   'Company': [
     { name: 'About Us', href: '/about', status: 'complete' },
     { name: 'Blog', href: '/blog', status: 'working' },
     { name: 'Careers', href: '/careers', status: 'incomplete' },
     { name: 'Press', href: '/press', status: 'incomplete' },
+    { name: 'Testimonials', href: '/testimonials', status: 'verified' },
   ],
   'Resources': [
     { name: 'Help Center', href: '/support', status: 'working' },
-    { name: 'Contact Us', href: '/contact', status: 'complete' },
+    { name: 'Contact Us', href: '/contact', status: 'verified' },
     { name: 'Community', href: '/community', status: 'incomplete' },
-    { name: 'System Status', href: '/status', status: 'working' },
+    { name: 'System Status', href: '/status', status: 'verified' },
+    { name: 'API Docs', href: '/api/docs', status: 'verified' },
   ],
   'Legal': [
     { name: 'Terms of Service', href: '/terms', status: 'complete' },
     { name: 'Privacy Policy', href: '/privacy', status: 'complete' },
     { name: 'Cookie Policy', href: '/cookies', status: 'complete' },
+    { name: 'Security', href: '/security', status: 'verified' },
   ],
 };
 
@@ -73,10 +76,18 @@ const Footer = () => {
                       <Link href={link.href} className={cn(commonStyles.linkItem, styles.linkItem)}>
                         {link.name}
                         {link.status && (
-                          <StatusIndicator 
-                            status={link.status as FeatureStatus} 
-                            className="ml-2 scale-90 origin-left" 
-                          />
+                          <span className={cn(
+                            commonStyles.statusPill,
+                            link.status === 'complete' && commonStyles.statusComplete,
+                            link.status === 'verified' && commonStyles.statusVerified,
+                            link.status === 'working' && commonStyles.statusWorking,
+                            link.status === 'incomplete' && commonStyles.statusIncomplete
+                          )}>
+                            {link.status === 'verified' && '✓'}
+                            {link.status === 'complete' && '✓'}
+                            {link.status === 'working' && '⚙'}
+                            {link.status === 'incomplete' && '⋯'}
+                          </span>
                         )}
                       </Link>
                     </li>
@@ -92,7 +103,7 @@ const Footer = () => {
               &copy; {new Date().getFullYear()} MegiLance. Final Year Project (FYP) 2022-2026.
             </p>
             <p className={cn(commonStyles.university, styles.university)}>
-              COMSATS University Islamabad, Lahore Campus.
+              COMSATS University Islamabad, Lahore Campus
             </p>
           </div>
           <div className={commonStyles.socialLinks}>

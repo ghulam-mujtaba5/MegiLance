@@ -72,7 +72,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 4rem; /* Explicit gap between cards */
+  gap: 5rem; /* Increased gap between cards */
   /* BILLIONAIRE LEVEL - 3D Context */
   transform-style: preserve-3d;
 }

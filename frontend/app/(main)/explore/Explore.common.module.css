@@ -226,30 +226,83 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.35rem 0.75rem;
+  padding: 0.4rem 0.9rem;
   border-radius: 50px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.featureStatus::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.featureStatus:hover::before {
+  left: 100%;
 }
 
 .statusComplete {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: #ffffff;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .statusPending {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
-  color: #f59e0b;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  color: #ffffff;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
 }
 
 .statusPortal {
-  background: linear-gradient(135deg, rgba(69, 115, 223, 0.2), rgba(99, 102, 241, 0.1));
-  color: #4573df;
-  border: 1px solid rgba(69, 115, 223, 0.3);
+  background: linear-gradient(135deg, #4573df 0%, #6366f1 100%);
+  color: #ffffff;
+  border: 1px solid rgba(69, 115, 223, 0.5);
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.statusWorking {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  color: #ffffff;
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.statusIncomplete {
+  background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+  color: #ffffff;
+  border: 1px solid rgba(100, 116, 139, 0.5);
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.3);
+}
+
+.statusVerified {
+  background: linear-gradient(135deg, #27AE60 0%, #2ecc71 100%);
+  color: #ffffff;
+  border: 1px solid rgba(39, 174, 96, 0.5);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(39, 174, 96, 0.5);
+  }
 }
 
 .featureDescription {

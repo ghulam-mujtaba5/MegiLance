@@ -365,9 +365,12 @@ const Explore: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'complete': return { label: '✅ Live', className: common.statusComplete };
+      case 'complete': return { label: '✅ Complete', className: common.statusComplete };
+      case 'verified': return { label: '✅ Verified', className: common.statusVerified };
+      case 'working': return { label: '🚧 Working', className: common.statusWorking };
       case 'pending': return { label: '⏳ Pending', className: common.statusPending };
       case 'portal': return { label: '🔒 Auth Required', className: common.statusPortal };
+      case 'incomplete': return { label: '⚠️ Incomplete', className: common.statusIncomplete };
       default: return { label: status, className: '' };
     }
   };

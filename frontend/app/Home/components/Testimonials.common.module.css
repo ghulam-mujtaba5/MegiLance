@@ -36,12 +36,13 @@
 .testimonialsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 @media (max-width: 1024px) {
   .testimonialsGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
   }
 }
 
@@ -52,5 +53,6 @@
   
   .testimonialsGrid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }
