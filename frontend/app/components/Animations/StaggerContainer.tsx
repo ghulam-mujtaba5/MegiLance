@@ -22,9 +22,16 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
   );
 };
 
-export const StaggerItem: React.FC<{ children: React.ReactNode; className?: string; style?: React.CSSProperties }> = ({ children, className = '', style }) => {
+export const StaggerItem: React.FC<{ 
+  children: React.ReactNode; 
+  className?: string; 
+  style?: React.CSSProperties;
+  tabIndex?: number;
+  'aria-labelledby'?: string;
+  onClick?: () => void;
+}> = ({ children, className = '', style, tabIndex, 'aria-labelledby': ariaLabelledby, onClick }) => {
   return (
-    <div className={className} style={style}>
+    <div className={className} style={style} tabIndex={tabIndex} aria-labelledby={ariaLabelledby} onClick={onClick}>
       {children}
     </div>
   );

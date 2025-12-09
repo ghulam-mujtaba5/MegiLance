@@ -69,14 +69,9 @@ export const footerNavItems = {
   ],
 };
 
-// Dashboard navigation (general authenticated users)
-export const dashboardNavItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: 'FaTachometerAlt' },
-  { label: 'Projects', href: '/projects', icon: 'FaBriefcase' },
-  { label: 'Messages', href: '/messages', icon: 'FaComments' },
-  { label: 'Payments', href: '/payments', icon: 'FaCreditCard' },
-  { label: 'Settings', href: '/settings', icon: 'FaCogs' },
-];
+// Dashboard navigation (general authenticated users) - REMOVED
+// All users should use role-specific navigation (freelancer, client, or admin)
+export const dashboardNavItems: NavItem[] = [];
 
 // Freelancer-specific navigation
 export const freelancerNavItems: NavItem[] = [
@@ -221,8 +216,7 @@ export const iconMap = {
 
 // Breadcrumb configuration
 export const breadcrumbConfig: Record<string, string[]> = {
-  '/dashboard': ['Dashboard'],
-  '/projects': ['Dashboard', 'Projects'],
+  '/projects': ['Projects'],
   '/freelancer/dashboard': ['Freelancer', 'Dashboard'],
   '/freelancer/projects': ['Freelancer', 'Projects'],
   '/freelancer/profile': ['Freelancer', 'Profile'],

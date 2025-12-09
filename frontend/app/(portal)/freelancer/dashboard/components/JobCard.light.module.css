@@ -1,0 +1,35 @@
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-color: #d1d5db;
+}
+
+.title {
+  color: #111827;
+}
+
+.client {
+  color: #6b7280;
+}
+
+.budget {
+  color: #111827;
+}
+
+.tag {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.footer {
+  border-top-color: #f3f4f6;
+}
+
+.meta {
+  color: #6b7280;
+}

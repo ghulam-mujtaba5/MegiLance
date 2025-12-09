@@ -129,11 +129,13 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
               { href: '/freelancer/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
             ];
           default:
+            // Default to client navigation if no specific user type
             return [
-              { href: '/', label: 'Home', icon: <Home size={18} /> },
-              { href: '/profile', label: 'Profile', icon: <User size={18} /> },
-              { href: '/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
-              { href: '/settings', label: 'Settings', icon: <SettingsIcon size={18} /> },
+              { href: '/client/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
+              { href: '/client/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7', status: 'complete' },
+              { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} />, status: 'complete' },
+              { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} />, status: 'complete' },
+              { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
             ];
         }
       })();

@@ -176,6 +176,7 @@ interface AuthUser {
   email: string;
   name: string;
   role: string;
+  requires_2fa?: boolean;
 }
 
 interface LoginResponse {

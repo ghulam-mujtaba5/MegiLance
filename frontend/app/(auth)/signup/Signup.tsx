@@ -130,7 +130,7 @@ const Signup: React.FC = () => {
       console.log('Preview signup bypass:', { selectedRole, formData });
       setTimeout(() => {
         setLoading(false);
-        router.push(selectedRole === 'client' ? '/client/dashboard' : '/dashboard');
+        router.push(selectedRole === 'client' ? '/client/dashboard' : '/freelancer/dashboard');
       }, 300);
       return;
     }
@@ -162,7 +162,7 @@ const Signup: React.FC = () => {
       console.log(`Preview social signup via ${provider} as ${selectedRole}`);
       setTimeout(() => {
         setLoading(false);
-        router.push(selectedRole === 'client' ? '/client/dashboard' : '/dashboard');
+        router.push(selectedRole === 'client' ? '/client/dashboard' : '/freelancer/dashboard');
       }, 300);
       return;
     }
@@ -207,9 +207,7 @@ const Signup: React.FC = () => {
 
   return (
     <PageTransition className={styles.loginPage}>
-      <ClientOnly>
-        {/* Background Decor - REMOVED */}
-      </ClientOnly>
+      {/* Background Decor - REMOVED */}
 
       <div className={styles.brandingSlot}>
         <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />

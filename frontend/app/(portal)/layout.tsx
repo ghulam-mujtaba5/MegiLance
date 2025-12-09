@@ -24,7 +24,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
         
         if (!token) {
           // No token - redirect to login
-          const currentPath = pathname || '/dashboard';
+          const currentPath = pathname || '/client/dashboard';
           router.replace(`/login?returnTo=${encodeURIComponent(currentPath)}`);
           return;
         }
@@ -39,7 +39,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
           window.localStorage.removeItem('access_token');
           window.localStorage.removeItem('refresh_token');
           window.localStorage.removeItem('user');
-          const currentPath = pathname || '/dashboard';
+          const currentPath = pathname || '/client/dashboard';
           router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`);
           return;
         }
@@ -60,7 +60,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
 
         // Check role-based access for specific portal sections
         if (pathname?.startsWith('/admin') && role !== 'admin') {
-          router.replace('/dashboard');
+          router.replace('/client/dashboard');
           return;
         }
 

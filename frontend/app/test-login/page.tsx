@@ -14,26 +14,27 @@ interface DemoUser {
   color: string;
 }
 
+// @AI-HINT: FYP Quick Login page - HARDCODED credentials for demo bypass
 const DEMO_USERS: DemoUser[] = [
   {
-    email: 'admin@megilance.com',
-    password: 'admin123',
+    email: 'admin.real@megilance.com',
+    password: 'Test123!@#',
     role: 'Admin',
     description: 'Full platform access, analytics, user management',
     dashboard: '/admin/dashboard',
     color: '#e81123'
   },
   {
-    email: 'client1@example.com',
-    password: 'password123',
+    email: 'sarah.tech@megilance.com',
+    password: 'Test123!@#',
     role: 'Client',
     description: 'Post jobs, hire freelancers, manage projects',
     dashboard: '/client/dashboard',
     color: '#4573df'
   },
   {
-    email: 'freelancer1@example.com',
-    password: 'password123',
+    email: 'alex.fullstack@megilance.com',
+    password: 'Test123!@#',
     role: 'Freelancer',
     description: 'Find jobs, submit proposals, track earnings',
     dashboard: '/freelancer/dashboard',
@@ -125,7 +126,7 @@ export default function DevQuickLogin() {
       )}
       
       <div className={styles.credentials}>
-        <h3>📋 All Demo Credentials</h3>
+        <h3>📋 All Demo Credentials (Universal Password: Test123!@#)</h3>
         <table className={styles.credTable}>
           <thead>
             <tr>
@@ -135,15 +136,13 @@ export default function DevQuickLogin() {
             </tr>
           </thead>
           <tbody>
-            <tr><td>Admin</td><td>admin@megilance.com</td><td>admin123</td></tr>
-            <tr><td>Client 1</td><td>client1@example.com</td><td>password123</td></tr>
-            <tr><td>Client 2</td><td>client2@example.com</td><td>password123</td></tr>
-            <tr><td>Client 3</td><td>client3@example.com</td><td>password123</td></tr>
-            <tr><td>Freelancer 1</td><td>freelancer1@example.com</td><td>password123</td></tr>
-            <tr><td>Freelancer 2</td><td>freelancer2@example.com</td><td>password123</td></tr>
-            <tr><td>Freelancer 3</td><td>freelancer3@example.com</td><td>password123</td></tr>
-            <tr><td>Freelancer 4</td><td>freelancer4@example.com</td><td>password123</td></tr>
-            <tr><td>Freelancer 5</td><td>freelancer5@example.com</td><td>password123</td></tr>
+            <tr><td>Admin</td><td>admin.real@megilance.com</td><td>Test123!@#</td></tr>
+            <tr><td>Client (Sarah)</td><td>sarah.tech@megilance.com</td><td>Test123!@#</td></tr>
+            <tr><td>Client (Michael)</td><td>michael.ventures@megilance.com</td><td>Test123!@#</td></tr>
+            <tr><td>Freelancer (Alex)</td><td>alex.fullstack@megilance.com</td><td>Test123!@#</td></tr>
+            <tr><td>Freelancer (Emma)</td><td>emma.designer@megilance.com</td><td>Test123!@#</td></tr>
+            <tr><td>Freelancer (James)</td><td>james.devops@megilance.com</td><td>Test123!@#</td></tr>
+            <tr><td>Freelancer (Sophia)</td><td>sophia.data@megilance.com</td><td>Test123!@#</td></tr>
           </tbody>
         </table>
       </div>

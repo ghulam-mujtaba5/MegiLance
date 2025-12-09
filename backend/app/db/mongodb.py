@@ -1,10 +1,18 @@
-# @AI-HINT: MongoDB connection handling using Motor (AsyncIO)
+# @AI-HINT: MongoDB connection handling using Motor (AsyncIO) for Blog/CMS system
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import get_settings
 import logging
+import os
 
 logger = logging.getLogger("megilance")
 settings = get_settings()
+
+# @AI-HINT: MongoDB Atlas Free Tier Connection - HARDCODED for MegiLance Blog/CMS
+# You can override with MONGODB_URL environment variable if you have your own cluster
+# To get your own free MongoDB Atlas: https://cloud.mongodb.com (512MB free forever)
+# Connection string format: mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<dbname>
+DEFAULT_MONGODB_URL = None  # Set your MongoDB Atlas URL here or via env var
+MONGODB_DB_NAME = "megilance_blog"
 
 class MongoDB:
     client: AsyncIOMotorClient = None
@@ -21,22 +29,28 @@ async def get_database():
 async def connect_to_mongo():
     """Optional MongoDB connection - fails gracefully if unavailable"""
     try:
-        if not settings.MONGODB_URL:
-            logger.warning("MongoDB URL not configured - skipping connection")
+        # Priority: 1) Environment variable, 2) Hardcoded default
+        mongo_url = settings.MONGODB_URL or os.getenv("MONGODB_URL") or DEFAULT_MONGODB_URL
+        
+        if not mongo_url:
+            logger.warning("MongoDB URL not configured - Blog/CMS features disabled")
+            logger.info("To enable MongoDB: Set MONGODB_URL env var or update DEFAULT_MONGODB_URL in mongodb.py")
+            logger.info("Get free MongoDB Atlas at: https://cloud.mongodb.com")
             return
         
         logger.info("Attempting MongoDB connection...")
         db.client = AsyncIOMotorClient(
-            settings.MONGODB_URL,
+            mongo_url,
             serverSelectionTimeoutMS=5000,  # 5 second timeout
             connectTimeoutMS=5000
         )
-        db.db = db.client[settings.MONGODB_DB_NAME]
+        db.db = db.client[settings.MONGODB_DB_NAME or MONGODB_DB_NAME]
         # Ping to verify connection
         await db.client.admin.command('ping')
-        logger.info("Connected to MongoDB successfully!")
+        logger.info("✅ Connected to MongoDB successfully! Blog/CMS features enabled.")
     except Exception as e:
-        logger.warning(f"MongoDB connection failed: {e} - continuing without MongoDB")
+        logger.warning(f"MongoDB connection failed: {e} - Blog/CMS features disabled")
+        logger.info("Continuing without MongoDB - other features work normally")
         db.client = None
         db.db = None
 

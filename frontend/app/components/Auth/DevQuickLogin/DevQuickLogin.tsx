@@ -19,28 +19,28 @@ interface DevCredential {
   icon: IconType;
 }
 
-// @AI-HINT: Real working credentials for quick login - verified against Turso database
-// These accounts exist and are functional in the current database
+// @AI-HINT: Real working credentials for quick login - HARDCODED for demo bypass
+// Universal password: Test123!@# - These are real seeded accounts in the database
 const DEV_CREDENTIALS: DevCredential[] = [
   {
-    email: 'admin@megilance.com',
-    password: 'Admin@123',
+    email: 'admin.real@megilance.com',
+    password: 'Test123!@#',
     role: 'admin',
-    label: 'Admin',
+    label: 'Admin Master',
     icon: FaUserShield,
   },
   {
-    email: 'freelancer1@example.com',
-    password: 'Freelancer@123',
+    email: 'alex.fullstack@megilance.com',
+    password: 'Test123!@#',
     role: 'freelancer',
-    label: 'Freelancer',
+    label: 'Alex (Freelancer)',
     icon: FaUserTie,
   },
   {
-    email: 'client1@example.com',
-    password: 'Client@123',
+    email: 'sarah.tech@megilance.com',
+    password: 'Test123!@#',
     role: 'client',
-    label: 'Client',
+    label: 'Sarah (Client)',
     icon: FaBriefcase,
   },
 ];

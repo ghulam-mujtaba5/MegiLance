@@ -41,11 +41,12 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
 
   const area: 'client' | 'freelancer' | 'admin' | 'general' = useMemo(() => {
-    if (!pathname) return 'general';
+    if (!pathname) return 'client';
     if (pathname.startsWith('/client')) return 'client';
     if (pathname.startsWith('/freelancer')) return 'freelancer';
     if (pathname.startsWith('/admin')) return 'admin';
-    return 'general';
+    // Default to client for authenticated users (most common)
+    return 'client';
   }, [pathname]);
 
   // Announce route changes to screen readers
@@ -78,10 +79,12 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           { label: 'Settings', href: '/admin/settings', icon: <Settings size={16} /> },
           { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
         ];
+      case 'general':
       default:
+        // Default to client if no specific area
         return [
-          { label: 'Your Profile', href: '/Profile', icon: <UserIcon size={16} /> },
-          { label: 'Settings', href: '/Settings', icon: <Settings size={16} /> },
+          { label: 'Your Profile', href: '/client/profile', icon: <UserIcon size={16} /> },
+          { label: 'Settings', href: '/client/settings', icon: <Settings size={16} /> },
           { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
         ];
     }

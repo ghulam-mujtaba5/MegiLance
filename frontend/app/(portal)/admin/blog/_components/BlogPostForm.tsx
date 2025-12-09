@@ -109,7 +109,7 @@ export default function BlogPostForm({ initialData, onSubmit, isEditing = false 
                 onChange={handleChange}
                 required
                 fullWidth
-                helperText="URL-friendly version of the title"
+                helpText="URL-friendly version of the title"
               />
               <Textarea
                 label="Excerpt"
@@ -119,7 +119,7 @@ export default function BlogPostForm({ initialData, onSubmit, isEditing = false 
                 required
                 rows={3}
                 fullWidth
-                helperText="Short summary for list views and SEO"
+                helpText="Short summary for list views and SEO"
               />
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -143,15 +143,17 @@ export default function BlogPostForm({ initialData, onSubmit, isEditing = false 
           <Card title="Settings">
             <div className="space-y-4">
               <ToggleSwitch
+                id="is_published"
                 label="Published"
                 checked={formData.is_published}
                 onChange={(checked) => handleToggle('is_published', checked)}
               />
               <ToggleSwitch
+                id="is_news_trend"
                 label="News Trend"
                 checked={formData.is_news_trend}
                 onChange={(checked) => handleToggle('is_news_trend', checked)}
-                helperText="Mark as a trending news item"
+                helpText="Mark as a trending news item"
               />
               <Input
                 label="Author"
@@ -176,7 +178,7 @@ export default function BlogPostForm({ initialData, onSubmit, isEditing = false 
                 onChange={handleTagsChange}
                 fullWidth
                 placeholder="crypto, defi, guide"
-                helperText="Comma separated"
+                helpText="Comma separated"
               />
             </div>
           </Card>

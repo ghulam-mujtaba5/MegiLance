@@ -79,8 +79,9 @@ export function middleware(request: NextRequest) {
   const isAuthPath = authPaths.some(path => pathname === path);
   
   if (isAuthPath && authToken) {
-    // Redirect to dashboard
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    // Redirect to client dashboard by default (most common user type)
+    // The portal layout will handle redirecting to the correct role-specific dashboard
+    return NextResponse.redirect(new URL('/client/dashboard', request.url));
   }
 
   return response;

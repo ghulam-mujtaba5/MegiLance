@@ -217,7 +217,7 @@ const Enterprise: React.FC = () => {
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <AnimatedOrb variant="purple" size={600} blur={120} opacity={0.12} className="absolute top-[-15%] right-[-15%]" />
         <AnimatedOrb variant="blue" size={500} blur={100} opacity={0.10} className="absolute bottom-[-10%] left-[-10%]" />
-        <AnimatedOrb variant="green" size={300} blur={80} opacity={0.06} className="absolute top-[50%] left-[30%]" />
+        <AnimatedOrb variant="orange" size={300} blur={80} opacity={0.06} className="absolute top-[50%] left-[30%]" />
         <ParticlesSystem count={20} className="absolute inset-0" />
         <div className="absolute top-32 left-16 opacity-10 animate-float-slow">
           <FloatingCube size={50} />
