@@ -20,10 +20,12 @@ const TalentCard: React.FC<TalentCardProps> = ({ name, role, avatar, rating = 5.
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
+  if (!resolvedTheme) return null; // Prevent hydration mismatch
+  
   return (
     <div className={cn(commonStyles.card, themeStyles.card)}>
       <div className={commonStyles.header}>
-        <UserAvatar name={name} src={avatar} size="md" />
+        <UserAvatar name={name} src={avatar} size="medium" />
         <button className={cn(commonStyles.actionButton, themeStyles.actionButton)} aria-label="More options">
           <MoreHorizontal size={20} />
         </button>

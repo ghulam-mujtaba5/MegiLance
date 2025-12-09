@@ -1,0 +1,161 @@
+/* @AI-HINT: SmartSelect light theme styles */
+
+.label {
+  color: #1a1a2e;
+}
+
+.placeholder {
+  color: #6b7280;
+}
+
+.trigger {
+  background: #ffffff;
+  border-color: #e5e7eb;
+  color: #1a1a2e;
+}
+
+.trigger:hover {
+  border-color: #d1d5db;
+  background: #fafafa;
+}
+
+.trigger:focus-visible,
+.triggerOpen {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.triggerError {
+  border-color: #e81123 !important;
+}
+
+.triggerError:focus-visible {
+  box-shadow: 0 0 0 3px rgba(232, 17, 35, 0.15);
+}
+
+/* Tags */
+.tag {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.tagMore {
+  color: #6b7280;
+}
+
+/* Clear Button */
+.clearButton {
+  color: #6b7280;
+}
+
+.clearButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Chevron */
+.chevron {
+  color: #6b7280;
+}
+
+/* Loader */
+.loader {
+  color: #4573df;
+}
+
+/* Dropdown */
+.dropdown {
+  background: #ffffff;
+  border: 2px solid #4573df;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Search */
+.searchContainer {
+  background: #fafafa;
+  border-color: #e5e7eb;
+}
+
+.searchIcon {
+  color: #9ca3af;
+}
+
+.searchInput {
+  color: #1a1a2e;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchClear {
+  color: #6b7280;
+}
+
+.searchClear:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Options */
+.optionsList::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+}
+
+.option {
+  color: #374151;
+}
+
+.option:hover {
+  background: #f3f4f6;
+}
+
+.optionHighlighted {
+  background: #eff6ff;
+}
+
+.optionSelected {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.optionSelected:hover {
+  background: #dbeafe;
+}
+
+.optionIcon {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.optionLabel {
+  color: #1a1a2e;
+}
+
+.optionDescription {
+  color: #6b7280;
+}
+
+.checkIcon {
+  color: #4573df;
+}
+
+/* Groups */
+.groupLabel {
+  color: #6b7280;
+}
+
+/* No Options */
+.noOptions {
+  color: #6b7280;
+}
+
+/* Helper Text */
+.helperText {
+  color: #6b7280;
+}
+
+.errorText {
+  color: #e81123;
+}

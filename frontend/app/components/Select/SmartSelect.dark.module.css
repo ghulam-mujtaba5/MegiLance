@@ -1,0 +1,161 @@
+/* @AI-HINT: SmartSelect dark theme styles */
+
+.label {
+  color: #f3f4f6;
+}
+
+.placeholder {
+  color: #9ca3af;
+}
+
+.trigger {
+  background: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+.trigger:hover {
+  border-color: #4b5563;
+  background: #263142;
+}
+
+.trigger:focus-visible,
+.triggerOpen {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.triggerError {
+  border-color: #f87171 !important;
+}
+
+.triggerError:focus-visible {
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25);
+}
+
+/* Tags */
+.tag {
+  background: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+}
+
+.tagMore {
+  color: #9ca3af;
+}
+
+/* Clear Button */
+.clearButton {
+  color: #9ca3af;
+}
+
+.clearButton:hover {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+/* Chevron */
+.chevron {
+  color: #9ca3af;
+}
+
+/* Loader */
+.loader {
+  color: #8b5cf6;
+}
+
+/* Dropdown */
+.dropdown {
+  background: #1f2937;
+  border: 2px solid #6366f1;
+  border-top: 1px solid #374151;
+}
+
+/* Search */
+.searchContainer {
+  background: #111827;
+  border-color: #374151;
+}
+
+.searchIcon {
+  color: #6b7280;
+}
+
+.searchInput {
+  color: #f3f4f6;
+}
+
+.searchInput::placeholder {
+  color: #6b7280;
+}
+
+.searchClear {
+  color: #9ca3af;
+}
+
+.searchClear:hover {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+/* Options */
+.optionsList::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.option {
+  color: #e5e7eb;
+}
+
+.option:hover {
+  background: #374151;
+}
+
+.optionHighlighted {
+  background: rgba(99, 102, 241, 0.15);
+}
+
+.optionSelected {
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+}
+
+.optionSelected:hover {
+  background: rgba(99, 102, 241, 0.25);
+}
+
+.optionIcon {
+  background: #374151;
+  color: #9ca3af;
+}
+
+.optionLabel {
+  color: #f3f4f6;
+}
+
+.optionDescription {
+  color: #9ca3af;
+}
+
+.checkIcon {
+  color: #8b5cf6;
+}
+
+/* Groups */
+.groupLabel {
+  color: #9ca3af;
+}
+
+/* No Options */
+.noOptions {
+  color: #9ca3af;
+}
+
+/* Helper Text */
+.helperText {
+  color: #9ca3af;
+}
+
+.errorText {
+  color: #f87171;
+}

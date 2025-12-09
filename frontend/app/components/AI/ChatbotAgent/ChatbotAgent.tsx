@@ -1,9 +1,10 @@
-// @AI-HINT: Enhanced AI chatbot interface with typing indicators, suggested actions, sentiment analysis display, and premium styling matching backend ai_chatbot.py capabilities
+// @AI-HINT: Enhanced AI chatbot with Framer Motion, magnetic hover, 3D effects, and world-class animations
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { MessageSquare, X, Send, Sparkles, Zap, HelpCircle, FileText, User } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import commonStyles from './ChatbotAgent.common.module.css';
 import lightStyles from './ChatbotAgent.light.module.css';
@@ -29,6 +30,8 @@ const ChatbotAgent: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -40,6 +43,34 @@ const ChatbotAgent: React.FC = () => {
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Magnetic mouse tracking for 3D tilt effect
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const rotateX = useSpring(useTransform(mouseY, [-50, 50], [10, -10]), {
+    damping: 20,
+    stiffness: 200,
+  });
+  const rotateY = useSpring(useTransform(mouseX, [-50, 50], [-10, 10]), {
+    damping: 20,
+    stiffness: 200,
+  });
+
+  const handleButtonMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    mouseX.set(e.clientX - centerX);
+    mouseY.set(e.clientY - centerY);
+  };
+
+  const handleButtonMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+    setIsHovered(false);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -365,19 +396,110 @@ const ChatbotAgent: React.FC = () => {
         </div>
       )}
       
-      {/* Toggle Button with Notification Badge */}
-      <button
+      {/* Toggle Button with Framer Motion, 3D, and Notification Badge */}
+      <motion.button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
+        onMouseMove={handleButtonMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleButtonMouseLeave}
         className={cn(commonStyles.toggleButton, themeStyles.toggleButton)}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
+        style={{
+          rotateX,
+          rotateY,
+          transformStyle: 'preserve-3d',
+        }}
+        whileHover={{ scale: 1.15 }}
+        whileTap={{ scale: 0.92 }}
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{
+          type: 'spring',
+          stiffness: 260,
+          damping: 20,
+        }}
       >
-        {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
+        {/* Floating particles effect on hover */}
+        <AnimatePresence>
+          {isHovered && !isOpen && (
+            <>
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className={cn(commonStyles.particle, themeStyles.particle)}
+                  initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0],
+                    x: Math.cos((i * Math.PI * 2) / 6) * 40,
+                    y: Math.sin((i * Math.PI * 2) / 6) * 40,
+                  }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    delay: i * 0.15,
+                  }}
+                />
+              ))}
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Icon with smooth transition */}
+        <AnimatePresence mode="wait">
+          {isOpen ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0, scale: 0 }}
+              animate={{ rotate: 0, opacity: 1, scale: 1 }}
+              exit={{ rotate: 90, opacity: 0, scale: 0 }}
+              transition={{ duration: 0.3, type: 'spring' }}
+              style={{ display: 'flex' }}
+            >
+              <X size={24} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="open"
+              initial={{ rotate: 90, opacity: 0, scale: 0 }}
+              animate={{ rotate: 0, opacity: 1, scale: 1 }}
+              exit={{ rotate: -90, opacity: 0, scale: 0 }}
+              transition={{ duration: 0.3, type: 'spring' }}
+              style={{ display: 'flex' }}
+            >
+              <MessageSquare size={24} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Notification Badge */}
         {!isOpen && unreadCount > 0 && (
-          <span className={cn(commonStyles.notificationBadge, themeStyles.notificationBadge)}>
+          <motion.span
+            className={cn(commonStyles.notificationBadge, themeStyles.notificationBadge)}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+          >
             {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
+          </motion.span>
         )}
-      </button>
+
+        {/* Ambient glow ring */}
+        <motion.div
+          className={cn(commonStyles.glowRing, themeStyles.glowRing)}
+          animate={{
+            scale: isHovered ? [1, 1.15, 1] : 1,
+            opacity: isHovered ? [0.5, 0.8, 0.5] : 0.3,
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      </motion.button>
     </div>
   );
 };

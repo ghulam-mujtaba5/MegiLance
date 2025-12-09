@@ -50,42 +50,32 @@ const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   const isMinimalChrome = isPortalOrAuthRoute(pathname);
 
-  // For portal or auth routes, we render a minimal shell.
-  // The responsibility for layout (like sidebars and headers) is delegated to the specific portal's layout file.
-  if (isMinimalChrome) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <main id="main-content" role="main" className="flex-1">
-          <PageTransition variant="fade">
-            {children}
-          </PageTransition>
-        </main>
-      </div>
-    );
-  }
-
-  // For all other pages, we assume they are public-facing marketing pages
-  // and render the full public header and footer.
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <Breadcrumbs />
-      </div>
-      <main id="main-content" role="main" className="flex-grow">
+      {!isMinimalChrome && <Header />}
+      {!isMinimalChrome && (
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <Breadcrumbs />
+        </div>
+      )}
+      
+      <main id="main-content" role="main" className={isMinimalChrome ? "flex-1" : "flex-grow"}>
         <PageTransition variant="fade">
           {children}
         </PageTransition>
       </main>
-      <PublicFooter />
-      {/* Right-side floating actions */}
+
+      {!isMinimalChrome && <PublicFooter />}
+      
+      {/* Right-side floating actions - ALWAYS VISIBLE */}
       <FloatingActionButtons position="right">
         <ChatbotAgent />
       </FloatingActionButtons>
-      {/* Left-side floating actions */}
+      {/* Left-side floating actions - ALWAYS VISIBLE */}
       <FloatingActionButtons position="left">
         <ThemeToggleButton />
       </FloatingActionButtons>
+      
       <InstallAppBanner />
       <UpdateNotification />
     </div>

@@ -40,7 +40,7 @@ const demoSteps = [
   },
   {
     title: '3. Backend API Demo (5 min)',
-    description: 'Open Swagger UI and scroll through 120+ endpoints. Demonstrate: Authentication flow (register/login), Project creation, Proposal submission, and Payment integration with Stripe.',
+    description: 'Open Swagger UI and scroll through 1,456+ endpoints across 128 API modules. Demonstrate: Authentication flow (register/login), Project creation, Proposal submission, and Payment integration with Stripe.',
     duration: '5 minutes',
     links: [
       { label: 'Swagger UI', href: 'http://localhost:8000/api/docs', external: true },
@@ -70,11 +70,11 @@ const demoSteps = [
 ];
 
 const keyMetrics = [
-  { value: '148', label: 'Total Pages', subtext: 'Frontend routes' },
-  { value: '120+', label: 'API Endpoints', subtext: 'RESTful APIs' },
-  { value: '25+', label: 'Database Tables', subtext: 'Turso/libSQL' },
+  { value: '195', label: 'Total Pages', subtext: 'Frontend routes' },
+  { value: '1,456', label: 'API Endpoints', subtext: '128 API modules' },
+  { value: '30', label: 'Database Tables', subtext: 'Turso/libSQL models' },
+  { value: '216', label: 'Core Modules', subtext: 'Services & routers' },
   { value: '100+', label: 'UI Components', subtext: 'Reusable React' },
-  { value: '12', label: 'Core Modules', subtext: 'Full-stack features' },
   { value: '3', label: 'User Roles', subtext: 'Client/Freelancer/Admin' },
 ];
 

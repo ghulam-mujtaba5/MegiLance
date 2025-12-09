@@ -227,8 +227,12 @@ const Login: React.FC = () => {
         }
         // Set auth token as cookie for middleware access
         document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-        try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
-        router.push(roleConfig[selectedRole].redirectPath);
+        
+        // Redirect based on user's actual role from API, not the selected tab
+        const userRole = (data.user?.user_type || data.user?.role || selectedRole).toLowerCase() as UserRole;
+        const actualRole = userRole === 'admin' ? 'admin' : userRole === 'freelancer' ? 'freelancer' : 'client';
+        try { window.localStorage.setItem('portal_area', actualRole); } catch {}
+        router.push(roleConfig[actualRole].redirectPath);
       }
     } catch (error: any) {
       setErrors({ email: '', password: '', general: error.message || 'Login failed. Please check your credentials.' });
@@ -278,14 +282,20 @@ const Login: React.FC = () => {
   const handleSocialLogin = async (provider: 'google' | 'github') => {
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // TODO: Implement social OAuth flow
-      // window.location.href = `/api/auth/${provider}?role=${selectedRole}`;
+      // Use current origin for redirect URI
+      const redirectUri = `${window.location.origin}/callback`;
+      // Store selected role in localStorage to be used after callback
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
-      router.push(roleConfig[selectedRole].redirectPath);
-    } catch (error) {
-      setErrors({ email: '', password: '', general: `Sign in with ${provider} failed.` });
-    } finally {
+      
+      const response = await api.socialAuth.start(provider, redirectUri);
+      
+      if (response.authorization_url) {
+        window.location.href = response.authorization_url;
+      } else {
+        throw new Error('No authorization URL returned');
+      }
+    } catch (error: any) {
+      setErrors({ email: '', password: '', general: error.message || `Sign in with ${provider} failed.` });
       setLoading(false);
     }
   };

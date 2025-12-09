@@ -75,6 +75,12 @@ export function clearAuthData() {
       sessionStorage.removeItem(TOKEN_STORAGE_KEY);
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+      // Clear legacy and other auth keys
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('portal_area');
+      // Clear cookie
+      document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Lax';
     } catch (e) {
       console.warn('Storage unavailable:', e);
     }
@@ -264,6 +270,36 @@ export const authApi = {
   verifyEmail: (token: string) => apiFetch(`/auth/verify-email?token=${token}`),
 
   disable2FA: () => apiFetch('/auth/2fa/disable', { method: 'POST' }),
+};
+
+// ===========================
+// SOCIAL AUTH
+// ===========================
+export const socialAuthApi = {
+  getProviders: () => apiFetch('/social-auth/providers'),
+  
+  start: (provider: string, redirectUri: string) => 
+    apiFetch('/social-auth/start', {
+      method: 'POST',
+      body: JSON.stringify({ provider, redirect_uri: redirectUri }),
+    }),
+    
+  complete: (code: string, state: string) =>
+    apiFetch('/social-auth/complete', {
+      method: 'POST',
+      body: JSON.stringify({ code, state }),
+    }),
+    
+  getLinkedAccounts: () => apiFetch('/social-auth/linked-accounts'),
+  
+  unlinkAccount: (provider: string) => 
+    apiFetch(`/social-auth/linked-accounts/${provider}`, { method: 'DELETE' }),
+    
+  syncProfile: (provider: string, fields?: string[]) =>
+    apiFetch('/social-auth/sync-profile', {
+      method: 'POST',
+      body: JSON.stringify({ provider, fields }),
+    }),
 };
 
 // ===========================
@@ -683,26 +719,53 @@ export const contractsApi = {
 // PROPOSALS
 // ===========================
 export const proposalsApi = {
-  list: (projectId?: number, page = 1, pageSize = 20) =>
-    apiFetch(`/proposals/?${new URLSearchParams({ 
-      ...(projectId && { project_id: projectId.toString() }), 
-      page: page.toString(), 
-      page_size: pageSize.toString() 
-    })}`),
+  list: (filters?: { project_id?: number; page?: number; page_size?: number }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined) params.append(key, value.toString());
+      });
+    }
+    return apiFetch(`/proposals/?${params}`);
+  },
 
-  getDrafts: (projectId: number) =>
-    apiFetch(`/proposals/drafts?project_id=${projectId}`),
+  getDrafts: (projectId?: number) => {
+    const params = projectId ? `?project_id=${projectId}` : '';
+    return apiFetch(`/proposals/drafts${params}`);
+  },
+
+  getByProject: (projectId: number) =>
+    apiFetch(`/proposals/project/${projectId}`),
 
   create: (data: {
     project_id: number;
     cover_letter: string;
-    proposed_rate: number;
-    estimated_duration: string;
+    bid_amount?: number;
+    estimated_hours?: number;
+    hourly_rate?: number;
+    availability?: string;
+    attachments?: string;
   }) =>
     apiFetch('/proposals/', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  saveDraft: (data: {
+    project_id: number;
+    cover_letter?: string;
+    bid_amount?: number;
+    estimated_hours?: number;
+    hourly_rate?: number;
+    availability?: string;
+  }) =>
+    apiFetch('/proposals/draft', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  submitDraft: (proposalId: number) =>
+    apiFetch(`/proposals/${proposalId}/submit`, { method: 'POST' }),
 
   get: (proposalId: number) =>
     apiFetch(`/proposals/${proposalId}`),
@@ -716,8 +779,14 @@ export const proposalsApi = {
   accept: (proposalId: number) =>
     apiFetch(`/proposals/${proposalId}/accept`, { method: 'POST' }),
 
-  reject: (proposalId: number) =>
-    apiFetch(`/proposals/${proposalId}/reject`, { method: 'POST' }),
+  reject: (proposalId: number, reason?: string) =>
+    apiFetch(`/proposals/${proposalId}/reject`, {
+      method: 'POST',
+      body: reason ? JSON.stringify({ reason }) : undefined,
+    }),
+
+  withdraw: (proposalId: number) =>
+    apiFetch(`/proposals/${proposalId}/withdraw`, { method: 'POST' }),
 
   delete: (proposalId: number) =>
     apiFetch(`/proposals/${proposalId}`, { method: 'DELETE' }),
@@ -2353,6 +2422,7 @@ export default {
   verification: verificationApi,
   ai: aiApi,
   aiWriting: aiWritingApi,
+  socialAuth: socialAuthApi,
   // New API integrations
   referral: referralApi,
   career: careerApi,

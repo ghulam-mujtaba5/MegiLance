@@ -153,8 +153,8 @@ const Signup: React.FC = () => {
     }
   };
 
-  // @AI-HINT: Social signup click handler. In preview mode, this simulates the auth flow and redirects to the appropriate dashboard. Replace with real provider logic when backend is ready.
-  const handleSocialLogin = (provider: 'google' | 'github') => {
+  // @AI-HINT: Social signup click handler.
+  const handleSocialLogin = async (provider: 'google' | 'github') => {
     if (isPreviewMode()) {
       setLoading(true);
       setTimeout(() => {
@@ -163,8 +163,25 @@ const Signup: React.FC = () => {
       }, 300);
       return;
     }
-    // TODO: Implement social OAuth flow
-    // window.location.href = `/api/auth/${provider}?role=${selectedRole}`;
+    
+    setLoading(true);
+    try {
+      // Use current origin for redirect URI
+      const redirectUri = `${window.location.origin}/callback`;
+      // Store selected role in localStorage to be used after callback
+      try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
+      
+      const response = await api.socialAuth.start(provider, redirectUri);
+      
+      if (response.authorization_url) {
+        window.location.href = response.authorization_url;
+      } else {
+        throw new Error('No authorization URL returned');
+      }
+    } catch (error: any) {
+      setErrors({ email: error.message || `Sign up with ${provider} failed.` });
+      setLoading(false);
+    }
   };
 
   const styles = useMemo(() => {

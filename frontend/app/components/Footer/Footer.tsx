@@ -14,33 +14,30 @@ import lightStyles from './Footer.light.module.css';
 import darkStyles from './Footer.dark.module.css';
 
 const footerSections = {
-  'Product': [
-    { name: 'Features', href: '/#features', status: 'verified' },
-    { name: 'Pricing', href: '/pricing', status: 'verified' },
+  'Platform': [
+    { name: 'Marketplace', href: '/#features', status: 'complete' },
+    { name: 'How It Works', href: '/how-it-works', status: 'complete' },
+    { name: 'Pricing', href: '/pricing', status: 'complete' },
+    { name: 'Talent Directory', href: '/talent', status: 'complete' },
+    { name: 'AI Matching', href: '/explore', status: 'advanced' },
+  ],
+  'For You': [
     { name: 'For Clients', href: '/clients', status: 'complete' },
     { name: 'For Freelancers', href: '/freelancers', status: 'complete' },
-    { name: 'AI Matching', href: '/ai-matching', status: 'verified' },
-    { name: 'Blockchain Escrow', href: '/#blockchain', status: 'verified' },
+    { name: 'Teams', href: '/teams', status: 'working' },
+    { name: 'FAQ', href: '/faq', status: 'complete' },
   ],
-  'Company': [
+  'AI & Security': [
+    { name: 'AI Chatbot', href: '/ai/chatbot', status: 'advanced' },
+    { name: 'Price Estimator', href: '/ai/price-estimator', status: 'advanced' },
+    { name: 'Blockchain Escrow', href: '/#blockchain', status: 'complete' },
+    { name: 'System Status', href: '/status', status: 'complete' },
+  ],
+  'Support': [
+    { name: 'Help Center', href: '/support', status: 'working' },
+    { name: 'Contact Us', href: '/contact', status: 'complete' },
     { name: 'About Us', href: '/about', status: 'complete' },
     { name: 'Blog', href: '/blog', status: 'working' },
-    { name: 'Careers', href: '/careers', status: 'incomplete' },
-    { name: 'Press', href: '/press', status: 'incomplete' },
-    { name: 'Testimonials', href: '/testimonials', status: 'verified' },
-  ],
-  'Resources': [
-    { name: 'Help Center', href: '/support', status: 'working' },
-    { name: 'Contact Us', href: '/contact', status: 'verified' },
-    { name: 'Community', href: '/community', status: 'incomplete' },
-    { name: 'System Status', href: '/status', status: 'verified' },
-    { name: 'API Docs', href: '/api/docs', status: 'verified' },
-  ],
-  'Legal': [
-    { name: 'Terms of Service', href: '/terms', status: 'complete' },
-    { name: 'Privacy Policy', href: '/privacy', status: 'complete' },
-    { name: 'Cookie Policy', href: '/cookies', status: 'complete' },
-    { name: 'Security', href: '/security', status: 'verified' },
   ],
 };
 
@@ -74,19 +71,17 @@ const Footer = () => {
                   {links.map((link) => (
                     <li key={link.name}>
                       <Link href={link.href} className={cn(commonStyles.linkItem, styles.linkItem)}>
-                        {link.name}
+                        <span className={commonStyles.linkText}>{link.name}</span>
                         {link.status && (
                           <span className={cn(
-                            commonStyles.statusPill,
+                            commonStyles.statusBadge,
                             link.status === 'complete' && commonStyles.statusComplete,
-                            link.status === 'verified' && commonStyles.statusVerified,
+                            link.status === 'advanced' && commonStyles.statusAdvanced,
                             link.status === 'working' && commonStyles.statusWorking,
-                            link.status === 'incomplete' && commonStyles.statusIncomplete
                           )}>
-                            {link.status === 'verified' && '✓'}
-                            {link.status === 'complete' && '✓'}
-                            {link.status === 'working' && '⚙'}
-                            {link.status === 'incomplete' && '⋯'}
+                            {link.status === 'complete' && 'Complete'}
+                            {link.status === 'advanced' && 'Advanced'}
+                            {link.status === 'working' && 'Working'}
                           </span>
                         )}
                       </Link>

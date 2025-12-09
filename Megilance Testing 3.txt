@@ -1,0 +1,112 @@
+In header the sigin button is half hides make it fully visible move it to right so button is properly aligned, spscing and visible.
+https://www.megilance.site/#:~:text=1.%20Post%20a,time%2C%20every%20time in these boxes the digit in each box and the icon shown in each box is overlapped plac icon elemnt on right side of box and digit on left side within box so in all boxes ivcon and digit within box are not overlapped. Also arrow button is not working  properly so arrow direct it to relevrnt page laso ensure that no box ia overlapped .\
+https://www.megilance.site/#:~:text=%E2%9C%93,Semantic%20vector%20embeddings and https://www.megilance.site/#:~:text=USDC%20Payments,Optimism buttons  and boxes borders are not visible make all boxes visible so ux vixe it overall each box loks good. 
+https://www.megilance.site/#:~:text=Skill%20Overlap,/ai/sentiment all these boxes are overlapped leading to -> button not visible comprlrty it hdes under below box so make sure each box isnot overlapped an dnot laeds to hiding of arrow button.
+https://www.megilance.site/explore  https://www.megilance.site/showcase/health  https://www.megilance.site/showcase/fyp  all boxes in these pages are left aligned   leaving all right side space empty which  is not according ui and ux principles.correct this  so right side of page not look empty. Place boxes next to each other like 2  or 3 boxes in one row according compapatabilty of boxes size . 
+https://www.megilance.site/showcase/health#:~:text=%2D%2D%25,DISK%20FREE  and https://www.megilance.site/showcase/health#:~:text=%2D%2D,LATENCY%20(MS no statistics are showing in this page.
+https://www.megilance.site/ai/price-estimator this page shows two headers. Remove lower unnecessary header.
+https://www.megilance.site/ai/price-estimator in this page  https://www.megilance.site/ai/price-estimator#:~:text=Project%20Details,for%20accurate%20pricing in this box the two fields one next to this field https://www.megilance.site/ai/price-estimator#:~:text=any%20specific%20requirements...-,Industry,-Optional name “Complexity” and other  field “Expected Timeline”below  this  field( https://www.megilance.site/ai/price-estimator#:~:text=any%20specific%20requirements...-,Industry,-Optional ) . these two fields named “Complexity” and “Expected Timeline” their  below bar have toomuch arrows remove all unnecessary arrows just leave one and place it in bar in right side within bars as symbol of dropdown remove all unnecessary  arrows.
+https://www.megilance.site/ai/price-estimator
+https://www.megilance.site/ai/chatbot  these page have two headers and two footers . remove lower mean 2nd header  and  this is older footer https://www.megilance.site/ai/price-estimator#:~:text=Islamabad%2C%20Lahore%20Campus-,The%20Future%20of%20Freelance%2C%20Today.,Cookie%20Policy,-%C2%A9%202025%20MegiLance Remove this footer from overall all website pages and replace all website footer with this footer https://www.megilance.site/ai/price-estimator#:~:text=of%20Freelance%2C%20Today.-,PRODUCT,COMSATS%20University%20Islamabad%2C%20Lahore%20Campus,-The%20Future%20of in every page of website remove old footer and replace it with new footer.
+https://www.megilance.site/showcase/fyp#:~:text=System%20Health-,API%20Docs,-3 
+https://www.megilance.site/showcase/fyp#:~:text=5%20minutes-,Swagger%20UI,-Health%20Check https://www.megilance.site/showcase/fyp#:~:text=Swagger%20UI-,Health%20Check,4.%20Frontend%20Showcase%20(4%20min),-Tour%20the%20responsive  no page is attached with this button link. Correctly connect this page with its link.
+https://www.megilance.site/ai/chatbot Redesign this page properly . Must correct this page each and everything now chttabot  box isnot visible  check this page and redesign and correct all error also make sure the new designe page must be working also accurate ui and ux wise also logically.
+
+https://www.megilance.site/ai/chatbot Chatbot is not giving answers. It give me this in response of my question  “Sorry, I'm having trouble connecting to the server.” Correct this issue make sure its working accurately and properly.
+https://www.megilance.site/explore#:~:text=Show%20API%20Endpoints,Tables%20(23) these two buttons are too flat . redesign these two buton also ensure uiand ux principles.
+https://www.megilance.site/about#:~:text=About%20MegiLance,low%2Dcost%20payments. There isno proper spacing between heading and simple line ensure ui and ux principles. Also https://www.megilance.site/about#:~:text=Acknowledgements,made%20this%20possible https://www.megilance.site/about#:~:text=Our%20Team,COMSATS%20University%20Islamabad https://www.megilance.site/about#:~:text=Development%20Roadmap,with%20Agile%20methodology https://www.megilance.site/about#:~:text=Global%20Impact,gig%20economy%20opportunity https://www.megilance.site/about#:~:text=Our%20Mission,global%20freelance%20workforce https://www.megilance.site/about#:~:text=Our%20Solution,Web2%20%2B%20Web3%20Architecture https://www.megilance.site/about#:~:text=The%20Problem%20We,industry%20needs%20disruption these all  these lines  in each these  not follow ui and ux principles because at very end of heading bold text the plain text mean  one line sartst no spsacing between them maintain proper spacing so ux principle would follows.correct this spacing issue in these.
+(On the Megilance pricing page (https://www.megilance.site/pricing), there is text that reads "Applicable taxes may be added at checkout. Contact us for enterprise solutions." This text is currently positioned behind the pricing boxes, making it invisible to users. Move this entire text line so that it appears below the pricing boxes in the correct visible position on the page. 
+
+1. The text "MOST POPULAR"  box is transparentnow so looks overappinf fill the little box button of most popular with blue colour in background of this text. Aos lines not looks overlapping.
+
+2. The buttons labeled "Join now", "Start for Free", and "Contact sales" need to be properly aligned and positioned within their respective boxes/containers on the same pricing page.
+
+correct all these issues &ensure these elements display correctly within their containers without overflowing or misalignment.
+Please review the pricing information on the Megilance website at the provided URLs. https://www.megilance.site/pricing#:~:text=1%25,fee https://www.megilance.site/pricing#:~:text=5%25,fee https://www.megilance.site/pricing#:~:text=3%25  The current fee structure appears to be displayed incorrectly in the pricing boxes. Specifically, the fees shown are 1% for Premium, 3% for Standard, and 5% for Basic. However, these percentages seem to be reversed - the Premium tier should have the lowest fee percentage, while the Basic tier should have the highest fee percentage. Please correct the statistics in the fee boxes so that they accurately reflect the proper fee structure, with Premium showing the lowest rate and Basic showing the highest rate.
+)
+I need you to review the website megilance.site and identify two specific issues:
+
+1. The FAQ page at https://www.megilance.site/faq currently has no answers provided for the listed questions - the FAQ section needs to be redesigned to include proper answers.
+
+https://www.megilance.site/blog/future-ai-powered-freelancing https://www.megilance.site/blog/blockchain-payments-zero-fees https://www.megilance.site/blog/tips-freelance-career-2025
+https://www.megilance.site/blog/smart-matching-algorithm https://www.megilance.site/blog/client-success-story-remote-team https://www.megilance.site/blog/tips-freelance-career-2025 https://www.megilance.site/blog/tips-freelance-career-2025  I need help fixing issues with the blog section on the website megilance.site. Specifically: 1) The blog links  above also all blog bloggs in blog section like (future-ai-powered-freelancing, blockchain-payments-zero-fees, and tips-freelance-career-2025) are returning 404 errors when clicked, and 2) The blog preview boxes are not displaying any images. Please add at least one relevant image to each blog post preview box to fix the missing image issue.
+https://www.megilance.site/signup/client 404 error page
+https://www.megilance.site/signup/freelancer 404 error page
+
+https://www.megilance.site/clients#:~:text=Case%20Studies,improved%20build%20velocity  in picture place holder in casestudies add relevent picture .
+https://www.megilance.site/press this page is eempty redesign this page.
+https://www.megilance.site/client/dashboard?redirect=%2Fclient%2Fdashboard infinite loading of verifying athenication 
+https://www.megilance.site/client/dashboard this page direcst to a black page and it shows this (:HL["/_next/static/chunks/7f780503094419a1.css","style"]
+:HL["/_next/static/chunks/a50838dddadf6f89.css","style"]
+:HL["/_next/static/chunks/26da156ecfe14f32.css","style"]
+:HL["/_next/static/chunks/c10fa9b6fe98a32d.css","style"]
+:HL["/_next/static/chunks/f0017c8fed6d2db2.css","style"]
+:HL["/_next/static/chunks/27d7629ef10380f5.css","style"]
+:HL["/_next/static/chunks/30104825d1853f18.css","style"]
+:HL["/_next/static/chunks/900b958fdb90412a.css","style"]
+0:{"buildId":"GJcxD5lDCD29muwmY1Va5","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"(portal)","paramType":null,"paramKey":"(portal)","hasRuntimePrefetch":false,"slots":{"children":{"name":"client","paramType":null,"paramKey":"client","hasRuntimePrefetch":false,"slots":{"children":{"name":"dashboard","paramType":null,"paramKey":"dashboard","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
+)
+https://www.megilance.site/client/dashboard this page  direct to black page which shows this
+
+https://www.megilance.site/explore#:~:text=Forgot%20Password,Open%20Page in this box clicking open page direct to the page which shows verification faield .correct this issue  so it correctly verify.it just show popup on page without anything https://www.megilance.site/verify-email#:~:text=Verification%20Failed,Back%20to%20Login 
+https://www.megilance.site/passwordless this page donot send link tocode to my email. Even not in spam.
+https://www.megilance.site/ai in this page There are two headers and two footers in this page redeign this pge. Now this page is very flat ensure proper functionality of everything with ui and ux principle s
+https://www.megilance.site/ai/fraud-check this fraud cjecker isnot accurate ensure accuracy .
+https://www.megilance.site/ai/price-estimator ai estimatorisnot accurate it everytime in report show LOW SCOPE of each project aslao overall ensure accuracy.
+https://www.megilance.site/portal/freelancer 404 page found
+https://www.megilance.site/client/dashboard this dashboard whenn opened shows at first something went wrong correct this line dsaboard so it not shown an d proper completeyly accurate full working dashboard appears.
+https://www.megilance.site/teams#:~:text=Admin%20Portal,Platform%20management this admin dashboard link directs it to client dashboard which is wrong direct it to its admin dashbosrd lik also ensure admmin dashboard must be correct.
+https://www.megilance.site/#:~:text=for%20your%20success.-,AI%2DPowered%20Precision,Learn%20More,-BUILT%20WITH%20TRUST why learn more button of these boxes are directed towards  chatbot ai . if this is wrong correct this. 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Buttons not working
+https://www.megilance.site/showcase/health#:~:text=FYP%20Evaluation-,Prometheus%20Metrics,-The%20Future%20of Button not working connect this button to its page.
+https://www.megilance.site/explore#:~:text=Hide%20Database%20Tables%20(23) these Buttons not working.
+https://www.megilance.site/about#:~:text=Join%20the%20Journey-,Get%20Started,-We%E2%80%99ll%20never%20spam these Buttons not working.
+https://www.megilance.site/explore#:~:text=Swagger%20API-,Health%20Check,-Status%20Page button not working . ensure it direct toward right na densure accuracy also in that page an link.
+https://www.megilance.site/explore#:~:text=Search%20API-,Open%20Page,-Careers link not working.
+https://www.megilance.site/install in this page green “Install App” button isnot working
+
+https://www.megilance.site/careers redesign this page this page is empty now.
+https://www.megilance.site/support#:~:text=and%20account%20safety.-,Reset%20password,-Enable%202FA https://www.megilance.site/support#:~:text=Manage%20plan-,View%20invoices,-Contact%20billing   https://www.megilance.site/support#:~:text=Browse%20jobs-,Create%20a%20posting,-Use%20escrow https://www.megilance.site/support#:~:text=Create%20a%20posting-,Use%20escrow,-Email%20Support all these button  links directs text with  links to wrong pages of FAQS correct all these text with links os they direct to right pages if pasges not exist made accurate properly functional pages.  
+https://www.megilance.site/docs/security-policy.pdf 404 page error found.
+https://www.megilance.site/security#:~:text=responsibly%20disclosed%20vulnerabilities.-,Contact%20Security,-View%20Policy not clickable not working button link.
+https://www.megilance.site/community#:~:text=Stay%20Connected-,Discord,Follow%20Us,-The%20Future%20of in thsees boxes Floow Us button donot direct buttons to relevant social media platfrom.
+https://www.megilance.site/client/dashboard this page in main window of its dashboar shows just this  “Something went wrong
+We're sorry, but something unexpected happened. Please try refreshing the page or going back to the home page.
+Try AgainRefresh PageGo to Home
+”
+
+
+
+
+
+
+
+Page Completed 
+
+
+
+
+
+
+Pages not completed & pages not good

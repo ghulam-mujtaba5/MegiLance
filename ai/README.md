@@ -1,63 +1,35 @@
 ---
 title: MegiLance AI Service
-emoji: 🤖
+emoji: 🚀
 colorFrom: blue
 colorTo: purple
 sdk: docker
 app_port: 7860
+pinned: false
+license: mit
 ---
 
-# MegiLance AI Microservice
+# MegiLance Advanced AI Service
 
-This service provides real AI capabilities using open-source models.
+This is the AI backend for the MegiLance freelancing platform. It provides:
 
-## Features
+- **Chatbot**: Intelligent conversational agent using Mistral-7B
+- **Matching**: Semantic matching of freelancers to projects
+- **Price Estimation**: AI-powered project cost analysis
+- **Sentiment Analysis**: For user feedback and messages
+- **NER**: Named Entity Recognition for extracting skills and requirements
 
-- **Embeddings**: Uses `sentence-transformers/all-MiniLM-L6-v2` to generate 384-dimensional vector embeddings for semantic search.
-- **Text Generation**: Uses `google/flan-t5-small` for text generation (proposals, descriptions).
-- **Sentiment Analysis**: Uses `distilbert-base-uncased-finetuned-sst-2-english` for analyzing text sentiment.
+## Deployment
 
-## Setup
+This service is designed to run on Hugging Face Spaces using the Docker SDK.
 
-### Local Development
+### Environment Variables
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+You should set the following secrets in your Space settings:
 
-2. Run the service:
-   ```bash
-   uvicorn main:app --reload --port 7860
-   ```
+- `HF_API_TOKEN`: Your Hugging Face Access Token (read permission)
+- `API_SECRET_KEY`: A secret key to secure the endpoints (optional but recommended)
 
-3. Test the endpoints:
-   - Swagger UI: http://localhost:7860/docs
-   - Embeddings: `POST /ai/embeddings`
-   - Generate: `POST /ai/generate`
+## API Documentation
 
-### Deployment to Hugging Face Spaces
-
-1. Create a new Space on Hugging Face (Docker SDK).
-2. Run the deployment script from the root of the repository:
-   ```bash
-   python deploy_to_hf.py <YOUR_HF_WRITE_TOKEN>
-   ```
-   Or set `HF_TOKEN` environment variable.
-
-## API Reference
-
-### `POST /ai/embeddings`
-Generates a vector embedding for the input text.
-- Input: `{"text": "string"}`
-- Output: `{"embedding": [float], "dimensions": 384}`
-
-### `POST /ai/generate`
-Generates text based on a prompt.
-- Input: `{"prompt": "string", "max_length": 100}`
-- Output: `{"generated_text": "string"}`
-
-### `POST /ai/sentiment`
-Analyzes sentiment of the input text.
-- Input: `{"text": "string"}`
-- Output: `{"sentiment": "POSITIVE" | "NEGATIVE", "score": float}`
+Once running, visit `/docs` to see the Swagger UI documentation.

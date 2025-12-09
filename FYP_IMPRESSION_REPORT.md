@@ -18,7 +18,7 @@
 
 ### 3. Technical Depth
 - **Architecture**: Emphasize the **Next.js 16 + FastAPI + Turso** stack.
-- **Scale**: Mention **121+ Endpoints** and **42 Database Tables**.
+- **Scale**: Mention **1,456 Endpoints** across 128 API modules, **30 Database Tables**, and **195 pages**.
 - **Security**: Show the new **Security Settings** page (Password, 2FA, Login History).
 
 ---

@@ -1,0 +1,110 @@
+/* @AI-HINT: AIStatusIndicator light theme styles */
+
+.badge {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.badge:hover {
+  background: #e5e7eb;
+}
+
+.dropdown {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.dropdownHeader {
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+.statusOnline {
+  background: #22c55e;
+}
+
+.statusOffline {
+  background: #ef4444;
+}
+
+.latencyValue {
+  color: #374151;
+}
+
+.lastPing {
+  color: #6b7280;
+}
+
+.errorBox {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.retryButton {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.retryButton:hover {
+  background: #e5e7eb;
+}
+
+/* Card */
+.card {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.cardRetryButton {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.cardRetryButton:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.cardItem {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.valueOnline {
+  color: #16a34a;
+}
+
+.valueOffline {
+  color: #dc2626;
+}
+
+.cardError {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.offlineNote {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Status Badge Colors */
+.online {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.degraded {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+.offline {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.connecting {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+}

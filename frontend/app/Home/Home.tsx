@@ -9,15 +9,13 @@ import { cn } from '@/lib/utils';
 // Import all the components that make up the home page
 import Hero from './components/Hero';
 import TrustIndicators from './components/TrustIndicators';
+import ProjectStats from './components/ProjectStats';
 import WhyMegiLance from './components/WhyMegiLance';
 import Features from './components/Features';
+import FeaturesStatus from './components/FeaturesStatus';
 import HowItWorks from './components/HowItWorks';
 import PoweredByAI from './components/PoweredByAI';
-import BlockchainShowcase from './components/BlockchainShowcase';
-import SuccessStories from './components/SuccessStories';
-import GlobalImpact from './components/GlobalImpact';
 import Testimonials from './components/Testimonials';
-import CTA from './components/CTA';
 import { ScrollReveal } from '../components/Animations/ScrollReveal';
 import { PageTransition } from '../components/Animations/PageTransition';
 import GlobeBackground from '../components/Animations/GlobeBackground';
@@ -56,6 +54,13 @@ const Home: React.FC = () => {
           </div>
         </div>
 
+        {/* Project Statistics */}
+        <div className={commonStyles.homeSection}>
+          <ScrollReveal width="100%" direction="up" delay={0.3}>
+            <ProjectStats />
+          </ScrollReveal>
+        </div>
+
         {/* Why MegiLance */}
         <div className={commonStyles.homeSection}>
           <ScrollReveal width="100%" direction="left">
@@ -90,32 +95,14 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        {/* Blockchain Showcase */}
+        {/* Features Status Overview - FYP Evaluation */}
         <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" direction="left">
-              <BlockchainShowcase />
-            </ScrollReveal>
-          </div>
+          <ScrollReveal width="100%" direction="up">
+            <FeaturesStatus />
+          </ScrollReveal>
         </div>
 
-        {/* Success Stories */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" direction="up">
-              <SuccessStories />
-            </ScrollReveal>
-          </div>
-        </div>
-
-        {/* Global Impact */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" direction="up">
-              <GlobalImpact />
-            </ScrollReveal>
-          </div>
-        </div>
+        {/* Success Stories and Global Impact sections removed per request */}
 
         {/* Testimonials */}
         <div className={commonStyles.homeSection}>
@@ -125,15 +112,6 @@ const Home: React.FC = () => {
             </ScrollReveal>
           </div>
         </div>
-
-          {/* CTA */}
-          <div className={commonStyles.homeSection}>
-            <div className={commonStyles.sectionContainer}>
-              <ScrollReveal width="100%" direction="up" delay={0.2}>
-                <CTA />
-              </ScrollReveal>
-            </div>
-          </div>
         </div>
       </div>
     </PageTransition>

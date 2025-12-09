@@ -1,0 +1,47 @@
+/* @AI-HINT: Dark theme styles for FeatureStatusPill */
+
+.pill {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+}
+
+/* Complete - Green */
+.status-complete {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.2) 0%, rgba(46, 125, 50, 0.3) 100%);
+  color: #81c784;
+  border-color: rgba(129, 199, 132, 0.4);
+}
+
+/* Advanced - Purple/Blue */
+.status-advanced {
+  background: linear-gradient(135deg, rgba(21, 101, 192, 0.2) 0%, rgba(21, 101, 192, 0.3) 100%);
+  color: #64b5f6;
+  border-color: rgba(100, 181, 246, 0.4);
+}
+
+/* Working - Orange */
+.status-working {
+  background: linear-gradient(135deg, rgba(230, 81, 0, 0.2) 0%, rgba(230, 81, 0, 0.3) 100%);
+  color: #ffb74d;
+  border-color: rgba(255, 183, 77, 0.4);
+}
+
+/* Basic - Gray */
+.status-basic {
+  background: linear-gradient(135deg, rgba(97, 97, 97, 0.2) 0%, rgba(97, 97, 97, 0.3) 100%);
+  color: #bdbdbd;
+  border-color: rgba(189, 189, 189, 0.4);
+}
+
+/* Development - Yellow/Orange */
+.status-development {
+  background: linear-gradient(135deg, rgba(245, 124, 0, 0.2) 0%, rgba(245, 124, 0, 0.3) 100%);
+  color: #ffd54f;
+  border-color: rgba(255, 213, 79, 0.4);
+}
+
+.pill:hover {
+  box-shadow: 0 2px 16px rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}

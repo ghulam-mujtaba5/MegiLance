@@ -1,0 +1,110 @@
+/* @AI-HINT: AIStatusIndicator dark theme styles */
+
+.badge {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+.badge:hover {
+  background: #4b5563;
+}
+
+.dropdown {
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+.dropdownHeader {
+  background: #111827;
+  color: #f3f4f6;
+}
+
+.statusOnline {
+  background: #22c55e;
+}
+
+.statusOffline {
+  background: #ef4444;
+}
+
+.latencyValue {
+  color: #e5e7eb;
+}
+
+.lastPing {
+  color: #9ca3af;
+}
+
+.errorBox {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.retryButton {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+.retryButton:hover {
+  background: #4b5563;
+}
+
+/* Card */
+.card {
+  background: #1f2937;
+  border-color: #374151;
+}
+
+.cardRetryButton {
+  background: #374151;
+  color: #9ca3af;
+}
+
+.cardRetryButton:hover {
+  background: #4b5563;
+  color: #e5e7eb;
+}
+
+.cardItem {
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.valueOnline {
+  color: #4ade80;
+}
+
+.valueOffline {
+  color: #f87171;
+}
+
+.cardError {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.offlineNote {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fcd34d;
+}
+
+/* Status Badge Colors */
+.online {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.degraded {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+}
+
+.offline {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.connecting {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}

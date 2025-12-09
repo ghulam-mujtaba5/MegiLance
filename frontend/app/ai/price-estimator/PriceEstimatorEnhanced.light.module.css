@@ -1,0 +1,302 @@
+/* @AI-HINT: Light theme colors for enhanced price estimator */
+
+.container {
+  background: linear-gradient(135deg, #f8fafc 0%, #f0f4f8 100%);
+}
+
+/* Header */
+.headerIcon {
+  background: linear-gradient(135deg, #4573df 0%, #5b85f0 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(69, 115, 223, 0.3);
+}
+
+.title {
+  color: #1f2937;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+/* Form Card */
+.formCard {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.formHeader {
+  border-bottom-color: #f3f4f6;
+}
+
+.formIconWrapper {
+  background: linear-gradient(135deg, #e5edfc 0%, #dce6fa 100%);
+  color: #4573df;
+}
+
+.formTitle {
+  color: #1f2937;
+}
+
+.formSubtitle {
+  color: #6b7280;
+}
+
+.label {
+  color: #374151;
+}
+
+.labelOptional,
+.charCount {
+  color: #9ca3af;
+}
+
+.textarea {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.textarea::placeholder {
+  color: #9ca3af;
+}
+
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+/* AI Insights */
+.insight {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.insightWarning {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.insightTip {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.insightRecommendation {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+}
+
+/* Submit Section */
+.submitSection {
+  border-top-color: #f3f4f6;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #4573df 0%, #5b85f0 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.submitButton:not(:disabled):hover {
+  box-shadow: 0 8px 20px rgba(69, 115, 223, 0.4);
+}
+
+.privacyNote {
+  color: #6b7280;
+}
+
+/* Results Panel */
+.resultsPanel {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Empty State */
+.emptyStateIcon {
+  background: linear-gradient(135deg, #e5edfc 0%, #dce6fa 100%);
+  color: #4573df;
+}
+
+.emptyStateTitle {
+  color: #1f2937;
+}
+
+.emptyStateText {
+  color: #6b7280;
+}
+
+.feature {
+  background-color: #f8fafc;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* Loading State */
+.loadingOrb {
+  background: linear-gradient(135deg, #e5edfc 0%, #dce6fa 100%);
+}
+
+.loadingOrbInner {
+  background: linear-gradient(135deg, #4573df 0%, #5b85f0 100%);
+  color: #ffffff;
+}
+
+.loadingTitle {
+  color: #1f2937;
+}
+
+.loadingText {
+  color: #6b7280;
+}
+
+.loadingStep {
+  color: #6b7280;
+}
+
+.loadingStep.completed {
+  color: #059669;
+}
+
+.loadingStep.active {
+  color: #4573df;
+}
+
+.loadingStepCheck {
+  color: #059669;
+}
+
+/* Price Header */
+.priceHeader {
+  background: linear-gradient(135deg, #4573df 0%, #5b85f0 100%);
+  color: #ffffff;
+}
+
+.priceLabel {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.priceValue {
+  color: #ffffff;
+}
+
+.priceDivider {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.priceConfidence {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Recommendation Banner */
+.recommendationBanner {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+/* Breakdown Section */
+.breakdownSection {
+  background-color: #f8fafc;
+}
+
+.breakdownTitle {
+  color: #1f2937;
+}
+
+.breakdownItem {
+  color: #1f2937;
+}
+
+.breakdownItemIcon {
+  background-color: #e5edfc;
+  color: #4573df;
+}
+
+.breakdownItemLabel {
+  color: #374151;
+}
+
+.breakdownItemValue {
+  color: #1f2937;
+}
+
+.progressBar {
+  background-color: #e5e7eb;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df 0%, #5b85f0 100%);
+}
+
+/* Factors Section */
+.factorsSection {
+  background-color: #f8fafc;
+}
+
+.factorsTitle {
+  color: #1f2937;
+}
+
+.factorCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+
+.factorImpact {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.factorPositive {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.factorNegative {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.factorValue {
+  color: #1f2937;
+}
+
+.factorLabel {
+  color: #6b7280;
+}
+
+/* Actions */
+.actionsSection {
+  border-top-color: transparent;
+}
+
+.actionButton {
+  background: linear-gradient(135deg, #4573df 0%, #5b85f0 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.25);
+}
+
+.actionButton:hover {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.35);
+}
+
+.actionButton.secondary {
+  background: #f3f4f6;
+  color: #374151;
+  box-shadow: none;
+}
+
+.actionButton.secondary:hover {
+  background: #e5e7eb;
+  box-shadow: none;
+}
+
+/* Disclaimer */
+.disclaimer {
+  background-color: #f8fafc;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}

@@ -1,0 +1,304 @@
+/* @AI-HINT: Dark theme colors for enhanced price estimator */
+
+.container {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Header */
+.headerIcon {
+  background: linear-gradient(135deg, #3b62c7 0%, #4573df 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(69, 115, 223, 0.4);
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Form Card */
+.formCard {
+  background-color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.formHeader {
+  border-bottom-color: #334155;
+}
+
+.formIconWrapper {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.2) 0%, rgba(69, 115, 223, 0.15) 100%);
+  color: #93b4ff;
+}
+
+.formTitle {
+  color: #f1f5f9;
+}
+
+.formSubtitle {
+  color: #94a3b8;
+}
+
+.label {
+  color: #e2e8f0;
+}
+
+.labelOptional,
+.charCount {
+  color: #64748b;
+}
+
+.textarea {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.textarea::placeholder {
+  color: #64748b;
+}
+
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+/* AI Insights */
+.insight {
+  background-color: rgba(14, 165, 233, 0.15);
+  color: #38bdf8;
+}
+
+.insightWarning {
+  background-color: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.insightTip {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.insightRecommendation {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #a78bfa;
+}
+
+/* Submit Section */
+.submitSection {
+  border-top-color: #334155;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #3b62c7 0%, #4573df 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.4);
+}
+
+.submitButton:not(:disabled):hover {
+  box-shadow: 0 8px 20px rgba(69, 115, 223, 0.5);
+}
+
+.privacyNote {
+  color: #94a3b8;
+}
+
+/* Results Panel */
+.resultsPanel {
+  background-color: #1e293b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Empty State */
+.emptyStateIcon {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.2) 0%, rgba(69, 115, 223, 0.15) 100%);
+  color: #93b4ff;
+}
+
+.emptyStateTitle {
+  color: #f1f5f9;
+}
+
+.emptyStateText {
+  color: #94a3b8;
+}
+
+.feature {
+  background-color: #334155;
+  color: #e2e8f0;
+  border: 1px solid #475569;
+}
+
+/* Loading State */
+.loadingOrb {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.2) 0%, rgba(69, 115, 223, 0.15) 100%);
+}
+
+.loadingOrbInner {
+  background: linear-gradient(135deg, #3b62c7 0%, #4573df 100%);
+  color: #ffffff;
+}
+
+.loadingTitle {
+  color: #f1f5f9;
+}
+
+.loadingText {
+  color: #94a3b8;
+}
+
+.loadingStep {
+  color: #94a3b8;
+}
+
+.loadingStep.completed {
+  color: #22c55e;
+}
+
+.loadingStep.active {
+  color: #93b4ff;
+}
+
+.loadingStepCheck {
+  color: #22c55e;
+}
+
+/* Price Header */
+.priceHeader {
+  background: linear-gradient(135deg, #3b62c7 0%, #4573df 100%);
+  color: #ffffff;
+}
+
+.priceLabel {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.priceValue {
+  color: #ffffff;
+}
+
+.priceDivider {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.priceConfidence {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+/* Recommendation Banner */
+.recommendationBanner {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Breakdown Section */
+.breakdownSection {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+}
+
+.breakdownTitle {
+  color: #f1f5f9;
+}
+
+.breakdownItem {
+  color: #f1f5f9;
+}
+
+.breakdownItemIcon {
+  background-color: rgba(69, 115, 223, 0.2);
+  color: #93b4ff;
+}
+
+.breakdownItemLabel {
+  color: #e2e8f0;
+}
+
+.breakdownItemValue {
+  color: #f1f5f9;
+}
+
+.progressBar {
+  background-color: #334155;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #3b62c7 0%, #4573df 100%);
+}
+
+/* Factors Section */
+.factorsSection {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+}
+
+.factorsTitle {
+  color: #f1f5f9;
+}
+
+.factorCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.factorImpact {
+  background-color: #334155;
+  color: #94a3b8;
+}
+
+.factorPositive {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.factorNegative {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.factorValue {
+  color: #f1f5f9;
+}
+
+.factorLabel {
+  color: #94a3b8;
+}
+
+/* Actions */
+.actionsSection {
+  border-top-color: transparent;
+}
+
+.actionButton {
+  background: linear-gradient(135deg, #3b62c7 0%, #4573df 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(69, 115, 223, 0.35);
+}
+
+.actionButton:hover {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.45);
+}
+
+.actionButton.secondary {
+  background: #334155;
+  color: #e2e8f0;
+  box-shadow: none;
+}
+
+.actionButton.secondary:hover {
+  background: #475569;
+  box-shadow: none;
+}
+
+/* Disclaimer */
+.disclaimer {
+  background-color: #0f172a;
+  color: #94a3b8;
+  border: 1px solid #334155;
+}

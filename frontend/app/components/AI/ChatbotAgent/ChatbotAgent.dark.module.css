@@ -137,8 +137,22 @@
 }
 
 .toggleButton {
-  background: linear-gradient(135deg, var(--ml-blue, #4573df), var(--ml-purple, #9b59b6));
+  background: linear-gradient(
+    135deg,
+    rgba(69, 115, 223, 0.95) 0%,
+    rgba(155, 89, 182, 0.9) 100%
+  );
   color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toggleButton:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(69, 115, 223, 1) 0%,
+    rgba(155, 89, 182, 0.95) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .toggleButton::before {
@@ -149,4 +163,25 @@
   background: var(--ml-red, #e81123);
   color: #ffffff;
   border: 2px solid #1a1a2e;
+  box-shadow: 0 2px 8px rgba(232, 17, 35, 0.4);
+}
+
+/* Particle color */
+.particle {
+  background: linear-gradient(
+    135deg,
+    rgba(147, 51, 234, 0.9),
+    rgba(59, 130, 246, 0.7)
+  );
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.8);
+}
+
+/* Glow ring */
+.glowRing {
+  background: radial-gradient(
+    circle,
+    rgba(69, 115, 223, 0.6) 0%,
+    rgba(155, 89, 182, 0.4) 50%,
+    transparent 70%
+  );
 }

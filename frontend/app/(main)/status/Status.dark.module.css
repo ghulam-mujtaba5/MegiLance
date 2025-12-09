@@ -6,4 +6,27 @@
 
 .subtitle {
   color: var(--text-secondary);
+}
+
+/* Hero Status Banner */
+.heroStatusBanner {
+  background-blend-mode: overlay;
+}
+
+.heroStatusTitle {
+  color: #e6edf3;
+}
+
+.heroStatusSubtitle {
+  color: #8b949e;
+}
+
+.heroRefreshBtn {
+  color: #58a6ff;
+  border-color: #58a6ff;
+}
+
+.heroRefreshBtn:hover {
+  background: #58a6ff;
+  color: #0d1117;
 } 

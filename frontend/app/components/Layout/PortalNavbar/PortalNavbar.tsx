@@ -4,22 +4,67 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { Bell, Search, HelpCircle, Sun, Moon } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { Bell, Search, HelpCircle, Sun, Moon, LogOut, User, Settings } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import ProfileMenu, { ProfileMenuItem } from '@/app/components/ProfileMenu/ProfileMenu';
+import { authApi } from '@/lib/api';
 
 import commonStyles from './PortalNavbar.common.module.css';
 import lightStyles from './PortalNavbar.light.module.css';
 import darkStyles from './PortalNavbar.dark.module.css';
 
-const PortalNavbar = () => {
+interface PortalNavbarProps {
+  userType?: 'client' | 'freelancer' | 'admin' | 'general';
+}
+
+const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client' }) => {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  
+  const [user, setUser] = useState<{ name: string; email?: string; avatar?: string } | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    try {
+      const storedUser = window.localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUser({
+          name: parsedUser.full_name || parsedUser.name || 'User',
+          email: parsedUser.email,
+          avatar: parsedUser.profile_image_url || parsedUser.avatar
+        });
+      }
+    } catch (e) {
+      console.error('Failed to parse user', e);
+    }
   }, []);
+
+  const handleLogout = () => {
+    authApi.logout();
+    router.push('/login');
+  };
+
+  const menuItems: ProfileMenuItem[] = [
+    { 
+      label: 'Profile', 
+      href: userType === 'general' ? '/profile' : `/${userType}/profile`, 
+      icon: <User size={16} /> 
+    },
+    { 
+      label: 'Settings', 
+      href: userType === 'general' ? '/settings' : `/${userType}/settings`, 
+      icon: <Settings size={16} /> 
+    },
+    { 
+      label: 'Sign out', 
+      onClick: handleLogout, 
+      icon: <LogOut size={16} /> 
+    },
+  ];
 
   // Determine page title from pathname
   const getPageTitle = () => {
@@ -72,6 +117,16 @@ const PortalNavbar = () => {
             <Bell size={20} />
             <span className={commonStyles.badge} />
           </button>
+
+          {mounted && user && (
+            <ProfileMenu 
+              userName={user.name}
+              userEmail={user.email}
+              userImageUrl={user.avatar}
+              menuItems={menuItems}
+              className="ml-2"
+            />
+          )}
         </div>
       </div>
     </header>

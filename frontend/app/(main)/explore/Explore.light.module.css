@@ -9,6 +9,30 @@
   color: #4a5568;
 }
 
+/* Hero Stats */
+.heroStats {
+  background: transparent;
+}
+
+.heroStatCard {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.heroStatCard:hover {
+  border-color: #4573df;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+}
+
+.heroStatValue {
+  color: #1a202c;
+}
+
+.heroStatLabel {
+  color: #4a5568;
+}
+
 .statCard {
   background: #fff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -228,4 +252,40 @@
 .pageStatus {
   background: #27AE60;
   color: #fff;
+}
+
+/* API Documentation Card */
+.apiDocCard {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(69, 115, 223, 0.3);
+}
+
+.apiDocTitle {
+  color: #1a202c;
+}
+
+.apiDocDesc {
+  color: #4a5568;
+}
+
+.apiDocButtonSecondary {
+  color: #4a5568;
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.apiDocButtonSecondary:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.toggleButton {
+  background: #f1f5f9;
+  color: #4a5568;
+  border-color: #e2e8f0;
+}
+
+.toggleButton:hover {
+  background: #4573df;
+  color: #fff;
+  border-color: #4573df;
 }

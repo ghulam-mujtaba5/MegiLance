@@ -13,34 +13,39 @@ import {
 import { cn } from '@/lib/utils';
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import Button from '@/app/components/Button/Button';
-import StatusIndicator from '@/app/components/StatusIndicator/StatusIndicator';
+import FeatureStatusPill, { type FeatureStatus } from '@/app/components/FeatureStatusPill';
 
 import commonStyles from './Header.common.module.css';
 import lightStyles from './Header.light.module.css';
 import darkStyles from './Header.dark.module.css';
 
-// Enterprise-level navigation structure
+// Streamlined navigation focused on core features with status indicators
 const megaMenuData = {
-  product: {
-    title: 'Product',
+  platform: {
+    title: 'Platform',
     sections: [
       {
-        title: 'Platform',
+        title: 'Core Features',
         items: [
-          { name: 'How It Works', href: '/how-it-works', icon: Rocket, description: 'Learn our 4-step process' },
-          { name: 'Features', href: '/#features', icon: Zap, description: 'AI matching & blockchain payments' },
-          { name: 'Pricing', href: '/pricing', icon: CreditCard, description: 'Transparent, low fees' },
-          { name: 'For Clients', href: '/clients', icon: Briefcase, description: 'Hire top talent' },
-          { name: 'For Freelancers', href: '/freelancers', icon: Users, description: 'Find work & grow' },
+          { name: 'How It Works', href: '/how-it-works', icon: Rocket, description: '4-step process', status: 'complete' as FeatureStatus },
+          { name: 'Marketplace', href: '/#features', icon: Zap, description: 'Find projects & talent', status: 'complete' as FeatureStatus },
+          { name: 'Pricing', href: '/pricing', icon: CreditCard, description: 'Transparent fees', status: 'complete' as FeatureStatus },
+          { name: 'Talent Directory', href: '/talent', icon: Star, description: 'Browse top freelancers', status: 'complete' as FeatureStatus },
         ]
       },
       {
-        title: 'AI Features',
+        title: 'AI-Powered',
         items: [
-          { name: 'AI Hub', href: '/ai', icon: Brain, description: 'All AI tools in one place' },
-          { name: 'AI Chatbot', href: '/ai/chatbot', icon: MessageSquare, description: 'Intelligent assistant' },
-          { name: 'Price Estimator', href: '/ai/price-estimator', icon: BarChart3, description: 'ML-powered pricing' },
-          { name: 'Smart Matching', href: '/explore', icon: Search, description: '7-factor algorithm' },
+          { name: 'AI Chatbot', href: '/ai/chatbot', icon: MessageSquare, description: 'Intelligent assistant', status: 'advanced' as FeatureStatus },
+          { name: 'Smart Matching', href: '/explore', icon: Search, description: '7-factor algorithm', status: 'advanced' as FeatureStatus },
+          { name: 'Price Estimator', href: '/ai/price-estimator', icon: BarChart3, description: 'ML-powered pricing', status: 'advanced' as FeatureStatus },
+        ]
+      },
+      {
+        title: 'Security',
+        items: [
+          { name: 'Blockchain Escrow', href: '/#blockchain', icon: Lock, description: 'Secure payments', status: 'complete' as FeatureStatus },
+          { name: 'Milestone Payments', href: '/how-it-works#payments', icon: Shield, description: 'Protected transactions', status: 'complete' as FeatureStatus },
         ]
       }
     ]
@@ -49,19 +54,18 @@ const megaMenuData = {
     title: 'Solutions',
     sections: [
       {
-        title: 'For Teams',
+        title: 'Get Started',
         items: [
-          { name: 'Enterprise', href: '/enterprise', icon: Building2, description: 'Custom solutions' },
-          { name: 'Teams', href: '/teams', icon: Users, description: 'Collaborate & scale' },
-          { name: 'Talent Directory', href: '/talent', icon: Star, description: 'Browse top talent' },
+          { name: 'For Clients', href: '/clients', icon: Briefcase, description: 'Hire top talent', status: 'complete' as FeatureStatus },
+          { name: 'For Freelancers', href: '/freelancers', icon: Users, description: 'Find great work', status: 'complete' as FeatureStatus },
+          { name: 'Teams', href: '/teams', icon: Building2, description: 'Collaborate & scale', status: 'working' as FeatureStatus },
         ]
       },
       {
-        title: 'Portals',
+        title: 'Dashboards',
         items: [
-          { name: 'Client Dashboard', href: '/client/dashboard', icon: Briefcase, description: 'Manage projects', auth: true },
-          { name: 'Freelancer Dashboard', href: '/freelancer/dashboard', icon: Users, description: 'Track earnings', auth: true },
-          { name: 'Admin Portal', href: '/admin/dashboard', icon: Shield, description: 'Platform management', auth: true },
+          { name: 'Client Portal', href: '/client/dashboard', icon: Briefcase, description: 'Manage projects', auth: true, status: 'complete' as FeatureStatus },
+          { name: 'Freelancer Portal', href: '/freelancer/dashboard', icon: Users, description: 'Track earnings', auth: true, status: 'complete' as FeatureStatus },
         ]
       }
     ]
@@ -70,21 +74,18 @@ const megaMenuData = {
     title: 'Resources',
     sections: [
       {
-        title: 'Learn',
+        title: 'Help & Support',
         items: [
-          { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Insights & tips' },
-          { name: 'FAQ', href: '/faq', icon: HelpCircle, description: 'Common questions' },
-          { name: 'Support', href: '/support', icon: Mail, description: 'Get help' },
-          { name: 'Community', href: '/community', icon: Users, description: 'Connect with others' },
+          { name: 'FAQ', href: '/faq', icon: HelpCircle, description: 'Common questions', status: 'complete' as FeatureStatus },
+          { name: 'Support', href: '/support', icon: Mail, description: 'Get help', status: 'working' as FeatureStatus },
+          { name: 'Blog', href: '/blog', icon: BookOpen, description: 'Insights & tips', status: 'working' as FeatureStatus },
         ]
       },
       {
-        title: 'Company',
+        title: 'About',
         items: [
-          { name: 'About Us', href: '/about', icon: Globe, description: 'Our mission' },
-          { name: 'Careers', href: '/careers', icon: Award, description: 'Join our team' },
-          { name: 'Press', href: '/press', icon: FileText, description: 'Media resources' },
-          { name: 'Status', href: '/status', icon: Activity, description: 'System health' },
+          { name: 'About Us', href: '/about', icon: Globe, description: 'Our mission', status: 'complete' as FeatureStatus },
+          { name: 'System Status', href: '/status', icon: Activity, description: 'Platform health', status: 'complete' as FeatureStatus },
         ]
       }
     ]
@@ -220,12 +221,17 @@ const Header: React.FC = () => {
                                 <item.icon size={18} />
                               </span>
                               <div className={commonStyles.megaMenuItemContent}>
-                                <span className={commonStyles.megaMenuItemName}>
-                                  {item.name}
-                                  {'auth' in item && item.auth && (
-                                    <Lock size={12} className={commonStyles.authIcon} />
+                                <div className={commonStyles.megaMenuItemHeader}>
+                                  <span className={commonStyles.megaMenuItemName}>
+                                    {item.name}
+                                    {'auth' in item && item.auth && (
+                                      <Lock size={12} className={commonStyles.authIcon} />
+                                    )}
+                                  </span>
+                                  {'status' in item && item.status && (
+                                    <FeatureStatusPill status={item.status} size="xs" compact />
                                   )}
-                                </span>
+                                </div>
                                 <span className={cn(commonStyles.megaMenuItemDesc, themeStyles.megaMenuItemDesc)}>
                                   {item.description}
                                 </span>
@@ -295,6 +301,9 @@ const Header: React.FC = () => {
                   >
                     <item.icon size={16} />
                     <span>{item.name}</span>
+                    {'status' in item && item.status && (
+                      <FeatureStatusPill status={item.status} size="xs" compact />
+                    )}
                     {'auth' in item && item.auth && <Lock size={12} />}
                   </Link>
                 ))}

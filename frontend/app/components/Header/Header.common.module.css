@@ -178,6 +178,13 @@
   min-width: 0;
 }
 
+.megaMenuItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .megaMenuItemName {
   font-size: 0.875rem;
   font-weight: 600;

@@ -12,7 +12,7 @@ import darkStyles from './UserAvatar.dark.module.css';
 export interface UserAvatarProps {
   name: string; // Always required for initials fallback and alt text
   src?: string; // Optional image source
-  size?: 'small' | 'medium' | 'large' | number;
+  size?: 'small' | 'sm' | 'medium' | 'md' | 'large' | 'lg' | number;
   className?: string;
   /** Optional click handler for interactive avatars */
   onClick?: () => void;
@@ -44,13 +44,17 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     imageSize = size;
     sizeAttr = size.toString();
   } else {
-    const sizeMap = {
+    const sizeMap: Record<string, { class: string; size: number }> = {
       small: { class: commonStyles.userAvatarSmall, size: 32 },
+      sm: { class: commonStyles.userAvatarSmall, size: 32 }, // alias
       medium: { class: commonStyles.userAvatarMedium, size: 40 },
+      md: { class: commonStyles.userAvatarMedium, size: 40 }, // alias
       large: { class: commonStyles.userAvatarLarge, size: 56 },
+      lg: { class: commonStyles.userAvatarLarge, size: 56 }, // alias
     };
-    sizeClass = sizeMap[size].class;
-    imageSize = sizeMap[size].size;
+    const sizeConfig = sizeMap[size] || sizeMap['medium']; // fallback to medium
+    sizeClass = sizeConfig.class;
+    imageSize = sizeConfig.size;
   }
 
   const getInitials = (fullName: string): string => {
