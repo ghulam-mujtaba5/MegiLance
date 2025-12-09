@@ -121,6 +121,9 @@ export function useFreelancerData() {
         setProjects(mappedProjects);
 
         // Map Jobs
+        console.log('[useFreelancer] jobsJson received:', jobsJson);
+        console.log('[useFreelancer] jobsJson.jobs:', jobsJson.jobs);
+        console.log('[useFreelancer] jobsJson.jobs length:', jobsJson.jobs?.length);
         const mappedJobs: FreelancerJob[] = (jobsJson.jobs || []).map((j: any) => ({
           id: String(j.id),
           title: j.title,
@@ -131,6 +134,7 @@ export function useFreelancerData() {
           skills: j.skills || [],
           status: 'Open'
         }));
+        console.log('[useFreelancer] mappedJobs:', mappedJobs.length);
         setJobs(mappedJobs);
 
         // Map Recommended Jobs - if AI matching returns empty, use regular jobs as fallback
@@ -138,6 +142,7 @@ export function useFreelancerData() {
         const aiRecommendations = recommendedJson.recommendations || [];
         
         if (aiRecommendations.length > 0) {
+          console.log('[useFreelancer] Using AI recommendations:', aiRecommendations.length);
           // Use AI-matched recommendations
           mappedRecommendedJobs = aiRecommendations.map((r: any) => ({
             id: String(r.project_id),
@@ -151,14 +156,17 @@ export function useFreelancerData() {
             matchScore: Math.round((r.match_score || 0) * 100)
           }));
         } else {
+          console.log('[useFreelancer] AI recommendations empty, using fallback. mappedJobs.length:', mappedJobs.length);
           // Fallback to regular jobs when AI matching is unavailable
           mappedRecommendedJobs = mappedJobs.slice(0, 5).map(job => ({
             ...job,
             clientName: job.clientName || 'Available Job',
             matchScore: undefined // No AI score available
           }));
+          console.log('[useFreelancer] mappedRecommendedJobs:', mappedRecommendedJobs.length, mappedRecommendedJobs);
         }
         setRecommendedJobs(mappedRecommendedJobs);
+        console.log('[useFreelancer] setRecommendedJobs called with:', mappedRecommendedJobs.length, 'items');
 
         // Map Proposals
         const mappedProposals: FreelancerProposal[] = (proposalsJson.proposals || []).map((p: any) => ({
