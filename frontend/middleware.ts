@@ -52,15 +52,17 @@ export function middleware(request: NextRequest) {
   
   // Protected portal routes that require authentication
   const protectedPaths = [
-    '/client',
-    '/freelancer', 
-    '/admin',
+    '/client/',       // Client portal (not /clients)
+    '/freelancer/',   // Freelancer portal (not /freelancers) 
+    '/admin/',        // Admin portal
     '/dashboard',
     '/settings',
     '/messages',
   ];
 
-  const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
+  const isProtectedPath = protectedPaths.some(path => 
+    pathname === path.replace(/\/$/, '') || pathname.startsWith(path)
+  );
   
   // Check for auth token in cookies
   const authToken = request.cookies.get('auth_token')?.value;

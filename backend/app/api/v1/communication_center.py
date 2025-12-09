@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/communications")
 
@@ -342,3 +342,4 @@ async def test_channel(
         "status": "sent",
         "message": "Test message sent successfully"
     }
+

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime, date, time
 from enum import Enum
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/availability")
 
@@ -342,3 +342,4 @@ async def sync_calendar(
         "provider": provider,
         "auth_url": f"https://auth.megilance.com/calendar/{provider}?user={current_user.id}"
     }
+

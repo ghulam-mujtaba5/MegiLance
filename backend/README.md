@@ -48,7 +48,10 @@ Copy `.env.example` to `.env` and configure variables:
 # Core Settings
 APP_NAME=MegiLance API
 ENVIRONMENT=development
-DATABASE_URL=postgresql+psycopg2://user:password@localhost:5432/megilance_db
+
+# Database (REQUIRED - Turso Cloud Database)
+TURSO_DATABASE_URL=libsql://your-database.turso.io
+TURSO_AUTH_TOKEN=your-turso-auth-token
 
 # Security
 SECRET_KEY=your-secret-key-min-32-characters

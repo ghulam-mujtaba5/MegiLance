@@ -173,8 +173,15 @@ const Login: React.FC = () => {
         setNeeds2FA(true);
         setTempAccessToken(data.access_token || ''); // Assuming temp token is passed as access_token in this case or handled differently
       } else {
-        // Token is already set by api.auth.login
+        // Token is already set by api.auth.login (in sessionStorage)
+        // Also save to localStorage for portal layout compatibility
+        localStorage.setItem('auth_token', data.access_token);
+        localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('refresh_token', data.refresh_token);
+        // Store user data for quick access
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
         // Set auth token as cookie for middleware access
         document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         try { window.localStorage.setItem('portal_area', role); } catch {}
@@ -210,8 +217,15 @@ const Login: React.FC = () => {
         setTempAccessToken((data as any).temp_token || '');
       } else {
         // Store tokens and redirect
-        // api.auth.login sets the access token
+        // api.auth.login sets the access token in sessionStorage
+        // Also save to localStorage for portal layout compatibility
+        localStorage.setItem('auth_token', data.access_token);
+        localStorage.setItem('access_token', data.access_token);
         localStorage.setItem('refresh_token', data.refresh_token);
+        // Store user data for quick access
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
         // Set auth token as cookie for middleware access
         document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         try { window.localStorage.setItem('portal_area', selectedRole); } catch {}

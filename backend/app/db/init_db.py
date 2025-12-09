@@ -14,7 +14,14 @@ from app.models import (
 
 
 def init_db(engine: Engine) -> None:
-    """Initialize database: create tables if they don't exist."""
+    """Initialize database: create tables if they don't exist.
+    
+    If engine is None, skip SQLAlchemy table creation (using Turso HTTP API).
+    """
+    
+    if engine is None:
+        print("[INFO] SQLAlchemy engine not available - using Turso HTTP API (tables managed externally)")
+        return
     
     try:
         # Check if critical tables exist

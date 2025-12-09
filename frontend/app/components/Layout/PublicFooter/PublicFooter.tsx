@@ -1,7 +1,7 @@
 // @AI-HINT: This is the dedicated footer for the public-facing marketing website. It includes sitemap links, social media icons, and copyright information.
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -55,6 +55,17 @@ const socialLinks = [
 
 const PublicFooter = () => {
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Don't render themed content until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return <footer className={commonStyles.footer} />;
+  }
+
   const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (

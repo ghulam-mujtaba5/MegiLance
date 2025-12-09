@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/data-export")
 
@@ -348,3 +348,4 @@ async def get_storage_usage(
         "percentage": 4.88,
         "exports_count": 25
     }
+

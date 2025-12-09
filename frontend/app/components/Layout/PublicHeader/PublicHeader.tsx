@@ -33,11 +33,16 @@ const servicesDropdown = [
 
 const PublicHeader = () => {
   const { resolvedTheme } = useTheme();
-  const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const servicesTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // Ensure hydration completes before applying theme styles
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close mobile menu when window is resized to desktop
   useEffect(() => {
@@ -79,6 +84,29 @@ const PublicHeader = () => {
       }
     };
   }, []);
+
+  // Compute styles - use common styles during SSR to prevent hydration mismatch
+  const styles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
+  // Prevent hydration mismatch by using a minimal skeleton on server
+  if (!mounted) {
+    return (
+      <header className={cn(commonStyles.header, lightStyles.header)}>
+        <div className={commonStyles.container}>
+          <div>
+            <MegiLanceLogo />
+          </div>
+          <nav className={commonStyles.nav}>
+            <ul className={commonStyles.navList}>
+              <li className={commonStyles.navItem}>
+                <button className={cn(commonStyles.navLink, lightStyles.navLink)}>Services</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+    );
+  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime, time
 from enum import Enum
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/notification-settings")
 
@@ -341,3 +341,4 @@ async def unsubscribe_all(
         "unsubscribed": True,
         "message": "Unsubscribed from all non-essential notifications. Security notifications remain enabled."
     }
+

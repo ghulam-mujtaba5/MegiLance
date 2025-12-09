@@ -296,21 +296,18 @@ def register_user(request: Request, payload: UserCreate):
 
 @router.post("/login", response_model=AuthResponse)
 @auth_rate_limit()
-def login_user(request: Request, credentials: LoginRequest, db: Session = Depends(get_db)):
+def login_user(request: Request, credentials: LoginRequest):
     """
     User login endpoint with 2FA support
     
     If user has 2FA enabled, returns requires_2fa=True and a temporary token.
+    Uses Turso HTTP API directly - no SQLAlchemy session needed.
     """
     print(f"\n[LOGIN ATTEMPT]:")
     print(f"   Email: {credentials.email}")
-    print(f"   DB Session: {db}")
-    
-    if db is None:
-        print("CRITICAL: DB Session is None in login_user endpoint")
-        raise HTTPException(status_code=500, detail="Database connection failed")
 
-    user = authenticate_user(db, credentials.email, credentials.password)
+    # authenticate_user uses Turso HTTP API directly, so pass None for db
+    user = authenticate_user(None, credentials.email, credentials.password)
     print(f"   Auth Result: {'SUCCESS' if user else 'FAILED'}")
     
     if not user:

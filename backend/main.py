@@ -129,8 +129,17 @@ app.add_middleware(SecurityHeadersMiddleware)
 async def on_startup():
     try:
         engine = get_engine()
-        init_db(engine)
-        logger.info("startup.database_initialized")
+        if engine is not None:
+            init_db(engine)
+            logger.info("startup.database_initialized")
+        else:
+            # Using Turso HTTP API - test connection
+            from app.db.turso_http import execute_query
+            result = execute_query("SELECT 1")
+            if result:
+                logger.info("startup.database_initialized via Turso HTTP API")
+            else:
+                logger.warning("startup.turso_http_test_failed")
         try:
             await connect_to_mongo()
         except Exception as mongo_error:
@@ -195,9 +204,18 @@ def health_live():
 def health_ready():
     engine = get_engine()
     try:
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        return {"status": "ready", "db": "ok"}
+        if engine is not None:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            return {"status": "ready", "db": "ok", "driver": "sqlalchemy"}
+        else:
+            # Using Turso HTTP API
+            from app.db.turso_http import execute_query
+            result = execute_query("SELECT 1")
+            if result is not None:
+                return {"status": "ready", "db": "ok", "driver": "turso_http"}
+            else:
+                return JSONResponse(status_code=503, content={"status": "degraded", "db_error": "Turso HTTP query failed"})
     except Exception as e:
         logger.error(f"health.ready_failed error={e}")
         return JSONResponse(status_code=503, content={"status": "degraded", "db_error": str(e)})

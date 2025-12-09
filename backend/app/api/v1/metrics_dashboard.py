@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/metrics")
 
@@ -338,3 +338,4 @@ async def export_metrics(
         "status": "processing",
         "download_url": None
     }
+

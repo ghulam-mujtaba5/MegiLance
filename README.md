@@ -165,10 +165,11 @@ python -m uvicorn main:app --reload
 
 **Benefits:**
 - ✅ Edge replication for global low latency
-- ✅ SQLite-compatible (easy local dev & migration)
+- ✅ SQLite-compatible syntax and queries
 - ✅ Simple provisioning (URL + auth token)
 - ✅ Efficient for serverless & container platforms
-- ✅ Eliminated legacy Oracle wallet complexity
+- ✅ No local database needed - cloud-native from day one
+- ✅ Free tier includes 500MB storage, 1 billion row reads/month
 
 Environment variables (example):
 ```
@@ -456,7 +457,7 @@ docker compose -f docker-compose.dev.yml up --build
 - Frontend: http://localhost:3000 (Hot Reload: ✓)
 - Backend API: http://localhost:8000/api/docs (Hot Reload: ✓)
 - **NEW**: Video Signaling: ws://localhost:8000/ws/video
-- Database: Turso remote endpoint (libSQL) or local SQLite fallback
+- Database: Turso cloud database (libSQL) - REQUIRED for all environments
 
 **Test New Features:**
 ```bash

@@ -11,18 +11,21 @@ class Settings(BaseSettings):
     backend_cors_origins: list[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
         "https://megilance.site",
         "https://www.megilance.site",
-        "https://api.megilance.site"
+        "https://api.megilance.site",
+        "*"  # Allow all origins in development
     ]
 
     # Database - Turso (libSQL) Remote Database ONLY
     # REQUIRED: Must set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN
-    # No local SQLite fallback - all environments use Turso
-    turso_database_url: Optional[str] = None  # Required: Turso database URL
-    turso_auth_token: Optional[str] = None  # Required: Turso auth token
+    # No local SQLite - all environments use Turso cloud database
+    turso_database_url: str  # Required: Turso database URL (e.g., libsql://your-db.turso.io)
+    turso_auth_token: str  # Required: Turso authentication token
     
     # Debug mode for verbose logging
     debug: bool = False
@@ -134,6 +137,14 @@ def validate_production_settings(settings: Settings) -> None:
     """Validate critical security settings for production environment."""
     import warnings
     
+    # Always check Turso database configuration (required for all environments)
+    if not settings.turso_database_url or not settings.turso_auth_token:
+        raise ValueError(
+            "CRITICAL: Turso database not configured. "
+            "TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are required for all environments. "
+            "Get free Turso database at: https://turso.tech"
+        )
+    
     if settings.environment == "production":
         # Check for default/weak secret key
         if "CHANGE_ME" in settings.secret_key or len(settings.secret_key) < 32:
@@ -147,14 +158,6 @@ def validate_production_settings(settings: Settings) -> None:
             warnings.warn(
                 "WARNING: CORS wildcard (*) detected in production. "
                 "Consider restricting to specific origins.",
-                RuntimeWarning
-            )
-        
-        # Check database configuration
-        if not settings.turso_database_url or not settings.turso_auth_token:
-            warnings.warn(
-                "WARNING: Production environment without Turso configuration. "
-                "Ensure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN are set.",
                 RuntimeWarning
             )
 

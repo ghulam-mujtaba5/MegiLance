@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/skill-taxonomy")
 
@@ -375,3 +375,4 @@ async def suggest_skills(
         "suggestions": [m["skill"] for m in matches[:limit]],
         "query": query
     }
+

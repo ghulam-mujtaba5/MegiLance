@@ -225,7 +225,7 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
               Skills ({matchedSkills.length}/{requiredSkills.length || freelancer.skills.length} matched)
             </div>
             <div className={commonStyles.skillsList}>
-              {freelancer.skills.slice(0, 6).map((skill) => {
+              {(freelancer.skills || []).slice(0, 6).map((skill) => {
                 const isMatched = matchedSkills.some(
                   ms => ms.toLowerCase() === skill.toLowerCase()
                 );

@@ -65,5 +65,5 @@ public/**/*.cache.*
 /tmp/
 **/tmp/
 
-# Ignore database json backups if any sensitive
-backend/**/*.sqlite
+# Note: No local SQLite databases - all environments use Turso cloud database
+# Legacy: backend/**/*.sqlite (removed as part of Turso-only migration)

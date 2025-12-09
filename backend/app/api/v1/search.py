@@ -105,7 +105,7 @@ def row_to_user(row: list) -> dict:
         "skills": to_str(row[8]),
         "user_type": to_str(row[9]),
         "is_active": bool(row[10].get("value")) if row[10].get("type") != "null" else True,
-        "created_at": parse_date(row[11])
+        "joined_at": parse_date(row[11])  # Map created_at from DB to joined_at for UserRead schema
     }
 
 

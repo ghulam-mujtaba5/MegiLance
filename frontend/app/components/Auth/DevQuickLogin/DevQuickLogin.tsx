@@ -20,25 +20,25 @@ interface DevCredential {
 }
 
 // @AI-HINT: Demo credentials for quick login. These are real accounts in the database.
-// Updated to match actual demo users in local_dev.db
+// Updated to match actual demo users in Turso cloud database
 const DEV_CREDENTIALS: DevCredential[] = [
   {
     email: 'admin@megilance.com',
-    password: 'Password123',
+    password: 'Admin@123',
     role: 'admin',
     label: 'Admin',
     icon: FaUserShield,
   },
   {
-    email: 'freelancer@demo.com',
-    password: 'Password123',
+    email: 'freelancer1@example.com',
+    password: 'Freelancer@123',
     role: 'freelancer',
     label: 'Freelancer',
     icon: FaUserTie,
   },
   {
-    email: 'client@demo.com',
-    password: 'Password123',
+    email: 'client1@example.com',
+    password: 'Client@123',
     role: 'client',
     label: 'Client',
     icon: FaBriefcase,

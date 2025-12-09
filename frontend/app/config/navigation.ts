@@ -37,9 +37,6 @@ export const footerNavItems = {
     { label: 'Testimonials', href: '/testimonials' },
     { label: 'Teams', href: '/teams' },
     { label: 'Referral', href: '/referral' },
-    { label: 'Analytics', href: '/analytics' },
-    { label: 'User Management', href: '/user-management' },
-    { label: 'Auth Dashboard', href: '/auth-dashboard' },
   ],
   services: [
     { label: 'For Freelancers', href: '/freelancers' },

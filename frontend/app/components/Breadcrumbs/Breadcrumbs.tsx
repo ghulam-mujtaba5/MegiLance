@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -14,10 +14,21 @@ import darkStyles from './Breadcrumbs.dark.module.css';
 const Breadcrumbs = () => {
   const pathname = usePathname();
   const { resolvedTheme } = useTheme();
-  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Don't show breadcrumbs on home page
   if (pathname === '/') return null;
+
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return <nav aria-label="Breadcrumb" className={commonStyles.breadcrumbs} />;
+  }
+
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   const pathSegments = pathname.split('/').filter((segment) => segment !== '');
 

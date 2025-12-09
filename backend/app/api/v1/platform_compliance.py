@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/platform-compliance")
 
@@ -332,3 +332,4 @@ async def get_terms_of_service(
         "content_url": "/legal/terms-of-service.html",
         "pdf_url": "/legal/terms-of-service.pdf"
     }
+

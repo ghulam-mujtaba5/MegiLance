@@ -46,16 +46,26 @@ const PublicFreelancers: React.FC = () => {
       // Assuming API returns { freelancers: [...] } or [...]
       const data = Array.isArray(res) ? res : ((res as { freelancers?: any[] }).freelancers || []);
       
-      const mapped: Freelancer[] = data.map((f: any) => ({
-        id: String(f.id),
-        name: f.name || 'Unknown',
-        title: f.title || f.bio?.substring(0, 50) || 'Freelancer',
-        hourlyRate: f.hourly_rate || f.hourlyRate || 0,
-        skills: f.skills || [],
-        rating: f.rating || 0,
-        location: f.location || 'Remote',
-        avatarUrl: f.profile_image_url || f.avatarUrl
-      }));
+      const mapped: Freelancer[] = data.map((f: any) => {
+        // Parse skills - can be string (comma-separated), array, or null
+        let skillsArray: string[] = [];
+        if (Array.isArray(f.skills)) {
+          skillsArray = f.skills;
+        } else if (typeof f.skills === 'string' && f.skills) {
+          skillsArray = f.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
+        
+        return {
+          id: String(f.id),
+          name: f.name || 'Unknown',
+          title: f.title || f.bio?.substring(0, 50) || 'Freelancer',
+          hourlyRate: f.hourly_rate || f.hourlyRate || 0,
+          skills: skillsArray,
+          rating: f.rating || 0,
+          location: f.location || 'Remote',
+          avatarUrl: f.profile_image_url || f.avatarUrl
+        };
+      });
       
       setFreelancers(mapped);
     } catch (err) {
@@ -131,10 +141,10 @@ const PublicFreelancers: React.FC = () => {
                   </div>
                   
                   <div className={common.skills}>
-                    {f.skills.slice(0, 3).map(s => (
+                    {(f.skills || []).slice(0, 3).map(s => (
                       <span key={s} className={cn(common.skill, themed.skill)}>{s}</span>
                     ))}
-                    {f.skills.length > 3 && <span className={cn(common.skill, themed.skill)}>+{f.skills.length - 3}</span>}
+                    {(f.skills || []).length > 3 && <span className={cn(common.skill, themed.skill)}>+{f.skills.length - 3}</span>}
                   </div>
 
                   <div className={common.footer}>

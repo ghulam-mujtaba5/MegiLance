@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/search-analytics")
 
@@ -271,3 +271,4 @@ async def export_search_analytics(
         "format": format,
         "estimated_time": "2 minutes"
     }
+

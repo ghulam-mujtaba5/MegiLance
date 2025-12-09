@@ -147,8 +147,9 @@ npm test                                # Jest tests
 ```
 
 ### Database
-- **Dev**: SQLite file `backend/local.db` (auto-created on startup)
-- **Prod**: Turso cloud (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`)
+- **All environments**: Turso cloud database (libSQL) - REQUIRED
+- **Setup**: Get free database at https://turso.tech
+- **Config**: Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in `.env`
 - **Migrations**: `alembic revision --autogenerate -m "desc"` then `alembic upgrade head`
 
 ### Design Tokens

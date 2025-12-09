@@ -41,7 +41,11 @@ pytest-asyncio==0.25.1
 pytest-cov==6.0.0
 
 # Turso (libSQL) - Managed SQLite database service
-# Uses HTTP API via requests library (no native driver needed)
+# REQUIRED: sqlalchemy-libsql for SQLAlchemy integration
+# Note: Requires Rust toolchain to compile on Windows
+# Install Rust from: https://rustup.rs/
+# Or use Docker for deployment (includes pre-built packages)
+sqlalchemy-libsql>=0.2.0
 requests==2.31.0
 
 # MongoDB

@@ -3,11 +3,8 @@
 
 // FIX: Always use the Next.js proxy to avoid CORS issues
 // The proxy is configured in next.config.js: /backend/* -> http://localhost:8000/*
-const envUrl = process.env.NEXT_PUBLIC_API_URL || '';
-// Use the proxy path for all requests (both dev and prod)
-const API_BASE_URL = envUrl 
-  ? (envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`)
-  : '/backend/api';
+// FORCE using proxy to avoid CORS - ignore environment variable
+const API_BASE_URL = '/backend/api';
 
 // Token storage keys - use constants to prevent typos
 const TOKEN_STORAGE_KEY = 'auth_token';

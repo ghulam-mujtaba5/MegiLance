@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/branding")
 
@@ -253,3 +253,4 @@ async def delete_branding_config(
 ):
     """Delete branding configuration (reset to defaults)"""
     return {"message": "Branding configuration reset to defaults"}
+

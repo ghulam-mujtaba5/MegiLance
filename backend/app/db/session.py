@@ -1,14 +1,14 @@
 """
-@AI-HINT: Database session management - SQLite for dev, Turso for production
-Supports both SQLite local development and Turso remote database.
+@AI-HINT: Database session management - Turso HTTP API primary, SQLAlchemy fallback
+All environments use Turso HTTP API. SQLAlchemy ORM is optional fallback.
 """
 
 from sqlalchemy import create_engine, event, Engine, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import QueuePool, StaticPool
+from sqlalchemy.pool import QueuePool
 from app.core.config import get_settings
 import logging
-from typing import Optional
+from typing import Optional, Generator
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -16,90 +16,81 @@ settings = get_settings()
 # Lazy engine creation to avoid blocking on startup
 _engine = None
 _SessionLocal = None
+_engine_available = None  # None = not checked, True/False = result
 
 
 def get_engine():
     """
     Create and return database engine.
     
-    Uses Turso if configured, otherwise falls back to SQLite for local development.
+    Uses SQLAlchemy with sqlalchemy-libsql driver if available.
+    Falls back to Turso HTTP API if driver is not installed.
     """
-    global _engine
-    if _engine is None:
+    global _engine, _engine_available
+    
+    if _engine_available is False:
+        return None
+    
+    if _engine is not None:
+        return _engine
+    
+    # Validate Turso configuration
+    if not settings.turso_database_url or not settings.turso_auth_token:
+        error_msg = (
+            "CRITICAL ERROR: Turso database not configured.\n"
+            "Required environment variables:\n"
+            "  - TURSO_DATABASE_URL\n"
+            "  - TURSO_AUTH_TOKEN\n"
+            "Please set these in your .env file or environment."
+        )
+        logger.error(error_msg)
+        print(f"\n{'='*70}\n{error_msg}\n{'='*70}\n")
+        _engine_available = False
+        return None
+    
+    try:
+        # Check if sqlalchemy-libsql is installed
         try:
-            # Check if Turso is configured
-            if settings.turso_database_url and settings.turso_auth_token:
-                # Verify sqlalchemy-libsql is installed
-                try:
-                    import sqlalchemy_libsql
-                except ImportError:
-                    print("[WARNING] sqlalchemy-libsql not installed, falling back to SQLite")
-                    raise ImportError("sqlalchemy-libsql not installed")
-                
-                # Construct Turso URL with auth token
-                base_url = settings.turso_database_url
-                auth_token = settings.turso_auth_token
-                
-                # Add auth token as query parameter if not already present
-                if "authToken" not in base_url and "?" not in base_url:
-                    db_url = f"{base_url}?authToken={auth_token}"
-                elif "authToken" not in base_url:
-                    db_url = f"{base_url}&authToken={auth_token}"
-                else:
-                    db_url = base_url
-                
-                logger.info(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
-                print(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
-                
-                _engine = create_engine(
-                    db_url,
-                    connect_args={},
-                    poolclass=QueuePool,
-                    echo=settings.debug,
-                    pool_pre_ping=True,
-                    pool_recycle=3600,
-                )
-                
-                logger.info("[TURSO] Database engine created successfully")
-            else:
-                # Fallback to SQLite for local development
-                db_url = getattr(settings, 'database_url', None) or "sqlite:///./local_dev.db"
-                logger.info(f"[SQLITE] Using local database: {db_url}")
-                print(f"[SQLITE] Using local database: {db_url}")
-                
-                _engine = create_engine(
-                    db_url,
-                    connect_args={"check_same_thread": False} if "sqlite" in db_url else {},
-                    poolclass=StaticPool if "sqlite" in db_url else QueuePool,
-                    echo=settings.debug,
-                )
-                
-                logger.info("[SQLITE] Database engine created successfully")
-            
-        except ImportError as ie:
-            # SQLite fallback when sqlalchemy-libsql is not installed
-            db_url = getattr(settings, 'database_url', None) or "sqlite:///./local_dev.db"
-            logger.info(f"[SQLITE] Falling back to local database: {db_url}")
-            print(f"[SQLITE] Using local database: {db_url}")
-            
-            _engine = create_engine(
-                db_url,
-                connect_args={"check_same_thread": False},
-                poolclass=StaticPool,
-                echo=settings.debug,
-            )
-        except Exception as e:
-            logger.error(f"Failed to create database engine: {e}")
-            # Final fallback to SQLite
-            db_url = "sqlite:///./local_dev.db"
-            print(f"[SQLITE] Emergency fallback to: {db_url}")
-            
-            _engine = create_engine(
-                db_url,
-                connect_args={"check_same_thread": False},
-                poolclass=StaticPool,
-                echo=False,
-            )
+            import sqlalchemy_libsql
+        except ImportError:
+            logger.warning("sqlalchemy-libsql not installed - using Turso HTTP API only")
+            print("[INFO] sqlalchemy-libsql not installed - using Turso HTTP API for all database operations")
+            _engine_available = False
+            return None
+        
+        # Construct Turso URL with auth token
+        base_url = settings.turso_database_url
+        auth_token = settings.turso_auth_token
+        
+        # Add auth token as query parameter if not already present
+        if "authToken" not in base_url and "?" not in base_url:
+            db_url = f"{base_url}?authToken={auth_token}"
+        elif "authToken" not in base_url:
+            db_url = f"{base_url}&authToken={auth_token}"
+        else:
+            db_url = base_url
+        
+        logger.info(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
+        print(f"[TURSO] Connecting to: {base_url.split('?')[0]}")
+        
+        _engine = create_engine(
+            db_url,
+            connect_args={},
+            poolclass=QueuePool,
+            echo=settings.debug,
+            pool_pre_ping=True,
+            pool_recycle=3600,
+        )
+        
+        _engine_available = True
+        logger.info("[TURSO] Database engine created successfully")
+        print("[TURSO] Database engine created successfully")
+        
+    except Exception as e:
+        logger.warning(f"Failed to create Turso database engine: {e} - using HTTP API")
+        print(f"[INFO] Using Turso HTTP API (SQLAlchemy engine not available: {e})")
+        _engine_available = False
+        return None
 
     return _engine
 
@@ -107,37 +98,45 @@ def get_engine():
 def get_session_local():
     """Get or create session factory"""
     global _SessionLocal
+    
+    engine = get_engine()
+    if engine is None:
+        return None
+    
     if _SessionLocal is None:
         _SessionLocal = sessionmaker(
             autocommit=False,
             autoflush=False,
-            bind=get_engine(),
+            bind=engine,
             expire_on_commit=False,
         )
     return _SessionLocal
 
 
-def get_db():
-    """Dependency for getting database sessions"""
+def get_db() -> Generator:
+    """Dependency for getting database sessions.
+    
+    Returns a SQLAlchemy session if available, otherwise yields None.
+    Endpoints should handle None db and use Turso HTTP API directly.
+    """
+    session_factory = get_session_local()
+    
+    if session_factory is None:
+        # SQLAlchemy not available - yield None, endpoints should use Turso HTTP API
+        yield None
+        return
+    
+    db = None
     try:
-        session_factory = get_session_local()
-        if session_factory is None:
-            logger.error("get_db: session_factory is None")
-            raise Exception("session_factory is None")
-            
         db = session_factory()
-        if db is None:
-            logger.error("get_db: db session is None")
-            raise Exception("db session is None")
-            
         yield db
     except Exception as e:
         logger.error(f"Database session error: {e}")
-        if 'db' in locals() and db:
+        if db:
             db.rollback()
         raise
     finally:
-        if 'db' in locals() and db:
+        if db:
             db.close()
 
 
@@ -147,10 +146,9 @@ SessionLocal = None
 
 
 def get_turso_client():
-    """Get Turso HTTP client if configured for production"""
-    if settings.environment != "production":
-        return None
+    """Get Turso HTTP client"""
     if not settings.turso_database_url or not settings.turso_auth_token:
+        logger.warning("Turso client not available - missing credentials")
         return None
     try:
         from app.db.turso_http import get_turso_http
@@ -161,17 +159,17 @@ def get_turso_client():
 
 
 def execute_query(query: str, params: dict = None):
-    """Execute a raw SQL query using Turso client or local database"""
+    """Execute a raw SQL query using Turso"""
     try:
-        # Try Turso client first if configured
+        # Try Turso HTTP client first
         turso_client = get_turso_client()
-        if turso_client and settings.turso_database_url:
+        if turso_client:
             result = turso_client.execute(query, params or {})
             return result
     except Exception as e:
-        print(f"[WARNING] Turso query failed: {e}, falling back to local DB")
+        logger.warning(f"Turso HTTP query failed: {e}, falling back to engine")
     
-    # Fallback to local database
+    # Fallback to SQLAlchemy engine
     engine = get_engine()
     with engine.connect() as conn:
         if params:

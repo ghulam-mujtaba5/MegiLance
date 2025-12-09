@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/rate-cards")
 
@@ -377,3 +377,4 @@ async def calculate_project_rate(
         "total": 75.0 * (hours or 0),
         "currency": "USD"
     }
+

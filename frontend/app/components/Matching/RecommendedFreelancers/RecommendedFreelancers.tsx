@@ -343,7 +343,7 @@ export default function RecommendedFreelancers({
 
               {/* Skills */}
               <div className={commonStyles.skills}>
-                {freelancer.skills.slice(0, 4).map((skill) => (
+                {(freelancer.skills || []).slice(0, 4).map((skill) => (
                   <span 
                     key={skill} 
                     className={cn(

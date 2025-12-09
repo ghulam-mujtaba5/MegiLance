@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/review-responses")
 
@@ -252,3 +252,4 @@ async def get_ai_response_suggestion(
             "Your kind review means a lot to me! It was a pleasure collaborating on this project. I hope we can work together again soon."
         ]
     }
+

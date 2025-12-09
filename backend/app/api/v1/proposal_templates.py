@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/proposal-templates")
 
@@ -292,3 +292,4 @@ async def generate_proposal_from_template(
         "project_id": project_id,
         "requires_review": customize
     }
+

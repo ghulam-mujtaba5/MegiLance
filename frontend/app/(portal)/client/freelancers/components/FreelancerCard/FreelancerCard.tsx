@@ -99,7 +99,7 @@ const FreelancerCard: React.FC<FreelancerCardProps> = ({ freelancer }) => {
         <div className={common.skillsSection}>
           <h4 className={common.skillsTitle}>Top Skills</h4>
           <div className={common.skillsGrid}>
-            {freelancer.skills.slice(0, 5).map(skill => (
+            {(freelancer.skills || []).slice(0, 5).map(skill => (
               <Badge key={skill} variant="secondary">{skill}</Badge>
             ))}
           </div>

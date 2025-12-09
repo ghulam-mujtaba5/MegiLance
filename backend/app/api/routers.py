@@ -8,7 +8,7 @@ from .v1 import (
     templates, calendar, organizations, notification_preferences, two_factor, email_templates, integrations,
     push_notifications, invoice_tax, contract_builder, skill_graph,
     social_login, timezone, backup_restore,
-    portfolio_builder, compliance, achievement_system, learning_center,
+    portfolio_builder, compliance, learning_center,
     analytics_dashboard, marketplace,
     subscription_billing, legal_documents, knowledge_base, workflow_automation,
     messages, notifications, reviews, disputes, milestones, skills, admin,
@@ -248,9 +248,6 @@ api_router.include_router(portfolio_builder.router, tags=["portfolio-builder"])
 
 # Compliance Center - GDPR and regulatory compliance
 api_router.include_router(compliance.router, tags=["compliance"])
-
-# Achievement System - Comprehensive achievements
-api_router.include_router(achievement_system.router, tags=["achievement-system"])
 
 # Learning Center - Tutorials and courses
 api_router.include_router(learning_center.router, tags=["learning-center"])

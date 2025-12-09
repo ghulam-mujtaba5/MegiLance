@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
 from app.db.session import get_db
-from app.api.v1.auth import get_current_active_user
+from app.core.security import get_current_active_user
 
 router = APIRouter(prefix="/custom-statuses")
 
@@ -191,3 +191,4 @@ async def reorder_statuses(
     user_statuses = [s for s in custom_statuses_db.values() 
                     if s["user_id"] == str(current_user.id) and s["entity_type"] == entity_type.value]
     return sorted(user_statuses, key=lambda x: x["sort_order"])
+
