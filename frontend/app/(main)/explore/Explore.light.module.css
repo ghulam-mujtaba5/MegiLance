@@ -279,13 +279,30 @@
 }
 
 .toggleButton {
-  background: #f1f5f9;
-  color: #4a5568;
-  border-color: #e2e8f0;
+  background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+  color: #4573df;
+  border-color: rgba(69, 115, 223, 0.3);
+  box-shadow: 
+    0 4px 15px rgba(69, 115, 223, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .toggleButton:hover {
-  background: #4573df;
+  background: linear-gradient(145deg, #4573df 0%, #3a62c4 100%);
   color: #fff;
   border-color: #4573df;
+  box-shadow: 
+    0 8px 25px rgba(69, 115, 223, 0.35),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.toggleButtonActive {
+  background: linear-gradient(145deg, #4573df 0%, #3a62c4 100%);
+  color: #fff;
+  border-color: #4573df;
+  box-shadow: 
+    0 4px 15px rgba(69, 115, 223, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }

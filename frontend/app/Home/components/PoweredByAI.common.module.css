@@ -137,19 +137,21 @@
 .featuresGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 3rem;
+  gap: 2rem;
   margin-bottom: 8rem;
 }
 
 @media (min-width: 768px) {
   .featuresGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
   }
 }
 
 @media (min-width: 1200px) {
   .featuresGrid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
   }
 }
 
@@ -160,20 +162,23 @@
   perspective: 1000px;
   cursor: pointer;
   z-index: 1;
+  min-height: 420px;
 }
 
 /* Feature Card (Visual) */
 .featureCard {
   position: relative;
   border-radius: 1.5rem;
-  padding: 2.5rem;
+  padding: 2rem;
   padding-top: 3.5rem; /* Extra room for status badge */
+  padding-bottom: 5rem; /* Room for arrow button */
   height: 100%;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
   overflow: visible;
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   transform: translateZ(0);

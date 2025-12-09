@@ -61,7 +61,10 @@ app = FastAPI(
     version="1.0.0-beta",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json"
+    openapi_url="/api/openapi.json",
+    # Disable automatic redirect for trailing slashes to prevent 308 redirects
+    # that can cause issues with POST requests
+    redirect_slashes=False
 )
 
 # Rate limiting

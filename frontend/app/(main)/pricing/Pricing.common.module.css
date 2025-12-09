@@ -92,6 +92,10 @@
   margin-top: 48px;
   font-size: 0.9rem;
   text-align: center;
+  position: relative;
+  z-index: 10;
+  opacity: 0.8;
+  padding: 1rem;
 }
 
 /* Responsive adjustments */

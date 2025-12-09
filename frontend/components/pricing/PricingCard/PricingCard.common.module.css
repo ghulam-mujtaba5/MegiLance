@@ -3,16 +3,23 @@
 .card {
   border-radius: 16px;
   padding: 32px;
+  padding-top: 40px;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid;
+  border: 2px solid;
   position: relative;
   height: 100%;
+  overflow: visible;
 }
 
 .card:hover {
   transform: translateY(-8px);
+}
+
+.popular {
+  padding-top: 48px;
+  margin-top: 12px;
 }
 
 .popularBadge {
@@ -20,15 +27,19 @@
   top: 0;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 6px 16px;
+  padding: 8px 20px;
   border-radius: 999px;
   font-family: var(--font-inter);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border: 1px solid;
   white-space: nowrap;
+  background: linear-gradient(135deg, #4573df 0%, #667eea 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 15px rgba(69, 115, 223, 0.4);
+  z-index: 10;
 }
 
 .cardHeader {

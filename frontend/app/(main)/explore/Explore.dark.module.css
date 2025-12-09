@@ -275,13 +275,30 @@
 }
 
 .toggleButton {
-  background: #21262d;
-  color: #8b949e;
-  border-color: #30363d;
+  background: linear-gradient(145deg, #2d333b 0%, #21262d 100%);
+  color: #58a6ff;
+  border-color: rgba(88, 166, 255, 0.3);
+  box-shadow: 
+    0 4px 15px rgba(88, 166, 255, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .toggleButton:hover {
-  background: #4573df;
+  background: linear-gradient(145deg, #58a6ff 0%, #4573df 100%);
   color: #fff;
-  border-color: #4573df;
+  border-color: #58a6ff;
+  box-shadow: 
+    0 8px 25px rgba(88, 166, 255, 0.35),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.toggleButtonActive {
+  background: linear-gradient(145deg, #58a6ff 0%, #4573df 100%);
+  color: #fff;
+  border-color: #58a6ff;
+  box-shadow: 
+    0 4px 15px rgba(88, 166, 255, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }

@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import api, { setAuthToken, setRefreshToken } from '@/lib/api';
-import { toast } from 'react-hot-toast';
+
+// Simple toast notification helper
+const showToast = (message: string, type: 'success' | 'error') => {
+  console.log(`[${type.toUpperCase()}] ${message}`);
+};
 
 // @AI-HINT: Handles OAuth2 callback from social providers. Exchanges code for tokens.
 export default function AuthCallbackPage() {
@@ -21,7 +25,7 @@ export default function AuthCallbackPage() {
       if (error) {
         setStatus('error');
         setMessage(`Authentication failed: ${error}`);
-        toast.error(`Authentication failed: ${error}`);
+        showToast(`Authentication failed: ${error}`, 'error');
         setTimeout(() => router.push('/login'), 3000);
         return;
       }
@@ -29,7 +33,7 @@ export default function AuthCallbackPage() {
       if (!code || !state) {
         setStatus('error');
         setMessage('Invalid callback parameters.');
-        toast.error('Invalid callback parameters.');
+        showToast('Invalid callback parameters.', 'error');
         setTimeout(() => router.push('/login'), 3000);
         return;
       }
@@ -50,7 +54,7 @@ export default function AuthCallbackPage() {
 
             setStatus('success');
             setMessage('Authentication successful! Redirecting...');
-            toast.success(`Successfully ${response.action === 'register' ? 'registered' : 'logged in'}!`);
+            showToast(`Successfully ${response.action === 'register' ? 'registered' : 'logged in'}!`, 'success');
 
             // Determine redirect path
             // Check for stored role preference from signup/login flow
@@ -73,7 +77,7 @@ export default function AuthCallbackPage() {
              // Handle account linking scenario (if triggered from settings)
              setStatus('success');
              setMessage('Account linked successfully!');
-             toast.success('Account linked successfully!');
+             showToast('Account linked successfully!', 'success');
              setTimeout(() => router.push('/settings/security'), 2000);
           }
         } else {
@@ -83,7 +87,7 @@ export default function AuthCallbackPage() {
         console.error('Social auth error:', err);
         setStatus('error');
         setMessage(err.message || 'Authentication failed. Please try again.');
-        toast.error(err.message || 'Authentication failed');
+        showToast(err.message || 'Authentication failed', 'error');
         setTimeout(() => router.push('/login'), 3000);
       }
     };

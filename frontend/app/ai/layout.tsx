@@ -1,9 +1,7 @@
-// @AI-HINT: AI section layout with navigation header to prevent UI clipping issues
+// @AI-HINT: AI section layout - uses main layout Header/Footer, only adds spacing
 'use client';
 
 import React from 'react';
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
 
 interface AILayoutProps {
   children: React.ReactNode;
@@ -11,12 +9,8 @@ interface AILayoutProps {
 
 export default function AILayout({ children }: AILayoutProps) {
   return (
-    <>
-      <Header />
-      <div className="min-h-screen pt-16">
-        {children}
-      </div>
-      <Footer />
-    </>
+    <div className="min-h-screen">
+      {children}
+    </div>
   );
 }

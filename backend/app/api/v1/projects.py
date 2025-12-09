@@ -91,6 +91,7 @@ def _row_to_project(row: list, columns: list = None) -> dict:
     return project
 
 
+@router.get("", response_model=List[ProjectRead])
 @router.get("/", response_model=List[ProjectRead])
 def list_projects(
     skip: int = Query(0, ge=0, description="Number of records to skip"),
@@ -216,6 +217,7 @@ def get_project(
         )
 
 
+@router.post("", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
 @router.post("/", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
 def create_project(
     project: ProjectCreate,

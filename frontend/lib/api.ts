@@ -641,11 +641,11 @@ export const projectsApi = {
         if (value !== undefined) params.append(key, value.toString());
       });
     }
-    return apiFetch(`/projects/?${params}`);
+    return apiFetch(`/projects?${params}`);
   },
 
   create: (data: any) =>
-    apiFetch('/projects/', {
+    apiFetch('/projects', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
