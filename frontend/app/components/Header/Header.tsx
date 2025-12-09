@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
-import { Button } from '@/app/components/Button/Button';
+import Button from '@/app/components/Button/Button';
 import StatusIndicator from '@/app/components/StatusIndicator/StatusIndicator';
 
 import commonStyles from './Header.common.module.css';

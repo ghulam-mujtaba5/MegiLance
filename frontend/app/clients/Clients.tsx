@@ -56,17 +56,17 @@ const cases = [
   {
     title: 'AI-assisted onboarding reduced time-to-value by 42%',
     desc: 'Enterprise-grade workflows and fine-tuned models improved user activation and retention.',
-    media: '/images/cases/placeholder.jpg',
+    media: '/images/cases/placeholder.svg',
   },
   {
     title: 'Payments reliability at 99.99% with audited contracts',
     desc: 'Escrow releases, milestone tracking, and dispute resolution led to higher trust and volume.',
-    media: '/images/cases/placeholder.jpg',
+    media: '/images/cases/placeholder.svg',
   },
   {
     title: 'Design system refresh accelerated shipping by 3x',
     desc: 'A premium, accessible component library unified teams and improved build velocity.',
-    media: '/images/cases/placeholder.jpg',
+    media: '/images/cases/placeholder.svg',
   },
 ];
 
@@ -201,7 +201,7 @@ const Clients: React.FC = () => {
                   <button
                     key={c}
                     type="button"
-                    className={cn(common.chip, active && common.chipActive)}
+                    className={cn(common.chip, themed.chip, active && common.chipActive)}
                     aria-pressed={active}
                     data-active={active || undefined}
                     onClick={() => onSelect(c)}
@@ -252,7 +252,7 @@ const Clients: React.FC = () => {
             <h2 className={common.sectionTitle}>Impact Metrics</h2>
             <ul className={common.metricGrid} role="list">
               {metrics.map(m => (
-                <li key={m.label} className={common.metricCard}>
+                <li key={m.label} className={cn(common.metricCard, themed.metricCard)}>
                   <div className={common.metricValue}>{m.value}</div>
                   <div className={common.metricLabel}>{m.label}</div>
                   <div className={common.metricDetail}>{m.detail}</div>

@@ -1,17 +1,19 @@
 /* AI-HINT: Light theme overrides for Clients page. */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
-.subtitle { color: var(--text-secondary); }
+.themeWrapper { background: #f8fafc; color: #0f172a; }
+.subtitle { color: #475569; }
 
-.chip { background: var(--surface-elev); border-color: var(--border); color: var(--text-primary); }
-.chip:hover { background: var(--surface); }
+.chip { background: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; }
+.chip:hover { background: #f8fafc; }
 
-.logoCard { background: var(--surface-elev); border: 1px solid var(--border); }
-.caseCard { background: var(--surface-elev); border: 1px solid var(--border); }
-.caseTitle { color: var(--text-primary); }
-.caseDesc { color: var(--text-secondary); }
+.logoCard { background: #ffffff; border: 1px solid #e2e8f0; }
+.caseCard { background: #ffffff; border: 1px solid #e2e8f0; }
+.caseTitle { color: #0f172a; }
+.caseDesc { color: #475569; }
 
-.button { background: var(--primary); color: var(--text-on-primary); }
+.metricCard { background: #ffffff; border: 1px solid #e2e8f0; color: #0f172a; }
+
+.button { background: #4573df; color: #ffffff; }
 .button:hover { filter: brightness(1.05); }
-.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
-.buttonSecondary:hover { background: var(--surface); }
+.buttonSecondary { color: #0f172a; border: 1px solid #e2e8f0; background: transparent; }
+.buttonSecondary:hover { background: #f8fafc; }

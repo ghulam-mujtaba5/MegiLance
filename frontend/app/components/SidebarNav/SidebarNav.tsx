@@ -35,14 +35,64 @@ import {
   Phone,
   Lock,
   Star,
-  TrendingUp
+  TrendingUp,
+  Search,
+  Gavel,
+  Bot,
+  Video,
+  Wrench,
+  History,
+  Tag,
+  List,
+  Activity,
+  Heart
 } from 'lucide-react';
+import {
+  clientNavItems,
+  freelancerNavItems,
+  adminNavItems,
+  NavItem as ConfigNavItem
+} from '@/app/config/navigation';
+
+// Map string icon names to React components
+const iconMap: Record<string, React.ReactNode> = {
+  LayoutDashboard: <LayoutDashboard size={18} />,
+  MessageSquare: <MessageSquare size={18} />,
+  Briefcase: <Briefcase size={18} />,
+  FileText: <FileText size={18} />,
+  CreditCard: <CreditCard size={18} />,
+  Users: <Users size={18} />,
+  Star: <Star size={18} />,
+  Settings: <SettingsIcon size={18} />,
+  HelpCircle: <HelpCircle size={18} />,
+  Search: <Search size={18} />,
+  ShieldAlert: <ShieldAlert size={18} />,
+  Gavel: <Gavel size={18} />,
+  Bot: <Bot size={18} />,
+  LineChart: <LineChart size={18} />,
+  Video: <Video size={18} />,
+  Calendar: <Calendar size={18} />,
+  Lock: <Lock size={18} />,
+  Wallet: <Wallet size={18} />,
+  TrendingUp: <TrendingUp size={18} />,
+  User: <User size={18} />,
+  Phone: <Phone size={18} />,
+  BarChart3: <BarChart3 size={18} />,
+  FolderGit2: <FolderGit2 size={18} />,
+  Bell: <Bell size={18} />,
+  Heart: <Heart size={18} />,
+  Wrench: <Wrench size={18} />,
+  History: <History size={18} />,
+  Tag: <Tag size={18} />,
+  List: <List size={18} />,
+  Activity: <Activity size={18} />,
+};
 
 // Define the structure for a navigation item
 export interface NavItem {
   href: string;
   label: string;
-  icon: React.ReactNode;
+  icon: React.ReactNode | string;
   badge?: string | number;
   submenu?: NavItem[];
   status?: FeatureStatus;
@@ -69,74 +119,31 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   const { resolvedTheme } = useTheme(); // Use hook for theme
   const [openSubmenus, setOpenSubmenus] = React.useState<Record<string, boolean>>({});
 
+  // Helper to convert ConfigNavItem to local NavItem
+  const mapConfigItems = (items: ConfigNavItem[]): NavItem[] => {
+    return items.map(item => ({
+      href: item.href,
+      label: item.label,
+      icon: item.icon && iconMap[item.icon] ? iconMap[item.icon] : <HelpCircle size={18} />,
+      badge: item.badge,
+      submenu: item.submenu ? mapConfigItems(item.submenu) : undefined,
+      status: 'complete' // Default status
+    }));
+  };
+
   // Provide sensible defaults when navItems are not passed in, based on userType
   const computedNavItems: NavItem[] = navItems && navItems.length > 0
     ? navItems
     : ((): NavItem[] => {
         switch (userType) {
           case 'admin':
-            return [
-              { href: '/admin/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
-              { href: '/admin/users', label: 'Users', icon: <Users size={18} />, badge: '12', status: 'complete' },
-              { href: '/admin/projects', label: 'Projects', icon: <FolderGit2 size={18} />, status: 'complete' },
-              { href: '/admin/blog', label: 'Blog & News', icon: <FileText size={18} />, status: 'complete' },
-              { 
-                href: '/admin/payments', 
-                label: 'Payments', 
-                icon: <CreditCard size={18} />,
-                badge: '3',
-                status: 'complete',
-                submenu: [
-                  { href: '/admin/payments/invoices', label: 'Invoices', icon: <FileText size={14} />, status: 'complete' },
-                  { href: '/admin/payments/refunds', label: 'Refunds', icon: <CreditCard size={14} />, status: 'complete' },
-                  { href: '/admin/payments/multicurrency', label: 'Multi-Currency', icon: <CreditCard size={14} />, status: 'working' },
-                ]
-              },
-              { href: '/admin/analytics', label: 'Analytics', icon: <BarChart3 size={18} />, status: 'complete' },
-              { href: '/admin/fraud-alerts', label: '🚨 Fraud Alerts', icon: <ShieldAlert size={18} />, badge: '5', status: 'complete' },
-              { href: '/admin/security', label: 'Security', icon: <Lock size={18} />, status: 'complete' },
-              { href: '/admin/video-calls', label: 'Video Calls', icon: <Phone size={18} />, status: 'complete' },
-              { href: '/admin/ai-monitoring', label: 'AI Monitoring', icon: <LineChart size={18} />, status: 'complete' },
-              { href: '/admin/calendar', label: 'Calendar', icon: <Calendar size={18} />, status: 'complete' },
-              { href: '/admin/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
-            ];
+            return mapConfigItems(adminNavItems);
           case 'client':
-            return [
-              { href: '/client/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
-              { href: '/client/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7', status: 'complete' },
-              { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} />, status: 'complete' },
-              { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} />, status: 'complete' },
-              { href: '/client/video-calls', label: 'Video Calls', icon: <Phone size={18} />, status: 'complete' },
-              { href: '/client/analytics', label: 'Analytics', icon: <BarChart3 size={18} />, status: 'complete' },
-              { href: '/client/security', label: 'Security', icon: <Lock size={18} />, status: 'complete' },
-              { href: '/client/help', label: 'Help', icon: <HelpCircle size={18} />, status: 'complete' },
-              { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
-            ];
+            return mapConfigItems(clientNavItems);
           case 'freelancer':
-            return [
-              { href: '/freelancer/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
-              { href: '/freelancer/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '2', status: 'complete' },
-              { href: '/freelancer/projects', label: 'Projects', icon: <Briefcase size={18} />, status: 'complete' },
-              { href: '/freelancer/wallet', label: 'Wallet', icon: <Wallet size={18} />, status: 'complete' },
-              { href: '/freelancer/video-calls', label: 'Video Calls', icon: <Phone size={18} />, status: 'complete' },
-              { href: '/freelancer/analytics', label: 'Analytics', icon: <BarChart3 size={18} />, status: 'complete' },
-              { href: '/freelancer/security', label: 'Security', icon: <Lock size={18} />, status: 'complete' },
-              { href: '/freelancer/my-jobs', label: 'My Jobs', icon: <Briefcase size={18} />, status: 'complete' },
-              { href: '/freelancer/portfolio', label: 'Portfolio', icon: <User size={18} />, status: 'complete' },
-              { href: '/freelancer/reviews', label: 'Reviews', icon: <Star size={18} />, status: 'complete' },
-              { href: '/freelancer/rank', label: 'Rank', icon: <TrendingUp size={18} />, status: 'complete' },
-              { href: '/freelancer/help', label: 'Help', icon: <HelpCircle size={18} />, status: 'complete' },
-              { href: '/freelancer/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
-            ];
+            return mapConfigItems(freelancerNavItems);
           default:
-            // Default to client navigation if no specific user type
-            return [
-              { href: '/client/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} />, status: 'complete' },
-              { href: '/client/messages', label: 'Messages', icon: <MessageSquare size={18} />, badge: '7', status: 'complete' },
-              { href: '/client/projects', label: 'Projects', icon: <Briefcase size={18} />, status: 'complete' },
-              { href: '/client/payments', label: 'Payments', icon: <CreditCard size={18} />, status: 'complete' },
-              { href: '/client/settings', label: 'Settings', icon: <SettingsIcon size={18} />, status: 'complete' },
-            ];
+            return mapConfigItems(clientNavItems);
         }
       })();
 

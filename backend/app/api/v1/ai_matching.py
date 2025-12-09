@@ -81,6 +81,13 @@ async def get_general_recommendations(
     from app.models.project import Project
     from app.models.user import User
     
+    # Check if database session is available
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI matching service temporarily unavailable. Database connection required."
+        )
+    
     matching_service = get_matching_service(db)
     
     try:
@@ -161,6 +168,13 @@ async def get_freelancer_recommendations(
     
     Returns ranked list of freelancers with match scores and explanations
     """
+    # Check if database session is available
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI matching service temporarily unavailable. Database connection required."
+        )
+    
     matching_service = get_matching_service(db)
     
     try:
@@ -201,6 +215,13 @@ async def get_project_recommendations(
     - Availability
     - Historical success in similar projects
     """
+    # Check if database session is available
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI matching service temporarily unavailable. Database connection required."
+        )
+    
     freelancer_id = current_user["id"]
     matching_service = get_matching_service(db)
     
@@ -241,6 +262,13 @@ async def get_match_score(
     - Weights used in calculation
     - Explanation of score
     """
+    # Check if database session is available
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI matching service temporarily unavailable. Database connection required."
+        )
+    
     from app.models.project import Project
     from app.models.user import User
     
@@ -281,6 +309,13 @@ async def track_recommendation_click(
     
     This data is used to improve the ML matching algorithm over time
     """
+    # Check if database session is available
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI matching service temporarily unavailable. Database connection required."
+        )
+    
     matching_service = get_matching_service(db)
     
     try:

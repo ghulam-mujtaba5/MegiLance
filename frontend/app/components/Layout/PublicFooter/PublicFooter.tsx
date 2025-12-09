@@ -73,7 +73,7 @@ const PublicFooter = () => {
       <div className={cn(commonStyles.container, styles.container)}>
         <div className={commonStyles.mainContent}>
           <div className={commonStyles.brandColumn}>
-            <Link href="/" aria-label="MegiLance Home">
+            <Link href="/" aria-label="MegiLance Home" className={commonStyles.brandLink}>
               <MegiLanceLogo />
             </Link>
             <p className={cn(commonStyles.tagline, styles.tagline)}>

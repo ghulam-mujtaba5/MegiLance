@@ -21,6 +21,11 @@
   max-width: 280px;
 }
 
+.brandLink {
+  text-decoration: none !important;
+  display: inline-block;
+}
+
 .tagline {
   margin-top: 1rem;
   font-size: 0.9375rem; /* 15px */
@@ -51,6 +56,7 @@
 
 .linkItem {
   font-size: 0.9375rem; /* 15px */
+  text-decoration: none !important;
   transition: color 0.2s ease-in-out;
 }
 
@@ -78,6 +84,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none !important;
   transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 

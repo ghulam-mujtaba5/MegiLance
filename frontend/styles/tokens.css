@@ -82,6 +82,13 @@
   --neutral-950: #020617;
 
   /* ========================================
+     SURFACE ELEVATIONS - For cards, panels
+     ======================================== */
+  --surface-elev: var(--neutral-800);
+  --surface-elev-light: #ffffff;
+  --surface-elev-dark: var(--neutral-800);
+
+  /* ========================================
      PREMIUM GRADIENTS - 2025 Trend
      ======================================== */
   --gradient-primary: linear-gradient(135deg, #4573df 0%, #6b93f5 50%, #9b59b6 100%);

@@ -4,6 +4,7 @@
 
 import React from 'react';
 
+import { usePathname } from 'next/navigation';
 import Header from '@/app/components/Header/Header';
 import PublicFooter from '@/app/components/Layout/PublicFooter/PublicFooter';
 import ThemeToggleButton from '@/app/components/ThemeToggleButton';
@@ -16,12 +17,7 @@ import Breadcrumbs from '@/app/components/Breadcrumbs/Breadcrumbs';
 
 // Separate client component for the logic that uses hooks
 const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [pathname, setPathname] = React.useState<string | null>(null);
-  
-  React.useEffect(() => {
-    // Simple pathname detection
-    setPathname(window.location.pathname);
-  }, []);
+  const pathname = usePathname();
 
   /**
    * Determines if a given route should have minimal chrome.
@@ -45,6 +41,8 @@ const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) 
       '/admin',
       '/client',
       '/freelancer',
+      // Portal routes
+      '/portal',
     ];
 
     return portalOrAuthRoots.some(root => normalizedPath === root || normalizedPath.startsWith(`${root}/`));

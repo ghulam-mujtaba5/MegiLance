@@ -28,6 +28,11 @@ body {
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
+/* Remove default underlines from links */
+a {
+  text-decoration: none;
+}
+
 /* ============================================= */
 /*   PREMIUM SELECTION STYLES                   */
 /* ============================================= */

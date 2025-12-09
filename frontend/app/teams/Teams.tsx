@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
@@ -11,12 +10,12 @@ import light from './Teams.light.module.css';
 import dark from './Teams.dark.module.css';
 
 const team = [
-  { name: 'Megi Lawson', role: 'Founder & CEO', bio: 'Product-centric leader focused on experience, quality, and velocity.', avatar: '/images/team/ceo.jpg' },
-  { name: 'Daniel Park', role: 'CTO', bio: 'Systems thinker shipping secure, scalable platforms.', avatar: '/images/team/cto.jpg' },
-  { name: 'Aisha Khan', role: 'Head of Design', bio: 'Designing premium, accessible interfaces with purpose.', avatar: '/images/team/design.jpg' },
-  { name: 'Luis Garcia', role: 'Lead Blockchain Engineer', bio: 'Delivering audited, resilient smart contracts.', avatar: '/images/team/blockchain.jpg' },
-  { name: 'Sofia Rossi', role: 'Lead Frontend Engineer', bio: 'Building delightful, high-performance UI.', avatar: '/images/team/frontend.jpg' },
-  { name: 'Ethan Chen', role: 'Head of Growth', bio: 'Data-driven acquisition and retention strategies.', avatar: '/images/team/growth.jpg' },
+  { name: 'Megi Lawson', role: 'Founder & CEO', bio: 'Product-centric leader focused on experience, quality, and velocity.', avatar: 'https://ui-avatars.com/api/?name=Megi+Lawson&background=4573df&color=fff&size=128' },
+  { name: 'Daniel Park', role: 'CTO', bio: 'Systems thinker shipping secure, scalable platforms.', avatar: 'https://ui-avatars.com/api/?name=Daniel+Park&background=6366f1&color=fff&size=128' },
+  { name: 'Aisha Khan', role: 'Head of Design', bio: 'Designing premium, accessible interfaces with purpose.', avatar: 'https://ui-avatars.com/api/?name=Aisha+Khan&background=10b981&color=fff&size=128' },
+  { name: 'Luis Garcia', role: 'Lead Blockchain Engineer', bio: 'Delivering audited, resilient smart contracts.', avatar: 'https://ui-avatars.com/api/?name=Luis+Garcia&background=f59e0b&color=fff&size=128' },
+  { name: 'Sofia Rossi', role: 'Lead Frontend Engineer', bio: 'Building delightful, high-performance UI.', avatar: 'https://ui-avatars.com/api/?name=Sofia+Rossi&background=ec4899&color=fff&size=128' },
+  { name: 'Ethan Chen', role: 'Head of Growth', bio: 'Data-driven acquisition and retention strategies.', avatar: 'https://ui-avatars.com/api/?name=Ethan+Chen&background=8b5cf6&color=fff&size=128' },
 ];
 
 const values = [
@@ -44,7 +43,7 @@ const Teams: React.FC = () => {
             <StaggerContainer className={common.grid} delay={0.1}>
               {team.map((p) => (
                 <article key={p.name} className={common.card} aria-labelledby={`name-${p.name}`}>
-                  <Image
+                  <img
                     className={common.avatar}
                     src={p.avatar}
                     alt={`${p.name} avatar`}

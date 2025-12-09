@@ -1,7 +1,8 @@
-// @AI-HINT: Public talent directory preview page.
+// @AI-HINT: Public talent directory preview page - links to freelancers page.
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
@@ -79,7 +80,9 @@ const TalentDirectoryPage = () => {
             <div className={styles.skillsWrapper}>
               {p.skills.map(s => <span key={s} className={styles.skillTag}>{s}</span>)}
             </div>
-            <button className={styles.viewProfileBtn}>View Profile</button>
+            <Link href="/freelancers" className={styles.viewProfileBtn}>
+              View Profile
+            </Link>
           </li>
         ))}
         {filtered.length === 0 && <li className={styles.emptyState}>No matches.</li>}

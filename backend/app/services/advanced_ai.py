@@ -17,7 +17,7 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 import json
 import re
 import math
@@ -761,4 +761,10 @@ class AdvancedAIService:
 
 def get_advanced_ai_service(db: Session = Depends(get_db)) -> AdvancedAIService:
     """Get advanced AI service instance"""
+    if db is None:
+        raise HTTPException(
+            status_code=503,
+            detail="AI service temporarily unavailable. Database connection required."
+        )
     return AdvancedAIService(db)
+

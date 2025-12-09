@@ -112,6 +112,32 @@ def ensure_wallet_tables():
         )
     """)
     
+    # Create performance indexes for wallet_transactions
+    execute_query("""
+        CREATE INDEX IF NOT EXISTS idx_wallet_transactions_user_id 
+        ON wallet_transactions(user_id)
+    """)
+    
+    execute_query("""
+        CREATE INDEX IF NOT EXISTS idx_wallet_transactions_status 
+        ON wallet_transactions(status)
+    """)
+    
+    execute_query("""
+        CREATE INDEX IF NOT EXISTS idx_wallet_transactions_user_status 
+        ON wallet_transactions(user_id, status)
+    """)
+    
+    execute_query("""
+        CREATE INDEX IF NOT EXISTS idx_wallet_transactions_created 
+        ON wallet_transactions(created_at DESC)
+    """)
+    
+    execute_query("""
+        CREATE INDEX IF NOT EXISTS idx_wallet_transactions_user_created 
+        ON wallet_transactions(user_id, created_at DESC)
+    """)
+    
     execute_query("""
         CREATE TABLE IF NOT EXISTS payout_schedules (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

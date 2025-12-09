@@ -996,3 +996,73 @@ async def recommend_jobs_for_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error recommending jobs: {str(e)}"
         )
+
+
+# ============ Project Categorization Endpoint ============
+
+@router.post("/categorize-project")
+async def categorize_project(
+    title: str,
+    description: str,
+    current_user = Depends(get_current_user)
+):
+    """
+    AI Project Categorization - automatically categorizes projects based on title and description
+    
+    - **title**: Project title
+    - **description**: Project description
+    
+    Returns the most likely category and confidence scores for all categories
+    """
+    # Category keywords mapping
+    category_keywords = {
+        "web_development": ["website", "web app", "frontend", "backend", "fullstack", "html", "css", "javascript", 
+                           "react", "vue", "angular", "node", "django", "flask", "php", "laravel", "wordpress"],
+        "mobile_development": ["mobile app", "ios", "android", "flutter", "react native", "swift", "kotlin", 
+                              "mobile", "smartphone", "tablet", "app development"],
+        "design": ["logo", "ui", "ux", "graphic design", "branding", "photoshop", "illustrator", "figma", 
+                  "sketch", "wireframe", "mockup", "prototype", "visual design"],
+        "data_science": ["machine learning", "data analysis", "ai", "deep learning", "nlp", "computer vision",
+                        "tensorflow", "pytorch", "pandas", "numpy", "data mining", "predictive model"],
+        "writing": ["content writing", "blog", "article", "copywriting", "technical writing", "seo content",
+                   "ghostwriting", "editing", "proofreading", "creative writing"],
+        "marketing": ["seo", "social media", "digital marketing", "email campaign", "ppc", "google ads",
+                     "facebook ads", "marketing strategy", "brand awareness", "lead generation"],
+        "video_audio": ["video editing", "animation", "motion graphics", "sound design", "music production",
+                       "voiceover", "podcast", "youtube", "after effects", "premiere pro"],
+        "blockchain": ["smart contract", "web3", "cryptocurrency", "nft", "defi", "ethereum", "solidity",
+                      "blockchain", "crypto", "decentralized"],
+        "game_development": ["game", "unity", "unreal engine", "3d modeling", "game design", "gaming",
+                            "multiplayer", "mobile game", "pc game"],
+        "devops": ["devops", "ci/cd", "docker", "kubernetes", "aws", "azure", "gcp", "cloud deployment",
+                  "infrastructure", "monitoring", "automation"]
+    }
+    
+    # Combine title and description for analysis
+    text = f"{title} {description}".lower()
+    
+    # Calculate scores for each category
+    category_scores = {}
+    for category, keywords in category_keywords.items():
+        matches = sum(1 for keyword in keywords if keyword in text)
+        # Normalize score based on keyword matches
+        score = min(1.0, matches / 3)  # Cap at 1.0, full confidence after 3+ keyword matches
+        category_scores[category] = round(score, 3)
+    
+    # Find best category
+    best_category = max(category_scores, key=category_scores.get)
+    best_score = category_scores[best_category]
+    
+    # If no strong match, default to "other"
+    if best_score < 0.3:
+        best_category = "other"
+        best_score = 0.5
+    
+    return {
+        "category": best_category,
+        "confidence": best_score,
+        "all_scores": category_scores,
+        "title": title,
+        "analysis_quality": "high" if len(description) > 50 else "medium"
+    }
+

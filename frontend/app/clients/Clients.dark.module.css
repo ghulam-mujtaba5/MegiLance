@@ -3,15 +3,17 @@
 .themeWrapper { background: var(--surface); color: var(--text-primary); }
 .subtitle { color: var(--text-secondary); }
 
-.chip { background: var(--surface-elev); border-color: var(--border); color: var(--text-primary); }
+.chip { background: var(--surface-elev, #1e293b); border-color: var(--border, #334155); color: var(--text-primary); }
 .chip:hover { background: var(--surface); }
 
-.logoCard { background: var(--surface-elev); border: 1px solid var(--border); }
-.caseCard { background: var(--surface-elev); border: 1px solid var(--border); }
+.logoCard { background: var(--surface-elev, #1e293b); border: 1px solid var(--border, #334155); }
+.caseCard { background: var(--surface-elev, #1e293b); border: 1px solid var(--border, #334155); }
 .caseTitle { color: var(--text-primary); }
 .caseDesc { color: var(--text-secondary); }
 
+.metricCard { background: var(--surface-elev, #1e293b); border: 1px solid var(--border, #334155); }
+
 .button { background: var(--primary); color: var(--text-on-primary); }
 .button:hover { filter: brightness(1.06); }
-.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
+.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border, #334155); }
 .buttonSecondary:hover { background: var(--surface); }

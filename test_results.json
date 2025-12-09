@@ -1,37 +1,127 @@
-[
-  {
-    "timestamp": "2025-12-07T20:01:37.628889",
-    "section": "HEALTH",
-    "status": "PASS",
-    "message": "Backend is responding",
-    "details": "Status: 200"
-  },
-  {
-    "timestamp": "2025-12-07T20:01:37.652882",
-    "section": "AUTH",
-    "status": "FAIL",
-    "message": "Login failed: 500",
-    "details": "Response: {\"detail\":\"Authentication failed\"}"
-  },
-  {
-    "timestamp": "2025-12-07T20:01:37.712882",
-    "section": "REGISTRATION",
-    "status": "FAIL",
-    "message": "Registration failed: 500",
-    "details": "Email: test_client@megilance.com"
-  },
-  {
-    "timestamp": "2025-12-07T20:01:37.775883",
-    "section": "REGISTRATION",
-    "status": "FAIL",
-    "message": "Registration failed: 500",
-    "details": "Email: test_freelancer@megilance.com"
-  },
-  {
-    "timestamp": "2025-12-07T20:01:37.843882",
-    "section": "REGISTRATION",
-    "status": "FAIL",
-    "message": "Registration failed: 500",
-    "details": "Email: test_admin@megilance.com"
-  }
-]
+{
+  "passed": 15,
+  "failed": 9,
+  "total": 24,
+  "details": [
+    {
+      "test": "Health Ready",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "Health Live",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "Root API",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "GET /users (admin)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /auth/me (admin)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /auth/me (client)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /auth/me (freelancer)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /projects (public)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /projects (client)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /projects (freelancer)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /proposals (freelancer)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /proposals (client)",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /wallet/balance (freelancer)",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "GET /wallet/transactions (freelancer)",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "GET /wallet/balance (client)",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "GET /notifications (admin)",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "GET /notifications/unread/count (admin)",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "GET /admin/users",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /admin/projects",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /admin/analytics/overview",
+      "status": "ERROR",
+      "error": "HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "Search freelancers",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "Search projects",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /skills",
+      "status": "PASS",
+      "code": 200
+    },
+    {
+      "test": "GET /categories",
+      "status": "PASS",
+      "code": 200
+    }
+  ]
+}
