@@ -165,7 +165,7 @@ const Header: React.FC = () => {
             </Link>
 
             {/* Mega Menu Items */}
-            {(Object.keys(megaMenuData) as Array<keyof typeof megaMenuData>).map((key) => (
+            {(Object.keys(megaMenuData) as Array<keyof typeof megaMenuData>).map((key, index, arr) => (
               <div 
                 key={key}
                 className={commonStyles.navDropdownWrapper}
@@ -196,7 +196,8 @@ const Header: React.FC = () => {
                   className={cn(
                     commonStyles.megaMenu,
                     themeStyles.megaMenu,
-                    activeMenu === key && commonStyles.megaMenuActive
+                    activeMenu === key && commonStyles.megaMenuActive,
+                    index === arr.length - 1 && commonStyles.megaMenuRight
                   )}
                   onMouseEnter={() => handleMenuEnter(key)}
                   onMouseLeave={handleMenuLeave}

@@ -101,6 +101,17 @@
   border: 1px solid;
 }
 
+/* Position mega menu to the right for rightmost dropdowns to prevent overflow */
+.megaMenuRight {
+  left: auto;
+  right: 0;
+  transform: translateX(0) translateY(-10px);
+}
+
+.megaMenuRight.megaMenuActive {
+  transform: translateX(0) translateY(0);
+}
+
 .megaMenuActive {
   opacity: 1;
   visibility: visible;
