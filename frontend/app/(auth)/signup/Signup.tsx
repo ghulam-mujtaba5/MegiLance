@@ -1,13 +1,13 @@
 // @AI-HINT: This is the fully redesigned Signup page, architected for a premium user experience. It features the same two-panel layout as the Login page for brand consistency and uses the sophisticated Tabs component for role selection.
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { isPreviewMode } from '@/app/utils/flags';
 
 import Button from '@/app/components/Button/Button';
@@ -48,9 +48,37 @@ const roleConfig = {
 const Signup: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
-  const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
+  const searchParams = useSearchParams();
+  
+  // Get initial role from URL params or localStorage
+  const getInitialRole = (): UserRole => {
+    const urlRole = searchParams.get('role');
+    if (urlRole === 'client' || urlRole === 'freelancer') return urlRole;
+    
+    // Check localStorage fallback
+    if (typeof window !== 'undefined') {
+      try {
+        const storedRole = window.localStorage.getItem('signup_role');
+        if (storedRole === 'client' || storedRole === 'freelancer') {
+          window.localStorage.removeItem('signup_role'); // Clear after use
+          return storedRole;
+        }
+      } catch (e) {}
+    }
+    return 'freelancer';
+  };
+  
+  const [selectedRole, setSelectedRole] = useState<UserRole>(getInitialRole());
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Update role when URL params change
+  useEffect(() => {
+    const urlRole = searchParams.get('role');
+    if (urlRole === 'client' || urlRole === 'freelancer') {
+      setSelectedRole(urlRole);
+    }
+  }, [searchParams]);
   
   const [formData, setFormData] = useState({
     fullName: '',

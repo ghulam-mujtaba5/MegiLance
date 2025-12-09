@@ -1,6 +1,9 @@
 domains:
-- domain: www.megilance.site
+- domain: megilance.site
   type: PRIMARY
+  zone: megilance.site
+- domain: www.megilance.site
+  type: ALIAS
   zone: megilance.site
 - domain: api.megilance.site
   type: ALIAS

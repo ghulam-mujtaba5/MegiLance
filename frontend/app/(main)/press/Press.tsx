@@ -7,13 +7,54 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
+import { Download, Copy, Mail, Newspaper, Award, TrendingUp, Calendar, ExternalLink } from 'lucide-react';
 import common from './Press.common.module.css';
 import light from './Press.light.module.css';
 import dark from './Press.dark.module.css';
 
+const pressReleases = [
+  { 
+    id: 'pr1', 
+    title: 'MegiLance Launches AI-Powered Freelance Matching Platform', 
+    date: 'January 15, 2025',
+    description: 'Revolutionary 7-factor AI algorithm connects businesses with top freelance talent.'
+  },
+  { 
+    id: 'pr2', 
+    title: 'MegiLance Secures $2M Seed Funding', 
+    date: 'December 1, 2024',
+    description: 'Investment to expand platform capabilities and global reach.'
+  },
+  { 
+    id: 'pr3', 
+    title: 'Zero-Fee Blockchain Payments Now Live', 
+    date: 'November 15, 2024',
+    description: 'USDC escrow system eliminates traditional payment fees for freelancers.'
+  },
+];
+
+const mediaFeatures = [
+  { outlet: 'TechCrunch', title: 'The Future of Freelancing', url: '#' },
+  { outlet: 'Forbes', title: 'Top AI Startups to Watch', url: '#' },
+  { outlet: 'Wired', title: 'Blockchain Meets Gig Economy', url: '#' },
+];
+
+const companyStats = [
+  { label: 'Founded', value: '2024' },
+  { label: 'Headquarters', value: 'Remote-First' },
+  { label: 'Team Size', value: '15+' },
+  { label: 'Users', value: '10,000+' },
+];
+
 const Press: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
+
+  const copyBoilerplate = () => {
+    const text = 'MegiLance is an AI-powered freelance marketplace that connects businesses with top talent through intelligent matching. Featuring secure USDC escrow payments with zero fees, real-time collaboration tools, and investor-grade security, MegiLance is revolutionizing how the world works together.';
+    navigator.clipboard?.writeText(text);
+    alert('Boilerplate copied to clipboard!');
+  };
 
   return (
     <PageTransition>
@@ -34,38 +75,119 @@ const Press: React.FC = () => {
           <ScrollReveal>
             <header className={common.header}>
               <span className={common.badge}>Press & Media</span>
-              <h1 id="press-title" className={common.title}>MegiLance Press</h1>
-              <p className={common.subtitle}>Resources for journalists and partners. Brand assets, boilerplate, and contacts.</p>
+              <h1 id="press-title" className={common.title}>MegiLance Press Room</h1>
+              <p className={common.subtitle}>Resources for journalists and partners. Brand assets, news, and media contacts.</p>
             </header>
           </ScrollReveal>
 
+          {/* Company Quick Stats */}
+          <section aria-labelledby="stats-heading" className={common.section}>
+            <ScrollReveal>
+              <h2 id="stats-heading" className={common.sectionTitle}>Company at a Glance</h2>
+            </ScrollReveal>
+            <StaggerContainer className={common.statsGrid}>
+              {companyStats.map((stat, idx) => (
+                <StaggerItem key={idx} className={common.statCard}>
+                  <span className={common.statValue}>{stat.value}</span>
+                  <span className={common.statLabel}>{stat.label}</span>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </section>
+
+          {/* Press Kit Section */}
           <section aria-labelledby="press-kit-heading" className={common.section}>
             <ScrollReveal>
               <h2 id="press-kit-heading" className={common.sectionTitle}>Press Kit</h2>
             </ScrollReveal>
             <StaggerContainer className={common.grid}>
               <StaggerItem className={common.card}>
-                <h3 className={common.cardTitle}>Logos & Assets</h3>
-                <p>Download high‑res logos, app icons, and screenshots.</p>
+                <div className={common.cardIcon}>
+                  <Download size={24} />
+                </div>
+                <h3 className={common.cardTitle}>Logos & Brand Assets</h3>
+                <p>Download high-resolution logos, app icons, product screenshots, and brand guidelines.</p>
                 <a className={cn(common.button, common.primary)} href="/assets/press/megilance-press-kit.zip" aria-label="Download MegiLance press kit">
+                  <Download size={16} />
                   Download Press Kit
                 </a>
               </StaggerItem>
               <StaggerItem className={common.card}>
+                <div className={common.cardIcon}>
+                  <Copy size={24} />
+                </div>
                 <h3 className={common.cardTitle}>Company Boilerplate</h3>
-                <p>MegiLance is an AI-powered freelance marketplace with secure USDC escrow and investor‑grade UX.</p>
-                <button type="button" className={cn(common.button, common.secondary)} onClick={() => navigator.clipboard?.writeText('MegiLance is an AI-powered freelance marketplace with secure USDC escrow and investor‑grade UX.')}
-                  aria-label="Copy company boilerplate to clipboard">
-                  Copy Text
+                <p>MegiLance is an AI-powered freelance marketplace that connects businesses with top talent through intelligent matching.</p>
+                <button 
+                  type="button" 
+                  className={cn(common.button, common.secondary)} 
+                  onClick={copyBoilerplate}
+                  aria-label="Copy company boilerplate to clipboard"
+                >
+                  <Copy size={16} />
+                  Copy Boilerplate
                 </button>
               </StaggerItem>
             </StaggerContainer>
           </section>
 
+          {/* Press Releases */}
+          <section aria-labelledby="press-releases-heading" className={common.section}>
+            <ScrollReveal>
+              <h2 id="press-releases-heading" className={common.sectionTitle}>
+                <Newspaper size={20} className="inline mr-2" />
+                Recent Press Releases
+              </h2>
+            </ScrollReveal>
+            <StaggerContainer className={common.releasesList}>
+              {pressReleases.map((pr) => (
+                <StaggerItem key={pr.id} className={common.releaseCard}>
+                  <div className={common.releaseDate}>
+                    <Calendar size={14} />
+                    {pr.date}
+                  </div>
+                  <h3 className={common.releaseTitle}>{pr.title}</h3>
+                  <p className={common.releaseDesc}>{pr.description}</p>
+                  <a href="#" className={common.releaseLink}>
+                    Read Full Release <ExternalLink size={14} />
+                  </a>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </section>
+
+          {/* Media Features */}
+          <section aria-labelledby="media-features-heading" className={common.section}>
+            <ScrollReveal>
+              <h2 id="media-features-heading" className={common.sectionTitle}>
+                <Award size={20} className="inline mr-2" />
+                Featured In
+              </h2>
+            </ScrollReveal>
+            <StaggerContainer className={common.mediaGrid}>
+              {mediaFeatures.map((feature, idx) => (
+                <StaggerItem key={idx} className={common.mediaCard}>
+                  <span className={common.mediaOutlet}>{feature.outlet}</span>
+                  <p className={common.mediaTitle}>{feature.title}</p>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </section>
+
+          {/* Media Contact */}
           <section aria-labelledby="media-contact-heading" className={common.section}>
             <ScrollReveal>
-              <h2 id="media-contact-heading" className={common.sectionTitle}>Media Inquiries</h2>
-              <p>Reach our communications team at <a className={common.link} href="mailto:press@megilance.com">press@megilance.com</a>.</p>
+              <div className={common.contactCard}>
+                <div className={common.contactIcon}>
+                  <Mail size={32} />
+                </div>
+                <h2 id="media-contact-heading" className={common.sectionTitle}>Media Inquiries</h2>
+                <p>For press inquiries, interviews, or partnership opportunities, reach our communications team:</p>
+                <a className={cn(common.button, common.primary)} href="mailto:press@megilance.com">
+                  <Mail size={16} />
+                  press@megilance.com
+                </a>
+              </div>
             </ScrollReveal>
           </section>
         </div>

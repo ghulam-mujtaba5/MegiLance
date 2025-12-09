@@ -1,20 +1,49 @@
 /* @AI-HINT: Careers page common tokens and structure */
 .page { display: block; }
 .container { max-width: 1120px; margin: 0 auto; padding: 64px 20px; }
-.header { text-align: center; margin-bottom: 40px; opacity: 0; transform: translateY(8px); transition: opacity .4s ease, transform .4s ease; }
-.title { font-family: var(--font-heading, Poppins); font-size: 2.25rem; line-height: 1.2; margin: 8px 0; }
-.subtitle { color: var(--text-muted); }
-.badge { display: inline-block; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); font-size: .75rem; }
-.section { margin: 48px 0; }
-.sectionTitle { font-size: 1.25rem; margin-bottom: 16px; }
-.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; opacity: 0; transform: translateY(8px); transition: opacity .4s ease, transform .4s ease; }
-.roleCard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--elevation-sm); display: flex; flex-direction: column; gap: 8px; }
-.roleTitle { font-weight: 600; }
-.roleMeta { color: var(--text-muted); font-size: .9rem; }
-.button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid transparent; text-decoration: none; font-weight: 600; }
-.applyButton { background: var(--brand); color: white; box-shadow: var(--elevation-sm); transition: transform .12s ease, box-shadow .12s ease, background .2s ease; }
-.applyButton:hover { transform: translateY(-1px); box-shadow: var(--elevation-md); }
-.applyButton:focus-visible { outline: 2px solid var(--brand); outline: 2px solid color-mix(in srgb, var(--brand) 60%, white); outline-offset: 2px; }
-.valuesList { display: grid; gap: 8px; list-style: disc; padding-inline-start: 20px; }
-.isVisible { opacity: 1; transform: translateY(0); }
-.isNotVisible { opacity: 0; transform: translateY(8px); }
+.header { text-align: center; margin-bottom: 48px; }
+.title { font-family: var(--font-heading, Poppins); font-size: 2.5rem; line-height: 1.2; margin: 12px 0; font-weight: 700; }
+.subtitle { color: var(--text-muted); font-size: 1.125rem; max-width: 600px; margin: 0 auto; }
+.badge { display: inline-block; padding: 6px 14px; border-radius: 999px; background: linear-gradient(135deg, var(--brand) 0%, #6b4cff 100%); color: white; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.section { margin: 56px 0; }
+.sectionTitle { font-size: 1.5rem; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+/* Values Grid */
+.valuesGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+@media (max-width: 768px) { .valuesGrid { grid-template-columns: 1fr; } }
+.valueCard { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.valueCard:hover { transform: translateY(-4px); box-shadow: var(--elevation-md); }
+.valueIcon { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--brand) 0%, #6b4cff 100%); color: white; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.valueTitle { font-weight: 600; font-size: 1.125rem; margin: 0 0 8px 0; }
+.valueDesc { color: var(--text-muted); font-size: 0.9rem; margin: 0; line-height: 1.5; }
+
+/* Roles Grid */
+.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+.roleCard { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--elevation-sm); display: flex; flex-direction: column; gap: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.roleCard:hover { transform: translateY(-4px); box-shadow: var(--elevation-md); }
+.roleHeader { display: flex; align-items: center; gap: 12px; }
+.roleIcon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--brand) 0%, #6b4cff 100%); color: white; display: flex; align-items: center; justify-content: center; }
+.roleDept { background: var(--surface-2); padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 500; color: var(--text-muted); }
+.roleTitle { font-weight: 600; font-size: 1.25rem; margin: 0; }
+.roleDesc { color: var(--text-muted); font-size: 0.9rem; margin: 0; line-height: 1.5; flex-grow: 1; }
+.roleMeta { display: flex; gap: 16px; flex-wrap: wrap; }
+.roleMetaItem { display: flex; align-items: center; gap: 6px; color: var(--text-muted); font-size: 0.875rem; }
+
+/* Benefits Grid */
+.benefitsGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+.benefitCard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; transition: transform 0.2s ease; }
+.benefitCard:hover { transform: translateY(-2px); }
+.benefitIcon { color: var(--brand); margin-bottom: 12px; }
+.benefitTitle { font-weight: 600; font-size: 1rem; margin: 0 0 4px 0; }
+.benefitDesc { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
+
+/* CTA Card */
+.ctaCard { background: linear-gradient(135deg, var(--brand) 0%, #6b4cff 100%); border-radius: 20px; padding: 48px; text-align: center; color: white; }
+.ctaTitle { font-size: 1.75rem; font-weight: 700; margin: 0 0 12px 0; }
+.ctaDesc { color: rgba(255,255,255,0.9); margin: 0 0 24px 0; font-size: 1.1rem; }
+.ctaButton { background: white !important; color: var(--brand) !important; }
+
+/* Buttons */
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 10px; border: 1px solid transparent; text-decoration: none; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.applyButton { background: var(--brand); color: white; box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3); margin-top: auto; }
+.applyButton:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(69, 115, 223, 0.4); }
