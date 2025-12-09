@@ -1,166 +1,522 @@
-/* Enterprise Page Common Styles */
+/* @AI-HINT: Enterprise page common styles - premium investor-grade design with animations */
+
+/* Layout */
 .page {
   min-height: 100vh;
-  padding: 2rem 0;
+  padding-top: 2rem;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }
 
-.header {
+/* Hero Section */
+.heroSection {
+  padding: 4rem 0 3rem;
+  text-align: center;
+}
+
+.heroContent {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.heroTitle {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.03em;
+}
+
+.heroGradient {
+  background: linear-gradient(135deg, var(--primary, #4573df) 0%, #7c3aed 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  margin: 0 0 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.heroCtas {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+/* Trust Badges */
+.trustBadges {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.trustBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+}
+
+.trustBadgeName {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.trustBadgeDesc {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Stats Section */
+.statsSection {
+  padding: 3rem 0;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.statCard {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-radius: 16px;
+  transition: transform 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+}
+
+.statIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.statValue {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.statDesc {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Section Styles */
+.section {
+  padding: 4rem 0;
+}
+
+.sectionHeader {
   text-align: center;
   margin-bottom: 3rem;
 }
 
-.title {
-  font-size: 3rem;
-  font-weight: 700;
-  margin: 0 0 1rem 0;
-  line-height: 1.2;
-}
-
-.subtitle {
-  font-size: 1.25rem;
-  margin: 0;
-  opacity: 0.8;
-}
-
-.section {
-  margin-bottom: 4rem;
-}
-
 .sectionTitle {
-  font-size: 2rem;
-  font-weight: 600;
-  margin: 0 0 2rem 0;
-  text-align: center;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
 }
 
+.sectionSubtitle {
+  font-size: 1.125rem;
+  margin: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Features Grid */
 .featuresGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }
 
 .featureCard {
-  background: var(--card-bg);
-  border-radius: 12px;
   padding: 2rem;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+}
+
+.featureIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.featureHighlight {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
 }
 
 .featureTitle {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
 }
 
 .featureDescription {
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.65;
   margin: 0;
-  color: var(--text-secondary);
+}
+
+/* Use Cases */
+.useCasesSection {
+  position: relative;
+}
+
+.useCasesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.useCaseCard {
+  padding: 2rem;
+  border-radius: 16px;
+  transition: transform 0.2s ease;
+}
+
+.useCaseCard:hover {
+  transform: translateY(-4px);
+}
+
+.useCaseHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.useCaseStats {
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.useCaseTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.useCaseDescription {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.useCaseBenefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  font-size: 0.9rem;
+}
+
+/* Testimonials */
+.testimonialsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.testimonialCard {
+  padding: 2rem;
+  border-radius: 16px;
+  transition: transform 0.2s ease;
+}
+
+.testimonialCard:hover {
+  transform: translateY(-4px);
+}
+
+.testimonialStars {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.testimonialQuote {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin: 0 0 1.5rem;
+  font-style: italic;
+}
+
+.testimonialAuthor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.authorAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.authorInfo {
+  flex: 1;
+}
+
+.authorName {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.authorRole {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Plans Section */
+.plansSection {
+  position: relative;
 }
 
 .plansGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  align-items: stretch;
 }
 
 .planCard {
-  background: var(--card-bg);
-  border-radius: 12px;
   padding: 2rem;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.2s ease;
 }
 
-.planTitle {
+.planCard:hover {
+  transform: translateY(-4px);
+}
+
+.planHighlighted {
+  transform: scale(1.02);
+}
+
+.planHighlighted:hover {
+  transform: scale(1.02) translateY(-4px);
+}
+
+.planBadge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.planName {
   font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-  color: var(--text-primary);
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+}
+
+.planDescription {
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+  opacity: 0.7;
 }
 
 .planPrice {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0 0 1.5rem 0;
-  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
 }
 
 .planFeatures {
   list-style: none;
   padding: 0;
-  margin: 0 0 2rem 0;
+  margin: 0 0 1.5rem;
+  flex: 1;
 }
 
-.planFeatures li {
+.planFeatureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--card-border);
-  color: var(--text-primary);
+  font-size: 0.9rem;
 }
 
-.planFeatures li:last-child {
-  border-bottom: none;
-}
-
-.planButton {
-  display: inline-block;
-  background: var(--primary-color);
-  color: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
+.planCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
   font-weight: 600;
-  transition: background-color 0.2s ease;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
-.planButton:hover {
-  background: var(--primary-hover);
+.planCtaPrimary {
+  /* Override styles in theme files */
 }
 
-.contactText {
+/* CTA Section */
+.ctaSection {
+  padding-bottom: 4rem;
+}
+
+.ctaBox {
+  padding: 3rem;
+  border-radius: 24px;
   text-align: center;
-  font-size: 1.125rem;
-  margin: 0 0 2rem 0;
-  color: var(--text-primary);
-}
-
-.contactButton {
-  display: inline-block;
-  background: var(--primary-color);
-  color: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.125rem;
-  transition: background-color 0.2s ease;
+  max-width: 800px;
   margin: 0 auto;
 }
 
-.contactButton:hover {
-  background: var(--primary-hover);
+.ctaTitle {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  margin: 0 0 1rem;
 }
 
-@media (max-width: 768px) {
-  .title {
-    font-size: 2.5rem;
+.ctaDescription {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin: 0 0 2rem;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .useCasesGrid {
+    grid-template-columns: 1fr;
+  }
+  .testimonialsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
   .featuresGrid {
     grid-template-columns: 1fr;
   }
-  
   .plansGrid {
     grid-template-columns: 1fr;
+  }
+  .trustBadges {
+    gap: 1rem;
   }
 } 

@@ -32,7 +32,9 @@ from .v1 import (
     # Pakistan Payments - USDC, JazzCash, EasyPaisa, Wise, Payoneer
     pakistan_payments,
     # Blog & News
-    blog
+    blog,
+    # Public clients showcase
+    public_clients
 )
 # Import separately to avoid circular import in Python 3.13
 from .v1 import complete_integrations
@@ -382,3 +384,6 @@ api_router.include_router(complete_integrations.router, prefix="", tags=["comple
 
 # Blog & News
 api_router.include_router(blog.router, prefix="/blog", tags=["blog"])
+
+# Public clients showcase (no auth required)
+api_router.include_router(public_clients.router, tags=["public-clients"])

@@ -220,6 +220,40 @@ def to_str(value: Any) -> Optional[str]:
     return str(value)
 
 
+def to_int(value: Any) -> Optional[int]:
+    """Convert value to integer, handling Turso dict format"""
+    if value is None:
+        return None
+    # Handle Turso format: {"type": "integer", "value": 123}
+    if isinstance(value, dict):
+        if value.get("type") == "null":
+            return None
+        value = value.get("value")
+        if value is None:
+            return None
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def to_float(value: Any) -> Optional[float]:
+    """Convert value to float, handling Turso dict format"""
+    if value is None:
+        return None
+    # Handle Turso format: {"type": "float"|"real", "value": 123.45}
+    if isinstance(value, dict):
+        if value.get("type") == "null":
+            return None
+        value = value.get("value")
+        if value is None:
+            return None
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
 def parse_date(value: Any) -> Optional[Any]:
     """Parse date value safely"""
     if value is None:

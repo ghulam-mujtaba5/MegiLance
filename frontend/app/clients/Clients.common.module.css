@@ -19,8 +19,13 @@
 @media (max-width: 800px) { .grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
 @media (max-width: 520px) { .grid { grid-template-columns: 1fr; } }
 
-.logoCard { border: 1px solid transparent; border-radius: var(--border-radius-lg); padding: var(--spacing-6); display: grid; place-items: center; aspect-ratio: 4 / 3; }
-.logo { max-width: 140px; width: 100%; height: auto; filter: saturate(0.95); }
+.logoCard { border: 1px solid transparent; border-radius: var(--border-radius-lg); padding: var(--spacing-6); display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 4 / 3; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.logoCard:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.logo { max-width: 140px; width: 100%; height: auto; filter: saturate(0.95); margin-bottom: var(--spacing-3); }
+.logoCaption { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.logoName { font-weight: var(--font-weight-semibold); font-size: var(--font-size-base); }
+.logoIndustry { font-size: var(--font-size-sm); opacity: 0.7; }
+.logoProjects { font-size: var(--font-size-xs); opacity: 0.6; margin-top: 2px; }
 .skeleton { position: relative; overflow: hidden; background: var(--skeleton-bg, #eceff1); }
 .skeleton:after { content: ""; position: absolute; inset:0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent); animation: shimmer 1.2s infinite; }
 @keyframes shimmer { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%);} }

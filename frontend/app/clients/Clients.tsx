@@ -1,4 +1,4 @@
-// @AI-HINT: Clients page with theme-aware styling, animated sections, accessible structure, and optimized images.
+// @AI-HINT: Clients page with real data from API, theme-aware styling, animated sections, accessible structure.
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -18,18 +18,38 @@ import light from './Clients.light.module.css';
 import dark from './Clients.dark.module.css';
 
 const ALL = 'All';
-const industries = [ALL, 'AI', 'Fintech', 'E-commerce', 'Healthcare'];
 
-// Using placeholder assets until real logos are added (replace src with real optimized WebP/SVG)
-const logos = [
-  { name: 'AtlasAI', industry: 'AI', src: '/images/clients/placeholder.svg' },
-  { name: 'NovaBank', industry: 'Fintech', src: '/images/clients/placeholder.svg' },
-  { name: 'PixelMint', industry: 'E-commerce', src: '/images/clients/placeholder.svg' },
-  { name: 'CureWell', industry: 'Healthcare', src: '/images/clients/placeholder.svg' },
-  { name: 'CortexCloud', industry: 'AI', src: '/images/clients/placeholder.svg' },
-  { name: 'VoltPay', industry: 'Fintech', src: '/images/clients/placeholder.svg' },
-  { name: 'ShopSphere', industry: 'E-commerce', src: '/images/clients/placeholder.svg' },
-  { name: 'Medisphere', industry: 'Healthcare', src: '/images/clients/placeholder.svg' },
+// Client data interface matching backend PublicClientResponse
+interface ClientData {
+  id: string;
+  name: string;
+  company_name: string | null;
+  industry: string;
+  logo_url: string | null;
+  description: string | null;
+  project_count: number;
+  joined_date: string;
+}
+
+// Stats interface matching backend ClientStatsResponse
+interface ClientStats {
+  total_clients: number;
+  total_projects: number;
+  industries: string[];
+  avg_project_value: number;
+  satisfaction_rate: number;
+}
+
+// Fallback demo data when API is unavailable
+const fallbackLogos: ClientData[] = [
+  { id: '1', name: 'AtlasAI', company_name: 'AtlasAI Corp', industry: 'AI', logo_url: '/images/clients/placeholder.svg', description: 'AI research company', project_count: 12, joined_date: '2024-01-15' },
+  { id: '2', name: 'NovaBank', company_name: 'NovaBank Inc', industry: 'Fintech', logo_url: '/images/clients/placeholder.svg', description: 'Digital banking platform', project_count: 8, joined_date: '2024-02-20' },
+  { id: '3', name: 'PixelMint', company_name: 'PixelMint LLC', industry: 'E-commerce', logo_url: '/images/clients/placeholder.svg', description: 'E-commerce solutions', project_count: 15, joined_date: '2024-03-10' },
+  { id: '4', name: 'CureWell', company_name: 'CureWell Health', industry: 'Healthcare', logo_url: '/images/clients/placeholder.svg', description: 'Healthcare technology', project_count: 6, joined_date: '2024-04-05' },
+  { id: '5', name: 'CortexCloud', company_name: 'CortexCloud AI', industry: 'AI', logo_url: '/images/clients/placeholder.svg', description: 'Cloud AI services', project_count: 20, joined_date: '2024-01-25' },
+  { id: '6', name: 'VoltPay', company_name: 'VoltPay Systems', industry: 'Fintech', logo_url: '/images/clients/placeholder.svg', description: 'Payment processing', project_count: 10, joined_date: '2024-02-28' },
+  { id: '7', name: 'ShopSphere', company_name: 'ShopSphere Global', industry: 'E-commerce', logo_url: '/images/clients/placeholder.svg', description: 'Global marketplace', project_count: 18, joined_date: '2024-03-15' },
+  { id: '8', name: 'Medisphere', company_name: 'Medisphere Labs', industry: 'Healthcare', logo_url: '/images/clients/placeholder.svg', description: 'Medical diagnostics', project_count: 9, joined_date: '2024-04-12' },
 ];
 
 const cases = [
@@ -56,7 +76,7 @@ interface Metric {
   detail: string;
 }
 
-const metrics: Metric[] = [
+const defaultMetrics: Metric[] = [
   { label: 'Avg. Activation Lift', value: '+42%', detail: 'AI-guided onboarding flows' },
   { label: 'Payment Reliability', value: '99.99%', detail: 'Audited escrow contracts' },
   { label: 'Shipping Velocity', value: '3×', detail: 'Unified component system' },
@@ -70,14 +90,70 @@ const Clients: React.FC = () => {
 
   const [selected, setSelected] = useState<string>(ALL);
   const [isLoading, setIsLoading] = useState(true);
-  // Simulate loading for skeleton UX (replace with real data fetch later)
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [industries, setIndustries] = useState<string[]>([ALL, 'AI', 'Fintech', 'E-commerce', 'Healthcare']);
+  const [stats, setStats] = useState<ClientStats | null>(null);
+  const [apiError, setApiError] = useState(false);
+
+  // Fetch real client data from API
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 400);
-    return () => clearTimeout(t);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch clients, stats, and industries in parallel
+        const [clientsRes, statsRes, industriesRes] = await Promise.all([
+          fetch('/backend/api/v1/public-clients/featured'),
+          fetch('/backend/api/v1/public-clients/stats'),
+          fetch('/backend/api/v1/public-clients/industries'),
+        ]);
+
+        if (clientsRes.ok) {
+          const clientsData = await clientsRes.json();
+          setClients(clientsData.length > 0 ? clientsData : fallbackLogos);
+        } else {
+          setClients(fallbackLogos);
+          setApiError(true);
+        }
+
+        if (statsRes.ok) {
+          const statsData = await statsRes.json();
+          setStats(statsData);
+        }
+
+        if (industriesRes.ok) {
+          const industriesData = await industriesRes.json();
+          if (industriesData.length > 0) {
+            setIndustries([ALL, ...industriesData]);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch client data:', error);
+        setClients(fallbackLogos);
+        setApiError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  // Dynamic metrics based on API stats
+  const metrics: Metric[] = useMemo(() => {
+    if (stats) {
+      return [
+        { label: 'Total Clients', value: stats.total_clients.toString(), detail: 'Trusted companies worldwide' },
+        { label: 'Projects Completed', value: stats.total_projects.toString(), detail: 'Successfully delivered' },
+        { label: 'Satisfaction Rate', value: `${stats.satisfaction_rate}%`, detail: 'Client happiness score' },
+        { label: 'Talent Match Accuracy', value: '92%', detail: 'ML-powered ranking' },
+      ];
+    }
+    return defaultMetrics;
+  }, [stats]);
+
   const filtered = useMemo(
-    () => (selected === ALL ? logos : logos.filter((l) => l.industry === selected)),
-    [selected]
+    () => (selected === ALL ? clients : clients.filter((c) => c.industry === selected)),
+    [selected, clients]
   );
 
   const onSelect = useCallback((c: string) => {
@@ -158,8 +234,15 @@ const Clients: React.FC = () => {
                 </div>
               )}
               {!isLoading && filtered.length > 0 && (
-                filtered.map((l) => (
-                  <ClientLogoCard key={l.name} name={l.name} src={l.src} industry={l.industry} />
+                filtered.map((client) => (
+                  <ClientLogoCard 
+                    key={client.id} 
+                    name={client.company_name || client.name} 
+                    src={client.logo_url || '/images/clients/placeholder.svg'} 
+                    industry={client.industry}
+                    projectCount={client.project_count}
+                    description={client.description}
+                  />
                 ))
               )}
             </StaggerContainer>
