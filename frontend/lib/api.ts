@@ -1,10 +1,9 @@
 // @AI-HINT: Comprehensive API client for MegiLance backend integration
 // Provides type-safe methods for all backend endpoints with proper error handling
 
-// FIX: Always use the Next.js proxy to avoid CORS issues
-// The proxy is configured in next.config.js: /backend/* -> http://localhost:8000/*
-// FORCE using proxy to avoid CORS - ignore environment variable
-const API_BASE_URL = '/backend/api';
+// In production on DO App Platform: /api routes directly to backend
+// In local dev: /api is proxied via next.config.js rewrites
+const API_BASE_URL = '/api';
 
 // Token storage keys - use constants to prevent typos
 const TOKEN_STORAGE_KEY = 'auth_token';
