@@ -1,0 +1,64 @@
+.card {
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.actionButton {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.role {
+  font-size: 0.875rem;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.rate {
+  margin-top: auto;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding-top: 0.75rem;
+  border-top-width: 1px;
+  border-top-style: solid;
+}

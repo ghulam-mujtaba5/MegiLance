@@ -1,0 +1,35 @@
+.card {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+}
+
+.card:hover {
+  border-color: #4b5563;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.actionButton {
+  color: #9ca3af;
+}
+
+.actionButton:hover {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
+.name {
+  color: #f9fafb;
+}
+
+.role {
+  color: #9ca3af;
+}
+
+.metaItem {
+  color: #9ca3af;
+}
+
+.rate {
+  color: #d1d5db;
+  border-top-color: #374151;
+}
