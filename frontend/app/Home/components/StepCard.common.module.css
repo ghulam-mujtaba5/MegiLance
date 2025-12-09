@@ -6,8 +6,7 @@
   width: 45%; /* Leave gap for timeline */
   box-sizing: border-box;
   border-radius: 24px;
-  margin-bottom: 2rem;
-  clear: both;
+  /* Removed float and clear */
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   transform: translateZ(0);
   will-change: transform;
@@ -30,19 +29,17 @@
   z-index: 10;
 }
 
-/* Position cards on alternating sides */
+/* Position cards on alternating sides using Flexbox alignment */
 .client {
-  float: left;
+  align-self: flex-start;
   text-align: right;
-  margin-right: 55%;
-  transform-origin: right center;
+  /* margin-right: 55%; REMOVED */
 }
 
 .freelancer {
-  float: right;
+  align-self: flex-end;
   text-align: left;
-  margin-left: 55%;
-  transform-origin: left center;
+  /* margin-left: 55%; REMOVED */
 }
 
 /* Connector Dot */
@@ -59,11 +56,11 @@
 }
 
 .client::before {
-  right: -11.5%; /* Adjust based on gap */
+  right: -13.5%; /* Adjusted for flex layout */
 }
 
 .freelancer::before {
-  left: -11.5%;
+  left: -13.5%; /* Adjusted for flex layout */
 }
 
 .stepCard:hover::before {
@@ -105,67 +102,57 @@
   font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   line-height: 1.2;
 }
 
 .description {
   font-family: var(--font-body);
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.6;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 .stepNumber {
   position: absolute;
   top: 1rem;
   font-family: var(--font-heading);
-  font-size: 5rem;
-  font-weight: 900;
+  font-size: 6rem;
+  font-weight: 800;
+  opacity: 0.05;
   line-height: 1;
+  pointer-events: none;
   z-index: 0;
-  opacity: 0.35;
-  transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
 }
 
 .client .stepNumber {
-  left: 2rem;
+  right: 1rem;
 }
 
 .freelancer .stepNumber {
-  right: 2rem;
-}
-
-.stepCard:hover .stepNumber {
-  opacity: 0.5;
-  transform: scale(1.05);
-  color: #4573df;
+  left: 1rem;
 }
 
 /* Responsive Design */
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .stepCard {
     width: 100%;
-    float: none;
-    margin-right: 0;
-    margin-left: 0;
+    padding-left: 4rem; /* Space for timeline line */
     text-align: left;
-    padding-left: 5rem;
   }
-
+  
   .client, .freelancer {
-    float: none;
-    margin: 0 0 2rem 0;
+    align-self: stretch;
     text-align: left;
   }
-
+  
   .client::before, .freelancer::before {
-    left: 1.5rem;
+    left: 1.5rem; /* Align with timeline line */
     right: auto;
   }
   
   .client .stepNumber, .freelancer .stepNumber {
+    right: 1rem;
     left: auto;
-    right: 2rem;
   }
 }

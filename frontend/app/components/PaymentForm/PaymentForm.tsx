@@ -101,8 +101,8 @@ export default function PaymentForm({
 
     try {
       const endpoint = isCrypto
-        ? '/backend/api/multicurrency/crypto-payment'
-        : '/backend/api/multicurrency/payments';
+        ? '/api/multicurrency/crypto-payment'
+        : '/api/multicurrency/payments';
 
       const payload = isCrypto
         ? {

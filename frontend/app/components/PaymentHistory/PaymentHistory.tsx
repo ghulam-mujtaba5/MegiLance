@@ -59,7 +59,7 @@ export default function PaymentHistory({
         if (projectId) params.append('project_id', projectId);
         
         const response = await fetch(
-          `/backend/api/multicurrency/payments/history?${params}`
+          `/api/multicurrency/payments/history?${params}`
         );
         
         if (!response.ok) {

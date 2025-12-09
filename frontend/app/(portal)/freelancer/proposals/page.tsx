@@ -93,7 +93,7 @@ const ProposalsPage: React.FC = () => {
     
     try {
       // Fetch proposals for current freelancer
-      const proposalsRes = await fetch('/backend/api/proposals/', {
+      const proposalsRes = await fetch('/api/proposals/', {
         credentials: 'include',
         headers: { 'Accept': 'application/json' },
       });
@@ -110,7 +110,7 @@ const ProposalsPage: React.FC = () => {
       // Fetch project details for job titles and client names
       const projectPromises = projectIds.map(async (pid) => {
         try {
-          const res = await fetch(`/backend/api/projects/${pid}`, {
+          const res = await fetch(`/api/projects/${pid}`, {
             credentials: 'include',
             headers: { 'Accept': 'application/json' },
           });
@@ -200,7 +200,7 @@ const ProposalsPage: React.FC = () => {
   const confirmWithdraw = async () => {
     if (pendingWithdrawId) {
       try {
-        const res = await fetch(`/backend/api/proposals/${pendingWithdrawId}`, {
+        const res = await fetch(`/api/proposals/${pendingWithdrawId}`, {
           method: 'DELETE',
           credentials: 'include',
           headers: { 'Accept': 'application/json' },

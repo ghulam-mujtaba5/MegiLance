@@ -165,7 +165,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
   const toggleWhiteboard = async () => {
     if (!showWhiteboard) {
       try {
-        await fetch(`/backend/api/video/calls/${callId}/whiteboard`, {
+        await fetch(`/api/video/calls/${callId}/whiteboard`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -183,7 +183,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
   const toggleRecording = async () => {
     try {
       if (!isRecording) {
-        await fetch(`/backend/api/video/calls/${callId}/recording/start`, {
+        await fetch(`/api/video/calls/${callId}/recording/start`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -191,7 +191,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
         });
         setIsRecording(true);
       } else {
-        await fetch(`/backend/api/video/calls/${callId}/recording/stop`, {
+        await fetch(`/api/video/calls/${callId}/recording/stop`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -206,7 +206,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
 
   const endCall = async () => {
     try {
-      await fetch(`/backend/api/video/calls/${callId}/end`, {
+      await fetch(`/api/video/calls/${callId}/end`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`

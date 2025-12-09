@@ -1,14 +1,35 @@
 from typing import List, Optional
 from datetime import datetime
-from bson import ObjectId
 from fastapi import HTTPException
-from app.db.mongodb import get_database
+
+try:
+    from bson import ObjectId
+    BSON_AVAILABLE = True
+except ImportError:
+    BSON_AVAILABLE = False
+    # Dummy ObjectId for when MongoDB is not available
+    class ObjectId:
+        def __init__(self, *args, **kwargs):
+            pass
+
+try:
+    from app.db.mongodb import get_database
+    MONGODB_AVAILABLE = True
+except ImportError:
+    MONGODB_AVAILABLE = False
+    def get_database():
+        return None
+
 from app.schemas.blog import BlogPostCreate, BlogPostUpdate, BlogPostInDB
 
 class BlogService:
     @staticmethod
     async def get_collection():
-        db = await get_database()
+        try:
+            db = await get_database()
+        except TypeError:
+            # get_database is not async when MongoDB unavailable
+            db = get_database()
         if db is None:
             raise HTTPException(status_code=503, detail="Blog service unavailable (MongoDB not connected)")
         return db["posts"]

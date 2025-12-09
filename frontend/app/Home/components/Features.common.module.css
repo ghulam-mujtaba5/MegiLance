@@ -4,8 +4,6 @@
   padding: 8rem 0;
   position: relative;
   overflow: hidden;
-  /* BILLIONAIRE LEVEL - 3D Context */
-  perspective: 1000px;
 }
 
 .container {
@@ -20,9 +18,6 @@
   text-align: center;
   margin-bottom: 6rem;
   position: relative;
-  /* BILLIONAIRE LEVEL - 3D Depth */
-  transform-style: preserve-3d;
-  transform: translateZ(0);
 }
 
 .tagline {
@@ -69,16 +64,13 @@
   grid-template-columns: repeat(12, 1fr);
   gap: 2.5rem;
   position: relative;
-  /* BILLIONAIRE LEVEL - 3D Context */
-  transform-style: preserve-3d;
+  /* Removed transform-style to prevent layout issues */
 }
 
 .heroCardWrapper {
   grid-column: span 12;
   margin-bottom: 2rem;
-  /* BILLIONAIRE LEVEL - 3D Card */
-  transform-style: preserve-3d;
-  transform: perspective(1000px) translateZ(0);
+  /* Removed transform-style */
 }
 
 .secondaryGrid {
@@ -86,8 +78,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2.5rem;
-  /* BILLIONAIRE LEVEL - 3D Context */
-  transform-style: preserve-3d;
+  /* Removed transform-style */
 }
 
 /* Responsive Design */

@@ -80,7 +80,7 @@ const PublicJobs: React.FC = () => {
     try {
       // Using api.projects.list but need to handle the search query manually since list takes specific filters
       // Or use api.search.projects if it's a search
-      // The original code used /backend/api/projects?limit=50&search=...
+      // The original code used /api/projects?limit=50&search=...
       // api.projects.list takes { status, category, page, page_size }
       // It seems api.projects.list doesn't support 'search' param in the type definition but let's check if we can pass it via 'any' or update api.ts
       

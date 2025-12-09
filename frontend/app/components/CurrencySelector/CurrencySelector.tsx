@@ -61,7 +61,7 @@ export default function CurrencySelector({
     const fetchCurrencies = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/backend/api/multicurrency/currencies');
+        const response = await fetch('/api/multicurrency/currencies');
         if (response.ok) {
           const data = await response.json();
           setCurrencies(data.fiat || []);
@@ -88,7 +88,7 @@ export default function CurrencySelector({
     const fetchExchangeRate = async () => {
       try {
         const response = await fetch(
-          `/backend/api/multicurrency/exchange-rate/${selectedCurrency}/${targetCurrency}`
+          `/api/multicurrency/exchange-rate/${selectedCurrency}/${targetCurrency}`
         );
         if (response.ok) {
           const data = await response.json();

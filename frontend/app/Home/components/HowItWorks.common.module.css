@@ -48,6 +48,7 @@
   font-family: var(--font-heading);
   font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 800;
+  letter-spacing: -0.03em;
   line-height: 1.1;
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg, #4573df 0%, #ff9800 100%);
@@ -69,6 +70,9 @@
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem; /* Explicit gap between cards */
   /* BILLIONAIRE LEVEL - 3D Context */
   transform-style: preserve-3d;
 }
@@ -87,135 +91,13 @@
   box-shadow: 0 0 20px rgba(69, 115, 223, 0.3);
 }
 
-/* Timeline items */
-.timelineItem {
-  position: relative;
-  width: 50%;
-  padding: 2rem 4rem;
-  box-sizing: border-box;
-  /* BILLIONAIRE LEVEL - 3D Card */
-  transform-style: preserve-3d;
-  transform: perspective(1000px) translateZ(0);
-  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.timelineItem:nth-child(odd) {
-  left: 0;
-  text-align: right;
-}
-
-.timelineItem:nth-child(even) {
-  left: 50%;
-  text-align: left;
-}
-
-/* Timeline content */
-.timelineContent {
-  padding: 2.5rem;
-  border-radius: 24px;
-  position: relative;
-  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 10px 30px -5px rgba(0, 0, 0, 0.05),
-    0 4px 10px -2px rgba(0, 0, 0, 0.02),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.timelineContent:hover {
-  transform: perspective(1000px) translateZ(20px) translateY(-10px);
-  box-shadow: 
-    0 20px 40px -5px rgba(69, 115, 223, 0.15),
-    0 10px 20px -5px rgba(0, 0, 0, 0.05);
-  border-color: rgba(69, 115, 223, 0.3);
-}
-
-/* Timeline dot */
-.timelineDot {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4573df, #ff9800);
-  top: 2.5rem;
-  z-index: 1;
-  box-shadow: 0 0 0 8px rgba(69, 115, 223, 0.1), 0 0 20px rgba(69, 115, 223, 0.4);
-  transition: all 0.3s ease;
-}
-
-.timelineItem:hover .timelineDot {
-  transform: scale(1.2);
-  box-shadow: 0 0 0 12px rgba(69, 115, 223, 0.2), 0 0 30px rgba(69, 115, 223, 0.6);
-}
-
-.timelineItem:nth-child(odd) .timelineDot {
-  right: -1rem;
-}
-
-.timelineItem:nth-child(even) .timelineDot {
-  left: -1rem;
-}
-
-/* Timeline item content */
-.stepNumber {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  color: #4573df;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.stepTitle {
-  font-family: var(--font-heading);
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.stepDescription {
-  font-family: var(--font-body);
-  font-size: 1.1rem;
-  line-height: 1.6;
-  opacity: 0.9;
-}
-
-/* Responsive adjustments */
-@media screen and (max-width: 768px) {
+/* Responsive Design */
+@media (max-width: 768px) {
   .timeline::after {
     left: 2rem;
   }
   
-  .howItWorks {
-    padding: 6rem 0;
-  }
-  
-  .container {
-    padding: 0 1.5rem;
-  }
-  
-  .timelineItem {
-    width: 100%;
-    padding-left: 5rem;
-    padding-right: 0;
-    left: 0 !important;
-    text-align: left;
-  }
-  
-  .timelineItem:nth-child(even) {
-    left: 0 !important;
-  }
-  
-  .timelineDot {
-    left: 1rem !important;
-    right: auto !important;
-  }
-  
-  .title {
-    font-size: 2.5rem;
+  .timeline {
+    gap: 3rem;
   }
 }

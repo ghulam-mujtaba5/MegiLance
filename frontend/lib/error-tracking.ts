@@ -175,7 +175,7 @@ class ConsoleErrorProvider implements ErrorTrackingProvider {
 
   private async sendToBackend(type: 'error' | 'message', data: unknown): Promise<void> {
     try {
-      await fetch('/backend/api/v1/monitoring/errors', {
+      await fetch('/api/v1/monitoring/errors', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, data }),

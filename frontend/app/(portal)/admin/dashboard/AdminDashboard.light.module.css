@@ -1,92 +1,54 @@
-/* AI-HINT: Light theme styles for Admin Dashboard page. */
+/* Admin Dashboard Light Theme */
 
-.page {
-  --dashboard-bg: #f5f7fa;
+.dashboardContainer {
+  background-color: #f8fafc;
+  color: #0f172a;
 }
 
-.subtitle {
-  color: #6b7280;
+.welcomeText h1 {
+  color: #0f172a;
 }
 
-.button {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-.button:hover {
-  background: color-mix(in oklab, var(--primary) 90% black);
-  border-color: color-mix(in oklab, var(--primary) 90% black);
-}
-
-.button.secondary {
-  --button-secondary-bg: #ffffff;
-  --button-secondary-text: #374151;
-  --button-secondary-border: #e5e7eb;
-}
-
-.button.secondary:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-}
-
-.card {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-}
-
-.card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-}
-
-.th {
-  --table-header-bg: #f9fafb;
-  --table-border: #e5e7eb;
-}
-
-.td {
-  --table-border: #e5e7eb;
+.welcomeText p {
+  color: #64748b;
 }
 
 .statCard {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-  --stat-icon-bg: #f0f4ff;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .statCard:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-.chartCard {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
+.statHeader {
+  color: #64748b;
 }
 
-.chartAction {
-  --surface: #f9fafb;
-  --surface-hover: #f3f4f6;
-  --border: #e5e7eb;
-  --text-secondary: #6b7280;
-  --text-primary: #111827;
+.statValue {
+  color: #0f172a;
+}
+
+.viewAllLink {
+  color: #4573df;
 }
 
 .activityItem {
-  --card-bg: #ffffff;
-  --card-border: #e5e7eb;
-  --surface-hover: #f9fafb;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
 }
 
 .activityIcon {
-  --activity-icon-bg: #f0f4ff;
-  --activity-icon-color: #4573df;
+  background-color: #eff6ff;
+  color: #3b82f6;
 }
 
-.skeletonRow {
-  --card-bg: #f9fafb;
-  --card-border: #e5e7eb;
+.activityContent h4 {
+  color: #0f172a;
 }
 
-.emptyState {
-  --surface: #f9fafb;
+.activityContent p {
+  color: #64748b;
 }

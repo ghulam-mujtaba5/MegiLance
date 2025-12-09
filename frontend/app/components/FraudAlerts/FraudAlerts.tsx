@@ -50,7 +50,7 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
     const fetchAlerts = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/backend/api/admin/fraud-alerts');
+        const response = await fetch('/api/admin/fraud-alerts');
         if (response.ok) {
           const data = await response.json();
           setAlerts(data.alerts || []);
@@ -92,7 +92,7 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
 
   const handleResolveAlert = async (alertId: string, resolution: 'resolved' | 'false_positive') => {
     try {
-      const response = await fetch(`/backend/api/admin/fraud-alerts/${alertId}`, {
+      const response = await fetch(`/api/admin/fraud-alerts/${alertId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -113,7 +113,7 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
 
   const handleBlockUser = async (userId: number) => {
     try {
-      const response = await fetch(`/backend/api/admin/users/${userId}/block`, {
+      const response = await fetch(`/api/admin/users/${userId}/block`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason: 'Fraud detected' })

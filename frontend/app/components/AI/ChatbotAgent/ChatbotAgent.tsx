@@ -71,7 +71,7 @@ const ChatbotAgent: React.FC = () => {
     setIsLoading(true);
     setIsTyping(true);
     try {
-      const res = await fetch('/backend/api/chatbot/start', { method: 'POST' });
+      const res = await fetch('/api/chatbot/start', { method: 'POST' });
       if (!res.ok) throw new Error('Failed to start conversation');
       const data = await res.json();
       setConversationId(data.conversation_id);
@@ -175,7 +175,7 @@ const ChatbotAgent: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`/backend/api/chatbot/${conversationId}/message`, {
+      const res = await fetch(`/api/chatbot/${conversationId}/message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userText }),

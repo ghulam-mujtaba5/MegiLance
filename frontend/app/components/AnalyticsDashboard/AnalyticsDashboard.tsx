@@ -44,7 +44,7 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
     const fetchAnalytics = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`/backend/api/admin/analytics?range=${dateRange}`);
+        const response = await fetch(`/api/admin/analytics?range=${dateRange}`);
         if (response.ok) {
           const data = await response.json();
 
@@ -111,7 +111,7 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
 
   const handleExportCSV = async () => {
     try {
-      const response = await fetch(`/backend/api/admin/analytics/export?format=csv&range=${dateRange}`);
+      const response = await fetch(`/api/admin/analytics/export?format=csv&range=${dateRange}`);
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -130,7 +130,7 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
 
   const handleExportPDF = async () => {
     try {
-      const response = await fetch(`/backend/api/admin/analytics/export?format=pdf&range=${dateRange}`);
+      const response = await fetch(`/api/admin/analytics/export?format=pdf&range=${dateRange}`);
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);

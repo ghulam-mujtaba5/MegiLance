@@ -75,7 +75,7 @@ export function useDashboardData() {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
         
-        const res = await fetch('/backend/api/mock/dashboard', { signal: controller.signal, headers });
+        const res = await fetch('/api/mock/dashboard', { signal: controller.signal, headers });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = (await res.json()) as DashboardData;
         if (isMounted) setData(json);

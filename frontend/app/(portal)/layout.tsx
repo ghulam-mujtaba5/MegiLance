@@ -30,7 +30,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
         }
 
         // Validate token with backend
-        const res = await fetch('/backend/api/auth/me', {
+        const res = await fetch('/api/auth/me', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 

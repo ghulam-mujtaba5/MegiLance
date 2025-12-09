@@ -40,7 +40,7 @@ export default function MFASetup({ onComplete, onCancel }: MFASetupProps) {
     setError(null);
 
     try {
-      const response = await fetch('/backend/api/security/mfa/setup', {
+      const response = await fetch('/api/security/mfa/setup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export default function MFASetup({ onComplete, onCancel }: MFASetupProps) {
     setError(null);
 
     try {
-      const response = await fetch('/backend/api/security/mfa/verify', {
+      const response = await fetch('/api/security/mfa/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -42,7 +42,7 @@ const CACHE_NAMES = {
 
 // API requests - always try network first
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/backend/api'),
+  ({ url }) => url.pathname.startsWith('/api'),
   new NetworkFirst({
     cacheName: CACHE_NAMES.api,
     plugins: [
@@ -150,7 +150,7 @@ const messageSyncPlugin = new BackgroundSyncPlugin('messageQueue', {
 });
 
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/backend/api/messages'),
+  ({ url }) => url.pathname.startsWith('/api/messages'),
   new NetworkFirst({
     plugins: [messageSyncPlugin],
   }),
@@ -163,7 +163,7 @@ const proposalSyncPlugin = new BackgroundSyncPlugin('proposalQueue', {
 });
 
 registerRoute(
-  ({ url }) => url.pathname.startsWith('/backend/api/proposals'),
+  ({ url }) => url.pathname.startsWith('/api/proposals'),
   new NetworkFirst({
     plugins: [proposalSyncPlugin],
   }),

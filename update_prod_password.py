@@ -62,4 +62,11 @@ def update_password(email, new_hash):
 
 if __name__ == "__main__":
     new_hash = "$2b$12$6Yxro5brPRbI6FSZwQc5.ef44k5ERl.4fxaCqIM7KuV9L/FTahIW6"
+    
+    # Update all three demo accounts
     update_password("freelancer1@example.com", new_hash)
+    update_password("client1@example.com", new_hash)
+    
+    # For admin, use hash of Admin@123: $2b$12$o4/EfJCEZ0GYMExW.k7fxupPxhh6sU1lC22lKXTzl4Lp91AhA9ZVO
+    admin_hash = "$2b$12$o4/EfJCEZ0GYMExW.k7fxupPxhh6sU1lC22lKXTzl4Lp91AhA9ZVO"
+    update_password("admin@megilance.com", admin_hash)

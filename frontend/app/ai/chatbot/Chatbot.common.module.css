@@ -5,10 +5,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 180px);
   padding: var(--spacing-6, 24px);
+  padding-top: var(--spacing-8, 32px);
+  padding-bottom: var(--spacing-8, 32px);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .container::before {

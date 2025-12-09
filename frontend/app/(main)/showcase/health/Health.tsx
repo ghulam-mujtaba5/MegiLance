@@ -89,7 +89,7 @@ const Health: React.FC = () => {
   const fetchHealth = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/backend/api/health/advanced?detailed=true');
+      const response = await fetch('/api/health/advanced?detailed=true');
       if (response.ok) {
         const data = await response.json();
         setHealth(data);

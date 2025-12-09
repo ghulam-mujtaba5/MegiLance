@@ -1,306 +1,221 @@
-// @AI-HINT: This is the modernized Freelancer Dashboard root component. It orchestrates several child components to create a modular, maintainable, and premium user experience. All data comes from backend APIs via useFreelancerData hook.
+// @AI-HINT: Redesigned Freelancer Dashboard with modern UI/UX
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { useFreelancerData, FreelancerJob, FreelancerTransaction } from '@/hooks/useFreelancer';
-import { PageTransition } from '@/app/components/Animations/PageTransition';
-import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
-import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { useFreelancerData } from '@/hooks/useFreelancer';
+import Button from '@/app/components/Button/Button';
 import { 
   Briefcase, 
   DollarSign, 
   FileText, 
-  Calendar,
-  Plus,
-  Award,
-  Clock,
-  AlertCircle,
-  MapPin
+  Eye,
+  TrendingUp, 
+  TrendingDown, 
+  Search,
+  ArrowRight,
+  Clock
 } from 'lucide-react';
-
-import KeyMetricsGrid from '@/app/(portal)/freelancer/dashboard/components/KeyMetricsGrid/KeyMetricsGrid';
-import RecentActivityFeed from '@/app/(portal)/freelancer/dashboard/components/RecentActivityFeed/RecentActivityFeed';
-import EarningsChart from '@/app/(portal)/freelancer/dashboard/components/EarningsChart/EarningsChart';
-import TimeTracker from '@/app/components/TimeTracker/TimeTracker';
-import FreelancerRankVisualizer from '@/app/components/AI/FreelancerRankVisualizer/FreelancerRankVisualizer';
-import TransactionRow from '@/app/components/TransactionRow/TransactionRow';
-import Button from '@/app/components/Button/Button';
-import Card from '@/app/components/Card/Card';
-import Badge from '@/app/components/Badge/Badge';
 
 import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
 import darkStyles from './Dashboard.dark.module.css';
 
-const Dashboard: React.FC = () => {
-  const { resolvedTheme } = useTheme();
-  const { analytics, jobs, recommendedJobs, transactions, monthlyEarnings, loading, error } = useFreelancerData();
-  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+interface StatCardProps {
+  title: string;
+  value: string;
+  trend?: number;
+  icon: React.ElementType;
+  themeStyles: any;
+}
 
-  // Use real earnings data from API
-  const earningsData = useMemo(() => {
-    if (monthlyEarnings && monthlyEarnings.length > 0) {
-      return monthlyEarnings;
-    }
-    // Return empty chart data if no real data
-    return [
-      { month: 'Jan', amount: 0 },
-      { month: 'Feb', amount: 0 },
-      { month: 'Mar', amount: 0 },
-      { month: 'Apr', amount: 0 },
-      { month: 'May', amount: 0 },
-      { month: 'Jun', amount: 0 },
-    ];
-  }, [monthlyEarnings]);
-
-  const renderJobItem = (job: FreelancerJob) => (
-    <div className={cn(commonStyles.jobItem, themeStyles.jobItem)}>
-      <div className={commonStyles.jobHeader}>
-        <h4 className={cn(commonStyles.jobTitle, themeStyles.jobTitle)}>{job.title}</h4>
-        <div className="flex gap-2">
-           {job.matchScore && <Badge variant="success" size="small">{job.matchScore}% Match</Badge>}
-           <Badge variant="info" size="small">{job.status}</Badge>
+const StatCard: React.FC<StatCardProps> = ({ title, value, trend, icon: Icon, themeStyles }) => {
+  const isPositive = trend && trend > 0;
+  const isNegative = trend && trend < 0;
+  
+  return (
+    <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+      <div className={cn(commonStyles.statHeader, themeStyles.statHeader)}>
+        <span>{title}</span>
+        <Icon size={20} />
+      </div>
+      <div className={cn(commonStyles.statValue, themeStyles.statValue)}>{value}</div>
+      {trend !== undefined && (
+        <div className={cn(commonStyles.statTrend, isPositive ? 'text-green-500' : isNegative ? 'text-red-500' : 'text-gray-500')}>
+          {isPositive ? <TrendingUp size={16} /> : isNegative ? <TrendingDown size={16} /> : null}
+          <span>{Math.abs(trend)}% from last month</span>
         </div>
-      </div>
-      <div className={commonStyles.jobDetails}>
-        <span className={commonStyles.jobClient}>{job.clientName}</span>
-        <span className={commonStyles.jobBudget}>${job.budget.toLocaleString()}</span>
-      </div>
-      <div className={commonStyles.jobFooter}>
-        <div className={commonStyles.jobMeta}>
-          <Clock size={14} className={commonStyles.jobIcon} />
-          <span>{new Date(job.postedTime).toLocaleDateString()}</span>
-        </div>
-        {job.skills.length > 0 && (
-          <div className={commonStyles.jobSkills}>
-            {job.skills.slice(0, 2).map(skill => (
-              <span key={skill} className={cn(commonStyles.skillTag, themeStyles.skillTag)}>{skill}</span>
-            ))}
-            {job.skills.length > 2 && <span className={cn(commonStyles.skillTag, themeStyles.skillTag)}>+{job.skills.length - 2}</span>}
-          </div>
-        )}
-      </div>
-      <Link href={`/jobs/${job.id}`} className={commonStyles.jobLink}>
-        View Details
-      </Link>
+      )}
     </div>
   );
+};
 
-  const renderTransactionItem = (txn: FreelancerTransaction) => (
-    <TransactionRow
-      key={txn.id}
-      amount={txn.amount}
-      date={new Date(txn.date).toLocaleDateString()}
-      description={txn.description}
-    />
+interface JobCardProps {
+  job: any;
+  themeStyles: any;
+}
+
+const JobCard: React.FC<JobCardProps> = ({ job, themeStyles }) => {
+  return (
+    <div className={cn(commonStyles.jobCard, themeStyles.jobCard)}>
+      <div className={commonStyles.jobHeader}>
+        <div>
+          <h3 className={cn(commonStyles.jobTitle, themeStyles.jobTitle)}>{job.title}</h3>
+          <span className={cn(commonStyles.jobClient, themeStyles.jobClient)}>{job.clientName}</span>
+        </div>
+        <div className={cn(commonStyles.jobBudget, themeStyles.jobBudget)}>${job.budget.toLocaleString()}</div>
+      </div>
+      <div className={commonStyles.jobTags}>
+        {job.skills.slice(0, 3).map((skill: string) => (
+          <span key={skill} className={cn(commonStyles.tag, themeStyles.tag)}>{skill}</span>
+        ))}
+      </div>
+      <div className={cn(commonStyles.jobFooter, themeStyles.jobFooter)}>
+        <div className="flex items-center gap-1 text-sm opacity-70">
+          <Clock size={14} />
+          <span>Posted {new Date(job.postedTime).toLocaleDateString()}</span>
+        </div>
+        <Link href={`/jobs/${job.id}`}>
+          <Button variant="outline" size="sm">View Job</Button>
+        </Link>
+      </div>
+    </div>
   );
+};
 
-  // Generate dynamic activity from real data
-  const recentActivity = useMemo(() => {
-    const activities: Array<{
-      id: string;
-      title: string;
-      description: string;
-      time: string;
-      icon: typeof Briefcase;
-      type: 'job' | 'payment' | 'proposal' | 'message';
-    }> = [];
+const Dashboard: React.FC = () => {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const { analytics, jobs, loading } = useFreelancerData();
 
-    // Add activities from jobs
-    if (jobs && jobs.length > 0) {
-      jobs.slice(0, 2).forEach((job, index) => {
-        activities.push({
-          id: `job-${job.id || index}`,
-          title: 'New job available',
-          description: job.title || 'A new job matching your skills was posted',
-          time: new Date(job.postedTime).toLocaleDateString(),
-          icon: Briefcase,
-          type: 'job'
-        });
-      });
-    }
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    // Add activities from transactions
-    if (transactions && transactions.length > 0) {
-      transactions.slice(0, 2).forEach((txn, index) => {
-        activities.push({
-          id: `txn-${txn.id || index}`,
-          title: txn.amount.startsWith('+') ? 'Payment received' : 'Payment processed',
-          description: txn.description || `Transaction of ${txn.amount}`,
-          time: new Date(txn.date).toLocaleDateString(),
-          icon: DollarSign,
-          type: 'payment'
-        });
-      });
-    }
+  const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-    // Add analytics-based activities
-    if (analytics) {
-      if (analytics.pendingProposals > 0) {
-        activities.push({
-          id: 'proposals',
-          title: 'Pending proposals',
-          description: `You have ${analytics.pendingProposals} proposal(s) awaiting response`,
-          time: 'Active',
-          icon: FileText,
-          type: 'proposal'
-        });
-      }
-      if (analytics.activeProjects > 0) {
-        activities.push({
-          id: 'active',
-          title: 'Active projects',
-          description: `${analytics.activeProjects} project(s) currently in progress`,
-          time: 'Ongoing',
-          icon: Clock,
-          type: 'job'
-        });
-      }
-    }
+  const metrics = useMemo(() => {
+    return {
+      earnings: analytics?.totalEarnings || '$0',
+      activeJobs: analytics?.activeProjects || 0,
+      proposalsSent: analytics?.pendingProposals || 0,
+      profileViews: analytics?.profileViews || 0
+    };
+  }, [analytics]);
 
-    // Fallback if no real data
-    if (activities.length === 0) {
-      activities.push({
-        id: 'welcome',
-        title: 'Welcome to MegiLance!',
-        description: 'Start by browsing available jobs or setting up your profile',
-        time: 'Just now',
-        icon: Award,
-        type: 'message'
-      });
-    }
-
-    return activities.slice(0, 5);
-  }, [jobs, transactions, analytics]);
+  if (!mounted) return null;
 
   return (
-    <PageTransition>
-      <div className={cn(commonStyles.container, themeStyles.container)}>
-        {/* Welcome Banner */}
-        <ScrollReveal>
-          <div className={cn(commonStyles.welcomeBanner, themeStyles.welcomeBanner)}>
-            <div className={commonStyles.welcomeBannerContent}>
-              <h1 className={cn(commonStyles.welcomeBannerTitle, themeStyles.welcomeBannerTitle)}>
-                Welcome back! 👋
-              </h1>
-              <p className={cn(commonStyles.welcomeBannerText, themeStyles.welcomeBannerText)}>
-                Here&apos;s what&apos;s happening with your projects and earnings today.
-              </p>
-              <div className={commonStyles.quickActions}>
-                <Link href="/portal/freelancer/jobs">
-                  <Button variant="primary" size="md" iconBefore={<Plus size={18} />}>
-                    Browse Jobs
-                  </Button>
-                </Link>
-                <Link href="/portal/freelancer/proposals">
-                  <Button variant="secondary" size="md" iconBefore={<FileText size={18} />}>
-                    My Proposals
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {error && (
-          <ScrollReveal>
-            <div className={cn(commonStyles.errorBanner, themeStyles.errorBanner)}>
-              <AlertCircle size={20} />
-              <span>Unable to load some data. Please refresh the page.</span>
-            </div>
-          </ScrollReveal>
-        )}
-
-        {/* Earnings Chart and Productivity */}
-        <ScrollReveal delay={0.15}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            <div className="lg:col-span-2">
-              <Card title="Earnings Overview" icon={DollarSign}>
-                <EarningsChart data={earningsData} />
-              </Card>
-            </div>
-            <div className="space-y-6">
-              <TimeTracker />
-              <FreelancerRankVisualizer 
-                rank={analytics?.rank || "Silver"} 
-                score={analytics ? Math.round((analytics.successRate || 85) * 10) : 850} 
-                percentile={85}
-                projectsCompleted={analytics?.completedProjects || 0}
-              />
-            </div>
-          </div>
-        </ScrollReveal>
-
-        {/* Key Metrics from API */}
-        <ScrollReveal delay={0.1}>
-          <KeyMetricsGrid analytics={analytics} loading={loading} />
-        </ScrollReveal>
-
-        <StaggerContainer delay={0.2} className={cn(commonStyles.mainContent, themeStyles.mainContent)}>
-          {/* Recent Activity */}
-          <div className={commonStyles.activitySection}>
-            <Card title="Recent Activity" icon={Calendar}>
-              <div className={commonStyles.activityList}>
-                {loading ? (
-                  // Loading skeleton
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className={commonStyles.activityItemSkeleton}>
-                      <div className={commonStyles.skeletonIcon} />
-                      <div className={commonStyles.skeletonContent}>
-                        <div className={commonStyles.skeletonTitle} />
-                        <div className={commonStyles.skeletonDesc} />
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  recentActivity.map(activity => (
-                    <div key={activity.id} className={cn(commonStyles.activityItem, themeStyles.activityItem)}>
-                      <div className={cn(
-                        commonStyles.activityIcon, 
-                        themeStyles.activityIcon,
-                        themeStyles[`activityIcon${activity.type.charAt(0).toUpperCase() + activity.type.slice(1)}`]
-                      )}>
-                        <activity.icon size={18} />
-                      </div>
-                      <div className={commonStyles.activityContent}>
-                        <h4 className={cn(commonStyles.activityTitle, themeStyles.activityTitle)}>
-                          {activity.title}
-                        </h4>
-                        <p className={cn(commonStyles.activityDescription, themeStyles.activityDescription)}>
-                          {activity.description}
-                        </p>
-                        <span className={cn(commonStyles.activityTime, themeStyles.activityTime)}>
-                          {activity.time}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </Card>
-          </div>
-
-          {/* Jobs and Transactions from API */}
-          <RecentActivityFeed
-            title="Recommended Jobs (AI Matched)"
-            items={recommendedJobs?.slice(0, 3) ?? []}
-            renderItem={renderJobItem}
-            loading={loading}
-            emptyStateMessage="No AI recommendations yet. Complete your profile to get better matches!"
-          />
-          <RecentActivityFeed
-            title="Recent Transactions"
-            items={transactions?.slice(0, 5) ?? []}
-            renderItem={renderTransactionItem}
-            loading={loading}
-            emptyStateMessage="No transactions yet. Complete a project to earn!"
-          />
-        </StaggerContainer>
+    <div className={cn(commonStyles.dashboardContainer, themeStyles.dashboardContainer)}>
+      {/* Header Section */}
+      <div className={commonStyles.headerSection}>
+        <div className={cn(commonStyles.welcomeText, themeStyles.welcomeText)}>
+          <h1>Welcome back, Freelancer</h1>
+          <p>You have new job matches waiting for you.</p>
+        </div>
+        <Link href="/jobs">
+          <Button variant="primary" size="lg" iconBefore={<Search size={20} />}>
+            Find Work
+          </Button>
+        </Link>
       </div>
-    </PageTransition>
+
+      {/* Stats Grid */}
+      <div className={commonStyles.statsGrid}>
+        <StatCard 
+          title="Total Earnings" 
+          value={metrics.earnings} 
+          trend={8.5} 
+          icon={DollarSign} 
+          themeStyles={themeStyles} 
+        />
+        <StatCard 
+          title="Active Jobs" 
+          value={metrics.activeJobs.toString()} 
+          trend={0} 
+          icon={Briefcase} 
+          themeStyles={themeStyles} 
+        />
+        <StatCard 
+          title="Proposals Sent" 
+          value={metrics.proposalsSent.toString()} 
+          trend={12.0} 
+          icon={FileText} 
+          themeStyles={themeStyles} 
+        />
+        <StatCard 
+          title="Profile Views" 
+          value={metrics.profileViews.toString()} 
+          trend={-5.0} 
+          icon={Eye} 
+          themeStyles={themeStyles} 
+        />
+      </div>
+
+      {/* Main Content Grid */}
+      <div className={commonStyles.mainContentGrid}>
+        {/* Left Column */}
+        <div className={commonStyles.sectionContainer}>
+          <div className={commonStyles.sectionHeader}>
+            <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Recommended Jobs</h2>
+            <Link href="/jobs" className={cn(commonStyles.viewAllLink, themeStyles.viewAllLink)}>
+              View All Jobs <ArrowRight size={16} className="inline ml-1" />
+            </Link>
+          </div>
+          
+          <div className={commonStyles.jobList}>
+            {loading ? (
+              <div className="p-4 text-center text-gray-500">Loading jobs...</div>
+            ) : jobs && jobs.length > 0 ? (
+              jobs.slice(0, 3).map((job: any) => (
+                <JobCard key={job.id} job={job} themeStyles={themeStyles} />
+              ))
+            ) : (
+              <div className="p-8 text-center border border-dashed rounded-lg border-gray-300 dark:border-gray-700">
+                <p className="text-gray-500 mb-4">No jobs found matching your skills.</p>
+                <Link href="/profile">
+                  <Button variant="outline" size="sm">Update Profile</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className={commonStyles.sectionContainer}>
+          <div className={commonStyles.sectionHeader}>
+            <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Recent Proposals</h2>
+            <Link href="/proposals" className={cn(commonStyles.viewAllLink, themeStyles.viewAllLink)}>
+              View All
+            </Link>
+          </div>
+
+          <div className={commonStyles.proposalList}>
+             {/* Mock Proposals */}
+             <div className={cn(commonStyles.proposalCard, themeStyles.proposalCard)}>
+                <div className={commonStyles.proposalInfo}>
+                   <div className={cn(commonStyles.proposalInfo, themeStyles.proposalInfo)}>
+                      <h4>E-commerce Website Redesign</h4>
+                   </div>
+                   <span className="text-xs opacity-70">Sent 2 days ago</span>
+                </div>
+                <span className={cn(commonStyles.proposalStatus, themeStyles.proposalStatus)}>Pending</span>
+             </div>
+             <div className={cn(commonStyles.proposalCard, themeStyles.proposalCard)}>
+                <div className={commonStyles.proposalInfo}>
+                   <div className={cn(commonStyles.proposalInfo, themeStyles.proposalInfo)}>
+                      <h4>Mobile App Development</h4>
+                   </div>
+                   <span className="text-xs opacity-70">Sent 5 days ago</span>
+                </div>
+                <span className={cn(commonStyles.proposalStatus, themeStyles.proposalStatus)}>Viewed</span>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
