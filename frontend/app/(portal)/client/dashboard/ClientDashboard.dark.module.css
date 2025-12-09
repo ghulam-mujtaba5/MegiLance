@@ -1,101 +1,82 @@
-/* @AI-HINT: Premium Client Dashboard dark theme - glassmorphism, glowing accents */
+/* Client Dashboard Dark Theme */
 
-.themeWrapper {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+.dashboardContainer {
+  background-color: #0f172a;
+  color: #f8fafc;
 }
 
-/* Welcome Banner */
-.welcomeBanner {
-  background: linear-gradient(
-    135deg,
-    rgba(69, 115, 223, 0.9) 0%,
-    rgba(59, 95, 217, 0.85) 50%,
-    rgba(37, 99, 235, 0.9) 100%
-  );
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 8px 32px rgba(69, 115, 223, 0.3),
-    0 0 60px rgba(69, 115, 223, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+.welcomeText h1 {
+  color: #f8fafc;
 }
 
-.welcomeBannerTitle {
-  color: #ffffff;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.welcomeBannerText {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-/* Error Banner */
-.errorBanner {
-  background: rgba(127, 29, 29, 0.3);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  backdrop-filter: blur(8px);
-}
-
-/* Activity Items */
-.activityItem {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.activityItem:hover {
-  background: rgba(30, 41, 59, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Activity Icon Colors by Type - glowing in dark mode */
-.activityIcon {
-  background: rgba(69, 115, 223, 0.2);
-  color: #60a5fa;
-  box-shadow: 0 0 15px rgba(69, 115, 223, 0.15);
-}
-
-.activityIconProject {
-  background: rgba(69, 115, 223, 0.2);
-  color: #60a5fa;
-  box-shadow: 0 0 15px rgba(69, 115, 223, 0.15);
-}
-
-.activityIconPayment {
-  background: rgba(39, 174, 96, 0.2);
-  color: #4ade80;
-  box-shadow: 0 0 15px rgba(39, 174, 96, 0.15);
-}
-
-.activityIconProposal {
-  background: rgba(255, 152, 0, 0.2);
-  color: #fb923c;
-  box-shadow: 0 0 15px rgba(255, 152, 0, 0.15);
-}
-
-.activityIconMessage {
-  background: rgba(139, 92, 246, 0.2);
-  color: #a78bfa;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15);
-}
-
-/* Text Colors */
-.activityTitle {
-  color: #f1f5f9;
-}
-
-.activityDescription {
+.welcomeText p {
   color: #94a3b8;
 }
 
-.activityTime {
-  color: #64748b;
+.statCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-.subtitle {
-  color: #d1d5db;
+.statCard:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  border-color: #475569;
+}
+
+.statHeader {
+  color: #94a3b8;
+}
+
+.statValue {
+  color: #f8fafc;
+}
+
+.viewAllLink {
+  color: #60a5fa;
+}
+
+.projectCard {
+  background-color: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.projectCard:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  border-color: #475569;
+}
+
+.projectInfo h3 {
+  color: #f8fafc;
+}
+
+.projectMeta {
+  color: #94a3b8;
+}
+
+.talentCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+}
+
+.talentCard:hover {
+  background-color: #334155;
+}
+
+.talentInfo h4 {
+  color: #f8fafc;
+}
+
+.talentRole {
+  color: #94a3b8;
+}
+
+.actionButton {
+  color: #94a3b8;
+}
+
+.actionButton:hover {
+  background-color: #334155;
+  color: #f8fafc;
 }

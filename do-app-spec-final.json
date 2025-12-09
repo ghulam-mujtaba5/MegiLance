@@ -91,12 +91,12 @@
         },
         {
           "key": "NEXT_PUBLIC_BACKEND_URL",
-          "value": "https://megilance.site",
+          "value": "https://www.megilance.site",
           "scope": "RUN_AND_BUILD_TIME"
         },
         {
           "key": "NEXT_PUBLIC_API_URL",
-          "value": "https://megilance.site/api",
+          "value": "https://www.megilance.site/api",
           "scope": "RUN_AND_BUILD_TIME"
         }
       ],
@@ -184,7 +184,7 @@
         },
         "component": {
           "name": "backend",
-          "preserve_path_prefix": true
+          "preserve_path_prefix": false
         }
       },
       {

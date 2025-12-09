@@ -223,16 +223,34 @@
 }
 
 .featureStatus {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
   font-size: 0.75rem;
   font-weight: 600;
-  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.statusComplete { background: #27AE60; color: #fff; }
-.statusPending { background: #F2C94C; color: #333; }
-.statusPortal { background: #4573df; color: #fff; }
+.statusComplete {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.statusPending {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.statusPortal {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.2), rgba(99, 102, 241, 0.1));
+  color: #4573df;
+  border: 1px solid rgba(69, 115, 223, 0.3);
+}
 
 .featureDescription {
   font-size: 0.875rem;

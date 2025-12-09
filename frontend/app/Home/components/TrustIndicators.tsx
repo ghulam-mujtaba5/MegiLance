@@ -28,10 +28,10 @@ interface SecurityBadge {
 }
 
 const trustIndicators: TrustIndicator[] = [
-  { id: 1, icon: <Users size={24} />, value: 50000, label: "Active Freelancers", suffix: "+" },
-  { id: 2, icon: <Globe size={24} />, value: 45, label: "Countries Served" },
-  { id: 3, icon: <Zap size={24} />, value: 2500000, label: "Paid to Freelancers", prefix: "$" },
-  { id: 4, icon: <Award size={24} />, value: 125000, label: "Projects Completed", suffix: "+" },
+  { id: 1, icon: <Users size={24} />, value: 98, label: "AI Match Accuracy", suffix: "%" },
+  { id: 2, icon: <Award size={24} />, value: 80, label: "Fee Savings", suffix: "%" },
+  { id: 3, icon: <Zap size={24} />, value: 2, label: "Transaction Time", suffix: "s" },
+  { id: 4, icon: <Shield size={24} />, value: 100, label: "Secure Escrow", suffix: "%" },
 ];
 
 const securityBadges: SecurityBadge[] = [
@@ -47,9 +47,9 @@ const TrustIndicators: React.FC = () => {
   return (
     <div className={cn(commonStyles.trustContainer, styles.trustContainer)}>
       <div className={cn(commonStyles.trustHeader, styles.trustHeader)}>
-        <h2 className={cn(commonStyles.trustTitle, styles.trustTitle)}>Trusted by Professionals Worldwide</h2>
+        <h2 className={cn(commonStyles.trustTitle, styles.trustTitle)}>Engineered for Performance</h2>
         <p className={cn(commonStyles.trustSubtitle, styles.trustSubtitle)}>
-          Join thousands of freelancers and clients who trust MegiLance for their work
+          Built on advanced AI and Blockchain technology for maximum efficiency and security.
         </p>
       </div>
 

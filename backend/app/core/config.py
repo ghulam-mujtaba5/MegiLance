@@ -30,8 +30,8 @@ class Settings(BaseSettings):
     # Debug mode for verbose logging
     debug: bool = False
 
-    # MongoDB Configuration
-    MONGODB_URL: str = "mongodb+srv://megilanceofficial_db_user:S0oNYXR4UggeiooT@cluster0.8is4jam.mongodb.net/?appName=Cluster0"
+    # MongoDB Configuration (Optional - for blog/advanced features)
+    MONGODB_URL: Optional[str] = None  # Set via environment variable if needed
     MONGODB_DB_NAME: str = "megilance_blog"
     
     # Path to mounted JSON data directory (for mock/admin/demo endpoints)

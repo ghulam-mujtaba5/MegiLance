@@ -99,6 +99,6 @@
 @media (max-width: 768px) {
   .featuresSection { padding: 4rem 0; }
   .container { padding: 0 1.5rem; }
-  .secondaryGrid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .secondaryGrid { grid-template-columns: 1fr; gap: 3rem; } /* Increased from 1.5rem */
   .title { font-size: 2.5rem; }
 }

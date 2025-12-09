@@ -18,7 +18,6 @@ from app.core.config import get_settings
 from app.core.rate_limit import limiter
 from app.db.init_db import init_db
 from app.db.session import get_engine
-from app.db.mongodb import connect_to_mongo, close_mongo_connection
 from sqlalchemy import text
 
 # Configure logging
@@ -140,19 +139,15 @@ async def on_startup():
                 logger.info("startup.database_initialized via Turso HTTP API")
             else:
                 logger.warning("startup.turso_http_test_failed")
-        try:
-            await connect_to_mongo()
-        except Exception as mongo_error:
-            logger.warning(f"startup.mongodb_connection_failed error={mongo_error} - continuing without MongoDB")
+        # MongoDB is optional - removed to prevent startup failures
+        logger.info("startup.mongodb_disabled - using Turso/SQLite only")
     except Exception as e:
         logger.error(f"startup.database_failed error={e}")
 
 @app.on_event("shutdown")
 async def on_shutdown():
-    try:
-        await close_mongo_connection()
-    except Exception as e:
-        pass  # Ignore shutdown errors
+    # MongoDB cleanup removed - using Turso/SQLite only
+    logger.info("shutdown.complete")
 
 
 @app.exception_handler(StarletteHTTPException)

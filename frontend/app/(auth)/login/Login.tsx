@@ -304,25 +304,9 @@ const Login: React.FC = () => {
 
   return (
     <PageTransition className={styles.loginPage}>
-      {/* Stunning 3D Background Elements */}
-      <div className={commonStyles.backgroundDecor}>
-        <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
-        <AnimatedOrb variant="purple" size={280} blur={60} opacity={0.25} className={commonStyles.orbBottomLeft} />
-        <ParticlesSystem count={6} className={commonStyles.particlesBg} />
-      </div>
+      {/* Background Decor - REMOVED */}
       
-      {/* Floating 3D Objects */}
-      <div className={commonStyles.floating3DElements}>
-        <div className={commonStyles.floatingElement} style={{ top: '15%', right: '8%' }}>
-          <FloatingCube size={35} />
-        </div>
-        <div className={commonStyles.floatingElement} style={{ bottom: '20%', left: '5%' }}>
-          <FloatingSphere size={45} variant="gradient" />
-        </div>
-        <div className={commonStyles.floatingElement} style={{ top: '60%', right: '12%' }}>
-          <FloatingSphere size={30} variant="purple" />
-        </div>
-      </div>
+      {/* Floating 3D Objects - REMOVED */}
       
       <div className={styles.brandingSlot}>
         <AuthBrandingPanel roleConfig={roleConfig[selectedRole]} />

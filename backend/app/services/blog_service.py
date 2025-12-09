@@ -9,6 +9,8 @@ class BlogService:
     @staticmethod
     async def get_collection():
         db = await get_database()
+        if db is None:
+            raise HTTPException(status_code=503, detail="Blog service unavailable (MongoDB not connected)")
         return db["posts"]
 
     @staticmethod

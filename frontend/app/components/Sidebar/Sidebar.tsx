@@ -38,6 +38,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
     }
   }, [toggleSidebar]);
 
+  const [user, setUser] = useState<{ name: string; avatar?: string; role?: string } | null>(null);
+
+  React.useEffect(() => {
+    try {
+      const storedUser = window.localStorage.getItem('user');
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUser({
+          name: parsedUser.full_name || parsedUser.name || 'User',
+          avatar: parsedUser.profile_image_url || parsedUser.avatar,
+          role: parsedUser.user_type || parsedUser.role || userType
+        });
+      }
+    } catch (e) {
+      console.error('Failed to parse user from localStorage', e);
+    }
+  }, [userType]);
+
   if (!resolvedTheme) return null;
 
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
@@ -90,7 +108,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>
         <div className={cn(commonStyles.userInfo)}>
-          <UserAvatar src="/mock-avatar.svg" name="John Doe" size="large" className={commonStyles.avatar} />
+          <UserAvatar 
+            src={user?.avatar} 
+            name={user?.name || 'User'} 
+            size="large" 
+            className={commonStyles.avatar} 
+          />
           <div
             className={cn(
               commonStyles.userDetails,
@@ -98,9 +121,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
             )}
             aria-hidden={isCollapsed}
           >
-            <span className={cn(commonStyles.userName, themeStyles.userName)}>John Doe</span>
+            <span className={cn(commonStyles.userName, themeStyles.userName)}>
+              {user?.name || 'Loading...'}
+            </span>
             <span className={cn(commonStyles.userRole, themeStyles.userRole)}>
-              {userType ? userType.charAt(0).toUpperCase() + userType.slice(1) : 'User'}
+              {user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : (userType ? userType.charAt(0).toUpperCase() + userType.slice(1) : 'User')}
             </span>
           </div>
         </div>

@@ -13,25 +13,39 @@ class MongoDB:
 db = MongoDB()
 
 async def get_database():
+    if db.db is None:
+        logger.warning("MongoDB database not available")
+        return None
     return db.db
 
 async def connect_to_mongo():
+    """Optional MongoDB connection - fails gracefully if unavailable"""
     try:
-        logger.info("Connecting to MongoDB...")
-        db.client = AsyncIOMotorClient(settings.MONGODB_URL)
+        if not settings.MONGODB_URL:
+            logger.warning("MongoDB URL not configured - skipping connection")
+            return
+        
+        logger.info("Attempting MongoDB connection...")
+        db.client = AsyncIOMotorClient(
+            settings.MONGODB_URL,
+            serverSelectionTimeoutMS=5000,  # 5 second timeout
+            connectTimeoutMS=5000
+        )
         db.db = db.client[settings.MONGODB_DB_NAME]
         # Ping to verify connection
         await db.client.admin.command('ping')
         logger.info("Connected to MongoDB successfully!")
     except Exception as e:
-        logger.error(f"Could not connect to MongoDB: {e}")
-        raise e
+        logger.warning(f"MongoDB connection failed: {e} - continuing without MongoDB")
+        db.client = None
+        db.db = None
 
 async def close_mongo_connection():
+    """Close MongoDB connection if it exists"""
     try:
-        logger.info("Closing MongoDB connection...")
         if db.client:
+            logger.info("Closing MongoDB connection...")
             db.client.close()
             logger.info("MongoDB connection closed.")
     except Exception as e:
-        logger.error(f"Error closing MongoDB connection: {e}")
+        logger.warning(f"Error closing MongoDB connection: {e}")

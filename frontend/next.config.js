@@ -149,10 +149,14 @@ const nextConfig = {
     ];
   },
   
-  // Rewrites disabled - using Next.js API route handler instead to avoid CORS
-  // See app/backend/[...path]/route.ts for the proxy implementation
+  // Rewrites for local development
   async rewrites() {
-    return [];
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000'}/api/:path*`,
+      },
+    ];
   },
   
   async redirects() {

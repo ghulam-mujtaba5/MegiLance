@@ -81,18 +81,9 @@ const Hero: React.FC = () => {
       {/* Premium animated mesh gradient background */}
       <div className={cn(commonStyles.meshBackground, styles.meshBackground)} />
       
-      {/* Background particles */}
-      <ParticlesSystem count={10} className={commonStyles.particlesLayer} />
+      {/* Background particles - REMOVED */}
       
-      {/* Floating orbs with parallax */}
-      <div 
-        className={commonStyles.floatingOrbs}
-        style={{ transform: `translate(${mousePosition.x}px, ${mousePosition.y}px)` }}
-      >
-        <div className={cn(commonStyles.orb, commonStyles.orb1, styles.orb)} />
-        <div className={cn(commonStyles.orb, commonStyles.orb2, styles.orb)} />
-        <div className={cn(commonStyles.orb, commonStyles.orb3, styles.orb)} />
-      </div>
+      {/* Floating orbs with parallax - REMOVED */}
 
       {/* Grid pattern overlay */}
       <div className={cn(commonStyles.gridPattern, styles.gridPattern)} />
@@ -144,9 +135,9 @@ const Hero: React.FC = () => {
               )}
               style={{ animationDelay: '0.3s' }}
             >
-              MegiLance is a hybrid decentralized freelancing platform combining AI-powered talent matching 
-              with blockchain-secured payments. Pay only 5-10% fees vs 20-27% on traditional platforms.
-              Built as a Final Year Project at COMSATS University.
+              Experience the future of work with MegiLance. Our AI-powered matching engine connects elite talent 
+              with innovative projects instantly, while blockchain integration ensures secure, low-fee payments. 
+              Built for the modern gig economy.
             </p>
 
             {/* CTA buttons */}
@@ -157,77 +148,31 @@ const Hero: React.FC = () => {
               )}
               style={{ animationDelay: '0.4s' }}
             >
-              <Link href="/signup" className={commonStyles.ctaLink}>
+              <Link href="/features" className={commonStyles.ctaLink}>
                 <Button 
                   variant="primary" 
                   size="lg" 
                   className={cn(commonStyles.primaryCta, styles.primaryCta)}
                 >
-                  Start Free Today
+                  Explore
                   <ArrowRight size={18} className={commonStyles.ctaIcon} />
                 </Button>
               </Link>
-              <Link href="/how-it-works" className={commonStyles.ctaLink}>
+              <Link href="/about" className={commonStyles.ctaLink}>
                 <Button 
                   variant="outline" 
                   size="lg"
                   className={cn(commonStyles.secondaryCta, styles.secondaryCta)}
                 >
                   <PlayCircle size={18} />
-                  See How It Works
+                  About
                 </Button>
               </Link>
             </div>
 
-            {/* Social proof row */}
-            <div 
-              className={cn(
-                commonStyles.socialProof,
-                isVisible && commonStyles.fadeInUp
-              )}
-              style={{ animationDelay: '0.5s' }}
-            >
-              <div className={cn(commonStyles.avatarStack, styles.avatarStack)}>
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className={cn(commonStyles.avatar, styles.avatar)}>
-                    <span>{String.fromCharCode(64 + i)}</span>
-                  </div>
-                ))}
-              </div>
-              <div className={commonStyles.proofText}>
-                <div className={cn(commonStyles.proofStars, styles.proofStars)}>
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} fill="currentColor" />
-                  ))}
-                  <span className={styles.ratingText}>4.9/5</span>
-                </div>
-                <span className={cn(commonStyles.proofLabel, styles.proofLabel)}>
-                  Trusted by 50,000+ professionals
-                </span>
-              </div>
-            </div>
-
-             {/* Trust badges */}
-            <div 
-              className={cn(
-                commonStyles.trustBadges,
-                isVisible && commonStyles.fadeInUp
-              )}
-              style={{ animationDelay: '0.6s' }}
-            >
-              <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
-                <CheckCircle2 size={16} />
-                <span>SOC 2 Certified</span>
-              </div>
-              <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
-                <ShieldCheck size={16} />
-                <span>Bank-grade Security</span>
-              </div>
-              <div className={cn(commonStyles.trustBadge, styles.trustBadge)}>
-                <Globe size={16} />
-                <span>GDPR Compliant</span>
-              </div>
-            </div>
+            {/* Social proof row - REMOVED as per user request */}
+            
+             {/* Trust badges - REMOVED as per user request */}
           </div>
 
           {/* Right Column: 3D Visuals */}
@@ -280,28 +225,28 @@ const Hero: React.FC = () => {
         >
           <div className={cn(commonStyles.statsGrid, styles.statsGrid)}>
             <StatItem 
-              value={455} 
-              label="Global Market (Billions)" 
-              prefix="$"
-              suffix="B+"
-              icon={<TrendingUp size={20} />} 
+              value={98} 
+              label="AI Match Accuracy" 
+              suffix="%"
+              icon={<Bot size={20} />} 
             />
             <StatItem 
-              value={75} 
-              label="Fee Savings vs Competitors" 
+              value={5} 
+              label="Platform Fee (Low)" 
               suffix="%"
               icon={<Award size={20} />} 
             />
             <StatItem 
-              value={1000000} 
-              label="Pakistani Freelancers" 
-              suffix="+"
-              icon={<Users size={20} />} 
+              value={0} 
+              label="Payment Delays" 
+              suffix="s"
+              icon={<Zap size={20} />} 
             />
             <StatItem 
-              value={45} 
-              label="Countries Served" 
-              icon={<Globe size={20} />} 
+              value={100} 
+              label="Secure Escrow" 
+              suffix="%"
+              icon={<ShieldCheck size={20} />} 
             />
           </div>
         </div>

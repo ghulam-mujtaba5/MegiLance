@@ -38,7 +38,8 @@ interface HealthResponse {
   };
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Use the Next.js proxy route to avoid CORS issues
+const API_BASE = '/backend';
 
 const Status: React.FC = () => {
   const { resolvedTheme } = useTheme();

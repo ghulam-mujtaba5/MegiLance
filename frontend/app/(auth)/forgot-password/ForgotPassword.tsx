@@ -106,13 +106,8 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <PageTransition className={styles.loginPage}>
-      {/* Stunning 3D Background Elements */}
-      <div className={commonStyles.backgroundDecor}>
-        <AnimatedOrb variant="blue" size={350} blur={80} opacity={0.3} className={commonStyles.orbTopRight} />
-        <AnimatedOrb variant="purple" size={280} blur={60} opacity={0.25} className={commonStyles.orbBottomLeft} />
-        <ParticlesSystem count={6} className={commonStyles.particlesBg} />
-      </div>
-
+      {/* Background Decor - REMOVED */}
+      
       <div className={styles.brandingSlot}>
         <AuthBrandingPanel roleConfig={forgotPasswordBranding} />
       </div>

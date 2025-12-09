@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
+import api from '@/lib/api';
 
 // @AI-HINT: Hook to fetch current user profile from /api/user.
 
 export type CurrentUser = {
-  fullName: string;
+  id: number;
+  name: string;
   email: string;
-  avatar?: string;
-  notificationCount?: number;
+  profile_image_url?: string;
+  user_type: string;
+  // Add other fields as needed based on UserRead schema
 };
 
 export function useUser() {
@@ -16,22 +19,23 @@ export function useUser() {
 
   useEffect(() => {
     let isMounted = true;
-    const controller = new AbortController();
 
     async function fetchUser() {
       setLoading(true);
       setError(null);
       try {
-        // Get auth token from localStorage
-        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-        const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
-        
-        const res = await fetch('/backend/api/auth/me', { signal: controller.signal, headers });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = await res.json();
-        if (isMounted) setUser(json);
+        const userData = await api.auth.me();
+        if (isMounted) {
+          // Map API response to CurrentUser type if needed, or just use the response
+          setUser({
+            id: Number(userData.id),
+            name: userData.name,
+            email: userData.email,
+            profile_image_url: (userData as any).profile_image_url,
+            user_type: userData.role // api.ts defines role in AuthUser
+          });
+        }
       } catch (err: any) {
-        if (err.name === 'AbortError') return;
         if (isMounted) setError(err?.message ?? 'Failed to load user');
       } finally {
         if (isMounted) setLoading(false);
@@ -41,7 +45,6 @@ export function useUser() {
     fetchUser();
     return () => {
       isMounted = false;
-      controller.abort();
     };
   }, []);
 

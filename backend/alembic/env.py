@@ -35,19 +35,19 @@ settings = get_settings()
 
 # Determine database URL - prioritize Turso if configured
 if settings.turso_database_url and settings.turso_auth_token:
-    # For Turso, use SQLite dialect with local path
-    # Handle existing sqlite prefix to avoid duplication
-    clean_url = settings.database_url.replace('file:', '').replace('file://', '')
-    if clean_url.startswith('sqlite:///'):
-        db_url = clean_url
-    elif clean_url.startswith('sqlite://'):
-        db_url = clean_url
-    else:
-        db_url = f"sqlite:///{clean_url}"
+    # Construct Turso URL for SQLAlchemy
+    # Format: sqlite+libsql://dbname.turso.io?authToken=...
+    turso_url = settings.turso_database_url
+    if turso_url.startswith("libsql://"):
+        turso_url = turso_url.replace("libsql://", "")
+    elif turso_url.startswith("https://"):
+        turso_url = turso_url.replace("https://", "")
+        
+    db_url = f"sqlite+libsql://{turso_url}?authToken={settings.turso_auth_token}"
 else:
-    db_url = settings.database_url
-    if not db_url.startswith("sqlite"):
-        db_url = f"sqlite:///{db_url.replace('file:', '').replace('file://', '')}"
+    # Fallback to local sqlite if Turso is not configured (though Settings requires it)
+    # This path might be taken if validation is bypassed or for testing
+    db_url = "sqlite:///./local_dev.db"
 
 # Override sqlalchemy.url from settings
 config.set_main_option("sqlalchemy.url", db_url)
