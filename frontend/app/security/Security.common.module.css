@@ -12,6 +12,7 @@
 @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
 
 .card { border: 1px solid transparent; border-radius: var(--border-radius-lg); padding: var(--spacing-6); transition: box-shadow .2s ease, transform .2s ease; }
+.cardIcon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: var(--spacing-4); }
 .cardTitle { font-weight: var(--font-weight-semibold); margin-bottom: var(--spacing-2); }
 .cardDesc { color: inherit; line-height: 1.7; }
 
@@ -24,9 +25,112 @@
 .item { display: flex; gap: var(--spacing-3); align-items: flex-start; }
 .itemIcon { width: 22px; height: 22px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
 
-.cta { margin-top: var(--spacing-10); display: flex; gap: var(--spacing-4); justify-content: center; }
-.button { padding: 12px 16px; border: none; border-radius: var(--border-radius-md); font-weight: 600; cursor: pointer; }
+.cta { margin-top: var(--spacing-10); display: flex; gap: var(--spacing-4); justify-content: center; flex-wrap: wrap; }
+.button { padding: 12px 20px; border: none; border-radius: var(--border-radius-md); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+.button:hover { transform: translateY(-2px); }
 .buttonSecondary { background: transparent; border: 1px solid transparent; }
 
 .isNotVisible { opacity: 0; transform: translateY(16px); }
 .isVisible { opacity: 1; transform: translateY(0); transition: opacity .6s ease-out, transform .6s ease-out; }
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(8px);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  max-height: 85vh;
+  border-radius: 20px;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modalClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.modalHeader {
+  padding: 2rem 2rem 1rem;
+  text-align: center;
+}
+
+.modalHeader h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+}
+
+.modalBody {
+  padding: 1rem 2rem 2rem;
+  overflow-y: auto;
+  max-height: calc(85vh - 150px);
+}
+
+.modalBody section {
+  margin-bottom: 1.5rem;
+}
+
+.modalBody h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.modalBody ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.modalBody li {
+  padding: 0.5rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  line-height: 1.6;
+}
+
+.modalBody li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.modalBody p {
+  line-height: 1.7;
+}
+
+.modalBody a {
+  font-weight: 600;
+  text-decoration: underline;
+}

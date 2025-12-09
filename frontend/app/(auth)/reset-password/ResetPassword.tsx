@@ -64,11 +64,27 @@ const ResetPassword: React.FC = () => {
     if (validate()) {
       setLoading(true);
       try {
-        // TODO: Implement password reset API call with token from URL
-        // const token = new URLSearchParams(window.location.search).get('token');
-        // await api.auth.resetPassword(token, formData.password);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setSubmitted(true);
+        const token = new URLSearchParams(window.location.search).get('token');
+        if (!token) {
+          setErrors({ password: '', confirmPassword: 'Invalid or missing reset token. Please request a new password reset.' });
+          return;
+        }
+        
+        const res = await fetch('/backend/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token,
+            new_password: formData.password,
+          }),
+        });
+        
+        if (res.ok) {
+          setSubmitted(true);
+        } else {
+          const error = await res.json().catch(() => ({}));
+          setErrors({ password: '', confirmPassword: error.detail || 'Failed to reset password. The link may have expired.' });
+        }
       } catch (error) {
         setErrors({ password: '', confirmPassword: 'Failed to reset password. Please try again.' });
       } finally {

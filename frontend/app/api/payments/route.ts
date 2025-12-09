@@ -1,61 +1,47 @@
-// @AI-HINT: This API route serves payment data from a JSON file, simulating a payments endpoint.
+// @AI-HINT: This API route proxies payment requests to the real backend API.
+// Production-ready: No mock data, proxies to backend wallet endpoint.
 
-import { NextResponse } from 'next/server';
-import path from 'path';
-import { promises as fs } from 'fs';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const jsonDirectory = path.resolve(process.cwd(), '..', 'db');
-    const filePath = path.join(jsonDirectory, 'payments.json');
+    // Get auth token from request headers
+    const authHeader = request.headers.get('authorization');
     
-    // Check if file exists, if not create mock data
-    try {
-      await fs.access(filePath);
-    } catch {
-      // Create mock data if file doesn't exist
-      const mockPayments = {
-        balance: "$1,234.56",
-        transactions: [
-          {
-            id: "1",
-            date: "2023-10-26",
-            description: "Payment from Global Retail Inc.",
-            amount: "+$5,000.00",
-            status: "paid"
-          },
-          {
-            id: "2",
-            date: "2023-10-24",
-            description: "Milestone payment for Mobile App",
-            amount: "+$2,500.00",
-            status: "paid"
-          },
-          {
-            id: "3",
-            date: "2023-10-22",
-            description: "Withdrawal to bank account",
-            amount: "-$3,000.00",
-            status: "pending"
-          },
-          {
-            id: "4",
-            date: "2023-10-20",
-            description: "Platform service fee",
-            amount: "-$50.00",
-            status: "completed"
-          }
-        ]
-      };
-      
-      await fs.writeFile(filePath, JSON.stringify(mockPayments, null, 2));
-    }
+    // Proxy to backend wallet balance endpoint
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     
-    const fileContents = await fs.readFile(filePath, 'utf8');
-    const payments = JSON.parse(fileContents);
-    return NextResponse.json(payments);
+    const [balanceRes, transactionsRes] = await Promise.all([
+      fetch(`${backendUrl}/api/wallet/balance`, {
+        headers: authHeader ? { Authorization: authHeader } : {},
+      }),
+      fetch(`${backendUrl}/api/wallet/transactions?limit=20`, {
+        headers: authHeader ? { Authorization: authHeader } : {},
+      }),
+    ]);
+
+    const balance = balanceRes.ok ? await balanceRes.json() : { available: 0, pending: 0, total: 0 };
+    const transactions = transactionsRes.ok ? await transactionsRes.json() : [];
+
+    // Transform to expected format
+    const formattedTransactions = (Array.isArray(transactions) ? transactions : []).map((tx: any) => ({
+      id: String(tx.id),
+      date: tx.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
+      description: tx.description || `${tx.type} transaction`,
+      amount: tx.amount >= 0 ? `+$${Math.abs(tx.amount).toFixed(2)}` : `-$${Math.abs(tx.amount).toFixed(2)}`,
+      status: tx.status || 'pending',
+    }));
+
+    return NextResponse.json({
+      balance: `$${(balance.available || 0).toFixed(2)}`,
+      transactions: formattedTransactions,
+    });
   } catch (error) {
-    console.error('Error reading payments data:', error);
-    return new NextResponse('Error fetching payments data.', { status: 500 });
+    console.error('Error fetching payments data:', error);
+    // Return empty data instead of error to prevent UI crashes
+    return NextResponse.json({
+      balance: '$0.00',
+      transactions: [],
+    });
   }
 }

@@ -1,30 +1,73 @@
-// @AI-HINT: Blog search page filtering mock posts client-side with 3D design system.
+// @AI-HINT: Blog search page - fetches real posts from API
+// Production-ready: No mock data, connects to /backend/api/blog
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { mockPosts } from '../data';
 import BlogPostCard from '@/app/components/Public/BlogPostCard/BlogPostCard';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 
 import commonStyles from './BlogSearch.common.module.css';
 import lightStyles from './BlogSearch.light.module.css';
 import darkStyles from './BlogSearch.dark.module.css';
 
+interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  imageUrl: string;
+  author: string;
+  date: string;
+}
+
+// Fetch blog posts from API
+async function fetchBlogPosts(): Promise<BlogPost[]> {
+  try {
+    const res = await fetch('/backend/api/blog?limit=50');
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.posts || data || []).map((p: any) => ({
+      slug: p.slug || String(p.id),
+      title: p.title || 'Untitled',
+      excerpt: p.excerpt || p.summary || '',
+      imageUrl: p.image_url || p.imageUrl || '/images/blog/default.jpg',
+      author: p.author || 'MegiLance Team',
+      date: p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { 
+        month: 'long', day: 'numeric', year: 'numeric' 
+      }) : '',
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default function BlogSearchPage() {
   const { resolvedTheme } = useTheme();
   const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
+  
+  const loadPosts = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchBlogPosts();
+    setAllPosts(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
   
   const posts = useMemo(() => 
-    mockPosts.filter(p => 
+    allPosts.filter(p => 
       !q || 
       p.title.toLowerCase().includes(q.toLowerCase()) || 
       p.excerpt.toLowerCase().includes(q.toLowerCase())
     ), 
-  [q]);
+  [q, allPosts]);
 
   if (!resolvedTheme) return null;
 
@@ -54,17 +97,23 @@ export default function BlogSearchPage() {
           </ScrollReveal>
 
           <div className={commonStyles.grid}>
-            {posts.map((p, index) => (
-              <ScrollReveal key={p.slug} delay={0.1 + index * 0.05}>
-                <BlogPostCard {...p} />
-              </ScrollReveal>
-            ))}
+            {loading ? (
+              <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+                <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+              </div>
+            ) : posts.length > 0 ? (
+              posts.map((p, index) => (
+                <ScrollReveal key={p.slug} delay={0.1 + index * 0.05}>
+                  <BlogPostCard {...p} />
+                </ScrollReveal>
+              ))
+            ) : null}
           </div>
 
-          {posts.length === 0 && (
+          {!loading && posts.length === 0 && (
             <ScrollReveal>
               <p className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-                No posts found matching "{q}".
+                {q ? `No posts found matching "${q}".` : 'No blog posts available yet.'}
               </p>
             </ScrollReveal>
           )}

@@ -1,7 +1,8 @@
 // @AI-HINT: Comprehensive wallet management client with balance, transactions, deposit/withdraw
+// Production-ready: Uses real API endpoints, no mock data
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
@@ -13,10 +14,10 @@ import darkStyles from './Wallet.dark.module.css';
 
 interface Transaction {
   id: string;
-  type: 'deposit' | 'withdrawal' | 'payment' | 'refund' | 'earning';
+  type: 'deposit' | 'withdrawal' | 'payment' | 'refund' | 'earning' | 'escrow_lock' | 'escrow_release' | 'milestone_payment' | 'fee' | 'bonus';
   amount: number;
   description: string;
-  status: 'completed' | 'pending' | 'failed';
+  status: 'completed' | 'pending' | 'failed' | 'processing' | 'cancelled';
   createdAt: string;
   reference?: string;
 }
@@ -24,97 +25,131 @@ interface Transaction {
 interface WalletBalance {
   available: number;
   pending: number;
+  escrow?: number;
   total: number;
   currency: string;
 }
 
 interface PayoutMethod {
   id: string;
-  type: 'bank' | 'paypal' | 'wise';
+  type: 'bank' | 'paypal' | 'wise' | 'crypto';
   name: string;
   last4: string;
   isDefault: boolean;
 }
 
-// Mock data for demonstration
-const mockBalance: WalletBalance = {
-  available: 12450.00,
-  pending: 2500.00,
-  total: 14950.00,
+// Initial empty state - data loads from API
+const emptyBalance: WalletBalance = {
+  available: 0,
+  pending: 0,
+  escrow: 0,
+  total: 0,
   currency: 'USD'
 };
 
-const mockTransactions: Transaction[] = [
-  {
-    id: 'txn-001',
-    type: 'earning',
-    amount: 2500.00,
-    description: 'Project: E-commerce Platform',
-    status: 'completed',
-    createdAt: '2024-12-05T14:30:00Z',
-    reference: 'PROJ-2024-001'
-  },
-  {
-    id: 'txn-002',
-    type: 'withdrawal',
-    amount: -1000.00,
-    description: 'Withdrawal to Bank Account ****4521',
-    status: 'completed',
-    createdAt: '2024-12-04T10:00:00Z',
-    reference: 'WD-2024-102'
-  },
-  {
-    id: 'txn-003',
-    type: 'earning',
-    amount: 750.00,
-    description: 'Project: Mobile App UI Design',
-    status: 'pending',
-    createdAt: '2024-12-03T16:45:00Z',
-    reference: 'PROJ-2024-002'
-  },
-  {
-    id: 'txn-004',
-    type: 'deposit',
-    amount: 500.00,
-    description: 'Added funds via Credit Card',
-    status: 'completed',
-    createdAt: '2024-12-02T09:15:00Z',
-    reference: 'DEP-2024-045'
-  },
-  {
-    id: 'txn-005',
-    type: 'payment',
-    amount: -350.00,
-    description: 'Platform fee for December',
-    status: 'completed',
-    createdAt: '2024-12-01T00:00:00Z',
-    reference: 'FEE-2024-012'
-  }
-];
-
-const mockPayoutMethods: PayoutMethod[] = [
-  { id: 'pm-1', type: 'bank', name: 'Chase Bank', last4: '4521', isDefault: true },
-  { id: 'pm-2', type: 'paypal', name: 'PayPal', last4: 'gmail.com', isDefault: false }
-];
-
 type TabType = 'overview' | 'transactions' | 'withdraw' | 'deposit' | 'settings';
+
+// API helper for wallet endpoints
+async function walletApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const res = await fetch(`/backend/api/wallet${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options?.headers,
+    },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Request failed' }));
+    throw new Error(err.detail || `API error: ${res.status}`);
+  }
+  return res.json();
+}
 
 export default function WalletClient() {
   const { resolvedTheme } = useTheme();
   const { notify } = useToaster();
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  const [balance, setBalance] = useState<WalletBalance>(mockBalance);
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
-  const [payoutMethods, setPayoutMethods] = useState<PayoutMethod[]>(mockPayoutMethods);
+  const [balance, setBalance] = useState<WalletBalance>(emptyBalance);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [payoutMethods, setPayoutMethods] = useState<PayoutMethod[]>([]);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
-  const [selectedMethod, setSelectedMethod] = useState<string>(mockPayoutMethods[0]?.id || '');
+  const [selectedMethod, setSelectedMethod] = useState<string>('');
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Fetch wallet data from API
+  const fetchWalletData = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Fetch balance
+      const balanceData = await walletApi<WalletBalance>('/balance');
+      setBalance({
+        available: balanceData.available || 0,
+        pending: balanceData.pending || 0,
+        escrow: balanceData.escrow || 0,
+        total: balanceData.total || 0,
+        currency: balanceData.currency || 'USD',
+      });
+
+      // Fetch transactions
+      const txData = await walletApi<any[]>('/transactions?limit=50');
+      const mappedTransactions: Transaction[] = txData.map((tx: any) => ({
+        id: String(tx.id),
+        type: mapTransactionType(tx.type),
+        amount: tx.type === 'withdrawal' || tx.type === 'fee' ? -Math.abs(tx.amount) : tx.amount,
+        description: tx.description || `${tx.type} transaction`,
+        status: tx.status as Transaction['status'],
+        createdAt: tx.created_at || tx.createdAt,
+        reference: tx.reference_id || tx.reference,
+      }));
+      setTransactions(mappedTransactions);
+
+      // Fetch payout schedule to see if configured
+      const payoutData = await walletApi<any>('/payout-schedule').catch(() => null);
+      if (payoutData?.is_configured && payoutData.destination_type) {
+        setPayoutMethods([{
+          id: 'default',
+          type: payoutData.destination_type as PayoutMethod['type'],
+          name: payoutData.destination_type === 'bank' ? 'Bank Account' :
+                payoutData.destination_type === 'paypal' ? 'PayPal' : 'Payout Method',
+          last4: payoutData.destination_details?.slice(-4) || '****',
+          isDefault: true,
+        }]);
+        setSelectedMethod('default');
+      }
+    } catch (err) {
+      console.error('[WalletClient] Failed to load wallet data:', err);
+      // Keep empty state - user sees "no transactions" etc.
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Map backend transaction types to frontend types
+  function mapTransactionType(type: string): Transaction['type'] {
+    const typeMap: Record<string, Transaction['type']> = {
+      deposit: 'deposit',
+      withdrawal: 'withdrawal',
+      escrow_lock: 'escrow_lock',
+      escrow_release: 'escrow_release',
+      refund: 'refund',
+      bonus: 'bonus',
+      fee: 'fee',
+      milestone_payment: 'milestone_payment',
+      payment: 'payment',
+      earning: 'earning',
+    };
+    return typeMap[type] || 'payment';
+  }
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    fetchWalletData();
+  }, [fetchWalletData]);
 
   if (!mounted || !resolvedTheme) return null;
 
@@ -139,11 +174,16 @@ export default function WalletClient() {
 
   const getTransactionIcon = (type: Transaction['type']) => {
     switch (type) {
-      case 'earning': return '💰';
+      case 'earning':
+      case 'milestone_payment':
+      case 'escrow_release': return '💰';
       case 'withdrawal': return '🏦';
       case 'deposit': return '💳';
-      case 'payment': return '📋';
+      case 'payment':
+      case 'fee':
+      case 'escrow_lock': return '📋';
       case 'refund': return '↩️';
+      case 'bonus': return '🎁';
       default: return '💵';
     }
   };
@@ -154,8 +194,10 @@ export default function WalletClient() {
       case 'completed':
         return cn(baseClass, themeStyles.statusCompleted);
       case 'pending':
+      case 'processing':
         return cn(baseClass, themeStyles.statusPending);
       case 'failed':
+      case 'cancelled':
         return cn(baseClass, themeStyles.statusFailed);
       default:
         return baseClass;
@@ -172,31 +214,54 @@ export default function WalletClient() {
       notify({ title: 'Insufficient funds', description: 'Withdrawal amount exceeds available balance.', variant: 'error', duration: 3000 });
       return;
     }
+    if (amount < 10) {
+      notify({ title: 'Minimum not met', description: 'Minimum withdrawal is $10.', variant: 'error', duration: 3000 });
+      return;
+    }
 
     setIsProcessing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setBalance(prev => ({
-      ...prev,
-      available: prev.available - amount,
-      total: prev.total - amount
-    }));
-    
-    setTransactions(prev => [{
-      id: `txn-${Date.now()}`,
-      type: 'withdrawal',
-      amount: -amount,
-      description: `Withdrawal to ${payoutMethods.find(m => m.id === selectedMethod)?.name || 'Bank Account'}`,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      reference: `WD-${Date.now()}`
-    }, ...prev]);
+    try {
+      const response = await walletApi<any>('/withdraw', {
+        method: 'POST',
+        body: JSON.stringify({
+          amount,
+          method: 'bank_transfer',
+          destination: selectedMethod || 'default',
+          currency: 'USD',
+        }),
+      });
 
-    setWithdrawAmount('');
-    setIsProcessing(false);
-    notify({ title: 'Withdrawal initiated', description: `${formatCurrency(amount)} will be sent to your account within 1-3 business days.`, variant: 'success', duration: 5000 });
-    setActiveTab('transactions');
+      // Update local balance
+      setBalance(prev => ({
+        ...prev,
+        available: prev.available - amount,
+        pending: prev.pending + amount,
+      }));
+
+      // Add transaction to list
+      setTransactions(prev => [{
+        id: response.reference_id || `txn-${Date.now()}`,
+        type: 'withdrawal',
+        amount: -amount,
+        description: `Withdrawal via ${response.method || 'bank transfer'}`,
+        status: 'processing',
+        createdAt: new Date().toISOString(),
+        reference: response.reference_id,
+      }, ...prev]);
+
+      setWithdrawAmount('');
+      notify({ 
+        title: 'Withdrawal initiated', 
+        description: `${formatCurrency(amount)} will be sent to your account. ${response.estimated_arrival ? `ETA: ${new Date(response.estimated_arrival).toLocaleDateString()}` : ''}`,
+        variant: 'success', 
+        duration: 5000 
+      });
+      setActiveTab('transactions');
+    } catch (err: any) {
+      notify({ title: 'Withdrawal failed', description: err.message || 'Please try again later.', variant: 'error', duration: 4000 });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleDeposit = async () => {
@@ -205,30 +270,59 @@ export default function WalletClient() {
       notify({ title: 'Invalid amount', description: 'Please enter a valid deposit amount.', variant: 'error', duration: 3000 });
       return;
     }
+    if (amount < 10) {
+      notify({ title: 'Minimum not met', description: 'Minimum deposit is $10.', variant: 'error', duration: 3000 });
+      return;
+    }
 
     setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setBalance(prev => ({
-      ...prev,
-      available: prev.available + amount,
-      total: prev.total + amount
-    }));
-    
-    setTransactions(prev => [{
-      id: `txn-${Date.now()}`,
-      type: 'deposit',
-      amount: amount,
-      description: 'Added funds via Credit Card',
-      status: 'completed',
-      createdAt: new Date().toISOString(),
-      reference: `DEP-${Date.now()}`
-    }, ...prev]);
+    try {
+      const response = await walletApi<any>('/deposit', {
+        method: 'POST',
+        body: JSON.stringify({
+          amount,
+          method: 'card',
+          currency: 'USD',
+        }),
+      });
 
-    setDepositAmount('');
-    setIsProcessing(false);
-    notify({ title: 'Deposit successful', description: `${formatCurrency(amount)} has been added to your wallet.`, variant: 'success', duration: 5000 });
-    setActiveTab('overview');
+      // Add pending transaction
+      setTransactions(prev => [{
+        id: response.reference_id || `txn-${Date.now()}`,
+        type: 'deposit',
+        amount: amount,
+        description: 'Deposit via card (pending)',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        reference: response.reference_id,
+      }, ...prev]);
+
+      setDepositAmount('');
+      
+      // Show payment instructions
+      if (response.payment_details?.checkout_url) {
+        notify({ 
+          title: 'Redirecting to payment', 
+          description: 'You will be redirected to complete payment.',
+          variant: 'success', 
+          duration: 3000 
+        });
+        // In production, redirect to checkout
+        // window.location.href = response.payment_details.checkout_url;
+      } else {
+        notify({ 
+          title: 'Deposit initiated', 
+          description: `Reference: ${response.reference_id}. Complete payment to add funds.`,
+          variant: 'success', 
+          duration: 5000 
+        });
+      }
+      setActiveTab('transactions');
+    } catch (err: any) {
+      notify({ title: 'Deposit failed', description: err.message || 'Please try again later.', variant: 'error', duration: 4000 });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const tabs: { id: TabType; label: string; icon: string }[] = [

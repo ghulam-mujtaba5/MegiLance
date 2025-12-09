@@ -94,19 +94,25 @@ const Passwordless: React.FC = () => {
     setErrors({ email: '', general: '' });
     
     try {
-      // Simulate API call for passwordless login
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
       if (isPreviewMode()) {
         try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
         router.push(roleConfig[selectedRole].redirectPath);
         return;
       }
       
-      // TODO: Implement passwordless login API call
-      // await api.auth.sendMagicLink(email, selectedRole);
-      setSubmitted(true);
-      setCountdown(30);
+      const res = await fetch('/backend/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role: selectedRole }),
+      });
+      
+      if (res.ok) {
+        setSubmitted(true);
+        setCountdown(30);
+      } else {
+        const error = await res.json().catch(() => ({}));
+        setErrors({ email: '', general: error.detail || 'Failed to send magic link. Please try again.' });
+      }
     } catch (error) {
       setErrors({ email: '', general: 'Failed to send magic link. Please try again.' });
     } finally {
@@ -119,11 +125,18 @@ const Passwordless: React.FC = () => {
     
     setLoading(true);
     try {
-      // Simulate API call for resend
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // TODO: Implement resend magic link API call
-      // await api.auth.resendMagicLink(email);
-      setCountdown(30);
+      const res = await fetch('/backend/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, role: selectedRole }),
+      });
+      
+      if (res.ok) {
+        setCountdown(30);
+      } else {
+        const error = await res.json().catch(() => ({}));
+        setErrors({ email: '', general: error.detail || 'Failed to resend magic link. Please try again.' });
+      }
     } catch (error) {
       setErrors({ email: '', general: 'Failed to resend magic link. Please try again.' });
     } finally {

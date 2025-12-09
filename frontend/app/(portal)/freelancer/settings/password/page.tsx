@@ -25,7 +25,7 @@ const PasswordSettingsPage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
@@ -38,14 +38,38 @@ const PasswordSettingsPage = () => {
     }
 
     setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/backend/api/auth/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || 'Failed to update password');
+      }
+
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       toaster.notify({ title: 'Updated', description: 'Password updated successfully!', variant: 'success' });
-    }, 1500);
+    } catch (err: any) {
+      toaster.notify({ 
+        title: 'Error', 
+        description: err.message || 'Failed to update password. Please try again.', 
+        variant: 'danger' 
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (

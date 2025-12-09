@@ -582,7 +582,13 @@ export const searchApi = {
   }) => {
     const params = new URLSearchParams({ q: query });
     if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
+      const { page = 1, page_size = 20, ...rest } = filters;
+      
+      // Map pagination to backend params (limit/offset)
+      params.append('limit', page_size.toString());
+      params.append('offset', ((page - 1) * page_size).toString());
+
+      Object.entries(rest).forEach(([key, value]) => {
         if (value !== undefined) {
           if (Array.isArray(value)) {
             value.forEach(v => params.append(key, v.toString()));
@@ -637,7 +643,13 @@ export const projectsApi = {
   list: (filters?: { status?: string; category?: string; page?: number; page_size?: number }) => {
     const params = new URLSearchParams();
     if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
+      const { page = 1, page_size = 20, ...rest } = filters;
+      
+      // Map pagination to backend params (limit/skip)
+      params.append('limit', page_size.toString());
+      params.append('skip', ((page - 1) * page_size).toString());
+
+      Object.entries(rest).forEach(([key, value]) => {
         if (value !== undefined) params.append(key, value.toString());
       });
     }
@@ -1187,17 +1199,42 @@ export const clientApi = {
   getProjects: () => apiFetch<any[]>('/portal/client/projects'),
   getPayments: () => apiFetch<any[]>('/portal/client/payments'),
   getFreelancers: async () => {
-    // Return mock data as this endpoint doesn't exist yet
-    return [
-      { id: '1', name: 'Alice Johnson', title: 'Full Stack Developer', rating: 4.9, hourlyRate: '$75', skills: ['React', 'Node.js'], completedProjects: 12 },
-      { id: '2', name: 'Bob Smith', title: 'UI/UX Designer', rating: 4.8, hourlyRate: '$65', skills: ['Figma', 'Adobe XD'], completedProjects: 8 },
-    ];
+    try {
+      const response = await apiFetch<{ recommendations: any[] }>('/matching/recommendations?limit=5');
+      return response.recommendations.map((r: any) => ({
+        id: r.freelancer_id.toString(),
+        name: r.freelancer_name,
+        title: r.freelancer_bio ? r.freelancer_bio.substring(0, 30) + '...' : 'Freelancer',
+        rating: r.match_factors?.avg_rating ? r.match_factors.avg_rating * 5 : 5.0,
+        hourlyRate: r.hourly_rate ? `$${r.hourly_rate}` : '$0',
+        skills: [], // The recommendation endpoint might not return skills list directly yet
+        completedProjects: 0, // Not in recommendation response
+        avatarUrl: r.profile_image_url,
+        location: r.location,
+        matchScore: r.match_score // Add this for UI to show match %
+      }));
+    } catch (error) {
+      console.error('Failed to fetch AI recommendations:', error);
+      // Return empty array on failure - no mock fallback for launch
+      return [];
+    }
   },
   getReviews: async () => {
-    // Return mock data as this endpoint doesn't exist yet
-    return [
-      { id: '1', projectTitle: 'Website Redesign', freelancerName: 'Alice Johnson', rating: 5, comment: 'Excellent work!', date: '2025-12-01' },
-    ];
+    try {
+      const response = await apiFetch<{ reviews: any[] }>('/reviews/?page_size=10');
+      const reviews = response.reviews || response;
+      return Array.isArray(reviews) ? reviews.map((r: any) => ({
+        id: String(r.id),
+        projectTitle: r.project_title || 'Project',
+        freelancerName: r.reviewee_name || 'Freelancer',
+        rating: r.rating || 5,
+        comment: r.comment || '',
+        date: r.created_at || new Date().toISOString()
+      })) : [];
+    } catch (error) {
+      console.error('Failed to fetch reviews:', error);
+      return [];
+    }
   },
   createJob: (data: any) => apiFetch('/portal/client/projects', {
     method: 'POST',

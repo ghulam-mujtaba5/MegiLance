@@ -1,22 +1,99 @@
 /* Community Page Dark Theme */
 .themeWrapper {
-  background: #0f172a;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
   color: #f8fafc;
-  --card-bg: #1e293b;
-  --card-border: #475569;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --primary-color: #4573df;
-  --primary-hover: #6b93f5;
 }
 
 .subtitle {
-  color: #cbd5e1;
+  color: #94a3b8;
 }
 
-/* Fix card borders visibility in dark mode */
-.themeWrapper .communityCard,
-.themeWrapper .socialCard {
-  border-color: #475569;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+/* Community Cards */
+.communityCard {
+  background: rgba(30, 27, 75, 0.6);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.communityCard:hover {
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.cardIcon {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(139, 92, 246, 0.2));
+  color: #a78bfa;
+}
+
+.communityTitle {
+  color: #f1f5f9;
+}
+
+.communityDescription {
+  color: #94a3b8;
+}
+
+.communityButton {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.communityButton:hover {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* Social Cards */
+.socialCard {
+  background: rgba(30, 27, 75, 0.6);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.socialCard:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.socialIcon {
+  background: rgba(99, 102, 241, 0.1);
+  color: #94a3b8;
+}
+
+.discord {
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.2), rgba(88, 101, 242, 0.1));
+  color: #5865f2;
+}
+
+.linkedin {
+  background: linear-gradient(135deg, rgba(0, 119, 181, 0.2), rgba(0, 119, 181, 0.1));
+  color: #0a66c2;
+}
+
+.twitter {
+  background: linear-gradient(135deg, rgba(29, 161, 242, 0.2), rgba(29, 161, 242, 0.1));
+  color: #1da1f2;
+}
+
+.github {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  color: #f0f6fc;
+}
+
+.socialTitle {
+  color: #f1f5f9;
+}
+
+.socialDescription {
+  color: #94a3b8;
+}
+
+.socialButton {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.socialButton:hover {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 } 

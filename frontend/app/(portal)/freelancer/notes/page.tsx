@@ -66,76 +66,50 @@ export default function NotesPage() {
 
   useEffect(() => {
     setMounted(true);
-    // Simulate API fetch
+    // Fetch notes from backend API
     fetchNotes();
   }, []);
 
   const fetchNotes = async () => {
     try {
-      // Mock data
-      await new Promise(resolve => setTimeout(resolve, 800));
-      setNotes([
-        {
-          id: '1',
-          project_id: 'p1',
-          project_title: 'E-commerce Redesign',
-          content: 'Client wants to use blue as the primary color. Need to check accessibility contrast ratios.',
-          color: '#dbeafe',
-          is_pinned: true,
-          is_private: false,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          tags: ['design', 'important']
-        },
-        {
-          id: '2',
-          project_id: 'p1',
-          project_title: 'E-commerce Redesign',
-          content: 'Meeting notes: 1. Fix checkout bug 2. Update hero image 3. Add testimonials section',
-          color: '#fef3c7',
-          is_pinned: true,
-          is_private: true,
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          updated_at: new Date(Date.now() - 86400000).toISOString(),
-          tags: ['meeting', 'urgent']
-        },
-        {
-          id: '3',
-          project_id: 'p2',
-          project_title: 'Mobile App Dev',
-          content: 'API documentation link: https://api.example.com/docs/v2. Remember to use the new authentication flow.',
-          color: '#d1fae5',
-          is_pinned: false,
-          is_private: false,
-          created_at: new Date(Date.now() - 172800000).toISOString(),
-          updated_at: new Date(Date.now() - 172800000).toISOString(),
-          tags: ['technical', 'api']
-        },
-        {
-          id: '4',
-          project_id: 'p3',
-          project_title: 'Marketing Dashboard',
-          content: 'Use Chart.js for all visualizations. Client approved the proposal on March 15th.',
-          color: '#f3e8ff',
-          is_pinned: false,
-          is_private: false,
-          created_at: new Date(Date.now() - 259200000).toISOString(),
-          updated_at: new Date(Date.now() - 259200000).toISOString(),
-          tags: ['technical', 'approved']
-        }
-      ]);
-
-      setTags([
-        { id: 't1', name: 'design', color: '#f59e0b', usage_count: 5 },
-        { id: 't2', name: 'technical', color: '#3b82f6', usage_count: 8 },
-        { id: 't3', name: 'client-feedback', color: '#10b981', usage_count: 3 },
-        { id: 't4', name: 'deadline', color: '#ef4444', usage_count: 4 },
-        { id: 't5', name: 'credentials', color: '#8b5cf6', usage_count: 2 },
-        { id: 't6', name: 'important', color: '#ec4899', usage_count: 6 },
-        { id: 't7', name: 'approved', color: '#22c55e', usage_count: 3 }
-      ]);
+      const token = localStorage.getItem('token');
+      const res = await fetch('/backend/api/notes-tags/notes?limit=50', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        // Transform API response to match frontend Note interface
+        const transformedNotes: Note[] = (Array.isArray(data) ? data : []).map((n: any) => ({
+          id: n.id || String(n.id),
+          project_id: n.entity_id || n.project_id || '',
+          project_title: n.entity_type === 'project' ? `Project ${n.entity_id}` : 'General Note',
+          content: n.content || '',
+          color: n.color || '#fef3c7',
+          is_pinned: n.is_pinned || false,
+          is_private: n.is_private !== false,
+          created_at: n.created_at || new Date().toISOString(),
+          updated_at: n.updated_at || n.created_at || new Date().toISOString(),
+          tags: n.tags || [],
+        }));
+        setNotes(transformedNotes);
+      } else {
+        // Empty state if API fails
+        setNotes([]);
+      }
+      
+      // Fetch tags
+      const tagsRes = await fetch('/backend/api/notes-tags/tags', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      
+      if (tagsRes.ok) {
+        const tagsData = await tagsRes.json();
+        setTags(Array.isArray(tagsData) ? tagsData : []);
+      }
     } catch (error) {
-      console.error('Failed to load notes:', error);
+      console.error('[Notes] Failed to fetch notes:', error);
+      setNotes([]);
     } finally {
       setLoading(false);
     }
@@ -149,28 +123,44 @@ export default function NotesPage() {
   const handleSaveNote = async () => {
     if (!editForm.content.trim()) return;
 
-    if (isCreating) {
-      const newNote: Note = {
-        id: Date.now().toString(),
-        project_id: 'p1',
-        project_title: 'New Project',
-        content: editForm.content,
-        color: editForm.color,
-        is_pinned: false,
-        is_private: editForm.is_private,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        tags: editForm.tags
-      };
-      setNotes(prev => [newNote, ...prev]);
-    } else if (isEditing) {
-      setNotes(prev =>
-        prev.map(n =>
-          n.id === isEditing
-            ? { ...n, content: editForm.content, color: editForm.color, tags: editForm.tags, is_private: editForm.is_private, updated_at: new Date().toISOString() }
-            : n
-        )
-      );
+    const token = localStorage.getItem('token');
+    try {
+      if (isCreating) {
+        const res = await fetch('/backend/api/notes-tags/notes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            entity_type: 'general',
+            entity_id: 'general',
+            content: editForm.content,
+            is_private: editForm.is_private,
+            color: editForm.color,
+          }),
+        });
+        if (res.ok) {
+          await fetchNotes(); // Refresh from server
+        }
+      } else if (isEditing) {
+        const res = await fetch(`/backend/api/notes-tags/notes/${isEditing}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            content: editForm.content,
+            color: editForm.color,
+          }),
+        });
+        if (res.ok) {
+          await fetchNotes(); // Refresh from server
+        }
+      }
+    } catch (error) {
+      console.error('[Notes] Failed to save note:', error);
     }
 
     setIsCreating(false);
@@ -189,13 +179,42 @@ export default function NotesPage() {
   };
 
   const handleDeleteNote = async (noteId: string) => {
-    setNotes(prev => prev.filter(n => n.id !== noteId));
+    const token = localStorage.getItem('token');
+    try {
+      const res = await fetch(`/backend/api/notes-tags/notes/${noteId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        setNotes(prev => prev.filter(n => n.id !== noteId));
+      }
+    } catch (error) {
+      console.error('[Notes] Failed to delete note:', error);
+    }
   };
 
   const handleTogglePin = async (noteId: string) => {
-    setNotes(prev =>
-      prev.map(n => (n.id === noteId ? { ...n, is_pinned: !n.is_pinned } : n))
-    );
+    const token = localStorage.getItem('token');
+    const note = notes.find(n => n.id === noteId);
+    if (!note) return;
+    
+    try {
+      const res = await fetch(`/backend/api/notes-tags/notes/${noteId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ is_pinned: !note.is_pinned }),
+      });
+      if (res.ok) {
+        setNotes(prev =>
+          prev.map(n => (n.id === noteId ? { ...n, is_pinned: !n.is_pinned } : n))
+        );
+      }
+    } catch (error) {
+      console.error('[Notes] Failed to toggle pin:', error);
+    }
   };
 
   const handleTagToggle = (tagName: string) => {
@@ -207,28 +226,60 @@ export default function NotesPage() {
     }));
   };
 
-  const handleCreateTag = () => {
+  const handleCreateTag = async () => {
     if (!newTagName.trim()) return;
-    const newTag: Tag = {
-      id: Date.now().toString(),
-      name: newTagName.toLowerCase().replace(/\s+/g, '-'),
-      color: '#' + Math.floor(Math.random() * 16777215).toString(16),
-      usage_count: 0
-    };
-    setTags(prev => [...prev, newTag]);
+    const token = localStorage.getItem('token');
+    const tagColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    
+    try {
+      const res = await fetch('/backend/api/notes-tags/tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          name: newTagName.toLowerCase().replace(/\s+/g, '-'),
+          color: tagColor,
+        }),
+      });
+      if (res.ok) {
+        const newTag = await res.json();
+        setTags(prev => [...prev, {
+          id: newTag.id,
+          name: newTag.name,
+          color: newTag.color,
+          usage_count: newTag.entity_count || 0,
+        }]);
+      }
+    } catch (error) {
+      console.error('[Notes] Failed to create tag:', error);
+    }
     setNewTagName('');
   };
 
-  const handleDeleteTag = (tagId: string) => {
-    setTags(prev => prev.filter(t => t.id !== tagId));
+  const handleDeleteTag = async (tagId: string) => {
+    const token = localStorage.getItem('token');
     const tagToDelete = tags.find(t => t.id === tagId);
-    if (tagToDelete) {
-      setNotes(prev =>
-        prev.map(n => ({
-          ...n,
-          tags: n.tags.filter(t => t !== tagToDelete.name)
-        }))
-      );
+    
+    try {
+      const res = await fetch(`/backend/api/notes-tags/tags/${tagId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        setTags(prev => prev.filter(t => t.id !== tagId));
+        if (tagToDelete) {
+          setNotes(prev =>
+            prev.map(n => ({
+              ...n,
+              tags: n.tags.filter(t => t !== tagToDelete.name)
+            }))
+          );
+        }
+      }
+    } catch (error) {
+      console.error('[Notes] Failed to delete tag:', error);
     }
   };
 

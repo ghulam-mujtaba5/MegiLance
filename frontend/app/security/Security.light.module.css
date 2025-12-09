@@ -1,7 +1,7 @@
 /* AI-HINT: Light theme overrides for Security page. */
 
 .themeWrapper { 
-  background: #f8fafc; 
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
   color: #0f172a; 
   --surface: #f8fafc;
   --surface-elev: #ffffff;
@@ -14,8 +14,9 @@
 }
 .subtitle { color: #475569; }
 
-.card { background: #ffffff; border-color: #e2e8f0; }
-.card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+.card { background: rgba(255, 255, 255, 0.9); border-color: #e2e8f0; }
+.card:hover { box-shadow: 0 12px 30px rgba(0,0,0,0.06); transform: translateY(-4px); }
+.cardIcon { background: linear-gradient(135deg, #eef2ff, #e0e7ff); color: #4573df; }
 .cardTitle { color: #0f172a; }
 .cardDesc { color: #475569; }
 
@@ -24,11 +25,23 @@
 .itemIcon { background: rgba(69, 115, 223, 0.1); color: #4573df; }
 
 .button { 
-  background: #4573df; 
+  background: linear-gradient(135deg, #4573df, #6366f1);
   color: #ffffff; 
   text-decoration: none;
-  display: inline-block;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
 }
-.button:hover { filter: brightness(1.05); }
-.buttonSecondary { color: #0f172a; border-color: #e2e8f0; background: transparent; }
+.button:hover { box-shadow: 0 6px 20px rgba(69, 115, 223, 0.35); }
+.buttonSecondary { color: #374151; border-color: #e2e8f0; background: #ffffff; }
 .buttonSecondary:hover { background: #f1f5f9; }
+
+/* Modal */
+.modal { background: rgba(15, 23, 42, 0.5); }
+.modalContent { background: #ffffff; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2); }
+.modalClose { color: #64748b; }
+.modalClose:hover { background: #f1f5f9; }
+.modalIcon { color: #4573df; }
+.modalSubtitle { color: #64748b; font-size: 0.875rem; }
+.modalBody { color: #374151; }
+.modalBody h3 { color: #1e293b; }
+.modalBody li::before { color: #10b981; }
+.modalBody a { color: #4573df; }

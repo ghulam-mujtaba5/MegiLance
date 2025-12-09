@@ -156,17 +156,46 @@ export default function SubscriptionPage() {
 
   const handleUpgrade = async (planId: string) => {
     try {
-      // TODO: Implement subscription upgrade API call
-      // await paymentsApi.upgradePlan(planId);
-      await fetchSubscriptionData();
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const res = await fetch('/backend/api/subscriptions/upgrade', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ new_tier: planId, prorate: true }),
+      });
+      
+      if (res.ok) {
+        await fetchSubscriptionData();
+      } else {
+        const error = await res.json().catch(() => ({}));
+        console.error('[Subscription] Upgrade failed:', error.detail || 'Unknown error');
+      }
     } catch (error) {
-      // Handle upgrade error
+      console.error('[Subscription] Upgrade error:', error);
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (confirm('Are you sure you want to cancel your subscription?')) {
-      setSubscription(prev => prev ? { ...prev, cancelAtPeriodEnd: true } : null);
+      try {
+        const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+        const res = await fetch('/backend/api/subscriptions/cancel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ immediate: false }),
+        });
+        
+        if (res.ok) {
+          setSubscription(prev => prev ? { ...prev, cancelAtPeriodEnd: true } : null);
+        }
+      } catch (error) {
+        console.error('[Subscription] Cancel error:', error);
+      }
     }
   };
 

@@ -27,7 +27,7 @@ import darkStyles from './Dashboard.dark.module.css';
 const Dashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { analytics, jobs, loading } = useFreelancerData();
+  const { analytics, recommendedJobs, proposals, loading } = useFreelancerData();
 
   useEffect(() => {
     setMounted(true);
@@ -103,8 +103,8 @@ const Dashboard: React.FC = () => {
           <div className={commonStyles.jobList}>
             {loading ? (
               <Loading />
-            ) : jobs && jobs.length > 0 ? (
-              jobs.slice(0, 3).map((job: any) => (
+            ) : recommendedJobs && recommendedJobs.length > 0 ? (
+              recommendedJobs.slice(0, 3).map((job: any) => (
                 <JobCard key={job.id} job={job} />
               ))
             ) : (
@@ -131,25 +131,28 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div className={commonStyles.proposalList}>
-             {/* Mock Proposals - In a real app, this would come from API */}
-             <div className={cn(commonStyles.proposalCard, themeStyles.proposalCard)}>
-                <div className={commonStyles.proposalInfo}>
-                   <div className={cn(commonStyles.proposalInfo, themeStyles.proposalInfo)}>
-                      <h4>E-commerce Website Redesign</h4>
-                   </div>
-                   <span className="text-xs opacity-70">Sent 2 days ago</span>
+            {proposals && proposals.length > 0 ? (
+              proposals.slice(0, 5).map((proposal) => (
+                <div key={proposal.id} className={cn(commonStyles.proposalCard, themeStyles.proposalCard)}>
+                  <div className={commonStyles.proposalInfo}>
+                    <div className={cn(commonStyles.proposalInfo, themeStyles.proposalInfo)}>
+                      <h4>{proposal.projectTitle}</h4>
+                    </div>
+                    <span className="text-xs opacity-70">
+                      {new Date(proposal.sentDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <span className={cn(commonStyles.proposalStatus, themeStyles.proposalStatus)}>
+                    {proposal.status}
+                  </span>
                 </div>
-                <span className={cn(commonStyles.proposalStatus, themeStyles.proposalStatus)}>Pending</span>
-             </div>
-             <div className={cn(commonStyles.proposalCard, themeStyles.proposalCard)}>
-                <div className={commonStyles.proposalInfo}>
-                   <div className={cn(commonStyles.proposalInfo, themeStyles.proposalInfo)}>
-                      <h4>Mobile App Development</h4>
-                   </div>
-                   <span className="text-xs opacity-70">Sent 5 days ago</span>
-                </div>
-                <span className={cn(commonStyles.proposalStatus, themeStyles.proposalStatus)}>Viewed</span>
-             </div>
+              ))
+            ) : (
+              <EmptyState
+                title="No proposals yet"
+                description="Start applying to jobs to see them here."
+              />
+            )}
           </div>
         </div>
       </div>

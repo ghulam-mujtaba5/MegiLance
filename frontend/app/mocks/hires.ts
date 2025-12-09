@@ -1,4 +1,4 @@
-// @AI-HINT: Mock Hires API to simulate the Hire flow backend.
+// @AI-HINT: Hire draft storage API for managing hire drafts in localStorage.
 import { readJSON, writeJSON, remove } from './storage';
 import type { CreateHireInput, CreateHireResult, HireDraft } from './types';
 
@@ -40,9 +40,31 @@ export function clearHireDraft() {
 }
 
 export async function submitHire(input: CreateHireInput): Promise<CreateHireResult> {
-  await new Promise((r) => setTimeout(r, 600));
-  const id = genId('hire_');
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') || localStorage.getItem('token') : null;
+  
+  const response = await fetch('/backend/api/contracts/direct', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      freelancer_id: parseInt(input.freelancerId, 10),
+      title: input.title,
+      description: input.description,
+      rate_type: input.rateType,
+      rate: input.rate,
+      start_date: input.startDate || null,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || 'Failed to submit hire request');
+  }
+
+  const result = await response.json();
   saveHireDraft({ status: 'submitted', updatedAt: nowISO() });
   clearHireDraft();
-  return { id, message: 'Hire request sent (mock).' };
+  return { id: result.id, message: 'Hire request sent successfully.' };
 }

@@ -148,9 +148,12 @@ const Press: React.FC = () => {
                   </div>
                   <h3 className={common.releaseTitle}>{pr.title}</h3>
                   <p className={common.releaseDesc}>{pr.description}</p>
-                  <a href="#" className={common.releaseLink}>
+                  <button
+                    className={common.releaseLink}
+                    onClick={() => alert(`Press release "${pr.title}" - Full content coming soon. Contact press@megilance.com for media inquiries.`)}
+                  >
                     Read Full Release <ExternalLink size={14} />
-                  </a>
+                  </button>
                 </StaggerItem>
               ))}
             </StaggerContainer>

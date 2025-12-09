@@ -53,7 +53,7 @@ export default function ClientContractsPage() {
       <div className={cn(commonStyles.container, themeStyles.container)}>
         <header className={commonStyles.header}>
           <h1 className={cn(commonStyles.title, themeStyles.title)}>My Contracts</h1>
-          <Button variant="primary" onClick={() => {}}>New Contract</Button>
+          <Button variant="primary" onClick={() => alert('Contract creation coming soon! Navigate to Projects to hire freelancers.')}>New Contract</Button>
         </header>
 
         {loading ? (

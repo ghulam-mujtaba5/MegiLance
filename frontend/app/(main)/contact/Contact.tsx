@@ -69,9 +69,17 @@ const Contact: React.FC = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      // TODO: Implement contact form API call
-      // await api.contact.send(data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Send contact form to backend
+      const res = await fetch('/backend/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to send message');
+      }
+
       toast({
         title: 'Message Sent!',
         description: "Thanks for reaching out. We'll get back to you shortly.",

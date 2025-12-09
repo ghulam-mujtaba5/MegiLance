@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 
 import BlogPostCard from '@/app/components/Public/BlogPostCard/BlogPostCard';
 import { cn } from '@/lib/utils';
-import { blogApi, BlogPost, demoPosts } from '@/lib/api/blog';
+import { blogApi, BlogPost } from '@/lib/api/blog';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -21,19 +21,15 @@ const BlogPage: React.FC = () => {
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isUsingDemo, setIsUsingDemo] = useState(false);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const data = await blogApi.getAll(true); // Fetch published posts
         setPosts(data);
-        // Check if using demo posts by comparing with demoPosts
-        setIsUsingDemo(data.length > 0 && data[0].id === demoPosts[0].id);
       } catch (error) {
-        console.error('Failed to fetch posts, using demo content:', error);
-        setPosts(demoPosts);
-        setIsUsingDemo(true);
+        console.error('[Blog] Failed to fetch posts:', error);
+        setPosts([]);
       } finally {
         setLoading(false);
       }
@@ -62,17 +58,17 @@ const BlogPage: React.FC = () => {
             <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
               Insights on crypto, freelancing, and the future of work.
             </p>
-            {isUsingDemo && (
-              <p className={cn(commonStyles.demoNotice, themeStyles.subtitle)} style={{ fontSize: '0.875rem', marginTop: '0.5rem', opacity: 0.7 }}>
-                📝 Showing demo articles • Connect MongoDB for live content
-              </p>
-            )}
           </header>
         </ScrollReveal>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 text-center">
+            <p className={cn(themeStyles.subtitle, "text-lg mb-2")}>No blog posts yet</p>
+            <p className={cn(themeStyles.subtitle, "text-sm opacity-70")}>Check back soon for insights on freelancing and crypto.</p>
           </div>
         ) : (
           <StaggerContainer className={commonStyles.grid} aria-label="Recent posts">

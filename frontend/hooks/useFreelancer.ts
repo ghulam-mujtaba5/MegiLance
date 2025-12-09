@@ -57,10 +57,19 @@ export type MonthlyEarning = {
   amount: number;
 };
 
+export type FreelancerProposal = {
+  id: string;
+  projectTitle: string;
+  status: 'Submitted' | 'Viewed' | 'Accepted' | 'Rejected' | 'Withdrawn';
+  sentDate: string;
+  bidAmount: string;
+};
+
 export function useFreelancerData() {
   const [projects, setProjects] = useState<FreelancerProject[] | null>(null);
   const [jobs, setJobs] = useState<FreelancerJob[] | null>(null);
   const [recommendedJobs, setRecommendedJobs] = useState<FreelancerJob[] | null>(null);
+  const [proposals, setProposals] = useState<FreelancerProposal[] | null>(null);
   const [transactions, setTransactions] = useState<FreelancerTransaction[] | null>(null);
   const [analytics, setAnalytics] = useState<FreelancerAnalytics | null>(null);
   const [monthlyEarnings, setMonthlyEarnings] = useState<MonthlyEarning[]>([]);
@@ -83,7 +92,7 @@ export function useFreelancerData() {
           }
         };
         
-        const [projectsJson, jobsJson, walletJson, paymentsJson, statsJson, earningsJson, rankJson, recommendedJson] = await Promise.all([
+        const [projectsJson, jobsJson, walletJson, paymentsJson, statsJson, earningsJson, rankJson, recommendedJson, proposalsJson] = await Promise.all([
           fetchWithFallback(api.portal.freelancer.getProjects(), { projects: [] }),
           fetchWithFallback(api.portal.freelancer.getJobs(), { jobs: [] }),
           fetchWithFallback(api.portal.freelancer.getWallet(), { balance: 0 }),
@@ -92,6 +101,7 @@ export function useFreelancerData() {
           fetchWithFallback(api.portal.freelancer.getMonthlyEarnings(6), { earnings: [] }),
           fetchWithFallback(api.gamification.getMyRank(), { rank: 'Silver', percentile: 50 }),
           fetchWithFallback(api.matching.findJobs(5), { recommendations: [] }),
+          fetchWithFallback(api.portal.freelancer.getProposals({ limit: 5 }), { proposals: [] }),
         ]);
         
         if (!mounted) return;
@@ -136,6 +146,19 @@ export function useFreelancerData() {
         }));
         setRecommendedJobs(mappedRecommendedJobs);
 
+        // Map Proposals
+        const mappedProposals: FreelancerProposal[] = (proposalsJson.proposals || []).map((p: any) => ({
+          id: String(p.id),
+          projectTitle: p.project_title || 'Untitled Project', // Backend might need to return project title
+          status: p.status === 'submitted' ? 'Submitted' : 
+                  p.status === 'viewed' ? 'Viewed' : 
+                  p.status === 'accepted' ? 'Accepted' : 
+                  p.status === 'rejected' ? 'Rejected' : 'Withdrawn',
+          sentDate: p.created_at,
+          bidAmount: `$${p.hourly_rate * p.estimated_hours}` // Approximate total
+        }));
+        setProposals(mappedProposals);
+
         // Map Transactions
         const mappedTransactions: FreelancerTransaction[] = (paymentsJson.payments || []).map((t: any) => ({
           id: String(t.id),
@@ -175,5 +198,5 @@ export function useFreelancerData() {
     return () => { mounted = false; };
   }, []);
 
-  return { projects, jobs, recommendedJobs, transactions, analytics, monthlyEarnings, loading, error } as const;
+  return { projects, jobs, recommendedJobs, proposals, transactions, analytics, monthlyEarnings, loading, error } as const;
 } 

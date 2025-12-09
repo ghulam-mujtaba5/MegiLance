@@ -149,25 +149,45 @@ export default function VerificationPage() {
     }
   };
 
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const handleUpload = async () => {
-    if (!selectedVerification) return;
+    if (!selectedVerification || !selectedFile) return;
     
     setUploading(true);
     try {
-      // Simulate upload
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const formData = new FormData();
+      formData.append('document', selectedFile);
+      formData.append('document_type', selectedVerification.type === 'identity' ? 'national_id' : 'address_proof');
       
-      setVerifications(prev => prev.map(v => 
-        v.id === selectedVerification.id ? { ...v, status: 'pending' as const } : v
-      ));
+      const res = await fetch('/backend/api/verification/upload-document', {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
       
-      setShowUploadModal(false);
-      setSelectedVerification(null);
+      if (res.ok) {
+        setVerifications(prev => prev.map(v => 
+          v.id === selectedVerification.id ? { ...v, status: 'pending' as const } : v
+        ));
+        setShowUploadModal(false);
+        setSelectedVerification(null);
+        setSelectedFile(null);
+      } else {
+        const error = await res.json().catch(() => ({}));
+        console.error('Upload failed:', error.detail || 'Unknown error');
+      }
     } catch (error) {
       console.error('Upload failed:', error);
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setSelectedFile(file);
   };
 
   const getStatusIcon = (status: string) => {
@@ -371,10 +391,15 @@ export default function VerificationPage() {
                   }
                 </p>
                 <div className={cn(commonStyles.uploadArea, themeStyles.uploadArea)}>
-                  <input type="file" accept="image/*,.pdf" className={commonStyles.fileInput} />
+                  <input 
+                    type="file" 
+                    accept="image/*,.pdf" 
+                    className={commonStyles.fileInput} 
+                    onChange={handleFileChange}
+                  />
                   <div className={commonStyles.uploadPlaceholder}>
-                    <span className={commonStyles.uploadIcon}>📄</span>
-                    <span>Click to upload or drag and drop</span>
+                    <span className={commonStyles.uploadIcon}>{selectedFile ? '✓' : '📄'}</span>
+                    <span>{selectedFile ? selectedFile.name : 'Click to upload or drag and drop'}</span>
                     <span className={cn(commonStyles.uploadHint, themeStyles.uploadHint)}>
                       PNG, JPG, or PDF up to 10MB
                     </span>
@@ -396,7 +421,7 @@ export default function VerificationPage() {
                 <button
                   className={cn(commonStyles.submitButton, themeStyles.submitButton)}
                   onClick={handleUpload}
-                  disabled={uploading}
+                  disabled={uploading || !selectedFile}
                 >
                   {uploading ? 'Uploading...' : 'Submit for Review'}
                 </button>

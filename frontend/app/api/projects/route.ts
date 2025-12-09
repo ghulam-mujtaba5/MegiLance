@@ -1,20 +1,22 @@
 // @AI-HINT: Projects API route - forwards requests to the FastAPI backend for real CRUD operations
 
 import { NextResponse, NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-// Helper to get auth token from cookies
-async function getAuthToken(): Promise<string | undefined> {
-  const cookieStore = await cookies();
-  return cookieStore.get('access_token')?.value;
+// Helper to get auth token from request headers (Authorization: Bearer token)
+function getAuthTokenFromRequest(request: NextRequest): string | undefined {
+  const authHeader = request.headers.get('Authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.substring(7);
+  }
+  return undefined;
 }
 
 // GET /api/projects - List all projects (proxies to backend)
 export async function GET(request: NextRequest) {
   try {
-    const token = await getAuthToken();
+    const token = getAuthTokenFromRequest(request);
     
     const backendResponse = await fetch(`${BACKEND_URL}/api/projects`, {
       method: 'GET',
@@ -41,7 +43,7 @@ export async function GET(request: NextRequest) {
 // POST /api/projects - Create a new project (proxies to backend)
 export async function POST(request: NextRequest) {
   try {
-    const token = await getAuthToken();
+    const token = getAuthTokenFromRequest(request);
     
     if (!token) {
       return NextResponse.json(

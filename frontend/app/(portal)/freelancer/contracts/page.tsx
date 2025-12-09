@@ -195,12 +195,60 @@ const ContractsPage = () => {
   const onConfirmAction = async () => {
     if (!actionType || !actionTargetId) return;
     setActionLoading(true);
-    await new Promise(r => setTimeout(r, 900));
-    if (actionType === 'extend') {
-      toaster.notify({ title: 'Extension requested', description: 'We have notified the client about your extension request.', variant: 'success' });
-    } else if (actionType === 'dispute') {
-      toaster.notify({ title: 'Dispute opened', description: 'A dispute ticket has been created for this contract.', variant: 'warning' });
+    
+    const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+    const contract = contracts.find(c => c.id === actionTargetId);
+    
+    try {
+      if (actionType === 'extend') {
+        // Create scope change request for extension
+        const res = await fetch('/backend/api/scope-changes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            contract_id: parseInt(actionTargetId, 10),
+            title: `Extension request for ${contract?.projectTitle || 'contract'}`,
+            description: 'Requesting deadline extension for this contract',
+            reason: 'Additional time needed to complete deliverables',
+          }),
+        });
+        
+        if (res.ok) {
+          toaster.notify({ title: 'Extension requested', description: 'We have notified the client about your extension request.', variant: 'success' });
+        } else {
+          const error = await res.json().catch(() => ({}));
+          toaster.notify({ title: 'Request failed', description: error.detail || 'Could not submit extension request', variant: 'error' });
+        }
+      } else if (actionType === 'dispute') {
+        // Create dispute
+        const res = await fetch('/backend/api/disputes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            contract_id: parseInt(actionTargetId, 10),
+            dispute_type: 'scope',
+            description: `Dispute raised for contract: ${contract?.projectTitle || 'Unknown'}`,
+          }),
+        });
+        
+        if (res.ok) {
+          toaster.notify({ title: 'Dispute opened', description: 'A dispute ticket has been created for this contract.', variant: 'warning' });
+        } else {
+          const error = await res.json().catch(() => ({}));
+          toaster.notify({ title: 'Failed', description: error.detail || 'Could not create dispute', variant: 'error' });
+        }
+      }
+    } catch (error) {
+      console.error('[Contracts] Action failed:', error);
+      toaster.notify({ title: 'Error', description: 'An unexpected error occurred', variant: 'error' });
     }
+    
     setActionLoading(false);
     setActionOpen(false);
     setActionType(null);

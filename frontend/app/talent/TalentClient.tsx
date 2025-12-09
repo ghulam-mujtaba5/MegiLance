@@ -1,29 +1,66 @@
-// @AI-HINT: Public talent directory preview page - links to freelancers page.
+// @AI-HINT: Public talent directory page - fetches real freelancer data from API.
+// Production-ready: No mock data, connects to /backend/api/freelancers
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { Loader2 } from 'lucide-react';
 
 import commonStyles from './TalentDirectory.common.module.css';
 import lightStyles from './TalentDirectory.light.module.css';
 import darkStyles from './TalentDirectory.dark.module.css';
 
-interface TalentProfile { id: string; name: string; role: string; rank: number; skills: string[]; avatar: string; }
+interface TalentProfile { 
+  id: string; 
+  name: string; 
+  role: string; 
+  rank: number; 
+  skills: string[]; 
+  avatar: string; 
+}
 
-const mock: TalentProfile[] = Array.from({ length: 8 }).map((_, i) => ({
-  id: 't' + i,
-  name: ['Aisha Khan','Bilal Ahmed','Sara Malik','Omar Farooq','Hira Javed','Zain Raza','Fatima Noor','Adnan Saeed'][i],
-  role: ['Full Stack Dev','Data Scientist','UI/UX Designer','Blockchain Dev','ML Engineer','Backend Dev','Frontend Dev','DevOps Engineer'][i],
-  rank: Math.round(Math.random()*100),
-  skills: ['React','Node','AI','Python','Solidity','Postgres','Tailwind'].sort(() => .5 - Math.random()).slice(0,3),
-  avatar: `https://i.pravatar.cc/120?img=${i+10}`
-}));
+// API helper
+async function fetchFreelancers(): Promise<TalentProfile[]> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  try {
+    const res = await fetch('/backend/api/freelancers?limit=20', {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    // Map API response to TalentProfile format
+    return (data.freelancers || data || []).map((f: any, idx: number) => ({
+      id: String(f.id || idx),
+      name: f.full_name || f.name || `Freelancer ${idx + 1}`,
+      role: f.title || f.headline || 'Freelancer',
+      rank: f.ai_score || Math.floor(f.rating * 20) || 0,
+      skills: f.skills || [],
+      avatar: f.profile_image_url || f.avatar_url || `https://i.pravatar.cc/120?img=${idx + 10}`,
+    }));
+  } catch (err) {
+    console.error('[TalentClient] Failed to fetch freelancers:', err);
+    return [];
+  }
+}
 
 const TalentDirectoryPage = () => {
   const { resolvedTheme } = useTheme();
   const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [profiles, setProfiles] = useState<TalentProfile[]>([]);
+  
+  const loadProfiles = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchFreelancers();
+    setProfiles(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadProfiles();
+  }, [loadProfiles]);
   
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const styles = {
@@ -47,7 +84,11 @@ const TalentDirectoryPage = () => {
     emptyState: cn(commonStyles.emptyState, themeStyles.emptyState),
   };
   
-  const filtered = mock.filter(m => !q || m.name.toLowerCase().includes(q.toLowerCase()) || m.skills.some(s => s.toLowerCase().includes(q.toLowerCase())));
+  const filtered = profiles.filter(m => 
+    !q || 
+    m.name.toLowerCase().includes(q.toLowerCase()) || 
+    m.skills.some(s => s.toLowerCase().includes(q.toLowerCase()))
+  );
 
   if (!resolvedTheme) return null;
 
@@ -55,7 +96,7 @@ const TalentDirectoryPage = () => {
     <main className={styles.main}>
       <header className={styles.header}>
         <h1 className={styles.title}>Explore Top Talent</h1>
-        <p className={styles.subtitle}>Preview a slice of our AI-ranked freelancer pool.</p>
+        <p className={styles.subtitle}>Discover AI-ranked freelancers for your projects.</p>
         <div className={styles.searchWrapper}>
           <input
             value={q}
@@ -66,27 +107,37 @@ const TalentDirectoryPage = () => {
           />
         </div>
       </header>
-      <ul className={styles.grid} role="list">
-        {filtered.map(p => (
-          <li key={p.id} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <Image src={p.avatar} alt={p.name} className={styles.avatar} width={56} height={56} />
-              <div className={styles.profileInfo}>
-                <h3 className={styles.name}>{p.name}</h3>
-                <p className={styles.role}>{p.role}</p>
+      {loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+        </div>
+      ) : (
+        <ul className={styles.grid} role="list">
+          {filtered.map(p => (
+            <li key={p.id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <Image src={p.avatar} alt={p.name} className={styles.avatar} width={56} height={56} />
+                <div className={styles.profileInfo}>
+                  <h3 className={styles.name}>{p.name}</h3>
+                  <p className={styles.role}>{p.role}</p>
+                </div>
+                {p.rank > 0 && <span className={styles.rankBadge}>Score {p.rank}</span>}
               </div>
-              <span className={styles.rankBadge}>Rank {p.rank}</span>
-            </div>
-            <div className={styles.skillsWrapper}>
-              {p.skills.map(s => <span key={s} className={styles.skillTag}>{s}</span>)}
-            </div>
-            <Link href="/freelancers" className={styles.viewProfileBtn}>
-              View Profile
-            </Link>
-          </li>
-        ))}
-        {filtered.length === 0 && <li className={styles.emptyState}>No matches.</li>}
-      </ul>
+              <div className={styles.skillsWrapper}>
+                {p.skills.slice(0, 5).map(s => <span key={s} className={styles.skillTag}>{s}</span>)}
+              </div>
+              <Link href={`/freelancers/${p.id}`} className={styles.viewProfileBtn}>
+                View Profile
+              </Link>
+            </li>
+          ))}
+          {filtered.length === 0 && (
+            <li className={styles.emptyState}>
+              {profiles.length === 0 ? 'No freelancers available yet.' : 'No matches for your search.'}
+            </li>
+          )}
+        </ul>
+      )}
     </main>
   );
 };

@@ -46,85 +46,120 @@
 }
 
 .communityCard {
-  background: var(--card-bg);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 2rem;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.communityCard:hover {
+  transform: translateY(-4px);
+}
+
+.cardIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
 }
 
 .communityTitle {
   font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-  color: var(--text-primary);
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
 }
 
 .communityDescription {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
-  color: var(--text-secondary);
+  flex-grow: 1;
 }
 
 .communityButton {
-  display: inline-block;
-  background: var(--primary-color);
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
-  transition: background-color 0.2s ease;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
 }
 
 .communityButton:hover {
-  background: var(--primary-hover);
+  transform: translateY(-2px);
 }
 
 .socialGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .socialCard {
-  background: var(--card-bg);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 2rem;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.socialCard:hover {
+  transform: translateY(-4px);
+}
+
+.socialIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.socialCard:hover .socialIcon {
+  transform: scale(1.1);
 }
 
 .socialTitle {
   font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0 0 1rem 0;
-  color: var(--text-primary);
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
 }
 
 .socialDescription {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
-  color: var(--text-secondary);
+  flex-grow: 1;
 }
 
 .socialButton {
-  display: inline-block;
-  background: var(--primary-color);
-  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 10px;
   text-decoration: none;
   font-weight: 600;
-  transition: background-color 0.2s ease;
+  font-size: 0.9375rem;
+  transition: all 0.2s ease;
 }
 
 .socialButton:hover {
-  background: var(--primary-hover);
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {

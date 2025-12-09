@@ -84,7 +84,7 @@ def row_to_project(row: list) -> dict:
         "experience_level": to_str(row[7]),
         "estimated_duration": to_str(row[8]) if len(row) > 8 else "Not specified",
         "status": to_str(row[9]) if len(row) > 9 else "open",
-        "skills": to_str(row[10]) if len(row) > 10 else "",
+        "skills": to_str(row[10]).split(",") if len(row) > 10 and to_str(row[10]) else [],
         "client_id": row[11].get("value") if len(row) > 11 and row[11].get("type") != "null" else None,
         "created_at": parse_date(row[12]) if len(row) > 12 else None,
         "updated_at": parse_date(row[13]) if len(row) > 13 else None

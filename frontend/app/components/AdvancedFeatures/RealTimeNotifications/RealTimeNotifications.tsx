@@ -147,16 +147,34 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     return notifications.filter((n) => !n.read).length;
   }, [notifications]);
 
-  const handleMarkAsRead = useCallback((notificationId: string) => {
+  const handleMarkAsRead = useCallback(async (notificationId: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
     );
-    // TODO: Send API request to mark as read
+    // Send API request to mark as read
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      await fetch(`/backend/api/notifications/${notificationId}/read`, {
+        method: 'PUT',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+    } catch (error) {
+      console.error('[Notifications] Failed to mark as read:', error);
+    }
   }, []);
 
-  const handleMarkAllAsRead = useCallback(() => {
+  const handleMarkAllAsRead = useCallback(async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    // TODO: Send API request to mark all as read
+    // Send API request to mark all as read
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      await fetch('/backend/api/notifications/mark-all-read', {
+        method: 'PUT',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+    } catch (error) {
+      console.error('[Notifications] Failed to mark all as read:', error);
+    }
   }, []);
 
   const handleNotificationClick = useCallback(
@@ -172,10 +190,19 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     [autoMarkAsRead, handleMarkAsRead, onNotificationClick]
   );
 
-  const handleDeleteNotification = useCallback((notificationId: string, e: React.MouseEvent) => {
+  const handleDeleteNotification = useCallback(async (notificationId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
-    // TODO: Send API request to delete notification
+    // Send API request to delete notification
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      await fetch(`/backend/api/notifications/${notificationId}`, {
+        method: 'DELETE',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+    } catch (error) {
+      console.error('[Notifications] Failed to delete notification:', error);
+    }
   }, []);
 
   const formatTimestamp = (date: Date) => {
