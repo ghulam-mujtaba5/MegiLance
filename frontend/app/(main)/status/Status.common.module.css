@@ -1,4 +1,4 @@
-/* Status Page Common Styles */
+/* Status Page Common Styles - Enhanced with colorful status pills */
 .page {
   min-height: 100vh;
   padding: 2rem 0;
@@ -20,12 +20,84 @@
   font-weight: 700;
   margin: 0 0 1rem 0;
   line-height: 1.2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .subtitle {
   font-size: 1.25rem;
-  margin: 0;
+  margin: 0 0 1.5rem 0;
   opacity: 0.8;
+}
+
+/* Overall Status Banner */
+.overallBanner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.bannerOperational {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+  border: 2px solid #10b981;
+  color: #10b981;
+}
+
+.bannerDegraded {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+  border: 2px solid #f59e0b;
+  color: #f59e0b;
+}
+
+.bannerOutage {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+  border: 2px solid #ef4444;
+  color: #ef4444;
+}
+
+.bannerText {
+  font-weight: 600;
+}
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: inherit;
+}
+
+.refreshBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: rotate(90deg);
+}
+
+.refreshing {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.lastUpdate {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  margin: 0;
 }
 
 .section {
@@ -33,54 +105,163 @@
 }
 
 .sectionTitle {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 600;
   margin: 0 0 2rem 0;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .statusGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .statusCard {
   background: var(--card-bg);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 16px;
+  padding: 1.5rem;
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.statusTitle {
-  font-size: 1.25rem;
+.statusCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.statusCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.operational::before {
+  background: linear-gradient(180deg, #10b981, #34d399);
+}
+
+.degraded::before {
+  background: linear-gradient(180deg, #f59e0b, #fbbf24);
+}
+
+.outage::before {
+  background: linear-gradient(180deg, #ef4444, #f87171);
+}
+
+.checking::before {
+  background: linear-gradient(180deg, #6b7280, #9ca3af);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.serviceIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(69, 115, 223, 0.1);
+}
+
+/* Colorful Status Pills */
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
   font-weight: 600;
-  margin: 0 0 1rem 0;
-  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.statusText {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0 0 0.5rem 0;
+.pillOperational {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
-.statusTime {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0;
+.pillDegraded {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
-.operational {
-  border-left: 4px solid #10b981;
+.pillOutage {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(248, 113, 113, 0.1));
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.operational .statusText {
+.pillChecking {
+  background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(156, 163, 175, 0.1));
+  color: #6b7280;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.statusIconOperational {
   color: #10b981;
 }
 
+.statusIconDegraded {
+  color: #f59e0b;
+}
+
+.statusIconOutage {
+  color: #ef4444;
+}
+
+.statusIconChecking {
+  color: #6b7280;
+  animation: pulse 2s infinite;
+}
+
+.statusTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.latency {
+  font-size: 0.875rem;
+  color: #10b981;
+  margin: 0 0 0.5rem 0;
+  font-weight: 500;
+}
+
+.statusTime {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* Incident Cards */
 .incidentsList {
   display: grid;
   gap: 1.5rem;
@@ -88,16 +269,23 @@
 
 .incidentCard {
   background: var(--card-bg);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 16px;
+  padding: 1.5rem;
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.incidentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
 }
 
 .incidentTitle {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   color: var(--text-primary);
 }
 
@@ -110,40 +298,82 @@
 .incidentDescription {
   font-size: 1rem;
   line-height: 1.6;
-  margin: 0 0 1rem 0;
+  margin: 0;
   color: var(--text-primary);
+  opacity: 0.9;
 }
 
 .incidentStatus {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
   font-weight: 600;
+  text-transform: uppercase;
 }
 
 .resolved {
-  background: #d1fae5;
-  color: #065f46;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+/* Metrics Cards */
 .metricsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
 
 .metricCard {
   background: var(--card-bg);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 16px;
+  padding: 1.5rem;
   border: 1px solid var(--card-border);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
+  transition: all 0.3s ease;
+}
+
+.metricCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.metricIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.metricIconGreen {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.1));
+  color: #10b981;
+}
+
+.metricIconBlue {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.1));
+  color: #3b82f6;
+}
+
+.metricIconPurple {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.1));
+  color: #8b5cf6;
+}
+
+.metricIconOrange {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(251, 146, 60, 0.1));
+  color: #f97316;
 }
 
 .metricTitle {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   margin: 0 0 0.5rem 0;
   color: var(--text-secondary);
@@ -152,10 +382,25 @@
 }
 
 .metricValue {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  color: var(--text-primary);
+  margin: 0 0 0.25rem 0;
+}
+
+.metricValueGreen {
+  color: #10b981;
+}
+
+.metricValueBlue {
+  color: #3b82f6;
+}
+
+.metricValuePurple {
+  color: #8b5cf6;
+}
+
+.metricValueOrange {
+  color: #f97316;
 }
 
 .metricPeriod {
@@ -166,7 +411,8 @@
 
 @media (max-width: 768px) {
   .title {
-    font-size: 2.5rem;
+    font-size: 2rem;
+    flex-direction: column;
   }
   
   .statusGrid {
@@ -174,6 +420,11 @@
   }
   
   .metricsGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .overallBanner {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
   }
 } 

@@ -19,8 +19,8 @@ interface DevCredential {
   icon: IconType;
 }
 
-// @AI-HINT: Demo credentials for quick login. These are real accounts in the database.
-// Updated to match actual demo users in Turso cloud database
+// @AI-HINT: Real working credentials for quick login - verified against Turso database
+// These accounts exist and are functional in the current database
 const DEV_CREDENTIALS: DevCredential[] = [
   {
     email: 'admin@megilance.com',

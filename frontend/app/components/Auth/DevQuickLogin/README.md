@@ -28,13 +28,17 @@ Development-only quick login feature for MegiLance that appears on the login pag
 
 ## Test Credentials
 
-All test accounts use specific passwords:
+All test accounts use role-specific passwords.
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@megilance.com | admin123 |
-| Freelancer | freelancer@example.com | freelancer123 |
-| Client | client@example.com | client123 |
+These are **real working accounts** verified in the Turso database:
+
+| Role | Email | Password | Features |
+|------|-------|----------|----------|
+| Admin | admin@megilance.com | Admin@123 | Full platform access, user management, analytics |
+| Freelancer | freelancer1@example.com | Freelancer@123 | Verified freelancer account with full features |
+| Client | client1@example.com | Client@123 | Verified client account with project posting abilities |
+
+> **Note:** These credentials are confirmed working against the live Turso database.
 
 ## Security
 
@@ -117,8 +121,9 @@ frontend/app/components/Auth/DevQuickLogin/
 
 ### Login Fails
 - Verify backend is running on port 8000
-- Check database has seeded test users
-- Verify password hasn't been changed (should be "admin123", "client123", etc.)
+- Check that users exist in Turso database
+- Passwords are role-specific: `Admin@123`, `Freelancer@123`, `Client@123`
+- Check browser console for detailed error messages
 
 ### Wrong Dashboard Redirect
 - Component automatically selects correct role tab
