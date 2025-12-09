@@ -1,0 +1,18 @@
+/* @AI-HINT: Common styles for Admin Categories page */
+.container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+.title { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem 0; }
+.subtitle { font-size: 0.95rem; margin: 0; }
+.categoriesList { border-radius: 12px; overflow: hidden; }
+.categoryItem { }
+.categoryRow { display: flex; justify-content: space-between; align-items: center; padding: 1rem; transition: background 0.2s; }
+.categoryRow:hover { }
+.categoryInfo { display: flex; align-items: center; gap: 0.75rem; }
+.expandIcon { opacity: 0.5; }
+.categoryName { font-weight: 500; }
+.projectCount { font-size: 0.85rem; opacity: 0.6; margin-left: 0.5rem; }
+.categoryActions { display: flex; gap: 0.5rem; opacity: 0; transition: opacity 0.2s; }
+.categoryRow:hover .categoryActions { opacity: 1; }
+.emptyState { text-align: center; padding: 4rem 2rem; border-radius: 12px; }
+.emptyState h3 { margin: 1rem 0 0.5rem; font-size: 1.25rem; }
+.emptyState p { margin: 0 0 1.5rem; opacity: 0.7; }

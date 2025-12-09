@@ -1,0 +1,10 @@
+/* @AI-HINT: Dark theme for Admin Moderation */
+.container { background: #0f1419; }
+.title { color: #f1f5f9; }
+.subtitle { color: #94a3b8; }
+.statCard { background: #1a1f2e; border: 1px solid #2d3748; }
+.filterBtn { background: #2d3748; color: #94a3b8; }
+.filterBtnActive { background: #4573df; color: white; }
+.itemsList { }
+.item { background: #1a1f2e; border: 1px solid #2d3748; }
+.itemContent { color: #f1f5f9; }

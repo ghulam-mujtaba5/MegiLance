@@ -1,0 +1,25 @@
+/* @AI-HINT: Common styles for Admin Health page */
+.container { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+.title { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem 0; }
+.subtitle { font-size: 0.95rem; margin: 0; }
+.spinning { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.overallStatus { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; }
+.overallStatus h3 { margin: 0; font-size: 1.1rem; }
+.overallStatus p { margin: 0.25rem 0 0; font-size: 0.9rem; opacity: 0.8; }
+.overallhealthy { background: rgba(39, 174, 96, 0.1); border: 1px solid rgba(39, 174, 96, 0.3); }
+.overalldegraded { background: rgba(242, 201, 76, 0.15); border: 1px solid rgba(242, 201, 76, 0.3); }
+.overalldown { background: rgba(232, 17, 35, 0.1); border: 1px solid rgba(232, 17, 35, 0.3); }
+.iconHealthy { color: #27AE60; }
+.iconDegraded { color: #F2C94C; }
+.iconDown { color: #e81123; }
+.servicesGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.serviceCard { padding: 1.25rem; border-radius: 12px; }
+.serviceHeader { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.serviceHeader h3 { margin: 0; font-size: 1rem; font-weight: 600; }
+.serviceStats { display: flex; gap: 2rem; margin-bottom: 0.75rem; }
+.stat { }
+.statLabel { display: block; font-size: 0.75rem; opacity: 0.6; margin-bottom: 2px; }
+.statValue { font-size: 1.1rem; font-weight: 600; }
+.lastCheck { margin: 0; font-size: 0.8rem; opacity: 0.5; }

@@ -1,0 +1,12 @@
+/* @AI-HINT: Light theme for Client Search page */
+.container { background: #f8fafc; }
+.title { color: #1a1a2e; }
+.subtitle { color: #64748b; }
+.searchSection { background: #ffffff; border: 1px solid #e2e8f0; }
+.searchInput { background: #f1f5f9; color: #1a1a2e; border-color: #e2e8f0; }
+.filterInput { background: #f1f5f9; color: #1a1a2e; border-color: #e2e8f0; }
+.freelancerCard { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.freelancerCard:hover { box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+.name { color: #1a1a2e; }
+.titleText { color: #64748b; }
+.skillTag { background: rgba(69, 115, 223, 0.1); color: #4573df; }

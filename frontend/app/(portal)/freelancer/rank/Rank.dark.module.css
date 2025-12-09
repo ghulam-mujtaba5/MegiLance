@@ -1,0 +1,104 @@
+/* Dark Theme */
+.container {
+  background: #0f0f0f;
+}
+
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.loadingState {
+  color: #9ca3af;
+}
+
+.rankCard {
+  background: linear-gradient(135deg, #1a1a1a 0%, #161616 100%);
+  border: 1px solid #2d2d2d;
+}
+
+.rankPoints {
+  color: #9ca3af;
+}
+
+.progressLabel {
+  color: #9ca3af;
+}
+
+.progressValue {
+  color: #d1d5db;
+  font-weight: 600;
+}
+
+.progressBar {
+  background: #2d2d2d;
+}
+
+.section {
+  background: #161616;
+  border: 1px solid #2d2d2d;
+}
+
+.sectionTitle {
+  color: #f9fafb;
+}
+
+.tierCard {
+  background: #1a1a1a;
+  border: 1px solid #2d2d2d;
+}
+
+.tierCurrent {
+  border-color: #4573df;
+  box-shadow: 0 0 0 2px rgba(69, 115, 223, 0.3);
+}
+
+.tierName {
+  color: #f9fafb;
+}
+
+.tierPoints {
+  color: #9ca3af;
+}
+
+.tierUnlocked {
+  background: #1f1f1f;
+}
+
+.statCard {
+  background: #1a1a1a;
+  border: 1px solid #2d2d2d;
+}
+
+.statValue {
+  color: #f9fafb;
+}
+
+.statLabel {
+  color: #9ca3af;
+}
+
+.badgeCard {
+  background: #1a1a1a;
+  border: 1px solid #2d2d2d;
+}
+
+.badgeName {
+  color: #f9fafb;
+}
+
+.badgeDesc {
+  color: #9ca3af;
+}
+
+.badge_epic {
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.badge_legendary {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, #1a1a1a 100%);
+}

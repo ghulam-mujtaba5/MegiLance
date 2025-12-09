@@ -1,0 +1,56 @@
+/* @AI-HINT: Dark theme colors for Freelancer Projects page */
+.container {
+  background: #0f1419;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.filters {
+  background: #1a1f2e;
+  border: 1px solid #2d3748;
+}
+
+.searchInput {
+  background: #0f1419;
+  color: #f1f5f9;
+  border-color: #2d3748;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.2);
+}
+
+.filterSelect {
+  background: #0f1419;
+  color: #f1f5f9;
+  border-color: #2d3748;
+}
+
+.projectCard {
+  background: #1a1f2e;
+  border: 1px solid #2d3748;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.projectCard:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.projectTitle {
+  color: #f1f5f9;
+}
+
+.clientName {
+  color: #94a3b8;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df, #6b8cff);
+}

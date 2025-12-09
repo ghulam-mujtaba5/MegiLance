@@ -1,0 +1,8 @@
+/* @AI-HINT: Dark theme for Admin Categories */
+.container { background: #0f1419; }
+.title { color: #f1f5f9; }
+.subtitle { color: #94a3b8; }
+.categoriesList { background: #1a1f2e; border: 1px solid #2d3748; }
+.categoryRow:hover { background: #252d3d; }
+.categoryName { color: #f1f5f9; }
+.emptyState { background: #1a1f2e; border: 1px solid #2d3748; }

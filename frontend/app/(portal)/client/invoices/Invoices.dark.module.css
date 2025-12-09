@@ -1,0 +1,57 @@
+/* @AI-HINT: Dark theme colors for Client Invoices page */
+.container {
+  background: #0f1419;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+.statCard {
+  background: #1a1f2e;
+  border: 1px solid #2d3748;
+}
+
+.statValue {
+  color: #f1f5f9;
+}
+
+.filters {
+  background: #1a1f2e;
+  border: 1px solid #2d3748;
+}
+
+.searchInput {
+  background: #0f1419;
+  color: #f1f5f9;
+  border-color: #2d3748;
+}
+
+.filterSelect {
+  background: #0f1419;
+  color: #f1f5f9;
+  border-color: #2d3748;
+}
+
+.tableWrapper {
+  background: #1a1f2e;
+  border: 1px solid #2d3748;
+}
+
+.tableRow:hover {
+  background: #252d3d;
+}
+
+.table th {
+  background: #141922;
+  color: #94a3b8;
+}
+
+.table td {
+  color: #f1f5f9;
+  border-color: #2d3748;
+}

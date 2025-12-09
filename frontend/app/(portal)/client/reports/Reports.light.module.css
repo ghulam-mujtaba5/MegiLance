@@ -1,0 +1,13 @@
+/* @AI-HINT: Light theme for Client Reports page */
+.container { background: #f8fafc; }
+.title { color: #1a1a2e; }
+.subtitle { color: #64748b; }
+.dateSelect { background: #ffffff; color: #1a1a2e; border-color: #e2e8f0; }
+.statCard { background: #ffffff; border: 1px solid #e2e8f0; }
+.statValue { color: #1a1a2e; }
+.chartCard { background: #ffffff; border: 1px solid #e2e8f0; }
+.chartTitle { color: #1a1a2e; }
+.bar { background: linear-gradient(180deg, #4573df, #6b8cff); }
+.reportsSection { background: #ffffff; border: 1px solid #e2e8f0; }
+.sectionTitle { color: #1a1a2e; }
+.reportCard { background: #f8fafc; }

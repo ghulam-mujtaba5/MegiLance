@@ -1,0 +1,54 @@
+/* Dark Theme */
+.container {
+  background: #0f0f0f;
+}
+
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.filterBtn {
+  background: #1f1f1f;
+  color: #d1d5db;
+}
+
+.filterBtn:hover {
+  background: #2d2d2d;
+}
+
+.filterBtnActive {
+  background: #4573df !important;
+  color: #fff !important;
+}
+
+.tableWrapper {
+  background: #161616;
+  border: 1px solid #2d2d2d;
+}
+
+.table th {
+  background: #1a1a1a;
+  color: #9ca3af;
+  border-color: #2d2d2d;
+}
+
+.table td {
+  color: #d1d5db;
+  border-color: #2d2d2d;
+}
+
+.table tr:hover {
+  background: #1f1f1f;
+}
+
+.amount {
+  color: #f9fafb;
+}
+
+.reason {
+  color: #9ca3af;
+}

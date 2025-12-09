@@ -7,7 +7,7 @@ import api from '@/lib/api';
 export type ClientProject = { 
   id: string; 
   title: string; 
-  status: 'Open' | 'In Progress' | 'Completed' | 'Pending' | 'Cancelled'; 
+  status: 'Open' | 'In Progress' | 'Completed' | 'Pending' | 'Cancelled' | 'open' | 'in_progress' | 'completed' | 'cancelled'; 
   budget: string; 
   updatedAt?: string;
   updated?: string;
@@ -17,6 +17,7 @@ export type ClientProject = {
   progress?: number;
   paid?: number;
   freelancers?: any[];
+  proposals_count?: number;
 };
 
 export type ClientPayment = { 
@@ -87,27 +88,41 @@ export function useClientData() {
         }
       };
       
-      const [projectsData, paymentsData, freelancersData, reviewsData] = await Promise.all([
-        fetchWithFallback(api.client.getProjects(), []),
-        fetchWithFallback(api.client.getPayments(), []),
+      const [projectsRes, paymentsRes, freelancersData, reviewsData] = await Promise.all([
+        fetchWithFallback(api.client.getProjects(), { projects: [] }),
+        fetchWithFallback(api.client.getPayments(), { payments: [] }),
         fetchWithFallback(api.client.getFreelancers(), []),
         fetchWithFallback(api.client.getReviews(), []),
       ]);
         
       // Check if component is still mounted before updating state
       if (!mountedRef.current) return;
+      
+      // Extract arrays from response objects (API returns {total, projects} or {total, payments} structure)
+      const projectsData = Array.isArray(projectsRes) ? projectsRes : (projectsRes?.projects || []);
+      const paymentsData = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes?.payments || []);
         
-      // Map projects
-      const mappedProjects: ClientProject[] = (projectsData || []).map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        status: p.status,
-        budget: typeof p.budget === 'number' ? `$${p.budget.toLocaleString()}` : p.budget,
-        updatedAt: p.updatedAt,
-        progress: p.progress,
-        paid: p.paid,
-        freelancers: p.freelancers
-      }));
+      // Map projects - handle API response format (budget_min/budget_max instead of budget)
+      const mappedProjects: ClientProject[] = (projectsData || []).map((p: any) => {
+        // Calculate budget display - use budget_max or budget_min if budget isn't available
+        const budgetAmount = p.budget || p.budget_max || p.budget_min || 0;
+        const budgetStr = typeof budgetAmount === 'number' 
+          ? `$${budgetAmount.toLocaleString()}` 
+          : budgetAmount;
+        
+        return {
+          id: String(p.id),
+          title: p.title,
+          status: p.status,
+          budget: budgetStr,
+          updatedAt: p.updated_at || p.updatedAt,
+          progress: p.progress,
+          paid: p.paid,
+          freelancers: p.freelancers,
+          description: p.description,
+          proposals_count: p.proposals_count || 0,
+        };
+      });
       setProjects(mappedProjects);
 
       // Map payments

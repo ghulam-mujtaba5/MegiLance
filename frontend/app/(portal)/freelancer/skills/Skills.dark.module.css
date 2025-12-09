@@ -1,0 +1,112 @@
+/* Dark Theme */
+.container {
+  background: #0f0f0f;
+}
+
+.title {
+  color: #f9fafb;
+}
+
+.subtitle {
+  color: #9ca3af;
+}
+
+.loadingState,
+.emptyState {
+  background: #161616;
+  color: #9ca3af;
+}
+
+.emptyState h3 {
+  color: #f9fafb;
+}
+
+.skillCard {
+  background: #161616;
+  border: 1px solid #2d2d2d;
+}
+
+.skillCard:hover {
+  border-color: #404040;
+  background: #1a1a1a;
+}
+
+.skillName {
+  color: #f9fafb;
+}
+
+.removeBtn {
+  color: #9ca3af;
+}
+
+.removeBtn:hover {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+}
+
+.experience {
+  color: #9ca3af;
+}
+
+.endorsements {
+  color: #6b9fff;
+}
+
+.progressBar {
+  background: #2d2d2d;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df, #6b9fff);
+}
+
+.modal {
+  background: #1a1a1a;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.modalTitle {
+  color: #f9fafb;
+}
+
+.label {
+  color: #d1d5db;
+}
+
+.suggestionChip {
+  background: #2d2d2d;
+  color: #d1d5db;
+}
+
+.suggestionChip:hover {
+  background: #404040;
+}
+
+.levelOption {
+  background: #1f1f1f;
+}
+
+.levelOption:hover {
+  background: #2d2d2d;
+}
+
+.levelOptionActive {
+  background: rgba(69, 115, 223, 0.15);
+}
+
+.levelLabel {
+  color: #f9fafb;
+}
+
+.levelDesc {
+  color: #9ca3af;
+}
+
+.modalActions {
+  border-color: #2d2d2d;
+}
+
+.level_beginner { background: rgba(107, 114, 128, 0.15); color: #9ca3af; }
+.level_intermediate { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.level_advanced { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+.level_expert { background: rgba(34, 197, 94, 0.15); color: #4ade80; }

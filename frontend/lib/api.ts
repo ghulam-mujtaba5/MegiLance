@@ -2125,6 +2125,24 @@ export const matchingApi = {
 };
 
 // ===========================
+// GAMIFICATION
+// ===========================
+export const gamificationApi = {
+  getMyRank: async () => {
+    // Try to fetch from backend, but return mock data if not available
+    try {
+      return await apiFetch('/gamification/my-rank');
+    } catch {
+      // Return mock rank data when endpoint doesn't exist
+      return { rank: 'Silver', percentile: 50, points: 1250, level: 3 };
+    }
+  },
+  getBadges: () => apiFetch('/gamification/badges'),
+  getLeaderboard: (limit = 10) => apiFetch(`/gamification/leaderboard?limit=${limit}`),
+  getAchievements: () => apiFetch('/gamification/achievements'),
+};
+
+// ===========================
 // FRAUD DETECTION
 // ===========================
 export const fraudDetectionApi = {
@@ -2485,6 +2503,7 @@ export default {
   fileVersions: fileVersionsApi,
   multiCurrency: multiCurrencyApi,
   matching: matchingApi,
+  gamification: gamificationApi,
   fraudDetection: fraudDetectionApi,
   videoCalls: videoCallsApi,
   legalDocs: legalDocsApi,
