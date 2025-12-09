@@ -1,71 +1,199 @@
-/* Portfolio.light.module.css */
+/* @AI-HINT: Portfolio Showcase page - light theme */
+
+.container {
+  background: #f9fafb;
+}
+
 .title {
-  color: var(--text-primary, #1a1a1a);
+  color: #111827;
 }
 
 .subtitle {
-  color: var(--text-secondary, #6c757d);
+  color: #6b7280;
 }
 
-.statIconWrapper {
-  background: var(--surface-hover, #f8f9fa);
+.settingsBtn {
+  background: #f3f4f6;
+  color: #374151;
 }
 
-.statIconBlue { color: #2563eb; background: #dbeafe; }
-.statIconGreen { color: #16a34a; background: #dcfce7; }
-.statIconPurple { color: #9333ea; background: #f3e8ff; }
-
-.statLabel {
-  color: var(--text-secondary, #6c757d);
+.settingsBtn:hover {
+  background: #e5e7eb;
 }
 
-.statValue {
-  color: var(--text-primary, #1a1a1a);
+.addBtn {
+  background: linear-gradient(135deg, #4573df 0%, #3b82f6 100%);
+  color: #fff;
 }
 
-.cardPlaceholder {
-  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
-  color: #adb5bd;
+.addBtn:hover {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
 }
 
-.actionButton {
+.publicUrl {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.publicUrl a {
+  color: #4573df;
+}
+
+.categoryBtn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.categoryBtn:hover {
+  background: #e5e7eb;
+}
+
+.categoryActive {
+  background: #4573df;
+  color: #fff;
+}
+
+.layoutToggle {
+  background: #f3f4f6;
+}
+
+.layoutBtn {
+  background: transparent;
+  color: #6b7280;
+}
+
+.layoutBtn:hover,
+.layoutActive {
   background: #fff;
-  color: #495057;
+  color: #111827;
 }
 
-.actionButton:hover {
-  color: #228be6;
+.loading {
+  color: #6b7280;
 }
 
-.actionButtonDelete:hover {
-  color: #fa5252;
-}
-
-.cardTitle {
-  color: var(--text-primary, #1a1a1a);
-}
-
-.cardDescription {
-  color: var(--text-secondary, #6c757d);
-}
-
-.tag {
-  background: #e7f5ff;
-  color: #1971c2;
-}
-
-.link {
-  color: var(--primary, #4573DF);
-}
-
-.emptyIcon {
-  color: #adb5bd;
+.emptyState {
+  background: #f3f4f6;
+  color: #6b7280;
 }
 
 .emptyTitle {
-  color: var(--text-primary, #1a1a1a);
+  color: #111827;
 }
 
-.emptyText {
-  color: var(--text-secondary, #6c757d);
+.emptyBtn {
+  background: linear-gradient(135deg, #4573df 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+.sectionTitle {
+  color: #111827;
+}
+
+.featuredCard,
+.portfolioCard {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.featuredCard:hover,
+.portfolioCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.featuredBadge {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.cardCategory {
+  color: #4573df;
+}
+
+.cardTitle {
+  color: #111827;
+}
+
+.cardDesc {
+  color: #6b7280;
+}
+
+.tag {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.stat {
+  color: #6b7280;
+}
+
+.likeBtn {
+  color: #6b7280;
+}
+
+.liked {
+  color: #ef4444;
+}
+
+.modal {
+  background: #fff;
+}
+
+.modalHeader {
+  border-color: #e5e7eb;
+}
+
+.closeButton {
+  color: #6b7280;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+}
+
+.input,
+.select,
+.textarea {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #111827;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.addTagBtn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.selectedTag {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.modalFooter {
+  border-color: #e5e7eb;
+}
+
+.cancelBtn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.cancelBtn:hover {
+  background: #e5e7eb;
+}
+
+.saveBtn {
+  background: linear-gradient(135deg, #4573df 0%, #3b82f6 100%);
+  color: #fff;
+}
+
+.saveBtn:hover {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
 }

@@ -202,7 +202,7 @@ const Clients: React.FC = () => {
                     key={c}
                     type="button"
                     className={cn(common.chip, active && common.chipActive)}
-                    aria-pressed={active ? 'true' : 'false'}
+                    aria-pressed={active}
                     data-active={active || undefined}
                     onClick={() => onSelect(c)}
                   >
@@ -250,7 +250,7 @@ const Clients: React.FC = () => {
 
           <section className={common.section} aria-label="Impact metrics">
             <h2 className={common.sectionTitle}>Impact Metrics</h2>
-            <StaggerContainer className={common.metricGrid} role="list" delay={0.3}>
+            <ul className={common.metricGrid} role="list">
               {metrics.map(m => (
                 <li key={m.label} className={common.metricCard}>
                   <div className={common.metricValue}>{m.value}</div>
@@ -258,7 +258,7 @@ const Clients: React.FC = () => {
                   <div className={common.metricDetail}>{m.detail}</div>
                 </li>
               ))}
-            </StaggerContainer>
+            </ul>
           </section>
 
           <section className={common.section} aria-label="Case studies">
