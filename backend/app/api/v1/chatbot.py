@@ -20,7 +20,7 @@ from app.core.security import get_current_active_user, get_current_user_optional
 from app.models.user import User
 from app.services.ai_chatbot import get_chatbot_service
 
-router = APIRouter(prefix="/chatbot", tags=["chatbot"])
+router = APIRouter(tags=["chatbot"])
 
 
 # Request/Response Models
