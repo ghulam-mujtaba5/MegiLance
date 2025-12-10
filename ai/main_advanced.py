@@ -354,6 +354,8 @@ def cosine_similarity(a: List[float], b: List[float]) -> float:
 # ============================================================================
 
 @app.get("/", response_model=Dict[str, Any])
+@app.get("/ai", response_model=Dict[str, Any])
+@app.get("/ai/", response_model=Dict[str, Any])
 async def root():
     """Root endpoint with service info"""
     return {
@@ -378,6 +380,7 @@ async def root():
 
 
 @app.get("/health", response_model=HealthResponse)
+@app.get("/ai/health", response_model=HealthResponse)
 async def health_check(background_tasks: BackgroundTasks):
     """Comprehensive health check"""
     background_tasks.add_task(check_hf_api_status)

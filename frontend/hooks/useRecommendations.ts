@@ -21,14 +21,15 @@ export function useRecommendations(limit: number = 5) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchRecommendations = async () => {
+    const attemptFetch = async (retryCount: number = 0): Promise<void> => {
+      const maxRetries = 3;
       try {
         setLoading(true);
-        console.log('[useRecommendations] Fetching recommendations...');
+        console.log(`[useRecommendations] Fetching recommendations (attempt ${retryCount + 1}/${maxRetries + 1})...`);
         
         // Get auth token from storage
         const token = getAuthToken();
-        console.log('[useRecommendations] Token available:', !!token);
+        console.log('[useRecommendations] Token available:', !!token, token ? `(length: ${token.length})` : '(empty)');
         
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
@@ -45,12 +46,20 @@ export function useRecommendations(limit: number = 5) {
         
         console.log('[useRecommendations] Response status:', response.status);
         
+        // Retry on 401 if we haven't exhausted retries (token might not be loaded yet)
+        if (response.status === 401 && retryCount < maxRetries) {
+          console.log(`[useRecommendations] Got 401, retrying in 1000ms (attempt ${retryCount + 1}/${maxRetries})...`);
+          // Retry after a short delay
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return attemptFetch(retryCount + 1);
+        }
+        
         if (!response.ok) {
           throw new Error(`Failed to fetch recommendations: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('[useRecommendations] Data:', data);
+        console.log('[useRecommendations] Data received:', data);
         
         if (data.recommendations && Array.isArray(data.recommendations)) {
           const mapped = data.recommendations.map((r: any) => ({
@@ -64,13 +73,15 @@ export function useRecommendations(limit: number = 5) {
             matchScore: r.match_score,
           }));
           setRecommendations(mapped);
-          console.log('[useRecommendations] Mapped recommendations:', mapped);
+          setError(null);
+          console.log('[useRecommendations] Successfully mapped', mapped.length, 'recommendations');
         } else {
           console.warn('[useRecommendations] No recommendations in response');
           setRecommendations([]);
+          setError(null);
         }
       } catch (err: any) {
-        console.error('[useRecommendations] Error:', err);
+        console.error('[useRecommendations] Fetch error:', err.message);
         setError(err.message || 'Failed to fetch recommendations');
         setRecommendations([]);
       } finally {
@@ -78,7 +89,7 @@ export function useRecommendations(limit: number = 5) {
       }
     };
 
-    fetchRecommendations();
+    attemptFetch();
   }, [limit]);
 
   return { recommendations, loading, error };

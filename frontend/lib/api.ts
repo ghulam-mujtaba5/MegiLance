@@ -19,9 +19,15 @@ export function setAuthToken(token: string | null) {
       if (token) {
         // Use sessionStorage for access tokens (more secure)
         sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+        // Also set cookie for middleware authentication
+        // Cookie expires in 7 days to match refresh token lifetime
+        const maxAge = 7 * 24 * 60 * 60;
+        document.cookie = `auth_token=${token}; path=/; SameSite=Lax; Max-Age=${maxAge}`;
       } else {
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+        // Clear cookie
+        document.cookie = 'auth_token=; path=/; Max-Age=0; SameSite=Lax';
       }
     } catch (e) {
       console.warn('Storage unavailable:', e);
