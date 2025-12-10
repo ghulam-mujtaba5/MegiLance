@@ -249,7 +249,7 @@ npm run dev
 ### Backend Demo (5 minutes)
 1. Show backend running (Terminal 1)
 2. Open Swagger UI (http://localhost:8000/api/docs)
-3. Show 1369 API endpoints (from Swagger UI)
+3. Show 1369 API endpoints (from Swaggeytrer UI)
 4. Demonstrate user registration
 5. Show authentication with JWT tokens
 6. Test project creation and proposal workflow

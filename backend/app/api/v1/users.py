@@ -314,7 +314,11 @@ def complete_user_profile(
                 params.append(location)
         
         if profile_data.skills:
-            skills = _validate_string(profile_data.skills, "Skills", MAX_SKILLS_LENGTH)
+            # Handle both list and string format for skills
+            skills_value = profile_data.skills
+            if isinstance(skills_value, list):
+                skills_value = ",".join(skills_value)
+            skills = _validate_string(skills_value, "Skills", MAX_SKILLS_LENGTH)
             if skills:
                 updates.append("skills = ?")
                 params.append(skills)
@@ -363,7 +367,11 @@ def complete_user_profile(
                 )
             extra_data['availability'] = profile_data.availability
         if profile_data.languages:
-            languages = _validate_string(profile_data.languages, "Languages", 500)
+            # Handle both list and string format for languages
+            languages_value = profile_data.languages
+            if isinstance(languages_value, list):
+                languages_value = ",".join(languages_value)
+            languages = _validate_string(languages_value, "Languages", 500)
             if languages:
                 extra_data['languages'] = languages
         if profile_data.portfolioItems:

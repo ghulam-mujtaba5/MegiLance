@@ -45,10 +45,10 @@ const getApiBase = () => {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:8000';
     }
-    // Production: use Next.js proxy
-    return '/backend';
+    // Production: use relative path - Next.js catch-all proxy handles /api/*
+    return '';
   }
-  return '/backend';
+  return '';
 };
 
 const Status: React.FC = () => {

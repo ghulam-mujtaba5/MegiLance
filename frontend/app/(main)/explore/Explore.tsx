@@ -38,10 +38,10 @@ const getApiBase = () => {
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
       return 'http://localhost:8000';
     }
-    // Production: use /backend proxy or construct API URL
-    return '/backend'; // Next.js proxy handles this
+    // Production: use relative path - Next.js catch-all proxy handles /api/*
+    return '';
   }
-  return process.env.NEXT_PUBLIC_API_URL || '/backend';
+  return process.env.NEXT_PUBLIC_API_URL || '';
 };
 
 // ============================================
