@@ -249,7 +249,7 @@ npm run dev
 ### Backend Demo (5 minutes)
 1. Show backend running (Terminal 1)
 2. Open Swagger UI (http://localhost:8000/api/docs)
-3. Show 100+ API endpoints
+3. Show 1369 API endpoints (from Swagger UI)
 4. Demonstrate user registration
 5. Show authentication with JWT tokens
 6. Test project creation and proposal workflow
@@ -268,7 +268,7 @@ npm run dev
 
 ### Key Achievements (2 minutes)
 1. Successfully migrated from Oracle to Turso
-2. 100+ production-ready API endpoints
+2. 1381 production-ready API endpoints
 3. Complete authentication system
 4. Payment integration
 5. Real-time messaging

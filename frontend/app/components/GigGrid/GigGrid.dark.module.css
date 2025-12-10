@@ -1,0 +1,75 @@
+/* @AI-HINT: Dark theme colors for GigGrid component */
+.theme {
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.title {
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.subtitle {
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.resultsCount {
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.sortDropdown {
+  background-color: var(--color-background-dark, #1e1e1e);
+  border: 1px solid var(--color-border-dark, #2d2d2d);
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.sortDropdown:focus {
+  outline: 2px solid var(--color-primary, #4573df);
+  outline-offset: 2px;
+}
+
+.viewButton {
+  background-color: var(--color-background-alt-dark, #2d2d2d);
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.viewButton.active {
+  background-color: var(--color-primary, #4573df);
+  color: #ffffff;
+}
+
+.viewButton:hover:not(.active) {
+  background-color: var(--color-background-hover-dark, #3d3d3d);
+}
+
+.emptyIcon {
+  background-color: var(--color-background-alt-dark, #2d2d2d);
+  color: var(--color-text-secondary-dark, #6b7280);
+}
+
+.emptyTitle {
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.emptyDescription {
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.skeletonCard {
+  background-color: var(--color-background-alt-dark, #2d2d2d);
+}
+
+.pageButton {
+  background-color: var(--color-background-dark, #1e1e1e);
+  border: 1px solid var(--color-border-dark, #2d2d2d);
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.pageButton:hover:not(:disabled) {
+  border-color: var(--color-primary, #4573df);
+  color: var(--color-primary, #4573df);
+}
+
+.pageButton.active {
+  background-color: var(--color-primary, #4573df);
+  border-color: var(--color-primary, #4573df);
+  color: #ffffff;
+}

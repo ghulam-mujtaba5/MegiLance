@@ -50,7 +50,7 @@
 > - Removing 40+ Oracle-specific files
 > - Rewriting database connection layer
 > - Updating all queries for libSQL
-> - Testing all 100+ API endpoints
+> - Testing all 1381 API endpoints
 > - Ensuring data integrity"
 
 **Show:**

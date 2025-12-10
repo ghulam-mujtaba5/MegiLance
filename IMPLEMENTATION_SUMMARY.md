@@ -344,7 +344,8 @@ Freelancer:
    - Demonstrate typing indicators
 
 4. **Comprehensive Platform**
-   - 100+ API endpoints
+  - 1369 backend API endpoints (documented in Swagger)
+  - 185 typed API client helpers in frontend/lib/api.ts
    - Complete workflow (project → proposal → contract → payment)
    - Advanced analytics
 

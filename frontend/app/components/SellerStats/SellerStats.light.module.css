@@ -1,0 +1,156 @@
+/* @AI-HINT: Light theme colors for SellerStats component */
+.theme {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+/* Level Badge */
+.levelSection {
+  background-color: var(--color-background-light, #ffffff);
+  border: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+.levelBadge.newSeller {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+}
+
+.levelBadge.bronze {
+  background: linear-gradient(135deg, #d4a574 0%, #cd7f32 100%);
+}
+
+.levelBadge.silver {
+  background: linear-gradient(135deg, #e8e8e8 0%, #c0c0c0 100%);
+}
+
+.levelBadge.gold {
+  background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
+}
+
+.levelBadge.platinum {
+  background: linear-gradient(135deg, #e5e4e2 0%, #a0a0a0 100%);
+}
+
+.levelTitle {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+.levelDescription {
+  color: var(--color-text-secondary-light, #6b7280);
+}
+
+.jssScore {
+  color: var(--color-text-secondary-light, #6b7280);
+}
+
+.jssValue {
+  color: var(--color-primary, #4573df);
+}
+
+/* Stats */
+.statCard {
+  background-color: var(--color-background-light, #ffffff);
+  border: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+.statIcon {
+  background-color: var(--color-background-alt-light, #f3f4f6);
+  color: var(--color-primary, #4573df);
+}
+
+.statLabel {
+  color: var(--color-text-secondary-light, #6b7280);
+}
+
+.statValue {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+/* Progress */
+.progressSection {
+  background-color: var(--color-background-light, #ffffff);
+  border: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+.progressTitle {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+.progressNextLevel {
+  color: var(--color-text-secondary-light, #6b7280);
+}
+
+.progressItemLabel {
+  color: var(--color-text-secondary-light, #6b7280);
+}
+
+.progressItemValue {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+.progressBar {
+  background-color: var(--color-background-alt-light, #e5e7eb);
+}
+
+.progressBarFill {
+  background: linear-gradient(90deg, var(--color-primary, #4573df), #667eea);
+}
+
+.progressBarFill.complete {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* Benefits */
+.benefitsSection {
+  background-color: var(--color-background-light, #ffffff);
+  border: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+.benefitsTitle {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+.benefitItem {
+  background-color: var(--color-background-alt-light, #f9fafb);
+}
+
+.benefitIcon {
+  background-color: rgba(69, 115, 223, 0.1);
+  color: var(--color-primary, #4573df);
+}
+
+.benefitName {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+.benefitValue {
+  color: var(--color-text-secondary-light, #6b7280);
+}
+
+/* Badges */
+.badgesSection {
+  background-color: var(--color-background-light, #ffffff);
+  border: 1px solid var(--color-border-light, #e5e7eb);
+}
+
+.badgesTitle {
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+.badge {
+  background-color: var(--color-background-alt-light, #f3f4f6);
+  color: var(--color-text-primary-light, #1f2937);
+}
+
+.badge.verified {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge.topRated {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge.trusted {
+  background-color: #d1fae5;
+  color: #065f46;
+}

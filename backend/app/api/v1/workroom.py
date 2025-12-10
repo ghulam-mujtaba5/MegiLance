@@ -207,11 +207,19 @@ def _ensure_workroom_tables():
     """, [])
 
 
-# Initialize tables on module load
-try:
-    _ensure_workroom_tables()
-except Exception as e:
-    logger.warning(f"Could not initialize workroom tables: {e}")
+# Initialize tables lazily on first request, not at module load
+# This prevents blocking during import when Turso is slow/unreachable
+_workroom_tables_initialized = False
+
+def _lazy_ensure_workroom_tables():
+    """Ensure workroom tables exist (called lazily on first request)."""
+    global _workroom_tables_initialized
+    if not _workroom_tables_initialized:
+        try:
+            _ensure_workroom_tables()
+            _workroom_tables_initialized = True
+        except Exception as e:
+            logger.warning(f"Could not initialize workroom tables: {e}")
 
 
 def _verify_contract_access(contract_id: int, user_id: int) -> tuple:

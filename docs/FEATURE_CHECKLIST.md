@@ -539,7 +539,7 @@ Legend: ✅ Full Support | ⚠️ Partial | ❌ Not Available | 🔄 Planned
 
 - ✅ **148 Pages** - Complete platform coverage
 - ✅ **5 Advanced Components** - Reusable feature library
-- ✅ **100+ API Endpoints** - Comprehensive backend
+- ✅ **1369 API Endpoints** - Comprehensive backend (FastAPI OpenAPI)
 - ✅ **25+ Database Tables** - Full data model
 - ✅ **< 5ms Search** - Lightning-fast FTS5
 - ⏳ **90+ Lighthouse Score** - Performance target

@@ -30,7 +30,9 @@ from . import (
     # Blog & News
     blog,
     # Public clients showcase
-    public_clients
+    public_clients,
+    # Fiverr/Upwork Feature Parity - Gig Marketplace & Seller Tiers
+    gigs, seller_stats, talent_invitations
 )
 
 # complete_integrations imported separately in routers.py to avoid circular import
@@ -62,5 +64,7 @@ __all__ = [
     "custom_statuses", "skill_taxonomy", "search_advanced",
     "realtime_notifications", "ai_matching", "security", "video_communication",
     "mock", "multicurrency", "ai_advanced",
-    "admin_analytics", "scope_change", "blog", "public_clients"  # admin_fraud_alerts temporarily disabled
+    "admin_analytics", "scope_change", "blog", "public_clients",
+    # Fiverr/Upwork Feature Parity
+    "gigs", "seller_stats", "talent_invitations"
 ]

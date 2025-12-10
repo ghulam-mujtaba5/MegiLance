@@ -21,6 +21,16 @@ import common from './Explore.common.module.css';
 import light from './Explore.light.module.css';
 import dark from './Explore.dark.module.css';
 
+// Canonical platform stats (synced with docs)
+const PLATFORM_OVERVIEW = {
+  totalPages: 148,
+  apiEndpointsLabel: '1369', // from FastAPI OpenAPI schema
+  dbTablesLabel: '25+',
+  advancedComponents: 5,
+  userRoles: 3,
+  frontendApiClients: 185, // distinct typed helpers in frontend/lib/api.ts
+};
+
 // Dynamic API base URL for production/development
 const getApiBase = () => {
   if (typeof window !== 'undefined') {
@@ -148,7 +158,7 @@ const allPages = [
 
 // ============================================
 // API Documentation - See Swagger for complete endpoint list
-// 128 API modules covering Auth, Projects, Payments, AI, Messaging, etc.
+// 1369 documented API operations covering Auth, Projects, Payments, AI, Messaging, etc.
 // ============================================
 
 // Core modules
@@ -378,7 +388,6 @@ const Explore: React.FC = () => {
 
   const avgProgress = Math.round(coreModules.reduce((acc, m) => acc + m.progress, 0) / coreModules.length);
   const totalModules = coreModules.length + allPages.length + databaseTables.length;
-  const totalAPIs = 128; // As documented in the system
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -426,9 +435,9 @@ const Explore: React.FC = () => {
             <div className={common.header}>
               <h1 className={common.title}>🚀 MegiLance Platform Explorer</h1>
               <p className={cn(common.subtitle, themed.subtitle)}>
-                Complete System Overview: {allPages.length} Pages • 128 API Endpoints • {databaseTables.length} Database Models
+                {PLATFORM_OVERVIEW.totalPages} Pages • {PLATFORM_OVERVIEW.apiEndpointsLabel} Backend API Endpoints • {PLATFORM_OVERVIEW.dbTablesLabel} Database Tables • {PLATFORM_OVERVIEW.frontendApiClients} Frontend API Clients
                 <br />
-                <strong>Real-time Platform Statistics & Technical Architecture</strong>
+                <strong>Concise overview of whats built and wired end-to-end</strong>
               </p>
               
               {/* Real-time Platform Stats */}
@@ -513,7 +522,7 @@ const Explore: React.FC = () => {
                       apiStatus === 'online' && common.heroStatBadgeSuccess,
                       apiStatus === 'offline' && common.heroStatBadgeDanger
                     )}>
-                      {apiStatus === 'online' && <><CheckCircle2 size={12} /> {totalAPIs} APIs Active</>}
+                      {apiStatus === 'online' && <><CheckCircle2 size={12} /> {PLATFORM_OVERVIEW.apiEndpointsLabel} APIs Active</>}
                       {apiStatus === 'offline' && <><XCircle size={12} /> Service Down</>}
                       {apiStatus === 'checking' && <><Clock size={12} /> Checking...</>}
                     </div>
@@ -527,19 +536,24 @@ const Explore: React.FC = () => {
           <ScrollReveal delay={100} threshold={0}>
             <StaggerContainer className={common.statsGrid}>
               <StaggerItem className={cn(common.statCard, themed.statCard)}>
-                <div className={cn(common.statValue, themed.statValue)}>{allPages.length}</div>
+                <div className={cn(common.statValue, themed.statValue)}>{PLATFORM_OVERVIEW.totalPages}</div>
                 <div className={common.statLabel}>Frontend Pages</div>
                 <div className={common.statSubLabel}>Complete Routes</div>
               </StaggerItem>
               <StaggerItem className={cn(common.statCard, themed.statCard)}>
-                <div className={cn(common.statValue, themed.statValue)}>128</div>
+                <div className={cn(common.statValue, themed.statValue)}>{PLATFORM_OVERVIEW.apiEndpointsLabel}</div>
                 <div className={common.statLabel}>API Endpoints</div>
-                <div className={common.statSubLabel}>FastAPI Modules</div>
+                <div className={common.statSubLabel}>FastAPI (OpenAPI)</div>
               </StaggerItem>
               <StaggerItem className={cn(common.statCard, themed.statCard)}>
-                <div className={cn(common.statValue, themed.statValue)}>{databaseTables.length}</div>
-                <div className={common.statLabel}>Database Models</div>
+                <div className={cn(common.statValue, themed.statValue)}>{PLATFORM_OVERVIEW.dbTablesLabel}</div>
+                <div className={common.statLabel}>Database Tables</div>
                 <div className={common.statSubLabel}>Turso (libSQL)</div>
+              </StaggerItem>
+              <StaggerItem className={cn(common.statCard, themed.statCard)}>
+                <div className={cn(common.statValue, themed.statValue)}>{PLATFORM_OVERVIEW.frontendApiClients}</div>
+                <div className={common.statLabel}>API Client Helpers</div>
+                <div className={common.statSubLabel}>frontend/lib/api.ts</div>
               </StaggerItem>
               <StaggerItem className={cn(common.statCard, themed.statCard)}>
                 <div className={cn(common.statValue, themed.statValue)}>{coreModules.length}</div>
@@ -590,10 +604,10 @@ const Explore: React.FC = () => {
                   <Code size={48} />
                 </div>
                 <div className={common.apiDocContent}>
-                  <h3 className={cn(common.apiDocTitle, themed.apiDocTitle)}>128 API Endpoints Available</h3>
+                  <h3 className={cn(common.apiDocTitle, themed.apiDocTitle)}>{PLATFORM_OVERVIEW.apiEndpointsLabel} Backend API Endpoints</h3>
                   <p className={cn(common.apiDocDesc, themed.apiDocDesc)}>
-                    Complete REST API with authentication, projects, payments, messaging, AI matching, and more.
-                    View interactive documentation with request/response schemas and test endpoints directly.
+                    FastAPI backend with authentication, projects, payments, messaging, AI matching, and more  all documented in Swagger.
+                    The frontend talks to these via {PLATFORM_OVERVIEW.frontendApiClients}+ typed API client helpers.
                   </p>
                   <div className={common.apiDocButtons}>
                     <a 
@@ -615,16 +629,16 @@ const Explore: React.FC = () => {
                   </div>
                   <div className={common.apiDocStats}>
                     <div className={common.apiDocStat}>
-                      <span className={common.apiDocStatValue}>128</span>
-                      <span className={common.apiDocStatLabel}>API Modules</span>
+                      <span className={common.apiDocStatValue}>{PLATFORM_OVERVIEW.apiEndpointsLabel}</span>
+                      <span className={common.apiDocStatLabel}>Backend API Endpoints</span>
                     </div>
                     <div className={common.apiDocStat}>
-                      <span className={common.apiDocStatValue}>31</span>
-                      <span className={common.apiDocStatLabel}>Database Models</span>
+                      <span className={common.apiDocStatValue}>{PLATFORM_OVERVIEW.dbTablesLabel}</span>
+                      <span className={common.apiDocStatLabel}>Database Tables</span>
                     </div>
                     <div className={common.apiDocStat}>
-                      <span className={common.apiDocStatValue}>100+</span>
-                      <span className={common.apiDocStatLabel}>REST Endpoints</span>
+                      <span className={common.apiDocStatValue}>{PLATFORM_OVERVIEW.frontendApiClients}</span>
+                      <span className={common.apiDocStatLabel}>Frontend API Clients</span>
                     </div>
                   </div>
                 </div>

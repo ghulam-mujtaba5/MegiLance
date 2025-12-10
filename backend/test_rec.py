@@ -16,4 +16,5 @@ for col in columns:
         print(f"Column {col}: exists = {bool(result.get('rows'))}")
     except Exception as e:
         print(f"Column {col}: ERROR - {e}")
-
+
+

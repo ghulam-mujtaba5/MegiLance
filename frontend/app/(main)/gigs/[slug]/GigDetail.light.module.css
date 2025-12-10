@@ -1,0 +1,285 @@
+/* @AI-HINT: Light theme styles for gig detail page */
+
+.themeWrapper {
+  background-color: #f8fafc;
+  color: #1a1a2e;
+}
+
+.breadcrumbLink {
+  color: #4573df;
+}
+
+.breadcrumbSeparator {
+  color: #94a3b8;
+}
+
+.breadcrumbCurrent {
+  color: #64748b;
+}
+
+.gigTitle {
+  color: #1a1a2e;
+}
+
+/* Seller */
+.sellerAvatarFallback {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.sellerName {
+  color: #1a1a2e;
+}
+
+.levelBadge {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.levelBadge.bronze {
+  background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%);
+  color: #ffffff;
+}
+
+.levelBadge.silver {
+  background: linear-gradient(135deg, #c0c0c0 0%, #a8a8a8 100%);
+  color: #1a1a2e;
+}
+
+.levelBadge.gold {
+  background: linear-gradient(135deg, #ffd700 0%, #f0b300 100%);
+  color: #1a1a2e;
+}
+
+.levelBadge.platinum {
+  background: linear-gradient(135deg, #e5e5e5 0%, #ffffff 50%, #e5e5e5 100%);
+  color: #1a1a2e;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.proBadge {
+  background: linear-gradient(135deg, #4573df 0%, #6b9eff 100%);
+  color: #ffffff;
+}
+
+.rating {
+  color: #1a1a2e;
+}
+
+.reviewCount {
+  color: #64748b;
+}
+
+.ordersCount {
+  color: #64748b;
+}
+
+/* Gallery */
+.gallery {
+  background-color: #f1f5f9;
+}
+
+.thumbnail {
+  border-color: #e2e8f0;
+}
+
+/* Section */
+.sectionTitle {
+  color: #1a1a2e;
+}
+
+.description {
+  color: #475569;
+}
+
+.tag {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+/* About Seller */
+.aboutSeller {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.aboutName {
+  color: #1a1a2e;
+}
+
+.aboutTitle {
+  color: #64748b;
+}
+
+.aboutStatValue {
+  color: #1a1a2e;
+}
+
+.aboutStatLabel {
+  color: #64748b;
+}
+
+.aboutBio {
+  color: #475569;
+}
+
+.contactButton {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.contactButton:hover {
+  background-color: #e2e8f0;
+}
+
+/* Reviews */
+.reviewsRating {
+  color: #1a1a2e;
+}
+
+.reviewsCount {
+  color: #64748b;
+}
+
+.reviewCard {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.reviewerName {
+  color: #1a1a2e;
+}
+
+.reviewDate {
+  color: #94a3b8;
+}
+
+.reviewText {
+  color: #475569;
+}
+
+.showMoreReviews {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.showMoreReviews:hover {
+  background-color: #e2e8f0;
+}
+
+/* Package Tabs */
+.packageTab {
+  background-color: #e2e8f0;
+  color: #64748b;
+}
+
+.packageTab:hover {
+  background-color: #f1f5f9;
+}
+
+.packageTab.active {
+  background-color: #ffffff;
+  color: #1a1a2e;
+}
+
+/* Package Card */
+.packageCard {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.packageName {
+  color: #1a1a2e;
+}
+
+.packagePrice {
+  color: #27ae60;
+}
+
+.packageDescription {
+  color: #64748b;
+}
+
+.packageMetaItem {
+  color: #475569;
+}
+
+.packageFeature {
+  color: #475569;
+}
+
+.packageFeatureIcon.included {
+  color: #27ae60;
+}
+
+.packageFeatureIcon.excluded {
+  color: #e81123;
+}
+
+.orderButton {
+  background: linear-gradient(135deg, #27ae60 0%, #1f9250 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.orderButton:hover {
+  background: linear-gradient(135deg, #1f9250 0%, #17703f 100%);
+}
+
+/* Quick Actions */
+.quickAction {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.quickAction:hover {
+  background-color: #f1f5f9;
+}
+
+.compareLink {
+  color: #4573df;
+}
+
+/* FAQ */
+.faqItem {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+}
+
+.faqQuestion {
+  color: #1a1a2e;
+}
+
+.faqQuestion:hover {
+  background-color: #f8fafc;
+}
+
+.faqAnswer {
+  color: #64748b;
+}
+
+/* Loading */
+.skeleton {
+  background-color: #e2e8f0;
+}
+
+/* Error */
+.errorTitle {
+  color: #1a1a2e;
+}
+
+.errorText {
+  color: #64748b;
+}
+
+.errorButton {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.errorButton:hover {
+  background-color: #3b63c9;
+}

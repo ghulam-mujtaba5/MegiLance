@@ -1,4 +1,4 @@
-// @AI-HINT: Redesigned Freelancer Dashboard with modern UI/UX
+// @AI-HINT: Redesigned Freelancer Dashboard with modern UI/UX including Seller Stats
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -10,6 +10,7 @@ import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import StatCard from '@/app/components/StatCard/StatCard';
+import SellerStats, { SellerStatsData } from '@/app/components/SellerStats/SellerStats';
 import JobCard from './components/JobCard';
 import { 
   Briefcase, 
@@ -17,20 +18,83 @@ import {
   FileText, 
   Eye,
   Search,
-  ArrowRight
+  ArrowRight,
+  Package
 } from 'lucide-react';
 
 import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
 import darkStyles from './Dashboard.dark.module.css';
 
+// Mock seller stats for demo
+const getMockSellerStats = (): SellerStatsData => ({
+  userId: 1,
+  level: {
+    level: 'silver',
+    jssScore: 92,
+    levelProgress: {
+      nextLevel: 'Gold Seller',
+      requirements: {
+        completedOrders: { current: 45, required: 50, percent: 90 },
+        earnings: { current: 4500, required: 5000, percent: 90 },
+        rating: { current: 4.8, required: 4.9, percent: 98 },
+        onTimeDelivery: { current: 95, required: 98, percent: 97 },
+      },
+    },
+    benefits: {
+      commissionRate: 15,
+      featuredGigs: 2,
+      prioritySupport: true,
+      badges: ['trusted', 'fast_delivery'],
+      description: 'Silver sellers enjoy reduced fees and featured placement.',
+    },
+  },
+  totalOrders: 52,
+  completedOrders: 45,
+  cancelledOrders: 3,
+  averageRating: 4.8,
+  totalReviews: 38,
+  completionRate: 86.5,
+  onTimeDeliveryRate: 95,
+  responseRate: 98,
+  avgResponseTimeHours: 1.5,
+  totalEarnings: 4500,
+  uniqueClients: 35,
+  repeatClients: 12,
+  repeatClientRate: 34.3,
+  ordersChange: 15,
+  earningsChange: 22,
+  ratingChange: 0.1,
+});
+
 const Dashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { analytics, recommendedJobs, proposals, loading } = useFreelancerData();
+  const [sellerStats, setSellerStats] = useState<SellerStatsData | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Fetch seller stats from API
+    const fetchSellerStats = async () => {
+      try {
+        const response = await fetch('/backend/api/seller-stats/me', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setSellerStats(data);
+        } else {
+          // Use mock data for demo
+          setSellerStats(getMockSellerStats());
+        }
+      } catch (error) {
+        setSellerStats(getMockSellerStats());
+      }
+    };
+    
+    fetchSellerStats();
   }, []);
 
   const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
@@ -54,12 +118,24 @@ const Dashboard: React.FC = () => {
           <h1>Welcome back, Freelancer</h1>
           <p>You have new job matches waiting for you.</p>
         </div>
-        <Link href="/jobs">
-          <Button variant="primary" size="lg" iconBefore={<Search size={20} />}>
-            Find Work
-          </Button>
-        </Link>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Link href="/freelancer/gigs">
+            <Button variant="outline" size="lg" iconBefore={<Package size={20} />}>
+              My Gigs
+            </Button>
+          </Link>
+          <Link href="/jobs">
+            <Button variant="primary" size="lg" iconBefore={<Search size={20} />}>
+              Find Work
+            </Button>
+          </Link>
+        </div>
       </div>
+
+      {/* Seller Stats Section */}
+      {sellerStats && (
+        <SellerStats stats={sellerStats} />
+      )}
 
       {/* Stats Grid */}
       <div className={commonStyles.statsGrid}>

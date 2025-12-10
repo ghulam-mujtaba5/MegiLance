@@ -1204,7 +1204,13 @@ export const clientApi = {
   getPayments: () => apiFetch<any[]>('/portal/client/payments'),
   getFreelancers: async () => {
     try {
+      console.log('[API] Fetching AI recommendations...');
       const response = await apiFetch<{ recommendations: any[] }>('/matching/recommendations?limit=5');
+      console.log('[API] AI recommendations response:', response);
+      if (!response?.recommendations) {
+        console.warn('[API] No recommendations field in response');
+        return [];
+      }
       return response.recommendations.map((r: any) => ({
         id: r.freelancer_id.toString(),
         name: r.freelancer_name,
@@ -1218,7 +1224,7 @@ export const clientApi = {
         matchScore: r.match_score // Add this for UI to show match %
       }));
     } catch (error) {
-      console.error('Failed to fetch AI recommendations:', error);
+      console.error('[API] Failed to fetch AI recommendations:', error);
       // Return empty array on failure - no mock fallback for launch
       return [];
     }

@@ -1,3 +1,4 @@
+# @AI-HINT: Category model for project and gig categorization with hierarchical structure
 """
 Category model for project categorization
 """
@@ -9,11 +10,12 @@ from typing import TYPE_CHECKING, Optional, List
 
 if TYPE_CHECKING:
     from .category import Category
+    from .gig import Gig
 
 
 class Category(Base):
     """
-    Categories table for organizing projects hierarchically
+    Categories table for organizing projects and gigs hierarchically
     """
     __tablename__ = "categories"
 
@@ -22,9 +24,12 @@ class Category(Base):
     slug: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     description: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     icon: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    image_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     parent_id: Mapped[Optional[int]] = mapped_column(ForeignKey("categories.id"), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_featured: Mapped[bool] = mapped_column(Boolean, default=False)  # Featured on homepage
     project_count: Mapped[int] = mapped_column(Integer, default=0)
+    gig_count: Mapped[int] = mapped_column(Integer, default=0)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -32,3 +37,6 @@ class Category(Base):
     # Self-referential relationship for hierarchy
     parent: Mapped[Optional["Category"]] = relationship("Category", remote_side=[id], back_populates="children")
     children: Mapped[List["Category"]] = relationship("Category", back_populates="parent")
+    
+    # Gigs in this category
+    gigs: Mapped[List["Gig"]] = relationship("Gig", back_populates="category")

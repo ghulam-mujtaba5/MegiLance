@@ -56,6 +56,7 @@ export type ClientReview = {
 };
 
 export function useClientData() {
+  console.log('[useClient] Hook called!');
   const [projects, setProjects] = useState<ClientProject[] | null>(null);
   const [payments, setPayments] = useState<ClientPayment[] | null>(null);
   const [freelancers, setFreelancers] = useState<ClientFreelancer[] | null>(null);
@@ -66,6 +67,7 @@ export function useClientData() {
   const loadingRef = useRef(false);
 
   const load = useCallback(async () => {
+    console.log('[useClient] load() function called, loadingRef.current =', loadingRef.current);
     // Prevent duplicate concurrent fetches
     if (loadingRef.current) return;
     loadingRef.current = true;
@@ -73,27 +75,59 @@ export function useClientData() {
     setLoading(true);
     setError(null);
     
+    console.log('[useClient] Starting data load...');
+    console.log('[useClient] api.client available?', !!api.client);
+    console.log('[useClient] getFreelancers function?', typeof api.client?.getFreelancers);
+    
     try {
-      const fetchWithFallback = async (promise: Promise<any>, fallback: any = []) => {
+      const fetchWithFallback = async (name: string, promise: Promise<any>, fallback: any = []) => {
+        console.log(`[useClient] Fetching ${name}...`);
         try {
           const result = await promise;
+          console.log(`[useClient] ${name} result:`, result);
           return result;
         } catch (err) {
           // Don't log abort errors
           if (err instanceof Error && err.name === 'AbortError') {
             throw err; // Re-throw to stop processing
           }
-          console.warn('Fetch failed, using fallback:', err);
+          console.warn(`[useClient] ${name} failed, using fallback:`, err);
           return fallback;
         }
       };
       
+      console.log('[useClient] Starting Promise.all...');
+      console.log('[useClient] api.client:', api.client);
+      console.log('[useClient] getFreelancers:', api.client?.getFreelancers);
+      console.log('[useClient] getReviews:', api.client?.getReviews);
+      
+      // Call functions explicitly to catch any sync errors
+      let freelancersPromise;
+      let reviewsPromise;
+      try {
+        console.log('[useClient] Creating freelancers promise...');
+        freelancersPromise = api.client?.getFreelancers?.() ?? Promise.resolve([]);
+        console.log('[useClient] Freelancers promise created:', freelancersPromise);
+      } catch (e) {
+        console.error('[useClient] Error creating freelancers promise:', e);
+        freelancersPromise = Promise.resolve([]);
+      }
+      try {
+        console.log('[useClient] Creating reviews promise...');
+        reviewsPromise = api.client?.getReviews?.() ?? Promise.resolve([]);
+        console.log('[useClient] Reviews promise created:', reviewsPromise);
+      } catch (e) {
+        console.error('[useClient] Error creating reviews promise:', e);
+        reviewsPromise = Promise.resolve([]);
+      }
+      
       const [projectsRes, paymentsRes, freelancersData, reviewsData] = await Promise.all([
-        fetchWithFallback(api.client.getProjects(), { projects: [] }),
-        fetchWithFallback(api.client.getPayments(), { payments: [] }),
-        fetchWithFallback(api.client.getFreelancers(), []),
-        fetchWithFallback(api.client.getReviews(), []),
+        fetchWithFallback('projects', api.client.getProjects(), { projects: [] }),
+        fetchWithFallback('payments', api.client.getPayments(), { payments: [] }),
+        fetchWithFallback('freelancers', freelancersPromise, []),
+        fetchWithFallback('reviews', reviewsPromise, []),
       ]);
+      console.log('[useClient] Promise.all completed');
         
       // Check if component is still mounted before updating state
       if (!mountedRef.current) return;

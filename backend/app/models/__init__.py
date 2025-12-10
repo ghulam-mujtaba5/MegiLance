@@ -30,6 +30,20 @@ from .analytics import AnalyticsEvent
 from .embedding import ProjectEmbedding, UserEmbedding
 from .verification import UserVerification
 
+# Gig marketplace models
+from .gig import Gig, GigStatus, GigPackageTier
+from .gig_order import GigOrder, GigOrderStatus
+from .gig_review import GigReview
+from .gig_revision import GigRevision
+from .gig_delivery import GigDelivery
+from .gig_faq import GigFAQ
+
+# Seller tier system
+from .seller_stats import SellerStats, SellerLevel, LEVEL_REQUIREMENTS, LEVEL_BENEFITS
+
+# Talent invitation system
+from .talent_invitation import TalentInvitation, InvitationStatus
+
 __all__ = [
     "User",
     "UserType",
@@ -76,4 +90,22 @@ __all__ = [
     "ProjectEmbedding",
     "UserEmbedding",
     "UserVerification",
+    # Gig marketplace
+    "Gig",
+    "GigStatus",
+    "GigPackageTier",
+    "GigOrder",
+    "GigOrderStatus",
+    "GigReview",
+    "GigRevision",
+    "GigDelivery",
+    "GigFAQ",
+    # Seller tier system
+    "SellerStats",
+    "SellerLevel",
+    "LEVEL_REQUIREMENTS",
+    "LEVEL_BENEFITS",
+    # Talent invitation
+    "TalentInvitation",
+    "InvitationStatus",
 ]

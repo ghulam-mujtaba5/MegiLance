@@ -214,11 +214,19 @@ def _ensure_community_tables():
     """, [])
 
 
-# Initialize tables on module load
-try:
-    _ensure_community_tables()
-except Exception as e:
-    logger.warning(f"Could not initialize community tables: {e}")
+# Initialize tables lazily on first request, not at module load
+# This prevents blocking during import when Turso is slow/unreachable
+_community_tables_initialized = False
+
+def _lazy_ensure_community_tables():
+    """Ensure community tables exist (called lazily on first request)."""
+    global _community_tables_initialized
+    if not _community_tables_initialized:
+        try:
+            _ensure_community_tables()
+            _community_tables_initialized = True
+        except Exception as e:
+            logger.warning(f"Could not initialize community tables: {e}")
 
 
 # ==================== Q&A Endpoints ====================

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useClientData } from '@/hooks/useClient';
+import { useRecommendations } from '@/hooks/useRecommendations';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
@@ -30,7 +31,9 @@ import darkStyles from './ClientDashboard.dark.module.css';
 const ClientDashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { projects, payments, freelancers, loading, error } = useClientData();
+  const { projects, payments, loading, error } = useClientData();
+  // Use dedicated recommendations hook
+  const { recommendations: freelancers, loading: recLoading, error: recError } = useRecommendations(5);
 
   useEffect(() => {
     setMounted(true);

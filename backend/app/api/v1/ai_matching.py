@@ -86,7 +86,7 @@ async def get_general_recommendations(
         from app.db.turso_http import TursoHTTP
         turso = TursoHTTP.get_instance()
         result = turso.execute(
-            f"SELECT id, email, full_name, bio, profile_image_url, hourly_rate, location "
+            f"SELECT id, email, name, bio, profile_image_url, hourly_rate, location "
             f"FROM users WHERE LOWER(user_type) = 'freelancer' AND is_active = 1 "
             f"LIMIT {limit}"
         )

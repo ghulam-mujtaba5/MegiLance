@@ -34,7 +34,9 @@ from .v1 import (
     # Blog & News
     blog,
     # Public clients showcase
-    public_clients
+    public_clients,
+    # Fiverr/Upwork Feature Parity - Gig Marketplace & Seller Tiers
+    gigs, seller_stats, talent_invitations
 )
 # Import separately to avoid circular import in Python 3.13
 from .v1 import complete_integrations
@@ -387,3 +389,16 @@ api_router.include_router(blog.router, prefix="/blog", tags=["blog"])
 
 # Public clients showcase (no auth required)
 api_router.include_router(public_clients.router, tags=["public-clients"])
+
+# ============================================================================
+# FIVERR/UPWORK FEATURE PARITY - Gig Marketplace & Seller Tier System
+# ============================================================================
+
+# Gig Marketplace - Fiverr-style service packages with 3-tier pricing
+api_router.include_router(gigs.router, prefix="/gigs", tags=["gigs"])
+
+# Seller Stats & Tier System - Bronze to Platinum levels with JSS algorithm
+api_router.include_router(seller_stats.router, prefix="/seller-stats", tags=["seller-stats"])
+
+# Talent Invitations - Upwork-style invite-to-bid system
+api_router.include_router(talent_invitations.router, prefix="/invitations", tags=["talent-invitations"])

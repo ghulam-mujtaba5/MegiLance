@@ -1,0 +1,123 @@
+/* @AI-HINT: Dark theme colors for GigCard component */
+.theme {
+  background-color: var(--color-background-dark, #1e1e1e);
+  border: 1px solid var(--color-border-dark, #2d2d2d);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.theme:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: var(--color-border-hover-dark, #404040);
+}
+
+.proLabel {
+  background-color: #1dbf73;
+  color: #ffffff;
+}
+
+.levelBadge {
+  background-color: rgba(30, 30, 30, 0.95);
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.levelBadge.bronze {
+  background-color: #cd7f32;
+  color: #ffffff;
+}
+
+.levelBadge.silver {
+  background-color: #c0c0c0;
+  color: #1f2937;
+}
+
+.levelBadge.gold {
+  background-color: #ffd700;
+  color: #1f2937;
+}
+
+.levelBadge.platinum {
+  background-color: #e5e4e2;
+  color: #1f2937;
+}
+
+.favoriteButton {
+  background-color: rgba(30, 30, 30, 0.95);
+  color: #9ca3af;
+}
+
+.favoriteButton:hover {
+  background-color: #2d2d2d;
+  color: #ef4444;
+}
+
+.favoriteButton.active {
+  color: #ef4444;
+}
+
+.sellerName {
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.sellerName:hover {
+  color: var(--color-primary, #4573df);
+}
+
+.sellerLevel {
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.sellerLevel.topRated {
+  color: #fbbf24;
+}
+
+.title {
+  color: var(--color-text-primary-dark, #e5e7eb);
+}
+
+.title:hover {
+  color: var(--color-primary, #4573df);
+}
+
+.ratingRow {
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.starIcon {
+  color: #fbbf24;
+}
+
+.ratingCount {
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.footer {
+  border-top: 1px solid var(--color-border-dark, #2d2d2d);
+}
+
+.priceLabel {
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.priceValue {
+  color: var(--color-text-primary-dark, #f3f4f6);
+}
+
+.tag {
+  background-color: var(--color-background-alt-dark, #2d2d2d);
+  color: var(--color-text-secondary-dark, #9ca3af);
+}
+
+.quickActions {
+  background: linear-gradient(to top, rgba(30, 30, 30, 0.98), rgba(30, 30, 30, 0.85));
+}
+
+.quickActionBtn {
+  background-color: var(--color-primary, #4573df);
+  color: #ffffff;
+}
+
+.quickActionBtn.secondary {
+  background-color: #2d2d2d;
+  color: var(--color-text-primary-dark, #f3f4f6);
+  border: 1px solid var(--color-border-dark, #404040);
+}
