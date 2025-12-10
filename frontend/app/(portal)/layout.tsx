@@ -25,6 +25,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
         if (!token) {
           // No token - redirect to login
           const currentPath = pathname || '/client/dashboard';
+          setIsAuthenticated(false);
           router.replace(`/login?returnTo=${encodeURIComponent(currentPath)}`);
           return;
         }
@@ -36,6 +37,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
 
         if (!res.ok) {
           // Token invalid or expired - clear and redirect
+          setIsAuthenticated(false);
           window.localStorage.removeItem('access_token');
           window.localStorage.removeItem('refresh_token');
           window.localStorage.removeItem('user');

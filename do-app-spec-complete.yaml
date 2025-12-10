@@ -106,8 +106,6 @@ services:
     instance_size_slug: basic-s
     instance_count: 1
     http_port: 8001
-    internal_ports:
-      - 8001
     
     health_check:
       http_path: /health

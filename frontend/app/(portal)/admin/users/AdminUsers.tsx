@@ -28,9 +28,6 @@ const AdminUsers: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const themed = resolvedTheme === 'dark' ? dark : light;
 
-  const { resolvedTheme } = useTheme();
-  const themed = resolvedTheme === 'dark' ? dark : light;
-
   // Server-side state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -55,6 +55,9 @@ services:
   - key: SLOWAPI_ENABLED
     scope: RUN_TIME
     value: "true"
+  - key: AI_SERVICE_URL
+    scope: RUN_TIME
+    value: http://ai-service:8001
   github:
     branch: main
     deploy_on_push: true
@@ -70,6 +73,29 @@ services:
   instance_count: 1
   instance_size_slug: basic-s
   name: backend
+- dockerfile_path: ai/Dockerfile
+  envs:
+  - key: PORT
+    scope: RUN_TIME
+    value: "8001"
+  - key: ML_WORKERS
+    scope: RUN_TIME
+    value: "1"
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: Mwaqarulmulk/MegiLance
+  health_check:
+    failure_threshold: 5
+    http_path: /health
+    initial_delay_seconds: 180
+    period_seconds: 60
+    success_threshold: 1
+    timeout_seconds: 30
+  http_port: 8001
+  instance_count: 1
+  instance_size_slug: basic-s
+  name: ai-service
 - dockerfile_path: frontend/Dockerfile
   envs:
   - key: NODE_ENV
