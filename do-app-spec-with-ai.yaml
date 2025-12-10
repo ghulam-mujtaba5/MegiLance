@@ -29,7 +29,7 @@ ingress:
       preserve_path_prefix: true
     match:
       path:
-        prefix: /ai
+        prefix: /ai-api
   - component:
       name: frontend
     match:
@@ -120,7 +120,7 @@ services:
     value: https://megilance.site/api
   - key: NEXT_PUBLIC_AI_URL
     scope: RUN_AND_BUILD_TIME
-    value: https://megilance.site/ai
+    value: https://megilance.site/ai-api
   github:
     branch: main
     deploy_on_push: true
