@@ -27,25 +27,64 @@ import darkStyles from './AppLayout.dark.module.css';
 // @AI-HINT: Build profile menu links based on current area (client/freelancer/admin/general)
 // so that portal pages use the portal layout instead of the public website layout.
 
-const user = {
-  fullName: 'John Doe',
-  email: 'john.doe@megilance.com',
-  bio: 'Investor & Entrepreneur',
+interface UserData {
+  fullName: string;
+  full_name?: string;
+  email: string;
+  bio?: string;
+  avatar?: string;
+  avatar_url?: string;
+  notificationCount?: number;
+}
+
+const DEFAULT_USER: UserData = {
+  fullName: 'User',
+  email: '',
+  bio: '',
   avatar: '/mock-avatar.svg',
-  notificationCount: 3,
+  notificationCount: 0,
 };
+
+function getStoredUser(): UserData {
+  if (typeof window === 'undefined') return DEFAULT_USER;
+  try {
+    const raw = window.localStorage.getItem('user');
+    if (!raw) return DEFAULT_USER;
+    const parsed = JSON.parse(raw);
+    return {
+      fullName: parsed.full_name || parsed.fullName || parsed.name || 'User',
+      email: parsed.email || '',
+      bio: parsed.bio || parsed.title || '',
+      avatar: parsed.avatar_url || parsed.avatar || '/mock-avatar.svg',
+      notificationCount: parsed.notificationCount || 0,
+    };
+  } catch {
+    return DEFAULT_USER;
+  }
+}
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [user, setUser] = useState<UserData>(DEFAULT_USER);
   const { resolvedTheme } = useTheme();
   const pathname = usePathname();
 
-  const area: 'client' | 'freelancer' | 'admin' | 'general' = useMemo(() => {
+  // Load real user data from localStorage (set by portal layout auth check)
+  useEffect(() => {
+    setUser(getStoredUser());
+    // Listen for storage changes (e.g. user updates profile in another tab)
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'user') setUser(getStoredUser());
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const area: 'client' | 'freelancer' | 'admin' = useMemo(() => {
     if (!pathname) return 'client';
     if (pathname.startsWith('/client')) return 'client';
     if (pathname.startsWith('/freelancer')) return 'freelancer';
     if (pathname.startsWith('/admin')) return 'admin';
-    // Default to client for authenticated users (most common)
     return 'client';
   }, [pathname]);
 
@@ -60,44 +99,18 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [pathname]);
 
   const profileMenuItems = useMemo(() => {
-    switch (area) {
-      case 'client':
-        return [
-          { label: 'Your Profile', href: '/client/profile', icon: <UserIcon size={16} /> },
-          { label: 'Settings', href: '/client/settings', icon: <Settings size={16} /> },
-          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
-        ];
-      case 'freelancer':
-        return [
-          { label: 'Your Profile', href: '/freelancer/profile', icon: <UserIcon size={16} /> },
-          { label: 'Settings', href: '/freelancer/settings', icon: <Settings size={16} /> },
-          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
-        ];
-      case 'admin':
-        return [
-          { label: 'Your Profile', href: '/admin/profile', icon: <UserIcon size={16} /> },
-          { label: 'Settings', href: '/admin/settings', icon: <Settings size={16} /> },
-          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
-        ];
-      case 'general':
-      default:
-        // Default to client if no specific area
-        return [
-          { label: 'Your Profile', href: '/client/profile', icon: <UserIcon size={16} /> },
-          { label: 'Settings', href: '/client/settings', icon: <Settings size={16} /> },
-          { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
-        ];
-    }
+    const basePath = `/${area}`;
+    return [
+      { label: 'Your Profile', href: `${basePath}/profile`, icon: <UserIcon size={16} /> },
+      { label: 'Settings', href: `${basePath}/settings`, icon: <Settings size={16} /> },
+      { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
+    ];
   }, [area]);
 
   // Remember the current portal area for cross-route redirects from public pages
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (area === 'client' || area === 'freelancer' || area === 'admin') {
-        window.localStorage.setItem('portal_area', area);
-      } else {
-        // do not overwrite when in general area
-      }
+      window.localStorage.setItem('portal_area', area);
     }
   }, [area]);
 
@@ -139,7 +152,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               id="main-content" 
               className={cn(commonStyles.pageContent, themeStyles.pageContent)}
               role="main"
-              aria-label={`${area === 'general' ? '' : area.charAt(0).toUpperCase() + area.slice(1) + ' '}Dashboard content`}
+              aria-label={`${area.charAt(0).toUpperCase() + area.slice(1)} Dashboard content`}
             >
               {children}
               <PortalFooter />

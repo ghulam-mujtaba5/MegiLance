@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { getAuthToken } from '@/lib/api';
 
 const PortalDashboardPage = () => {
   const router = useRouter();
@@ -12,14 +13,10 @@ const PortalDashboardPage = () => {
 
   useEffect(() => {
     const redirect = async () => {
-      // Get user data from localStorage and sessionStorage
-      const userStr = window.localStorage.getItem('user');
-      const token = window.sessionStorage.getItem('auth_token') || 
-                    window.localStorage.getItem('auth_token') ||
-                    window.localStorage.getItem('access_token');
+      // Use centralized token retrieval
+      const token = getAuthToken();
       
       if (!token) {
-        // No auth token - redirect to login
         router.replace('/login?returnTo=/dashboard');
         return;
       }
@@ -39,6 +36,7 @@ const PortalDashboardPage = () => {
       }
       
       // Fallback: parse user object
+      const userStr = window.localStorage.getItem('user');
       if (userStr) {
         try {
           const user = JSON.parse(userStr);

@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { io, Socket as SocketIOSocket } from 'socket.io-client';
+import { getAuthToken } from '@/lib/api';
 
 type Socket = SocketIOSocket;
 
@@ -27,7 +28,7 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   useEffect(() => {
     if (!autoConnect) return;
 
-    const token = localStorage.getItem('access_token');
+    const token = getAuthToken();
     if (!token) {
       console.warn('No access token found for WebSocket connection');
       return;

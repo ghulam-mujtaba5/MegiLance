@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 
-// @AI-HINT: Hook to fetch current user profile from /api/user.
+// @AI-HINT: Hook to fetch current user profile from /api/auth/me endpoint.
 
 export type CurrentUser = {
   id: number;
   name: string;
+  fullName: string;
   email: string;
+  avatar: string;
   profile_image_url?: string;
   user_type: string;
-  // Add other fields as needed based on UserRead schema
+  notificationCount: number;
 };
 
 export function useUser() {
@@ -26,13 +28,16 @@ export function useUser() {
       try {
         const userData = await api.auth.me();
         if (isMounted) {
-          // Map API response to CurrentUser type if needed, or just use the response
+          const name = userData.name || (userData as any).full_name || 'User';
           setUser({
             id: Number(userData.id),
-            name: userData.name,
+            name,
+            fullName: name,
             email: userData.email,
+            avatar: (userData as any).profile_image_url || (userData as any).avatar_url || '/images/avatars/avatar-1.png',
             profile_image_url: (userData as any).profile_image_url,
-            user_type: userData.role // api.ts defines role in AuthUser
+            user_type: userData.role || (userData as any).user_type || 'client',
+            notificationCount: (userData as any).notification_count || 0,
           });
         }
       } catch (err: any) {

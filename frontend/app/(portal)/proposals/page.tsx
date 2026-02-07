@@ -3,13 +3,14 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getAuthToken } from '@/lib/api';
 
 export default function ProposalsRedirect() {
   const router = useRouter();
 
   useEffect(() => {
     // Get user role from localStorage or default to freelancer
-    const authToken = localStorage.getItem('auth_token');
+    const authToken = getAuthToken();
     const userRole = localStorage.getItem('user_role') || 'freelancer';
     
     if (!authToken) {

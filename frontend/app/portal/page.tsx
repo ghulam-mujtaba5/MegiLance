@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { getAuthToken } from '@/lib/api';
 
 export default function PortalPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function PortalPage() {
     const redirectToDashboard = async () => {
       try {
         const area = window.localStorage.getItem('portal_area');
-        const token = window.localStorage.getItem('access_token');
+        const token = getAuthToken();
         
         if (!token) {
           // No token - redirect to login

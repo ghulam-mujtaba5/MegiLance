@@ -5,6 +5,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { Wallet, CreditCard, History, ArrowUpRight, ArrowDownRight, Loader2 } from 'lucide-react';
+import { getAuthToken } from '@/lib/api';
 
 interface Transaction {
   id: number;
@@ -22,7 +23,7 @@ interface WalletBalance {
 
 // API helper
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = typeof window !== 'undefined' ? getAuthToken() : null;
   try {
     const res = await fetch(`/backend/api${endpoint}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},

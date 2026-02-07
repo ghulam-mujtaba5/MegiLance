@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { getAuthToken } from '@/lib/api';
 import Profile from './Profile';
 
 // @AI-HINT: Public /profile redirects to portal-scoped profile if a portal area is known
@@ -15,7 +16,7 @@ export default function ProfilePage() {
     const checkAndRedirect = async () => {
       try {
         const area = window.localStorage.getItem('portal_area');
-        const token = window.localStorage.getItem('access_token');
+        const token = getAuthToken();
         
         if (token && area === 'client') {
           router.replace('/client/profile');

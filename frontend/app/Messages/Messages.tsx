@@ -5,6 +5,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { MessageSquare, Search, User, Loader2 } from 'lucide-react';
+import { getAuthToken } from '@/lib/api';
 
 interface Conversation {
   id: number;
@@ -18,7 +19,7 @@ interface Conversation {
 
 // API helper
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = typeof window !== 'undefined' ? getAuthToken() : null;
   try {
     const res = await fetch(`/backend/api/messages${endpoint}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},

@@ -13,7 +13,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ProfileMenu, { ProfileMenuItem } from '@/app/components/ProfileMenu/ProfileMenu';
-import { authApi } from '@/lib/api';
+import { authApi, getAuthToken, clearAuthData } from '@/lib/api';
 
 import commonStyles from './PortalNavbar.common.module.css';
 import lightStyles from './PortalNavbar.light.module.css';
@@ -35,7 +35,7 @@ interface PortalNavbarProps {
 
 // Fetch real notifications from API
 async function fetchNotifications(): Promise<Notification[]> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = getAuthToken();
   if (!token) return [];
   try {
     const res = await fetch('/backend/api/notifications?limit=10', {
@@ -152,7 +152,7 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client' }) => {
   }, []);
 
   const handleLogout = useCallback(() => {
-    authApi.logout();
+    clearAuthData();
     router.push('/login');
   }, [router]);
 

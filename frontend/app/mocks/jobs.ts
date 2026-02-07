@@ -1,6 +1,7 @@
 // @AI-HINT: Mock Jobs API used to simulate backend behavior for posting jobs.
 import { readJSON, writeJSON, remove } from './storage';
 import type { CreateJobInput, CreateJobResult, JobDraft } from './types';
+import { getAuthToken } from '@/lib/api';
 
 const STORAGE_KEY = 'client:post-job:draft';
 
@@ -45,7 +46,7 @@ export async function submitJob(input: CreateJobInput): Promise<CreateJobResult>
   await new Promise((r) => setTimeout(r, 600));
   
   // Get token from localStorage
-  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  const token = typeof window !== 'undefined' ? getAuthToken() : null;
   
   // Send the job data to the real backend
   const response = await fetch('/api/client/jobs', {

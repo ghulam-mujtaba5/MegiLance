@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 
+import { getAuthToken } from '@/lib/api';
 import commonStyles from './TalentDirectory.common.module.css';
 import lightStyles from './TalentDirectory.light.module.css';
 import darkStyles from './TalentDirectory.dark.module.css';
@@ -23,7 +24,7 @@ interface TalentProfile {
 
 // API helper
 async function fetchFreelancers(): Promise<TalentProfile[]> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = typeof window !== 'undefined' ? getAuthToken() : null;
   try {
     const res = await fetch('/backend/api/freelancers?limit=20', {
       headers: token ? { Authorization: `Bearer ${token}` } : {},

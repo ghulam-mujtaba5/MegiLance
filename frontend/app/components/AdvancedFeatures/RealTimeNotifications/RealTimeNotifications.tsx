@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { getAuthToken } from '@/lib/api';
 import { 
   FaBell, FaCheck, FaEnvelope, FaDollarSign, FaBriefcase, 
   FaExclamationTriangle, FaTimes, FaEllipsisV 
@@ -79,7 +80,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
   // WebSocket connection
   useEffect(() => {
     const connectWebSocket = () => {
-      const token = localStorage.getItem('access_token');
+      const token = getAuthToken();
       if (!token) return;
 
       const wsUrl = `${apiBaseUrl.replace('http', 'ws')}/api/realtime/notifications?token=${token}`;
@@ -153,7 +154,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     );
     // Send API request to mark as read
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const token = getAuthToken();
       await fetch(`/backend/api/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -167,7 +168,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     // Send API request to mark all as read
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const token = getAuthToken();
       await fetch('/backend/api/notifications/mark-all-read', {
         method: 'PUT',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -195,7 +196,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
     // Send API request to delete notification
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const token = getAuthToken();
       await fetch(`/backend/api/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {},

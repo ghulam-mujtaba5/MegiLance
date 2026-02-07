@@ -171,19 +171,13 @@ const Login: React.FC = () => {
       
       if (data.user?.requires_2fa) {
         setNeeds2FA(true);
-        setTempAccessToken(data.access_token || ''); // Assuming temp token is passed as access_token in this case or handled differently
+        setTempAccessToken(data.access_token || '');
       } else {
-        // Token is already set by api.auth.login (in sessionStorage)
-        // Also save to localStorage for portal layout compatibility
-        localStorage.setItem('auth_token', data.access_token);
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
-        // Store user data for quick access
+        // Tokens already stored by api.auth.login → setAuthToken/setRefreshToken
+        // Store user data and portal area for quick access
         if (data.user) {
           localStorage.setItem('user', JSON.stringify(data.user));
         }
-        // Set auth token as cookie for middleware access
-        document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         try { window.localStorage.setItem('portal_area', role); } catch {}
         router.push(roleConfig[role].redirectPath);
       }
@@ -215,21 +209,14 @@ const Login: React.FC = () => {
         setNeeds2FA(true);
         setTempAccessToken((data as any).temp_token || '');
       } else {
-        // Store tokens and redirect
-        // api.auth.login sets the access token in sessionStorage
-        // Also save to localStorage for portal layout compatibility
-        localStorage.setItem('auth_token', data.access_token);
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('refresh_token', data.refresh_token);
+        // Tokens already stored by api.auth.login → setAuthToken/setRefreshToken
         // Store user data for quick access
         if (data.user) {
           localStorage.setItem('user', JSON.stringify(data.user));
         }
-        // Set auth token as cookie for middleware access
-        document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
         
         // Redirect based on user's actual role from API, not the selected tab
-        const userRole = (data.user?.user_type || data.user?.role || selectedRole).toLowerCase() as UserRole;
+        const userRole = ((data.user as any)?.user_type || data.user?.role || selectedRole).toLowerCase() as UserRole;
         const actualRole = userRole === 'admin' ? 'admin' : userRole === 'freelancer' ? 'freelancer' : 'client';
         try { window.localStorage.setItem('portal_area', actualRole); } catch {}
         router.push(roleConfig[actualRole].redirectPath);
@@ -261,13 +248,9 @@ const Login: React.FC = () => {
       // I should probably update api.ts to call setAuthToken or do it here.
       // Let's do it here for safety.
       if (data.access_token) {
-         localStorage.setItem('auth_token', data.access_token);
-         // Set auth token as cookie for middleware access
-         document.cookie = `auth_token=${data.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
-         // If refresh token is also returned
-         if ((data as any).refresh_token) {
-             localStorage.setItem('refresh_token', (data as any).refresh_token);
-         }
+        // Use centralized setAuthToken for consistent storage (sessionStorage + cookie)
+        const { setAuthToken: setToken } = await import('@/lib/api');
+        setToken(data.access_token);
       }
 
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
@@ -287,7 +270,7 @@ const Login: React.FC = () => {
       // Store selected role in localStorage to be used after callback
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
       
-      const response = await api.socialAuth.start(provider, redirectUri, selectedRole);
+      const response = await api.socialAuth.start(provider, redirectUri, selectedRole) as { authorization_url?: string };
       
       if (response.authorization_url) {
         window.location.href = response.authorization_url;

@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { getAuthToken } from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
 import commonStyles from './DisputeWizard.common.module.css';
 import lightStyles from './DisputeWizard.light.module.css';
@@ -683,7 +684,7 @@ export default function DisputeWizard({
     setIsSubmitting(true);
 
     try {
-      const token = localStorage.getItem('access_token');
+      const token = getAuthToken();
       const formData = new FormData();
 
       formData.append('contract_id', contractId);

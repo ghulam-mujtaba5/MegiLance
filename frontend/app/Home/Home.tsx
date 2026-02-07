@@ -45,75 +45,75 @@ const Home: React.FC = () => {
             <Hero />
           </ScrollReveal>
 
-        {/* Trust Indicators */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" delay={0.2}>
-              <TrustIndicators />
+          {/* Trust Indicators */}
+          <div className={commonStyles.homeSection}>
+            <div className={commonStyles.sectionContainer}>
+              <ScrollReveal width="100%" delay={0.2}>
+                <TrustIndicators />
+              </ScrollReveal>
+            </div>
+          </div>
+
+          {/* Project Statistics */}
+          <div className={commonStyles.homeSection}>
+            <ScrollReveal width="100%" direction="up" delay={0.3}>
+              <ProjectStats />
             </ScrollReveal>
           </div>
-        </div>
 
-        {/* Project Statistics */}
-        <div className={commonStyles.homeSection}>
-          <ScrollReveal width="100%" direction="up" delay={0.3}>
-            <ProjectStats />
-          </ScrollReveal>
-        </div>
-
-        {/* Why MegiLance */}
-        <div className={commonStyles.homeSection}>
-          <ScrollReveal width="100%" direction="left">
-            <WhyMegiLance />
-          </ScrollReveal>
-        </div>
-
-        {/* Features */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" direction="right">
-              <Features />
+          {/* Why MegiLance */}
+          <div className={commonStyles.homeSection}>
+            <ScrollReveal width="100%" direction="left">
+              <WhyMegiLance />
             </ScrollReveal>
           </div>
-        </div>
 
-        {/* How It Works */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
+          {/* Features */}
+          <div className={commonStyles.homeSection}>
+            <div className={commonStyles.sectionContainer}>
+              <ScrollReveal width="100%" direction="right">
+                <Features />
+              </ScrollReveal>
+            </div>
+          </div>
+
+          {/* How It Works */}
+          <div className={commonStyles.homeSection}>
+            <div className={commonStyles.sectionContainer}>
+              <ScrollReveal width="100%" direction="up">
+                <HowItWorks />
+              </ScrollReveal>
+            </div>
+          </div>
+
+          {/* Powered By AI */}
+          <div className={commonStyles.homeSection}>
+            <div className={commonStyles.sectionContainer}>
+              <ScrollReveal width="100%" direction="up">
+                <PoweredByAI />
+              </ScrollReveal>
+            </div>
+          </div>
+
+          {/* Features Status Overview - FYP Evaluation */}
+          <div className={commonStyles.homeSection}>
             <ScrollReveal width="100%" direction="up">
-              <HowItWorks />
+              <FeaturesStatus />
             </ScrollReveal>
           </div>
-        </div>
 
-        {/* Powered By AI */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" direction="up">
-              <PoweredByAI />
-            </ScrollReveal>
+          {/* Testimonials */}
+          <div className={commonStyles.homeSection}>
+            <div className={commonStyles.sectionContainer}>
+              <ScrollReveal width="100%" direction="up">
+                <Testimonials />
+              </ScrollReveal>
+            </div>
           </div>
-        </div>
-
-        {/* Features Status Overview - FYP Evaluation */}
-        <div className={commonStyles.homeSection}>
-          <ScrollReveal width="100%" direction="up">
-            <FeaturesStatus />
-          </ScrollReveal>
-        </div>
-
-        {/* Success Stories and Global Impact sections removed per request */}
-
-        {/* Testimonials */}
-        <div className={commonStyles.homeSection}>
-          <div className={commonStyles.sectionContainer}>
-            <ScrollReveal width="100%" direction="up">
-              <Testimonials />
-            </ScrollReveal>
-          </div>
-        </div>
         </div>
       </div>
     </PageTransition>
   );
-};export default Home;
+};
+
+export default Home;

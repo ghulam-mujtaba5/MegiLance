@@ -5,6 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { getAuthToken } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 
 import commonStyles from './VideoCall.common.module.css';
@@ -168,7 +169,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
         await fetch(`/api/video/calls/${callId}/whiteboard`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${getAuthToken()}`
           }
         });
         setShowWhiteboard(true);
@@ -186,7 +187,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
         await fetch(`/api/video/calls/${callId}/recording/start`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${getAuthToken()}`
           }
         });
         setIsRecording(true);
@@ -194,7 +195,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
         await fetch(`/api/video/calls/${callId}/recording/stop`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            'Authorization': `Bearer ${getAuthToken()}`
           }
         });
         setIsRecording(false);
@@ -209,7 +210,7 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
       await fetch(`/api/video/calls/${callId}/end`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          'Authorization': `Bearer ${getAuthToken()}`
         }
       });
       cleanup();

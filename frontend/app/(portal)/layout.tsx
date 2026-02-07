@@ -6,6 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import AppLayout from '../components/AppLayout/AppLayout';
+import { getAuthToken, clearAuthData } from '@/lib/api';
 
 export default function PortalLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
@@ -16,14 +17,10 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check multiple storage locations for the access token
-        // api.ts uses sessionStorage with 'auth_token', some code uses localStorage with 'access_token'
-        const token = window.sessionStorage.getItem('auth_token') || 
-                     window.localStorage.getItem('auth_token') ||
-                     window.localStorage.getItem('access_token');
+        // Use centralized token retrieval from api.ts
+        const token = getAuthToken();
         
         if (!token) {
-          // No token - redirect to login
           const currentPath = pathname || '/client/dashboard';
           setIsAuthenticated(false);
           router.replace(`/login?returnTo=${encodeURIComponent(currentPath)}`);
@@ -36,29 +33,19 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
         });
 
         if (!res.ok) {
-          // Token invalid or expired - clear and redirect
+          // Token invalid or expired - clear all auth data and redirect
           setIsAuthenticated(false);
-          window.localStorage.removeItem('access_token');
-          window.localStorage.removeItem('refresh_token');
-          window.localStorage.removeItem('user');
+          clearAuthData();
           const currentPath = pathname || '/client/dashboard';
-          router.replace(`/login?redirect=${encodeURIComponent(currentPath)}`);
+          router.replace(`/login?returnTo=${encodeURIComponent(currentPath)}`);
           return;
         }
 
         const user = await res.json();
-        setUserRole(user.user_type || user.role || 'client');
-        window.localStorage.setItem('user', JSON.stringify(user));
-        
-        // Store portal area based on user role
         const role = (user.user_type || user.role || 'client').toLowerCase();
-        if (role === 'admin') {
-          window.localStorage.setItem('portal_area', 'admin');
-        } else if (role === 'freelancer') {
-          window.localStorage.setItem('portal_area', 'freelancer');
-        } else {
-          window.localStorage.setItem('portal_area', 'client');
-        }
+        setUserRole(role);
+        window.localStorage.setItem('user', JSON.stringify(user));
+        window.localStorage.setItem('portal_area', role);
 
         // Check role-based access for specific portal sections
         if (pathname?.startsWith('/admin') && role !== 'admin') {
@@ -69,7 +56,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Auth check failed:', error);
-        window.localStorage.removeItem('access_token');
+        clearAuthData();
         router.replace('/login');
       }
     };

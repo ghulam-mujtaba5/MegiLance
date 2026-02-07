@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
+import { getAuthToken } from '@/lib/api';
 import commonStyles from './Wallet.common.module.css';
 import lightStyles from './Wallet.light.module.css';
 import darkStyles from './Wallet.dark.module.css';
@@ -51,7 +52,7 @@ type TabType = 'overview' | 'transactions' | 'withdraw' | 'deposit' | 'settings'
 
 // API helper for wallet endpoints
 async function walletApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = typeof window !== 'undefined' ? getAuthToken() : null;
   const res = await fetch(`/backend/api/wallet${endpoint}`, {
     ...options,
     headers: {
