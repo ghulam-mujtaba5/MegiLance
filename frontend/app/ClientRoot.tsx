@@ -8,6 +8,7 @@ import { ToasterProvider } from './components/Toast/ToasterProvider';
 import QuickLogin from '@/app/components/QuickLogin';
 import StructuredData from '@/app/shared/StructuredData';
 import { AnalyticsProvider } from '@/app/shared/analytics/AnalyticsProvider';
+import WebVitalsReporter from './components/Analytics/WebVitalsReporter';
 
 const ClientRoot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -26,6 +27,7 @@ const ClientRoot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </AppChrome>
           <QuickLogin />
           <StructuredData />
+          <WebVitalsReporter />
         </ToasterProvider>
       </AnalyticsProvider>
     </ThemeProvider>

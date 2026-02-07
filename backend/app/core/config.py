@@ -114,7 +114,6 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     
     # Additional settings from .env
-    debug: bool = False
     jwt_secret_key: Optional[str] = None
     refresh_token_expire_days: int = 7
     smtp_host: Optional[str] = None

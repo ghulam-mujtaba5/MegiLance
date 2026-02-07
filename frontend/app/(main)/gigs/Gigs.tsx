@@ -424,11 +424,11 @@ const Gigs: React.FC = () => {
                           username: gig.seller_username,
                           name: gig.seller_username,
                           avatarUrl: gig.seller_avatar,
-                          level: gig.seller_level,
+                          level: gig.seller_level || 'new_seller',
                         }}
                         startingPrice={gig.starting_price}
-                        averageRating={gig.average_rating}
-                        totalReviews={gig.total_reviews}
+                        averageRating={gig.average_rating ?? 0}
+                        totalReviews={gig.total_reviews ?? 0}
                         category={gig.category}
                         tags={gig.tags}
                         isFeatured={gig.is_featured}
@@ -516,11 +516,11 @@ const Gigs: React.FC = () => {
                       username: gig.seller_username,
                       name: gig.seller_username,
                       avatarUrl: gig.seller_avatar,
-                      level: gig.seller_level,
+                      level: gig.seller_level || 'new_seller',
                     }}
                     startingPrice={gig.starting_price}
-                    averageRating={gig.average_rating}
-                    totalReviews={gig.total_reviews}
+                    averageRating={gig.average_rating ?? 0}
+                    totalReviews={gig.total_reviews ?? 0}
                     category={gig.category}
                     tags={gig.tags}
                     isFeatured={gig.is_featured}

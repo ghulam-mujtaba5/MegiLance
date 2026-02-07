@@ -6,7 +6,7 @@ const withPWA = withPWAInit({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'production' || process.env.NEXT_ENABLE_PWA !== '1',
+  disable: process.env.NODE_ENV === 'development' && process.env.NEXT_ENABLE_PWA !== '1',
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
@@ -64,20 +64,48 @@ const withPWA = withPWAInit({
 const nextConfig = {
   output: 'standalone', // Required for Docker deployment
   
-  // Production optimizations
-  poweredByHeader: false, // Security: Remove X-Powered-By header
-  compress: true, // Enable gzip compression
+  // Security: Remove X-Powered-By header
+  poweredByHeader: false,
   
-  // Strict mode for better development
+  // Enable gzip compression
+  compress: true,
+  
+  // React Strict Mode: catches bugs early (Vercel best practice)
   reactStrictMode: true,
   
+  // TypeScript: enforce type safety in builds
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   
-  // Experimental features for performance
+  // Dev logging: show fetch requests in terminal (Vercel best practice)
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  
+  // Performance: Tree-shake & optimize heavy package imports
   experimental: {
-    optimizePackageImports: ['lucide-react', 'react-icons', 'recharts'],
+    optimizePackageImports: [
+      'lucide-react',
+      'react-icons',
+      'recharts',
+      'framer-motion',
+      'chart.js',
+      'react-chartjs-2',
+      'zod',
+      '@radix-ui/react-slider',
+      '@radix-ui/react-slot',
+      'class-variance-authority',
+      'clsx',
+      'tailwind-merge',
+      'three',
+    ],
+    // Enable server actions body size limit (security)
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
   
   turbopack: {
@@ -110,6 +138,7 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60, // Cache optimized images for at least 60 seconds
     remotePatterns: [
       { protocol: 'https', hostname: 'i.pravatar.cc' },
       { protocol: 'https', hostname: 'unpkg.com' },

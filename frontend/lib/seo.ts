@@ -29,7 +29,9 @@ export function buildMeta(input: MetaInput): Metadata {
 
   const robots = input.noindex ? 'noindex, nofollow' : (input.robots || 'index, follow');
 
-  const ogImage = input.image ? toAbsoluteUrl(input.image) : `${BASE_URL}/og/default.png`;
+  // Only set explicit OG images when a custom image is provided.
+  // Otherwise, the file-convention opengraph-image.tsx auto-generates them.
+  const ogImage = input.image ? toAbsoluteUrl(input.image) : undefined;
 
   return {
     title,
@@ -42,14 +44,14 @@ export function buildMeta(input: MetaInput): Metadata {
       description: input.description,
       url,
       siteName: SITE_NAME,
-      images: [{ url: ogImage }],
+      ...(ogImage ? { images: [{ url: ogImage }] } : {}),
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description: input.description,
-      images: [ogImage],
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
     robots,
   } satisfies Metadata;

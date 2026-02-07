@@ -52,7 +52,7 @@ export default function JobsPage() {
   const fetchJobs = useCallback(async () => {
     setLoading(true);
     try {
-      let response;
+      let response: any;
       const filters: any = {};
       if (category !== 'all') filters.category = category;
       if (minBudget) filters.budget_min = parseInt(minBudget);

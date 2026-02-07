@@ -22,7 +22,9 @@ export function setAuthToken(token: string | null) {
         // Also set cookie for middleware authentication
         // Cookie expires in 7 days to match refresh token lifetime
         const maxAge = 7 * 24 * 60 * 60;
-        document.cookie = `auth_token=${token}; path=/; SameSite=Lax; Max-Age=${maxAge}`;
+        const isProduction = window.location.protocol === 'https:';
+        const secureFlag = isProduction ? '; Secure' : '';
+        document.cookie = `auth_token=${token}; path=/; SameSite=Lax; Max-Age=${maxAge}${secureFlag}`;
       } else {
         sessionStorage.removeItem(TOKEN_STORAGE_KEY);
         localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
@@ -109,7 +111,51 @@ export class APIError extends Error {
 // Request timeout (30 seconds)
 const REQUEST_TIMEOUT = 30000;
 
-// Generic fetch wrapper with auth, timeout, and security headers
+// Track if we're currently refreshing tokens to prevent race conditions
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+function onTokenRefreshed(token: string) {
+  refreshSubscribers.forEach(cb => cb(token));
+  refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(callback: (token: string) => void) {
+  refreshSubscribers.push(callback);
+}
+
+// Attempt to refresh the access token using refresh token
+async function attemptTokenRefresh(): Promise<string | null> {
+  const refreshTokenValue = getRefreshToken();
+  if (!refreshTokenValue) return null;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshTokenValue }),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      clearAuthData();
+      return null;
+    }
+
+    const data = await response.json();
+    const newToken = data.access_token;
+    if (newToken) {
+      setAuthToken(newToken);
+      return newToken;
+    }
+    return null;
+  } catch {
+    clearAuthData();
+    return null;
+  }
+}
+
+// Generic fetch wrapper with auth, timeout, auto-refresh on 401, and rate limit handling
 async function apiFetch<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
@@ -117,8 +163,6 @@ async function apiFetch<T = unknown>(
   const token = getAuthToken();
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> || {}),
-    // Security: Prevent MIME type sniffing
-    'X-Content-Type-Options': 'nosniff',
   };
 
   if (!(options.body instanceof FormData)) {
@@ -143,6 +187,71 @@ async function apiFetch<T = unknown>(
     });
 
     clearTimeout(timeoutId);
+
+    // Handle rate limiting (429)
+    if (response.status === 429) {
+      const retryAfter = response.headers.get('Retry-After');
+      const waitSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
+      throw new APIError(
+        `Too many requests. Please try again in ${waitSeconds} seconds.`,
+        429,
+        'RATE_LIMITED',
+        { retryAfter: waitSeconds }
+      );
+    }
+
+    // Handle 401 - attempt token refresh
+    if (response.status === 401 && token && !endpoint.includes('/auth/refresh') && !endpoint.includes('/auth/login')) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        const newToken = await attemptTokenRefresh();
+        isRefreshing = false;
+
+        if (newToken) {
+          onTokenRefreshed(newToken);
+          // Retry the original request with the new token
+          headers['Authorization'] = `Bearer ${newToken}`;
+          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
+            ...options,
+            headers: headers as HeadersInit,
+            credentials: 'include',
+          });
+
+          if (!retryResponse.ok) {
+            const error = await retryResponse.json().catch(() => ({ detail: 'Request failed after token refresh' }));
+            throw new APIError(error.detail || `HTTP ${retryResponse.status}`, retryResponse.status, error.error_type, error);
+          }
+          if (retryResponse.status === 204) return undefined as T;
+          return retryResponse.json();
+        } else {
+          // Refresh failed - redirect to login
+          if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname;
+            window.location.href = `/login?returnTo=${encodeURIComponent(currentPath)}&expired=true`;
+          }
+          throw new APIError('Session expired. Please log in again.', 401);
+        }
+      } else {
+        // Another request is already refreshing - wait for it
+        return new Promise<T>((resolve, reject) => {
+          addRefreshSubscriber((newToken: string) => {
+            headers['Authorization'] = `Bearer ${newToken}`;
+            fetch(`${API_BASE_URL}${endpoint}`, {
+              ...options,
+              headers: headers as HeadersInit,
+              credentials: 'include',
+            })
+              .then(res => {
+                if (res.status === 204) return undefined as T;
+                if (!res.ok) throw new APIError('Request failed', res.status);
+                return res.json();
+              })
+              .then(resolve)
+              .catch(reject);
+          });
+        });
+      }
+    }
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ detail: 'Unknown error' }));

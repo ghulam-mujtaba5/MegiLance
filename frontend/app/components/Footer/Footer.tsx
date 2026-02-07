@@ -15,36 +15,38 @@ import darkStyles from './Footer.dark.module.css';
 
 const footerSections = {
   'Platform': [
-    { name: 'Marketplace', href: '/#features', status: 'complete' },
-    { name: 'How It Works', href: '/how-it-works', status: 'complete' },
-    { name: 'Pricing', href: '/pricing', status: 'complete' },
-    { name: 'Talent Directory', href: '/talent', status: 'complete' },
-    { name: 'AI Matching', href: '/explore', status: 'advanced' },
+    { name: 'Marketplace', href: '/#features' },
+    { name: 'How It Works', href: '/how-it-works' },
+    { name: 'Pricing', href: '/pricing' },
+    { name: 'Talent Directory', href: '/talent' },
+    { name: 'AI Matching', href: '/explore' },
   ],
   'For You': [
-    { name: 'For Clients', href: '/clients', status: 'complete' },
-    { name: 'For Freelancers', href: '/freelancers', status: 'complete' },
-    { name: 'Teams', href: '/teams', status: 'working' },
-    { name: 'FAQ', href: '/faq', status: 'complete' },
+    { name: 'For Clients', href: '/clients' },
+    { name: 'For Freelancers', href: '/freelancers' },
+    { name: 'Teams', href: '/teams' },
+    { name: 'FAQ', href: '/faq' },
+    { name: 'Careers', href: '/careers' },
   ],
-  'AI & Security': [
-    { name: 'AI Chatbot', href: '/ai/chatbot', status: 'advanced' },
-    { name: 'Price Estimator', href: '/ai/price-estimator', status: 'advanced' },
-    { name: 'Blockchain Escrow', href: '/#blockchain', status: 'complete' },
-    { name: 'System Status', href: '/status', status: 'complete' },
+  'Resources': [
+    { name: 'Help Center', href: '/support' },
+    { name: 'Contact Us', href: '/contact' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Community', href: '/community' },
   ],
-  'Support': [
-    { name: 'Help Center', href: '/support', status: 'working' },
-    { name: 'Contact Us', href: '/contact', status: 'complete' },
-    { name: 'About Us', href: '/about', status: 'complete' },
-    { name: 'Blog', href: '/blog', status: 'working' },
+  'Legal': [
+    { name: 'Privacy Policy', href: '/privacy' },
+    { name: 'Terms of Service', href: '/terms' },
+    { name: 'Cookie Policy', href: '/cookies' },
+    { name: 'System Status', href: '/status' },
   ],
 };
 
 const socialLinks = [
-  { name: 'Twitter', href: '#', icon: Twitter },
-  { name: 'GitHub', href: '#', icon: Github },
-  { name: 'LinkedIn', href: '#', icon: Linkedin },
+  { name: 'Twitter', href: 'https://twitter.com/megilance', icon: Twitter },
+  { name: 'GitHub', href: 'https://github.com/megilance', icon: Github },
+  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/megilance', icon: Linkedin },
 ];
 
 const Footer = () => {
@@ -72,18 +74,6 @@ const Footer = () => {
                     <li key={link.name}>
                       <Link href={link.href} className={cn(commonStyles.linkItem, styles.linkItem)}>
                         <span className={commonStyles.linkText}>{link.name}</span>
-                        {link.status && (
-                          <span className={cn(
-                            commonStyles.statusBadge,
-                            link.status === 'complete' && commonStyles.statusComplete,
-                            link.status === 'advanced' && commonStyles.statusAdvanced,
-                            link.status === 'working' && commonStyles.statusWorking,
-                          )}>
-                            {link.status === 'complete' && 'Complete'}
-                            {link.status === 'advanced' && 'Advanced'}
-                            {link.status === 'working' && 'Working'}
-                          </span>
-                        )}
                       </Link>
                     </li>
                   ))}
@@ -95,10 +85,10 @@ const Footer = () => {
         <div className={cn(commonStyles.bottomBar, styles.bottomBar)}>
           <div className={commonStyles.copyrightWrapper}>
             <p className={cn(commonStyles.copyright, styles.copyright)}>
-              &copy; {new Date().getFullYear()} MegiLance. Final Year Project (FYP) 2022-2026.
+              &copy; {new Date().getFullYear()} MegiLance. All rights reserved.
             </p>
             <p className={cn(commonStyles.university, styles.university)}>
-              COMSATS University Islamabad, Lahore Campus
+              Built with AI-powered technology
             </p>
           </div>
           <div className={commonStyles.socialLinks}>

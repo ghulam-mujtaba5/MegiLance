@@ -45,20 +45,21 @@ logger.propagate = False
 settings = get_settings()
 
 app = FastAPI(
-    title="MegiLance API (FYP)",
+    title="MegiLance API",
     description="""
     MegiLance Backend API
     
-    A Hybrid Decentralized Freelancing Platform developed as a Final Year Project (FYP) 
-    at COMSATS University Islamabad, Lahore Campus (Session 2022-2026).
+    AI-Powered Freelancing Platform connecting top talent with global opportunities.
     
     Key Features:
     - AI-Powered Freelancer Matching
     - Blockchain-Based Escrow Payments
     - Secure Authentication & Role Management
     - Real-time Messaging & Notifications
+    - Gig Marketplace & Seller Tiers
+    - Multi-Currency Payment Support
     """,
-    version="1.0.0-beta",
+    version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
@@ -175,6 +176,14 @@ async def general_exception_handler(request, exc):
     import traceback
     error_details = traceback.format_exc()
     logger.error(f"unhandled_exception type={type(exc).__name__} message={str(exc)} traceback={error_details.replace(chr(10), ' | ')}")
+    
+    # SECURITY: Never expose internal error details in production
+    if settings.environment == "production":
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "An internal server error occurred. Please try again later."}
+        )
+    
     return JSONResponse(
         status_code=500,
         content={"detail": str(exc), "error_type": type(exc).__name__}
@@ -183,7 +192,7 @@ async def general_exception_handler(request, exc):
 
 @app.get("/")
 def root():
-    return {"message": "Welcome to the MegiLance API!", "version": "1.0.1"}
+    return {"message": "Welcome to the MegiLance API!", "version": "1.0.0"}
 
 
 @app.get("/api")
@@ -217,7 +226,9 @@ def health_ready():
                 return JSONResponse(status_code=503, content={"status": "degraded", "db_error": "Turso HTTP query failed"})
     except Exception as e:
         logger.error(f"health.ready_failed error={e}")
-        return JSONResponse(status_code=503, content={"status": "degraded", "db_error": str(e)})
+        # SECURITY: Don't leak database error details in production
+        error_detail = str(e) if settings.environment != "production" else "Database connection failed"
+        return JSONResponse(status_code=503, content={"status": "degraded", "db_error": error_detail})
 
 
 from fastapi.staticfiles import StaticFiles

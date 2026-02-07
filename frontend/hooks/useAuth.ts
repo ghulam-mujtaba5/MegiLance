@@ -1,10 +1,12 @@
 // @AI-HINT: Custom hook for managing authentication state and user profile
 // Handles login/logout, token refresh, and user data fetching
+// Security best practices: Secure cookie storage, proper token lifecycle, cleanup on unmount
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import api, { setAuthToken, clearAuthData, getAuthToken, APIError } from '@/lib/api';
+import { AUTH } from '@/lib/constants';
 
 export interface User {
   id: number;
@@ -33,14 +35,68 @@ interface UseAuthReturn {
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
+/**
+ * Normalize user data from various API response shapes
+ */
+function normalizeUser(userData: any): User {
+  return {
+    id: Number(userData.id),
+    email: userData.email,
+    name: userData.name || userData.full_name || '',
+    user_type: (userData.user_type || userData.role || 'client').toLowerCase() as User['user_type'],
+    role: userData.role || userData.user_type || 'client',
+    bio: userData.bio,
+    skills: userData.skills,
+    hourly_rate: userData.hourly_rate,
+    profile_image_url: userData.profile_image_url || userData.avatar_url,
+    location: userData.location,
+    title: userData.title,
+    is_verified: userData.is_verified,
+    joined_at: userData.joined_at,
+  };
+}
+
+/**
+ * Set auth cookie with secure flags
+ * Best practice: Use SameSite=Lax, Secure in production
+ */
+function setAuthCookie(token: string) {
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${AUTH.TOKEN_KEY}=${token}; path=/; max-age=${AUTH.COOKIE_MAX_AGE}; SameSite=Lax${secure}`;
+}
+
+/**
+ * Clear auth cookie
+ */
+function clearAuthCookie() {
+  document.cookie = `${AUTH.TOKEN_KEY}=; path=/; max-age=0; SameSite=Lax`;
+}
+
 export function useAuth(): UseAuthReturn {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Track mounted state to prevent state updates after unmount
+  const isMounted = useRef(true);
+  
+  // Token refresh interval ref
+  const refreshIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isAuthenticated = useMemo(() => !!user, [user]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, []);
 
   // Load user from storage on mount
   useEffect(() => {
@@ -48,16 +104,16 @@ export function useAuth(): UseAuthReturn {
       try {
         const token = getAuthToken();
         if (!token) {
-          setIsLoading(false);
+          if (isMounted.current) setIsLoading(false);
           return;
         }
 
         // Try to get user from localStorage first for quick render
-        const cachedUser = localStorage.getItem('user');
+        const cachedUser = localStorage.getItem(AUTH.USER_KEY);
         if (cachedUser) {
           try {
             const parsed = JSON.parse(cachedUser);
-            setUser(parsed);
+            if (isMounted.current) setUser(parsed);
           } catch {
             // Invalid cache, ignore
           }
@@ -65,35 +121,26 @@ export function useAuth(): UseAuthReturn {
 
         // Verify token and get fresh user data
         const userData = await api.auth.me();
-        const normalizedUser: User = {
-          id: Number(userData.id),
-          email: userData.email,
-          name: userData.name || userData.full_name || '',
-          user_type: (userData.user_type || userData.role || 'client').toLowerCase() as User['user_type'],
-          role: userData.role || userData.user_type || 'client',
-          bio: userData.bio,
-          skills: userData.skills,
-          hourly_rate: userData.hourly_rate,
-          profile_image_url: userData.profile_image_url || userData.avatar_url,
-          location: userData.location,
-          title: userData.title,
-          is_verified: userData.is_verified,
-          joined_at: userData.joined_at,
-        };
+        const normalized = normalizeUser(userData);
 
-        setUser(normalizedUser);
-        localStorage.setItem('user', JSON.stringify(normalizedUser));
-        setError(null);
+        if (isMounted.current) {
+          setUser(normalized);
+          setError(null);
+        }
+        localStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
       } catch (err) {
         console.error('Failed to load user:', err);
         if (err instanceof APIError && err.status === 401) {
           // Token expired, clear auth data
           clearAuthData();
-          setUser(null);
+          clearAuthCookie();
+          if (isMounted.current) setUser(null);
         }
-        setError(err instanceof Error ? err.message : 'Failed to load user');
+        if (isMounted.current) {
+          setError(err instanceof Error ? err.message : 'Failed to load user');
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted.current) setIsLoading(false);
       }
     };
 
@@ -101,8 +148,10 @@ export function useAuth(): UseAuthReturn {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
+    if (isMounted.current) {
+      setIsLoading(true);
+      setError(null);
+    }
     try {
       const response = await api.auth.login(email, password);
       
@@ -111,74 +160,52 @@ export function useAuth(): UseAuthReturn {
         throw new Error('2FA_REQUIRED');
       }
 
-      const normalizedUser: User = {
-        id: Number(response.user.id),
-        email: response.user.email,
-        name: response.user.name || '',
-        user_type: (response.user.user_type || response.user.role || 'client').toLowerCase() as User['user_type'],
-        role: response.user.role || response.user.user_type || 'client',
-        bio: response.user.bio,
-        skills: response.user.skills,
-        hourly_rate: response.user.hourly_rate,
-        profile_image_url: response.user.profile_image_url,
-        location: response.user.location,
-        title: response.user.title,
-        is_verified: response.user.is_verified,
-        joined_at: response.user.joined_at,
-      };
+      const normalized = normalizeUser(response.user);
 
-      setUser(normalizedUser);
-      localStorage.setItem('user', JSON.stringify(normalizedUser));
-      localStorage.setItem('auth_token', response.access_token);
-      localStorage.setItem('refresh_token', response.refresh_token);
+      if (isMounted.current) setUser(normalized);
+      localStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
+      localStorage.setItem(AUTH.TOKEN_KEY, response.access_token);
+      localStorage.setItem(AUTH.REFRESH_TOKEN_KEY, response.refresh_token);
 
-      // Set cookie for middleware
-      document.cookie = `auth_token=${response.access_token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+      // Set cookie for middleware (secure)
+      setAuthCookie(response.access_token);
 
       // Redirect based on role
-      const redirectPath = normalizedUser.user_type === 'admin' 
+      const redirectPath = normalized.user_type === 'admin' 
         ? '/admin/dashboard'
-        : normalizedUser.user_type === 'freelancer'
+        : normalized.user_type === 'freelancer'
           ? '/freelancer/dashboard'
           : '/client/dashboard';
 
       router.push(redirectPath);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
-      setError(message);
+      if (isMounted.current) setError(message);
       throw err;
     } finally {
-      setIsLoading(false);
+      if (isMounted.current) setIsLoading(false);
     }
   }, [router]);
 
   const logout = useCallback(() => {
     clearAuthData();
-    setUser(null);
+    clearAuthCookie();
+    localStorage.removeItem(AUTH.USER_KEY);
+    localStorage.removeItem(AUTH.REFRESH_TOKEN_KEY);
+    if (isMounted.current) setUser(null);
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+    }
     router.push('/login');
   }, [router]);
 
   const refreshUser = useCallback(async () => {
     try {
       const userData = await api.auth.me();
-      const normalizedUser: User = {
-        id: Number(userData.id),
-        email: userData.email,
-        name: userData.name || userData.full_name || '',
-        user_type: (userData.user_type || userData.role || 'client').toLowerCase() as User['user_type'],
-        role: userData.role || userData.user_type || 'client',
-        bio: userData.bio,
-        skills: userData.skills,
-        hourly_rate: userData.hourly_rate,
-        profile_image_url: userData.profile_image_url || userData.avatar_url,
-        location: userData.location,
-        title: userData.title,
-        is_verified: userData.is_verified,
-        joined_at: userData.joined_at,
-      };
+      const normalized = normalizeUser(userData);
 
-      setUser(normalizedUser);
-      localStorage.setItem('user', JSON.stringify(normalizedUser));
+      if (isMounted.current) setUser(normalized);
+      localStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
     } catch (err) {
       console.error('Failed to refresh user:', err);
       throw err;
