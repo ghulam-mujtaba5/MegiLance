@@ -53,6 +53,7 @@ const getApiBase = () => {
 
 const Status: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
   const themed = resolvedTheme === 'dark' ? dark : light;
   
   const [services, setServices] = useState<ServiceStatus[]>([

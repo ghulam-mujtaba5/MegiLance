@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { knowledgeBaseApi } from '@/lib/api';
+import { knowledgeBaseApi as _knowledgeBaseApi } from '@/lib/api';
+const knowledgeBaseApi: any = _knowledgeBaseApi;
 import commonStyles from './KnowledgeBase.common.module.css';
 import lightStyles from './KnowledgeBase.light.module.css';
 import darkStyles from './KnowledgeBase.dark.module.css';

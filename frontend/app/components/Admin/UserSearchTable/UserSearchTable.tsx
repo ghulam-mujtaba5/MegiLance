@@ -135,7 +135,7 @@ const UserSearchTable: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.admin.getUsers();
+      const data = await api.admin.getUsers() as any;
       const userList = data.users ?? data ?? [];
       const transformed = userList.map(transformUser);
       setUsers(transformed);

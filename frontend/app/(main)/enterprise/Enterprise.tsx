@@ -38,10 +38,10 @@ import dark from './Enterprise.dark.module.css';
 
 // Enterprise stats
 const stats = [
-  { label: 'Enterprise Clients', value: '500+', icon: Building2, description: 'Global organizations' },
-  { label: 'Talent Pool', value: '100K+', icon: Users, description: 'Vetted professionals' },
+  { label: 'Enterprise Features', value: '20+', icon: Building2, description: 'Built-in capabilities' },
+  { label: 'Talent Pool', value: 'Global', icon: Users, description: 'Vetted professionals' },
   { label: 'Countries', value: '80+', icon: Globe, description: 'Worldwide coverage' },
-  { label: 'Success Rate', value: '98%', icon: TrendingUp, description: 'Project completion' },
+  { label: 'Uptime SLA', value: '99.9%', icon: TrendingUp, description: 'Platform reliability' },
 ];
 
 // Core features
@@ -188,14 +188,15 @@ const plans = [
 
 // Trust badges / logos
 const trustLogos = [
-  { name: 'Fortune 500', description: '50+ clients' },
-  { name: 'ISO 27001', description: 'Certified' },
-  { name: 'SOC 2 Type II', description: 'Compliant' },
-  { name: 'GDPR', description: 'Compliant' },
+  { name: 'Enterprise-Ready', description: 'Architecture' },
+  { name: 'ISO 27001', description: 'Standards' },
+  { name: 'SOC 2', description: 'Designed' },
+  { name: 'GDPR', description: 'Aligned' },
 ];
 
 const Enterprise: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
   const themed = resolvedTheme === 'dark' ? dark : light;
 
   const containerVariants = {
@@ -247,7 +248,7 @@ const Enterprise: React.FC = () => {
                 Talent Solutions
               </h1>
               <p className={cn(common.heroSubtitle, themed.heroSubtitle)}>
-                Join 500+ leading organizations using MegiLance to access the world&apos;s best freelance talent. 
+                Leading organizations can use MegiLance to access the world&apos;s best freelance talent. 
                 Security-first, AI-powered, and built for the enterprise.
               </p>
               <div className={common.heroCtas}>
@@ -481,7 +482,7 @@ const Enterprise: React.FC = () => {
             >
               <h2 className={common.ctaTitle}>Ready to Transform Your Workforce?</h2>
               <p className={cn(common.ctaDescription, themed.ctaDescription)}>
-                Join 500+ enterprises already using MegiLance to build world-class teams. 
+                Enterprises can use MegiLance to build world-class teams. 
                 Schedule a personalized demo with our enterprise team today.
               </p>
               <div className={common.ctaButtons}>

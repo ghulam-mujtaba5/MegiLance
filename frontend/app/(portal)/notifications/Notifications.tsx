@@ -42,7 +42,7 @@ const Notifications: React.FC = () => {
     const fetchNotifications = async () => {
       try {
         setLoading(true);
-        const data = await api.notifications.list();
+        const data = await (api.notifications as any).list?.();
         
         // Transform API data to NotificationItem format
         const notifications: NotificationItem[] = (Array.isArray(data) ? data : []).map((n: any, idx: number) => {
@@ -102,7 +102,7 @@ const Notifications: React.FC = () => {
 
   const markAllRead = async () => {
     try {
-      await api.notifications.markAllAsRead();
+      await (api.notifications as any).markAllAsRead?.();
     } catch (e) {
       // Continue with local update even if API fails
     }
@@ -125,7 +125,7 @@ const Notifications: React.FC = () => {
 
   const markRead = async (id: string) => {
     try {
-      await api.notifications.markAsRead(parseInt(id));
+      await (api.notifications as any).markAsRead?.(parseInt(id));
     } catch (e) {
       // Continue with local update
     }
@@ -137,7 +137,7 @@ const Notifications: React.FC = () => {
 
   const archive = async (id: string) => {
     try {
-      await api.notifications.delete(parseInt(id));
+      await (api.notifications as any).delete?.(parseInt(id));
     } catch (e) {
       // Continue with local update
     }

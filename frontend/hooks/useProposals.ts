@@ -75,7 +75,7 @@ export function useProposals(): UseProposalsReturn {
     setError(null);
     try {
       const params = projectId ? { project_id: projectId } : {};
-      const response = await api.proposals.list(params);
+      const response = await api.proposals.list(params) as any;
       const proposalList = Array.isArray(response) ? response : (response.proposals || []);
       setProposals(proposalList);
     } catch (err) {
@@ -91,7 +91,7 @@ export function useProposals(): UseProposalsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.proposals.getDrafts();
+      const response = await api.proposals.getDrafts() as any;
       const draftList = Array.isArray(response) ? response : (response.drafts || []);
       setDrafts(draftList);
     } catch (err) {
@@ -107,7 +107,7 @@ export function useProposals(): UseProposalsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const proposal = await api.proposals.get(id);
+      const proposal = await api.proposals.get(id) as Proposal;
       setCurrentProposal(proposal);
       return proposal;
     } catch (err) {
@@ -124,7 +124,7 @@ export function useProposals(): UseProposalsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const proposal = await api.proposals.create(data);
+      const proposal = await api.proposals.create(data) as Proposal;
       // Refresh proposals list
       await fetchProposals();
       return proposal;
@@ -152,7 +152,7 @@ export function useProposals(): UseProposalsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const proposal = await api.proposals.saveDraft(data);
+      const proposal = await api.proposals.saveDraft(data) as Proposal;
       await fetchDrafts();
       return proposal;
     } catch (err) {
@@ -169,7 +169,7 @@ export function useProposals(): UseProposalsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const proposal = await api.proposals.submitDraft(id);
+      const proposal = await api.proposals.submitDraft(id) as Proposal;
       // Move from drafts to proposals
       setDrafts(prev => prev.filter(d => d.id !== id));
       await fetchProposals();
@@ -188,7 +188,7 @@ export function useProposals(): UseProposalsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const proposal = await api.proposals.update(id, data);
+      const proposal = await api.proposals.update(id, data) as Proposal;
       setProposals(prev => prev.map(p => p.id === id ? proposal : p));
       setDrafts(prev => prev.map(d => d.id === id ? proposal : d));
       if (currentProposal?.id === id) {
@@ -285,7 +285,7 @@ export function useProposals(): UseProposalsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.proposals.getByProject(projectId);
+      const response = await api.proposals.getByProject(projectId) as any;
       const proposalList = Array.isArray(response) ? response : (response.proposals || []);
       return proposalList;
     } catch (err) {

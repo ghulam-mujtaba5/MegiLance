@@ -125,7 +125,7 @@ export default function PaymentWizard({
   useEffect(() => {
     const loadSavedMethods = async () => {
       try {
-        const data = await api.paymentMethods.list();
+        const data = await api.paymentMethods.list() as any;
         setSavedMethods(data);
       } catch (error) {
         console.error('Failed to load saved payment methods:', error);

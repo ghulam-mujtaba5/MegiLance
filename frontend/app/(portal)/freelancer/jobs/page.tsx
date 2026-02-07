@@ -266,16 +266,18 @@ export default function JobsPage() {
                   jobs.map((job) => (
                     <StaggerItem key={job.id}>
                       <JobCard 
-                        id={job.id}
-                        title={job.title}
-                        clientName={(job as any).client_name}
-                        description={job.description}
-                        budget={job.budget_max || job.budget_min}
-                        postedAt={job.posted_at}
-                        skills={job.skills || []}
-                        matchScore={job.match_score}
-                        clientRating={job.client_rating}
-                        isVerified={(job as any).is_verified}
+                        {...{
+                          id: job.id,
+                          title: job.title,
+                          clientName: (job as any).client_name,
+                          description: job.description,
+                          budget: job.budget_max || job.budget_min,
+                          postedAt: job.posted_at,
+                          skills: job.skills || [],
+                          matchScore: job.match_score,
+                          clientRating: job.client_rating,
+                          isVerified: (job as any).is_verified,
+                        } as any}
                       />
                     </StaggerItem>
                   ))

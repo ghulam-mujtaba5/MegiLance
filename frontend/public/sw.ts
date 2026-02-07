@@ -1,6 +1,11 @@
 // @AI-HINT: PWA Service Worker for offline support and caching
 // Production-ready with workbox strategies and precaching
 
+/// <reference lib="webworker" />
+
+declare const self: ServiceWorkerGlobalScope;
+export {};
+
 import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
 import { registerRoute, Route } from 'workbox-routing';
 import {
@@ -11,8 +16,6 @@ import {
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import { BackgroundSyncPlugin } from 'workbox-background-sync';
-
-declare const self: ServiceWorkerGlobalScope;
 
 // ============================================================================
 // Precaching
@@ -184,7 +187,6 @@ self.addEventListener('push', (event) => {
       body: data.body || 'You have a new notification',
       icon: '/icons/icon-192x192.svg',
       badge: '/icons/badge-72x72.png',
-      vibrate: [100, 50, 100],
       data: {
         url: data.url || '/',
         timestamp: Date.now(),
@@ -192,7 +194,7 @@ self.addEventListener('push', (event) => {
       actions: data.actions || [],
       tag: data.tag || 'default',
       renotify: true,
-    };
+    } as any;
 
     event.waitUntil(
       self.registration.showNotification(data.title || 'MegiLance', options)
@@ -269,7 +271,7 @@ const offlineFallback = new Route(
     try {
       return await new NetworkFirst({
         cacheName: CACHE_NAMES.pages,
-      }).handle({ event, request: event.request });
+      }).handle({ event, request: (event as any).request });
     } catch (error) {
       // Return cached offline page
       const cache = await caches.open(CACHE_NAMES.pages);
@@ -301,5 +303,3 @@ const offlineFallback = new Route(
 );
 
 registerRoute(offlineFallback);
-
-export {};

@@ -74,7 +74,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
     try {
       // Create payment intent
-      const { client_secret } = await api.payments.createIntent({
+      const { client_secret } = await (api.payments as any).createIntent?.({
         amount,
         project_id: projectId,
         milestone_id: milestoneId,

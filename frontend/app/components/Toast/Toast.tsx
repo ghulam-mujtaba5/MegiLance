@@ -9,7 +9,7 @@ import commonStyles from './Toast.common.module.css';
 import lightStyles from './Toast.light.module.css';
 import darkStyles from './Toast.dark.module.css';
 
-export type ToastVariant = 'info' | 'success' | 'warning' | 'danger';
+export type ToastVariant = 'info' | 'success' | 'warning' | 'danger' | 'error';
 
 export interface ToastProps {
   /** Toast title */

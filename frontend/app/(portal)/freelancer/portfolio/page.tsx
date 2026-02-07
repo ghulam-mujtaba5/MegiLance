@@ -4,13 +4,15 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { portfolioShowcaseApi } from '@/lib/api';
+import { portfolioShowcaseApi as _portfolioShowcaseApi } from '@/lib/api';
 import commonStyles from './Portfolio.common.module.css';
 import lightStyles from './Portfolio.light.module.css';
 import darkStyles from './Portfolio.dark.module.css';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+
+const portfolioShowcaseApi: any = _portfolioShowcaseApi;
 
 interface PortfolioItem {
   id: string;

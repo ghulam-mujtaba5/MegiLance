@@ -75,7 +75,7 @@ export default function SkillAssessmentWizard({
 
   const loadQuestions = async () => {
     try {
-      const questions = await api.skills.getQuestions(skillId, assessmentData.level);
+      const questions = await api.skills.getQuestions(skillId, assessmentData.level) as any;
       setAssessmentData(prev => ({ ...prev, questions }));
     } catch (error) {
       console.error('Failed to load questions:', error);

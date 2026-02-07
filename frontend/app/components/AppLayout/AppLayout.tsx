@@ -143,7 +143,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </div>
 
       <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
-        <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={area === 'general' ? undefined : area} />
+        <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={(area as string) === 'general' ? undefined : area} />
         <div className={cn(commonStyles.mainContent, isCollapsed && commonStyles.sidebarCollapsed)}>
           <PortalNavbar userType={area} />
 

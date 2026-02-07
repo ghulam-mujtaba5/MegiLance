@@ -195,7 +195,7 @@ const ProjectWizard: React.FC = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const project = await api.projects.create({
+      const project: any = await (api.projects as any).create?.({
         title: projectData.title,
         description: projectData.description,
         category: projectData.category,

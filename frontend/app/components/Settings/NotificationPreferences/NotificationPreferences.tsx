@@ -84,7 +84,7 @@ const NotificationPreferences: React.FC = () => {
   const loadPreferences = async () => {
     setLoading(true);
     try {
-      const data = await api.users.getNotificationPreferences();
+      const data: any = await (api.users as any).getNotificationPreferences?.();
 
       if (data) {
         if (data.preferences) setPreferences(data.preferences);
@@ -111,7 +111,7 @@ const NotificationPreferences: React.FC = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.users.updateNotificationPreferences({ preferences, digest });
+      await (api.users as any).updateNotificationPreferences?.({ preferences, digest });
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

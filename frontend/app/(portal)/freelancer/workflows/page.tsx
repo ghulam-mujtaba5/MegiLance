@@ -55,7 +55,7 @@ export default function WorkflowsPage() {
     setLoading(true);
     try {
       // Fetch real workflow data from API
-      const { workflowApi } = await import('@/lib/api');
+      const { workflowApi } = await import('@/lib/api') as any;
       
       const [workflowsData, triggersData, actionsData] = await Promise.all([
         workflowApi.list().catch(() => null),
@@ -111,7 +111,7 @@ export default function WorkflowsPage() {
       const workflow = workflows.find(wf => wf.id === workflowId);
       if (!workflow) return;
       
-      const { workflowApi } = await import('@/lib/api');
+      const { workflowApi } = await import('@/lib/api') as any;
       if (workflow.isActive) {
         await workflowApi.disable(workflowId).catch(() => {});
       } else {
@@ -128,7 +128,7 @@ export default function WorkflowsPage() {
 
   const deleteWorkflow = async (workflowId: string) => {
     try {
-      const { workflowApi } = await import('@/lib/api');
+      const { workflowApi } = await import('@/lib/api') as any;
       await workflowApi.delete(workflowId).catch(() => {});
       setWorkflows(prev => prev.filter(wf => wf.id !== workflowId));
     } catch (error) {

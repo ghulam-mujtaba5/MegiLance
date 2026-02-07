@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
-import api from '@/lib/api';
+import _api from '@/lib/api';
+const api: any = _api;
 
 // @AI-HINT: Hook to fetch client portal datasets (projects, payments, freelancers, reviews).
 // Uses proper cleanup to prevent memory leaks and request abortion issues.

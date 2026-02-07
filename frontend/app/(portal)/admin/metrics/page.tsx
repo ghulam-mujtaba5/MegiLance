@@ -77,12 +77,12 @@ export default function MetricsDashboardPage() {
 
       const [metricsRes, healthRes, activityRes] = await Promise.all([
         metricsApi.getOverview().catch(() => null),
-        metricsApi.getSystemHealth?.().catch(() => null),
-        adminApi.getRecentActivity?.().catch(() => null),
+        (metricsApi as any).getSystemHealth?.().catch(() => null),
+        (adminApi as any).getRecentActivity?.().catch(() => null),
       ]);
 
       // Build metrics from API response or use defaults
-      const apiMetrics = metricsRes?.metrics || metricsRes;
+      const apiMetrics = (metricsRes as any)?.metrics || metricsRes as any;
       const defaultMetrics: MetricCard[] = [
         { id: '1', title: 'Total Revenue', value: apiMetrics?.total_revenue ? `$${(apiMetrics.total_revenue / 100).toLocaleString()}` : '$124,532', change: apiMetrics?.revenue_change || 12.5, changeType: (apiMetrics?.revenue_change || 12.5) >= 0 ? 'increase' : 'decrease', icon: '💰', period: 'vs last period' },
         { id: '2', title: 'Active Users', value: (apiMetrics?.active_users || 8432).toLocaleString(), change: apiMetrics?.users_change || 8.3, changeType: (apiMetrics?.users_change || 8.3) >= 0 ? 'increase' : 'decrease', icon: '👥', period: 'vs last period' },
@@ -95,20 +95,20 @@ export default function MetricsDashboardPage() {
       setMetrics(defaultMetrics);
 
       // Revenue data
-      const revenueFromApi = metricsRes?.revenue_trend || [];
+      const revenueFromApi = (metricsRes as any)?.revenue_trend || [];
       setRevenueData(revenueFromApi.length > 0 ? revenueFromApi.map((r: any) => ({ label: r.label || r.date, value: r.value || r.amount })) : [
         { label: 'Mon', value: 12500 }, { label: 'Tue', value: 15200 }, { label: 'Wed', value: 18300 },
         { label: 'Thu', value: 16800 }, { label: 'Fri', value: 21500 }, { label: 'Sat', value: 19200 }, { label: 'Sun', value: 17800 }
       ]);
 
       // User growth data
-      const growthFromApi = metricsRes?.user_growth || [];
+      const growthFromApi = (metricsRes as any)?.user_growth || [];
       setUserGrowthData(growthFromApi.length > 0 ? growthFromApi.map((g: any) => ({ label: g.label || g.week, value: g.value || g.count })) : [
         { label: 'Week 1', value: 7200 }, { label: 'Week 2', value: 7450 }, { label: 'Week 3', value: 7800 }, { label: 'Week 4', value: 8432 }
       ]);
 
       // System health
-      const healthData = healthRes?.services || [];
+      const healthData = (healthRes as any)?.services || [];
       setSystemHealth(healthData.length > 0 ? healthData.map((h: any) => ({
         service: h.service || h.name, status: h.status, latency: h.latency, uptime: h.uptime, lastChecked: h.last_checked || new Date().toISOString()
       })) : [
@@ -120,7 +120,7 @@ export default function MetricsDashboardPage() {
       ]);
 
       // Recent activity
-      const activityData = activityRes?.activities || activityRes?.items || [];
+      const activityData = (activityRes as any)?.activities || (activityRes as any)?.items || [];
       setRecentActivity(activityData.length > 0 ? activityData.map((a: any) => ({
         id: a.id?.toString(), type: a.type, description: a.description || a.message, user: a.user_email || a.user, timestamp: a.created_at || a.timestamp
       })) : [

@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 import Card from '@/app/components/Card/Card';
 import { Sparkles } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
-import { matchingApi } from '@/lib/api';
+import { matchingApi as _matchingApi } from '@/lib/api';
+const matchingApi: any = _matchingApi;
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import AIMatchCard, { FreelancerMatchData } from '@/app/components/AI/AIMatchCard/AIMatchCard';
 

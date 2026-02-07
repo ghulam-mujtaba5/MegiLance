@@ -123,7 +123,7 @@ export default function ActivityPage() {
       }
       
       const response = await activityFeedApi.list(params);
-      const items = response.items || [];
+      const items = (response as any).items || [];
       
       if (append) {
         setActivities(prev => [...prev, ...items]);
@@ -142,7 +142,7 @@ export default function ActivityPage() {
 
   const markAsRead = async (id: string) => {
     try {
-      await activityFeedApi.markRead(id);
+      await (activityFeedApi as any).markAsRead(id);
       setActivities(prev =>
         prev.map(a => (a.id === id ? { ...a, read: true } : a))
       );
@@ -153,7 +153,7 @@ export default function ActivityPage() {
 
   const markAllAsRead = async () => {
     try {
-      await activityFeedApi.markAllRead();
+      await (activityFeedApi as any).markAllAsRead();
       setActivities(prev => prev.map(a => ({ ...a, read: true })));
     } catch (error) {
       console.error('Failed to mark all as read:', error);

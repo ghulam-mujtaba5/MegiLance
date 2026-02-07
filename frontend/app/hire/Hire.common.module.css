@@ -1,0 +1,172 @@
+/* @AI-HINT: Hire directory page - layout, structure */
+
+.page {
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero {
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.heroTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .heroTitle {
+    font-size: 3rem;
+  }
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+/* Skills Section */
+.skillsSection {
+  padding: 3rem 1rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.skillsSectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.categoryGroup {
+  margin-bottom: 2.5rem;
+}
+
+.categoryTitle {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.skillsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .skillsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .skillsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.skillCard {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-primary, #e2e8f0);
+  text-decoration: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.skillCard:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.skillName {
+  font-weight: 500;
+}
+
+.skillRate {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Industries Section */
+.industriesSection {
+  padding: 3rem 1rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.industriesSectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.industriesGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .industriesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .industriesGrid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.industryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.industryCard:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.industryEmoji {
+  font-size: 1.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.industryName {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* CTA Section */
+.ctaSection {
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.ctaTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.ctaText {
+  margin-bottom: 1.5rem;
+}
+
+.ctaButton {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}

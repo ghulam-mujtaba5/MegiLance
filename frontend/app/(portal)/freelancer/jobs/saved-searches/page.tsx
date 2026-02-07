@@ -51,7 +51,7 @@ export default function SavedSearchesPage() {
     experienceLevel: '',
     projectType: '',
     alertEnabled: true,
-    alertFrequency: 'daily' as const
+    alertFrequency: 'daily' as 'instant' | 'daily' | 'weekly'
   });
 
   useEffect(() => {

@@ -131,9 +131,9 @@ export default function VideoCall({ callId, participants = [], onEnd }: VideoCal
   const startScreenShare = async () => {
     try {
       const screenStream = await navigator.mediaDevices.getDisplayMedia({
-        video: { cursor: 'always' },
+        video: true,
         audio: false
-      });
+      } as any);
 
       const screenTrack = screenStream.getVideoTracks()[0];
       const sender = peerConnectionRef.current?.getSenders().find(s => s.track?.kind === 'video');

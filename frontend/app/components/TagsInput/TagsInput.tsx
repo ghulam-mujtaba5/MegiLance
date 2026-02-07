@@ -17,6 +17,8 @@ export interface TagsInputProps {
   onTagsChange: (tags: string[]) => void;
   placeholder?: string;
   error?: string;
+  disabled?: boolean;
+  'aria-describedby'?: string;
 }
 
 const TagsInput: React.FC<TagsInputProps> = ({ id, label, tags, onTagsChange, placeholder, error }) => {

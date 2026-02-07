@@ -60,7 +60,7 @@ const AdminDisputesPage: React.FC = () => {
       if (filterStatus !== 'all') {
         filters.status = filterStatus;
       }
-      const data = await api.disputes.list(filters);
+      const data = await api.disputes.list(filters) as any;
       // Handle pagination response if necessary, assuming array for now or extracting items
       setDisputes(Array.isArray(data) ? data : data.items || []);
     } catch (err) {

@@ -96,7 +96,7 @@ const FlaggedReviews: React.FC = () => {
         api.admin.getUsers({ limit: 200 }),
       ]);
       
-      const users = usersData.users ?? usersData ?? [];
+      const users = (usersData as any).users ?? usersData ?? [];
       
       // Create user lookup map
       const userMap = new Map<number, { name: string; avatar_url?: string }>();

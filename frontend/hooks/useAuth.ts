@@ -66,7 +66,7 @@ export function useAuth(): UseAuthReturn {
         // Verify token and get fresh user data
         const userData = await api.auth.me();
         const normalizedUser: User = {
-          id: userData.id,
+          id: Number(userData.id),
           email: userData.email,
           name: userData.name || userData.full_name || '',
           user_type: (userData.user_type || userData.role || 'client').toLowerCase() as User['user_type'],
@@ -112,7 +112,7 @@ export function useAuth(): UseAuthReturn {
       }
 
       const normalizedUser: User = {
-        id: response.user.id,
+        id: Number(response.user.id),
         email: response.user.email,
         name: response.user.name || '',
         user_type: (response.user.user_type || response.user.role || 'client').toLowerCase() as User['user_type'],
@@ -162,7 +162,7 @@ export function useAuth(): UseAuthReturn {
     try {
       const userData = await api.auth.me();
       const normalizedUser: User = {
-        id: userData.id,
+        id: Number(userData.id),
         email: userData.email,
         name: userData.name || userData.full_name || '',
         user_type: (userData.user_type || userData.role || 'client').toLowerCase() as User['user_type'],

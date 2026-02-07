@@ -81,7 +81,7 @@ const Withdrawals: React.FC = () => {
         setLoading(true);
         
         // Fetch outgoing payments (withdrawals/payouts)
-        const payments: ApiPayment[] = await api.payments.list(50);
+        const payments: ApiPayment[] = await api.payments.list(50) as any;
 
         // Transform API payments to withdrawal format
         const transformed: WithdrawalRequest[] = payments.map((payment) => ({

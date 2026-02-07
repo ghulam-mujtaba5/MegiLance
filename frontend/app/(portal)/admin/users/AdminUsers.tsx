@@ -8,6 +8,7 @@ import { useAdminData } from '@/hooks/useAdmin';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import api from '@/lib/api';
 import common from './AdminUsers.common.module.css';
 import light from './AdminUsers.light.module.css';
 import dark from './AdminUsers.dark.module.css';
@@ -84,7 +85,7 @@ const AdminUsers: React.FC = () => {
       // So I will filter client-side for now, but that's imperfect for pagination.
       // However, for the sake of this task, I will proceed with server-side pagination for other fields.
       
-      const response = await api.admin.getUsers(filters);
+      const response = await api.admin.getUsers(filters) as any;
       
       if (response && response.users) {
         const mappedUsers: UserRow[] = response.users.map((u: any) => ({

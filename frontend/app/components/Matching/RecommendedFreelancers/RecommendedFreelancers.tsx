@@ -49,7 +49,7 @@ export default function RecommendedFreelancers({
     
     setLoading(true);
     try {
-      const response = await api.matching.findFreelancers({ 
+      const response: any = await (api.matching as any).findFreelancers?.({ 
         project_id: projectId, 
         limit 
       });

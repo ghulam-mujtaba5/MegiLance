@@ -81,12 +81,12 @@ export default function AuditTrailPage() {
     try {
       setLoading(true);
       const [logsRes, statsRes] = await Promise.all([
-        auditTrailApi.getLogs({ ...filters, page, limit: 50 }),
-        auditTrailApi.getStats()
+        auditTrailApi.getEvents({ ...filters, skip: (page - 1) * 50, limit: 50 } as any),
+        auditTrailApi.getSummary()
       ]);
-      setLogs(logsRes?.data || []);
-      setTotalPages(logsRes?.total_pages || 1);
-      setStats(statsRes);
+      setLogs((logsRes as any)?.data || []);
+      setTotalPages((logsRes as any)?.total_pages || 1);
+      setStats(statsRes as any);
     } catch (err) {
       console.error('Failed to load audit logs:', err);
     } finally {
@@ -96,7 +96,7 @@ export default function AuditTrailPage() {
 
   const handleExport = async () => {
     try {
-      const blob = await auditTrailApi.exportLogs(filters);
+      const blob = await auditTrailApi.exportLogs(filters) as any;
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

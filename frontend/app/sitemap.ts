@@ -56,7 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = topLevelPaths.map(({ path, changeFrequency, priority }) => ({
     url: `${baseUrl}${path === '/' ? '' : path}`,
     lastModified: currentDate,
-    changeFrequency,
+    changeFrequency: changeFrequency as any,
     priority,
   }));
 

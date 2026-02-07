@@ -86,12 +86,11 @@ export function useProjects(): UseProjectsReturn {
     setError(null);
     try {
       const response = await api.projects.list({
-        skip: (page - 1) * pageSize,
-        limit: pageSize,
+        page: page,
+        page_size: pageSize,
         status: filters?.status,
         category: filters?.category,
-        search: filters?.search,
-      });
+      }) as any;
 
       // Handle array or paginated response
       if (Array.isArray(response)) {
@@ -114,7 +113,7 @@ export function useProjects(): UseProjectsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await api.projects.getMyProjects();
+      const response = await api.projects.getMyProjects() as any;
       const projectList = Array.isArray(response) ? response : (response.projects || []);
       setMyProjects(projectList);
     } catch (err) {
@@ -130,7 +129,7 @@ export function useProjects(): UseProjectsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const project = await api.projects.get(id);
+      const project = await api.projects.get(id) as Project;
       setCurrentProject(project);
       return project;
     } catch (err) {
@@ -150,7 +149,7 @@ export function useProjects(): UseProjectsReturn {
       const project = await api.projects.create({
         ...data,
         status: 'open',
-      });
+      }) as Project;
       // Refresh my projects list
       await fetchMyProjects();
       return project;
@@ -174,7 +173,7 @@ export function useProjects(): UseProjectsReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const project = await api.projects.update(id, data);
+      const project = await api.projects.update(id, data) as Project;
       // Update local state
       setMyProjects(prev => prev.map(p => p.id === id ? project : p));
       if (currentProject?.id === id) {

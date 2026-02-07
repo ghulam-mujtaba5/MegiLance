@@ -49,7 +49,7 @@ export default function VerificationPage() {
     setLoading(true);
     try {
       // Fetch real verification data from API
-      const { verificationApi, authApi } = await import('@/lib/api');
+      const { verificationApi, authApi } = await import('@/lib/api') as any;
       
       const [verificationStatus, userProfile] = await Promise.all([
         verificationApi.getStatus().catch(() => null),

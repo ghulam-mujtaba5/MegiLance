@@ -66,7 +66,7 @@ const ChatInbox: React.FC = () => {
       try {
         setLoading(true);
         
-        const data: ApiConversation[] = await api.messages.getConversations();
+        const data: ApiConversation[] = await (api.messages as any).getConversations?.() || [];
         
         // Transform API response to component format
         const transformed: Conversation[] = data.map((conv) => ({

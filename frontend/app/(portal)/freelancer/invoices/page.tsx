@@ -71,7 +71,7 @@ export default function InvoicesPage() {
       setLoading(true);
       const response = await invoicesApi.list({ 
         status: filter !== 'all' ? filter : undefined 
-      });
+      }) as any;
       
       // Use API data if available, otherwise fall back to demo data
       let invoiceData: Invoice[] = [];

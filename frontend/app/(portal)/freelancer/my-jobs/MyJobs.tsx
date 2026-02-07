@@ -92,8 +92,8 @@ const MyJobs: React.FC = () => {
     
     try {
       // Fetch contracts for current freelancer
-      const response = await api.portal.freelancer.getProjects();
-      const contracts = response.projects;
+      const response: any = await (api as any).portal?.freelancer?.getProjects?.();
+      const contracts = response?.projects || [];
       
       // Transform contracts to job cards
       const active: JobStatusCardProps[] = [];

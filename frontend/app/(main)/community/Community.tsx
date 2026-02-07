@@ -19,6 +19,7 @@ import dark from './Community.dark.module.css';
 
 const Community: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
   const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
@@ -113,7 +114,7 @@ const Community: React.FC = () => {
                 </div>
                 <h3 className={cn(common.socialTitle, themed.socialTitle)}>Discord</h3>
                 <p className={cn(common.socialDescription, themed.socialDescription)}>
-                  Join 5,000+ members for real-time discussions and networking.
+                  Join our community for real-time discussions and networking.
                 </p>
                 <a 
                   href="https://discord.gg/megilance" 

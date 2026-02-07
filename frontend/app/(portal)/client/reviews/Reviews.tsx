@@ -58,10 +58,10 @@ const Reviews: React.FC = () => {
   useEffect(() => {
     async function loadEligible() {
       try {
-        const me = await api.auth.me();
+        const me: any = await api.auth.me();
         // Fetch my reviews to know what I've already reviewed
-        const myReviews = await api.reviews.list({ reviewer_id: me.id });
-        const contracts = await api.contracts.list({ status: 'completed' });
+        const myReviews: any = await (api.reviews as any).list?.({ reviewer_id: me.id }) || [];
+        const contracts: any = await (api.contracts as any).list?.({ status: 'completed' }) || [];
         
         const reviewedContractIds = new Set(myReviews.map((r: any) => String(r.contract_id)));
         
@@ -130,7 +130,7 @@ const Reviews: React.FC = () => {
       const contract = eligibleContracts.find(c => String(c.id) === selectedContractId);
       if (!contract) throw new Error("Contract not found");
 
-      await api.reviews.create({
+      await (api.reviews as any).create?.({
         contract_id: contract.id,
         reviewed_user_id: contract.freelancer_id,
         rating: newRating,

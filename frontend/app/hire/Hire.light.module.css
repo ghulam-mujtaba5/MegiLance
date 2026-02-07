@@ -1,0 +1,71 @@
+/* @AI-HINT: Hire directory page - light theme colors */
+
+.page {
+  background-color: #ffffff;
+}
+
+.hero {
+  background: linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%);
+}
+
+.heroTitle {
+  color: #111827;
+}
+
+.heroSubtitle {
+  color: #4b5563;
+}
+
+.skillsSectionTitle {
+  color: #111827;
+}
+
+.categoryTitle {
+  color: #374151;
+}
+
+.skillCard {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.skillName {
+  color: #111827;
+}
+
+.skillRate {
+  color: #16a34a;
+}
+
+.industriesSection {
+  background-color: #f9fafb;
+}
+
+.industriesSectionTitle {
+  color: #111827;
+}
+
+.industryCard {
+  background-color: #ffffff;
+}
+
+.industryName {
+  color: #374151;
+}
+
+.ctaTitle {
+  color: #111827;
+}
+
+.ctaText {
+  color: #4b5563;
+}
+
+.ctaButton {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.ctaButton:hover {
+  background-color: #1d4ed8;
+}

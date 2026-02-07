@@ -10,11 +10,14 @@ import darkStyles from './ProgressBar.dark.module.css';
 // @AI-HINT: This component has been fully refactored to use theme-aware CSS modules and the `cn` utility for dynamic class composition.
 
 interface ProgressBarProps {
-  progress: number; // A value from 0 to 100
+  progress?: number; // A value from 0 to 100
+  value?: number; // Alternative prop name (0 to max)
+  max?: number; // Max value when using value prop
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'default' | 'success' | 'error' | 'warning' | 'info';
   label?: string;
   showPercentage?: boolean;
+  showLabel?: boolean; // Alias for showPercentage
   animated?: boolean;
   striped?: boolean;
   className?: string;
@@ -32,10 +35,13 @@ const sizeMap = {
 
 const ProgressBar: React.FC<ProgressBarProps> = ({
   progress,
+  value,
+  max = 100,
   size = 'md',
   variant = 'default',
   label,
   showPercentage = false,
+  showLabel,
   animated = false,
   striped = false,
   className = '',
@@ -43,21 +49,24 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   'aria-describedby': ariaDescribedBy,
 }) => {
   const progressId = React.useId();
-  const safeProgress = Math.min(100, Math.max(0, progress || 0));
+  // Support both progress (0-100) and value/max patterns
+  const computedProgress = progress ?? (value !== undefined ? (value / max) * 100 : 0);
+  const safeProgress = Math.min(100, Math.max(0, computedProgress));
+  const shouldShowPercentage = showPercentage || showLabel;
 
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
     <div className={cn(commonStyles.progressBarContainer, className)}>
-      {(label || showPercentage) && (
+      {(label || shouldShowPercentage) && (
         <div className={commonStyles.progressBarHeader}>
           {label && (
             <span className={cn(commonStyles.progressBarLabel, themeStyles.progressBarLabel)} id={`${progressId}-label`}>
               {label}
             </span>
           )}
-          {showPercentage && (
+          {shouldShowPercentage && (
             <span className={cn(commonStyles.progressBarPercentage, themeStyles.progressBarPercentage)}>
               {Math.round(safeProgress)}%
             </span>

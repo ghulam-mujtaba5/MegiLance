@@ -14,8 +14,11 @@ export default function FeaturesPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-gray-600 dark:text-gray-400">Redirecting to features...</p>
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="text-center flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-3 border-gray-200 border-t-[var(--color-primary)] rounded-full animate-spin" />
+        <p className="text-sm text-[var(--text-secondary)]">Redirecting to features...</p>
+      </div>
     </div>
   );
 }

@@ -771,7 +771,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
       alert('Payout method added successfully!');
       
       if (onComplete) {
-        onComplete(result.id);
+        onComplete((result as any).id);
       } else {
         router.push('/settings/payout-methods');
       }

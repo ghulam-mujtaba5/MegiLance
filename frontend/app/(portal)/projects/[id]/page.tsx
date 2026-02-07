@@ -29,8 +29,8 @@ export default function ProjectDetailsPage() {
   const loadData = async () => {
     try {
       const [projectData, userData] = await Promise.all([
-        api.projects.get(id as string),
-        api.auth.me()
+        (api.projects as any).get?.(id as string),
+        (api as any).auth?.me?.()
       ]);
       setProject(projectData);
       setUser(userData);

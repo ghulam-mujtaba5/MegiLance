@@ -152,8 +152,8 @@ const JobModerationQueue: React.FC = () => {
         api.admin.getUsers({ limit: 200 }),
       ]);
       
-      const projects: APIProject[] = projectsData.projects ?? projectsData ?? [];
-      const users = usersData.users ?? usersData ?? [];
+      const projects: APIProject[] = (projectsData as any).projects ?? projectsData ?? [];
+      const users = (usersData as any).users ?? usersData ?? [];
       
       // Create user lookup map
       const userMap = new Map<number, { name: string; avatar_url?: string }>();

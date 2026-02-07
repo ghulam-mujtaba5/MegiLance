@@ -422,6 +422,7 @@ const Gigs: React.FC = () => {
                         seller={{
                           id: gig.seller_id,
                           username: gig.seller_username,
+                          name: gig.seller_username,
                           avatarUrl: gig.seller_avatar,
                           level: gig.seller_level,
                         }}
@@ -513,6 +514,7 @@ const Gigs: React.FC = () => {
                     seller={{
                       id: gig.seller_id,
                       username: gig.seller_username,
+                      name: gig.seller_username,
                       avatarUrl: gig.seller_avatar,
                       level: gig.seller_level,
                     }}

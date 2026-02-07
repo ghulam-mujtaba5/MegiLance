@@ -72,7 +72,7 @@ export default function AdminBillingPage() {
       ]);
 
       // Transform API data or use defaults
-      const apiStats = metricsData || {};
+      const apiStats = (metricsData || {}) as any;
       const statsData: RevenueStats = {
         mrr: apiStats.mrr || 47850,
         arr: apiStats.arr || 574200,
@@ -85,7 +85,7 @@ export default function AdminBillingPage() {
       };
 
       // Transform payments to subscriptions format
-      const paymentsArray = Array.isArray(paymentsData) ? paymentsData : paymentsData?.items || [];
+      const paymentsArray = Array.isArray(paymentsData) ? paymentsData : (paymentsData as any)?.items || [];
       const subscriptionData: Subscription[] = paymentsArray.slice(0, 10).map((p: any, idx: number) => ({
         id: p.id?.toString() || `sub_${idx}`,
         userId: p.user_id?.toString() || `user_${idx}`,

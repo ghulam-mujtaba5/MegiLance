@@ -7,7 +7,7 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
-import { Download, Copy, Mail, Newspaper, Award, TrendingUp, Calendar, ExternalLink } from 'lucide-react';
+import { Download, Copy, Mail, Newspaper, Award, TrendingUp, Calendar, ExternalLink, Check } from 'lucide-react';
 import common from './Press.common.module.css';
 import light from './Press.light.module.css';
 import dark from './Press.dark.module.css';
@@ -42,18 +42,21 @@ const mediaFeatures = [
 const companyStats = [
   { label: 'Founded', value: '2024' },
   { label: 'Headquarters', value: 'Remote-First' },
-  { label: 'Team Size', value: '15+' },
-  { label: 'Users', value: '10,000+' },
+  { label: 'Team Size', value: 'Growing' },
+  { label: 'Platform', value: 'AI-Powered' },
 ];
 
 const Press: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
   const themed = resolvedTheme === 'dark' ? dark : light;
+  const [copied, setCopied] = React.useState(false);
 
   const copyBoilerplate = () => {
     const text = 'MegiLance is an AI-powered freelance marketplace that connects businesses with top talent through intelligent matching. Featuring secure USDC escrow payments with zero fees, real-time collaboration tools, and investor-grade security, MegiLance is revolutionizing how the world works together.';
     navigator.clipboard?.writeText(text);
-    alert('Boilerplate copied to clipboard!');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -124,8 +127,8 @@ const Press: React.FC = () => {
                   onClick={copyBoilerplate}
                   aria-label="Copy company boilerplate to clipboard"
                 >
-                  <Copy size={16} />
-                  Copy Boilerplate
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                  {copied ? 'Copied!' : 'Copy Boilerplate'}
                 </button>
               </StaggerItem>
             </StaggerContainer>
@@ -148,12 +151,13 @@ const Press: React.FC = () => {
                   </div>
                   <h3 className={common.releaseTitle}>{pr.title}</h3>
                   <p className={common.releaseDesc}>{pr.description}</p>
-                  <button
+                  <a
                     className={common.releaseLink}
-                    onClick={() => alert(`Press release "${pr.title}" - Full content coming soon. Contact press@megilance.com for media inquiries.`)}
+                    href="mailto:press@megilance.com"
+                    aria-label={`Read full release: ${pr.title}`}
                   >
                     Read Full Release <ExternalLink size={14} />
-                  </button>
+                  </a>
                 </StaggerItem>
               ))}
             </StaggerContainer>

@@ -9,8 +9,8 @@ import commonStyles from './Badge.common.module.css';
 import lightStyles from './Badge.light.module.css';
 import darkStyles from './Badge.dark.module.css';
 
-export type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
-export type BadgeSize = 'small' | 'medium';
+export type BadgeVariant = 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'error' | 'neutral';
+export type BadgeSize = 'small' | 'medium' | 'sm' | 'md' | 'lg';
 
 export interface BadgeProps {
   /** Badge content */

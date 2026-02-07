@@ -65,5 +65,28 @@ public/**/*.cache.*
 /tmp/
 **/tmp/
 
-# Note: No local SQLite databases - all environments use Turso cloud database
-# Legacy: backend/**/*.sqlite (removed as part of Turso-only migration)
+# Local databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Build artifacts & logs
+build_log.txt
+build_output.txt
+backend.log
+
+# Sensitive tokens
+*_token.txt
+.browser_token.txt
+
+# Temp files
+ts_errors.txt
+*.cache
+
+# Screenshots (dev artifacts)
+screenshots/
+
+# Playwright MCP
+.playwright-mcp/

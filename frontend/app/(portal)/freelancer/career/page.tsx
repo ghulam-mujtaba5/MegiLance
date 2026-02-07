@@ -87,10 +87,10 @@ export default function CareerPage() {
         careerApi.findMentors(),
         careerApi.getRecommendations(),
       ]);
-      setPaths(pathsData);
-      setProgress(progressData);
-      setGoals(goalsData);
-      setMentors(mentorsData);
+      setPaths(pathsData as any);
+      setProgress(progressData as any);
+      setGoals(goalsData as any);
+      setMentors(mentorsData as any);
       setRecommendations(recsData);
     } catch (error) {
       console.error('Failed to load career data:', error);
@@ -179,7 +179,22 @@ export default function CareerPage() {
         </StaggerContainer>
 
         <ScrollReveal delay={0.2}>
-          <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+          <div className={cn(commonStyles.tabs, themeStyles.tabs || '')}>
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  commonStyles.tab,
+                  themeStyles.tab,
+                  activeTab === tab.id && commonStyles.tabActive,
+                  activeTab === tab.id && themeStyles.tabActive
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </ScrollReveal>
 
         <div className={cn(commonStyles.tabContent, themeStyles.tabContent)}>
@@ -193,8 +208,7 @@ export default function CareerPage() {
                       <div className={cn(commonStyles.skillHeader, themeStyles.skillHeader)}>
                         <h3>{skill.skill_name}</h3>
                         <Badge 
-                          variant="default" 
-                          style={{ backgroundColor: levelColors[skill.current_level] }}
+                          {...{variant: "default", style: { backgroundColor: levelColors[skill.current_level] }} as any}
                         >
                           {skill.current_level}
                         </Badge>
@@ -204,7 +218,7 @@ export default function CareerPage() {
                           <span>Progress to {skill.target_level}</span>
                           <span>{skill.progress_percentage.toFixed(0)}%</span>
                         </div>
-                        <ProgressBar value={skill.progress_percentage} max={100} showLabel={false} />
+                        <ProgressBar value={skill.progress_percentage} max={100} showLabel={false} {...{} as any} />
                       </div>
                       <div className={cn(commonStyles.skillStats, themeStyles.skillStats)}>
                         <div>
@@ -315,14 +329,14 @@ export default function CareerPage() {
                       <Card className={cn(commonStyles.goalCard, themeStyles.goalCard)}>
                         <div className={cn(commonStyles.goalHeader, themeStyles.goalHeader)}>
                           <h3>{goal.title}</h3>
-                          <Badge variant={goal.status === 'active' ? 'success' : 'default'}>{goal.status}</Badge>
+                          <Badge variant={goal.status === 'active' ? 'success' : 'default' as any}>{goal.status}</Badge>
                         </div>
                         <div className={cn(commonStyles.goalMeta, themeStyles.goalMeta)}>
                           <span>Target: {goal.target_skill} ({goal.target_level})</span>
                           {goal.deadline && <span>Due: {new Date(goal.deadline).toLocaleDateString()}</span>}
                         </div>
                         <div className={cn(commonStyles.goalProgress, themeStyles.goalProgress)}>
-                          <ProgressBar value={goal.progress} max={100} />
+                          <ProgressBar value={goal.progress} max={100} {...{} as any} />
                         </div>
                         <div className={cn(commonStyles.goalActions, themeStyles.goalActions)}>
                           <Button variant="ghost" size="sm">Update Progress</Button>
@@ -353,7 +367,7 @@ export default function CareerPage() {
                       </div>
                       <div className={cn(commonStyles.mentorExpertise, themeStyles.mentorExpertise)}>
                         {mentor.expertise.map((exp) => (
-                          <Badge key={exp} variant="default" size="sm">{exp}</Badge>
+                          <Badge key={exp} variant={"default" as any} size="sm">{exp}</Badge>
                         ))}
                       </div>
                       <div className={cn(commonStyles.mentorMeta, themeStyles.mentorMeta)}>

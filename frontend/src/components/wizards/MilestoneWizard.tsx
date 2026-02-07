@@ -536,7 +536,7 @@ export default function MilestoneWizard({
         auto_release_days: milestoneData.autoReleaseDays
       };
 
-      const result = await api.milestones.create(payload);
+      const result = await api.milestones.create(payload) as any;
 
       localStorage.removeItem(`milestone_draft_${projectId}`);
       

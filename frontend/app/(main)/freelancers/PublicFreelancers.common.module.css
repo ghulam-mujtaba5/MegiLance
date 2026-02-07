@@ -110,6 +110,31 @@
   font-weight: 600;
 }
 
+.ratingWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+}
+
+.starIcon {
+  color: #facc15;
+}
+
+.locationWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  opacity: 0.7;
+}
+
 .loading {
   text-align: center;
   padding: 4rem;

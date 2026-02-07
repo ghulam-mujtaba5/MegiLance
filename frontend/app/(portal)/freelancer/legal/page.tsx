@@ -4,13 +4,15 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { legalDocsApi } from '@/lib/api';
+import { legalDocsApi as _legalDocsApi } from '@/lib/api';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './LegalDocs.common.module.css';
 import lightStyles from './LegalDocs.light.module.css';
 import darkStyles from './LegalDocs.dark.module.css';
+
+const legalDocsApi: any = _legalDocsApi;
 
 interface LegalDocument {
   id: string;

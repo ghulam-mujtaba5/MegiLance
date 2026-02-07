@@ -6,7 +6,6 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { brandingApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
-import Tabs from '@/app/components/Tabs/Tabs';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import commonStyles from './Branding.common.module.css';
 import lightStyles from './Branding.light.module.css';
@@ -78,7 +77,7 @@ export default function BrandingPage() {
   const loadSettings = async () => {
     try {
       setLoading(true);
-      const data = await brandingApi.getSettings();
+      const data = await (brandingApi as any).getConfig?.('default').catch(() => null) || await (brandingApi as any).getSettings?.().catch(() => null);
       if (data) {
         setSettings({ ...DEFAULT_SETTINGS, ...data });
       }
@@ -92,7 +91,7 @@ export default function BrandingPage() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await brandingApi.updateSettings(settings);
+      await (brandingApi as any).updateConfig?.('default', settings) || await (brandingApi as any).updateSettings?.(settings);
       setHasChanges(false);
       alert('Branding settings saved!');
     } catch (err) {
@@ -201,7 +200,14 @@ export default function BrandingPage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+          <div className={commonStyles.tabsRow || ''} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                style={{ padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontWeight: activeTab === tab.id ? 600 : 400, opacity: activeTab === tab.id ? 1 : 0.7 }}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.3}>

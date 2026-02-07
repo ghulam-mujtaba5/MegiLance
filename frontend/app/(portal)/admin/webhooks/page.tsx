@@ -76,7 +76,7 @@ export default function WebhooksPage() {
   const loadWebhooks = async () => {
     try {
       setLoading(true);
-      const response = await webhooksApi.list().catch(() => null);
+      const response = await webhooksApi.list().catch(() => null) as any;
       
       // Use API data if available, otherwise fall back to demo data
       let webhookData: Webhook[] = [];
@@ -135,11 +135,10 @@ export default function WebhooksPage() {
     
     try {
       await webhooksApi.create({
-        name: newWebhook.name,
         url: newWebhook.url,
         events: newWebhook.events,
         secret: newWebhook.secret || undefined,
-      });
+      } as any);
       setShowCreateModal(false);
       setNewWebhook({ name: '', url: '', events: [], secret: '' });
       loadWebhooks();
@@ -182,7 +181,7 @@ export default function WebhooksPage() {
   const handleViewLogs = async (webhook: Webhook) => {
     setSelectedWebhook(webhook);
     try {
-      const response = await webhooksApi.getLogs(webhook.id).catch(() => null);
+      const response = await webhooksApi.getLogs(webhook.id).catch(() => null) as any;
       
       // Use API data if available, otherwise fall back to demo data
       let logsData: DeliveryLog[] = [];

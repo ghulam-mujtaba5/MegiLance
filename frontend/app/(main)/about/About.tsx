@@ -25,6 +25,7 @@ import dark from './About.dark.module.css';
 
 const About: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
   const t = resolvedTheme === 'dark' ? dark : light;
   const styles = {
     root: cn(common.root, t.root),
@@ -142,7 +143,7 @@ const About: React.FC = () => {
               <Zap size={32} style={{ marginBottom: '1rem', color: 'var(--color-warning)' }} />
               <h3 id="solution-speed-title" className={styles.cardTitle}>Modern Tech Stack</h3>
               <p className={styles.cardBody}>
-                Next.js 16 delivers fast, SEO-optimized pages. FastAPI provides high-performance 
+                Next.js 14 delivers fast, SEO-optimized pages. FastAPI provides high-performance 
                 async backend. Turso edge database ensures low-latency worldwide. Docker enables 
                 consistent deployment across environments.
               </p>
@@ -254,7 +255,7 @@ const About: React.FC = () => {
           </ScrollReveal>
           <StaggerContainer className={styles.valuesGrid}>
             <StaggerItem className={styles.valueItem}>
-              <h3 className={styles.valueTitle}>Team Lead</h3>
+              <h3 className={styles.valueTitle}>Ghulam Ahmed (Team Lead)</h3>
               <p className={styles.valueDesc}>
                 Architecture design, AI integration, full-stack development, and project documentation.
               </p>

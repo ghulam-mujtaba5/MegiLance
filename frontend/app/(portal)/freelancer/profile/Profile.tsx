@@ -59,7 +59,7 @@ const Profile: React.FC = () => {
   // Fetch user profile from API
   const fetchProfile = useCallback(async () => {
     try {
-      const data: ApiUser = await api.auth.me();
+      const data: any = await api.auth.me();
       setName(data.full_name || '');
       setTitle(data.title || 'Freelancer');
       setBio(data.bio || '');
@@ -155,7 +155,7 @@ const Profile: React.FC = () => {
 
     setSaving(true);
     try {
-      await api.auth.updateProfile({
+      await (api.auth as any).updateProfile({
         full_name: name,
         title: title,
         bio: bio,
@@ -180,8 +180,8 @@ const Profile: React.FC = () => {
   const getRateEstimate = async () => {
     setEstimatingRate(true);
     try {
-      const user = await api.auth.me();
-      const result = await api.ai.estimateFreelancerRate(user.id, {
+      const user: any = await api.auth.me();
+      const result = await (api as any).ai?.estimateFreelancerRate?.(user.id, {
         skills: skills.split(',').map(s => s.trim()).filter(Boolean),
         average_rating: 0, // API will fetch from DB if 0
         completed_projects: 0 // API will fetch from DB if 0

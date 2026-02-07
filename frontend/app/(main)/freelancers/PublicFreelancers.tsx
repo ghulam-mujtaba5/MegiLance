@@ -170,11 +170,11 @@ const PublicFreelancers: React.FC = () => {
 
                   <div className={common.footer}>
                     <div className={common.rate}>${f.hourlyRate}/hr</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
-                      <Star size={14} fill="currentColor" className="text-yellow-400" />
+                    <div className={common.ratingWrapper}>
+                      <Star size={14} fill="currentColor" className={cn(common.starIcon, themed.starIcon)} />
                       <span>{f.rating.toFixed(1)}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', opacity: 0.7 }}>
+                    <div className={common.locationWrapper}>
                       <MapPin size={14} />
                       <span>{f.location}</span>
                     </div>
@@ -186,7 +186,7 @@ const PublicFreelancers: React.FC = () => {
         )}
         
         {!loading && !error && freelancers.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '2rem', opacity: 0.7 }}>
+          <div className={common.emptyState}>
             No freelancers found matching your criteria.
           </div>
         )}

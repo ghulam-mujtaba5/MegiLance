@@ -5,11 +5,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import { getAuthToken } from '@/lib/api';
+import commonStyles from './Dashboard.common.module.css';
+import lightStyles from './Dashboard.light.module.css';
+import darkStyles from './Dashboard.dark.module.css';
 
 const PortalDashboardPage = () => {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const [status, setStatus] = useState<'checking' | 'redirecting'>('checking');
+
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
     const redirect = async () => {
@@ -66,26 +74,11 @@ const PortalDashboardPage = () => {
   }, [router]);
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '50vh',
-      flexDirection: 'column',
-      gap: '1rem'
-    }}>
-      <div style={{
-        width: '40px',
-        height: '40px',
-        border: '3px solid #e2e8f0',
-        borderTopColor: '#4573df',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite'
-      }} />
-      <p style={{ color: '#64748b' }}>
+    <div className={commonStyles.redirectWrapper}>
+      <div className={cn(commonStyles.redirectSpinner, themeStyles.redirectSpinner)} />
+      <p className={cn(commonStyles.redirectText, themeStyles.redirectText)}>
         {status === 'checking' ? 'Checking authentication...' : 'Redirecting to your dashboard...'}
       </p>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 };

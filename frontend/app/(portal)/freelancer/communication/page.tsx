@@ -74,9 +74,9 @@ export default function CommunicationPage() {
       const { messagesApi, notificationsApi } = await import('@/lib/api');
 
       const [inboxRes, sentRes, notifRes] = await Promise.all([
-        messagesApi.list?.({ folder: 'inbox' }).catch(() => null),
-        messagesApi.list?.({ folder: 'sent' }).catch(() => null),
-        notificationsApi.list?.().catch(() => null),
+        (messagesApi as any).getConversations?.({ folder: 'inbox' }).catch(() => null),
+        (messagesApi as any).getConversations?.({ folder: 'sent' }).catch(() => null),
+        (notificationsApi as any).list?.().catch(() => null),
       ]);
 
       // Transform API data or use defaults

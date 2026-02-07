@@ -70,7 +70,8 @@ export default function DataExportPage() {
     setLoading(true);
     try {
       // Fetch real export data from API
-      const { exportApi } = await import('@/lib/api');
+      const apiModule = await import('@/lib/api') as any;
+      const exportApi = apiModule.exportApi || {};
 
       const [jobsRes, templatesRes] = await Promise.all([
         exportApi.getJobs?.().catch(() => null),

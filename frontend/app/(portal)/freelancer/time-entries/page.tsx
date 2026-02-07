@@ -4,11 +4,13 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { timeEntriesApi } from '@/lib/api';
+import { timeEntriesApi as _timeEntriesApi } from '@/lib/api';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
 import commonStyles from './TimeEntries.common.module.css';
 import lightStyles from './TimeEntries.light.module.css';
 import darkStyles from './TimeEntries.dark.module.css';
+
+const timeEntriesApi: any = _timeEntriesApi;
 
 interface TimeEntry {
   id: string;

@@ -95,8 +95,8 @@ const AnalyticsDashboard: React.FC = () => {
 
       // Process Summary
       if (summaryRes.status === 'fulfilled' && completionRes.status === 'fulfilled') {
-        const s = summaryRes.value;
-        const c = completionRes.value;
+        const s = summaryRes.value as any;
+        const c = completionRes.value as any;
         setSummary({
           total_users: s.users?.total_users || 0,
           active_projects: s.projects?.status_breakdown?.in_progress || 0,
@@ -142,7 +142,7 @@ const AnalyticsDashboard: React.FC = () => {
 
       // Process User Distribution
       if (userStatsRes.status === 'fulfilled') {
-        const data = userStatsRes.value;
+        const data = userStatsRes.value as any;
         const types = data.user_types || {};
         setUserDistribution({
           labels: ['Freelancers', 'Clients', 'Admins'],

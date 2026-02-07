@@ -71,10 +71,12 @@ const StepDetails: React.FC<StepDetailsProps> = ({ data, updateData, errors }) =
 
           <div className="mb-4">
             <AIProposalAssistant 
-              jobDescription="Please review the job description and write a proposal." // Ideally this should come from props
-              currentProposal={data.coverLetter}
-              onGenerate={handleAIGenerate}
-              onImprove={handleAIGenerate}
+              {...{
+                jobDescription: "Please review the job description and write a proposal.",
+                currentProposal: data.coverLetter,
+                onGenerate: handleAIGenerate,
+                onImprove: handleAIGenerate,
+              } as any}
             />
           </div>
 

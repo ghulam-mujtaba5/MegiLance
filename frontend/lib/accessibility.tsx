@@ -1,7 +1,7 @@
 // @AI-HINT: Accessibility utilities and hooks for WCAG 2.1 AA compliance
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 // ============================================================================
 // Focus Management
@@ -378,7 +378,7 @@ export function useFormFieldA11y(
 
 interface VisuallyHiddenProps {
   children: React.ReactNode;
-  as?: keyof JSX.IntrinsicElements;
+  as?: React.ElementType;
 }
 
 /**

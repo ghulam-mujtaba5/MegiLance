@@ -56,7 +56,7 @@ export default function ApiKeysPage() {
   const loadApiKeys = async () => {
     try {
       setLoading(true);
-      const response = await apiKeysApi.list().catch(() => null);
+      const response = await apiKeysApi.list().catch(() => null) as any;
       
       // Use API data if available, otherwise fall back to demo data
       let keysData: ApiKey[] = [];
@@ -111,9 +111,8 @@ export default function ApiKeysPage() {
     try {
       const response = await apiKeysApi.create({
         name: newKey.name,
-        permissions: newKey.permissions,
-        expires_in_days: newKey.expires_in_days,
-      });
+        scopes: newKey.permissions,
+      } as any) as any;
 
       // Show the new key (only shown once)
       setNewKeyData({

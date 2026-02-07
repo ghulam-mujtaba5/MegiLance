@@ -37,8 +37,8 @@ const NotificationSettingsPage = () => {
 
   const loadSettings = async () => {
     try {
-      const { settingsApi } = await import('@/lib/api');
-      const response = await settingsApi.getNotificationPreferences?.().catch(() => null);
+      const { settingsApi } = await import('@/lib/api') as any;
+      const response = await settingsApi?.getNotificationPreferences?.().catch(() => null);
       
       if (response) {
         setSettings({
@@ -65,8 +65,8 @@ const NotificationSettingsPage = () => {
     setIsSaving(true);
     
     try {
-      const { settingsApi } = await import('@/lib/api');
-      await settingsApi.updateNotificationPreferences?.({
+      const { settingsApi } = await import('@/lib/api') as any;
+      await settingsApi?.updateNotificationPreferences?.({
         new_job_alerts: settings.newJobAlerts,
         proposal_status_updates: settings.proposalStatusUpdates,
         message_notifications: settings.messageNotifications,

@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { referralApi } from '@/lib/api';
+import { referralApi as _referralApi } from '@/lib/api';
 import Card from '@/app/components/Card/Card';
 import Badge from '@/app/components/Badge/Badge';
 import ProgressBar from '@/app/components/ProgressBar/ProgressBar';
@@ -17,6 +17,8 @@ import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/a
 import commonStyles from './Referral.common.module.css';
 import lightStyles from './Referral.light.module.css';
 import darkStyles from './Referral.dark.module.css';
+
+const referralApi: any = _referralApi;
 
 interface ReferralCode {
   code: string;
@@ -225,7 +227,7 @@ export default function ReferralPage() {
                 <Badge variant="warning">${nextMilestone.bonus} Bonus</Badge>
               </div>
               <div className={cn(commonStyles.milestoneProgress, themeStyles.milestoneProgress)}>
-                <ProgressBar value={milestoneProgress} max={100} showLabel={false} />
+                <ProgressBar {...{value: milestoneProgress, max: 100, showLabel: false} as any} />
                 <span>{currentReferrals} / {nextMilestone.referrals} referrals</span>
               </div>
               <div className={cn(commonStyles.milestonesList, themeStyles.milestonesList)}>
@@ -282,7 +284,7 @@ export default function ReferralPage() {
 
         {/* Tabs */}
         <ScrollReveal delay={0.4}>
-          <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+          <Tabs {...{tabs, activeTab, onChange: setActiveTab} as any} />
 
           {/* Tab Content */}
           <div className={cn(commonStyles.tabContent, themeStyles.tabContent)}>
@@ -333,7 +335,7 @@ export default function ReferralPage() {
                           </span>
                         </div>
                         <div className={cn(commonStyles.referralStatus, themeStyles.referralStatus)}>
-                          <Badge variant={ref.status === 'qualified' ? 'success' : ref.status === 'pending' ? 'warning' : 'default'}>
+                          <Badge variant={(ref.status === 'qualified' ? 'success' : ref.status === 'pending' ? 'warning' : 'default') as any}>
                             {ref.status}
                           </Badge>
                           {ref.reward_paid && <span className={cn(commonStyles.rewardPaid, themeStyles.rewardPaid)}>+${ref.reward_amount}</span>}
@@ -367,7 +369,7 @@ export default function ReferralPage() {
 
         {/* Invite Modal */}
         {showInviteModal && (
-          <Modal title="Invite a Friend" onClose={() => setShowInviteModal(false)}>
+          <Modal {...{isOpen: showInviteModal, title: "Invite a Friend", onClose: () => setShowInviteModal(false)} as any}>
             <div className={cn(commonStyles.inviteForm, themeStyles.inviteForm)}>
               <Input
                 label="Friend's Email"

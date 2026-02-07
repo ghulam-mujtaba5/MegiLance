@@ -49,7 +49,7 @@ const getApiBase = () => {
 // ============================================
 const allPages = [
   // ===== PUBLIC PAGES =====
-  { route: '/', name: 'Homepage', description: 'Main landing with hero, features, testimonials, AI/blockchain sections', status: 'complete', category: 'public', tech: 'Next.js 16 + Turbopack' },
+  { route: '/', name: 'Homepage', description: 'Main landing with hero, features, testimonials, AI/blockchain sections', status: 'complete', category: 'public', tech: 'Next.js 14 + Turbopack' },
   { route: '/about', name: 'About Us', description: 'Company mission, team, timeline, values', status: 'complete', category: 'public', tech: 'SSR Page' },
   { route: '/pricing', name: 'Pricing', description: '3-tier plans: Starter $0, Pro $29, Enterprise $99', status: 'complete', category: 'public', tech: 'Interactive Cards' },
   { route: '/how-it-works', name: 'How It Works', description: '4-step process: Post → Match → Collaborate → Pay', status: 'complete', category: 'public', tech: 'Animated Steps' },

@@ -88,7 +88,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
   const loadProfile = async () => {
     try {
-      const data = await api.users.get(userId);
+      const data = await (api.users as any).get?.(userId);
       // Map backend fields to frontend expected format
       setProfile({
         ...data,
@@ -114,7 +114,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
   const loadPortfolio = async () => {
     try {
-      const data = await api.portfolio.list(userId);
+      const data = await (api.portfolio as any).list?.(userId);
       // Map backend fields
       const mappedPortfolio = data.map((item: any) => ({
         id: item.id,
@@ -133,7 +133,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
 
   const loadReviews = async () => {
     try {
-      const data = await api.reviews.list({ user_id: Number(userId) });
+      const data = await (api.reviews as any).list?.({ user_id: Number(userId) });
       // Map backend fields
       const mappedReviews = (data as any[]).map((item: any) => ({
         id: item.id,

@@ -80,13 +80,13 @@ const ReviewsPage: React.FC = () => {
     
     try {
       // Get current user ID first
-      const userData = await api.auth.me();
+      const userData: any = await api.auth.me();
       const userId = userData.id;
       setCurrentUserId(userId);
       
       // Fetch reviews for this user (as the reviewed person)
       try {
-        const reviewsData = await api.reviews.list({ user_id: userId });
+        const reviewsData = await (api.reviews as any).list?.({ user_id: userId });
         setReviews(Array.isArray(reviewsData) ? reviewsData : []);
       } catch (err) {
         console.error('Failed to fetch reviews list:', err);
@@ -95,7 +95,7 @@ const ReviewsPage: React.FC = () => {
       
       // Fetch review stats
       try {
-        const statsData = await api.reviews.getStats(userId);
+        const statsData = await (api.reviews as any).getStats?.(userId);
         setStats(statsData as ReviewStats);
       } catch {
         // Stats endpoint might not exist - calculate manually

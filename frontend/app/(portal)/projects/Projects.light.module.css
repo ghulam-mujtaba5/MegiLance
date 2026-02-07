@@ -1,0 +1,83 @@
+/* @AI-HINT: Portal Projects page - light theme colors */
+
+.page {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+.toolbar {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.searchIcon {
+  color: #9ca3af;
+}
+
+.searchInput {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  color: #111827;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+}
+
+.spinner {
+  border-bottom-color: #4573df;
+}
+
+.projectCard {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.projectCard:hover {
+  border-color: #d1d5db;
+}
+
+.iconWrapper {
+  background-color: #eff6ff;
+}
+
+.projectIcon {
+  color: #2563eb;
+}
+
+.statusBadge {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.cardDescription {
+  color: #6b7280;
+}
+
+.budget {
+  color: #2563eb;
+}
+
+.chevron {
+  color: #9ca3af;
+}
+
+.emptyState {
+  background-color: #ffffff;
+}
+
+.emptyIcon {
+  color: #d1d5db;
+}
+
+.emptyText {
+  color: #6b7280;
+}

@@ -6,7 +6,6 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { searchAnalyticsApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
-import Tabs from '@/app/components/Tabs/Tabs';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -55,15 +54,15 @@ export default function SearchAnalyticsPage() {
     try {
       setLoading(true);
       const [statsRes, topRes, trendingRes, zeroRes] = await Promise.all([
-        searchAnalyticsApi.getStats({ range: dateRange }),
-        searchAnalyticsApi.getTopSearches({ range: dateRange, limit: 20 }),
-        searchAnalyticsApi.getTrendingSearches({ range: dateRange }),
-        searchAnalyticsApi.getZeroResultQueries({ range: dateRange })
+        searchAnalyticsApi.getOverview(dateRange),
+        searchAnalyticsApi.getTopQueries(20),
+        (searchAnalyticsApi as any).getTrends?.('', dateRange).catch(() => []),
+        searchAnalyticsApi.getZeroResults(20)
       ]);
-      setStats(statsRes);
-      setTopSearches(topRes || []);
-      setTrendingSearches(trendingRes || []);
-      setZeroResults(zeroRes || []);
+      setStats(statsRes as any);
+      setTopSearches((topRes as any) || []);
+      setTrendingSearches((trendingRes as any) || []);
+      setZeroResults((zeroRes as any) || []);
     } catch (err) {
       console.error('Failed to load search analytics:', err);
     } finally {
@@ -172,7 +171,14 @@ export default function SearchAnalyticsPage() {
         )}
 
         <ScrollReveal delay={0.2}>
-          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            {tabs.map(tab => (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                style={{ padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontWeight: activeTab === tab.id ? 600 : 400, opacity: activeTab === tab.id ? 1 : 0.7 }}>
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </ScrollReveal>
 
         <div className={commonStyles.tabContent}>

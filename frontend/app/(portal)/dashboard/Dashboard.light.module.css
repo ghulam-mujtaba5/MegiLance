@@ -5,6 +5,15 @@
   color: var(--text-primary, #1e293b); 
 }
 
+.redirectSpinner {
+  border-color: #e2e8f0;
+  border-top-color: #4573df;
+}
+
+.redirectText {
+  color: #64748b;
+}
+
 /* Override page mesh for light theme */
 .page::before {
   background: 

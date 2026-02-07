@@ -1,7 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
-import { Conversation, Message } from '@/app/messages/components/types';
+
+// Local types for messages API
+interface Message {
+  id: number;
+  text: string;
+  timestamp: string;
+  sender: string;
+}
+
+interface Conversation {
+  id: number;
+  messages: Message[];
+  lastMessage?: string;
+  lastMessageTimestamp?: string;
+  [key: string]: any;
+}
 
 // Define the path to the JSON database file
 const dbPath = path.join(process.cwd(), 'db', 'messages.json');

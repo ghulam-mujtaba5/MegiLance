@@ -60,7 +60,7 @@ const UserDisputeDetailsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.disputes.get(Number(params.id));
+      const data = await (api.disputes as any).get?.(Number(params.id));
       setDispute(data);
     } catch (err) {
       console.error('Failed to fetch dispute:', err);
@@ -80,7 +80,7 @@ const UserDisputeDetailsPage: React.FC = () => {
     const file = e.target.files[0];
     setUploading(true);
     try {
-      await api.disputes.uploadEvidence(dispute.id, file);
+      await (api.disputes as any).uploadEvidence?.(dispute.id, file);
       toaster.notify({ title: 'Success', description: 'Evidence uploaded successfully', variant: 'success' });
       fetchDispute(); // Refresh data
     } catch (err: any) {
@@ -134,7 +134,7 @@ const UserDisputeDetailsPage: React.FC = () => {
         <div>
           <h1 className={styles.title}>{dispute.title}</h1>
           <div className={styles.meta}>
-            <Badge variant={getStatusBadgeVariant(dispute.status)}>
+            <Badge variant={getStatusBadgeVariant(dispute.status) as any}>
               {dispute.status.replace('_', ' ')}
             </Badge>
             <span>Dispute #{dispute.id}</span>

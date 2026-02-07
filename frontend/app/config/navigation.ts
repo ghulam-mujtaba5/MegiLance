@@ -6,6 +6,9 @@ export interface NavItem {
   href: string;
   icon?: string;
   description?: string;
+  badge?: string | number;
+  submenu?: NavItem[];
+  status?: string;
 }
 
 export interface ProfileMenuItem {

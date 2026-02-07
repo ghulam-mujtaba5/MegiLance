@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { rateCardsApi } from '@/lib/api';
+import { rateCardsApi as _rateCardsApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import commonStyles from './RateCards.common.module.css';
 import lightStyles from './RateCards.light.module.css';
@@ -12,6 +12,8 @@ import darkStyles from './RateCards.dark.module.css';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+
+const rateCardsApi: any = _rateCardsApi;
 
 interface RateCard {
   id: string;

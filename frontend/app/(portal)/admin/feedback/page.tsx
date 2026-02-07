@@ -58,7 +58,7 @@ export default function AdminFeedbackPage() {
       // Fetch real feedback data from API
       const { userFeedbackApi } = await import('@/lib/api');
       
-      const feedbackData = await userFeedbackApi.list({ page: 1, page_size: 50 }).catch(() => null);
+      const feedbackData = await userFeedbackApi.list({ page: 1, page_size: 50 }).catch(() => null) as any;
       
       // Transform API data or use defaults
       const feedbackArray = Array.isArray(feedbackData) ? feedbackData : feedbackData?.items || [];

@@ -45,7 +45,7 @@ const Profile: React.FC = () => {
 
   const fetchUserProfile = useCallback(async () => {
     try {
-      const data: ApiUser = await api.auth.me();
+      const data: ApiUser = await api.auth.me() as any;
       setUser(data);
       // Fetch user's projects
       await fetchUserProjects();

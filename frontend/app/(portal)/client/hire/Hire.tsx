@@ -96,7 +96,7 @@ const Hire: React.FC = () => {
       // Extract numeric ID if prefixed
       const fId = parseInt(freelancerId.toString().replace('freelancer_', ''));
       
-      const res = await api.contracts.createDirect({
+      const res = await (api.contracts as any).createDirect({
         freelancer_id: isNaN(fId) ? 0 : fId,
         title,
         description,

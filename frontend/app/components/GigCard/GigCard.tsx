@@ -14,6 +14,7 @@ import dark from './GigCard.dark.module.css';
 export interface GigSeller {
   id: number | string;
   name: string;
+  username?: string;
   avatarUrl?: string;
   level: 'new_seller' | 'bronze' | 'silver' | 'gold' | 'platinum';
   isTopRated?: boolean;

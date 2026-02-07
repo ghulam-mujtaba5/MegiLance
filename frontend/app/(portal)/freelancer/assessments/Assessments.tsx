@@ -47,7 +47,7 @@ const AssessmentsPage: React.FC = () => {
     setError(null);
     try {
       // Try to fetch assessments from API
-      const response = await api.portal.freelancer.getAssessments?.() || [];
+      const response = await (api as any).portal?.freelancer?.getAssessments?.() || [];
       
       if (Array.isArray(response) && response.length > 0) {
         const mapped: Assessment[] = response.map((a: any) => ({
@@ -66,7 +66,7 @@ const AssessmentsPage: React.FC = () => {
         setAssessments(mapped);
       } else {
         // Fallback to skill-based assessments from user profile
-        const user = await api.auth.me();
+        const user = await api.auth.me() as any;
         const skills = user?.skills || [];
         
         // Generate assessments based on user skills
@@ -312,9 +312,8 @@ const AssessmentsPage: React.FC = () => {
                         variant={assessment.locked ? "ghost" : "primary"} 
                         size="sm"
                         disabled={assessment.locked}
-                        icon={<Play size={16} />}
                       >
-                        {assessment.locked ? 'Locked' : 'Start'}
+                        {assessment.locked ? 'Locked' : '▶ Start'}
                       </Button>
                     </Link>
                   )}

@@ -80,10 +80,9 @@ const pricingData = {
 const Pricing: React.FC = () => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annually'>('monthly');
   const { resolvedTheme } = useTheme();
-  const styles = {
-    ...commonStyles,
-    ...(resolvedTheme === 'dark' ? darkStyles : lightStyles),
-  };
+  if (!resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  const styles = { ...commonStyles, ...themeStyles };
 
   return (
     <PageTransition>

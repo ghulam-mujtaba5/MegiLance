@@ -7,7 +7,7 @@ import commonStyles from './DensityToggle.common.module.css';
 import lightStyles from './DensityToggle.light.module.css';
 import darkStyles from './DensityToggle.dark.module.css';
 
-export type Density = 'comfortable' | 'compact';
+export type Density = 'comfortable' | 'compact' | 'standard';
 
 interface DensityToggleProps {
   value: Density;

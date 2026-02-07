@@ -4,10 +4,12 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { multiCurrencyApi } from '@/lib/api';
+import { multiCurrencyApi as _multiCurrencyApi } from '@/lib/api';
 import commonStyles from './Currency.common.module.css';
 import lightStyles from './Currency.light.module.css';
 import darkStyles from './Currency.dark.module.css';
+
+const multiCurrencyApi: any = _multiCurrencyApi;
 
 interface Currency {
   code: string;

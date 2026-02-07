@@ -164,7 +164,7 @@ export default function IntegrationsPage() {
   const loadIntegrations = async () => {
     try {
       setLoading(true);
-      const response = await integrationsApi.list();
+      const response = await integrationsApi.list() as any;
       const connected = response.items || [];
       
       // Merge with available integrations
@@ -188,7 +188,7 @@ export default function IntegrationsPage() {
   const connectIntegration = async (provider: string) => {
     try {
       setConnecting(provider);
-      const response = await integrationsApi.connect(provider);
+      const response = await integrationsApi.connect(provider) as any;
       
       if (response.auth_url) {
         // OAuth flow - redirect to provider

@@ -48,7 +48,7 @@ const Calendar: React.FC = () => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const data: RecentActivity[] = await api.admin.getRecentActivity(50);
+        const data = await api.admin.getRecentActivity(50) as any as RecentActivity[];
 
         // Convert activity to calendar events
         const calendarEvents: CalendarEvent[] = (Array.isArray(data) ? data : []).map((activity, index) => {

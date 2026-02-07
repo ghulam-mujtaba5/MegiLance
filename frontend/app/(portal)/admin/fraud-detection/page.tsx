@@ -71,11 +71,11 @@ export default function FraudDetectionPage() {
       
       const [alertsData, paymentsData] = await Promise.all([
         fraudDetectionApi.getAlerts().catch(() => null),
-        adminApi.getPayments({ status: 'flagged', limit: 20 }).catch(() => null),
+        adminApi.getPayments({ status: 'flagged', limit: 20 } as any).catch(() => null),
       ]);
 
       // Transform API alerts or use defaults
-      const alertsArray = Array.isArray(alertsData) ? alertsData : alertsData?.items || [];
+      const alertsArray = Array.isArray(alertsData) ? alertsData : (alertsData as any)?.items || [];
       const transformedAlerts: FraudAlert[] = alertsArray.map((a: any) => ({
         id: a.id?.toString() || `alert_${Math.random()}`,
         type: a.type || 'unknown',
@@ -87,7 +87,7 @@ export default function FraudDetectionPage() {
       }));
 
       // Transform API payments to flagged transactions or use defaults
-      const paymentsArray = Array.isArray(paymentsData) ? paymentsData : paymentsData?.items || [];
+      const paymentsArray = Array.isArray(paymentsData) ? paymentsData : (paymentsData as any)?.items || [];
       const transformedTransactions: FlaggedTransaction[] = paymentsArray.map((p: any) => ({
         id: p.id?.toString() || `tx_${Math.random()}`,
         type: p.type || 'payment',

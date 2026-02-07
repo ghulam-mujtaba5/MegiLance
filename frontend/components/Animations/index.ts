@@ -3,4 +3,4 @@ export { PageTransition } from '@/app/components/Animations/PageTransition';
 export { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 export { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 export { default as GlobeBackground } from '@/app/components/Animations/GlobeBackground';
-export { default as GlassCard } from '@/app/components/Animations/GlassCard';
+export { GlassCard } from '@/app/components/Animations/GlassCard';

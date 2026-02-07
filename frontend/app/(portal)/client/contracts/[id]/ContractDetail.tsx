@@ -4,11 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { contractsApi, milestonesApi } from '@/lib/api';
+import { contractsApi as _contractsApi, milestonesApi as _milestonesApi } from '@/lib/api';
 import { Button } from '@/app/components/Button';
 import commonStyles from './ContractDetail.common.module.css';
 import lightStyles from './ContractDetail.light.module.css';
 import darkStyles from './ContractDetail.dark.module.css';
+
+const contractsApi: any = _contractsApi;
+const milestonesApi: any = _milestonesApi;
 
 // @AI-HINT: Client view for managing a specific contract and its milestones
 

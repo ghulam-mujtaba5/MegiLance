@@ -25,6 +25,16 @@ import { usePersistedState } from '@/app/lib/hooks/usePersistedState';
 import { useSelection } from '@/app/lib/hooks/useSelection';
 import { useColumnVisibility } from '@/app/lib/hooks/useColumnVisibility';
 // import { exportCSV, exportData } from '@/app/utils/exportUtils';
+const exportCSV = (header: string[], rows: string[][], name: string) => {
+  const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${name}.csv`; a.click();
+};
+const exportData = (format: string, header: string[], rows: string[][], name: string, opts?: any) => {
+  exportCSV(header, rows, name);
+};
 import {
   DataToolbar,
   DensityToggle,

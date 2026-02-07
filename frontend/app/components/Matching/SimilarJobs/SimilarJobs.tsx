@@ -34,7 +34,7 @@ export default function SimilarJobs({ projectId, description, limit = 3 }: Simil
       setLoading(true);
       try {
         // Try to fetch from API
-        const response = await api.matching.findJobs({ 
+        const response: any = await (api.matching as any).findJobs?.({ 
             project_id: projectId, 
             description, 
             limit 

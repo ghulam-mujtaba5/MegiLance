@@ -296,3 +296,34 @@
     transform: none;
   }
 }
+
+/* ==========================================
+   REDIRECT / LOADING STATE
+   ========================================== */
+.redirectWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.redirectSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-primary, #e2e8f0);
+  border-top-color: var(--color-primary, #4573df);
+  border-radius: 50%;
+  animation: redirectSpin 1s linear infinite;
+}
+
+@keyframes redirectSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.redirectText {
+  font-size: 0.95rem;
+}

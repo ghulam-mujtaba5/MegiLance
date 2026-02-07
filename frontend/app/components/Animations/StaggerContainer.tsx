@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-interface StaggerContainerProps {
+interface StaggerContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   delay?: number;
   staggerDelay?: number;
@@ -27,11 +27,12 @@ export const StaggerItem: React.FC<{
   className?: string; 
   style?: React.CSSProperties;
   tabIndex?: number;
+  role?: string;
   'aria-labelledby'?: string;
   onClick?: () => void;
-}> = ({ children, className = '', style, tabIndex, 'aria-labelledby': ariaLabelledby, onClick }) => {
+}> = ({ children, className = '', style, tabIndex, role, 'aria-labelledby': ariaLabelledby, onClick }) => {
   return (
-    <div className={className} style={style} tabIndex={tabIndex} aria-labelledby={ariaLabelledby} onClick={onClick}>
+    <div className={className} style={style} tabIndex={tabIndex} role={role} aria-labelledby={ariaLabelledby} onClick={onClick}>
       {children}
     </div>
   );

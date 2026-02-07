@@ -4,13 +4,15 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { teamsApi } from '@/lib/api';
+import { teamsApi as _teamsApi } from '@/lib/api';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Teams.common.module.css';
 import lightStyles from './Teams.light.module.css';
 import darkStyles from './Teams.dark.module.css';
+
+const teamsApi: any = _teamsApi;
 
 interface TeamMember {
   id: string;

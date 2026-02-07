@@ -59,7 +59,7 @@ export default function VideoCallsPage() {
   const loadCalls = async () => {
     try {
       setLoading(true);
-      const response = await videoCallsApi.getHistory().catch(() => ({ calls: [] }));
+      const response = await videoCallsApi.getHistory().catch(() => ({ calls: [] })) as any;
       
       // Use API data if available, otherwise fall back to demo data
       let callsData: VideoCall[] = [];
@@ -174,7 +174,7 @@ export default function VideoCallsPage() {
 
   const handleViewRecording = async (roomId: string) => {
     try {
-      const recording = await videoCallsApi.getRecording(roomId);
+      const recording = await videoCallsApi.getRecording(roomId) as any;
       if (recording?.url) {
         window.open(recording.url, '_blank');
       }

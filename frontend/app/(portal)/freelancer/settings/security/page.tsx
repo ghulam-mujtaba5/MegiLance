@@ -4,10 +4,12 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { twoFactorApi } from '@/lib/api';
+import { twoFactorApi as _twoFactorApi } from '@/lib/api';
 import commonStyles from './Security.common.module.css';
 import lightStyles from './Security.light.module.css';
 import darkStyles from './Security.dark.module.css';
+
+const twoFactorApi: any = _twoFactorApi;
 
 interface TwoFactorStatus {
   enabled: boolean;

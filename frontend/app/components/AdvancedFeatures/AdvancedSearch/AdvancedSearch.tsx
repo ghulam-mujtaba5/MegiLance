@@ -50,7 +50,7 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<NodeJS.Timeout>(undefined);
 
   const styles = useMemo(() => {
     const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
@@ -169,14 +169,16 @@ const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       <div className={styles.inputWrapper}>
         <FaSearch className={styles.searchIcon} />
         <Input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => query && results.length > 0 && setShowResults(true)}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
+          {...{
+            ref: inputRef,
+            type: "text",
+            value: query,
+            onChange: (e: any) => setQuery(e.target.value),
+            onKeyDown: handleKeyDown,
+            onFocus: () => query && results.length > 0 && setShowResults(true),
+            placeholder: placeholder,
+            autoFocus: autoFocus,
+          } as any}
         />
         {loading && <FaSpinner className={`${styles.searchIcon} animate-spin`} />}
         {query && !loading && (

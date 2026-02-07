@@ -39,6 +39,7 @@ const contactInfo = [
 
 const Contact: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  if (!resolvedTheme) return null;
   const { toast } = useToast();
   const styles = React.useMemo(() => {
     const themeStyles = resolvedTheme === 'dark' ? dark : light;
@@ -90,7 +91,7 @@ const Contact: React.FC = () => {
       toast({
         title: 'Error',
         description: 'Failed to send message. Please try again.',
-        variant: 'error',
+        variant: 'danger',
       });
     }
   };

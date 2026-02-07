@@ -7,8 +7,8 @@ export { useProposals, type Proposal, type CreateProposalData } from './usePropo
 export { useClientData, type ClientProject, type ClientPayment, type ClientFreelancer, type ClientReview } from './useClient';
 export { useFreelancerData, type FreelancerProject, type FreelancerJob, type FreelancerTransaction, type FreelancerAnalytics } from './useFreelancer';
 export { useDashboardData } from './useDashboardData';
-export { useAdmin } from './useAdmin';
+export { useAdminData as useAdmin } from './useAdmin';
 export { useUser } from './useUser';
 export { useWebSocket } from './useWebSocket';
-export { useAnimatedCounter } from './useAnimatedCounter';
-export { useIntersectionObserver } from './useIntersectionObserver';
+export { default as useAnimatedCounter } from './useAnimatedCounter';
+export { default as useIntersectionObserver } from './useIntersectionObserver';

@@ -29,10 +29,10 @@ export default function ProposalsRedirect() {
   }, [router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p>Redirecting to proposals...</p>
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="text-center flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-3 border-gray-200 border-t-[var(--color-primary)] rounded-full animate-spin" />
+        <p className="text-sm text-[var(--text-secondary)]">Redirecting to proposals...</p>
       </div>
     </div>
   );

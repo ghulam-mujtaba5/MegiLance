@@ -11,8 +11,8 @@ import {
   FaDollarSign,
   FaUsers,
   FaBriefcase,
-  FaTrendingUp,
-  FaTrendingDown,
+  FaArrowUp as FaTrendingUp,
+  FaArrowDown as FaTrendingDown,
   FaCalendar,
 } from 'react-icons/fa';
 import commonStyles from './AnalyticsDashboard.common.module.css';

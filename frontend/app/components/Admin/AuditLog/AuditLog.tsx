@@ -72,7 +72,7 @@ const AuditLog: React.FC = () => {
       try {
         setLoading(true);
         
-        const activities: ApiActivity[] = await api.admin.getRecentActivity(100);
+        const activities: ApiActivity[] = await api.admin.getRecentActivity(100) as any;
 
         // Transform API data to LogEntry format
         const transformed: LogEntry[] = activities.map((activity, index) => ({

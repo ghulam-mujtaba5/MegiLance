@@ -154,7 +154,7 @@ export default function InvoiceWizard({
 
   const loadClients = async () => {
     try {
-      const data = await api.users.getClients();
+      const data = await api.users.getClients() as any;
       setClients(data);
     } catch (error) {
       console.error('Failed to load clients:', error);
@@ -630,7 +630,7 @@ export default function InvoiceWizard({
         due_date: invoiceData.dueDate
       };
 
-      const result = await api.invoices.create(payload);
+      const result = await api.invoices.create(payload) as any;
 
       localStorage.removeItem('invoice_draft');
       

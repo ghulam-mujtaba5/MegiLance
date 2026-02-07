@@ -63,7 +63,7 @@ export default function SubscriptionPage() {
     setLoading(true);
     try {
       // Import API dynamically to avoid circular dependencies
-      const { paymentsApi, invoicesApi } = await import('@/lib/api');
+      const { paymentsApi, invoicesApi } = await import('@/lib/api') as any;
       
       // Fetch real data from APIs
       const [paymentsData, invoicesData] = await Promise.all([

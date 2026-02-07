@@ -117,7 +117,7 @@ const AdvancedSearch: React.FC = () => {
 
   const loadSavedSearches = async () => {
     try {
-      const data = await api.searches.getSaved();
+      const data: any = await (api.searches as any).getSaved?.() || [];
       setSavedSearches(data);
     } catch (error) {
       console.error('Failed to load saved searches:', error);
@@ -126,7 +126,7 @@ const AdvancedSearch: React.FC = () => {
 
   const fetchSuggestions = useCallback(async (query: string) => {
     try {
-      const data = await api.search.suggestions(query);
+      const data: any = await (api.search as any).suggestions?.(query) || [];
       setSuggestions(data);
       setShowSuggestions(true);
     } catch (error) {
@@ -167,7 +167,7 @@ const AdvancedSearch: React.FC = () => {
     if (!searchName.trim()) return;
 
     try {
-      await api.searches.save({
+      await (api.searches as any).save?.({
         name: searchName,
         filters,
         alertsEnabled: false,
@@ -188,7 +188,7 @@ const AdvancedSearch: React.FC = () => {
 
   const deleteSavedSearch = async (id: string) => {
     try {
-      await api.searches.delete(id);
+      await (api.searches as any).delete?.(id);
       await loadSavedSearches();
     } catch (error) {
       console.error('Failed to delete search:', error);

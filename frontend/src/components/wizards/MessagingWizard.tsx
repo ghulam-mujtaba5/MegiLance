@@ -172,7 +172,7 @@ export default function MessagingWizard({
     setIsSearching(true);
     try {
       const targetType = userType === 'client' ? 'freelancer' : 'client';
-      const results = await api.users.search(query, targetType);
+      const results = await api.users.search(query, targetType) as any;
       setSearchResults(results);
     } catch (error) {
       console.error('Search error:', error);
@@ -547,7 +547,7 @@ export default function MessagingWizard({
         formData.append(`attachment_${index}`, attachment.file);
       });
 
-      const result = await api.messages.createConversation(formData);
+      const result = await api.messages.createConversation(formData) as any;
 
       localStorage.removeItem('messaging_draft');
       

@@ -77,11 +77,11 @@ const ContractDetailsPage: React.FC = () => {
     setError(null);
     
     try {
-      const contractData: Contract = await api.contracts.get(Number(params.id));
+      const contractData = await api.contracts.get(Number(params.id)) as any as Contract;
       
       // Try to fetch project details
       try {
-        const projectData = await api.projects.get(contractData.project_id);
+        const projectData = await api.projects.get(contractData.project_id) as any;
         contractData.project_title = projectData.title;
         contractData.client_name = projectData.client_name;
       } catch {

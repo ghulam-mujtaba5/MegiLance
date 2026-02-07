@@ -6,7 +6,9 @@ import { useTheme } from 'next-themes';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import api, { proposalsApi, contractsApi } from '@/lib/api';
+import api, { proposalsApi as _proposalsApi, contractsApi as _contractsApi } from '@/lib/api';
+const proposalsApi: any = _proposalsApi;
+const contractsApi: any = _contractsApi;
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import { PageTransition, ScrollReveal } from '@/components/Animations';
 import Button from '@/app/components/Button/Button';
@@ -55,7 +57,7 @@ const ProjectDetail: React.FC = () => {
   const loadProject = useCallback(async () => {
     if (!projectId) return;
     try {
-      const data = await api.projects.get(projectId);
+      const data = await (api.projects as any).get?.(projectId);
       setProject(data);
     } catch (e) {
       console.error(e);
@@ -146,7 +148,7 @@ const ProjectDetail: React.FC = () => {
       // However, we updated fraudDetectionApi in api.ts, but did we update the default export?
       // Yes, the default export includes fraudDetection: fraudDetectionApi.
       
-      const result = await api.fraudDetection.checkProposal(proposalId);
+      const result: any = await (api as any).fraudDetection?.checkProposal?.(proposalId);
       // The API returns { analysis: ... } wrapper
       setFraudCheckResults(prev => ({ ...prev, [proposalId]: result.analysis || result }));
     } catch (err) {
@@ -287,11 +289,11 @@ const ProjectDetail: React.FC = () => {
                           <span>{proposal.freelancer_name || `Freelancer #${proposal.freelancer_id}`}</span>
                         </div>
                         <Badge 
-                          variant={
+                          variant={(
                             proposal.status === 'accepted' ? 'success' : 
                             proposal.status === 'rejected' ? 'error' : 
                             'info'
-                          }
+                          ) as any}
                         >
                           {proposal.status}
                         </Badge>

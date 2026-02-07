@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { proposalTemplatesApi } from '@/lib/api';
+import { proposalTemplatesApi as _proposalTemplatesApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
@@ -12,6 +12,8 @@ import { StaggerContainer, StaggerItem } from '@/app/components/Animations/Stagg
 import commonStyles from './Templates.common.module.css';
 import lightStyles from './Templates.light.module.css';
 import darkStyles from './Templates.dark.module.css';
+
+const proposalTemplatesApi: any = _proposalTemplatesApi;
 
 interface ProposalTemplate {
   id: string;

@@ -62,7 +62,7 @@ const FlaggedFraudList: React.FC = () => {
         setLoading(true);
         
         // Fetch users from admin API
-        const usersData = await api.admin.getUsers({ limit: 50 });
+        const usersData = await api.admin.getUsers({ limit: 50 }) as any;
         const users: ApiUser[] = usersData.users ?? usersData ?? [];
 
         // Check fraud risk for each user (in parallel with rate limiting)

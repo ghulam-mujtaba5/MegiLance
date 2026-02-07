@@ -12,6 +12,7 @@ import dark from './RadioGroup.dark.module.css';
 interface RadioOption {
   value: string;
   label: string;
+  description?: string;
 }
 
 interface RadioGroupProps {

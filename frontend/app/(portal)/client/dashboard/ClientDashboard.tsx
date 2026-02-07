@@ -50,7 +50,7 @@ const ClientDashboard: React.FC = () => {
   const metrics = useMemo(() => {
     const totalProjects = displayProjects.length;
     const activeProjects = displayProjects.filter(p => 
-      p.status === 'In Progress' || p.status === 'in_progress' || p.status === 'active'
+      (p.status as string) === 'In Progress' || (p.status as string) === 'in_progress' || (p.status as string) === 'active'
     ).length;
     const totalSpent = Array.isArray(payments) ? payments.reduce((sum, p) => {
       const amount = typeof p.amount === 'number' ? p.amount : parseFloat(p.amount?.replace(/[$,]/g, '') || '0');

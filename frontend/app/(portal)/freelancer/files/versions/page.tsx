@@ -59,22 +59,23 @@ export default function FileVersionsPage() {
     setLoading(true);
     try {
       // Fetch real file versions from API
-      const { filesApi } = await import('@/lib/api');
+      const apiModule = await import('@/lib/api') as any;
+      const filesApi = apiModule.filesApi || apiModule.default?.files || {};
       
       const [fileData, versionsData] = await Promise.all([
-        filesApi.get(id).catch(() => null),
-        filesApi.getVersions(id).catch(() => null),
+        filesApi.get?.(id).catch(() => null),
+        filesApi.getVersions?.(id).catch(() => null),
       ]);
 
       // Transform API data or use defaults
       const fileInfoFromApi: FileInfo | null = fileData ? {
-        id: fileData.id?.toString() || id,
-        name: fileData.name || fileData.file_name || 'Unknown File',
-        projectId: fileData.project_id?.toString() || 'proj_001',
-        projectName: fileData.project_name || 'Project',
-        totalVersions: fileData.total_versions || versionsData?.length || 1,
-        currentVersion: fileData.current_version || 1,
-        createdAt: fileData.created_at || new Date().toISOString()
+        id: (fileData as any).id?.toString() || id,
+        name: (fileData as any).name || (fileData as any).file_name || 'Unknown File',
+        projectId: (fileData as any).project_id?.toString() || 'proj_001',
+        projectName: (fileData as any).project_name || 'Project',
+        totalVersions: (fileData as any).total_versions || (versionsData as any)?.length || 1,
+        currentVersion: (fileData as any).current_version || 1,
+        createdAt: (fileData as any).created_at || new Date().toISOString()
       } : null;
 
       const versionsArray = Array.isArray(versionsData) ? versionsData : versionsData?.items || [];

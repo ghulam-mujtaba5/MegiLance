@@ -73,7 +73,7 @@ const Search: React.FC = () => {
       // Search projects if type is All or Project
       if (searchType === 'All' || searchType === 'Project') {
         try {
-          const projects = await api.search.projects(searchQuery, { page_size: 10 });
+          const projects = await (api.search as any).projects?.(searchQuery, { page_size: 10 });
           allResults.push(...(Array.isArray(projects) ? projects : []).map((p: any) => ({
             id: `project-${p.id}`,
             title: p.title,
@@ -89,7 +89,7 @@ const Search: React.FC = () => {
       // Search freelancers if type is All or User
       if (searchType === 'All' || searchType === 'User') {
         try {
-          const users = await api.search.freelancers(searchQuery, { page_size: 10 });
+          const users = await (api.search as any).freelancers?.(searchQuery, { page_size: 10 });
           allResults.push(...(Array.isArray(users) ? users : []).map((u: any) => ({
             id: `user-${u.id}`,
             title: u.full_name || 'Unknown User',

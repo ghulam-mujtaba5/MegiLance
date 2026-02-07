@@ -184,11 +184,26 @@ async function apiFetch<T = unknown>(
 
 // Type definitions for auth responses
 interface AuthUser {
-  id: string;
+  id: string | number;
   email: string;
   name: string;
+  full_name?: string;
   role: string;
+  user_type?: string;
   requires_2fa?: boolean;
+  bio?: string;
+  skills?: string;
+  hourly_rate?: number;
+  profile_image_url?: string;
+  avatar_url?: string;
+  location?: string;
+  title?: string;
+  is_verified?: boolean;
+  joined_at?: string;
+  notification_count?: number;
+  phone?: string;
+  company?: string;
+  website?: string;
 }
 
 interface LoginResponse {

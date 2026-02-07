@@ -86,7 +86,7 @@ export default function FeedbackPage() {
       if (activeFilter !== 'all') {
         params.type = activeFilter;
       }
-      const response = await userFeedbackApi.list(params);
+      const response = await userFeedbackApi.list(params) as any;
       setFeedbackItems(response.items || []);
     } catch (error) {
       console.error('Failed to load feedback:', error);
@@ -100,7 +100,7 @@ export default function FeedbackPage() {
 
     try {
       setSubmitting(true);
-      await userFeedbackApi.create(newFeedback);
+      await (userFeedbackApi as any).submit(newFeedback);
       setShowModal(false);
       setNewFeedback({
         type: 'feature_request',
@@ -119,9 +119,9 @@ export default function FeedbackPage() {
   const handleVote = async (id: string, userVoted: boolean) => {
     try {
       if (userVoted) {
-        await userFeedbackApi.unvote(id);
+        await (userFeedbackApi as any).unvote(id);
       } else {
-        await userFeedbackApi.vote(id);
+        await (userFeedbackApi as any).vote(id);
       }
       setFeedbackItems(prev =>
         prev.map(item =>

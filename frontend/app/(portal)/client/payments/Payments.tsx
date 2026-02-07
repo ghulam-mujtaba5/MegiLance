@@ -169,7 +169,8 @@ const Payments: React.FC = () => {
             <Pagination
               currentPage={currentPage}
               totalPages={Math.ceil(sortedPayments.length / itemsPerPage)}
-              onPageChange={setCurrentPage}
+              onPrev={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onNext={() => setCurrentPage(p => Math.min(Math.ceil(sortedPayments.length / itemsPerPage), p + 1))}
             />
           </div>
         )}

@@ -64,7 +64,7 @@ const DisputeDetailsPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.disputes.get(Number(params.id));
+      const data = await api.disputes.get(Number(params.id)) as any;
       setDispute(data);
     } catch (err) {
       console.error('Failed to fetch dispute:', err);

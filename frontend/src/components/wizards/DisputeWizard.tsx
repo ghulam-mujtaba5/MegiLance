@@ -708,7 +708,7 @@ export default function DisputeWizard({
         formData.append(`evidence_${index}_description`, evidence.description);
       });
 
-      const result = await api.disputes.create(formData);
+      const result = await api.disputes.create(formData) as any;
 
       localStorage.removeItem(`dispute_draft_${contractId}`);
       alert('Dispute submitted successfully. Our team will review it within 24 hours.');

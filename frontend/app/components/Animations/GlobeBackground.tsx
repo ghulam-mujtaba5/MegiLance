@@ -8,7 +8,7 @@ import { useTheme } from 'next-themes';
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
 
 const GlobeBackground = () => {
-  const globeEl = useRef<any>();
+  const globeEl = useRef<any>(null);
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
