@@ -39,4 +39,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
     CMD curl -f http://localhost:${PORT:-8001}/health || exit 1
 
 # Run the advanced application with dynamic port
-CMD ["sh", "-c", "uvicorn main_advanced:app --host 0.0.0.0 --port ${PORT:-8001}"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8001}"]
