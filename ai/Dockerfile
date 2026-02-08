@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir --upgrade pip
 
 # Copy requirements from ai subdirectory (build context is repo root)
-COPY ai/requirements_advanced.txt requirements.txt
+COPY ai/requirements.txt requirements.txt
 
 # Install Python dependencies
 # Note: Using CPU version of PyTorch to save space/memory
