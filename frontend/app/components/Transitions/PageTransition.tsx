@@ -9,12 +9,13 @@ import dark from './PageTransition.dark.module.css';
 
 export type PageTransitionProps = {
   children: React.ReactNode;
+  className?: string;
   theme?: 'light' | 'dark';
   variant?: 'fade' | 'slide' | 'scale';
 };
 
 // Separate client component for the logic that uses hooks
-const PageTransitionClient: React.FC<PageTransitionProps> = ({ children, theme: themeProp, variant = 'fade' }) => {
+const PageTransitionClient: React.FC<PageTransitionProps> = ({ children, className, theme: themeProp, variant = 'fade' }) => {
   const { resolvedTheme } = useTheme();
   const currentTheme = themeProp || resolvedTheme;
   const [pathname, setPathname] = React.useState<string | null>(null);
@@ -36,7 +37,7 @@ const PageTransitionClient: React.FC<PageTransitionProps> = ({ children, theme: 
     <div
       key={pathname || 'default'}
       ref={wrapperRef}
-      className={[styles.base, styles[variant], themeClass].join(' ')}
+      className={[styles.base, styles[variant], themeClass, className].filter(Boolean).join(' ')}
       role="region"
       aria-label="Page content"
       tabIndex={-1}
