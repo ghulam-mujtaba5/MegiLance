@@ -6,7 +6,7 @@
 - Rate limiting on auth endpoints
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Set, Any
 import logging
 
@@ -119,12 +119,12 @@ def _create_token(data: dict, expires_delta: timedelta, token_type: str) -> str:
     """Create JWT token with expiry"""
     settings = get_settings()
     to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     
     # Add token metadata
     to_encode.update({
         "exp": expire,
-        "iat": datetime.utcnow(),
+        "iat": datetime.now(timezone.utc),
         "type": token_type,
     })
     
@@ -220,7 +220,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         
         # Validate expiry
         exp_timestamp = payload.get("exp")
-        if exp_timestamp and datetime.utcfromtimestamp(exp_timestamp) < datetime.utcnow():
+        if exp_timestamp and datetime.fromtimestamp(exp_timestamp, tz=timezone.utc) < datetime.now(timezone.utc):
             logger.warning("Token has expired")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -284,7 +284,7 @@ def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> dict:
         
         # Validate expiry
         exp = payload.get("exp")
-        if exp and datetime.utcfromtimestamp(exp) < datetime.utcnow():
+        if exp and datetime.fromtimestamp(exp, tz=timezone.utc) < datetime.now(timezone.utc):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
         
         return payload

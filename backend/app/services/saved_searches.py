@@ -13,7 +13,7 @@ Features:
 import uuid
 import json
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from sqlalchemy.orm import Session
 
@@ -147,8 +147,8 @@ class SavedSearchesService:
             "last_alert_sent": None,
             "results_count": 0,
             "use_count": 0,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         if user_id not in self._saved_searches:
@@ -217,7 +217,7 @@ class SavedSearchesService:
                 if "criteria" in updates:
                     search["search_hash"] = self._generate_search_hash(updates["criteria"])
                 
-                search["updated_at"] = datetime.utcnow().isoformat()
+                search["updated_at"] = datetime.now(timezone.utc).isoformat()
                 
                 return {
                     "success": True,
@@ -274,7 +274,7 @@ class SavedSearchesService:
                     "search": search,
                     "results": results,
                     "total_results": len(results),
-                    "executed_at": datetime.utcnow().isoformat()
+                    "executed_at": datetime.now(timezone.utc).isoformat()
                 }
         
         raise ValueError("Saved search not found")
@@ -292,7 +292,7 @@ class SavedSearchesService:
                     "title": f"Project {i+1}",
                     "budget": random.randint(500, 10000),
                     "category": "development",
-                    "posted_at": datetime.utcnow().isoformat()
+                    "posted_at": datetime.now(timezone.utc).isoformat()
                 }
                 for i in range(count)
             ]
@@ -325,7 +325,7 @@ class SavedSearchesService:
             "criteria": criteria,
             "search_hash": self._generate_search_hash(criteria),
             "results_count": results_count,
-            "searched_at": datetime.utcnow().isoformat()
+            "searched_at": datetime.now(timezone.utc).isoformat()
         }
         
         if user_id not in self._search_history:
@@ -380,7 +380,7 @@ class SavedSearchesService:
         for popular in self._popular_searches:
             if popular["search_hash"] == search_hash:
                 popular["count"] += 1
-                popular["last_used"] = datetime.utcnow().isoformat()
+                popular["last_used"] = datetime.now(timezone.utc).isoformat()
                 return
         
         self._popular_searches.append({
@@ -388,8 +388,8 @@ class SavedSearchesService:
             "category": category,
             "criteria": criteria,
             "count": 1,
-            "first_used": datetime.utcnow().isoformat(),
-            "last_used": datetime.utcnow().isoformat()
+            "first_used": datetime.now(timezone.utc).isoformat(),
+            "last_used": datetime.now(timezone.utc).isoformat()
         })
         
         # Keep only top 1000 popular searches
@@ -473,7 +473,7 @@ class SavedSearchesService:
             if search["id"] == search_id:
                 search["is_alert"] = enable
                 search["alert_frequency"] = frequency if enable else None
-                search["updated_at"] = datetime.utcnow().isoformat()
+                search["updated_at"] = datetime.now(timezone.utc).isoformat()
                 
                 return {
                     "success": True,
@@ -506,13 +506,13 @@ class SavedSearchesService:
                     if frequency == "instant":
                         should_send = True
                     elif frequency == "daily":
-                        should_send = datetime.utcnow() - last_sent_dt >= timedelta(days=1)
+                        should_send = datetime.now(timezone.utc) - last_sent_dt >= timedelta(days=1)
                     elif frequency == "weekly":
-                        should_send = datetime.utcnow() - last_sent_dt >= timedelta(weeks=1)
+                        should_send = datetime.now(timezone.utc) - last_sent_dt >= timedelta(weeks=1)
                 
                 if should_send:
                     # Would send actual email notification here
-                    search["last_alert_sent"] = datetime.utcnow().isoformat()
+                    search["last_alert_sent"] = datetime.now(timezone.utc).isoformat()
                     notifications_sent += 1
                 
                 alerts_processed += 1
@@ -520,7 +520,7 @@ class SavedSearchesService:
         return {
             "alerts_processed": alerts_processed,
             "notifications_sent": notifications_sent,
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_search_analytics(

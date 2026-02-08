@@ -10,7 +10,7 @@ Complete Analytics Service featuring:
 """
 
 from typing import List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.db.turso_http import execute_query, parse_rows
 
 class AnalyticsService:
@@ -20,7 +20,7 @@ class AnalyticsService:
     def get_dashboard_metrics(days: int = 30) -> Dict[str, Any]:
         """Get comprehensive dashboard metrics"""
         
-        cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
         
         # Revenue metrics
         revenue_result = execute_query(
@@ -96,14 +96,14 @@ class AnalyticsService:
             "revenue": revenue_metrics,
             "projects": project_metrics,
             "contracts": contract_metrics,
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     @staticmethod
     def get_revenue_trend(days: int = 30) -> List[Dict[str, Any]]:
         """Get daily revenue trend"""
         
-        cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
         
         result = execute_query(
             """SELECT 
@@ -202,7 +202,7 @@ class AnalyticsService:
     def get_user_retention() -> Dict[str, Any]:
         """Get user retention metrics"""
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         month_ago = (now - timedelta(days=30)).isoformat()
         
         # New users

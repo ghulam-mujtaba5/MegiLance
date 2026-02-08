@@ -16,7 +16,7 @@ Features:
 import logging
 import secrets
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
@@ -248,12 +248,12 @@ class NotificationCenterService:
                 "delivery_status": {},
                 "read": False,
                 "read_at": None,
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "scheduled_for": schedule_for.isoformat() if schedule_for else None
             }
             
             # If scheduled for later, store and return
-            if schedule_for and schedule_for > datetime.utcnow():
+            if schedule_for and schedule_for > datetime.now(timezone.utc):
                 notification_record["status"] = "scheduled"
                 self._notifications[notification_id] = notification_record
                 self._user_notifications[user_id].append(notification_id)
@@ -396,7 +396,7 @@ class NotificationCenterService:
             notif = self._notifications.get(nid)
             if notif and notif["user_id"] == user_id and not notif.get("read"):
                 notif["read"] = True
-                notif["read_at"] = datetime.utcnow().isoformat()
+                notif["read_at"] = datetime.now(timezone.utc).isoformat()
                 marked_count += 1
         
         return {
@@ -485,7 +485,7 @@ class NotificationCenterService:
             "endpoint": subscription.get("endpoint"),
             "keys": subscription.get("keys", {}),
             "device_info": device_info or {},
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._push_subscriptions[user_id].append(subscription_record)
@@ -556,7 +556,7 @@ class NotificationCenterService:
         limit = self.RATE_LIMITS.get(channel, 50)
         
         # Clean old entries
-        cutoff = datetime.utcnow() - timedelta(hours=1)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=1)
         self._rate_tracking[key] = [
             t for t in self._rate_tracking[key] if t > cutoff
         ]
@@ -570,7 +570,7 @@ class NotificationCenterService:
     ) -> None:
         """Track notification delivery for rate limiting."""
         key = f"{user_id}:{channel.value}"
-        self._rate_tracking[key].append(datetime.utcnow())
+        self._rate_tracking[key].append(datetime.now(timezone.utc))
     
     async def _deliver_to_channel(
         self,

@@ -1,5 +1,5 @@
 """Skill schemas for MegiLance platform"""
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 from datetime import datetime
 
@@ -35,8 +35,7 @@ class Skill(SkillBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserSkillBase(BaseModel):
@@ -68,5 +67,4 @@ class UserSkill(UserSkillBase):
     updated_at: datetime
     skill: Optional[Skill] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

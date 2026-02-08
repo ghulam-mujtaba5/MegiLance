@@ -15,7 +15,7 @@ import logging
 import math
 import hashlib
 from typing import List, Dict, Any, Optional, Set, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 from enum import Enum
 from sqlalchemy.orm import Session
@@ -86,7 +86,7 @@ class BehavioralAnalyzer:
     
     def get_user_features(self, user_id: int, window_days: int = 30) -> Dict[str, float]:
         """Extract behavioral features for a user"""
-        cutoff = datetime.utcnow() - timedelta(days=window_days)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=window_days)
         
         # Proposal behavior
         proposals = self.db.query(Proposal).filter(
@@ -130,7 +130,7 @@ class BehavioralAnalyzer:
             'avg_message_length': avg_response_length,
             'night_activity_ratio': night_activity,
             'contract_count': len(contracts),
-            'days_active': (datetime.utcnow() - self.db.query(User).get(user_id).created_at).days
+            'days_active': (datetime.now(timezone.utc) - self.db.query(User).get(user_id).created_at).days
         }
     
     def calculate_anomaly_score(
@@ -189,7 +189,7 @@ class VelocityChecker:
         
         Returns: (is_allowed, risk_score, message)
         """
-        timestamp = timestamp or datetime.utcnow()
+        timestamp = timestamp or datetime.now(timezone.utc)
         key = f"{user_id}:{action_type}"
         
         # Add current action
@@ -367,7 +367,7 @@ class RelationshipAnalyzer:
         new_reviewer_count = 0
         for reviewer_id in reviewer_ids:
             reviewer = self.db.query(User).get(reviewer_id)
-            if reviewer and (datetime.utcnow() - reviewer.created_at).days < 7:
+            if reviewer and (datetime.now(timezone.utc) - reviewer.created_at).days < 7:
                 new_reviewer_count += 1
         
         risk_score = 0
@@ -431,7 +431,7 @@ class AdvancedFraudEngine:
         total_score = 0
         
         # 1. Account age signal
-        account_age_days = (datetime.utcnow() - user.created_at).days
+        account_age_days = (datetime.now(timezone.utc) - user.created_at).days
         if account_age_days < 1:
             signals['new_account'] = {
                 'score': 25,
@@ -503,7 +503,7 @@ class AdvancedFraudEngine:
             'risk_score': total_score,
             'risk_level': risk_level.value,
             'signal_count': len(signals),
-            'analyzed_at': datetime.utcnow().isoformat(),
+            'analyzed_at': datetime.now(timezone.utc).isoformat(),
             'recommendations': self._get_recommendations(risk_level)
         }
         
@@ -569,13 +569,13 @@ class AdvancedFraudEngine:
                 })
         
         # Recent suspicious activity
-        recent_cutoff = datetime.utcnow() - timedelta(hours=24)
+        recent_cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
         
         return {
             'risk_distribution': dict(risk_distribution),
             'high_risk_user_count': len(high_risk_users),
             'high_risk_users': high_risk_users[:10],
-            'generated_at': datetime.utcnow().isoformat()
+            'generated_at': datetime.now(timezone.utc).isoformat()
         }
     
     def _get_risk_level(self, score: float) -> RiskLevel:

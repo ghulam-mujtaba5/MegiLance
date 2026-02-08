@@ -15,7 +15,7 @@ All these work in Pakistan and have free or low-cost tiers!
 """
 
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from pydantic import BaseModel, Field
 from enum import Enum
@@ -436,7 +436,7 @@ class PakistanPaymentService:
             "network": network,
             "is_testnet": is_testnet,
             "chain_id": polygon_config["chain_id"],
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         # Block explorer URLs
@@ -501,7 +501,7 @@ Chain ID: **{polygon_config['chain_id']}**
         # For now, simulate verification
         tx["status"] = "confirmed"
         tx["tx_hash"] = tx_hash
-        tx["confirmed_at"] = datetime.utcnow().isoformat()
+        tx["confirmed_at"] = datetime.now(timezone.utc).isoformat()
         
         network = tx.get("network", "polygon")
         explorer_base = "https://polygonscan.com" if network == "polygon" else "https://etherscan.io"
@@ -545,7 +545,7 @@ Chain ID: **{polygon_config['chain_id']}**
             "amount_usd": str(request.amount),
             "amount_pkr": str(pkr_amount),
             "merchant_code": merchant_code,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         return PaymentResponse(
@@ -592,7 +592,7 @@ Your payment will be verified within 5 minutes!
             "provider": "airtm",
             "status": "pending",
             "amount": str(request.amount),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         return PaymentResponse(
@@ -646,7 +646,7 @@ Verification typically takes 15-30 minutes.
             "provider": "wise",
             "status": "pending",
             "amount": str(request.amount),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         return PaymentResponse(
@@ -695,7 +695,7 @@ First time? Sign up at wise.com (free account)
             "provider": "payoneer",
             "status": "pending",
             "amount": str(request.amount),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         return PaymentResponse(

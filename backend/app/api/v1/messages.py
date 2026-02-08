@@ -1,7 +1,7 @@
 # @AI-HINT: Messages and conversations API - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field, field_validator
 import re
 import logging
@@ -151,7 +151,7 @@ def create_conversation(
             existing["is_archived"] = bool(existing.get("is_archived"))
             return existing
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         # Create new conversation
@@ -381,7 +381,7 @@ def update_conversation(
     
     if updates:
         updates.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(conversation_id)
         
         try:
@@ -471,7 +471,7 @@ def send_message(
             receiver_type = rows[0].get("user_type", "")
             
             # Create new conversation
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             if role.lower() == "client":
                 client_id = user_id
                 freelancer_id = receiver_id
@@ -523,7 +523,7 @@ def send_message(
     if not receiver_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Receiver ID could not be determined")
 
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         # Create message
@@ -610,7 +610,7 @@ def get_messages(
         return []
     
     messages = parse_rows(result)
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Mark messages as read
     unread_ids = []
@@ -658,7 +658,7 @@ def get_message(
     
     # Mark as read if receiver
     if message.get("receiver_id") == user_id and not message.get("is_read"):
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         execute_query(
             "UPDATE messages SET is_read = 1, read_at = ? WHERE id = ?",
             [now, message_id]
@@ -711,7 +711,7 @@ def update_message(
         params.append(1 if message_update["is_read"] else 0)
         if message_update["is_read"]:
             updates.append("read_at = ?")
-            params.append(datetime.utcnow().isoformat())
+            params.append(datetime.now(timezone.utc).isoformat())
     
     if updates:
         params.append(message_id)

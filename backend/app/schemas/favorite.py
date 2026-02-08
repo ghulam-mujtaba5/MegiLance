@@ -1,5 +1,5 @@
 # @AI-HINT: Pydantic schemas for Favorite API validation and responses
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 from typing import Literal
 
@@ -25,8 +25,7 @@ class FavoriteRead(FavoriteBase):
     user_id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class FavoriteDelete(BaseModel):
     """Schema for confirming favorite deletion"""

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -85,7 +85,7 @@ async def create_export(
         format=format,
         filters=filters,
         status=ExportStatus.PROCESSING,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -109,8 +109,8 @@ async def list_exports(
             file_url=f"/downloads/export-{i}.csv" if i < 3 else None,
             file_size=1024 * (i + 1) if i < 3 else None,
             records_count=100 * (i + 1) if i < 3 else None,
-            created_at=datetime.utcnow(),
-            completed_at=datetime.utcnow() if i < 3 else None
+            created_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(timezone.utc) if i < 3 else None
         )
         for i in range(min(limit, 5))
     ]
@@ -133,8 +133,8 @@ async def get_export(
         file_url=f"/downloads/{export_id}.csv",
         file_size=2048,
         records_count=150,
-        created_at=datetime.utcnow(),
-        completed_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc),
+        completed_at=datetime.now(timezone.utc)
     )
 
 
@@ -235,8 +235,8 @@ async def get_scheduled_exports(
             format=ExportFormat.XLSX,
             recipients=["admin@example.com"],
             is_active=True,
-            last_run=datetime.utcnow(),
-            next_run=datetime.utcnow()
+            last_run=datetime.now(timezone.utc),
+            next_run=datetime.now(timezone.utc)
         )
     ]
 
@@ -261,7 +261,7 @@ async def create_scheduled_export(
         format=format,
         recipients=recipients,
         is_active=True,
-        next_run=datetime.utcnow()
+        next_run=datetime.now(timezone.utc)
     )
 
 
@@ -280,7 +280,7 @@ async def update_scheduled_export(
         "schedule": schedule,
         "recipients": recipients,
         "is_active": is_active,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 

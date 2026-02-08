@@ -17,7 +17,7 @@ import hmac
 import json
 import httpx
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -123,7 +123,7 @@ class WebhookService:
             "description": description,
             "secret": secret,
             "active": True,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "last_triggered": None,
             "success_count": 0,
             "failure_count": 0
@@ -164,7 +164,7 @@ class WebhookService:
         if description is not None:
             webhook["description"] = description
         
-        webhook["updated_at"] = datetime.utcnow().isoformat()
+        webhook["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         # Don't return secret on update
         result = {**webhook}
@@ -330,7 +330,7 @@ class WebhookService:
         
         new_secret = secrets.token_urlsafe(32)
         webhook["secret"] = new_secret
-        webhook["secret_rotated_at"] = datetime.utcnow().isoformat()
+        webhook["secret_rotated_at"] = datetime.now(timezone.utc).isoformat()
         
         return {
             "webhook_id": webhook_id,
@@ -352,7 +352,7 @@ class WebhookService:
         test_payload = {
             "test": True,
             "message": "This is a test webhook delivery",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
         delivery_id = f"test_{secrets.token_urlsafe(8)}"
@@ -394,7 +394,7 @@ class WebhookService:
         # Prepare payload
         full_payload = {
             "event": event.value,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "delivery_id": delivery_id,
             "test": is_test,
             "data": payload
@@ -424,7 +424,7 @@ class WebhookService:
             "payload": payload,
             "status": WebhookStatus.PENDING.value,
             "attempts": 1 if not is_retry else self._deliveries.get(delivery_id, {}).get("attempts", 0) + 1,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._deliveries[delivery_id] = delivery
@@ -443,7 +443,7 @@ class WebhookService:
                     delivery["status"] = WebhookStatus.DELIVERED.value
                     delivery["response_code"] = response.status_code
                     webhook["success_count"] += 1
-                    webhook["last_triggered"] = datetime.utcnow().isoformat()
+                    webhook["last_triggered"] = datetime.now(timezone.utc).isoformat()
                 else:
                     raise Exception(f"HTTP {response.status_code}")
                     
@@ -465,7 +465,7 @@ class WebhookService:
             "webhook_id": webhook["id"],
             "event": event.value,
             "status": delivery["status"],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "response_code": delivery.get("response_code"),
             "error": delivery.get("error")
         }

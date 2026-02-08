@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query, Path
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -147,8 +147,8 @@ async def get_availability_blocks(
         AvailabilityBlock(
             id="block-1",
             user_id=str(current_user.id),
-            start_datetime=datetime.utcnow(),
-            end_datetime=datetime.utcnow(),
+            start_datetime=datetime.now(timezone.utc),
+            end_datetime=datetime.now(timezone.utc),
             status=AvailabilityStatus.OUT_OF_OFFICE,
             title="Vacation"
         )
@@ -169,8 +169,8 @@ async def update_availability_block(
     return AvailabilityBlock(
         id=block_id,
         user_id=str(current_user.id),
-        start_datetime=start_datetime or datetime.utcnow(),
-        end_datetime=end_datetime or datetime.utcnow(),
+        start_datetime=start_datetime or datetime.now(timezone.utc),
+        end_datetime=end_datetime or datetime.now(timezone.utc),
         status=status or AvailabilityStatus.BUSY,
         title=title
     )
@@ -246,8 +246,8 @@ async def get_my_bookings(
             id="booking-1",
             freelancer_id=str(current_user.id),
             client_id="client-1",
-            start_datetime=datetime.utcnow(),
-            end_datetime=datetime.utcnow(),
+            start_datetime=datetime.now(timezone.utc),
+            end_datetime=datetime.now(timezone.utc),
             title="Project Discussion",
             status="confirmed",
             meeting_link="https://meet.megilance.com/booking-1"
@@ -314,7 +314,7 @@ async def update_availability_settings(
     """Update availability settings"""
     return {
         "message": "Settings updated successfully",
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 

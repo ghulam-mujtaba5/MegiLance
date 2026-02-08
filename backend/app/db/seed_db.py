@@ -9,7 +9,7 @@ from app.models.contract import Contract
 from app.models.portfolio import PortfolioItem
 from app.models.payment import Payment
 from app.core.security import get_password_hash
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 def seed_database():
     # Create tables
@@ -37,7 +37,7 @@ def seed_database():
             hourly_rate=50.0,
             profile_image_url="/avatars/alice.png",
             location="San Francisco, CA",
-            joined_at=datetime.utcnow()
+            joined_at=datetime.now(timezone.utc)
         )
         
         freelancer2 = User(
@@ -51,7 +51,7 @@ def seed_database():
             hourly_rate=45.0,
             profile_image_url="/avatars/bob.jpg",
             location="New York, NY",
-            joined_at=datetime.utcnow()
+            joined_at=datetime.now(timezone.utc)
         )
         
         client1 = User(
@@ -62,7 +62,7 @@ def seed_database():
             user_type="Client",
             bio="Innovative tech company looking for talented freelancers to help build our products.",
             location="Los Angeles, CA",
-            joined_at=datetime.utcnow()
+            joined_at=datetime.now(timezone.utc)
         )
         
         db.add_all([freelancer1, freelancer2, client1])
@@ -81,8 +81,8 @@ def seed_database():
             skills="React,Node.js,PostgreSQL,Stripe",
             client_id=client1.id,
             status="open",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         project2 = Project(
@@ -97,8 +97,8 @@ def seed_database():
             skills="UI/UX,Figma,Prototyping",
             client_id=client1.id,
             status="open",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         db.add_all([project1, project2])
@@ -113,8 +113,8 @@ def seed_database():
             hourly_rate=50.0,
             availability="1-2_weeks",
             status="submitted",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         proposal2 = Proposal(
@@ -125,8 +125,8 @@ def seed_database():
             hourly_rate=45.0,
             availability="immediate",
             status="submitted",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         db.add_all([proposal1, proposal2])
@@ -139,8 +139,8 @@ def seed_database():
             description="A full-featured e-commerce platform built with React and Node.js.",
             image_url="/portfolio/ecommerce.jpg",
             project_url="https://example-ecommerce.com",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         portfolio2 = PortfolioItem(
@@ -148,8 +148,8 @@ def seed_database():
             title="Task Management App",
             description="A productivity app for managing tasks and projects.",
             image_url="/portfolio/taskapp.jpg",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         db.add_all([portfolio1, portfolio2])

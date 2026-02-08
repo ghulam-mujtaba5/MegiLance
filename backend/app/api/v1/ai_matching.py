@@ -8,11 +8,14 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 from app.services.matching_engine import get_matching_service, MatchingEngine
+import logging
+
+logger = logging.getLogger("megilance")
 
 
 router = APIRouter(prefix="/matching", tags=["ai-matching"])
@@ -86,9 +89,10 @@ async def get_general_recommendations(
         from app.db.turso_http import TursoHTTP
         turso = TursoHTTP.get_instance()
         result = turso.execute(
-            f"SELECT id, email, name, bio, profile_image_url, hourly_rate, location "
-            f"FROM users WHERE LOWER(user_type) = 'freelancer' AND is_active = 1 "
-            f"LIMIT {limit}"
+            "SELECT id, email, name, bio, profile_image_url, hourly_rate, location "
+            "FROM users WHERE LOWER(user_type) = 'freelancer' AND is_active = 1 "
+            "LIMIT ?",
+            [limit]
         )
         
         recommendations = []
@@ -125,7 +129,7 @@ async def get_general_recommendations(
         }
     except Exception as turso_error:
         # Log the Turso error and try SQLAlchemy as fallback
-        print(f"Turso HTTP fallback: {turso_error}")
+        logger.warning("Turso HTTP fallback: %s", turso_error)
     
     # Fallback to SQLAlchemy (only if Turso HTTP fails)
     matching_service = get_matching_service(db)
@@ -180,9 +184,10 @@ async def get_general_recommendations(
         }
     
     except Exception as e:
+        logger.error("get_general_recommendations failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate recommendations: {str(e)}"
+            detail="An internal error occurred. Please try again."
         )
 
 
@@ -228,13 +233,14 @@ async def get_freelancer_recommendations(
             "recommendations": recommendations,
             "total": len(recommendations),
             "algorithm": "weighted_multi_factor_v1",
-            "generated_at": str(datetime.utcnow())
+            "generated_at": str(datetime.now(timezone.utc))
         }
     
     except Exception as e:
+        logger.error("get_freelancer_recommendations failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate recommendations: {str(e)}"
+            detail="An internal error occurred. Please try again."
         )
 
 
@@ -276,13 +282,14 @@ async def get_project_recommendations(
             "recommendations": recommendations,
             "total": len(recommendations),
             "algorithm": "weighted_multi_factor_v1",
-            "generated_at": str(datetime.utcnow())
+            "generated_at": str(datetime.now(timezone.utc))
         }
     
     except Exception as e:
+        logger.error("get_project_recommendations failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate recommendations: {str(e)}"
+            detail="An internal error occurred. Please try again."
         )
 
 
@@ -372,9 +379,10 @@ async def track_recommendation_click(
         }
     
     except Exception as e:
+        logger.error("track_recommendation_click failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to track click: {str(e)}"
+            detail="An internal error occurred. Please try again."
         )
 
 

@@ -1,10 +1,13 @@
 # @AI-HINT: Client-specific API endpoints - Turso HTTP only
 from fastapi import APIRouter, Depends, HTTPException, Header
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.core.security import get_current_user_from_token
+import logging
+
+logger = logging.getLogger("megilance")
 
 router = APIRouter()
 
@@ -320,7 +323,7 @@ def create_client_job(
     Create a new job posting for the client
     """
     try:
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         skills = ",".join(job_data.get("skills", []))
         budget = job_data.get("budget", 0)
         
@@ -352,4 +355,5 @@ def create_client_job(
             "message": "Job submitted successfully."
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("create_client_job failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="An internal error occurred. Please try again.")

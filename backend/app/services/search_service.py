@@ -6,7 +6,7 @@ Production-grade search for projects, freelancers, and global search
 from typing import List, Dict, Any, Optional, Tuple, Union
 from dataclasses import dataclass, field
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 import logging
 from math import ceil
@@ -247,7 +247,7 @@ class SearchScorer:
         if not created_at:
             return 0.5
         
-        age = (datetime.utcnow() - created_at).days
+        age = (datetime.now(timezone.utc) - created_at).days
         
         if age <= 0:
             return 1.0
@@ -410,7 +410,7 @@ class SearchService:
             base_query = base_query.filter(Project.project_type == filters.project_type)
         if filters.posted_within_days:
             from datetime import timedelta
-            cutoff = datetime.utcnow() - timedelta(days=filters.posted_within_days)
+            cutoff = datetime.now(timezone.utc) - timedelta(days=filters.posted_within_days)
             base_query = base_query.filter(Project.created_at >= cutoff)
         
         # Get total count

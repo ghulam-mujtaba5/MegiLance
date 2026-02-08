@@ -15,7 +15,7 @@ Features:
 import logging
 import math
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Set
 from sqlalchemy.orm import Session
 from collections import defaultdict
@@ -82,7 +82,7 @@ class RecommendationEngine:
                     "budget_min": p.budget_min,
                     "budget_max": p.budget_max,
                     "experience_level": p.experience_level,
-                    "created_at": p.created_at.isoformat() if p.created_at else datetime.utcnow().isoformat()
+                    "created_at": p.created_at.isoformat() if p.created_at else datetime.now(timezone.utc).isoformat()
                 }
 
             # 2. Load Freelancers
@@ -145,10 +145,10 @@ class RecommendationEngine:
     ) -> None:
         """Track user viewing a project."""
         self._user_project_views[user_id][project_id] += 1
-        self._hourly_views[project_id].append(datetime.utcnow())
+        self._hourly_views[project_id].append(datetime.now(timezone.utc))
         
         # Clean old view records
-        cutoff = datetime.utcnow() - timedelta(hours=24)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
         self._hourly_views[project_id] = [
             t for t in self._hourly_views[project_id] if t > cutoff
         ]
@@ -171,7 +171,7 @@ class RecommendationEngine:
     ) -> None:
         """Track user applying to a project."""
         self._user_project_applications[user_id].add(project_id)
-        self._daily_applications[project_id].append(datetime.utcnow())
+        self._daily_applications[project_id].append(datetime.now(timezone.utc))
         
         # Higher weight for applications
         if project_id in self._project_features:
@@ -214,7 +214,7 @@ class RecommendationEngine:
             "budget_min": features.get("budget_min", 0),
             "budget_max": features.get("budget_max", 0),
             "experience_level": features.get("experience_level", ""),
-            "created_at": features.get("created_at", datetime.utcnow().isoformat())
+            "created_at": features.get("created_at", datetime.now(timezone.utc).isoformat())
         }
     
     async def register_freelancer(
@@ -431,7 +431,7 @@ class RecommendationEngine:
         limit: int = 10
     ) -> List[Dict[str, Any]]:
         """Get trending projects based on recent activity."""
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         
         trending_scores = []
         
@@ -553,8 +553,8 @@ class RecommendationEngine:
         recent_views = self._hourly_views.get(project_id, [])
         recent_apps = self._daily_applications.get(project_id, [])
         
-        cutoff_1h = datetime.utcnow() - timedelta(hours=1)
-        cutoff_24h = datetime.utcnow() - timedelta(hours=24)
+        cutoff_1h = datetime.now(timezone.utc) - timedelta(hours=1)
+        cutoff_24h = datetime.now(timezone.utc) - timedelta(hours=24)
         
         views_1h = len([t for t in recent_views if t > cutoff_1h])
         views_24h = len([t for t in recent_views if t > cutoff_24h])

@@ -11,7 +11,7 @@ Features:
 - Backup history
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -75,9 +75,9 @@ class BackupRestoreService:
             "status": BackupStatus.PENDING.value,
             "encrypted": encrypt,
             "compressed": compression,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "estimated_size_mb": 125.5,
-            "expires_at": (datetime.utcnow() + timedelta(days=30)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
         }
         
         # In production, queue backup job
@@ -98,7 +98,7 @@ class BackupRestoreService:
             "started_at": "2024-01-15T10:00:00",
             "completed_at": "2024-01-15T10:05:32",
             "download_url": f"/api/backup/{backup_id}/download",
-            "download_expires_at": (datetime.utcnow() + timedelta(hours=24)).isoformat()
+            "download_expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
         }
     
     async def list_backups(
@@ -144,7 +144,7 @@ class BackupRestoreService:
             "filename": f"megilance_backup_{backup_id[:8]}.zip",
             "size_mb": 125.5,
             "checksum": f"sha256:{hashlib.sha256(backup_id.encode()).hexdigest()}",
-            "expires_at": (datetime.utcnow() + timedelta(hours=24)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
         }
     
     async def delete_backup(
@@ -172,7 +172,7 @@ class BackupRestoreService:
             "status": "in_progress",
             "categories": [c.value for c in (categories or list(DataCategory))],
             "overwrite_mode": overwrite,
-            "started_at": datetime.utcnow().isoformat(),
+            "started_at": datetime.now(timezone.utc).isoformat(),
             "estimated_time_minutes": 5
         }
     
@@ -265,7 +265,7 @@ class BackupRestoreService:
             "backup_type": backup_type.value,
             "categories": [c.value for c in (categories or list(DataCategory))],
             "retention_days": retention_days,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Storage Management
@@ -295,7 +295,7 @@ class BackupRestoreService:
             "deleted_count": 3,
             "freed_storage_mb": 245.8,
             "remaining_backups": 5,
-            "cleaned_at": datetime.utcnow().isoformat()
+            "cleaned_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Export for Migration
@@ -323,7 +323,7 @@ class BackupRestoreService:
                 "reviews",
                 "settings"
             ],
-            "started_at": datetime.utcnow().isoformat()
+            "started_at": datetime.now(timezone.utc).isoformat()
         }
 
 

@@ -10,7 +10,7 @@ Complete Search Service featuring:
 
 from typing import List, Dict, Any, Optional
 from app.db.turso_http import execute_query, parse_rows
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 class SearchService:
@@ -260,7 +260,7 @@ class SearchService:
         search_type: str = "global"
     ):
         """Log search query for analytics"""
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         execute_query(
             """INSERT INTO search_analytics (query, user_id, search_type, created_at)

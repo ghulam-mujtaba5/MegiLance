@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -196,7 +196,7 @@ async def create_learning_goal(
         deadline=deadline,
         progress=0.0,
         status="active",
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -218,7 +218,7 @@ async def get_my_learning_goals(
             deadline=datetime(2025, 12, 31),
             progress=45.0,
             status="active",
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
     ]
 
@@ -241,7 +241,7 @@ async def update_learning_goal(
         target_level=SkillLevel.ADVANCED,
         progress=progress or 50.0,
         status=status or "active",
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -305,7 +305,7 @@ async def request_mentorship(
         message=message,
         goals=goals,
         status="pending",
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 

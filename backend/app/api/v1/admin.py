@@ -5,7 +5,7 @@ Uses Turso HTTP API directly - NO SQLite fallback
 import re
 import logging
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.security import get_current_active_user
@@ -272,7 +272,7 @@ async def get_system_stats(admin: User = Depends(get_admin_user)):
 @router.get("/admin/dashboard/user-activity", response_model=UserActivity)
 async def get_user_activity(admin: User = Depends(get_admin_user)):
     """Get user activity metrics."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     today = now.replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
     week_ago = (now - timedelta(days=7)).isoformat()
     month_ago = (now - timedelta(days=30)).isoformat()
@@ -385,7 +385,7 @@ async def get_project_metrics(admin: User = Depends(get_admin_user)):
 @router.get("/admin/dashboard/financial-metrics", response_model=FinancialMetrics)
 async def get_financial_metrics(admin: User = Depends(get_admin_user)):
     """Get financial analytics and revenue metrics."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
     week_start = (now - timedelta(days=now.weekday())).isoformat()
     
@@ -558,7 +558,7 @@ async def get_recent_activity(
         for row in result["rows"]:
             name = _safe_str(_get_val(row, 1)) or "Unknown"
             user_type = _safe_str(_get_val(row, 2)) or "User"
-            joined_at = parse_date(_get_val(row, 3)) or datetime.utcnow()
+            joined_at = parse_date(_get_val(row, 3)) or datetime.now(timezone.utc)
             activities.append({
                 'type': 'user_joined',
                 'description': f"{user_type} joined the platform",
@@ -578,7 +578,7 @@ async def get_recent_activity(
         for row in result["rows"]:
             title = _safe_str(_get_val(row, 1)) or "Project"
             budget = float(_get_val(row, 2) or 0)
-            created_at = parse_date(_get_val(row, 3)) or datetime.utcnow()
+            created_at = parse_date(_get_val(row, 3)) or datetime.now(timezone.utc)
             client_name = _safe_str(_get_val(row, 4)) or "Unknown"
             activities.append({
                 'type': 'project_posted',
@@ -599,7 +599,7 @@ async def get_recent_activity(
         for row in result["rows"]:
             hours = float(_get_val(row, 1) or 0)
             rate = float(_get_val(row, 2) or 0)
-            created_at = parse_date(_get_val(row, 3)) or datetime.utcnow()
+            created_at = parse_date(_get_val(row, 3)) or datetime.now(timezone.utc)
             freelancer_name = _safe_str(_get_val(row, 4)) or "Unknown"
             amount = hours * rate if rate else None
             activities.append({
@@ -622,7 +622,7 @@ async def get_recent_activity(
             amount = float(_get_val(row, 1) or 0)
             payment_type = _safe_str(_get_val(row, 2)) or ""
             description = _safe_str(_get_val(row, 3)) or payment_type
-            created_at = parse_date(_get_val(row, 4)) or datetime.utcnow()
+            created_at = parse_date(_get_val(row, 4)) or datetime.now(timezone.utc)
             payee_name = _safe_str(_get_val(row, 5)) or "Unknown"
             activities.append({
                 'type': 'payment_made',
@@ -740,7 +740,7 @@ async def toggle_user_status(
     # Update status
     update_result = execute_query(
         "UPDATE users SET is_active = ?, updated_at = ? WHERE id = ?",
-        [new_status, datetime.utcnow().isoformat(), user_id]
+        [new_status, datetime.now(timezone.utc).isoformat(), user_id]
     )
     
     if not update_result:

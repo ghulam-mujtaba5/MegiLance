@@ -7,7 +7,7 @@ Enables clients and freelancers to propose budget/deadline/scope modifications.
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import logging
 
@@ -90,8 +90,8 @@ def _scope_change_from_row(row: list) -> dict:
         "new_amount": float(_get_val(row, 9)) if _get_val(row, 9) else None,
         "old_deadline": parse_date(_get_val(row, 10)),
         "new_deadline": parse_date(_get_val(row, 11)),
-        "created_at": parse_date(_get_val(row, 12)) or datetime.utcnow(),
-        "updated_at": parse_date(_get_val(row, 13)) or datetime.utcnow(),
+        "created_at": parse_date(_get_val(row, 12)) or datetime.now(timezone.utc),
+        "updated_at": parse_date(_get_val(row, 13)) or datetime.now(timezone.utc),
         "resolved_at": parse_date(_get_val(row, 14))
     }
 
@@ -117,7 +117,7 @@ def _get_contract_parties(contract_id: int) -> tuple:
 def _send_notification(user_id: int, notification_type: str, title: str, 
                        content: str, data: dict, priority: str = "medium", action_url: str = ""):
     """Send notification to user"""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     try:
         execute_query("""
             INSERT INTO notifications (user_id, notification_type, title, content, data, 
@@ -167,7 +167,7 @@ async def create_scope_change_request(
             detail="There is already a pending scope change request for this contract"
         )
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Insert scope change request
     result = execute_query("""
@@ -347,7 +347,7 @@ async def update_scope_change_request(
     
     if update_fields:
         update_fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(scope_change_id)
         
         execute_query(
@@ -398,7 +398,7 @@ async def approve_scope_change(
     if current_user.id == requested_by:
         raise HTTPException(status_code=400, detail="You cannot approve your own scope change request")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Update scope change status
     execute_query("""
@@ -479,7 +479,7 @@ async def reject_scope_change(
     if current_user.id == requested_by:
         raise HTTPException(status_code=400, detail="You cannot reject your own scope change request")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Update scope change status
     execute_query("""
@@ -535,7 +535,7 @@ async def cancel_scope_change(
     if current_status != "pending":
         raise HTTPException(status_code=400, detail=f"Cannot cancel a {current_status} scope change")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("""
         UPDATE scope_change_requests 

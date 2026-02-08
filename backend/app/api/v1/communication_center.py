@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -75,7 +75,7 @@ async def send_message(
         "channel": channel,
         "recipient": recipient,
         "status": "sent",
-        "sent_at": datetime.utcnow().isoformat()
+        "sent_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -116,9 +116,9 @@ async def get_messages(
             subject="Important Update" if i % 2 == 0 else None,
             content="Your project has been updated.",
             status=MessageStatus.DELIVERED,
-            sent_at=datetime.utcnow(),
-            delivered_at=datetime.utcnow(),
-            created_at=datetime.utcnow()
+            sent_at=datetime.now(timezone.utc),
+            delivered_at=datetime.now(timezone.utc),
+            created_at=datetime.now(timezone.utc)
         )
         for i in range(min(limit, 5))
     ]
@@ -139,10 +139,10 @@ async def get_message(
         subject="Important Update",
         content="Your project has been updated.",
         status=MessageStatus.READ,
-        sent_at=datetime.utcnow(),
-        delivered_at=datetime.utcnow(),
-        read_at=datetime.utcnow(),
-        created_at=datetime.utcnow()
+        sent_at=datetime.now(timezone.utc),
+        delivered_at=datetime.now(timezone.utc),
+        read_at=datetime.now(timezone.utc),
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -254,7 +254,7 @@ async def update_channel_config(
         "enabled": enabled,
         "rate_limit": rate_limit,
         "daily_limit": daily_limit,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -313,7 +313,7 @@ async def get_scheduled_messages(
             "id": "scheduled-1",
             "channel": "email",
             "recipient": "user@example.com",
-            "scheduled_at": datetime.utcnow().isoformat(),
+            "scheduled_at": datetime.now(timezone.utc).isoformat(),
             "status": "scheduled"
         }
     ]

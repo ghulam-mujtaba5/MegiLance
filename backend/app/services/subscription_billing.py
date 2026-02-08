@@ -8,7 +8,7 @@ and premium feature access.
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
 import logging
@@ -253,7 +253,7 @@ class SubscriptionBillingService:
             if not plan:
                 return {"error": "Invalid plan tier"}
             
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             
             # Calculate period end based on billing cycle
             if trial_days > 0:
@@ -325,7 +325,7 @@ class SubscriptionBillingService:
             if prorate and current_sub.get("current_period_end"):
                 # Calculate unused days
                 period_end = datetime.fromisoformat(current_sub["current_period_end"])
-                remaining_days = (period_end - datetime.utcnow()).days
+                remaining_days = (period_end - datetime.now(timezone.utc)).days
                 if remaining_days > 0:
                     current_plan = SUBSCRIPTION_PLANS.get(current_tier, {})
                     daily_rate = current_plan.get("price_monthly", Decimal("0")) / 30
@@ -416,7 +416,7 @@ class SubscriptionBillingService:
             if not subscription or subscription.get("tier") == PlanTier.FREE.value:
                 return {"error": "No active subscription to cancel"}
             
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             
             if immediate:
                 subscription["status"] = SubscriptionStatus.CANCELLED.value

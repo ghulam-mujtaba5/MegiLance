@@ -1,7 +1,7 @@
 # @AI-HINT: Categories API endpoints - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 from app.db.turso_http import execute_query, parse_rows
@@ -58,9 +58,9 @@ async def create_category(
     slug = generate_slug(name)
     result = execute_query("SELECT id FROM categories WHERE slug = ?", [slug])
     if result and result.get("rows"):
-        slug = f"{slug}-{int(datetime.utcnow().timestamp())}"
+        slug = f"{slug}-{int(datetime.now(timezone.utc).timestamp())}"
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Create category
     result = execute_query(
@@ -273,7 +273,7 @@ async def update_category(
     
     if updates:
         updates.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(category_id)
         
         execute_query(

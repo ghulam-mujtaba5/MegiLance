@@ -4,7 +4,7 @@
 from sqlalchemy import String, Integer, DateTime, Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 import enum
 
@@ -72,4 +72,4 @@ class TalentInvitation(Base):
     @property
     def is_expired(self) -> bool:
         """Check if invitation has expired."""
-        return datetime.utcnow() > self.expires_at and self.status == "pending"
+        return datetime.now(timezone.utc) > self.expires_at and self.status == "pending"

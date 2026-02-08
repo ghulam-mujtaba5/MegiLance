@@ -10,7 +10,7 @@ Provides project-centric collaboration features:
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import uuid
 import logging
@@ -246,7 +246,7 @@ def _log_activity(contract_id: int, user_id: int, activity_type: str,
                   entity_type: str = None, entity_id: int = None, 
                   description: str = None, metadata: dict = None):
     """Log workroom activity"""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     metadata_json = json.dumps(metadata) if metadata else None
     try:
         execute_query("""
@@ -319,7 +319,7 @@ async def create_task(
     """Create a new task on the Kanban board."""
     _verify_contract_access(contract_id, current_user.id)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     labels_json = json.dumps(task.labels) if task.labels else "[]"
     due_date = task.due_date.isoformat() if task.due_date else None
     
@@ -386,7 +386,7 @@ async def update_task(
     
     if update_fields:
         update_fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(task_id)
         
         execute_query(f"UPDATE workroom_tasks SET {', '.join(update_fields)} WHERE id = ?", params)
@@ -395,7 +395,7 @@ async def update_task(
         if update.column == "done" and old_column != "done":
             execute_query("""
                 UPDATE workroom_tasks SET is_completed = 1, completed_at = ? WHERE id = ?
-            """, [datetime.utcnow().isoformat(), task_id])
+            """, [datetime.now(timezone.utc).isoformat(), task_id])
             _log_activity(contract_id, current_user.id, "task_completed", "task", task_id)
         elif update.column and update.column != "done" and old_column == "done":
             execute_query("UPDATE workroom_tasks SET is_completed = 0, completed_at = NULL WHERE id = ?", [task_id])
@@ -418,7 +418,7 @@ async def move_task(
     old_column = _get_val(result["rows"][0], 1)
     _verify_contract_access(contract_id, current_user.id)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     is_completed = 1 if move.column == "done" else 0
     completed_at = now if move.column == "done" and old_column != "done" else None
     
@@ -523,7 +523,7 @@ async def upload_file(
     with open(file_path, "wb") as f:
         f.write(content)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("""
         INSERT INTO workroom_files (contract_id, uploaded_by, filename, original_name, file_path, 
@@ -654,7 +654,7 @@ async def create_discussion(
     """Create a new discussion thread."""
     _verify_contract_access(contract_id, current_user.id)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("""
         INSERT INTO workroom_discussions (contract_id, user_id, title, content, is_pinned, created_at, updated_at)
@@ -743,7 +743,7 @@ async def add_reply(
     contract_id = int(_get_val(result["rows"][0], 0) or 0)
     _verify_contract_access(contract_id, current_user.id)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("""
         INSERT INTO workroom_discussion_replies (discussion_id, user_id, parent_id, content, created_at, updated_at)
@@ -837,7 +837,7 @@ async def get_workroom_summary(
     summary["discussion_count"] = _get_val(disc_result["rows"][0], 0) or 0 if disc_result and disc_result.get("rows") else 0
     
     # Recent activity count (last 7 days)
-    week_ago = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    week_ago = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     week_ago = week_ago.isoformat()
     activity_result = execute_query("""
         SELECT COUNT(*) FROM workroom_activity WHERE contract_id = ? AND created_at > ?

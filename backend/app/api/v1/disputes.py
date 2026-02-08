@@ -4,7 +4,7 @@ Handles dispute creation, listing, admin assignment, and resolution.
 """
 from typing import List, Optional
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
 
 from app.db.turso_http import execute_query, to_str, parse_date
@@ -40,7 +40,7 @@ def _row_to_dispute(row) -> dict:
 def _send_notification_turso(user_id: int, notification_type: str, title: str, 
                               content: str, data: dict, priority: str, action_url: str):
     """Send notification using Turso"""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         INSERT INTO notifications (user_id, notification_type, title, content, data, 
                                    priority, action_url, is_read, created_at)
@@ -68,7 +68,7 @@ async def create_dispute(
         raise HTTPException(status_code=403, detail="Only contract parties can raise disputes")
     
     # Create dispute
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     dispute_type = dispute_data.dispute_type.value if hasattr(dispute_data.dispute_type, 'value') else dispute_data.dispute_type
     
     execute_query("""
@@ -307,7 +307,7 @@ async def update_dispute(
             params.append(value)
         
         update_fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(dispute_id)
         
         execute_query(f"UPDATE disputes SET {', '.join(update_fields)} WHERE id = ?", params)
@@ -345,7 +345,7 @@ async def assign_dispute(
         raise HTTPException(status_code=400, detail="Can only assign to admin users")
     
     # Assign
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE disputes SET assigned_to_id = ?, status = 'in_progress', updated_at = ? WHERE id = ?
     """, [admin_id, now, dispute_id])
@@ -388,7 +388,7 @@ async def resolve_dispute(
     contract_id = int(result["rows"][0][1].get("value"))
     
     # Resolve
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE disputes SET status = 'resolved', resolution = ?, updated_at = ? WHERE id = ?
     """, [resolution, now, dispute_id])
@@ -474,7 +474,7 @@ async def upload_evidence(
     evidence_list.append(file_url)
     new_evidence_json = json.dumps(evidence_list)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("UPDATE disputes SET evidence = ?, updated_at = ? WHERE id = ?", 
                   [new_evidence_json, now, dispute_id])
     

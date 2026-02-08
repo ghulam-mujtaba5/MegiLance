@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Optional
-from datetime import datetime
-from pydantic import BaseModel
+from datetime import datetime, timezone
+from pydantic import BaseModel, ConfigDict
 
 from app.core.security import get_current_user_from_token
 from app.db.turso_http import execute_query, parse_rows
@@ -28,8 +28,7 @@ class JobAlert(JobAlertBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 # --- Endpoints ---
 
@@ -59,7 +58,7 @@ def create_job_alert(
 ):
     """Create a new job alert"""
     user_id = current_user.get("user_id")
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Insert
     result = execute_query(
@@ -132,7 +131,7 @@ def update_job_alert(
     # Build update query
     updates = []
     params = []
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     if alert_update.keywords is not None:
         updates.append("keywords = ?")

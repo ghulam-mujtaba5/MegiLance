@@ -11,7 +11,10 @@ import os
 from app.core.security import get_current_active_user
 from app.core.storage import save_file, delete_file, get_file_url
 from app.db.turso_http import execute_query, to_str
-from datetime import datetime
+from datetime import datetime, timezone
+import logging
+
+logger = logging.getLogger("megilance")
 
 router = APIRouter()
 
@@ -80,16 +83,16 @@ async def upload_profile_image(
     if old_image:
         try:
             delete_file(old_image)
-            print(f"[UPLOAD] Deleted old profile image: {old_image}")
+            logger.info("Deleted old profile image: %s", old_image)
         except Exception as e:
-            print(f"[WARNING] Failed to delete old profile image: {str(e)}")
+            logger.warning("Failed to delete old profile image: %s", e)
     
     # Update user.profile_image in database
     execute_query(
         "UPDATE users SET profile_image = ?, updated_at = ? WHERE id = ?",
-        [saved_path, datetime.utcnow().isoformat(), current_user['id']]
+        [saved_path, datetime.now(timezone.utc).isoformat(), current_user['id']]
     )
-    print(f"[UPLOAD] Updated profile image for user {current_user['id']}")
+    logger.info("Updated profile image for user %s", current_user['id'])
     
     return {
         "message": "Profile image uploaded successfully",
@@ -184,16 +187,16 @@ async def upload_proposal_attachment(
             "filename": file.filename,
             "url": file_url,
             "file_path": saved_path,
-            "uploaded_at": datetime.utcnow().isoformat()
+            "uploaded_at": datetime.now(timezone.utc).isoformat()
         })
         
         execute_query(
             "UPDATE proposals SET attachments = ? WHERE id = ?",
             [json.dumps(attachments), int(proposal_id)]
         )
-        print(f"[UPLOAD] Added attachment to proposal {proposal_id}")
+        logger.info("Added attachment to proposal %s", proposal_id)
     else:
-        print(f"[WARNING] Proposal {proposal_id} not found, attachment saved but not linked")
+        logger.warning("Proposal %s not found, attachment saved but not linked", proposal_id)
     
     return {
         "message": "Proposal attachment uploaded successfully",

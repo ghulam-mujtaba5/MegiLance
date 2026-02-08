@@ -4,7 +4,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 
 from app.db.turso_http import get_turso_http
@@ -139,7 +139,7 @@ def create_invitation(
     
     # Create invitation
     invitation_id = str(uuid.uuid4())[:8]
-    expires_at = (datetime.utcnow() + timedelta(days=invitation.expires_in_days or 7)).isoformat()
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=invitation.expires_in_days or 7)).isoformat()
     
     turso.execute("""
         INSERT INTO talent_invitations (
@@ -162,7 +162,7 @@ def create_invitation(
         "budget_hint": invitation.budget_hint,
         "status": "pending",
         "expires_at": expires_at,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -191,7 +191,7 @@ def create_bulk_invitations(
     created = []
     skipped = []
     
-    expires_at = (datetime.utcnow() + timedelta(days=bulk.expires_in_days or 7)).isoformat()
+    expires_at = (datetime.now(timezone.utc) + timedelta(days=bulk.expires_in_days or 7)).isoformat()
     
     for freelancer_id in bulk.freelancer_ids:
         # Check if freelancer exists
@@ -420,7 +420,7 @@ def respond_to_invitation(
     expires_at = inv.get("expires_at")
     if expires_at:
         exp_dt = datetime.fromisoformat(expires_at.replace('Z', '+00:00')) if isinstance(expires_at, str) else expires_at
-        if exp_dt < datetime.utcnow():
+        if exp_dt < datetime.now(timezone.utc):
             raise HTTPException(status_code=400, detail="Invitation has expired")
     
     # Update invitation

@@ -1,7 +1,7 @@
 # @AI-HINT: Pydantic schemas for Talent Invitation system
 """Talent invitation schemas."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -79,8 +79,7 @@ class TalentInvitationDetail(BaseModel):
     
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TalentInvitationListItem(BaseModel):
@@ -98,8 +97,7 @@ class TalentInvitationListItem(BaseModel):
     is_expired: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class InvitationListResponse(BaseModel):
@@ -148,8 +146,7 @@ class SuggestedFreelancer(BaseModel):
     already_invited: bool
     already_proposed: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SuggestedFreelancersResponse(BaseModel):

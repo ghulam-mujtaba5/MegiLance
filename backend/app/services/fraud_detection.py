@@ -5,7 +5,7 @@ AI-powered fraud detection for suspicious activities
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import logging
 
 from app.models.user import User
@@ -41,7 +41,7 @@ class FraudDetectionService:
             flags = []
             
             # Check account age
-            account_age_days = (datetime.utcnow() - user.created_at).days
+            account_age_days = (datetime.now(timezone.utc) - user.created_at).days
             if account_age_days < 1:
                 risk_score += 20
                 flags.append('Very new account (< 1 day old)')
@@ -84,7 +84,7 @@ class FraudDetectionService:
                 'risk_level': risk_level,
                 'flags': flags,
                 'recommendations': self._get_recommendations(risk_level, flags),
-                'analyzed_at': datetime.utcnow().isoformat()
+                'analyzed_at': datetime.now(timezone.utc).isoformat()
             }
             
         except Exception as e:
@@ -138,7 +138,7 @@ class FraudDetectionService:
                 'risk_level': risk_level,
                 'flags': flags,
                 'recommendations': self._get_recommendations(risk_level, flags),
-                'analyzed_at': datetime.utcnow().isoformat()
+                'analyzed_at': datetime.now(timezone.utc).isoformat()
             }
             
         except Exception as e:
@@ -184,7 +184,7 @@ class FraudDetectionService:
                 'risk_level': risk_level,
                 'flags': flags,
                 'recommendations': self._get_recommendations(risk_level, flags),
-                'analyzed_at': datetime.utcnow().isoformat()
+                'analyzed_at': datetime.now(timezone.utc).isoformat()
             }
             
         except Exception as e:
@@ -198,7 +198,7 @@ class FraudDetectionService:
         
         try:
             # Check rapid submissions
-            recent_time = datetime.utcnow() - timedelta(hours=1)
+            recent_time = datetime.now(timezone.utc) - timedelta(hours=1)
             recent_proposals = self.db.query(Proposal).filter(
                 Proposal.freelancer_id == user_id,
                 Proposal.created_at >= recent_time

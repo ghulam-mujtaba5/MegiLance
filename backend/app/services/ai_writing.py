@@ -12,7 +12,7 @@ Features:
 - Grammar and style checking
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -90,7 +90,7 @@ Best regards"""
             "content": proposal,
             "tone": tone.value,
             "word_count": len(proposal.split()),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "suggestions": [
                 "Consider adding specific portfolio examples",
                 "Include a timeline estimate",
@@ -138,7 +138,7 @@ We're looking forward to reviewing your proposals and finding the right partner 
             "content": description,
             "tone": tone.value,
             "word_count": len(description.split()),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "suggestions": [
                 "Add specific technology requirements",
                 "Include examples of similar projects",
@@ -178,7 +178,7 @@ Let's collaborate and bring your vision to life! I'm available for both short-te
             "content": bio,
             "tone": tone.value,
             "word_count": len(bio.split()),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "suggestions": [
                 "Add specific metrics from past projects",
                 "Include certifications",
@@ -245,7 +245,7 @@ Best regards"""
             "content": message,
             "intent": intent,
             "tone": tone.value,
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def generate_upsell_suggestions(
@@ -302,7 +302,7 @@ Best regards"""
                 "before": 65,
                 "after": 78
             },
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def adjust_tone(
@@ -319,7 +319,7 @@ Best regards"""
             "adjusted": content,  # Would be tone-adjusted in production
             "original_tone": "neutral",
             "target_tone": target_tone.value,
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def expand_content(
@@ -336,7 +336,7 @@ Best regards"""
             "original_length": len(content.split()),
             "expanded_length": target_length,
             "focus_areas": focus_areas or [],
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def summarize_content(
@@ -354,7 +354,7 @@ Best regards"""
             "summary": summary,
             "original_length": len(words),
             "summary_length": target_length,
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def analyze_feasibility(
@@ -420,7 +420,7 @@ Best regards"""
                 "score": 0.75,
                 "label": "positive"
             },
-            "analyzed_at": datetime.utcnow().isoformat()
+            "analyzed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def check_grammar(
@@ -446,7 +446,7 @@ Best regards"""
             ],
             "total_issues": 2,
             "corrected_content": content,  # Would be corrected in production
-            "checked_at": datetime.utcnow().isoformat()
+            "checked_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Templates
@@ -502,7 +502,7 @@ Best regards"""
             "template_id": template_id,
             "content": "Generated content from template...",
             "variables_used": variables,
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Usage Tracking

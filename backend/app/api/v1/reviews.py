@@ -14,7 +14,7 @@ import json
 import re
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.turso_http import execute_query, parse_rows
 from app.core.security import get_current_user_from_token
@@ -156,7 +156,7 @@ async def create_review(
     if result and result.get("rows"):
         raise HTTPException(status_code=400, detail="You have already reviewed this user for this contract")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Prepare rating breakdown
     rating_breakdown = {
@@ -497,7 +497,7 @@ async def update_review(
     
     if updates:
         updates.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(review_id)
         
         execute_query(

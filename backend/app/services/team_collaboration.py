@@ -15,7 +15,7 @@ Features:
 
 import logging
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -118,7 +118,7 @@ class TeamCollaborationService:
                 "role": TeamRole.OWNER.value,
                 "permissions": [p.value for p in TeamPermission],
                 "earnings_split": 100.0,  # Owner gets 100% by default
-                "joined_at": datetime.utcnow().isoformat()
+                "joined_at": datetime.now(timezone.utc).isoformat()
             }],
             "settings": {
                 "default_earnings_split": "equal",  # equal, custom, project-based
@@ -133,8 +133,8 @@ class TeamCollaborationService:
                 "active_projects": 0,
                 "average_rating": 0.0
             },
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._teams[team_id] = team
@@ -178,7 +178,7 @@ class TeamCollaborationService:
         if "settings" in updates:
             team["settings"].update(updates["settings"])
         
-        team["updated_at"] = datetime.utcnow().isoformat()
+        team["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         await self._log_activity(team_id, user_id, "team_updated", updates)
         
@@ -224,8 +224,8 @@ class TeamCollaborationService:
             "token": invitation_token,
             "custom_message": custom_message,
             "status": InvitationStatus.PENDING.value,
-            "created_at": datetime.utcnow().isoformat(),
-            "expires_at": (datetime.utcnow() + timedelta(days=7)).isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
         }
         
         self._invitations[invitation_id] = invitation
@@ -263,7 +263,7 @@ class TeamCollaborationService:
         
         # Check expiration
         expires_at = datetime.fromisoformat(invitation["expires_at"])
-        if datetime.utcnow() > expires_at:
+        if datetime.now(timezone.utc) > expires_at:
             invitation["status"] = InvitationStatus.EXPIRED.value
             return {"error": "Invitation expired"}
         
@@ -279,7 +279,7 @@ class TeamCollaborationService:
             "role": role.value,
             "permissions": [p.value for p in ROLE_PERMISSIONS[role]],
             "earnings_split": self._calculate_default_split(team),
-            "joined_at": datetime.utcnow().isoformat()
+            "joined_at": datetime.now(timezone.utc).isoformat()
         }
         
         team["members"].append(member)
@@ -456,7 +456,7 @@ class TeamCollaborationService:
             "data": resource_data,
             "shared_by": user_id,
             "visibility": visibility,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._shared_resources[team_id].append(resource)
@@ -677,7 +677,7 @@ class TeamCollaborationService:
             "user_id": user_id,
             "action": action,
             "details": details,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
         self._activity_feed[team_id].append(activity)

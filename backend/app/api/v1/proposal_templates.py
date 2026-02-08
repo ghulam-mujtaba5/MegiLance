@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -59,7 +59,7 @@ async def get_my_templates(
             tags=["web", "development"],
             use_count=15,
             is_public=False,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         ),
         ProposalTemplate(
             id="template-2",
@@ -72,7 +72,7 @@ async def get_my_templates(
             tags=["mobile", "app"],
             use_count=8,
             is_public=False,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
     ]
 
@@ -103,7 +103,7 @@ async def create_template(
         tags=tags,
         use_count=0,
         is_public=is_public,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -121,7 +121,7 @@ async def get_template(
         cover_letter="Dear {{client_name}}...",
         tags=["web"],
         use_count=15,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -147,8 +147,8 @@ async def update_template(
         tags=tags or [],
         use_count=15,
         is_public=is_public if is_public is not None else False,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
     )
 
 
@@ -177,7 +177,7 @@ async def duplicate_template(
         cover_letter="Duplicated content...",
         tags=[],
         use_count=0,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -201,7 +201,7 @@ async def browse_public_templates(
             tags=["web", "professional"],
             use_count=250,
             is_public=True,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
     ]
 

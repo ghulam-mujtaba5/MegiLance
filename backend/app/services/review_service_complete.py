@@ -9,7 +9,7 @@ Complete Review Service with:
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
 from app.db.turso_http import execute_query, parse_rows
 
@@ -30,7 +30,7 @@ class ReviewService:
         is_public: bool = True
     ) -> Dict[str, Any]:
         """Create a new review"""
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         rating_breakdown = {
             "communication": communication_rating,
@@ -196,7 +196,7 @@ class ReviewService:
         response_text: str
     ) -> Dict[str, Any]:
         """Add a response to a review"""
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """INSERT INTO review_responses (review_id, respondee_id, response_text, created_at, updated_at)
@@ -244,7 +244,7 @@ class ReviewService:
         reporter_id: int
     ) -> Dict[str, Any]:
         """Flag a review for moderation"""
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """INSERT INTO review_flags (review_id, reason, reporter_id, status, created_at)

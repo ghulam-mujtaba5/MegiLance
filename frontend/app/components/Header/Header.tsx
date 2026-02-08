@@ -224,12 +224,12 @@ const Header: React.FC = () => {
                                 <div className={commonStyles.megaMenuItemHeader}>
                                   <span className={commonStyles.megaMenuItemName}>
                                     {item.name}
-                                    {'auth' in item && item.auth && (
+                                    {'auth' in item && (item as any).auth && (
                                       <Lock size={12} className={commonStyles.authIcon} />
                                     )}
                                   </span>
-                                  {'status' in item && item.status && (
-                                    <FeatureStatusPill status={item.status} size="xs" compact />
+                                  {'status' in item && (item as any).status && (
+                                    <FeatureStatusPill status={(item as any).status} size="xs" compact />
                                   )}
                                 </div>
                                 <span className={cn(commonStyles.megaMenuItemDesc, themeStyles.megaMenuItemDesc)}>
@@ -301,10 +301,10 @@ const Header: React.FC = () => {
                   >
                     <item.icon size={16} />
                     <span>{item.name}</span>
-                    {'status' in item && item.status && (
-                      <FeatureStatusPill status={item.status} size="xs" compact />
+                    {'status' in item && (item as any).status && (
+                      <FeatureStatusPill status={(item as any).status} size="xs" compact />
                     )}
-                    {'auth' in item && item.auth && <Lock size={12} />}
+                    {'auth' in item && (item as any).auth && <Lock size={12} />}
                   </Link>
                 ))}
               </div>

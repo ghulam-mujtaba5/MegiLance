@@ -12,7 +12,7 @@ Features:
 - Contract comparison
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -282,8 +282,8 @@ class ContractBuilderService:
             "sections": sections,
             "variables": {},
             "version": 1,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         return contract
@@ -303,7 +303,7 @@ class ContractBuilderService:
             "content": content,
             "order": order or 999,
             "is_required": False,
-            "added_at": datetime.utcnow().isoformat()
+            "added_at": datetime.now(timezone.utc).isoformat()
         }
         
         return section
@@ -345,7 +345,7 @@ class ContractBuilderService:
         return {
             "section_id": section_id,
             **updates,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def remove_section(
@@ -367,7 +367,7 @@ class ContractBuilderService:
         return {
             "contract_id": contract_id,
             "section_order": section_order,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def set_variables(
@@ -380,7 +380,7 @@ class ContractBuilderService:
         return {
             "contract_id": contract_id,
             "variables": variables,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def preview_contract(
@@ -392,7 +392,7 @@ class ContractBuilderService:
         return {
             "contract_id": contract_id,
             "html": "<html><body><h1>Contract Preview</h1><p>Contract content with variables applied...</p></body></html>",
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def export_contract(
@@ -406,7 +406,7 @@ class ContractBuilderService:
             "contract_id": contract_id,
             "format": format,
             "download_url": f"/api/contracts/{contract_id}/download/{format}",
-            "expires_at": (datetime.utcnow() + timedelta(hours=1)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
         }
     
     # Version Control
@@ -421,7 +421,7 @@ class ContractBuilderService:
             "contract_id": contract_id,
             "version": 2,
             "notes": notes,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_versions(
@@ -490,7 +490,7 @@ class ContractBuilderService:
             "content": content,
             "variables": variables or [],
             "is_custom": True,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_user_custom_clauses(

@@ -1,5 +1,5 @@
 """Review schemas for MegiLance platform"""
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional, Dict, Any
 from datetime import datetime
 
@@ -11,7 +11,8 @@ class ReviewBase(BaseModel):
     rating_breakdown: Optional[Dict[str, float]] = None
     is_public: bool = True
 
-    @validator('rating')
+    @field_validator('rating')
+    @classmethod
     def validate_rating(cls, v):
         if v < 1.0 or v > 5.0:
             raise ValueError('Rating must be between 1.0 and 5.0')
@@ -42,8 +43,7 @@ class Review(ReviewBase):
     updated_at: datetime
     response_to: Optional[int] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ReviewStats(BaseModel):

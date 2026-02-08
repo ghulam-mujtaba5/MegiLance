@@ -1,7 +1,7 @@
 # @AI-HINT: Tags API endpoints - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 from app.db.turso_http import execute_query, parse_rows
@@ -59,7 +59,7 @@ async def create_tag(
             counter += 1
         slug = f"{slug}-{counter}"
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Create tag
     result = execute_query(

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -114,9 +114,9 @@ async def get_zero_result_queries(
 ):
     """Get queries with zero results"""
     return [
-        {"query": "blockchain solidity developer", "count": 45, "last_searched": datetime.utcnow().isoformat()},
-        {"query": "ai prompt engineer", "count": 38, "last_searched": datetime.utcnow().isoformat()},
-        {"query": "quantum computing", "count": 25, "last_searched": datetime.utcnow().isoformat()}
+        {"query": "blockchain solidity developer", "count": 45, "last_searched": datetime.now(timezone.utc).isoformat()},
+        {"query": "ai prompt engineer", "count": 38, "last_searched": datetime.now(timezone.utc).isoformat()},
+        {"query": "quantum computing", "count": 25, "last_searched": datetime.now(timezone.utc).isoformat()}
     ]
 
 
@@ -237,7 +237,7 @@ async def track_search_event(
     return {
         "tracked": True,
         "search_id": "search-new",
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 

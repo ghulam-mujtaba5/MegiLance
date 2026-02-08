@@ -13,7 +13,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pydantic import BaseModel
 import uuid
@@ -306,7 +306,7 @@ class IntegrationsService:
             "user_id": user_id,
             "integration_type": integration_type,
             "redirect_uri": redirect_uri,
-            "created_at": datetime.utcnow()
+            "created_at": datetime.now(timezone.utc)
         }
         
         # Build OAuth URL
@@ -344,9 +344,9 @@ class IntegrationsService:
             status=IntegrationStatus.CONNECTED,
             access_token=f"access_{secrets.token_hex(16)}",
             refresh_token=f"refresh_{secrets.token_hex(16)}",
-            token_expires_at=datetime.utcnow(),
+            token_expires_at=datetime.now(timezone.utc),
             workspace_name=f"{integration_type.value.title()} Workspace",
-            connected_at=datetime.utcnow(),
+            connected_at=datetime.now(timezone.utc),
             settings={}
         )
         
@@ -410,13 +410,13 @@ class IntegrationsService:
         
         # In production, make API call to test connection
         # Simulating successful test
-        integration.last_synced = datetime.utcnow()
+        integration.last_synced = datetime.now(timezone.utc)
         
         return {
             "success": True,
             "integration": integration_type.value,
             "workspace": integration.workspace_name,
-            "tested_at": datetime.utcnow().isoformat()
+            "tested_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Integration-specific actions
@@ -441,7 +441,7 @@ class IntegrationsService:
             "success": True,
             "channel": channel,
             "message_id": f"slack_msg_{uuid.uuid4().hex[:8]}",
-            "sent_at": datetime.utcnow().isoformat()
+            "sent_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def create_github_issue(
@@ -465,7 +465,7 @@ class IntegrationsService:
             "success": True,
             "issue_number": 123,
             "issue_url": f"https://github.com/{repo}/issues/123",
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def sync_google_calendar(
@@ -485,7 +485,7 @@ class IntegrationsService:
         return {
             "success": True,
             "events_synced": len(events),
-            "synced_at": datetime.utcnow().isoformat()
+            "synced_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def create_trello_card(
@@ -509,7 +509,7 @@ class IntegrationsService:
             "success": True,
             "card_id": f"card_{uuid.uuid4().hex[:8]}",
             "card_url": f"https://trello.com/c/{uuid.uuid4().hex[:8]}",
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
 
 

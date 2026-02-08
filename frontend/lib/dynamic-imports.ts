@@ -70,7 +70,8 @@ export const DynamicQRCode = dynamic(
 /**
  * Webcam Component - Medium (~40KB)
  */
-export const DynamicWebcam = dynamic(
-  () => import('react-webcam'),
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const DynamicWebcam = dynamic<any>(
+  () => import('react-webcam').then((mod) => mod.default),
   { ssr: false }
 );

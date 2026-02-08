@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class PortfolioItemSchema(BaseModel):
@@ -86,5 +86,4 @@ class UserRead(UserBase):
     joined_at: datetime
     full_name: Optional[str] = None # Alias for name
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -53,7 +53,7 @@ async def get_pending_reviews(
             reviewer_name=f"Client {i}",
             rating=4 + (i % 2),
             review_text="Great work on the project!",
-            review_date=datetime.utcnow(),
+            review_date=datetime.now(timezone.utc),
             response=None,
             project_title=f"Project {i}"
         )
@@ -75,13 +75,13 @@ async def get_responded_reviews(
             reviewer_name=f"Client {i}",
             rating=5,
             review_text="Excellent work!",
-            review_date=datetime.utcnow(),
+            review_date=datetime.now(timezone.utc),
             response=ReviewResponse(
                 id=f"response-{i}",
                 review_id=f"review-{i}",
                 responder_id=str(current_user.id),
                 response_text="Thank you for your kind words!",
-                created_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc)
             ),
             project_title=f"Project {i}"
         )
@@ -104,7 +104,7 @@ async def respond_to_review(
         responder_id=str(current_user.id),
         response_text=response_text,
         is_public=is_public,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -123,8 +123,8 @@ async def update_response(
         responder_id=str(current_user.id),
         response_text=response_text,
         is_public=is_public if is_public is not None else True,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
     )
 
 

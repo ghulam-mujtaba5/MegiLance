@@ -4,6 +4,7 @@ import logging
 import json
 import time
 import uuid
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -44,6 +45,30 @@ logger.propagate = False
 
 settings = get_settings()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    try:
+        engine = get_engine()
+        if engine is not None:
+            init_db(engine)
+            logger.info("startup.database_initialized")
+        else:
+            from app.db.turso_http import execute_query
+            result = execute_query("SELECT 1")
+            if result:
+                logger.info("startup.database_initialized via Turso HTTP API")
+            else:
+                logger.warning("startup.turso_http_test_failed")
+        logger.info("startup.mongodb_disabled - using Turso/SQLite only")
+    except Exception as e:
+        logger.error(f"startup.database_failed error={e}")
+    yield
+    # Shutdown
+    logger.info("shutdown.complete")
+
+
 app = FastAPI(
     title="MegiLance API",
     description="""
@@ -60,6 +85,7 @@ app = FastAPI(
     - Multi-Currency Payment Support
     """,
     version="1.0.0",
+    lifespan=lifespan,
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
@@ -128,31 +154,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(SecurityHeadersMiddleware)
-
-@app.on_event("startup")
-async def on_startup():
-    try:
-        engine = get_engine()
-        if engine is not None:
-            init_db(engine)
-            logger.info("startup.database_initialized")
-        else:
-            # Using Turso HTTP API - test connection
-            from app.db.turso_http import execute_query
-            result = execute_query("SELECT 1")
-            if result:
-                logger.info("startup.database_initialized via Turso HTTP API")
-            else:
-                logger.warning("startup.turso_http_test_failed")
-        # MongoDB is optional - removed to prevent startup failures
-        logger.info("startup.mongodb_disabled - using Turso/SQLite only")
-    except Exception as e:
-        logger.error(f"startup.database_failed error={e}")
-
-@app.on_event("shutdown")
-async def on_shutdown():
-    # MongoDB cleanup removed - using Turso/SQLite only
-    logger.info("shutdown.complete")
 
 
 @app.exception_handler(StarletteHTTPException)

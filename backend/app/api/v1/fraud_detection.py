@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -211,13 +211,13 @@ async def report_fraud(
 ):
     """Report suspected fraud for manual review."""
     return {
-        "report_id": f"FR-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
+        "report_id": f"FR-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
         "entity_type": request.entity_type,
         "entity_id": request.entity_id,
         "reported_by": current_user.id,
         "reason": request.reason,
         "status": "pending_review",
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
 
 

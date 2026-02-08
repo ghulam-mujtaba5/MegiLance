@@ -11,7 +11,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pydantic import BaseModel
 import uuid
@@ -164,8 +164,8 @@ class OrganizationService:
             },
             features=["projects", "proposals", "contracts", "invoices"],
             member_count=1,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         self._organizations[org_id] = org
@@ -177,7 +177,7 @@ class OrganizationService:
             user_id=owner_id,
             role=OrganizationRole.OWNER,
             permissions=ROLE_PERMISSIONS[OrganizationRole.OWNER],
-            joined_at=datetime.utcnow()
+            joined_at=datetime.now(timezone.utc)
         )
         
         self._members[org_id] = [owner_member]
@@ -227,7 +227,7 @@ class OrganizationService:
             if field in updates:
                 org_dict[field] = updates[field]
         
-        org_dict["updated_at"] = datetime.utcnow()
+        org_dict["updated_at"] = datetime.now(timezone.utc)
         
         # Regenerate slug if name changed
         if "name" in updates:
@@ -316,8 +316,8 @@ class OrganizationService:
             token=token,
             invited_by=invited_by,
             message=message,
-            expires_at=datetime.utcnow() + timedelta(days=7),
-            created_at=datetime.utcnow()
+            expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+            created_at=datetime.now(timezone.utc)
         )
         
         self._invites[invite_id] = invite
@@ -340,7 +340,7 @@ class OrganizationService:
             return None
         
         # Check if expired
-        if datetime.utcnow() > invite.expires_at:
+        if datetime.now(timezone.utc) > invite.expires_at:
             invite.status = InviteStatus.EXPIRED
             return None
         
@@ -351,7 +351,7 @@ class OrganizationService:
             user_id=user_id,
             role=invite.role,
             permissions=ROLE_PERMISSIONS[invite.role],
-            joined_at=datetime.utcnow(),
+            joined_at=datetime.now(timezone.utc),
             invited_by=invite.invited_by
         )
         
@@ -493,7 +493,7 @@ class OrganizationService:
         
         # Update org owner
         org.owner_id = new_owner_id
-        org.updated_at = datetime.utcnow()
+        org.updated_at = datetime.now(timezone.utc)
         
         # Update member roles
         members = self._members.get(org_id, [])

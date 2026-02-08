@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -74,7 +74,7 @@ async def get_my_rate_cards(
             min_hours=1,
             is_negotiable=True,
             is_default=True,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         ),
         RateCard(
             id="rate-2",
@@ -87,7 +87,7 @@ async def get_my_rate_cards(
             min_hours=8,
             is_negotiable=True,
             is_default=False,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
     ]
 
@@ -119,7 +119,7 @@ async def create_rate_card(
         max_hours=max_hours,
         is_negotiable=is_negotiable,
         is_default=is_default,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -138,7 +138,7 @@ async def get_rate_card(
         base_rate=75.0,
         currency="USD",
         is_default=True,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -163,8 +163,8 @@ async def update_rate_card(
         currency="USD",
         is_negotiable=is_negotiable if is_negotiable is not None else True,
         is_default=is_default if is_default is not None else False,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
     )
 
 

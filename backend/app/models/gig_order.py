@@ -4,7 +4,7 @@
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional, TYPE_CHECKING
 import enum
 
@@ -132,12 +132,12 @@ class GigOrder(Base):
         """Check if order is past expected delivery date."""
         if self.status in ["completed", "cancelled", "delivered"]:
             return False
-        return datetime.utcnow() > self.expected_delivery_at
+        return datetime.now(timezone.utc) > self.expected_delivery_at
 
     @property
     def time_remaining(self) -> timedelta:
         """Get time remaining until deadline."""
-        return self.expected_delivery_at - datetime.utcnow()
+        return self.expected_delivery_at - datetime.now(timezone.utc)
 
     @property
     def revisions_remaining(self) -> int:

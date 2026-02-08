@@ -311,7 +311,7 @@ async def admin_block_user(
     
     service = ContentModerationService(db)
     
-    service._blocked_users[user_id] = datetime.utcnow() + timedelta(days=days)
+    service._blocked_users[user_id] = datetime.now(timezone.utc) + timedelta(days=days)
     
     return {
         "user_id": user_id,

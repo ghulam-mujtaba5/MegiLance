@@ -13,7 +13,7 @@ Features:
 """
 
 from typing import Optional, Dict, List, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel, EmailStr
 from fastapi import Depends
 import secrets
@@ -132,7 +132,7 @@ class AdvancedSecurityService:
             execute_query("""
                 INSERT INTO mfa_methods (user_id, method, secret, is_active, created_at)
                 VALUES (?, ?, ?, 1, ?)
-            """, [user_id, method, secret, datetime.utcnow().isoformat()])
+            """, [user_id, method, secret, datetime.now(timezone.utc).isoformat()])
             
             return {
                 "method": method,
@@ -152,8 +152,8 @@ class AdvancedSecurityService:
                 VALUES (?, ?, ?, ?, ?, ?)
             """, [
                 user_id, method, contact, code,
-                (datetime.utcnow() + timedelta(minutes=10)).isoformat(),
-                datetime.utcnow().isoformat()
+                (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat(),
+                datetime.now(timezone.utc).isoformat()
             ])
             
             return {
@@ -171,8 +171,8 @@ class AdvancedSecurityService:
                 VALUES (?, ?, ?, ?, ?, ?)
             """, [
                 user_id, method, contact, code,
-                (datetime.utcnow() + timedelta(minutes=10)).isoformat(),
-                datetime.utcnow().isoformat()
+                (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat(),
+                datetime.now(timezone.utc).isoformat()
             ])
             
             return {
@@ -270,7 +270,7 @@ class AdvancedSecurityService:
             stored_code = result["rows"][0][0].get("value")
             expires_at = result["rows"][0][1].get("value")
             
-            if datetime.fromisoformat(expires_at) < datetime.utcnow():
+            if datetime.fromisoformat(expires_at) < datetime.now(timezone.utc):
                 return {"verified": False, "error": "Code expired"}
                 
             if stored_code == code:
@@ -353,7 +353,7 @@ class AdvancedSecurityService:
             SELECT COUNT(*) as count FROM security_events
             WHERE user_id = ? AND event_type = 'login_failed'
             AND created_at > ?
-        """, [user_id, (datetime.utcnow() - timedelta(hours=24)).isoformat()])
+        """, [user_id, (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()])
         
         if failed_attempts_result and failed_attempts_result.get("rows"):
             failed_count = int(failed_attempts_result["rows"][0][0].get("value", 0))
@@ -371,7 +371,7 @@ class AdvancedSecurityService:
         
         # Check unusual login time
         from datetime import datetime
-        current_hour = datetime.utcnow().hour
+        current_hour = datetime.now(timezone.utc).hour
         if current_hour < 6 or current_hour > 22:  # Between 10 PM and 6 AM
             risk_factors.append({
                 "factor": "unusual_time",
@@ -434,14 +434,14 @@ class AdvancedSecurityService:
             user_id, session_token, ip_address, user_agent,
             device_fingerprint, json.dumps(device_info) if device_info else None,
             json.dumps(location) if location else None,
-            datetime.utcnow().isoformat(),
-            (datetime.utcnow() + timedelta(days=7)).isoformat()
+            datetime.now(timezone.utc).isoformat(),
+            (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
         ])
         
         return {
             "session_token": session_token,
             "device_fingerprint": device_fingerprint,
-            "expires_at": (datetime.utcnow() + timedelta(days=7)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
         }
 
     async def get_active_sessions(self, user_id: int) -> List[Dict[str, Any]]:
@@ -453,7 +453,7 @@ class AdvancedSecurityService:
             FROM user_sessions
             WHERE user_id = ? AND is_active = 1 AND expires_at > ?
             ORDER BY created_at DESC
-        """, [user_id, datetime.utcnow().isoformat()])
+        """, [user_id, datetime.now(timezone.utc).isoformat()])
         
         sessions = []
         if result and result.get("rows"):
@@ -537,7 +537,7 @@ class AdvancedSecurityService:
             device_info.get("ip_address") if device_info else None,
             device_info.get("user_agent") if device_info else None,
             json.dumps(device_info) if device_info else None,
-            datetime.utcnow().isoformat()
+            datetime.now(timezone.utc).isoformat()
         ])
 
     # ========================================================================
@@ -563,7 +563,7 @@ class AdvancedSecurityService:
             execute_query("""
                 INSERT INTO mfa_backup_codes (user_id, code_hash, is_used, created_at)
                 VALUES (?, ?, 0, ?)
-            """, [user_id, code_hash, datetime.utcnow().isoformat()])
+            """, [user_id, code_hash, datetime.now(timezone.utc).isoformat()])
         
         return codes
 

@@ -11,7 +11,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime, time
+from datetime import datetime, time, timezone
 from enum import Enum
 from pydantic import BaseModel
 
@@ -246,7 +246,7 @@ class NotificationPreferencesService:
             preferences=preferences,
             quiet_hours=QuietHours(),
             digest=DigestSettings(),
-            updated_at=datetime.utcnow()
+            updated_at=datetime.now(timezone.utc)
         )
     
     async def get_settings(self, user_id: str) -> UserNotificationSettings:
@@ -278,7 +278,7 @@ class NotificationPreferencesService:
         if "push_token" in updates:
             settings.push_token = updates["push_token"]
         
-        settings.updated_at = datetime.utcnow()
+        settings.updated_at = datetime.now(timezone.utc)
         self._user_settings[user_id] = settings
         
         return settings
@@ -313,7 +313,7 @@ class NotificationPreferencesService:
         if enabled is not None:
             pref.enabled = enabled
         
-        settings.updated_at = datetime.utcnow()
+        settings.updated_at = datetime.now(timezone.utc)
         
         return pref
     
@@ -339,7 +339,7 @@ class NotificationPreferencesService:
             except (ValueError, KeyError):
                 continue
         
-        settings.updated_at = datetime.utcnow()
+        settings.updated_at = datetime.now(timezone.utc)
         self._user_settings[user_id] = settings
         
         return settings
@@ -383,12 +383,12 @@ class NotificationPreferencesService:
     
     def _is_quiet_hour(self, quiet_hours: QuietHours) -> bool:
         """Check if current time is within quiet hours."""
-        now = datetime.utcnow().time()
+        now = datetime.now(timezone.utc).time()
         start = datetime.strptime(quiet_hours.start_time, "%H:%M").time()
         end = datetime.strptime(quiet_hours.end_time, "%H:%M").time()
         
         # Check day
-        if datetime.utcnow().weekday() not in quiet_hours.days:
+        if datetime.now(timezone.utc).weekday() not in quiet_hours.days:
             return False
         
         # Handle overnight quiet hours (e.g., 22:00 to 07:00)
@@ -431,7 +431,7 @@ class NotificationPreferencesService:
         settings = await self.get_settings(user_id)
         settings.push_token = token
         settings.push_enabled = True
-        settings.updated_at = datetime.utcnow()
+        settings.updated_at = datetime.now(timezone.utc)
         return True
     
     async def unregister_push_token(self, user_id: str) -> bool:
@@ -439,7 +439,7 @@ class NotificationPreferencesService:
         settings = await self.get_settings(user_id)
         settings.push_token = None
         settings.push_enabled = False
-        settings.updated_at = datetime.utcnow()
+        settings.updated_at = datetime.now(timezone.utc)
         return True
     
     async def get_digest_eligible_users(

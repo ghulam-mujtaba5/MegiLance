@@ -8,7 +8,7 @@ import base64
 import secrets
 import hashlib
 from typing import List, Tuple, Optional, Dict, Any, Union
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 
@@ -178,7 +178,7 @@ class TwoFactorService:
                two_factor_enabled = 0,
                updated_at = ?
                WHERE id = ?""",
-            [secret, json.dumps(hashed_codes), datetime.utcnow().isoformat(), user_id]
+            [secret, json.dumps(hashed_codes), datetime.now(timezone.utc).isoformat(), user_id]
         )
         
         # Generate QR code
@@ -229,7 +229,7 @@ class TwoFactorService:
         if self.verify_token(two_factor_secret, verification_token):
             execute_query(
                 "UPDATE users SET two_factor_enabled = 1, updated_at = ? WHERE id = ?",
-                [datetime.utcnow().isoformat(), user_id]
+                [datetime.now(timezone.utc).isoformat(), user_id]
             )
             return True
         
@@ -257,7 +257,7 @@ class TwoFactorService:
                two_factor_backup_codes = NULL,
                updated_at = ?
                WHERE id = ?""",
-            [datetime.utcnow().isoformat(), user_id]
+            [datetime.now(timezone.utc).isoformat(), user_id]
         )
     
     def verify_2fa_login_turso(
@@ -319,7 +319,7 @@ class TwoFactorService:
                 # Update stored codes (one-time use)
                 execute_query(
                     "UPDATE users SET two_factor_backup_codes = ?, updated_at = ? WHERE id = ?",
-                    [updated_codes, datetime.utcnow().isoformat(), user_id]
+                    [updated_codes, datetime.now(timezone.utc).isoformat(), user_id]
                 )
                 return True
             

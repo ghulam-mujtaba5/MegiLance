@@ -6,7 +6,7 @@ Manages client reviews of freelancers and project ratings
 from typing import List, Optional, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 
 from app.models.user import User
@@ -61,7 +61,7 @@ class ReviewService:
                 'rating': rating,
                 'comment': comment,
                 'skills_rating': skills_rating,
-                'created_at': datetime.utcnow()
+                'created_at': datetime.now(timezone.utc)
             }
             
             # Update reviewee's profile stats

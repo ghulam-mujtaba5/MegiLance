@@ -1,10 +1,11 @@
 # @AI-HINT: Auth endpoints - register, login, 2FA, email verification, password reset
 # Uses Turso HTTP API directly - NO SQLite fallback
 
+import logging
 import re
 from typing import Any, Dict
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 
@@ -53,6 +54,7 @@ from app.core.config import get_settings
 
 
 router = APIRouter()
+logger = logging.getLogger("megilance")
 
 # Security: Validation constants
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
@@ -188,14 +190,12 @@ def register_user(request: Request, payload: UserCreate):
             password_str = password_bytes.decode('utf-8', errors='ignore')
         hashed_password = get_password_hash(password_str)
     except Exception as e:
-        print(f"[ERROR] Password hashing failed: {e}")
-        print(f"[ERROR] Password type: {type(payload.password)}")
-        print(f"[ERROR] Password length: {len(str(payload.password)) if payload.password else 0}")
+        logger.error("Password hashing failed: %s (type=%s, length=%d)", e, type(payload.password), len(str(payload.password)) if payload.password else 0, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Password hashing error: {str(e)}"
+            detail="Registration failed. Please try again."
         )
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Prepare profile data
     profile_data = {}
@@ -242,21 +242,18 @@ def register_user(request: Request, payload: UserCreate):
         # Insert returns {"columns": [], "rows": []} for local SQLite
         # This is considered successful as long as no exception was raised
         if insert_result is None:
-            print(f"[ERROR] Insert returned None")
+            logger.error("User insert returned None for email=%s", payload.email)
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to create user"
+                detail="Registration failed. Please try again."
             )
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] Database insert failed: {e}")
-        print(f"[ERROR] Exception type: {type(e)}")
-        import traceback
-        traceback.print_exc()
+        logger.error("Database insert failed for email=%s: %s", payload.email, e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create user: {str(e)}"
+            detail="Registration failed. Please try again."
         )
     
     # Get the created user
@@ -303,15 +300,14 @@ def login_user(request: Request, credentials: LoginRequest):
     If user has 2FA enabled, returns requires_2fa=True and a temporary token.
     Uses Turso HTTP API directly - no SQLAlchemy session needed.
     """
-    print(f"\n[LOGIN ATTEMPT]:")
-    print(f"   Email: {credentials.email}")
+    logger.info("Login attempt for email=%s", credentials.email)
 
     # authenticate_user uses Turso HTTP API directly, so pass None for db
     user = authenticate_user(None, credentials.email, credentials.password)
-    print(f"   Auth Result: {'SUCCESS' if user else 'FAILED'}")
+    logger.info("Login result for email=%s: %s", credentials.email, "SUCCESS" if user else "FAILED")
     
     if not user:
-        print(f"   Reason: User not found or password mismatch")
+        logger.info("Login failed for email=%s: user not found or password mismatch", credentials.email)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password"
@@ -847,7 +843,7 @@ def forgot_password(
                 reset_url=reset_url
             )
         except Exception as e:
-            print(f"Failed to send password reset email: {e}")
+            logger.error("Failed to send password reset email for email=%s: %s", request_body.email, e, exc_info=True)
     
     return ForgotPasswordResponse(message=success_message)
 

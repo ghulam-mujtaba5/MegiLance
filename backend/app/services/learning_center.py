@@ -13,7 +13,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import uuid
 
@@ -170,8 +170,8 @@ class LearningCenterService:
                 "Find and win your first project",
                 "Understand pricing strategies"
             ],
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Learning Paths
@@ -234,9 +234,9 @@ class LearningCenterService:
             "user_id": user_id,
             "path_id": path_id,
             "status": "enrolled",
-            "enrolled_at": datetime.utcnow().isoformat(),
+            "enrolled_at": datetime.now(timezone.utc).isoformat(),
             "progress": 0,
-            "expected_completion": (datetime.utcnow() + timedelta(days=30)).isoformat()
+            "expected_completion": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
         }
     
     # Progress Tracking
@@ -255,14 +255,14 @@ class LearningCenterService:
                     "content_id": "c1",
                     "title": "Advanced Proposal Writing",
                     "progress": 65,
-                    "last_accessed": datetime.utcnow().isoformat()
+                    "last_accessed": datetime.now(timezone.utc).isoformat()
                 }
             ],
             "completed": [
                 {
                     "content_id": "c2",
                     "title": "Getting Started",
-                    "completed_at": datetime.utcnow().isoformat(),
+                    "completed_at": datetime.now(timezone.utc).isoformat(),
                     "score": 95
                 }
             ],
@@ -291,7 +291,7 @@ class LearningCenterService:
             "completed": completed,
             "time_spent_seconds": time_spent_seconds,
             "overall_progress": 75,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def mark_content_complete(
@@ -308,7 +308,7 @@ class LearningCenterService:
             "quiz_score": quiz_score,
             "points_earned": 100,
             "certificate_earned": True,
-            "completed_at": datetime.utcnow().isoformat()
+            "completed_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Quizzes
@@ -363,7 +363,7 @@ class LearningCenterService:
                 "q2": {"correct": True}
             },
             "attempts_remaining": 2,
-            "submitted_at": datetime.utcnow().isoformat()
+            "submitted_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Webinars
@@ -378,7 +378,7 @@ class LearningCenterService:
                     "name": "Sarah Johnson",
                     "title": "Freelance Expert"
                 },
-                "scheduled_at": (datetime.utcnow() + timedelta(days=5)).isoformat(),
+                "scheduled_at": (datetime.now(timezone.utc) + timedelta(days=5)).isoformat(),
                 "duration_minutes": 60,
                 "registered": 250,
                 "max_participants": 500,
@@ -399,7 +399,7 @@ class LearningCenterService:
             "status": "registered",
             "calendar_link": f"/calendar/webinar/{webinar_id}",
             "reminder_set": True,
-            "registered_at": datetime.utcnow().isoformat()
+            "registered_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Certifications
@@ -430,8 +430,8 @@ class LearningCenterService:
             {
                 "certification_id": "cert-freelancer",
                 "name": "Certified MegiLance Freelancer",
-                "earned_at": datetime.utcnow().isoformat(),
-                "expires_at": (datetime.utcnow() + timedelta(days=730)).isoformat(),
+                "earned_at": datetime.now(timezone.utc).isoformat(),
+                "expires_at": (datetime.now(timezone.utc) + timedelta(days=730)).isoformat(),
                 "verification_code": str(uuid.uuid4())[:8].upper(),
                 "badge_url": "/badges/certified-freelancer.png",
                 "linkedin_eligible": True
@@ -449,7 +449,7 @@ class LearningCenterService:
             "user_id": user_id,
             "content_id": content_id,
             "bookmarked": True,
-            "bookmarked_at": datetime.utcnow().isoformat()
+            "bookmarked_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_bookmarks(self, user_id: int) -> List[Dict[str, Any]]:
@@ -459,7 +459,7 @@ class LearningCenterService:
                 "content_id": str(uuid.uuid4()),
                 "title": "Advanced Pricing Strategies",
                 "type": ContentType.VIDEO,
-                "bookmarked_at": datetime.utcnow().isoformat()
+                "bookmarked_at": datetime.now(timezone.utc).isoformat()
             }
         ]
     

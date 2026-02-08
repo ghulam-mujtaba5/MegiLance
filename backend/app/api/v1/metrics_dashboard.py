@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -82,7 +82,7 @@ async def get_metric_series(
 ):
     """Get time series data for a metric"""
     data_points = [
-        TimeSeriesData(timestamp=datetime.utcnow() - timedelta(days=i), value=100 + i * 5)
+        TimeSeriesData(timestamp=datetime.now(timezone.utc) - timedelta(days=i), value=100 + i * 5)
         for i in range(30)
     ]
     return MetricSeries(
@@ -318,7 +318,7 @@ async def create_metric_alert(
         "condition": condition,
         "threshold": threshold,
         "notification_channels": notification_channels,
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
 
 

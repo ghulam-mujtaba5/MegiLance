@@ -18,7 +18,7 @@ import logging
 import secrets
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -224,8 +224,8 @@ class AIChatbotService:
             "sentiment_history": [],
             "ticket_id": None,
             "escalated": False,
-            "started_at": datetime.utcnow().isoformat(),
-            "last_activity": datetime.utcnow().isoformat()
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "last_activity": datetime.now(timezone.utc).isoformat()
         }
         
         self._conversations[conversation_id] = conversation
@@ -258,7 +258,7 @@ class AIChatbotService:
             return {"error": "Conversation not found"}
         
         # Update last activity
-        conversation["last_activity"] = datetime.utcnow().isoformat()
+        conversation["last_activity"] = datetime.now(timezone.utc).isoformat()
         
         # Analyze message
         intent = self._classify_intent(message)
@@ -270,7 +270,7 @@ class AIChatbotService:
             "content": message,
             "intent": intent.value,
             "sentiment": sentiment.value,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
         
         # Track intent and sentiment
@@ -293,7 +293,7 @@ class AIChatbotService:
             "role": "assistant",
             "content": response["message"],
             "intent_matched": intent.value,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
         
         return {
@@ -391,8 +391,8 @@ class AIChatbotService:
                 conversation.get("sentiment_history", [])
             ),
             "conversation_summary": self._summarize_conversation(messages),
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._tickets[ticket_id] = ticket
@@ -423,7 +423,7 @@ class AIChatbotService:
             return {"error": "Conversation not found"}
         
         conversation["state"] = ConversationState.CLOSED.value
-        conversation["closed_at"] = datetime.utcnow().isoformat()
+        conversation["closed_at"] = datetime.now(timezone.utc).isoformat()
         conversation["resolution"] = resolution
         
         return {
@@ -653,7 +653,7 @@ class AIChatbotService:
         if conversation:
             conversation["escalated"] = True
             conversation["state"] = ConversationState.ESCALATED.value
-            conversation["escalated_at"] = datetime.utcnow().isoformat()
+            conversation["escalated_at"] = datetime.now(timezone.utc).isoformat()
         
         return {
             "conversation_id": conversation_id,
@@ -668,7 +668,7 @@ class AIChatbotService:
         context: Optional[Dict]
     ) -> str:
         """Generate personalized greeting."""
-        hour = datetime.utcnow().hour
+        hour = datetime.now(timezone.utc).hour
         
         if hour < 12:
             time_greeting = "Good morning"

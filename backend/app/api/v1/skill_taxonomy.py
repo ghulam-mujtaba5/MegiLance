@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, ConfigDict
+from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -25,6 +25,8 @@ class SkillCategoryUpdate(BaseModel):
 
 
 class SkillCategoryResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     name: str
     description: Optional[str]
@@ -33,9 +35,6 @@ class SkillCategoryResponse(BaseModel):
     skill_count: int
     created_at: datetime
     updated_at: Optional[datetime]
-
-    class Config:
-        from_attributes = True
 
 
 class TaxonomySkillCreate(BaseModel):
@@ -47,6 +46,8 @@ class TaxonomySkillCreate(BaseModel):
 
 
 class TaxonomySkillResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: str
     name: str
     category_id: str
@@ -55,9 +56,6 @@ class TaxonomySkillResponse(BaseModel):
     related_skills: List[str]
     usage_count: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 # In-memory storage for demo
@@ -69,7 +67,7 @@ categories_db = {
         "parent_id": None,
         "icon": "code",
         "skill_count": 15,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "updated_at": None
     },
     "cat_2": {
@@ -79,7 +77,7 @@ categories_db = {
         "parent_id": None,
         "icon": "browser",
         "skill_count": 12,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "updated_at": None
     },
     "cat_3": {
@@ -89,7 +87,7 @@ categories_db = {
         "parent_id": None,
         "icon": "server",
         "skill_count": 10,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "updated_at": None
     },
     "cat_4": {
@@ -99,7 +97,7 @@ categories_db = {
         "parent_id": None,
         "icon": "palette",
         "skill_count": 8,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "updated_at": None
     }
 }
@@ -113,7 +111,7 @@ skills_db = {
         "aliases": ["py", "python3"],
         "related_skills": ["Django", "FastAPI", "Flask"],
         "usage_count": 1250,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     },
     "skill_2": {
         "id": "skill_2",
@@ -123,7 +121,7 @@ skills_db = {
         "aliases": ["js", "ecmascript"],
         "related_skills": ["React", "Node.js", "TypeScript"],
         "usage_count": 1500,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     },
     "skill_3": {
         "id": "skill_3",
@@ -133,7 +131,7 @@ skills_db = {
         "aliases": ["reactjs", "react.js"],
         "related_skills": ["Redux", "Next.js", "JavaScript"],
         "usage_count": 980,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     },
     "skill_4": {
         "id": "skill_4",
@@ -143,7 +141,7 @@ skills_db = {
         "aliases": ["nodejs", "node"],
         "related_skills": ["Express.js", "JavaScript", "MongoDB"],
         "usage_count": 850,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     }
 }
 
@@ -180,7 +178,7 @@ async def create_category(
         "parent_id": category_data.parent_id,
         "icon": category_data.icon,
         "skill_count": 0,
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "updated_at": None
     }
     
@@ -221,7 +219,7 @@ async def update_category(
     if category_data.icon is not None:
         category["icon"] = category_data.icon
     
-    category["updated_at"] = datetime.utcnow()
+    category["updated_at"] = datetime.now(timezone.utc)
     return category
 
 
@@ -288,7 +286,7 @@ async def create_taxonomy_skill(
         "aliases": skill_data.aliases,
         "related_skills": skill_data.related_skills,
         "usage_count": 0,
-        "created_at": datetime.utcnow()
+        "created_at": datetime.now(timezone.utc)
     }
     
     skills_db[new_skill["id"]] = new_skill

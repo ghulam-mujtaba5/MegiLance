@@ -1,7 +1,7 @@
 # @AI-HINT: Pydantic schemas for Gig marketplace - request/response models for gig CRUD and ordering
 """Gig marketplace schemas."""
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -96,8 +96,7 @@ class GigFAQResponse(BaseModel):
     answer: str
     sort_order: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =====================
@@ -132,7 +131,8 @@ class GigCreate(BaseModel):
     images: Optional[List[str]] = None
     video_url: Optional[str] = None
     
-    @validator('title')
+    @field_validator('title')
+    @classmethod
     def validate_title(cls, v):
         # Remove "I will" prefix if present (Fiverr convention)
         if v.lower().startswith('i will '):
@@ -187,8 +187,7 @@ class GigSellerInfo(BaseModel):
     total_reviews: int = 0
     member_since: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GigListResponse(BaseModel):
@@ -217,8 +216,7 @@ class GigListResponse(BaseModel):
     
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GigDetailResponse(BaseModel):
@@ -276,8 +274,7 @@ class GigDetailResponse(BaseModel):
     updated_at: datetime
     published_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =====================
@@ -350,8 +347,7 @@ class GigOrderResponse(BaseModel):
     started_at: Optional[datetime]
     completed_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =====================
@@ -376,8 +372,7 @@ class GigDeliveryResponse(BaseModel):
     is_final: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =====================
@@ -404,8 +399,7 @@ class GigRevisionResponse(BaseModel):
     created_at: datetime
     delivered_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # =====================
@@ -456,8 +450,7 @@ class GigReviewResponse(BaseModel):
     
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GigReviewSellerResponse(BaseModel):

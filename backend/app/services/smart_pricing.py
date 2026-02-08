@@ -14,7 +14,7 @@ Billion-dollar feature: AI-powered pricing intelligence
 import logging
 import math
 from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 from enum import Enum
 from sqlalchemy.orm import Session
@@ -492,7 +492,7 @@ class SmartPricingEngine:
                 "design": "moderate",
                 "writing": "moderate"
             },
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # =========================================================================

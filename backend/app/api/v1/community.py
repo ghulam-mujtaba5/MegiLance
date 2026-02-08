@@ -9,7 +9,7 @@ Enables community-driven learning and collaboration through:
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import logging
 
@@ -237,7 +237,7 @@ async def create_question(
     current_user: User = Depends(get_current_active_user)
 ):
     """Create a new community question."""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     tags_json = json.dumps(question.tags) if question.tags else "[]"
     
     execute_query("""
@@ -425,7 +425,7 @@ async def create_answer(
     if not result or not result.get("rows"):
         raise HTTPException(status_code=404, detail="Question not found")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("""
         INSERT INTO community_answers (question_id, user_id, content, created_at, updated_at)
@@ -447,7 +447,7 @@ async def vote_question(
     current_user: User = Depends(get_current_active_user)
 ):
     """Vote on a question."""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Check existing vote
     existing = execute_query("""
@@ -521,7 +521,7 @@ async def accept_answer(
     if current_user.id != question_author:
         raise HTTPException(status_code=403, detail="Only the question author can accept answers")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Unaccept any previously accepted answer
     execute_query("UPDATE community_answers SET is_accepted = 0 WHERE question_id = ?", [question_id])
@@ -545,7 +545,7 @@ async def create_playbook(
     current_user: User = Depends(get_current_active_user)
 ):
     """Create a new playbook (guide/tutorial)."""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     tags_json = json.dumps(playbook.tags) if playbook.tags else "[]"
     
     execute_query("""
@@ -673,7 +673,7 @@ async def publish_playbook(
     if _get_val(row, 1) == "published":
         raise HTTPException(status_code=400, detail="Playbook is already published")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE community_playbooks SET status = 'published', published_at = ?, updated_at = ? WHERE id = ?
     """, [now, now, playbook_id])
@@ -687,7 +687,7 @@ async def like_playbook(
     current_user: User = Depends(get_current_active_user)
 ):
     """Like or unlike a playbook."""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     existing = execute_query("""
         SELECT id FROM community_votes WHERE user_id = ? AND target_type = 'playbook' AND target_id = ?
@@ -718,10 +718,10 @@ async def create_office_hours(
     current_user: User = Depends(get_current_active_user)
 ):
     """Schedule an office hours session."""
-    if oh.scheduled_at <= datetime.utcnow():
+    if oh.scheduled_at <= datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Office hours must be scheduled in the future")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("""
         INSERT INTO community_office_hours (host_id, title, description, scheduled_at, duration_minutes, 
@@ -742,7 +742,7 @@ async def list_office_hours(
     limit: int = Query(20, ge=1, le=100)
 ):
     """List office hours sessions."""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     sql = """
         SELECT oh.id, oh.host_id, u.full_name, oh.title, oh.description, oh.scheduled_at,
@@ -858,7 +858,7 @@ async def register_for_office_hours(
     if attendee_count >= max_attendees:
         raise HTTPException(status_code=400, detail="This session is full")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Check if already registered
     existing = execute_query("""
@@ -931,7 +931,7 @@ async def get_community_stats():
         stats["total_attendees"] = _get_val(row, 1) or 0
     
     # Upcoming sessions
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     upcoming_result = execute_query("""
         SELECT COUNT(*) FROM community_office_hours WHERE scheduled_at > ? AND status = 'scheduled'
     """, [now])

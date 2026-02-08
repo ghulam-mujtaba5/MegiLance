@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -89,7 +89,7 @@ async def get_my_referral_code(
         max_uses=None,
         reward_per_referral=25.0,
         bonus_reward=100.0,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
         is_active=True
     )
 
@@ -105,7 +105,7 @@ async def generate_referral_code(
         user_id=str(current_user.id),
         uses_count=0,
         reward_per_referral=25.0,
-        created_at=datetime.utcnow(),
+        created_at=datetime.now(timezone.utc),
         is_active=True
     )
 
@@ -159,8 +159,8 @@ async def get_my_referrals(
             status=ReferralStatus.QUALIFIED if i < 3 else ReferralStatus.PENDING,
             reward_amount=25.0,
             reward_paid=i < 3,
-            qualification_date=datetime.utcnow() if i < 3 else None,
-            created_at=datetime.utcnow()
+            qualification_date=datetime.now(timezone.utc) if i < 3 else None,
+            created_at=datetime.now(timezone.utc)
         )
         for i in range(5)
     ]
@@ -197,8 +197,8 @@ async def get_referral_rewards(
             amount=25.0,
             type="referral_bonus",
             status="paid" if i < 3 else "pending",
-            paid_at=datetime.utcnow() if i < 3 else None,
-            created_at=datetime.utcnow()
+            paid_at=datetime.now(timezone.utc) if i < 3 else None,
+            created_at=datetime.now(timezone.utc)
         )
         for i in range(5)
     ]
@@ -251,7 +251,7 @@ async def get_referral_campaigns(
             reward_amount=50.0,
             bonus_threshold=5,
             bonus_amount=100.0,
-            start_date=datetime.utcnow(),
+            start_date=datetime.now(timezone.utc),
             end_date=datetime(2025, 8, 31),
             is_active=True
         )

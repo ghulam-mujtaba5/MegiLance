@@ -5,7 +5,7 @@ Includes: balances, transaction history, payouts, deposits, and analytics
 """
 
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
 
@@ -183,7 +183,7 @@ def get_or_create_balance(user_id: int) -> dict:
         }
     
     # Create new balance record
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query(
         "INSERT INTO wallet_balances (user_id, available, pending, escrow, currency, updated_at) VALUES (?, 0, 0, 0, 'USD', ?)",
         [user_id, now]
@@ -286,8 +286,8 @@ async def request_withdrawal(
             detail="Minimum withdrawal amount is $10"
         )
     
-    now = datetime.utcnow().isoformat()
-    reference_id = f"WD-{current_user.id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+    now = datetime.now(timezone.utc).isoformat()
+    reference_id = f"WD-{current_user.id}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
     
     # Deduct from available, add to pending
     execute_query(
@@ -316,7 +316,7 @@ async def request_withdrawal(
         "crypto": 0,  # instant
         "wise": 1
     }
-    eta = datetime.utcnow() + timedelta(days=estimated_days.get(request.method, 3))
+    eta = datetime.now(timezone.utc) + timedelta(days=estimated_days.get(request.method, 3))
     
     return {
         "message": "Withdrawal request submitted",
@@ -337,8 +337,8 @@ async def initiate_deposit(
     """Initiate a deposit to wallet"""
     ensure_wallet_tables()
     
-    now = datetime.utcnow().isoformat()
-    reference_id = f"DEP-{current_user.id}-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+    now = datetime.now(timezone.utc).isoformat()
+    reference_id = f"DEP-{current_user.id}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
     
     # Create pending transaction
     execute_query("""
@@ -360,7 +360,7 @@ async def initiate_deposit(
         payment_details = {
             "type": "stripe_checkout",
             "checkout_url": f"https://checkout.stripe.com/pay/{reference_id}",  # Mock
-            "expires_at": (datetime.utcnow() + timedelta(hours=1)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
         }
     elif request.method == "crypto":
         payment_details = {
@@ -368,7 +368,7 @@ async def initiate_deposit(
             "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bE1e",  # Mock
             "network": "Ethereum",
             "amount_crypto": request.amount / 2500,  # Mock ETH conversion
-            "expires_at": (datetime.utcnow() + timedelta(hours=24)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
         }
     else:
         payment_details = {
@@ -400,7 +400,7 @@ async def get_wallet_analytics(
     
     # Calculate date range
     period_days = {"7d": 7, "30d": 30, "90d": 90, "1y": 365, "all": 3650}
-    start_date = (datetime.utcnow() - timedelta(days=period_days.get(period, 30))).isoformat()
+    start_date = (datetime.now(timezone.utc) - timedelta(days=period_days.get(period, 30))).isoformat()
     
     # Get income
     income_result = execute_query("""
@@ -510,11 +510,11 @@ async def set_payout_schedule(
     """Configure automatic payout schedule"""
     ensure_wallet_tables()
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Calculate next payout date
     next_payout_days = {"instant": 0, "daily": 1, "weekly": 7, "monthly": 30}
-    next_payout = (datetime.utcnow() + timedelta(days=next_payout_days.get(schedule.frequency, 7))).isoformat()
+    next_payout = (datetime.now(timezone.utc) + timedelta(days=next_payout_days.get(schedule.frequency, 7))).isoformat()
     
     # Upsert schedule
     execute_query("""
@@ -558,7 +558,7 @@ async def disable_payout_schedule(
     
     execute_query(
         "UPDATE payout_schedules SET is_active = 0, updated_at = ? WHERE user_id = ?",
-        [datetime.utcnow().isoformat(), current_user.id]
+        [datetime.now(timezone.utc).isoformat(), current_user.id]
     )
     
     return {"message": "Automatic payouts disabled"}

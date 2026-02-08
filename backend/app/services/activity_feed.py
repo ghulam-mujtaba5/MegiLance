@@ -11,7 +11,7 @@ Features:
 """
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from collections import defaultdict
 from sqlalchemy.orm import Session
@@ -104,7 +104,7 @@ class ActivityFeedService:
             "likes": [],
             "comments": [],
             "is_aggregated": False,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         # Generate display text
@@ -496,7 +496,7 @@ class ActivityFeedService:
                         "id": str(uuid.uuid4()),
                         "user_id": user_id,
                         "comment": comment,
-                        "created_at": datetime.utcnow().isoformat()
+                        "created_at": datetime.now(timezone.utc).isoformat()
                     }
                     activity["comments"].append(comment_entry)
                     
@@ -561,7 +561,7 @@ class ActivityFeedService:
         limit: int = 20
     ) -> Dict[str, Any]:
         """Get trending activities across the platform."""
-        cutoff = datetime.utcnow() - timedelta(hours=time_range_hours)
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=time_range_hours)
         
         all_activities = []
         for user_activities in self._activities.values():

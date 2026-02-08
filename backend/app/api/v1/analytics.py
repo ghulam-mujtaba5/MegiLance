@@ -3,7 +3,7 @@
 
 from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.core.security import get_current_user
@@ -97,7 +97,7 @@ async def get_active_user_stats(
     current_user = Depends(require_admin)
 ):
     """Get active user statistics for the specified period. Admin only."""
-    cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
     
     # Total users
     total_result = execute_query("SELECT COUNT(*) FROM users", [])
@@ -211,7 +211,7 @@ async def get_project_stats(
             avg_budget = float(val.get("value", 0))
     
     # Recent projects
-    thirty_days_ago = (datetime.utcnow() - timedelta(days=30)).isoformat()
+    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
     recent_result = execute_query(
         "SELECT COUNT(*) FROM projects WHERE created_at >= ?",
         [thirty_days_ago]
@@ -611,7 +611,7 @@ async def get_platform_health(
             user_satisfaction = float(val.get("value", 0))
     
     # Daily active users
-    yesterday = (datetime.utcnow() - timedelta(days=1)).isoformat()
+    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
     dau_result = execute_query(
         "SELECT COUNT(*) FROM users WHERE last_login >= ?",
         [yesterday]
@@ -637,7 +637,7 @@ async def get_engagement_metrics(
     current_user = Depends(require_admin)
 ):
     """Get user engagement metrics. Admin only."""
-    cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
     
     # Messages
     messages_result = execute_query(
@@ -694,7 +694,7 @@ async def get_dashboard_summary(
     current_user = Depends(require_admin)
 ):
     """Get comprehensive dashboard summary. Admin only."""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     thirty_days_ago = now - timedelta(days=30)
     
     # Get all metrics

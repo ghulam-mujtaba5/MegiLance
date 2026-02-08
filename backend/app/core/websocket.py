@@ -3,18 +3,23 @@
 
 import socketio
 from typing import Dict, Set, Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 import json
+import os
 
 
 class WebSocketManager:
     """Manager for WebSocket connections and real-time events"""
     
     def __init__(self):
-        # Initialize Socket.IO server
+        # Initialize Socket.IO server with environment-based CORS
+        allowed_origins = os.environ.get(
+            "WEBSOCKET_CORS_ORIGINS",
+            "http://localhost:3000,http://127.0.0.1:3000,https://megilance.site,https://www.megilance.site"
+        ).split(",")
         self.sio = socketio.AsyncServer(
             async_mode='asgi',
-            cors_allowed_origins='*',  # Configure based on environment
+            cors_allowed_origins=allowed_origins,
             logger=True,
             engineio_logger=True
         )
@@ -125,7 +130,7 @@ class WebSocketManager:
                         'chat_id': chat_id,
                         'message': message,
                         'user_id': user_id,
-                        'timestamp': datetime.utcnow().isoformat()
+                        'timestamp': datetime.now(timezone.utc).isoformat()
                     },
                     exclude_sid=sid
                 )
@@ -231,7 +236,7 @@ class WebSocketManager:
         await self.sio.emit('user_status', {
             'user_id': user_id,
             'status': status,
-            'timestamp': datetime.utcnow().isoformat()
+            'timestamp': datetime.now(timezone.utc).isoformat()
         })
     
     # ===== Notification Events =====

@@ -1,5 +1,5 @@
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import HTTPException
 
 try:
@@ -44,8 +44,8 @@ class BlogService:
     async def create_post(post: BlogPostCreate) -> BlogPostInDB:
         collection = await BlogService.get_collection()
         post_dict = post.model_dump()
-        post_dict["created_at"] = datetime.utcnow()
-        post_dict["updated_at"] = datetime.utcnow()
+        post_dict["created_at"] = datetime.now(timezone.utc)
+        post_dict["updated_at"] = datetime.now(timezone.utc)
         post_dict["reading_time"] = BlogService.calculate_reading_time(post.content)
         
         result = await collection.insert_one(post_dict)
@@ -107,7 +107,7 @@ class BlogService:
         if "content" in update_data:
             update_data["reading_time"] = BlogService.calculate_reading_time(update_data["content"])
 
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = datetime.now(timezone.utc)
         
         result = await collection.update_one(
             {"_id": oid},

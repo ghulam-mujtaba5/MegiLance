@@ -1,5 +1,5 @@
 # @AI-HINT: Pydantic schemas for Escrow API validation and responses
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 from typing import Optional
 
@@ -39,8 +39,7 @@ class EscrowRead(EscrowBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class EscrowBalance(BaseModel):
     """Schema for escrow balance summary"""

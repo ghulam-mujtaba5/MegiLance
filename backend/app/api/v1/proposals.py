@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 import uuid
 import logging
@@ -201,7 +201,7 @@ def create_draft_proposal(
     if not result or not result.get("rows"):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     insert_result = execute_query(
         """INSERT INTO proposals (project_id, freelancer_id, cover_letter, bid_amount,
@@ -405,7 +405,7 @@ def create_proposal(
             detail="You have already submitted a proposal for this project"
         )
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     bid_amount = proposal.bid_amount or (proposal.estimated_hours * proposal.hourly_rate)
     
     insert_result = execute_query(
@@ -496,7 +496,7 @@ def update_proposal(
         values.append(value if value is not None else "")
     
     set_parts.append("updated_at = ?")
-    values.append(datetime.utcnow().isoformat())
+    values.append(datetime.now(timezone.utc).isoformat())
     values.append(proposal_id)
     
     execute_query(
@@ -602,7 +602,7 @@ def accept_proposal(
             detail="Proposal is not in submitted status"
         )
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Accept proposal
     execute_query(
@@ -627,7 +627,7 @@ def accept_proposal(
     platform_fee = contract_amount * 0.1  # 10% platform fee
     start_date = now
     # Default end date: 30 days from now
-    end_date = (datetime.utcnow() + timedelta(days=30)).isoformat()
+    end_date = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
     
     try:
         contract_result = execute_query(
@@ -717,7 +717,7 @@ def reject_proposal(
             detail="Proposal is not in submitted status"
         )
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Reject proposal
     execute_query(

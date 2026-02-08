@@ -13,7 +13,7 @@ Features:
 
 import logging
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -181,7 +181,7 @@ class ContentModerationService:
             "result": result.value,
             "risk_score": risk_score,
             "violations": violations,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
         self._moderation_logs.append(log_entry)
@@ -219,7 +219,7 @@ class ContentModerationService:
             "violation_type": violation_type.value,
             "description": description,
             "status": ReportStatus.PENDING.value,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "resolved_at": None,
             "resolution": None,
             "moderator_notes": None
@@ -272,7 +272,7 @@ class ContentModerationService:
             return None
         
         report["status"] = ReportStatus.RESOLVED.value
-        report["resolved_at"] = datetime.utcnow().isoformat()
+        report["resolved_at"] = datetime.now(timezone.utc).isoformat()
         report["resolution"] = resolution
         report["moderator_notes"] = moderator_notes
         
@@ -322,14 +322,14 @@ class ContentModerationService:
         
         block_until = self._blocked_users[user_id]
         
-        if datetime.utcnow() > block_until:
+        if datetime.now(timezone.utc) > block_until:
             del self._blocked_users[user_id]
             return {"blocked": False}
         
         return {
             "blocked": True,
             "blocked_until": block_until.isoformat(),
-            "remaining_seconds": (block_until - datetime.utcnow()).seconds
+            "remaining_seconds": (block_until - datetime.now(timezone.utc)).seconds
         }
     
     async def get_moderation_stats(self) -> Dict[str, Any]:
@@ -428,7 +428,7 @@ class ContentModerationService:
         for violation in violations:
             self._user_violations[user_id].append({
                 **violation,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             })
         
         # Reduce reputation based on risk score
@@ -437,7 +437,7 @@ class ContentModerationService:
         
         # Check for automatic blocking
         if self._user_reputation[user_id] < 20:
-            self._blocked_users[user_id] = datetime.utcnow() + timedelta(days=7)
+            self._blocked_users[user_id] = datetime.now(timezone.utc) + timedelta(days=7)
             logger.warning(f"User {user_id} auto-blocked due to low reputation")
     
     async def _apply_penalty(
@@ -462,11 +462,11 @@ class ContentModerationService:
         # Block if too many violations
         recent_violations = [
             v for v in self._user_violations[user_id]
-            if datetime.fromisoformat(v["timestamp"]) > datetime.utcnow() - timedelta(days=30)
+            if datetime.fromisoformat(v["timestamp"]) > datetime.now(timezone.utc) - timedelta(days=30)
         ]
         
         if len(recent_violations) >= 5:
-            self._blocked_users[user_id] = datetime.utcnow() + timedelta(days=30)
+            self._blocked_users[user_id] = datetime.now(timezone.utc) + timedelta(days=30)
     
     def _get_action_message(self, result: ModerationResult) -> str:
         """Get action message for result."""

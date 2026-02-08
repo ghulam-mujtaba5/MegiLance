@@ -1044,7 +1044,7 @@ export default function PaymentWizard({
         user_id: userId
       };
 
-      let result;
+      let result: any;
       if (flowType === 'withdrawal') {
         result = await api.payments.withdraw(payload);
       } else {

@@ -3,8 +3,12 @@
 Price estimation, freelancer matching, fraud detection
 """
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Optional
+
+logger = logging.getLogger("megilance")
 
 from app.db.turso_http import execute_query, to_str
 from app.core.security import get_current_user
@@ -178,9 +182,10 @@ async def match_freelancers_to_project(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("Error matching freelancers to project", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error matching freelancers: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 
@@ -269,9 +274,10 @@ async def estimate_project_price(
             ]
         }
     except Exception as e:
+        logger.error("Error estimating price", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error estimating price: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 
@@ -348,9 +354,10 @@ async def estimate_freelancer_hourly_rate(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("Error estimating freelancer rate", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error estimating freelancer rate: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 
@@ -439,9 +446,10 @@ async def check_user_fraud_risk(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("Error analyzing user for fraud risk", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error analyzing user: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 
@@ -509,9 +517,10 @@ async def check_project_fraud_risk(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("Error analyzing project for fraud risk", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error analyzing project: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 
@@ -582,9 +591,10 @@ async def check_proposal_fraud_risk(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("Error analyzing proposal for fraud risk", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error analyzing proposal: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 
@@ -884,9 +894,10 @@ async def get_profile_optimization_suggestions(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("Error analyzing profile for optimization suggestions", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error analyzing profile: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 
@@ -992,9 +1003,10 @@ async def recommend_jobs_for_user(
     except HTTPException:
         raise
     except Exception as e:
+        logger.error("Error recommending jobs for user", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error recommending jobs: {str(e)}"
+            detail="An error occurred processing your request. Please try again."
         )
 
 

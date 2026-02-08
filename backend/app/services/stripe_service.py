@@ -4,7 +4,7 @@
 import stripe
 from typing import Optional, Dict, Any, List
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from ..core.config import get_settings
@@ -374,7 +374,7 @@ class StripeService:
             if payment:
                 payment.status = "completed"
                 payment.stripe_payment_intent_id = payment_intent["id"]
-                payment.updated_at = datetime.utcnow()
+                payment.updated_at = datetime.now(timezone.utc)
                 db.commit()
         
         return {"status": "success", "payment_id": payment_id}
@@ -388,7 +388,7 @@ class StripeService:
             payment = db.query(Payment).filter(Payment.id == payment_id).first()
             if payment:
                 payment.status = "failed"
-                payment.updated_at = datetime.utcnow()
+                payment.updated_at = datetime.now(timezone.utc)
                 db.commit()
         
         return {"status": "failed", "payment_id": payment_id}
@@ -402,7 +402,7 @@ class StripeService:
             payment = db.query(Payment).filter(Payment.id == payment_id).first()
             if payment:
                 payment.status = "canceled"
-                payment.updated_at = datetime.utcnow()
+                payment.updated_at = datetime.now(timezone.utc)
                 db.commit()
         
         return {"status": "canceled", "payment_id": payment_id}

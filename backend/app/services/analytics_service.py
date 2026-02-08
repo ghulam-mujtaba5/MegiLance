@@ -1,7 +1,7 @@
 # @AI-HINT: Analytics service for platform metrics and reporting
 # Provides data aggregation for user, project, revenue, and performance analytics
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from sqlalchemy import func, and_, or_, extract
 from sqlalchemy.orm import Session
@@ -66,7 +66,7 @@ class AnalyticsService:
     
     def get_active_users_stats(self, days: int = 30) -> Dict[str, Any]:
         """Get active user statistics"""
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
         
         # Total users
         total_users = self.db.query(func.count(User.id)).scalar()
@@ -129,7 +129,7 @@ class AnalyticsService:
         ).scalar() or 0
         
         # Total projects posted in last 30 days
-        thirty_days_ago = datetime.utcnow() - timedelta(days=30)
+        thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
         recent_projects = self.db.query(func.count(Project.id)).filter(
             Project.created_at >= thirty_days_ago
         ).scalar()
@@ -433,7 +433,7 @@ class AnalyticsService:
         user_satisfaction = self.db.query(func.avg(Review.rating)).scalar() or 0
         
         # Daily active users (last 24 hours)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.now(timezone.utc) - timedelta(days=1)
         daily_active = self.db.query(func.count(User.id)).filter(
             User.last_login >= yesterday
         ).scalar()
@@ -449,7 +449,7 @@ class AnalyticsService:
     def get_engagement_metrics(self, days: int = 30) -> Dict[str, Any]:
         """Get user engagement metrics"""
         
-        cutoff_date = datetime.utcnow() - timedelta(days=days)
+        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
         
         # Messages sent
         messages_sent = self.db.query(func.count(Message.id)).filter(

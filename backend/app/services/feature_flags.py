@@ -15,7 +15,7 @@ Features:
 import logging
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -132,8 +132,8 @@ class FeatureFlagsService:
             self._flags[flag_config["key"]] = {
                 "id": flag_id,
                 **flag_config,
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat()
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
             }
     
     # ===================
@@ -172,8 +172,8 @@ class FeatureFlagsService:
                 "staging": True,
                 "production": default_value
             },
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._flags[key] = flag
@@ -203,7 +203,7 @@ class FeatureFlagsService:
             if field in updates:
                 flag[field] = updates[field]
         
-        flag["updated_at"] = datetime.utcnow().isoformat()
+        flag["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         return {"flag": flag, "status": "updated"}
     
@@ -273,7 +273,7 @@ class FeatureFlagsService:
         
         if status == FeatureStatus.SCHEDULED:
             schedule = flag.get("schedule", {})
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             
             start = schedule.get("start")
             end = schedule.get("end")
@@ -379,7 +379,7 @@ class FeatureFlagsService:
             "metrics": metrics or ["conversion"],
             "results": {v["id"]: {"participants": 0, "conversions": 0} 
                        for v in variants},
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "started_at": None,
             "ended_at": None
         }
@@ -395,7 +395,7 @@ class FeatureFlagsService:
             return {"error": "Experiment not found"}
         
         experiment["status"] = ExperimentStatus.RUNNING.value
-        experiment["started_at"] = datetime.utcnow().isoformat()
+        experiment["started_at"] = datetime.now(timezone.utc).isoformat()
         
         return {"experiment_id": experiment_id, "status": "running"}
     
@@ -420,7 +420,7 @@ class FeatureFlagsService:
             return {"error": "Experiment not found"}
         
         experiment["status"] = ExperimentStatus.COMPLETED.value
-        experiment["ended_at"] = datetime.utcnow().isoformat()
+        experiment["ended_at"] = datetime.now(timezone.utc).isoformat()
         experiment["winning_variant"] = winning_variant
         
         return {
@@ -522,7 +522,7 @@ class FeatureFlagsService:
             "variant_id": variant_id,
             "metric": metric,
             "value": value,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
         
         return {

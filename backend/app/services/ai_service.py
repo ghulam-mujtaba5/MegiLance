@@ -336,7 +336,7 @@ Best regards"""
         
         # Check account age
         from datetime import datetime, timedelta
-        if user.created_at and (datetime.utcnow() - user.created_at) < timedelta(days=7):
+        if user.created_at and (datetime.now(timezone.utc) - user.created_at) < timedelta(days=7):
             fraud_flags.append('New account (< 7 days)')
             risk_score += 10
         

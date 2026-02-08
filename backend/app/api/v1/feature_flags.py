@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -161,7 +161,7 @@ async def track_exposure(
         request.context
     )
     
-    return {"success": True, "tracked_at": datetime.utcnow().isoformat()}
+    return {"success": True, "tracked_at": datetime.now(timezone.utc).isoformat()}
 
 
 # Admin Endpoints
@@ -306,7 +306,7 @@ async def admin_update_flag(
     if request.allowed_user_ids is not None:
         flag.allowed_user_ids = request.allowed_user_ids
     
-    flag.updated_at = datetime.utcnow()
+    flag.updated_at = datetime.now(timezone.utc)
     flags._flags[flag_name] = flag
     
     return {
@@ -359,7 +359,7 @@ async def admin_update_rollout(
         raise HTTPException(status_code=404, detail="Flag not found")
     
     flag.rollout_percentage = percentage
-    flag.updated_at = datetime.utcnow()
+    flag.updated_at = datetime.now(timezone.utc)
     flags._flags[flag_name] = flag
     
     return {

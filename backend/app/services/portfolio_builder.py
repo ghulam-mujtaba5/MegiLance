@@ -13,7 +13,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 import uuid
 
@@ -68,7 +68,7 @@ class PortfolioBuilderService:
             "is_public": is_public,
             "sections": self._get_default_sections(template),
             "theme": self._get_default_theme(template),
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "published": False
         }
     
@@ -88,7 +88,7 @@ class PortfolioBuilderService:
             "is_public": True,
             "sections": self._get_default_sections(PortfolioTemplate.PROFESSIONAL),
             "theme": self._get_default_theme(PortfolioTemplate.PROFESSIONAL),
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "published": True,
             "views": 150,
             "unique_visitors": 89
@@ -104,7 +104,7 @@ class PortfolioBuilderService:
         return {
             "portfolio_id": portfolio_id,
             "updated_fields": list(updates.keys()),
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def delete_portfolio(self, user_id: int, portfolio_id: str) -> bool:
@@ -141,7 +141,7 @@ class PortfolioBuilderService:
             "type": section_type,
             "content": content,
             "order": order,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def update_section(
@@ -155,7 +155,7 @@ class PortfolioBuilderService:
         return {
             "section_id": section_id,
             "updated_fields": list(updates.keys()),
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def delete_section(
@@ -177,7 +177,7 @@ class PortfolioBuilderService:
         return {
             "portfolio_id": portfolio_id,
             "sections_reordered": len(section_orders),
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Project Showcase
@@ -201,7 +201,7 @@ class PortfolioBuilderService:
             "github_url": project_data.get("github_url"),
             "case_study": project_data.get("case_study"),
             "featured": project_data.get("featured", False),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def create_case_study(
@@ -223,7 +223,7 @@ class PortfolioBuilderService:
             "results": case_study_data.get("results"),
             "metrics": case_study_data.get("metrics", {}),
             "testimonial": case_study_data.get("testimonial"),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Media Gallery
@@ -245,7 +245,7 @@ class PortfolioBuilderService:
             "title": media_data.get("title"),
             "description": media_data.get("description"),
             "order": media_data.get("order", 0),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def delete_gallery_media(
@@ -278,7 +278,7 @@ class PortfolioBuilderService:
             "rating": testimonial_data.get("rating", 5),
             "project_id": testimonial_data.get("project_id"),
             "verified": False,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def request_testimonial(
@@ -299,7 +299,7 @@ class PortfolioBuilderService:
             "project_id": project_id,
             "message": message,
             "status": "sent",
-            "sent_at": datetime.utcnow().isoformat()
+            "sent_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Theme & Customization
@@ -321,7 +321,7 @@ class PortfolioBuilderService:
                 "font_body": theme_settings.get("font_body", "Inter"),
                 "dark_mode": theme_settings.get("dark_mode", True)
             },
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def preview_template(
@@ -353,7 +353,7 @@ class PortfolioBuilderService:
                 {"type": "CNAME", "name": domain, "value": "portfolio.megilance.com"},
                 {"type": "TXT", "name": domain, "value": f"megilance-verify={portfolio_id[:16]}"}
             ],
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def verify_custom_domain(
@@ -366,7 +366,7 @@ class PortfolioBuilderService:
             "portfolio_id": portfolio_id,
             "domain_verified": True,
             "ssl_status": "provisioning",
-            "verified_at": datetime.utcnow().isoformat()
+            "verified_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Publishing
@@ -380,7 +380,7 @@ class PortfolioBuilderService:
             "portfolio_id": portfolio_id,
             "published": True,
             "url": f"https://portfolio-{portfolio_id[:8]}.megilance.com",
-            "published_at": datetime.utcnow().isoformat()
+            "published_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def unpublish_portfolio(
@@ -392,7 +392,7 @@ class PortfolioBuilderService:
         return {
             "portfolio_id": portfolio_id,
             "published": False,
-            "unpublished_at": datetime.utcnow().isoformat()
+            "unpublished_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Analytics
@@ -449,7 +449,7 @@ class PortfolioBuilderService:
                 "canonical_url": seo_settings.get("canonical_url"),
                 "robots": seo_settings.get("robots", "index, follow")
             },
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Export
@@ -468,7 +468,7 @@ class PortfolioBuilderService:
             "format": format,
             "status": "processing",
             "download_url": None,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     def _get_default_sections(self, template: PortfolioTemplate) -> List[Dict[str, Any]]:

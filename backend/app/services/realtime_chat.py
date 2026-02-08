@@ -16,7 +16,7 @@ Billion-dollar feature: Professional chat with:
 
 import logging
 from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_, func, desc
@@ -86,8 +86,8 @@ class RealtimeChatService:
             client_id=user1_id,  # First user as client
             freelancer_id=user2_id,  # Second user as freelancer
             project_id=project_id,
-            created_at=datetime.utcnow(),
-            last_message_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            last_message_at=datetime.now(timezone.utc)
         )
         self.db.add(conversation)
         self.db.commit()
@@ -182,13 +182,13 @@ class RealtimeChatService:
             attachments=json.dumps(attachments) if attachments else None,
             parent_message_id=reply_to_id,
             is_read=False,
-            sent_at=datetime.utcnow(),
-            created_at=datetime.utcnow()
+            sent_at=datetime.now(timezone.utc),
+            created_at=datetime.now(timezone.utc)
         )
         self.db.add(message)
         
         # Update conversation last_message_at
-        conv.last_message_at = datetime.utcnow()
+        conv.last_message_at = datetime.now(timezone.utc)
         
         self.db.commit()
         self.db.refresh(message)
@@ -225,7 +225,7 @@ class RealtimeChatService:
             await websocket_manager.broadcast_to_chat(
                 str(conversation_id),
                 'message_delivered',
-                {'message_id': message.id, 'delivered_at': datetime.utcnow().isoformat()}
+                {'message_id': message.id, 'delivered_at': datetime.now(timezone.utc).isoformat()}
             )
         
         return msg_payload
@@ -289,7 +289,7 @@ class RealtimeChatService:
         conversation_id: int
     ) -> None:
         """Mark messages as read and notify sender"""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         self.db.query(Message).filter(
             Message.id.in_(message_ids)
@@ -340,7 +340,7 @@ class RealtimeChatService:
             reactions.append({
                 'user_id': user_id,
                 'emoji': emoji,
-                'created_at': datetime.utcnow().isoformat()
+                'created_at': datetime.now(timezone.utc).isoformat()
             })
         
         message.reactions = reactions
@@ -375,7 +375,7 @@ class RealtimeChatService:
             self._typing_users[chat_key] = {}
         
         if is_typing:
-            self._typing_users[chat_key][user_id] = datetime.utcnow()
+            self._typing_users[chat_key][user_id] = datetime.now(timezone.utc)
         else:
             self._typing_users[chat_key].pop(user_id, None)
         
@@ -399,7 +399,7 @@ class RealtimeChatService:
         if chat_key not in self._typing_users:
             return []
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         timeout = timedelta(seconds=10)
         
         # Clean up stale entries
@@ -421,7 +421,7 @@ class RealtimeChatService:
         status: PresenceStatus
     ) -> None:
         """Update user presence status"""
-        self._presence_cache[user_id] = (status, datetime.utcnow())
+        self._presence_cache[user_id] = (status, datetime.now(timezone.utc))
         
         # Broadcast presence update
         await websocket_manager.broadcast_user_status(
@@ -437,7 +437,7 @@ class RealtimeChatService:
             if cached:
                 status, last_update = cached
                 # Auto-away after 5 minutes of no activity
-                if datetime.utcnow() - last_update > timedelta(minutes=5):
+                if datetime.now(timezone.utc) - last_update > timedelta(minutes=5):
                     return PresenceStatus.AWAY.value
                 return status.value
             return PresenceStatus.ONLINE.value
@@ -446,7 +446,7 @@ class RealtimeChatService:
     
     async def heartbeat(self, user_id: int) -> None:
         """Update user activity timestamp (call periodically)"""
-        self._presence_cache[user_id] = (PresenceStatus.ONLINE, datetime.utcnow())
+        self._presence_cache[user_id] = (PresenceStatus.ONLINE, datetime.now(timezone.utc))
     
     # =========================================================================
     # SEARCH
@@ -528,7 +528,7 @@ class RealtimeChatService:
                 {'id': p1.id, 'name': f"{p1.first_name} {p1.last_name}"} if p1 else None,
                 {'id': p2.id, 'name': f"{p2.first_name} {p2.last_name}"} if p2 else None
             ],
-            'export_date': datetime.utcnow().isoformat(),
+            'export_date': datetime.now(timezone.utc).isoformat(),
             'message_count': len(messages),
             'messages': [
                 {

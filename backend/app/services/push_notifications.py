@@ -11,7 +11,7 @@ Features:
 - Silent push for data sync
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -61,8 +61,8 @@ class PushNotificationService:
             "platform": platform.value,
             "device_info": device_info or {},
             "is_active": True,
-            "created_at": datetime.utcnow().isoformat(),
-            "last_used_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "last_used_at": datetime.now(timezone.utc).isoformat()
         }
         
         return device
@@ -88,14 +88,14 @@ class PushNotificationService:
                 "platform": "ios",
                 "device_info": {"model": "iPhone 15 Pro", "os_version": "17.2"},
                 "is_active": True,
-                "last_used_at": datetime.utcnow().isoformat()
+                "last_used_at": datetime.now(timezone.utc).isoformat()
             },
             {
                 "id": "device-2",
                 "platform": "android",
                 "device_info": {"model": "Pixel 8", "os_version": "14"},
                 "is_active": True,
-                "last_used_at": datetime.utcnow().isoformat()
+                "last_used_at": datetime.now(timezone.utc).isoformat()
             }
         ]
     
@@ -139,7 +139,7 @@ class PushNotificationService:
             "collapse_key": collapse_key,
             "ttl": ttl,
             "status": "sent",
-            "sent_at": datetime.utcnow().isoformat(),
+            "sent_at": datetime.now(timezone.utc).isoformat(),
             "devices_targeted": 2,
             "devices_delivered": 2
         }
@@ -190,7 +190,7 @@ class PushNotificationService:
             "total_devices": len(user_ids) * 2,  # Estimated
             "successful": len(user_ids) * 2,
             "failed": 0,
-            "sent_at": datetime.utcnow().isoformat()
+            "sent_at": datetime.now(timezone.utc).isoformat()
         }
         
         return results
@@ -206,7 +206,7 @@ class PushNotificationService:
             "type": "silent",
             "user_id": user_id,
             "data": data,
-            "sent_at": datetime.utcnow().isoformat()
+            "sent_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Notification Templates
@@ -366,7 +366,7 @@ class PushNotificationService:
             "title": title,
             "body": body,
             "data": data,
-            "sent_at": datetime.utcnow().isoformat()
+            "sent_at": datetime.now(timezone.utc).isoformat()
         }
 
 

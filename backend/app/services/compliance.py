@@ -13,7 +13,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import uuid
 
@@ -70,23 +70,23 @@ class ComplianceCenterService:
                     "framework": ComplianceFramework.GDPR,
                     "status": "compliant",
                     "score": 95,
-                    "last_audit": datetime.utcnow().isoformat(),
-                    "next_audit": (datetime.utcnow() + timedelta(days=90)).isoformat(),
+                    "last_audit": datetime.now(timezone.utc).isoformat(),
+                    "next_audit": (datetime.now(timezone.utc) + timedelta(days=90)).isoformat(),
                     "issues": []
                 },
                 {
                     "framework": ComplianceFramework.CCPA,
                     "status": "compliant",
                     "score": 92,
-                    "last_audit": datetime.utcnow().isoformat(),
-                    "next_audit": (datetime.utcnow() + timedelta(days=90)).isoformat(),
+                    "last_audit": datetime.now(timezone.utc).isoformat(),
+                    "next_audit": (datetime.now(timezone.utc) + timedelta(days=90)).isoformat(),
                     "issues": []
                 }
             ],
             "overall_score": 93.5,
             "critical_issues": 0,
             "warnings": 2,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_framework_requirements(
@@ -123,19 +123,19 @@ class ComplianceCenterService:
                 {
                     "type": ConsentType.MARKETING,
                     "granted": True,
-                    "granted_at": datetime.utcnow().isoformat(),
+                    "granted_at": datetime.now(timezone.utc).isoformat(),
                     "version": "1.0"
                 },
                 {
                     "type": ConsentType.ANALYTICS,
                     "granted": True,
-                    "granted_at": datetime.utcnow().isoformat(),
+                    "granted_at": datetime.now(timezone.utc).isoformat(),
                     "version": "1.0"
                 },
                 {
                     "type": ConsentType.PERSONALIZATION,
                     "granted": True,
-                    "granted_at": datetime.utcnow().isoformat(),
+                    "granted_at": datetime.now(timezone.utc).isoformat(),
                     "version": "1.0"
                 },
                 {
@@ -147,11 +147,11 @@ class ComplianceCenterService:
                 {
                     "type": ConsentType.DATA_PROCESSING,
                     "granted": True,
-                    "granted_at": datetime.utcnow().isoformat(),
+                    "granted_at": datetime.now(timezone.utc).isoformat(),
                     "version": "1.0"
                 }
             ],
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def update_consent(
@@ -165,7 +165,7 @@ class ComplianceCenterService:
             "user_id": user_id,
             "consent_type": consent_type,
             "granted": granted,
-            "updated_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
             "version": "1.0"
         }
     
@@ -187,7 +187,7 @@ class ComplianceCenterService:
             "metadata": metadata,
             "ip_address": metadata.get("ip_address"),
             "user_agent": metadata.get("user_agent"),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Data Subject Requests
@@ -201,7 +201,7 @@ class ComplianceCenterService:
         request_id = str(uuid.uuid4())
         
         # GDPR requires 30-day response
-        due_date = datetime.utcnow() + timedelta(days=30)
+        due_date = datetime.now(timezone.utc) + timedelta(days=30)
         
         return {
             "request_id": request_id,
@@ -210,7 +210,7 @@ class ComplianceCenterService:
             "status": RequestStatus.PENDING,
             "details": details,
             "due_date": due_date.isoformat(),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_data_request(
@@ -224,10 +224,10 @@ class ComplianceCenterService:
             "user_id": user_id,
             "request_type": DataRequestType.ACCESS,
             "status": RequestStatus.IN_PROGRESS,
-            "due_date": (datetime.utcnow() + timedelta(days=15)).isoformat(),
+            "due_date": (datetime.now(timezone.utc) + timedelta(days=15)).isoformat(),
             "progress": 65,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def list_data_requests(
@@ -243,8 +243,8 @@ class ComplianceCenterService:
                 "user_id": user_id or 1,
                 "request_type": DataRequestType.ACCESS,
                 "status": RequestStatus.PENDING,
-                "due_date": (datetime.utcnow() + timedelta(days=25)).isoformat(),
-                "created_at": datetime.utcnow().isoformat()
+                "due_date": (datetime.now(timezone.utc) + timedelta(days=25)).isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat()
             }
         ]
     
@@ -262,7 +262,7 @@ class ComplianceCenterService:
             "status": RequestStatus.COMPLETED if action == "approve" else RequestStatus.REJECTED,
             "processed_by": admin_id,
             "notes": notes,
-            "processed_at": datetime.utcnow().isoformat()
+            "processed_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Data Export (GDPR Article 20)
@@ -291,7 +291,7 @@ class ComplianceCenterService:
             "estimated_size": "15 MB",
             "download_url": None,
             "expires_at": None,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Data Deletion (GDPR Article 17)
@@ -310,7 +310,7 @@ class ComplianceCenterService:
             "status": "pending_confirmation",
             "confirmation_required": True,
             "grace_period_days": 30,
-            "scheduled_deletion": (datetime.utcnow() + timedelta(days=30)).isoformat(),
+            "scheduled_deletion": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
             "data_to_delete": [
                 "Personal information",
                 "Account data",
@@ -322,7 +322,7 @@ class ComplianceCenterService:
                 "Anonymized analytics",
                 "Transaction records (7 years - legal requirement)"
             ],
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def confirm_data_deletion(
@@ -335,8 +335,8 @@ class ComplianceCenterService:
         return {
             "deletion_id": deletion_id,
             "status": "scheduled",
-            "scheduled_deletion": (datetime.utcnow() + timedelta(days=30)).isoformat(),
-            "confirmed_at": datetime.utcnow().isoformat()
+            "scheduled_deletion": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
+            "confirmed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def cancel_data_deletion(
@@ -348,7 +348,7 @@ class ComplianceCenterService:
         return {
             "deletion_id": deletion_id,
             "status": "cancelled",
-            "cancelled_at": datetime.utcnow().isoformat()
+            "cancelled_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Data Retention Policies
@@ -398,7 +398,7 @@ class ComplianceCenterService:
             "data_type": data_type,
             "retention_period": retention_period,
             "updated_by": admin_id,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Compliance Reports
@@ -439,7 +439,7 @@ class ComplianceCenterService:
                 "security_incidents": 1,
                 "resolved": 1
             },
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Privacy Impact Assessment
@@ -467,7 +467,7 @@ class ComplianceCenterService:
                 ]
             },
             "status": "draft",
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Cookie Consent
@@ -479,7 +479,7 @@ class ComplianceCenterService:
             "functional": True,
             "analytics": True,
             "advertising": False,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def update_cookie_preferences(
@@ -494,7 +494,7 @@ class ComplianceCenterService:
             "functional": preferences.get("functional", True),
             "analytics": preferences.get("analytics", False),
             "advertising": preferences.get("advertising", False),
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
 
 

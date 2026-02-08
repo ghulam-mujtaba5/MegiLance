@@ -2,7 +2,7 @@
 # Handles forgot password workflow with secure token generation and expiry management
 
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy.orm import Session
 from ..models.user import User
@@ -35,7 +35,7 @@ class PasswordResetService:
             tuple[str, datetime]: (reset_token, expiry_datetime)
         """
         token = self.generate_reset_token()
-        expiry = datetime.utcnow() + timedelta(hours=self.token_expiry_hours)
+        expiry = datetime.now(timezone.utc) + timedelta(hours=self.token_expiry_hours)
         
         user.password_reset_token = token
         user.password_reset_expires = expiry
@@ -60,7 +60,7 @@ class PasswordResetService:
             return None
         
         # Check if token has expired
-        if user.password_reset_expires and user.password_reset_expires < datetime.utcnow():
+        if user.password_reset_expires and user.password_reset_expires < datetime.now(timezone.utc):
             return None
         
         return user
@@ -80,7 +80,7 @@ class PasswordResetService:
         user.hashed_password = new_password_hash
         user.password_reset_token = None  # Clear token after use
         user.password_reset_expires = None
-        user.last_password_changed = datetime.utcnow()
+        user.last_password_changed = datetime.now(timezone.utc)
         
         db.commit()
         db.refresh(user)
@@ -100,7 +100,7 @@ class PasswordResetService:
         if not user.password_reset_token or not user.password_reset_expires:
             return True
         
-        return user.password_reset_expires < datetime.utcnow()
+        return user.password_reset_expires < datetime.now(timezone.utc)
     
     def invalidate_reset_token(self, db: Session, user: User):
         """

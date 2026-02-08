@@ -3,7 +3,7 @@
 Handles milestone CRUD, submissions, approvals, and payment integration.
 """
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -44,7 +44,7 @@ def _row_to_milestone(row) -> dict:
 def _send_notification_turso(user_id: int, notification_type: str, title: str, 
                               content: str, data: dict, priority: str, action_url: str):
     """Send notification using Turso"""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         INSERT INTO notifications (user_id, notification_type, title, content, data, 
                                    priority, action_url, is_read, created_at)
@@ -72,7 +72,7 @@ async def create_milestone(
         raise HTTPException(status_code=403, detail="Only the contract client can create milestones")
     
     # Create milestone
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     due_date = milestone_data.due_date.isoformat() if milestone_data.due_date else None
     
     insert_result = execute_query("""
@@ -234,7 +234,7 @@ async def update_milestone(
     
     if update_fields:
         update_fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(milestone_id)
         
         execute_query(f"UPDATE milestones SET {', '.join(update_fields)} WHERE id = ?", params)
@@ -278,7 +278,7 @@ async def submit_milestone(
         raise HTTPException(status_code=400, detail=f"Milestone is {current_status}, cannot submit")
     
     # Update milestone
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE milestones SET status = 'submitted', deliverables = ?, submission_notes = ?, 
                               submitted_at = ?, updated_at = ?
@@ -340,7 +340,7 @@ async def approve_milestone(
     platform_fee = amount * platform_fee_percentage
     freelancer_amount = amount - platform_fee
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Update milestone
     execute_query("""
@@ -367,7 +367,7 @@ async def approve_milestone(
         payment_id = int(payment_result["rows"][0][0].get("value"))
         
     # Create Invoice
-    invoice_number = f"INV-{contract_id}-{milestone_id}-{int(datetime.utcnow().timestamp())}"
+    invoice_number = f"INV-{contract_id}-{milestone_id}-{int(datetime.now(timezone.utc).timestamp())}"
     items = json.dumps([{"description": f"Milestone: {title}", "amount": amount}])
     
     execute_query("""
@@ -426,7 +426,7 @@ async def reject_milestone(
         raise HTTPException(status_code=400, detail=f"Milestone is {current_status}, must be submitted to reject")
     
     # Update milestone
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE milestones SET status = 'pending', approval_notes = ?, submitted_at = NULL, updated_at = ?
         WHERE id = ?

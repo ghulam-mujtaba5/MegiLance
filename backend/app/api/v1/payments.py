@@ -4,7 +4,7 @@ No local SQLite fallback - all queries go directly to Turso
 """
 
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -13,6 +13,9 @@ from app.core.security import get_current_active_user
 from app.models.user import User
 from app.schemas.payment import PaymentCreate, PaymentRead, PaymentUpdate
 from app.db.turso_http import get_turso_http
+import logging
+
+logger = logging.getLogger("megilance")
 
 router = APIRouter()
 
@@ -136,10 +139,10 @@ def list_payments(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] list_payments: {e}")
+        logger.error("list_payments failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database temporarily unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -174,10 +177,10 @@ def get_payment(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] get_payment: {e}")
+        logger.error("get_payment failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -245,7 +248,7 @@ def create_payment(
                 detail="Recipient account is not active"
             )
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         # currency = (payment.currency or "USDC").upper() # Not stored in DB
         payment_type = (payment.payment_type or "milestone").lower()
         description = (payment.description or "")[:1000]  # Truncate to limit
@@ -275,10 +278,10 @@ def create_payment(
         return _row_to_payment(row)
         
     except Exception as e:
-        print(f"[ERROR] create_payment: {e}")
+        logger.error("create_payment failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -354,7 +357,7 @@ def update_payment(
         
         if updates:
             updates.append("updated_at = ?")
-            params.append(datetime.utcnow().isoformat())
+            params.append(datetime.now(timezone.utc).isoformat())
             params.append(payment_id)
             
             turso.execute(f"UPDATE payments SET {', '.join(updates)} WHERE id = ?", params)
@@ -372,10 +375,10 @@ def update_payment(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] update_payment: {e}")
+        logger.error("update_payment failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -396,7 +399,7 @@ def complete_payment(
         if current_user.role != "Admin" and existing[0] != current_user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         turso.execute(
             "UPDATE payments SET status = ?, processed_at = ?, blockchain_tx_hash = ?, updated_at = ? WHERE id = ?",
             ["completed", now, tx_hash, now, payment_id]
@@ -414,10 +417,10 @@ def complete_payment(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] complete_payment: {e}")
+        logger.error("complete_payment failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -450,8 +453,8 @@ def get_payment_stats(
         }
         
     except Exception as e:
-        print(f"[ERROR] get_payment_stats: {e}")
+        logger.error("get_payment_stats failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )

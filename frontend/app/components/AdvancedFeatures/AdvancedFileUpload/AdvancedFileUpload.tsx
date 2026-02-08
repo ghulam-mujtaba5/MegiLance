@@ -157,7 +157,7 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
           file,
           status: error ? 'error' : 'pending',
           progress: 0,
-          error,
+          error: error ?? undefined,
           preview,
         });
       }

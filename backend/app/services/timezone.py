@@ -10,7 +10,7 @@ Features:
 - Meeting time suggestions
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -76,7 +76,7 @@ class TimezoneService:
             "detected_timezone": detected_tz,
             "confidence": 0.95 if browser_timezone else 0.75,
             "method": "browser" if browser_timezone else "ip",
-            "detected_at": datetime.utcnow().isoformat()
+            "detected_at": datetime.now(timezone.utc).isoformat()
         }
     
     # User Preferences
@@ -112,7 +112,7 @@ class TimezoneService:
             "date_format": date_format,
             "time_format": time_format,
             "week_start": week_start,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Time Conversion
@@ -143,7 +143,7 @@ class TimezoneService:
         """Get current time in a specific timezone."""
         return {
             "timezone": timezone,
-            "current_time": datetime.utcnow().isoformat(),
+            "current_time": datetime.now(timezone.utc).isoformat(),
             "utc_offset": "-05:00",
             "is_dst": False
         }
@@ -204,7 +204,7 @@ class TimezoneService:
             "suggestions": suggestions,
             "total_suggestions": len(suggestions),
             "best_overlap_window": "14:00 - 18:00 UTC",
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def find_overlapping_hours(
@@ -243,7 +243,7 @@ class TimezoneService:
             "Asia/Tokyo"
         ]
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         clocks = []
         for tz in timezones:
@@ -271,7 +271,7 @@ class TimezoneService:
         return {
             "user_id": user_id,
             "timezone": timezone,
-            "added_at": datetime.utcnow().isoformat()
+            "added_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def remove_favorite_timezone(

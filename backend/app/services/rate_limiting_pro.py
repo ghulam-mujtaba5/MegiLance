@@ -13,7 +13,7 @@ Features:
 
 import logging
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any, List
 from sqlalchemy.orm import Session
 from collections import defaultdict
@@ -170,12 +170,12 @@ class RateLimitingProService:
         # Check if IP is blocked
         if identifier in self._blocked_ips:
             block_until = self._blocked_ips[identifier]
-            if datetime.utcnow() < block_until:
+            if datetime.now(timezone.utc) < block_until:
                 return {
                     "allowed": False,
                     "remaining": 0,
                     "limit": 0,
-                    "reset_in": (block_until - datetime.utcnow()).seconds,
+                    "reset_in": (block_until - datetime.now(timezone.utc)).seconds,
                     "blocked": True,
                     "reason": "Too many requests - temporarily blocked"
                 }
@@ -202,7 +202,7 @@ class RateLimitingProService:
             # Check for abuse (repeated rate limit hits)
             abuse_count = self._analytics[identifier].get(f"{category}_blocked", 0)
             if abuse_count > 100:  # 100 blocked requests = temporary ban
-                self._blocked_ips[identifier] = datetime.utcnow() + timedelta(hours=1)
+                self._blocked_ips[identifier] = datetime.now(timezone.utc) + timedelta(hours=1)
             
             return {
                 "allowed": False,
@@ -301,7 +301,7 @@ class RateLimitingProService:
         reason: str = "Manual block"
     ) -> Dict[str, Any]:
         """Block an identifier temporarily."""
-        until = datetime.utcnow() + timedelta(minutes=duration_minutes)
+        until = datetime.now(timezone.utc) + timedelta(minutes=duration_minutes)
         self._blocked_ips[identifier] = until
         
         logger.warning(f"Blocked identifier {identifier} until {until}: {reason}")
@@ -325,7 +325,7 @@ class RateLimitingProService:
     
     async def get_blocked_list(self) -> List[Dict[str, Any]]:
         """Get list of blocked identifiers."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         blocked = []
         
         for identifier, until in self._blocked_ips.items():
@@ -415,7 +415,7 @@ class RateLimitingProService:
             return False
         
         valid_until = self._bypass_tokens[token]
-        if datetime.utcnow() > valid_until:
+        if datetime.now(timezone.utc) > valid_until:
             del self._bypass_tokens[token]
             return False
         

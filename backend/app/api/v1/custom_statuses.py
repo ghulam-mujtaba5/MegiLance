@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, ConfigDict
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -59,8 +59,7 @@ class CustomStatusResponse(BaseModel):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # In-memory storage for demo
@@ -91,7 +90,7 @@ async def create_custom_status(
     global status_counter
     status_counter += 1
     
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     new_status = {
         "id": f"status_{status_counter}",
         "name": status_data.name,
@@ -152,7 +151,7 @@ async def update_custom_status(
     if status_data.sort_order is not None:
         custom_status["sort_order"] = status_data.sort_order
     
-    custom_status["updated_at"] = datetime.utcnow()
+    custom_status["updated_at"] = datetime.now(timezone.utc)
     return custom_status
 
 
@@ -186,7 +185,7 @@ async def reorder_statuses(
         if status_id in custom_statuses_db:
             if custom_statuses_db[status_id]["user_id"] == str(current_user.id):
                 custom_statuses_db[status_id]["sort_order"] = idx
-                custom_statuses_db[status_id]["updated_at"] = datetime.utcnow()
+                custom_statuses_db[status_id]["updated_at"] = datetime.now(timezone.utc)
     
     user_statuses = [s for s in custom_statuses_db.values() 
                     if s["user_id"] == str(current_user.id) and s["entity_type"] == entity_type.value]

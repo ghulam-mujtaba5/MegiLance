@@ -1,5 +1,5 @@
 """Notification schemas for MegiLance platform"""
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Dict, Any
 from datetime import datetime
 
@@ -35,8 +35,7 @@ class Notification(NotificationBase):
     created_at: datetime
     expires_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class NotificationList(BaseModel):

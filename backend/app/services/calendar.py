@@ -11,7 +11,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta, date, time
+from datetime import datetime, timedelta, date, time, timezone
 from enum import Enum
 from pydantic import BaseModel
 import uuid
@@ -241,8 +241,8 @@ class CalendarService:
             contract_id=contract_id,
             recurrence=recurrence,
             reminders=reminders or [15, 60],
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         self._meetings[meeting_id] = meeting
@@ -308,7 +308,7 @@ class CalendarService:
             if field in updates:
                 meeting_dict[field] = updates[field]
         
-        meeting_dict["updated_at"] = datetime.utcnow()
+        meeting_dict["updated_at"] = datetime.now(timezone.utc)
         
         # If time changed, update status
         if "scheduled_at" in updates:
@@ -334,7 +334,7 @@ class CalendarService:
         
         if meeting.status == MeetingStatus.PENDING:
             meeting.status = MeetingStatus.CONFIRMED
-            meeting.updated_at = datetime.utcnow()
+            meeting.updated_at = datetime.now(timezone.utc)
         
         return meeting
     
@@ -355,7 +355,7 @@ class CalendarService:
         
         meeting.status = MeetingStatus.CANCELLED
         meeting.notes = f"Cancelled by {user_id}. Reason: {reason or 'No reason provided'}"
-        meeting.updated_at = datetime.utcnow()
+        meeting.updated_at = datetime.now(timezone.utc)
         
         return meeting
     
@@ -376,7 +376,7 @@ class CalendarService:
         meeting.status = MeetingStatus.COMPLETED
         if notes:
             meeting.notes = notes
-        meeting.updated_at = datetime.utcnow()
+        meeting.updated_at = datetime.now(timezone.utc)
         
         return meeting
     
@@ -436,7 +436,7 @@ class CalendarService:
         within_minutes: int = 60
     ) -> List[Dict[str, Any]]:
         """Get upcoming meeting reminders for a user."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         reminders = []
         
         meetings = await self.get_user_meetings(

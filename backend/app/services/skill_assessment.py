@@ -20,7 +20,7 @@ import subprocess
 import tempfile
 import os
 from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, func, desc
@@ -377,7 +377,7 @@ class SkillAssessmentEngine:
         
         # Generate session ID
         session_id = hashlib.sha256(
-            f"{user_id}:{skill}:{datetime.utcnow().isoformat()}:{random.random()}".encode()
+            f"{user_id}:{skill}:{datetime.now(timezone.utc).isoformat()}:{random.random()}".encode()
         ).hexdigest()[:16]
         
         # Create session
@@ -391,8 +391,8 @@ class SkillAssessmentEngine:
             "current_index": 0,
             "total_points": total_points,
             "total_time_seconds": total_time,
-            "time_limit": datetime.utcnow() + timedelta(seconds=total_time + 60),  # Buffer
-            "started_at": datetime.utcnow().isoformat(),
+            "time_limit": datetime.now(timezone.utc) + timedelta(seconds=total_time + 60),  # Buffer
+            "started_at": datetime.now(timezone.utc).isoformat(),
             "completed_at": None,
             "status": "in_progress",
             "focus_events": [],  # Track tab switches for proctoring
@@ -435,7 +435,7 @@ class SkillAssessmentEngine:
             return None
         
         # Check time limit
-        if datetime.utcnow() > session["time_limit"]:
+        if datetime.now(timezone.utc) > session["time_limit"]:
             self._complete_assessment(session_id, timeout=True)
             return None
         
@@ -450,7 +450,7 @@ class SkillAssessmentEngine:
             "question": self._sanitize_question(question),
             "already_answered": session["answers"].get(question["id"]) is not None,
             "previous_answer": session["answers"].get(question["id"]),
-            "time_remaining": (session["time_limit"] - datetime.utcnow()).total_seconds()
+            "time_remaining": (session["time_limit"] - datetime.now(timezone.utc)).total_seconds()
         }
     
     def submit_answer(
@@ -465,7 +465,7 @@ class SkillAssessmentEngine:
             return {"error": "Invalid or expired session"}
         
         # Check time limit
-        if datetime.utcnow() > session["time_limit"]:
+        if datetime.now(timezone.utc) > session["time_limit"]:
             result = self._complete_assessment(session_id, timeout=True)
             return {"completed": True, "timeout": True, "result": result}
         
@@ -480,7 +480,7 @@ class SkillAssessmentEngine:
         # Store answer
         session["answers"][question_id] = {
             "answer": answer,
-            "submitted_at": datetime.utcnow().isoformat()
+            "submitted_at": datetime.now(timezone.utc).isoformat()
         }
         
         # Check if all questions answered
@@ -503,7 +503,7 @@ class SkillAssessmentEngine:
         if session and session["status"] == "in_progress":
             session["focus_events"].append({
                 "type": event_type,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             })
     
     # =========================================================================
@@ -531,7 +531,7 @@ class SkillAssessmentEngine:
             return self._get_results(session)
         
         session["status"] = "completed"
-        session["completed_at"] = datetime.utcnow().isoformat()
+        session["completed_at"] = datetime.now(timezone.utc).isoformat()
         session["timeout"] = timeout
         
         # Grade each question

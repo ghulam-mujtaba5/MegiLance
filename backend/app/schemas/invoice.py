@@ -1,5 +1,5 @@
 # @AI-HINT: Pydantic schemas for Invoice API validation and responses
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime, date
 from typing import Optional, List, Dict, Any, List, Dict, Any
 
@@ -60,8 +60,7 @@ class InvoiceRead(InvoiceBase):
             return json.loads(v)
         return v
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class InvoiceList(BaseModel):
     """Schema for paginated invoice list"""

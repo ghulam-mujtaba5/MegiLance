@@ -11,14 +11,14 @@ Provides:
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, UploadFile, File
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from ...db.session import get_db
-from ...core.security import get_current_active_user
+from ...core.security import get_current_active_user, require_admin
 
 
 router = APIRouter()
@@ -117,7 +117,7 @@ async def process_bulk_operation(
         "succeeded_items": succeeded,
         "failed_items": failed
     }
-    _bulk_operations[operation_id]["completed_at"] = datetime.utcnow().isoformat()
+    _bulk_operations[operation_id]["completed_at"] = datetime.now(timezone.utc).isoformat()
 
 
 # ============== Bulk Project Operations ==============
@@ -126,7 +126,7 @@ async def process_bulk_operation(
 async def bulk_project_operation(
     request: BulkProjectOperation,
     background_tasks: BackgroundTasks,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -161,7 +161,7 @@ async def bulk_project_operation(
         "status": "queued",
         "progress": {"processed": 0, "total": len(request.project_ids), "percentage": 0},
         "created_by": str(current_user.get("id")),
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     async def process_project(project_id: str, operation: str):
@@ -190,7 +190,7 @@ async def bulk_project_operation(
 async def bulk_user_operation(
     request: BulkUserOperation,
     background_tasks: BackgroundTasks,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -224,7 +224,7 @@ async def bulk_user_operation(
         "status": "queued",
         "progress": {"processed": 0, "total": len(request.user_ids), "percentage": 0},
         "created_by": str(current_user.get("id")),
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     async def process_user(user_id: str, operation: str):
@@ -251,7 +251,7 @@ async def bulk_user_operation(
 async def bulk_payment_operation(
     request: BulkPaymentOperation,
     background_tasks: BackgroundTasks,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -284,7 +284,7 @@ async def bulk_payment_operation(
         "status": "queued",
         "progress": {"processed": 0, "total": len(request.payment_ids), "percentage": 0},
         "created_by": str(current_user.get("id")),
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     async def process_payment(payment_id: str, operation: str):
@@ -310,7 +310,7 @@ async def bulk_payment_operation(
 @router.post("/tags")
 async def bulk_tag_operation(
     request: BulkTagOperation,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -340,7 +340,7 @@ async def bulk_tag_operation(
 async def bulk_export(
     request: BulkExportRequest,
     background_tasks: BackgroundTasks,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -375,7 +375,7 @@ async def bulk_import(
     item_type: str,
     file: UploadFile = File(...),
     background_tasks: BackgroundTasks = None,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -410,7 +410,7 @@ async def bulk_import(
 @router.get("/operations/{operation_id}")
 async def get_operation_status(
     operation_id: str,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -433,7 +433,7 @@ async def list_operations(
     status: Optional[str] = None,
     operation_type: Optional[str] = None,
     limit: int = 20,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -466,7 +466,7 @@ async def list_operations(
 @router.delete("/operations/{operation_id}")
 async def cancel_operation(
     operation_id: str,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -481,7 +481,7 @@ async def cancel_operation(
         raise HTTPException(status_code=400, detail="Can only cancel queued operations")
     
     operation["status"] = "cancelled"
-    operation["cancelled_at"] = datetime.utcnow().isoformat()
+    operation["cancelled_at"] = datetime.now(timezone.utc).isoformat()
     
     return {
         "success": True,
@@ -497,7 +497,7 @@ async def bulk_delete(
     item_ids: List[str],
     permanent: bool = False,
     background_tasks: BackgroundTasks = None,
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -527,7 +527,7 @@ async def bulk_update(
     item_type: str,
     item_ids: List[str],
     updates: Dict[str, Any],
-    current_user = Depends(get_current_active_user),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """

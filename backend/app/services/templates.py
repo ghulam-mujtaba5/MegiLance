@@ -12,7 +12,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pydantic import BaseModel
 
@@ -231,8 +231,8 @@ class TemplatesService:
         for tpl_data in default_templates:
             tpl = Template(
                 **tpl_data,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
             )
             self._templates[tpl.id] = tpl
     
@@ -265,8 +265,8 @@ class TemplatesService:
             variables=variables or [],
             tags=tags or [],
             price=price,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         self._templates[template_id] = template
@@ -359,7 +359,7 @@ class TemplatesService:
             if field in updates:
                 template_dict[field] = updates[field]
         
-        template_dict["updated_at"] = datetime.utcnow()
+        template_dict["updated_at"] = datetime.now(timezone.utc)
         
         updated_template = Template(**template_dict)
         self._templates[template_id] = updated_template
@@ -403,8 +403,8 @@ class TemplatesService:
             content=original.content.copy(),
             variables=original.variables.copy(),
             tags=original.tags.copy(),
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         self._templates[new_id] = new_template
@@ -443,7 +443,7 @@ class TemplatesService:
             "template_id": template_id,
             "template_name": template.name,
             "rendered_content": json.loads(content_str),
-            "applied_at": datetime.utcnow().isoformat()
+            "applied_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def rate_template(

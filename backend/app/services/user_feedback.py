@@ -8,7 +8,7 @@ satisfaction tracking, and feedback analytics.
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import logging
 import uuid
@@ -146,8 +146,8 @@ class UserFeedbackService:
             "priority": FeedbackPriority.MEDIUM.value,
             "metadata": metadata or {},
             "votes": 0,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         return {"feedback": feedback}
@@ -292,8 +292,8 @@ class UserFeedbackService:
             "target_audience": target_audience,
             "created_by": admin_id,
             "is_active": True,
-            "created_at": datetime.utcnow().isoformat(),
-            "expires_at": (datetime.utcnow() + timedelta(days=active_days)).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "expires_at": (datetime.now(timezone.utc) + timedelta(days=active_days)).isoformat(),
             "response_count": 0
         }
         
@@ -311,7 +311,7 @@ class UserFeedbackService:
             "survey_id": survey_id,
             "user_id": user_id,
             "responses": responses,
-            "submitted_at": datetime.utcnow().isoformat()
+            "submitted_at": datetime.now(timezone.utc).isoformat()
         }
         
         return {"response": response}

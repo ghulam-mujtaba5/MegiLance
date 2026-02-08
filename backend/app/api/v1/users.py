@@ -6,7 +6,7 @@ Enhanced with input validation and security measures
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import re
 
@@ -14,6 +14,9 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate, ProfileCompleteUpdate
 from app.core.security import get_password_hash, get_current_user
 from app.db.turso_http import get_turso_http
+import logging
+
+logger = logging.getLogger("megilance")
 
 router = APIRouter()
 
@@ -68,7 +71,7 @@ def _validate_string(value: Optional[str], field_name: str, max_length: int) -> 
 def _parse_date(value) -> datetime:
     """Parse date from various formats"""
     if value is None:
-        return datetime.utcnow()
+        return datetime.now(timezone.utc)
     if isinstance(value, datetime):
         return value
     if isinstance(value, str):
@@ -78,8 +81,8 @@ def _parse_date(value) -> datetime:
             try:
                 return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
             except:
-                return datetime.utcnow()
-    return datetime.utcnow()
+                return datetime.now(timezone.utc)
+    return datetime.now(timezone.utc)
 
 
 def _to_str(value) -> Optional[str]:
@@ -151,10 +154,10 @@ def list_users():
         return users
         
     except Exception as e:
-        print(f"[ERROR] list_users: {e}")
+        logger.error("list_users failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -178,10 +181,10 @@ def get_user(user_id: int):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] get_user: {e}")
+        logger.error("get_user failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -196,7 +199,7 @@ def create_user(payload: UserCreate):
         if existing:
             raise HTTPException(status_code=400, detail="Email already registered")
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         hashed_pw = get_password_hash(payload.password)
         
         turso.execute(
@@ -220,10 +223,10 @@ def create_user(payload: UserCreate):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] create_user: {e}")
+        logger.error("create_user failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -426,7 +429,7 @@ def complete_user_profile(
             params.append(json.dumps(extra_data))
         
         updates.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(current_user.id)
         
         if updates:
@@ -440,10 +443,10 @@ def complete_user_profile(
         return _row_to_user_dict(row)
         
     except Exception as e:
-        print(f"[ERROR] complete_user_profile: {e}")
+        logger.error("complete_user_profile failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -481,10 +484,10 @@ def get_notification_preferences(current_user: User = Depends(get_current_user))
         }
         
     except Exception as e:
-        print(f"[ERROR] get_notification_preferences: {e}")
+        logger.error("get_notification_preferences failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -562,7 +565,7 @@ def update_notification_preferences(
         turso = get_turso_http()
         turso.execute(
             "UPDATE users SET notification_preferences = ?, updated_at = ? WHERE id = ?",
-            [json.dumps(preferences), datetime.utcnow().isoformat(), current_user.id]
+            [json.dumps(preferences), datetime.now(timezone.utc).isoformat(), current_user.id]
         )
         
         return {
@@ -573,8 +576,8 @@ def update_notification_preferences(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] update_notification_preferences: {e}")
+        logger.error("update_notification_preferences failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )

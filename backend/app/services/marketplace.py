@@ -13,7 +13,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import uuid
 
@@ -87,7 +87,7 @@ class MarketplaceService:
                         "jobs_posted": 25,
                         "hire_rate": 85
                     },
-                    "posted_at": datetime.utcnow().isoformat(),
+                    "posted_at": datetime.now(timezone.utc).isoformat(),
                     "is_featured": False,
                     "is_urgent": False,
                     "match_score": 0.92
@@ -365,8 +365,8 @@ class MarketplaceService:
     ) -> List[Dict[str, Any]]:
         """Get user's recent searches."""
         return [
-            {"query": "React developer", "timestamp": datetime.utcnow().isoformat(), "results_count": 250},
-            {"query": "UI/UX design", "timestamp": datetime.utcnow().isoformat(), "results_count": 180}
+            {"query": "React developer", "timestamp": datetime.now(timezone.utc).isoformat(), "results_count": 250},
+            {"query": "UI/UX design", "timestamp": datetime.now(timezone.utc).isoformat(), "results_count": 180}
         ]
     
     async def save_search(
@@ -384,7 +384,7 @@ class MarketplaceService:
             "name": name or f"Saved Search {saved_search_id[:8]}",
             "params": search_params,
             "notify_new_matches": notify,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Marketplace Stats

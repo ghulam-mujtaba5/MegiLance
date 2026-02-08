@@ -13,7 +13,7 @@ Features:
 
 import uuid
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from collections import defaultdict
 from sqlalchemy.orm import Session
@@ -131,8 +131,8 @@ class CommentsService:
             "is_pinned": False,
             "is_resolved": False,
             "is_deleted": False,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._comments[comment_id] = comment
@@ -278,7 +278,7 @@ class CommentsService:
         comment["content_html"] = self._render_markdown(content)
         comment["mentions"] = self._extract_mentions(content)
         comment["is_edited"] = True
-        comment["updated_at"] = datetime.utcnow().isoformat()
+        comment["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         return {
             "success": True,
@@ -305,7 +305,7 @@ class CommentsService:
             raise ValueError("Can only delete your own comments")
         
         comment["is_deleted"] = True
-        comment["deleted_at"] = datetime.utcnow().isoformat()
+        comment["deleted_at"] = datetime.now(timezone.utc).isoformat()
         comment["deleted_by"] = user_id
         comment["content"] = "[deleted]"
         comment["content_html"] = "<em>[deleted]</em>"
@@ -400,7 +400,7 @@ class CommentsService:
             raise ValueError("Only admins can pin comments")
         
         comment["is_pinned"] = True
-        comment["pinned_at"] = datetime.utcnow().isoformat()
+        comment["pinned_at"] = datetime.now(timezone.utc).isoformat()
         comment["pinned_by"] = user_id
         
         return {
@@ -439,7 +439,7 @@ class CommentsService:
             raise ValueError("Comment not found")
         
         comment["is_resolved"] = True
-        comment["resolved_at"] = datetime.utcnow().isoformat()
+        comment["resolved_at"] = datetime.now(timezone.utc).isoformat()
         comment["resolved_by"] = user_id
         
         return {

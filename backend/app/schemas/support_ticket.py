@@ -1,5 +1,5 @@
 # @AI-HINT: Pydantic schemas for Support Ticket API validation and responses
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Literal
 
@@ -49,8 +49,7 @@ class SupportTicketRead(SupportTicketBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SupportTicketList(BaseModel):
     """Schema for paginated ticket list"""

@@ -1,7 +1,7 @@
 # @AI-HINT: Invoice API endpoints - Turso HTTP only (NO SQLite fallback)
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 import json
 
 from app.db.turso_http import execute_query, to_str, parse_date
@@ -45,7 +45,7 @@ def _row_to_invoice(row) -> dict:
 
 def generate_invoice_number() -> str:
     """Generate unique invoice number in format INV-YYYY-MM-####"""
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     prefix = f"INV-{now.year}-{now.month:02d}-"
     
     # Get last invoice number for this month
@@ -92,7 +92,7 @@ async def create_invoice(
     # Store items as JSON
     items_json = json.dumps(invoice.items)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     due_date = invoice.due_date.isoformat() if invoice.due_date else None
     invoice_number = generate_invoice_number()
     
@@ -259,7 +259,7 @@ async def pay_invoice(
     if not payment_result or not payment_result.get("rows"):
         raise HTTPException(status_code=404, detail="Payment not found")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE invoices SET payment_id = ?, status = 'paid', paid_date = ?, updated_at = ?
         WHERE id = ?
@@ -307,7 +307,7 @@ async def update_invoice(
     
     if update_fields:
         update_fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(invoice_id)
         
         execute_query(f"UPDATE invoices SET {', '.join(update_fields)} WHERE id = ?", params)

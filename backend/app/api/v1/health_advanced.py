@@ -4,7 +4,7 @@ Provides liveness, readiness, and detailed health status for Kubernetes/Docker
 """
 
 from fastapi import APIRouter, Response
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 import os
 import platform
@@ -92,7 +92,7 @@ async def liveness():
     Kubernetes liveness probe endpoint.
     Returns 200 if the application is running.
     """
-    return {"status": "alive", "timestamp": datetime.utcnow().isoformat()}
+    return {"status": "alive", "timestamp": datetime.now(timezone.utc).isoformat()}
 
 
 @router.get("/ready")
@@ -108,13 +108,13 @@ async def readiness(response: Response):
         response.status_code = 503
         return {
             "status": "not_ready",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "checks": {"database": db_health},
         }
     
     return {
         "status": "ready",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "checks": {"database": db_health},
     }
 
@@ -146,7 +146,7 @@ async def health_status(response: Response, detailed: bool = False):
     
     result = {
         "status": overall_status,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "version": "1.0.0",
         "checks": checks,
     }

@@ -1,7 +1,7 @@
 # @AI-HINT: Portfolio items API - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, Query, status, Request, UploadFile
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import uuid
 from pathlib import Path
@@ -112,7 +112,7 @@ def create_portfolio_item(
         )
     
     user_id = current_user.get("user_id")
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     tags_json = json.dumps(portfolio_item.get("tags", []))
     
@@ -211,7 +211,7 @@ async def create_portfolio_item_wizard(
                         image_url = saved_url
     
     user_id = current_user.get("user_id")
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     tags_json = json.dumps(tags)
     
     result = execute_query(
@@ -300,7 +300,7 @@ def update_portfolio_item(
     
     if updates:
         updates.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(portfolio_item_id)
         
         execute_query(

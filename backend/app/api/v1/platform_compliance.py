@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -62,7 +62,7 @@ async def get_compliance_status(
     """Get overall compliance status"""
     return {
         "overall_status": "compliant",
-        "last_updated": datetime.utcnow().isoformat(),
+        "last_updated": datetime.now(timezone.utc).isoformat(),
         "standards": [
             {"standard": "gdpr", "status": "compliant", "score": 98.5},
             {"standard": "soc2", "status": "compliant", "score": 96.0},
@@ -82,7 +82,7 @@ async def get_compliance_standards(
         ComplianceStatus(
             standard=ComplianceStandard.GDPR,
             is_compliant=True,
-            last_audit_date=datetime.utcnow(),
+            last_audit_date=datetime.now(timezone.utc),
             next_audit_date=datetime(2025, 12, 1),
             certificate_url="/certificates/gdpr-2024.pdf",
             score=98.5
@@ -90,7 +90,7 @@ async def get_compliance_standards(
         ComplianceStatus(
             standard=ComplianceStandard.SOC2,
             is_compliant=True,
-            last_audit_date=datetime.utcnow(),
+            last_audit_date=datetime.now(timezone.utc),
             next_audit_date=datetime(2025, 8, 1),
             certificate_url="/certificates/soc2-2024.pdf",
             score=96.0
@@ -98,7 +98,7 @@ async def get_compliance_standards(
         ComplianceStatus(
             standard=ComplianceStandard.PCI_DSS,
             is_compliant=True,
-            last_audit_date=datetime.utcnow(),
+            last_audit_date=datetime.now(timezone.utc),
             next_audit_date=datetime(2025, 10, 1),
             certificate_url="/certificates/pci-dss-2024.pdf",
             score=100.0
@@ -123,7 +123,7 @@ async def get_my_gdpr_data(
             "Activity Logs"
         ],
         "download_url": f"/exports/gdpr-data-{current_user.id}.zip",
-        "generated_at": datetime.utcnow().isoformat()
+        "generated_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -169,7 +169,7 @@ async def get_data_processing_agreement(
         effective_date=datetime(2024, 1, 1),
         content_url="/legal/dpa-v3.pdf",
         accepted=True,
-        accepted_at=datetime.utcnow()
+        accepted_at=datetime.now(timezone.utc)
     )
 
 
@@ -183,7 +183,7 @@ async def accept_data_processing_agreement(
     return {
         "dpa_version": dpa_version,
         "accepted": True,
-        "accepted_at": datetime.utcnow().isoformat(),
+        "accepted_at": datetime.now(timezone.utc).isoformat(),
         "user_id": str(current_user.id)
     }
 
@@ -200,14 +200,14 @@ async def get_consent_records(
             user_id=str(current_user.id),
             consent_type="marketing_emails",
             granted=True,
-            granted_at=datetime.utcnow()
+            granted_at=datetime.now(timezone.utc)
         ),
         ConsentRecord(
             id="consent-2",
             user_id=str(current_user.id),
             consent_type="analytics_cookies",
             granted=True,
-            granted_at=datetime.utcnow()
+            granted_at=datetime.now(timezone.utc)
         ),
         ConsentRecord(
             id="consent-3",
@@ -229,7 +229,7 @@ async def update_consent(
     return {
         "consent_type": consent_type,
         "granted": granted,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -276,8 +276,8 @@ async def get_compliance_audit_logs(
     """Get compliance-related audit logs"""
     return {
         "logs": [
-            {"event": "consent_updated", "timestamp": datetime.utcnow().isoformat(), "details": "Marketing consent updated"},
-            {"event": "data_access", "timestamp": datetime.utcnow().isoformat(), "details": "User accessed personal data"}
+            {"event": "consent_updated", "timestamp": datetime.now(timezone.utc).isoformat(), "details": "Marketing consent updated"},
+            {"event": "data_access", "timestamp": datetime.now(timezone.utc).isoformat(), "details": "User accessed personal data"}
         ],
         "total_count": 2
     }

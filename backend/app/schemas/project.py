@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import List, Optional
 from datetime import datetime
 import json
@@ -45,5 +45,4 @@ class ProjectRead(ProjectBase):
                 return [s.strip() for s in v.split(',') if s.strip()]
         return v
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

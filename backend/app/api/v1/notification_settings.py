@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime, time
+from datetime import datetime, time, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -197,7 +197,7 @@ async def update_quiet_hours(
         "end_time": end_time.isoformat() if end_time else None,
         "timezone": timezone,
         "days": days,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -230,7 +230,7 @@ async def update_digest_settings(
         "frequency": frequency,
         "send_time": send_time.isoformat() if send_time else None,
         "categories": categories,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -247,7 +247,7 @@ async def mute_entity(
         "entity_type": entity_type,
         "entity_id": entity_id,
         "muted": True,
-        "muted_until": datetime.utcnow().isoformat() if duration_hours else "indefinitely"
+        "muted_until": datetime.now(timezone.utc).isoformat() if duration_hours else "indefinitely"
     }
 
 
@@ -275,7 +275,7 @@ async def get_muted_entities(
     return {
         "muted_entities": [
             {"type": "project", "id": "proj-123", "muted_until": None},
-            {"type": "user", "id": "user-456", "muted_until": datetime.utcnow().isoformat()}
+            {"type": "user", "id": "user-456", "muted_until": datetime.now(timezone.utc).isoformat()}
         ]
     }
 
@@ -305,14 +305,14 @@ async def get_registered_devices(
             "id": "device-1",
             "name": "iPhone 15",
             "platform": "ios",
-            "last_active": datetime.utcnow().isoformat(),
+            "last_active": datetime.now(timezone.utc).isoformat(),
             "enabled": True
         },
         {
             "id": "device-2",
             "name": "Chrome - Windows",
             "platform": "web",
-            "last_active": datetime.utcnow().isoformat(),
+            "last_active": datetime.now(timezone.utc).isoformat(),
             "enabled": True
         }
     ]

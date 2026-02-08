@@ -12,7 +12,7 @@ Features:
 
 import logging
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Callable
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -100,7 +100,7 @@ class ScheduledTasksService:
         """
         task_id = f"task_{secrets.token_urlsafe(12)}"
         
-        scheduled_at = datetime.utcnow()
+        scheduled_at = datetime.now(timezone.utc)
         if delay_seconds > 0:
             scheduled_at += timedelta(seconds=delay_seconds)
         
@@ -111,7 +111,7 @@ class ScheduledTasksService:
             "priority": priority.value,
             "status": TaskStatus.PENDING.value,
             "scheduled_at": scheduled_at.isoformat(),
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "user_id": user_id,
             "max_retries": max_retries,
             "retry_count": 0,
@@ -170,7 +170,7 @@ class ScheduledTasksService:
             "day_of_month": day_of_month,
             "user_id": user_id,
             "enabled": enabled,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "last_run": None,
             "next_run": self._calculate_next_run(
                 schedule_type, interval_minutes, time_of_day,
@@ -265,7 +265,7 @@ class ScheduledTasksService:
             return False
         
         task["status"] = TaskStatus.CANCELLED.value
-        task["cancelled_at"] = datetime.utcnow().isoformat()
+        task["cancelled_at"] = datetime.now(timezone.utc).isoformat()
         
         return True
     
@@ -281,7 +281,7 @@ class ScheduledTasksService:
             return None
         
         schedule["enabled"] = enabled
-        schedule["updated_at"] = datetime.utcnow().isoformat()
+        schedule["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         if enabled:
             schedule["next_run"] = self._calculate_next_run(
@@ -323,7 +323,7 @@ class ScheduledTasksService:
             return {"error": "Task already running"}
         
         task["status"] = TaskStatus.RUNNING.value
-        task["started_at"] = datetime.utcnow().isoformat()
+        task["started_at"] = datetime.now(timezone.utc).isoformat()
         
         try:
             handler = self._handlers.get(task["type"])
@@ -337,7 +337,7 @@ class ScheduledTasksService:
                 task["result"] = {"success": True, "simulated": True}
             
             task["status"] = TaskStatus.COMPLETED.value
-            task["completed_at"] = datetime.utcnow().isoformat()
+            task["completed_at"] = datetime.now(timezone.utc).isoformat()
             
         except Exception as e:
             logger.error(f"Task {task_id} failed: {str(e)}")
@@ -347,18 +347,18 @@ class ScheduledTasksService:
                 task["status"] = TaskStatus.RETRYING.value
                 task["retry_count"] += 1
                 task["scheduled_at"] = (
-                    datetime.utcnow() + timedelta(minutes=5 * task["retry_count"])
+                    datetime.now(timezone.utc) + timedelta(minutes=5 * task["retry_count"])
                 ).isoformat()
             else:
                 task["status"] = TaskStatus.FAILED.value
-                task["failed_at"] = datetime.utcnow().isoformat()
+                task["failed_at"] = datetime.now(timezone.utc).isoformat()
         
         # Log to history
         self._task_history.append({
             "task_id": task_id,
             "type": task["type"],
             "status": task["status"],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "result": task.get("result"),
             "error": task.get("error")
         })
@@ -414,7 +414,7 @@ class ScheduledTasksService:
         day_of_month: Optional[int]
     ) -> str:
         """Calculate next run time for schedule."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         if schedule_type == ScheduleType.INTERVAL and interval_minutes:
             next_run = now + timedelta(minutes=interval_minutes)

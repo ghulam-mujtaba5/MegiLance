@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from pydantic import BaseModel, Field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -262,7 +262,7 @@ async def get_trending_skills(
         return {
             "trending_skills": trending,
             "category": category,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
     except Exception as e:

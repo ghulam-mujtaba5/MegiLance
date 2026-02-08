@@ -3,7 +3,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import re
 import logging
@@ -280,7 +280,7 @@ def create_direct_contract(
     title = sanitize_text(hire_data.title, MAX_TITLE_LENGTH)
     description = sanitize_text(hire_data.description, MAX_DESCRIPTION_LENGTH)
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         # 1. Create Project
@@ -513,7 +513,7 @@ def create_contract(
     
     # Generate contract ID
     contract_id = str(uuid.uuid4())
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     try:
         insert_result = execute_query(
@@ -674,7 +674,7 @@ def update_contract(
             values.append(value if value is not None else "")
     
     set_parts.append("updated_at = ?")
-    values.append(datetime.utcnow().isoformat())
+    values.append(datetime.now(timezone.utc).isoformat())
     values.append(contract_id)
     
     try:
@@ -741,7 +741,7 @@ def delete_contract(
     try:
         execute_query(
             "UPDATE contracts SET status = 'cancelled', updated_at = ? WHERE id = ?",
-            [datetime.utcnow().isoformat(), contract_id]
+            [datetime.now(timezone.utc).isoformat(), contract_id]
         )
         logger.info(f"Contract {contract_id} cancelled by client {current_user.id}")
     except Exception as e:

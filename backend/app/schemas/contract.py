@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 class ContractType(str, Enum):
     FIXED = "fixed"
@@ -67,5 +67,4 @@ class ContractRead(ContractBase):
     job_title: Optional[str] = None
     client_name: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,7 +1,7 @@
 # @AI-HINT: Refunds API endpoints - Turso HTTP only (NO SQLite fallback)
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.core.security import get_current_user
@@ -64,7 +64,7 @@ async def create_refund(
         raise HTTPException(status_code=400, detail=f"Refund amount cannot exceed payment amount (${payment_amount:.2f})")
     
     # Create refund
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         INSERT INTO refunds (payment_id, amount, reason, requested_by, status, created_at, updated_at)
         VALUES (?, ?, ?, ?, 'pending', ?, ?)
@@ -211,7 +211,7 @@ async def update_refund(
     
     if update_fields:
         update_fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(refund_id)
         
         execute_query(f"UPDATE refunds SET {', '.join(update_fields)} WHERE id = ?", params)
@@ -242,7 +242,7 @@ async def approve_refund(
     if refund_status != "pending":
         raise HTTPException(status_code=400, detail=f"Cannot approve refund with status: {refund_status}")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE refunds SET status = 'approved', approved_by = ?, updated_at = ? WHERE id = ?
     """, [current_user.id, now, refund_id])
@@ -276,7 +276,7 @@ async def reject_refund(
         raise HTTPException(status_code=400, detail=f"Cannot reject refund with status: {refund_status}")
     
     new_reason = f"{current_reason}\n\nRejection reason: {reject_data.rejection_reason}"
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("""
         UPDATE refunds SET status = 'rejected', reason = ?, updated_at = ? WHERE id = ?
@@ -323,7 +323,7 @@ async def process_refund(
     
     # Process refund
     new_balance = requester_balance + amount
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("UPDATE users SET account_balance = ? WHERE id = ?", [new_balance, requested_by])
     execute_query("UPDATE payments SET status = 'refunded' WHERE id = ?", [payment_id])

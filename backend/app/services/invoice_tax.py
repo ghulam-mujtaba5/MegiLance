@@ -12,7 +12,7 @@ Features:
 - Export to accounting software
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -69,7 +69,7 @@ class InvoiceTaxService:
     ) -> Dict[str, Any]:
         """Create a new invoice."""
         invoice_id = str(uuid.uuid4())
-        invoice_number = f"INV-{datetime.utcnow().strftime('%Y%m')}-{uuid.uuid4().hex[:6].upper()}"
+        invoice_number = f"INV-{datetime.now(timezone.utc).strftime('%Y%m')}-{uuid.uuid4().hex[:6].upper()}"
         
         # Calculate totals
         subtotal = sum(item["quantity"] * item["unit_price"] for item in items)
@@ -100,7 +100,7 @@ class InvoiceTaxService:
                 PaymentTerms.NET_60: 60
             }
             days = terms_days.get(payment_terms, 30)
-            due_date = datetime.utcnow() + timedelta(days=days)
+            due_date = datetime.now(timezone.utc) + timedelta(days=days)
         
         invoice = {
             "id": invoice_id,
@@ -115,12 +115,12 @@ class InvoiceTaxService:
             "total": round(total, 2),
             "currency": currency,
             "payment_terms": payment_terms.value,
-            "issue_date": datetime.utcnow().isoformat(),
+            "issue_date": datetime.now(timezone.utc).isoformat(),
             "due_date": due_date.isoformat(),
             "notes": notes,
             "amount_paid": 0,
             "amount_due": round(total, 2),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         return invoice
@@ -218,7 +218,7 @@ class InvoiceTaxService:
             "success": True,
             "invoice_id": invoice_id,
             "sent_to": email_to,
-            "sent_at": datetime.utcnow().isoformat(),
+            "sent_at": datetime.now(timezone.utc).isoformat(),
             "message": "Invoice sent successfully"
         }
     
@@ -237,9 +237,9 @@ class InvoiceTaxService:
             "invoice_id": invoice_id,
             "amount": amount,
             "payment_method": payment_method,
-            "payment_date": (payment_date or datetime.utcnow()).isoformat(),
+            "payment_date": (payment_date or datetime.now(timezone.utc)).isoformat(),
             "reference": reference,
-            "recorded_at": datetime.utcnow().isoformat()
+            "recorded_at": datetime.now(timezone.utc).isoformat()
         }
         
         return {"payment": payment, "message": "Payment recorded"}
@@ -254,7 +254,7 @@ class InvoiceTaxService:
         return {
             "invoice_id": invoice_id,
             "status": "cancelled",
-            "cancelled_at": datetime.utcnow().isoformat(),
+            "cancelled_at": datetime.now(timezone.utc).isoformat(),
             "reason": reason
         }
     
@@ -269,14 +269,14 @@ class InvoiceTaxService:
             return None
         
         new_id = str(uuid.uuid4())
-        new_number = f"INV-{datetime.utcnow().strftime('%Y%m')}-{uuid.uuid4().hex[:6].upper()}"
+        new_number = f"INV-{datetime.now(timezone.utc).strftime('%Y%m')}-{uuid.uuid4().hex[:6].upper()}"
         
         duplicate = {
             **original,
             "id": new_id,
             "invoice_number": new_number,
             "status": "draft",
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         return duplicate
@@ -335,7 +335,7 @@ class InvoiceTaxService:
             "country": country,
             "region": region,
             "is_default": is_default,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def update_tax_rate(
@@ -348,7 +348,7 @@ class InvoiceTaxService:
         return {
             "id": tax_id,
             **updates,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def delete_tax_rate(
@@ -387,7 +387,7 @@ class InvoiceTaxService:
                 {"country": "GB", "revenue": 25000.00, "tax": 5000.00},
                 {"country": "US", "revenue": 17000.00, "tax": 3400.00}
             ],
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_income_statement(
@@ -411,7 +411,7 @@ class InvoiceTaxService:
             },
             "net_income": 50140.00,
             "tax_liability_estimate": 10028.00,
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Invoice Templates
@@ -463,7 +463,7 @@ class InvoiceTaxService:
             "invoice_id": invoice_id,
             "format": "pdf",
             "download_url": f"/api/invoices/{invoice_id}/download/pdf",
-            "expires_at": (datetime.utcnow() + timedelta(hours=1)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
         }
     
     async def export_to_accounting(
@@ -479,7 +479,7 @@ class InvoiceTaxService:
             "period": f"{date_from.date()} to {date_to.date()}",
             "invoices_exported": 25,
             "download_url": f"/api/invoices/export/{format}",
-            "expires_at": (datetime.utcnow() + timedelta(hours=1)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
         }
     
     # Recurring Invoices
@@ -503,7 +503,7 @@ class InvoiceTaxService:
             "end_date": end_date.isoformat() if end_date else None,
             "next_invoice_date": start_date.isoformat(),
             "is_active": True,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def list_recurring_invoices(

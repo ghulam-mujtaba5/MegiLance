@@ -8,7 +8,7 @@ and actions for business process automation.
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import logging
 import uuid
@@ -289,8 +289,8 @@ class WorkflowAutomationService:
             "trigger": trigger,
             "conditions": conditions,
             "actions": actions,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
             "execution_count": 0,
             "last_executed_at": None
         }

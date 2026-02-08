@@ -8,7 +8,7 @@ and contract compliance.
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import logging
 import hashlib
@@ -252,7 +252,7 @@ class LegalDocumentService:
                 "field_values": field_values,
                 "created_by": user_id,
                 "version": template["version"],
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "signatures": [],
                 "hash": hashlib.sha256(content.encode()).hexdigest()
             }
@@ -360,8 +360,8 @@ class LegalDocumentService:
             "signer_name": signer_name,
             "status": SignatureStatus.PENDING.value,
             "message": message,
-            "created_at": datetime.utcnow().isoformat(),
-            "expires_at": (datetime.utcnow() + timedelta(days=expires_in_days)).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "expires_at": (datetime.now(timezone.utc) + timedelta(days=expires_in_days)).isoformat(),
             "sign_url": f"/sign/{document_id}?token={uuid.uuid4()}"
         }
         
@@ -379,11 +379,11 @@ class LegalDocumentService:
             "document_id": document_id,
             "signer_id": user_id,
             "signature_type": signature_data.get("type", "typed"),  # typed, drawn, uploaded
-            "signed_at": datetime.utcnow().isoformat(),
+            "signed_at": datetime.now(timezone.utc).isoformat(),
             "ip_address": signature_data.get("ip_address"),
             "user_agent": signature_data.get("user_agent"),
             "certificate_hash": hashlib.sha256(
-                f"{document_id}-{user_id}-{datetime.utcnow().isoformat()}".encode()
+                f"{document_id}-{user_id}-{datetime.now(timezone.utc).isoformat()}".encode()
             ).hexdigest()
         }
         
@@ -404,7 +404,7 @@ class LegalDocumentService:
             "status": DocumentStatus.VOIDED.value,
             "voided_by": user_id,
             "reason": reason,
-            "voided_at": datetime.utcnow().isoformat()
+            "voided_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Contract Attachment

@@ -11,7 +11,7 @@ Complete Invoicing Service featuring:
 
 import json
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.db.turso_http import execute_query, parse_rows
 
 class TaxCalculator:
@@ -62,7 +62,7 @@ class InvoicingService:
         """Create a new invoice"""
         
         # Generate invoice number
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         invoice_num = f"INV-{now.year}{now.month:02d}{now.day:02d}-{int(now.timestamp() % 10000)}"
         
         # Calculate totals
@@ -179,7 +179,7 @@ class InvoicingService:
     ) -> bool:
         """Mark invoice as paid"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """UPDATE invoices 
@@ -203,7 +203,7 @@ class InvoicingService:
     ) -> Dict[str, Any]:
         """Create a recurring invoice template"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """INSERT INTO recurring_invoices (
@@ -237,7 +237,7 @@ class InvoicingService:
     def process_recurring_invoices():
         """Process due recurring invoices (call via scheduler)"""
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         # Get active recurring invoices
         result = execute_query(

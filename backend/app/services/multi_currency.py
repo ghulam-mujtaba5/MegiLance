@@ -8,7 +8,7 @@ and international payment support.
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from enum import Enum
 import logging
@@ -110,7 +110,7 @@ class MultiCurrencyService:
     
     def __init__(self, db: Session):
         self.db = db
-        self._rates_last_updated = datetime.utcnow()
+        self._rates_last_updated = datetime.now(timezone.utc)
     
     # Currency Information
     async def get_supported_currencies(self) -> List[Dict[str, Any]]:
@@ -232,7 +232,7 @@ class MultiCurrencyService:
             "fee": float(fee),
             "fee_percentage": float(fee_percentage) if include_fee else 0.0,
             "final_amount": float(final_amount),
-            "converted_at": datetime.utcnow().isoformat()
+            "converted_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def bulk_convert(
@@ -254,7 +254,7 @@ class MultiCurrencyService:
             "original_amount": float(amount),
             "from_currency": from_currency.value,
             "conversions": conversions,
-            "converted_at": datetime.utcnow().isoformat()
+            "converted_at": datetime.now(timezone.utc).isoformat()
         }
     
     # User Currency Preferences
@@ -404,7 +404,7 @@ class MultiCurrencyService:
             "target_rate": float(target_rate),
             "alert_type": alert_type,
             "status": "active",
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "message": "Rate alerts not yet implemented"
         }
 

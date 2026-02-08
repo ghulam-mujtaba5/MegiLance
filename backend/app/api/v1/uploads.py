@@ -12,7 +12,7 @@ import re
 import uuid
 import hashlib
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import magic  # python-magic for MIME type detection
 
 router = APIRouter()
@@ -233,7 +233,7 @@ async def upload_avatar(
     # Update user profile
     execute_query(
         "UPDATE users SET profile_image_url = ?, updated_at = ? WHERE id = ?",
-        [relative_path, datetime.utcnow().isoformat(), current_user['id']]
+        [relative_path, datetime.now(timezone.utc).isoformat(), current_user['id']]
     )
     
     return {
@@ -336,7 +336,7 @@ async def delete_uploaded_file(
         # Clear the profile image reference
         execute_query(
             "UPDATE users SET profile_image_url = NULL, updated_at = ? WHERE id = ?",
-            [datetime.utcnow().isoformat(), current_user['id']]
+            [datetime.now(timezone.utc).isoformat(), current_user['id']]
         )
         # Delete file
         full_path.unlink()

@@ -1,7 +1,7 @@
 # @AI-HINT: Notifications API endpoints - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 from app.db.turso_http import execute_query, parse_rows
@@ -29,7 +29,7 @@ def create_notification(
     if user_id != current_user_id and role.lower() != "admin":
         raise HTTPException(status_code=403, detail="Only admins can create notifications for other users")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     data_json = json.dumps(notification.get("data")) if notification.get("data") else None
     
     result = execute_query(
@@ -86,7 +86,7 @@ def get_notifications(
 ):
     """Get all notifications for current user"""
     user_id = current_user.get("user_id")
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Build query with filters
     where_clauses = ["user_id = ?", "(expires_at IS NULL OR expires_at > ?)"]
@@ -187,7 +187,7 @@ def get_notification(
     
     # Auto-mark as read when viewed
     if not notification.get("is_read"):
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         execute_query(
             "UPDATE notifications SET is_read = 1, read_at = ? WHERE id = ?",
             [now, notification_id]
@@ -242,7 +242,7 @@ def update_notification(
         
         if notification_update["is_read"] and not notification.get("read_at"):
             updates.append("read_at = ?")
-            params.append(datetime.utcnow().isoformat())
+            params.append(datetime.now(timezone.utc).isoformat())
     
     if updates:
         params.append(notification_id)
@@ -278,7 +278,7 @@ def mark_all_read(
 ):
     """Mark all notifications as read for current user"""
     user_id = current_user.get("user_id")
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query(
         "UPDATE notifications SET is_read = 1, read_at = ? WHERE user_id = ? AND is_read = 0",
@@ -349,7 +349,7 @@ def send_notification(
     expires_at: str = None,
 ):
     """Helper function to send a notification"""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     data_json = json.dumps(data) if data else None
     
     result = execute_query(

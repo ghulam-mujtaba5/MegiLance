@@ -1,7 +1,7 @@
 # @AI-HINT: Pydantic schemas for Seller Stats and Tier system
 """Seller stats and tier system schemas."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Dict
 from datetime import datetime
 from enum import Enum
@@ -105,8 +105,7 @@ class SellerStatsResponse(BaseModel):
     level_benefits: LevelBenefits
     progress_to_next: LevelProgress
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SellerStatsSummary(BaseModel):
@@ -122,8 +121,7 @@ class SellerStatsSummary(BaseModel):
     member_since: datetime
     is_verified: bool
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SellerLevelInfo(BaseModel):
@@ -155,8 +153,7 @@ class SellerLeaderboardEntry(BaseModel):
     earnings_this_month: float
     top_category: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SellerLeaderboardResponse(BaseModel):

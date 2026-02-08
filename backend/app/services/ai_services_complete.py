@@ -10,7 +10,7 @@ Complete AI Services featuring:
 import json
 import math
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.db.turso_http import execute_query, parse_rows
 
 class VectorEmbedding:
@@ -198,7 +198,7 @@ class AIMatchingService:
                GROUP BY p.id
                ORDER BY p.created_at DESC
                LIMIT 100""",
-            [(datetime.utcnow() - timedelta(days=30)).isoformat()]
+            [(datetime.now(timezone.utc) - timedelta(days=30)).isoformat()]
         )
         
         if not projects_result or not projects_result.get("rows"):
@@ -402,7 +402,7 @@ class FraudDetectionService:
         # Account age risk
         created_at = user.get("created_at")
         if created_at:
-            account_age_days = (datetime.utcnow() - datetime.fromisoformat(created_at)).days
+            account_age_days = (datetime.now(timezone.utc) - datetime.fromisoformat(created_at)).days
             if account_age_days < 7:
                 risk_score += 25
                 risk_factors.append("New account (< 7 days)")

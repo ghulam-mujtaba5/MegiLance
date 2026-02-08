@@ -11,7 +11,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pydantic import BaseModel
 import uuid
@@ -360,8 +360,8 @@ class EmailTemplatesService:
                 text_body=config["text_body"],
                 variables=config["variables"],
                 is_system=config.get("is_system", False),
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
             )
             self._templates[template.id] = template
     
@@ -414,8 +414,8 @@ class EmailTemplatesService:
             variables=variables,
             is_system=False,
             created_by=created_by,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         
         self._templates[template_id] = template
@@ -439,7 +439,7 @@ class EmailTemplatesService:
                 template_dict[field] = updates[field]
         
         template_dict["version"] = template.version + 1
-        template_dict["updated_at"] = datetime.utcnow()
+        template_dict["updated_at"] = datetime.now(timezone.utc)
         
         updated_template = EmailTemplate(**template_dict)
         self._templates[template_id] = updated_template
@@ -465,7 +465,7 @@ class EmailTemplatesService:
             return None
         
         # Add common variables
-        variables.setdefault("year", datetime.utcnow().year)
+        variables.setdefault("year", datetime.now(timezone.utc).year)
         variables.setdefault("support_url", "https://megilance.com/support")
         variables.setdefault("dashboard_url", "https://megilance.com/dashboard")
         
@@ -509,7 +509,7 @@ class EmailTemplatesService:
                 "bid_amount": "2,500.00",
                 "delivery_time": "14 days",
                 "cover_letter_preview": "I'm excited to work on this project...",
-                "payment_date": datetime.utcnow().strftime("%B %d, %Y"),
+                "payment_date": datetime.now(timezone.utc).strftime("%B %d, %Y"),
                 "transaction_id": "TXN-123456",
                 "from_name": "Acme Corp",
                 "reset_url": "https://megilance.com/reset/abc123",

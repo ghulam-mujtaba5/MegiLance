@@ -10,7 +10,7 @@ Handles:
 """
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 import secrets
 
@@ -131,7 +131,7 @@ async def invite_friend(
         
     # Create referral record
     code = generate_referral_code()
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query(
         """INSERT INTO referrals (referrer_id, referred_email, referral_code, status, created_at, updated_at)

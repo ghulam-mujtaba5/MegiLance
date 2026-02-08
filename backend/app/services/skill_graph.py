@@ -11,7 +11,7 @@ Features:
 - Learning paths
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -186,7 +186,7 @@ class SkillGraphService:
             "years_experience": years_experience,
             "endorsement_count": 0,
             "verified": False,
-            "added_at": datetime.utcnow().isoformat()
+            "added_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def update_user_skill(
@@ -201,7 +201,7 @@ class SkillGraphService:
             "skill_id": skill_id,
             "level": level.value if level else "advanced",
             "years_experience": years_experience,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def remove_user_skill(
@@ -270,7 +270,7 @@ class SkillGraphService:
             "project_id": project_id,
             "message": message,
             "status": EndorsementStatus.PENDING.value,
-            "requested_at": datetime.utcnow().isoformat()
+            "requested_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def give_endorsement(
@@ -292,7 +292,7 @@ class SkillGraphService:
             "relationship": relationship,
             "project_id": project_id,
             "status": EndorsementStatus.ACCEPTED.value,
-            "endorsed_at": datetime.utcnow().isoformat()
+            "endorsed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def respond_to_endorsement_request(
@@ -307,7 +307,7 @@ class SkillGraphService:
             "request_id": request_id,
             "status": EndorsementStatus.ACCEPTED.value if accept else EndorsementStatus.DECLINED.value,
             "message": message,
-            "responded_at": datetime.utcnow().isoformat()
+            "responded_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_pending_endorsement_requests(
@@ -375,8 +375,8 @@ class SkillGraphService:
             "attempt_id": str(uuid.uuid4()),
             "skill_id": skill_id,
             "test_id": test_id,
-            "started_at": datetime.utcnow().isoformat(),
-            "expires_at": (datetime.utcnow() + timedelta(minutes=30)).isoformat(),
+            "started_at": datetime.now(timezone.utc).isoformat(),
+            "expires_at": (datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat(),
             "questions": [
                 {"id": "q1", "text": "What is Python?", "options": ["A", "B", "C", "D"]},
                 {"id": "q2", "text": "What is a list comprehension?", "options": ["A", "B", "C", "D"]}
@@ -400,7 +400,7 @@ class SkillGraphService:
             "passed": passed,
             "status": VerificationStatus.VERIFIED.value if passed else VerificationStatus.FAILED.value,
             "badge_awarded": "python-advanced" if passed else None,
-            "completed_at": datetime.utcnow().isoformat()
+            "completed_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_verification_history(

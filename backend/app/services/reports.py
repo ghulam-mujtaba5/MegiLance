@@ -13,7 +13,7 @@ Features:
 import logging
 import io
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -138,7 +138,7 @@ class ReportGenerationService:
         
         # Default date range to last 30 days
         if not date_to:
-            date_to = datetime.utcnow()
+            date_to = datetime.now(timezone.utc)
         if not date_from:
             date_from = date_to - timedelta(days=30)
         
@@ -151,7 +151,7 @@ class ReportGenerationService:
             "date_from": date_from.isoformat(),
             "date_to": date_to.isoformat(),
             "filters": filters or {},
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "file_url": None,
             "file_size": None,
             "error": None
@@ -180,7 +180,7 @@ class ReportGenerationService:
             
             report["data"] = output
             report["status"] = ReportStatus.COMPLETED.value
-            report["completed_at"] = datetime.utcnow().isoformat()
+            report["completed_at"] = datetime.now(timezone.utc).isoformat()
             report["file_size"] = len(str(output))
             
             # Generate download URL (would be actual file in production)
@@ -251,7 +251,7 @@ class ReportGenerationService:
             "email_to": email_to,
             "filters": filters or {},
             "enabled": True,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "last_run": None,
             "next_run": self._calculate_next_run(schedule),
             "run_count": 0
@@ -385,7 +385,7 @@ class ReportGenerationService:
             return {
                 "report_type": report_type.value,
                 "period": f"{date_from.date()} to {date_to.date()}",
-                "generated_at": datetime.utcnow().isoformat()
+                "generated_at": datetime.now(timezone.utc).isoformat()
             }
     
     def _format_csv(
@@ -444,7 +444,7 @@ class ReportGenerationService:
     
     def _calculate_next_run(self, schedule: str) -> str:
         """Calculate next run time for schedule."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         if schedule == "daily":
             next_run = now.replace(hour=6, minute=0, second=0, microsecond=0)

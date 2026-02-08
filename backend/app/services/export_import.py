@@ -16,7 +16,7 @@ import json
 import csv
 import io
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -107,7 +107,7 @@ class ExportImportService:
             "file_url": None,
             "file_size": None,
             "error": None,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "completed_at": None,
             "expires_at": None
         }
@@ -194,7 +194,7 @@ class ExportImportService:
             "items_skipped": 0,
             "items_failed": 0,
             "errors": [],
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "completed_at": None
         }
         
@@ -269,7 +269,7 @@ class ExportImportService:
             "enabled": True,
             "last_run": None,
             "next_run": self._calculate_next_run(frequency),
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         return schedule
@@ -288,7 +288,7 @@ class ExportImportService:
         """Gather user data for export."""
         data = {
             "version": "1.0",
-            "exported_at": datetime.utcnow().isoformat(),
+            "exported_at": datetime.now(timezone.utc).isoformat(),
             "user_id": user_id,
             "export_type": export_type.value
         }
@@ -359,8 +359,8 @@ class ExportImportService:
             job["progress"] = 100
             job["file_url"] = file_url
             job["file_size"] = len(output)
-            job["completed_at"] = datetime.utcnow().isoformat()
-            job["expires_at"] = (datetime.utcnow().replace(hour=0) + 
+            job["completed_at"] = datetime.now(timezone.utc).isoformat()
+            job["expires_at"] = (datetime.now(timezone.utc).replace(hour=0) + 
                                  __import__('datetime').timedelta(days=7)).isoformat()
             
         except Exception as e:
@@ -437,7 +437,7 @@ class ExportImportService:
             
             job["status"] = ExportStatus.COMPLETED.value
             job["progress"] = 100
-            job["completed_at"] = datetime.utcnow().isoformat()
+            job["completed_at"] = datetime.now(timezone.utc).isoformat()
             
         except Exception as e:
             job["status"] = ExportStatus.FAILED.value
@@ -449,7 +449,7 @@ class ExportImportService:
         """Calculate next backup run time."""
         from datetime import timedelta
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         if frequency == "daily":
             next_run = now + timedelta(days=1)

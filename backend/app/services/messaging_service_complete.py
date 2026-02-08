@@ -11,7 +11,7 @@ Complete Messaging Service featuring:
 
 import json
 from typing import List, Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.turso_http import execute_query, parse_rows
 
 class MessagingService:
@@ -41,7 +41,7 @@ class MessagingService:
                 "conversation_id": row.get("id")
             }
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         create_result = execute_query(
             """INSERT INTO conversations (
@@ -75,7 +75,7 @@ class MessagingService:
     ) -> Dict[str, Any]:
         """Send a message in a conversation"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         file_meta = None
         
         if message_type == "file" and file_url:
@@ -214,7 +214,7 @@ class MessagingService:
     def mark_message_read(message_id: int, user_id: int) -> bool:
         """Mark a message as read"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """UPDATE messages SET is_read = 1, updated_at = ?
@@ -248,7 +248,7 @@ class MessagingService:
     def close_conversation(conversation_id: int, user_id: int) -> bool:
         """Close a conversation for a user"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """UPDATE conversations SET status = 'closed', updated_at = ?
@@ -262,7 +262,7 @@ class MessagingService:
     def block_user(user_id: int, blocked_user_id: int) -> bool:
         """Block a user from messaging"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         execute_query(
             """INSERT INTO user_blocks (blocker_id, blocked_id, created_at)

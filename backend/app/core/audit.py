@@ -6,7 +6,7 @@ Tracks all API requests, user actions, and security events
 import json
 import time
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 from functools import wraps
 
@@ -56,7 +56,7 @@ class AuditLogger:
             severity: debug, info, warning, error, critical
         """
         log_entry = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
             "event_type": event_type,
             "action": action,
             "status": status,

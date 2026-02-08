@@ -15,7 +15,7 @@ import logging
 import json
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
@@ -107,7 +107,7 @@ class VideoInterviewService:
                 raise ValueError("Invalid client or freelancer ID")
             
             # Validate scheduled time is in the future
-            if scheduled_time <= datetime.utcnow():
+            if scheduled_time <= datetime.now(timezone.utc):
                 raise ValueError("Interview must be scheduled for a future time")
             
             # Check for scheduling conflicts (simple check - 1 hour buffer)
@@ -134,7 +134,7 @@ class VideoInterviewService:
                 "end_time": (scheduled_time + timedelta(minutes=duration_minutes)).isoformat(),
                 "status": InterviewStatus.SCHEDULED,
                 "timezone": timezone,
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "tokens": {
                     "client": client_token,
                     "freelancer": freelancer_token
@@ -183,7 +183,7 @@ class VideoInterviewService:
             upcoming_only: Only return future interviews
         """
         interviews = []
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         for room_id, room_data in self._active_rooms.items():
             interview = room_data["interview"]
@@ -253,7 +253,7 @@ class VideoInterviewService:
         room["participants"][user_id] = {
             "socket_id": socket_id,
             "role": participant_role,
-            "joined_at": datetime.utcnow().isoformat(),
+            "joined_at": datetime.now(timezone.utc).isoformat(),
             "video_enabled": True,
             "audio_enabled": True,
             "screen_sharing": False
@@ -263,7 +263,7 @@ class VideoInterviewService:
         if not room["started_at"] and len(room["participants"]) >= 1:
             # Mark as in progress when both join
             if len(room["participants"]) >= 2:
-                room["started_at"] = datetime.utcnow()
+                room["started_at"] = datetime.now(timezone.utc)
                 interview["status"] = InterviewStatus.IN_PROGRESS
         
         # Get other participants for WebRTC connection
@@ -300,7 +300,7 @@ class VideoInterviewService:
         room = self._active_rooms[room_id]
         
         if user_id in room["participants"]:
-            left_at = datetime.utcnow()
+            left_at = datetime.now(timezone.utc)
             participant_data = room["participants"].pop(user_id)
             
             # If room is now empty, mark interview as completed
@@ -358,7 +358,7 @@ class VideoInterviewService:
             "from_user_id": from_user_id,
             "to_user_id": to_user_id,
             "data": signal_data,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
         # Queue message for recipient (would be sent via WebSocket in real implementation)
@@ -422,7 +422,7 @@ class VideoInterviewService:
             "user_id": user_id,
             "media_type": media_type,
             "enabled": enabled,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
     
     async def start_recording(self, room_id: str, user_id: int) -> Dict[str, Any]:
@@ -445,7 +445,7 @@ class VideoInterviewService:
             return {"status": "already_recording"}
         
         room["recording"] = True
-        room["recording_started_at"] = datetime.utcnow()
+        room["recording_started_at"] = datetime.now(timezone.utc)
         
         # Generate recording ID
         recording_id = secrets.token_urlsafe(16)
@@ -476,7 +476,7 @@ class VideoInterviewService:
             return {"status": "not_recording"}
         
         room["recording"] = False
-        stopped_at = datetime.utcnow()
+        stopped_at = datetime.now(timezone.utc)
         duration = (stopped_at - room["recording_started_at"]).total_seconds()
         
         recording_info = {
@@ -519,7 +519,7 @@ class VideoInterviewService:
         
         interview["status"] = InterviewStatus.CANCELLED
         interview["cancelled_by"] = user_id
-        interview["cancelled_at"] = datetime.utcnow().isoformat()
+        interview["cancelled_at"] = datetime.now(timezone.utc).isoformat()
         interview["cancellation_reason"] = reason
         
         logger.info(f"Interview {room_id} cancelled by user {user_id}")
@@ -550,7 +550,7 @@ class VideoInterviewService:
             raise ValueError("User not authorized to reschedule this interview")
         
         # Validate new time
-        if new_time <= datetime.utcnow():
+        if new_time <= datetime.now(timezone.utc):
             raise ValueError("New time must be in the future")
         
         old_time = interview["scheduled_time"]
@@ -560,7 +560,7 @@ class VideoInterviewService:
         interview["scheduled_time"] = new_time.isoformat()
         interview["end_time"] = (new_time + timedelta(minutes=interview["duration_minutes"])).isoformat()
         interview["rescheduled_by"] = user_id
-        interview["rescheduled_at"] = datetime.utcnow().isoformat()
+        interview["rescheduled_at"] = datetime.now(timezone.utc).isoformat()
         interview["reschedule_reason"] = reason
         interview["previous_time"] = old_time
         
@@ -627,7 +627,7 @@ class VideoInterviewService:
             "notes": notes,
             "would_hire": would_hire,
             "skills_demonstrated": skills_demonstrated or [],
-            "submitted_at": datetime.utcnow().isoformat()
+            "submitted_at": datetime.now(timezone.utc).isoformat()
         }
         
         # Store feedback
@@ -680,7 +680,7 @@ class VideoInterviewService:
             "completion_rate": (completed / total * 100) if total > 0 else 0,
             "average_rating": round(avg_rating, 2),
             "total_ratings": len(ratings),
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
     
     def _generate_room_id(
@@ -729,7 +729,7 @@ class WebRTCSignalingServer:
         self.connections[socket_id] = {
             "user_id": user_id,
             "room_id": room_id,
-            "connected_at": datetime.utcnow()
+            "connected_at": datetime.now(timezone.utc)
         }
         
         if room_id not in self.rooms:
@@ -778,7 +778,7 @@ class WebRTCSignalingServer:
             "from_socket": from_socket,
             "from_user_id": self.connections[from_socket]["user_id"],
             "data": data,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
         return {

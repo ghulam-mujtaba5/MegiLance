@@ -13,7 +13,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import uuid
 
@@ -73,7 +73,7 @@ class AnalyticsDashboardService:
             "is_default": is_default,
             "widgets": [],
             "layout": {"columns": 12, "rows": []},
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_dashboard(
@@ -105,8 +105,8 @@ class AnalyticsDashboardService:
                 }
             ],
             "refresh_interval": 60,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def list_dashboards(self, user_id: int) -> List[Dict[str, Any]]:
@@ -136,7 +136,7 @@ class AnalyticsDashboardService:
         return {
             "dashboard_id": dashboard_id,
             "updated_fields": list(updates.keys()),
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def delete_dashboard(
@@ -165,7 +165,7 @@ class AnalyticsDashboardService:
             "type": widget_type,
             "title": title,
             "config": config,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def update_widget(
@@ -179,7 +179,7 @@ class AnalyticsDashboardService:
         return {
             "widget_id": widget_id,
             "updated_fields": list(updates.keys()),
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def delete_widget(
@@ -202,9 +202,9 @@ class AnalyticsDashboardService:
     ) -> Dict[str, Any]:
         """Get metric data."""
         if not start_date:
-            start_date = datetime.utcnow() - timedelta(days=30)
+            start_date = datetime.now(timezone.utc) - timedelta(days=30)
         if not end_date:
-            end_date = datetime.utcnow()
+            end_date = datetime.now(timezone.utc)
         
         # Generate sample data points
         data_points = []
@@ -250,7 +250,7 @@ class AnalyticsDashboardService:
     async def get_realtime_metrics(self, user_id: int) -> Dict[str, Any]:
         """Get real-time metrics snapshot."""
         return {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "metrics": {
                 "active_projects": 5,
                 "pending_proposals": 3,
@@ -264,8 +264,8 @@ class AnalyticsDashboardService:
                 {"type": "deadline", "message": "Project deadline in 2 days", "priority": "medium"}
             ],
             "activity": [
-                {"event": "proposal_accepted", "timestamp": datetime.utcnow().isoformat()},
-                {"event": "payment_received", "timestamp": datetime.utcnow().isoformat()}
+                {"event": "proposal_accepted", "timestamp": datetime.now(timezone.utc).isoformat()},
+                {"event": "payment_received", "timestamp": datetime.now(timezone.utc).isoformat()}
             ]
         }
     
@@ -288,7 +288,7 @@ class AnalyticsDashboardService:
             "current_value": 0,
             "progress_percent": 0,
             "on_track": True,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_kpi_progress(self, user_id: int) -> List[Dict[str, Any]]:
@@ -301,7 +301,7 @@ class AnalyticsDashboardService:
                 "target_value": 10000,
                 "current_value": 8500,
                 "progress_percent": 85,
-                "target_date": (datetime.utcnow() + timedelta(days=15)).isoformat(),
+                "target_date": (datetime.now(timezone.utc) + timedelta(days=15)).isoformat(),
                 "on_track": True,
                 "forecast_value": 10500
             },
@@ -312,7 +312,7 @@ class AnalyticsDashboardService:
                 "target_value": 20,
                 "current_value": 15,
                 "progress_percent": 75,
-                "target_date": (datetime.utcnow() + timedelta(days=30)).isoformat(),
+                "target_date": (datetime.now(timezone.utc) + timedelta(days=30)).isoformat(),
                 "on_track": True,
                 "forecast_value": 22
             }
@@ -337,7 +337,7 @@ class AnalyticsDashboardService:
             "threshold": threshold,
             "notification_channels": notification_channels,
             "enabled": True,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def get_alert_rules(self, user_id: int) -> List[Dict[str, Any]]:
@@ -351,7 +351,7 @@ class AnalyticsDashboardService:
                 "notification_channels": ["email", "push"],
                 "enabled": True,
                 "triggered_count": 2,
-                "last_triggered": datetime.utcnow().isoformat()
+                "last_triggered": datetime.now(timezone.utc).isoformat()
             }
         ]
     
@@ -379,7 +379,7 @@ class AnalyticsDashboardService:
             "format": format,
             "status": "generating",
             "download_url": None,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
     
     async def export_data(
@@ -473,7 +473,7 @@ class AnalyticsDashboardService:
             "forecast_period_days": forecast_days,
             "current_value": 8500,
             "forecast": [
-                {"date": (datetime.utcnow() + timedelta(days=i)).isoformat(), "predicted_value": 8500 + (i * 100), "confidence_low": 8500 + (i * 80), "confidence_high": 8500 + (i * 120)}
+                {"date": (datetime.now(timezone.utc) + timedelta(days=i)).isoformat(), "predicted_value": 8500 + (i * 100), "confidence_low": 8500 + (i * 80), "confidence_high": 8500 + (i * 120)}
                 for i in range(1, forecast_days + 1, 5)
             ],
             "end_of_period_forecast": 11500,

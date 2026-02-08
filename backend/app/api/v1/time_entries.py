@@ -1,7 +1,7 @@
 # @AI-HINT: Time Tracking API endpoints for work hour management - Turso HTTP only
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 from app.db.turso_http import execute_query, to_str, parse_date
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/time-entries", tags=["time-tracking"])
 def _send_notification_turso(user_id: int, notification_type: str, title: str, 
                               content: str, data: dict, priority: str, action_url: str):
     """Send notification using Turso"""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         INSERT INTO notifications (user_id, notification_type, title, content, data, 
                                    priority, action_url, is_read, created_at)
@@ -96,7 +96,7 @@ async def create_time_entry(
         if user_result and user_result.get("rows"):
             hourly_rate = user_result["rows"][0][0].get("value") if user_result["rows"][0][0].get("type") != "null" else None
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     start_time = time_entry.start_time.isoformat() if time_entry.start_time else now
     
     result = execute_query(
@@ -162,7 +162,7 @@ async def stop_time_entry(
         raise HTTPException(status_code=400, detail="Time entry already stopped")
     
     # Set end time
-    end_time = stop_data.end_time if stop_data.end_time else datetime.utcnow()
+    end_time = stop_data.end_time if stop_data.end_time else datetime.now(timezone.utc)
     end_time_str = end_time.isoformat()
     
     # Calculate duration in minutes
@@ -181,7 +181,7 @@ async def stop_time_entry(
     execute_query(
         """UPDATE time_entries SET end_time = ?, duration_minutes = ?, amount = ?, updated_at = ?
            WHERE id = ?""",
-        [end_time_str, duration_minutes, amount, datetime.utcnow().isoformat(), time_entry_id]
+        [end_time_str, duration_minutes, amount, datetime.now(timezone.utc).isoformat(), time_entry_id]
     )
     
     # Fetch updated entry
@@ -419,7 +419,7 @@ async def update_time_entry(
         params.append(value)
     
     set_parts.append("updated_at = ?")
-    params.append(datetime.utcnow().isoformat())
+    params.append(datetime.now(timezone.utc).isoformat())
     params.append(time_entry_id)
     
     execute_query(
@@ -550,7 +550,7 @@ async def submit_time_entries(
         contract_ids.add(contract_id)
     
     # Update status to submitted
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query(
         f"UPDATE time_entries SET status = 'submitted', updated_at = ? WHERE id IN ({placeholders})",
         [now] + submission.time_entry_ids
@@ -637,7 +637,7 @@ async def approve_time_entries(
         raise HTTPException(status_code=403, detail="Only contract client can approve time entries")
         
     # Update status
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query(
         f"UPDATE time_entries SET status = 'approved', updated_at = ? WHERE id IN ({placeholders})",
         [now] + review.time_entry_ids
@@ -645,7 +645,7 @@ async def approve_time_entries(
     
     # Create Invoice
     if total_amount > 0:
-        invoice_number = f"INV-HR-{contract_id}-{int(datetime.utcnow().timestamp())}"
+        invoice_number = f"INV-HR-{contract_id}-{int(datetime.now(timezone.utc).timestamp())}"
         
         items_list = []
         for row in rows:
@@ -737,7 +737,7 @@ async def reject_time_entries(
         raise HTTPException(status_code=403, detail="Only contract client can reject time entries")
         
     # Update status
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query(
         f"UPDATE time_entries SET status = 'rejected', updated_at = ? WHERE id IN ({placeholders})",
         [now] + review.time_entry_ids

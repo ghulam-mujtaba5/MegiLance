@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from typing import Optional
 from pydantic import BaseModel
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -206,7 +206,7 @@ async def create_bypass_token(
     
     service = RateLimitingProService(db)
     
-    valid_until = datetime.utcnow() + timedelta(hours=request.valid_hours)
+    valid_until = datetime.now(timezone.utc) + timedelta(hours=request.valid_hours)
     token = await service.create_bypass_token(valid_until)
     
     return {

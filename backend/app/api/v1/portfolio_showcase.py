@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -73,7 +73,7 @@ async def get_portfolio_items(
             views_count=150 + i * 20,
             likes_count=25 + i * 5,
             order=i,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
         for i in range(min(limit, 5))
     ]
@@ -110,7 +110,7 @@ async def create_portfolio_item(
         client_name=client_name,
         project_date=project_date,
         is_featured=is_featured,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -131,7 +131,7 @@ async def get_portfolio_item(
         technologies=["React", "Node.js"],
         views_count=250,
         likes_count=45,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -159,7 +159,7 @@ async def update_portfolio_item(
         technologies=technologies or [],
         is_featured=is_featured if is_featured is not None else False,
         is_public=is_public if is_public is not None else True,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -220,7 +220,7 @@ async def update_portfolio_settings(
         "show_client_names": show_client_names,
         "show_dates": show_dates,
         "enable_comments": enable_comments,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 

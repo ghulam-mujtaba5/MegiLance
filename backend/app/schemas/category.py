@@ -1,5 +1,5 @@
 # @AI-HINT: Pydantic schemas for Category API validation and responses
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 from typing import Optional, List
 import re
@@ -41,8 +41,7 @@ class CategoryRead(CategoryBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class CategoryTree(CategoryRead):
     """Schema for category with children (hierarchical)"""

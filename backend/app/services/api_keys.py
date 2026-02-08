@@ -13,7 +13,7 @@ Features:
 import uuid
 import hashlib
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from sqlalchemy.orm import Session
 
@@ -109,7 +109,7 @@ class APIKeyService:
         # Calculate expiration
         expires_at = None
         if expires_in_days:
-            expires_at = (datetime.utcnow() + timedelta(days=expires_in_days)).isoformat()
+            expires_at = (datetime.now(timezone.utc) + timedelta(days=expires_in_days)).isoformat()
         
         key_data = {
             "id": str(uuid.uuid4()),
@@ -125,7 +125,7 @@ class APIKeyService:
             "is_active": True,
             "last_used_at": None,
             "total_requests": 0,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "expires_at": expires_at,
             "rotated_from": None
         }
@@ -141,8 +141,8 @@ class APIKeyService:
         self._usage[key_hash] = {
             "requests_today": 0,
             "requests_this_minute": 0,
-            "minute_window_start": datetime.utcnow().isoformat(),
-            "day_window_start": datetime.utcnow().date().isoformat()
+            "minute_window_start": datetime.now(timezone.utc).isoformat(),
+            "day_window_start": datetime.now(timezone.utc).date().isoformat()
         }
         
         return {
@@ -229,7 +229,7 @@ class APIKeyService:
         # Check expiration
         if key_data["expires_at"]:
             expires = datetime.fromisoformat(key_data["expires_at"])
-            if datetime.utcnow() > expires:
+            if datetime.now(timezone.utc) > expires:
                 return {
                     "valid": False,
                     "error": "API key has expired"
@@ -260,7 +260,7 @@ class APIKeyService:
             }
         
         # Update usage
-        key_data["last_used_at"] = datetime.utcnow().isoformat()
+        key_data["last_used_at"] = datetime.now(timezone.utc).isoformat()
         key_data["total_requests"] += 1
         
         return {
@@ -279,7 +279,7 @@ class APIKeyService:
         limits = self.TIER_LIMITS[tier]
         usage = self._usage.get(key_hash, {})
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         # Reset minute window if needed
         minute_start = usage.get("minute_window_start")
@@ -343,7 +343,7 @@ class APIKeyService:
             key_data = self._api_keys.get(key_hash)
             if key_data and key_data["id"] == key_id:
                 key_data["is_active"] = False
-                key_data["revoked_at"] = datetime.utcnow().isoformat()
+                key_data["revoked_at"] = datetime.now(timezone.utc).isoformat()
                 
                 return {
                     "success": True,
@@ -382,7 +382,7 @@ class APIKeyService:
                 
                 # Mark old key for delayed revocation
                 key_data["pending_revocation"] = True
-                key_data["revocation_time"] = (datetime.utcnow() + timedelta(hours=24)).isoformat()
+                key_data["revocation_time"] = (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
                 
                 # Link new key to old
                 new_key_hash = self._hash_key(new_key_result["api_key"])

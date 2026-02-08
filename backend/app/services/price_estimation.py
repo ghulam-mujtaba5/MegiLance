@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.models.project import Project, ProjectCategory
 from app.models.contract import Contract
@@ -146,7 +146,7 @@ class PriceEstimationService:
         """Get market data for similar projects"""
         try:
             # Get recent completed projects in same category
-            recent_date = datetime.utcnow() - timedelta(days=90)
+            recent_date = datetime.now(timezone.utc) - timedelta(days=90)
             
             completed_projects = self.db.query(Project).filter(
                 Project.category == category,

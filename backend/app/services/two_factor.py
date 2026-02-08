@@ -11,7 +11,7 @@ Features:
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pydantic import BaseModel
 import secrets
@@ -141,7 +141,7 @@ class TwoFactorService:
         secret = self._generate_secret()
         config.totp_secret = secret
         config.status = TwoFactorStatus.PENDING_SETUP
-        config.setup_started = datetime.utcnow()
+        config.setup_started = datetime.now(timezone.utc)
         
         # Generate provisioning URI for QR code
         issuer = "MegiLance"
@@ -179,7 +179,7 @@ class TwoFactorService:
         config.primary_method = TwoFactorMethod.TOTP
         config.backup_codes = hashed_codes
         config.backup_codes_remaining = len(backup_codes)
-        config.enabled_at = datetime.utcnow()
+        config.enabled_at = datetime.now(timezone.utc)
         
         return {
             "success": True,
@@ -208,7 +208,7 @@ class TwoFactorService:
                 return {"success": False, "error": "TOTP not configured"}
             
             if self._verify_totp(config.totp_secret, code):
-                config.last_verified = datetime.utcnow()
+                config.last_verified = datetime.now(timezone.utc)
                 return {"success": True, "method": "totp"}
         
         elif method == TwoFactorMethod.BACKUP_CODE:
@@ -217,7 +217,7 @@ class TwoFactorService:
             if code_hash in config.backup_codes:
                 config.backup_codes.remove(code_hash)
                 config.backup_codes_remaining -= 1
-                config.last_verified = datetime.utcnow()
+                config.last_verified = datetime.now(timezone.utc)
                 return {
                     "success": True,
                     "method": "backup_code",
@@ -296,9 +296,9 @@ class TwoFactorService:
             device_fingerprint=device_fingerprint,
             user_agent=user_agent,
             ip_address=ip_address,
-            last_used=datetime.utcnow(),
-            trusted_until=datetime.utcnow() + timedelta(days=self.device_trust_days),
-            created_at=datetime.utcnow()
+            last_used=datetime.now(timezone.utc),
+            trusted_until=datetime.now(timezone.utc) + timedelta(days=self.device_trust_days),
+            created_at=datetime.now(timezone.utc)
         )
         
         self._trusted_devices[device_id] = device
@@ -321,8 +321,8 @@ class TwoFactorService:
             device = self._trusted_devices.get(device_id)
             if device and device.device_fingerprint == device_fingerprint:
                 # Check if still valid
-                if datetime.utcnow() < device.trusted_until:
-                    device.last_used = datetime.utcnow()
+                if datetime.now(timezone.utc) < device.trusted_until:
+                    device.last_used = datetime.now(timezone.utc)
                     return True
         
         return False

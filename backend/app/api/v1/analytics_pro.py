@@ -13,7 +13,7 @@ Endpoints for:
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic import BaseModel
 import logging
 
@@ -268,7 +268,7 @@ async def get_analytics_dashboard(
                 "trend": forecast["summary"]["trend"],
                 "growth_rate": forecast["summary"]["growth_rate"]
             },
-            "generated_at": datetime.utcnow().isoformat()
+            "generated_at": datetime.now(timezone.utc).isoformat()
         }
         
     except Exception as e:
@@ -324,7 +324,7 @@ async def generate_custom_report(
                 "end": end_date.isoformat() if end_date else None
             },
             "data": data,
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "generated_by": current_user.id
         }
         

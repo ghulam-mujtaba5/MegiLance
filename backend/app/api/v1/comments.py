@@ -19,6 +19,9 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from ...core.security import get_current_active_user
 from ...services.comments import comments_service
+import logging
+
+logger = logging.getLogger("megilance")
 
 
 router = APIRouter()
@@ -71,7 +74,8 @@ async def create_comment(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.warning("create_comment validation error: %s", e)
+        raise HTTPException(status_code=400, detail="Invalid request. Please check your input.")
 
 
 @router.get("")
@@ -135,7 +139,8 @@ async def get_comment(
         comment = await comments_service.get_comment(db=db, comment_id=comment_id)
         return comment
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        logger.warning("get_comment not found: %s", e)
+        raise HTTPException(status_code=404, detail="The requested resource was not found.")
 
 
 @router.put("/{comment_id}")
@@ -159,7 +164,8 @@ async def update_comment(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.warning("update_comment validation error: %s", e)
+        raise HTTPException(status_code=400, detail="Invalid request. Please check your input.")
 
 
 @router.delete("/{comment_id}")
@@ -183,7 +189,8 @@ async def delete_comment(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.warning("delete_comment validation error: %s", e)
+        raise HTTPException(status_code=400, detail="Invalid request. Please check your input.")
 
 
 # ============== Reactions ==============
@@ -210,7 +217,8 @@ async def add_reaction(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        logger.warning("add_reaction validation error: %s", e)
+        raise HTTPException(status_code=400, detail="Invalid request. Please check your input.")
 
 
 @router.delete("/{comment_id}/reactions/{reaction}")
@@ -230,7 +238,8 @@ async def remove_reaction(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        logger.warning("remove_reaction not found: %s", e)
+        raise HTTPException(status_code=404, detail="The requested resource was not found.")
 
 
 # ============== Moderation ==============
@@ -252,7 +261,8 @@ async def pin_comment(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=403, detail=str(e))
+        logger.warning("pin_comment access denied: %s", e)
+        raise HTTPException(status_code=403, detail="You do not have permission to perform this action.")
 
 
 @router.delete("/{comment_id}/pin")
@@ -272,7 +282,8 @@ async def unpin_comment(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        logger.warning("unpin_comment not found: %s", e)
+        raise HTTPException(status_code=404, detail="The requested resource was not found.")
 
 
 @router.post("/{comment_id}/resolve")
@@ -290,7 +301,8 @@ async def resolve_comment(
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        logger.warning("resolve_comment not found: %s", e)
+        raise HTTPException(status_code=404, detail="The requested resource was not found.")
 
 
 # ============== History & Mentions ==============
@@ -306,7 +318,8 @@ async def get_edit_history(
         result = await comments_service.get_edit_history(db=db, comment_id=comment_id)
         return result
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        logger.warning("get_edit_history not found: %s", e)
+        raise HTTPException(status_code=404, detail="The requested resource was not found.")
 
 
 @router.get("/mentions/me")

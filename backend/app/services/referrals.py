@@ -12,7 +12,7 @@ Features:
 
 import logging
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -118,7 +118,7 @@ class ReferralService:
             "user_id": user_id,
             "code": code,
             "active": True,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "uses": 0,
             "max_uses": None,  # Unlimited
             "expires_at": None,  # Never expires
@@ -145,7 +145,7 @@ class ReferralService:
         
         if referral_code.get("expires_at"):
             expires = datetime.fromisoformat(referral_code["expires_at"])
-            if datetime.utcnow() > expires:
+            if datetime.now(timezone.utc) > expires:
                 return {"valid": False, "reason": "Code has expired"}
         
         if referral_code.get("max_uses"):
@@ -190,7 +190,7 @@ class ReferralService:
             "referee_email": referee_email,
             "code": code,
             "status": ReferralStatus.SIGNED_UP.value,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "converted_at": None,
             "reward_paid": False,
             "referrer_reward": None,
@@ -257,7 +257,7 @@ class ReferralService:
             "type": tier["reward_type"].value,
             "reason": "Referral conversion",
             "referral_id": referral["id"],
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         referee_reward = {
@@ -266,14 +266,14 @@ class ReferralService:
             "type": tier["reward_type"].value,
             "reason": "Welcome bonus (referred)",
             "referral_id": referral["id"],
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._rewards[referrer_id].append(referrer_reward)
         self._rewards[referee_id].append(referee_reward)
         
         # Update referral
-        referral["converted_at"] = datetime.utcnow().isoformat()
+        referral["converted_at"] = datetime.now(timezone.utc).isoformat()
         referral["reward_paid"] = True
         referral["referrer_reward"] = tier["referrer_reward"]
         referral["referee_reward"] = tier["referee_reward"]
@@ -392,7 +392,7 @@ class ReferralService:
             return False
         
         code_data["active"] = False
-        code_data["deactivated_at"] = datetime.utcnow().isoformat()
+        code_data["deactivated_at"] = datetime.now(timezone.utc).isoformat()
         
         return True
     

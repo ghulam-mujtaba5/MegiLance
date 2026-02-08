@@ -4,7 +4,7 @@ Uses Turso HTTP API directly - NO SQLite fallback
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 from app.core.security import get_current_active_user
@@ -205,7 +205,7 @@ async def create_client_project(
     client: User = Depends(get_client_user)
 ):
     """Create a new project"""
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Determine budget range based on type
     budget_min = project_data.budget * 0.8 if project_data.budget_type == 'Fixed' else project_data.budget
@@ -624,7 +624,7 @@ async def submit_freelancer_proposal(
     if result and result.get("rows"):
         raise HTTPException(status_code=400, detail="Proposal already submitted for this project")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     hourly_rate = bid_amount / delivery_time if delivery_time > 0 else float(freelancer.hourly_rate or 0)
     
     result = execute_query(
@@ -901,7 +901,7 @@ async def withdraw_funds(
     if amount > current_balance:
         raise HTTPException(status_code=400, detail="Insufficient funds")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # 1. Create payment record
     result = execute_query(

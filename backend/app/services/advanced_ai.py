@@ -14,7 +14,7 @@ Features:
 
 from typing import Dict, List, Any, Optional, Tuple
 from decimal import Decimal
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
@@ -453,7 +453,7 @@ class AdvancedAIService:
 
         # Check for new account (higher risk)
         if created_at:
-            account_age_days = (datetime.utcnow() - datetime.fromisoformat(created_at)).days
+            account_age_days = (datetime.now(timezone.utc) - datetime.fromisoformat(created_at)).days
             if account_age_days < 7:
                 patterns.append("very_new_account")
                 score += 15.0
@@ -480,7 +480,7 @@ class AdvancedAIService:
             result = execute_query("""
                 SELECT COUNT(*) FROM proposals
                 WHERE freelancer_id = ? AND created_at > ?
-            """, [user_id, (datetime.utcnow() - timedelta(hours=24)).isoformat()])
+            """, [user_id, (datetime.now(timezone.utc) - timedelta(hours=24)).isoformat()])
 
             if result and result.get("rows"):
                 proposal_count = int(result["rows"][0][0].get("value", 0))

@@ -1,7 +1,7 @@
 # @AI-HINT: Escrow API endpoints - Turso HTTP only (NO SQLite fallback)
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.core.security import get_current_user
@@ -55,7 +55,7 @@ async def create_escrow(
         raise HTTPException(status_code=400, detail=f"Insufficient balance. Available: ${balance:.2f}")
     
     # Create escrow
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     expires_at = escrow.expires_at.isoformat() if escrow.expires_at else None
     
     execute_query("""
@@ -94,7 +94,7 @@ async def list_escrow(
     user_role = str(user_role).lower()
     
     # Update expired escrow first
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     execute_query("""
         UPDATE escrow SET status = 'expired' 
         WHERE status = 'active' AND expires_at IS NOT NULL AND expires_at < ?
@@ -258,7 +258,7 @@ async def release_escrow(
     new_freelancer_balance = freelancer_balance + release_data.amount
     new_released_amount = released_amount + release_data.amount
     new_status = "released" if new_released_amount >= amount else "active"
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("UPDATE users SET account_balance = ? WHERE id = ?", [new_freelancer_balance, freelancer_id])
     execute_query("""
@@ -314,7 +314,7 @@ async def refund_escrow(
     # Refund to client
     new_client_balance = client_balance + refund_data.amount
     new_released_amount = released_amount + refund_data.amount
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     execute_query("UPDATE users SET account_balance = ? WHERE id = ?", [new_client_balance, client_id])
     execute_query("""
@@ -397,7 +397,7 @@ async def update_escrow(
     
     if update_fields:
         update_fields.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(escrow_id)
         
         execute_query(f"UPDATE escrow SET {', '.join(update_fields)} WHERE id = ?", params)

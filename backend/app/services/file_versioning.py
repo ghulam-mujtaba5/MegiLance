@@ -12,7 +12,7 @@ Features:
 
 import uuid
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Any, Optional
 from sqlalchemy.orm import Session
 
@@ -75,8 +75,8 @@ class FileVersioningService:
             "current_version_id": version_id,
             "total_versions": 1,
             "is_locked": False,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         version = {
@@ -89,7 +89,7 @@ class FileVersioningService:
             "uploaded_by": user_id,
             "comment": "Initial version",
             "is_current": True,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._files[file_id] = file_metadata
@@ -133,7 +133,7 @@ class FileVersioningService:
         lock = self._locks.get(file_id)
         if lock and lock["user_id"] != user_id:
             lock_time = datetime.fromisoformat(lock["locked_at"])
-            if datetime.utcnow() - lock_time < timedelta(minutes=self.LOCK_TIMEOUT_MINUTES):
+            if datetime.now(timezone.utc) - lock_time < timedelta(minutes=self.LOCK_TIMEOUT_MINUTES):
                 raise ValueError(f"File is locked by another user until {lock['expires_at']}")
         
         content_hash = self._calculate_hash(content)
@@ -163,7 +163,7 @@ class FileVersioningService:
             "uploaded_by": user_id,
             "comment": comment or f"Version {new_version_number}",
             "is_current": True,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         versions.append(version)
@@ -177,7 +177,7 @@ class FileVersioningService:
         file_meta["current_version"] = new_version_number
         file_meta["current_version_id"] = version_id
         file_meta["total_versions"] = len(versions)
-        file_meta["updated_at"] = datetime.utcnow().isoformat()
+        file_meta["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         return {
             "success": True,
@@ -354,7 +354,7 @@ class FileVersioningService:
         existing_lock = self._locks.get(file_id)
         if existing_lock:
             lock_time = datetime.fromisoformat(existing_lock["locked_at"])
-            if datetime.utcnow() - lock_time < timedelta(minutes=self.LOCK_TIMEOUT_MINUTES):
+            if datetime.now(timezone.utc) - lock_time < timedelta(minutes=self.LOCK_TIMEOUT_MINUTES):
                 if existing_lock["user_id"] != user_id:
                     raise ValueError("File is already locked by another user")
                 return {
@@ -363,12 +363,12 @@ class FileVersioningService:
                     "lock": existing_lock
                 }
         
-        expires = datetime.utcnow() + timedelta(minutes=self.LOCK_TIMEOUT_MINUTES)
+        expires = datetime.now(timezone.utc) + timedelta(minutes=self.LOCK_TIMEOUT_MINUTES)
         
         lock = {
             "file_id": file_id,
             "user_id": user_id,
-            "locked_at": datetime.utcnow().isoformat(),
+            "locked_at": datetime.now(timezone.utc).isoformat(),
             "expires_at": expires.isoformat()
         }
         

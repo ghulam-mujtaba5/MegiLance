@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -101,7 +101,7 @@ async def get_audit_events(
             resource_type="user" if i % 2 == 0 else "project",
             resource_id=f"resource-{i}",
             action="login" if i % 2 == 0 else "create",
-            timestamp=datetime.utcnow()
+            timestamp=datetime.now(timezone.utc)
         )
         for i in range(min(limit, 10))
     ]
@@ -123,7 +123,7 @@ async def get_audit_event(
         resource_id=str(current_user.id),
         action="login",
         details={"browser": "Chrome", "os": "Windows"},
-        timestamp=datetime.utcnow()
+        timestamp=datetime.now(timezone.utc)
     )
 
 
@@ -143,7 +143,7 @@ async def create_audit_event(
         resource_id=event.resource_id,
         action=event.action,
         details=event.details,
-        timestamp=datetime.utcnow()
+        timestamp=datetime.now(timezone.utc)
     )
 
 
@@ -171,7 +171,7 @@ async def get_audit_summary(
             {"event": "User login", "actor": "admin@example.com", "time": "2 minutes ago"},
             {"event": "Project created", "actor": "client@example.com", "time": "5 minutes ago"}
         ],
-        time_range={"start": datetime.utcnow().isoformat(), "end": datetime.utcnow().isoformat()}
+        time_range={"start": datetime.now(timezone.utc).isoformat(), "end": datetime.now(timezone.utc).isoformat()}
     )
 
 
@@ -192,7 +192,7 @@ async def get_user_activity(
             resource_type="session",
             resource_id=f"session-{i}",
             action="login",
-            timestamp=datetime.utcnow()
+            timestamp=datetime.now(timezone.utc)
         )
         for i in range(min(limit, 5))
     ]
@@ -210,8 +210,8 @@ async def get_resource_history(
         "resource_type": resource_type,
         "resource_id": resource_id,
         "events": [
-            {"action": "create", "actor": "user@example.com", "timestamp": datetime.utcnow().isoformat()},
-            {"action": "update", "actor": "user@example.com", "timestamp": datetime.utcnow().isoformat()}
+            {"action": "create", "actor": "user@example.com", "timestamp": datetime.now(timezone.utc).isoformat()},
+            {"action": "update", "actor": "user@example.com", "timestamp": datetime.now(timezone.utc).isoformat()}
         ]
     }
 
@@ -242,7 +242,7 @@ async def get_export_status(
         "export_id": export_id,
         "status": "completed",
         "download_url": f"/downloads/audit/{export_id}.csv",
-        "expires_at": datetime.utcnow().isoformat()
+        "expires_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -286,7 +286,7 @@ async def update_retention_policy(
     """Update audit log retention policy"""
     return {
         "retention_days": retention_days,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
 
 

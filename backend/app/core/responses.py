@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, TypeVar, Generic
 from pydantic import BaseModel
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # Generic type for data
@@ -23,7 +23,7 @@ class APIResponse(BaseModel, Generic[T]):
     
     def __init__(self, **data):
         if 'timestamp' not in data or data['timestamp'] is None:
-            data['timestamp'] = datetime.utcnow().isoformat()
+            data['timestamp'] = datetime.now(timezone.utc).isoformat()
         super().__init__(**data)
 
 
@@ -55,7 +55,7 @@ class ErrorResponse(BaseModel):
     
     def __init__(self, **data):
         if 'timestamp' not in data or data['timestamp'] is None:
-            data['timestamp'] = datetime.utcnow().isoformat()
+            data['timestamp'] = datetime.now(timezone.utc).isoformat()
         super().__init__(**data)
 
 
@@ -105,7 +105,7 @@ def success_response(
         "success": True,
         "message": message,
         "data": data,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -125,7 +125,7 @@ def error_response(
             "field": field,
             "details": details
         },
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
     return JSONResponse(status_code=status_code, content=content)
 
@@ -149,7 +149,7 @@ def paginated_response(
             "has_next": page < total_pages,
             "has_prev": page > 1
         },
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 

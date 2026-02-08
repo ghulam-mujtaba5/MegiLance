@@ -1,7 +1,7 @@
 # @AI-HINT: Favorites API endpoints - Turso-only, no SQLite fallback
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import List, Literal, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.turso_http import execute_query, parse_rows
 from app.core.security import get_current_user_from_token
@@ -51,7 +51,7 @@ async def create_favorite(
             raise HTTPException(status_code=404, detail="Freelancer not found")
     
     # Create favorite
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     result = execute_query(
         "INSERT INTO favorites (user_id, target_type, target_id, created_at) VALUES (?, ?, ?, ?)",
         [user_id, target_type, target_id, now]

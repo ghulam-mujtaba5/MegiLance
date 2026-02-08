@@ -17,7 +17,7 @@ import logging
 import hashlib
 import json
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -207,7 +207,7 @@ class AuditTrailService:
             Created audit log entry
         """
         log_id = f"audit_{secrets.token_hex(12)}"
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         
         # Create log entry
         entry = {
@@ -318,7 +318,7 @@ class AuditTrailService:
         days: int = 30
     ) -> Dict[str, Any]:
         """Get user activity summary."""
-        start_date = datetime.utcnow() - timedelta(days=days)
+        start_date = datetime.now(timezone.utc) - timedelta(days=days)
         
         result = await self.get_logs(
             user_id=user_id,
@@ -437,7 +437,7 @@ class AuditTrailService:
         
         # Add export metadata
         export = {
-            "export_date": datetime.utcnow().isoformat(),
+            "export_date": datetime.now(timezone.utc).isoformat(),
             "total_records": len(logs),
             "format": format,
             "filters_applied": filters,
@@ -464,7 +464,7 @@ class AuditTrailService:
         days: int = 30
     ) -> Dict[str, Any]:
         """Get audit log statistics."""
-        start_date = datetime.utcnow() - timedelta(days=days)
+        start_date = datetime.now(timezone.utc) - timedelta(days=days)
         
         result = await self.get_logs(start_date=start_date, limit=10000)
         logs = result["logs"]
@@ -520,7 +520,7 @@ class AuditTrailService:
     ) -> Dict[str, Any]:
         """Clean up logs past retention period."""
         deleted_count = 0
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         
         logs_to_keep = []
         
@@ -562,7 +562,7 @@ class AuditTrailService:
         hours: int = 24
     ) -> Dict[str, Any]:
         """Get recent security-related events."""
-        start_date = datetime.utcnow() - timedelta(hours=hours)
+        start_date = datetime.now(timezone.utc) - timedelta(hours=hours)
         
         result = await self.get_logs(
             category=AuditCategory.SECURITY,

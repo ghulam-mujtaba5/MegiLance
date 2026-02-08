@@ -16,7 +16,7 @@ import logging
 import hashlib
 import secrets
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
@@ -157,8 +157,8 @@ class IdentityVerificationService:
                 "address_verified": False,
                 "face_verified": False
             },
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         })
         
         # Recalculate tier
@@ -246,7 +246,7 @@ class IdentityVerificationService:
                 "extracted_data": extracted_data,
                 "validation_result": doc_validation,
                 "metadata": metadata or {},
-                "uploaded_at": datetime.utcnow().isoformat(),
+                "uploaded_at": datetime.now(timezone.utc).isoformat(),
                 "reviewed_at": None,
                 "reviewer_id": None,
                 "rejection_reason": doc_validation.get("error") if not doc_validation["valid"] else None
@@ -269,13 +269,13 @@ class IdentityVerificationService:
                         "address_verified": False,
                         "face_verified": False
                     },
-                    "created_at": datetime.utcnow().isoformat(),
-                    "updated_at": datetime.utcnow().isoformat()
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
                 }
             
             self._verifications[user_id]["documents"].append(document_id)
             self._verifications[user_id]["status"] = VerificationStatus.PENDING
-            self._verifications[user_id]["updated_at"] = datetime.utcnow().isoformat()
+            self._verifications[user_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
             
             logger.info(f"Document uploaded: {document_id} for user {user_id}")
             
@@ -389,7 +389,7 @@ class IdentityVerificationService:
         
         # Update document status
         document["status"] = VerificationStatus.APPROVED if approved else VerificationStatus.REJECTED
-        document["reviewed_at"] = datetime.utcnow().isoformat()
+        document["reviewed_at"] = datetime.now(timezone.utc).isoformat()
         document["reviewer_id"] = admin_id
         document["review_notes"] = notes
         
@@ -414,7 +414,7 @@ class IdentityVerificationService:
                 verification["checks"], 
                 verification["documents"]
             )
-            verification["updated_at"] = datetime.utcnow().isoformat()
+            verification["updated_at"] = datetime.now(timezone.utc).isoformat()
             
             # Update overall status
             all_docs_reviewed = all(
@@ -495,13 +495,13 @@ class IdentityVerificationService:
                     "address_verified": False,
                     "face_verified": False
                 },
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat()
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
             }
         
         self._verifications[user_id]["checks"]["phone_verified"] = True
         self._verifications[user_id]["phone_number"] = phone_number
-        self._verifications[user_id]["phone_verified_at"] = datetime.utcnow().isoformat()
+        self._verifications[user_id]["phone_verified_at"] = datetime.now(timezone.utc).isoformat()
         
         # Recalculate tier
         verification = self._verifications[user_id]
@@ -537,13 +537,13 @@ class IdentityVerificationService:
                 "status": VerificationStatus.NOT_STARTED,
                 "documents": [],
                 "checks": {},
-                "created_at": datetime.utcnow().isoformat(),
-                "updated_at": datetime.utcnow().isoformat()
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "updated_at": datetime.now(timezone.utc).isoformat()
             }
         
         self._verifications[user_id]["pending_phone_code"] = code
         self._verifications[user_id]["pending_phone_number"] = phone_number
-        self._verifications[user_id]["code_sent_at"] = datetime.utcnow().isoformat()
+        self._verifications[user_id]["code_sent_at"] = datetime.now(timezone.utc).isoformat()
         
         logger.info(f"Phone verification code sent to user {user_id}")
         
@@ -608,7 +608,7 @@ class IdentityVerificationService:
         extracted = {
             "extraction_method": "simulated_ocr",
             "confidence": 0.85,
-            "extracted_at": datetime.utcnow().isoformat()
+            "extracted_at": datetime.now(timezone.utc).isoformat()
         }
         
         # Add document-specific fields based on type
@@ -664,7 +664,7 @@ class IdentityVerificationService:
         if "expiry_date" in extracted_data:
             try:
                 expiry = datetime.strptime(extracted_data["expiry_date"], "%Y-%m-%d")
-                if expiry < datetime.utcnow():
+                if expiry < datetime.now(timezone.utc):
                     return {
                         "valid": False,
                         "error": "Document has expired"
@@ -716,7 +716,7 @@ class IdentityVerificationService:
             "match": similarity_score > 0.8,
             "confidence": similarity_score,
             "id_document_id": id_document["id"],
-            "matched_at": datetime.utcnow().isoformat(),
+            "matched_at": datetime.now(timezone.utc).isoformat(),
             "method": "simulated_face_api"
         }
     

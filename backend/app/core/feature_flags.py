@@ -10,7 +10,7 @@ Features:
 """
 
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any, List
 from enum import Enum
 from pydantic import BaseModel
@@ -37,8 +37,8 @@ class FeatureFlag(BaseModel):
     required_attributes: Dict[str, Any] = {}
     variants: List[str] = []
     default_variant: str = "control"
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = datetime.now(timezone.utc)
+    updated_at: datetime = datetime.now(timezone.utc)
 
 
 # Default feature flags configuration
@@ -337,7 +337,7 @@ class FeatureFlags:
             "user_id": user_id,
             "variant": variant,
             "context": context or {},
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
     
     async def get_analytics(self, flag_name: Optional[str] = None) -> List[Dict[str, Any]]:

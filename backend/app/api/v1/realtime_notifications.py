@@ -7,7 +7,7 @@ Provides instant push notifications for bids, messages, payments, and other even
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Dict, Set, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import asyncio
 from collections import defaultdict
@@ -15,6 +15,9 @@ from collections import defaultdict
 from app.db.session import get_db
 from app.models.notification import Notification
 from app.core.security import decode_token
+import logging
+
+logger = logging.getLogger("megilance")
 
 
 router = APIRouter()
@@ -83,7 +86,7 @@ class ConnectionManager:
             "type": "user_status",
             "user_id": user_id,
             "status": status,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         await self.broadcast(message)
     
@@ -99,7 +102,7 @@ class ConnectionManager:
             "conversation_id": conversation_id,
             "user_id": user_id,
             "is_typing": is_typing,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
         # Send to all participants in the conversation
@@ -119,7 +122,7 @@ class ConnectionManager:
         message = {
             "type": "notification",
             "data": notification,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         await self.send_personal_message(message, user_id)
 
@@ -169,7 +172,7 @@ async def websocket_notifications(
         await websocket.send_json({
             "type": "connected",
             "user_id": user_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "online_users": manager.get_online_users()
         })
         
@@ -189,7 +192,7 @@ async def websocket_notifications(
                 # Heartbeat to keep connection alive
                 await websocket.send_json({
                     "type": "pong",
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": datetime.now(timezone.utc).isoformat()
                 })
             
             elif message.get("type") == "read_receipt":
@@ -200,14 +203,14 @@ async def websocket_notifications(
                     "type": "read_receipt",
                     "message_id": message_id,
                     "read_by": user_id,
-                    "timestamp": datetime.utcnow().isoformat()
+                    "timestamp": datetime.now(timezone.utc).isoformat()
                 })
     
     except WebSocketDisconnect:
         manager.disconnect(websocket, user_id)
-        print(f"User {user_id} disconnected from WebSocket")
+        logger.info("User %s disconnected from WebSocket", user_id)
     except Exception as e:
-        print(f"WebSocket error for user {user_id}: {e}")
+        logger.error("WebSocket error for user %s: %s", user_id, e, exc_info=True)
         manager.disconnect(websocket, user_id)
 
 
@@ -284,7 +287,7 @@ async def broadcast_notification(
     await manager.broadcast({
         "type": "broadcast",
         "data": notification,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat()
     })
     
     return {

@@ -13,7 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -302,7 +302,7 @@ async def schedule_backup(
         "user_id": current_user.id,
         "frequency": frequency,
         "status": "scheduled",
-        "next_backup": datetime.utcnow().isoformat()
+        "next_backup": datetime.now(timezone.utc).isoformat()
     }
 
 

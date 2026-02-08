@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import secrets
 
@@ -146,7 +146,7 @@ async def create_call(
         request.call_type,
         scheduled_at,
         metadata_json,
-        datetime.utcnow().isoformat()
+        datetime.now(timezone.utc).isoformat()
     ])
 
     # Get created call
@@ -187,7 +187,7 @@ async def create_call(
         """, [
             participant_id,
             f"/video/join/{room_id}",
-            datetime.utcnow().isoformat()
+            datetime.now(timezone.utc).isoformat()
         ])
 
     return CallResponse(**call_data)
@@ -234,7 +234,7 @@ async def join_call(
             UPDATE video_calls
             SET status = 'ongoing', started_at = ?
             WHERE id = ?
-        """, [datetime.utcnow().isoformat(), call_id])
+        """, [datetime.now(timezone.utc).isoformat(), call_id])
 
     # Get active participant count
     # In production, would track via WebSocket connections
@@ -284,7 +284,7 @@ async def end_call(
     # Calculate duration
     if started_at:
         start_time = datetime.fromisoformat(started_at)
-        duration_seconds = int((datetime.utcnow() - start_time).total_seconds())
+        duration_seconds = int((datetime.now(timezone.utc) - start_time).total_seconds())
     else:
         duration_seconds = 0
 
@@ -293,7 +293,7 @@ async def end_call(
         UPDATE video_calls
         SET status = 'ended', ended_at = ?, duration_seconds = ?
         WHERE id = ?
-    """, [datetime.utcnow().isoformat(), duration_seconds, call_id])
+    """, [datetime.now(timezone.utc).isoformat(), duration_seconds, call_id])
 
     return {
         "message": "Call ended successfully",
@@ -383,7 +383,7 @@ async def start_screen_share(
     """, [
         current_user.id,
         json.dumps({"call_id": request.call_id, "stream_id": request.stream_id}),
-        datetime.utcnow().isoformat()
+        datetime.now(timezone.utc).isoformat()
     ])
 
     return {
@@ -433,9 +433,9 @@ async def whiteboard_action(
         json.dumps({
             "action_type": request.action_type,
             "data": request.data,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }),
-        datetime.utcnow().isoformat()
+        datetime.now(timezone.utc).isoformat()
     ])
 
     return {
@@ -549,7 +549,7 @@ async def websocket_signaling(websocket: WebSocket, room_id: str):
         # Notify others of participant leaving
         await manager.broadcast(room_id, {
             "type": "participant_left",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         })
 
 
@@ -673,13 +673,13 @@ async def get_call_analytics(
     """Get call usage analytics"""
     # Calculate date range
     if period == "day":
-        start_date = datetime.utcnow() - timedelta(days=1)
+        start_date = datetime.now(timezone.utc) - timedelta(days=1)
     elif period == "week":
-        start_date = datetime.utcnow() - timedelta(weeks=1)
+        start_date = datetime.now(timezone.utc) - timedelta(weeks=1)
     elif period == "month":
-        start_date = datetime.utcnow() - timedelta(days=30)
+        start_date = datetime.now(timezone.utc) - timedelta(days=30)
     else:
-        start_date = datetime.utcnow() - timedelta(days=365)
+        start_date = datetime.now(timezone.utc) - timedelta(days=365)
 
     # Get statistics
     result = execute_query("""

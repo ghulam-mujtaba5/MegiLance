@@ -12,7 +12,7 @@ Handles:
 """
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 from app.db.turso_http import execute_query, parse_rows
@@ -260,7 +260,7 @@ async def create_skill(
     if result and result.get("rows"):
         raise HTTPException(status_code=400, detail="A skill with this name already exists")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     result = execute_query(
         """INSERT INTO skills (name, description, category, icon, is_active, sort_order, created_at, updated_at)
@@ -341,7 +341,7 @@ async def update_skill(
     
     if updates:
         updates.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(skill_id)
         
         execute_query(
@@ -386,7 +386,7 @@ async def delete_skill(
     # Soft delete
     execute_query(
         "UPDATE skills SET is_active = 0, updated_at = ? WHERE id = ?",
-        [datetime.utcnow().isoformat(), skill_id]
+        [datetime.now(timezone.utc).isoformat(), skill_id]
     )
 
 
@@ -471,7 +471,7 @@ async def add_user_skill(
     if result and result.get("rows"):
         raise HTTPException(status_code=400, detail="You already have this skill in your profile")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     result = execute_query(
         """INSERT INTO user_skills (user_id, skill_id, proficiency_level, years_experience, is_verified, created_at, updated_at)
@@ -562,13 +562,13 @@ async def update_user_skill(
         params.append(1 if user_skill_data["is_verified"] else 0)
         if user_skill_data["is_verified"]:
             updates.append("verified_at = ?")
-            params.append(datetime.utcnow().isoformat())
+            params.append(datetime.now(timezone.utc).isoformat())
             updates.append("verified_by = ?")
             params.append(user_id)
     
     if updates:
         updates.append("updated_at = ?")
-        params.append(datetime.utcnow().isoformat())
+        params.append(datetime.now(timezone.utc).isoformat())
         params.append(user_skill_id)
         
         execute_query(

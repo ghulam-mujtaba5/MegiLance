@@ -4,7 +4,7 @@ from app.models.scope_change import ScopeChangeRequest
 from app.models.contract import Contract
 from app.schemas.scope_change import ScopeChangeCreate, ScopeChangeUpdate, ScopeChangeStatus
 from fastapi import HTTPException, status
-from datetime import datetime
+from datetime import datetime, timezone
 
 class ScopeChangeService:
     @staticmethod
@@ -70,7 +70,7 @@ class ScopeChangeService:
                 raise HTTPException(status_code=403, detail="Only requester can cancel")
 
         request.status = status_update
-        request.resolved_at = datetime.utcnow()
+        request.resolved_at = datetime.now(timezone.utc)
 
         # If approved, update the contract
         if status_update == ScopeChangeStatus.APPROVED:

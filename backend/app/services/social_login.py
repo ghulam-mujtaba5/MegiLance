@@ -10,7 +10,7 @@ Features:
 - Profile sync from social accounts
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 from enum import Enum
@@ -167,8 +167,8 @@ class SocialLoginService:
             "user_id": user_id,
             "nonce": nonce,
             "portal_area": portal_area,
-            "created_at": datetime.utcnow().isoformat(),
-            "expires_at": (datetime.utcnow() + timedelta(minutes=10)).isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "expires_at": (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
         }
         
         # Build authorization URL
@@ -210,7 +210,7 @@ class SocialLoginService:
         # Enforce expiration
         try:
             expires_at = datetime.fromisoformat(state_data["expires_at"])
-            if expires_at < datetime.utcnow():
+            if expires_at < datetime.now(timezone.utc):
                 self._oauth_states.pop(state, None)
                 return {"success": False, "error": "OAuth session expired. Please try again."}
         except Exception:
@@ -440,7 +440,7 @@ class SocialLoginService:
             return user, False
 
         # Create new user
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         hashed_password = get_password_hash(secrets.token_urlsafe(32))
 
         execute_result = execute_query(
@@ -510,7 +510,7 @@ class SocialLoginService:
             "provider_user_id": str(social_user.get("id")),
             "email": social_user.get("email"),
             "name": social_user.get("name"),
-            "linked_at": datetime.utcnow().isoformat()
+            "linked_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Linked Accounts Management
@@ -548,7 +548,7 @@ class SocialLoginService:
         return {
             "success": True,
             "provider": provider.value,
-            "unlinked_at": datetime.utcnow().isoformat()
+            "unlinked_at": datetime.now(timezone.utc).isoformat()
         }
     
     # Profile Sync
@@ -564,7 +564,7 @@ class SocialLoginService:
         return {
             "success": True,
             "synced_fields": fields,
-            "synced_at": datetime.utcnow().isoformat()
+            "synced_at": datetime.now(timezone.utc).isoformat()
         }
 
 

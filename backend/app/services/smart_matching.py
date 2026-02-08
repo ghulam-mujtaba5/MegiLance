@@ -15,7 +15,7 @@ import logging
 import hashlib
 from typing import List, Dict, Any, Optional, Tuple
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_
 
@@ -561,7 +561,7 @@ class SmartMatchingEngine:
         if not last_active:
             return 0.3
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         days_ago = (now - last_active).days
         
         if days_ago <= 1:
@@ -757,7 +757,7 @@ class SmartMatchingEngine:
             budget_fit = 1.0 if not budget_max or hourly_rate <= budget_max else 0.5
             
             # Recency (newer = better)
-            days_old = (datetime.utcnow() - project.created_at).days if project.created_at else 30
+            days_old = (datetime.now(timezone.utc) - project.created_at).days if project.created_at else 30
             recency = max(0, 1 - (days_old / 30))
             
             # Total score
@@ -788,14 +788,14 @@ class SmartMatchingEngine:
         """Get from cache if not expired"""
         if key in self._cache:
             data, timestamp = self._cache[key]
-            if (datetime.utcnow() - timestamp).total_seconds() < self._cache_ttl:
+            if (datetime.now(timezone.utc) - timestamp).total_seconds() < self._cache_ttl:
                 return data
             del self._cache[key]
         return None
     
     def _set_cache(self, key: str, value: Any) -> None:
         """Set cache with timestamp"""
-        self._cache[key] = (value, datetime.utcnow())
+        self._cache[key] = (value, datetime.now(timezone.utc))
     
     def clear_cache(self) -> None:
         """Clear all cached data"""

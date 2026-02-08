@@ -367,7 +367,7 @@ async def create_quick_nda(
             "disclosing_party_name": current_user.get("full_name", current_user.get("email")),
             "receiving_party_name": other_party_name,
             "purpose": purpose,
-            "effective_date": datetime.utcnow().strftime("%Y-%m-%d")
+            "effective_date": datetime.now(timezone.utc).strftime("%Y-%m-%d")
         },
         f"NDA with {other_party_name}"
     )
@@ -391,4 +391,4 @@ async def create_quick_nda(
     }
 
 
-from datetime import datetime
+from datetime import datetime, timezone

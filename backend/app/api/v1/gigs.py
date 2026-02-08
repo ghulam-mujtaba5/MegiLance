@@ -4,7 +4,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import uuid
 
@@ -52,7 +52,7 @@ def _generate_order_number() -> str:
     """Generate unique order number"""
     import random
     import string
-    timestamp = datetime.utcnow().strftime('%Y%m%d%H%M')
+    timestamp = datetime.now(timezone.utc).strftime('%Y%m%d%H%M')
     random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     return f"GIG-{timestamp}-{random_suffix}"
 
@@ -475,7 +475,7 @@ def create_order(
     total_price = base_price + extras_price + service_fee
     
     # Calculate deadline
-    deadline = (datetime.utcnow() + timedelta(days=delivery_days)).isoformat()
+    deadline = (datetime.now(timezone.utc) + timedelta(days=delivery_days)).isoformat()
     
     # Generate order number
     order_number = _generate_order_number()

@@ -15,7 +15,7 @@ Features:
 """
 
 from typing import Optional, Dict, List, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -130,7 +130,7 @@ class MultiCurrencyPaymentService:
         # Check cache
         if use_cache and cache_key in self.exchange_rate_cache:
             cached_data = self.exchange_rate_cache[cache_key]
-            if datetime.utcnow() - cached_data["timestamp"] < timedelta(seconds=self.cache_ttl):
+            if datetime.now(timezone.utc) - cached_data["timestamp"] < timedelta(seconds=self.cache_ttl):
                 return Decimal(str(cached_data["rate"]))
         
         # Determine if crypto or fiat
@@ -148,7 +148,7 @@ class MultiCurrencyPaymentService:
             # Cache the rate
             self.exchange_rate_cache[cache_key] = {
                 "rate": float(rate),
-                "timestamp": datetime.utcnow()
+                "timestamp": datetime.now(timezone.utc)
             }
             
             return rate
@@ -242,7 +242,7 @@ class MultiCurrencyPaymentService:
                 amount=amount,
                 converted_amount=amount,
                 exchange_rate=Decimal("1.0"),
-                timestamp=datetime.utcnow()
+                timestamp=datetime.now(timezone.utc)
             )
         
         rate = await self.get_exchange_rate(from_currency, to_currency)
@@ -254,7 +254,7 @@ class MultiCurrencyPaymentService:
             amount=amount,
             converted_amount=converted_amount,
             exchange_rate=rate,
-            timestamp=datetime.utcnow()
+            timestamp=datetime.now(timezone.utc)
         )
 
     # ========================================================================
@@ -339,7 +339,7 @@ class MultiCurrencyPaymentService:
                 float(platform_fee), payment.payment_method,
                 result.get("transaction_id"),
                 json.dumps(payment.metadata) if payment.metadata else None,
-                datetime.utcnow().isoformat()
+                datetime.now(timezone.utc).isoformat()
             ])
         
         return result
@@ -662,7 +662,7 @@ class MultiCurrencyPaymentService:
             """, [
                 user_id, float(amount), currency, payout_method,
                 result.get("transaction_id"),
-                datetime.utcnow().isoformat()
+                datetime.now(timezone.utc).isoformat()
             ])
         
         return result

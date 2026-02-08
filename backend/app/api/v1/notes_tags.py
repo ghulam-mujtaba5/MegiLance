@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -61,7 +61,7 @@ async def get_notes(
             is_private=True,
             is_pinned=i == 0,
             color="#FFE4B5" if i == 0 else None,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
         for i in range(min(limit, 5))
     ]
@@ -86,7 +86,7 @@ async def create_note(
         content=content,
         is_private=is_private,
         color=color,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -103,7 +103,7 @@ async def get_note(
         entity_type="project",
         entity_id="project-1",
         content="Note content",
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -125,8 +125,8 @@ async def update_note(
         content=content or "Updated content",
         is_pinned=is_pinned if is_pinned is not None else False,
         color=color,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
     )
 
 
@@ -155,7 +155,7 @@ async def get_tags(
             color="#FF5733",
             description="High priority items",
             entity_count=12,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         ),
         Tag(
             id="tag-2",
@@ -164,7 +164,7 @@ async def get_tags(
             color="#33A1FF",
             description="Items needing follow-up",
             entity_count=8,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         ),
         Tag(
             id="tag-3",
@@ -172,7 +172,7 @@ async def get_tags(
             name="Important",
             color="#FFD700",
             entity_count=15,
-            created_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc)
         )
     ]
 
@@ -193,7 +193,7 @@ async def create_tag(
         color=color,
         description=description,
         entity_count=0,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -214,7 +214,7 @@ async def update_tag(
         color=color or "#000000",
         description=description,
         entity_count=10,
-        created_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc)
     )
 
 
@@ -278,7 +278,7 @@ async def get_entity_notes_tags(
                 "id": "note-1",
                 "content": "Important note",
                 "is_pinned": True,
-                "created_at": datetime.utcnow().isoformat()
+                "created_at": datetime.now(timezone.utc).isoformat()
             }
         ],
         "tags": [

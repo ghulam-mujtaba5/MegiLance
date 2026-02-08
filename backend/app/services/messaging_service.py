@@ -5,7 +5,7 @@ WebSocket-based messaging between clients and freelancers
 
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import json
 
@@ -36,7 +36,7 @@ class MessageService:
                 'content': content,
                 'contract_id': contract_id,
                 'attachment_url': attachment_url,
-                'sent_at': datetime.utcnow().isoformat(),
+                'sent_at': datetime.now(timezone.utc).isoformat(),
                 'read': False
             }
             

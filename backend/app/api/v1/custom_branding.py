@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 
@@ -79,8 +79,8 @@ async def get_branding_config(
         font_family="Inter, sans-serif",
         heading_font="Poppins, sans-serif",
         white_label_enabled=False,
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
     )
 
 
@@ -94,8 +94,8 @@ async def create_branding_config(
     return BrandingConfig(
         id="branding-new",
         **config.dict(),
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
     )
 
 
@@ -119,7 +119,7 @@ async def update_branding_config(
         font_family=update.font_family or "Inter, sans-serif",
         heading_font=update.heading_font or "Poppins, sans-serif",
         white_label_enabled=update.white_label_enabled or False,
-        updated_at=datetime.utcnow()
+        updated_at=datetime.now(timezone.utc)
     )
 
 
@@ -132,7 +132,7 @@ async def upload_logo(
     """Upload organization logo"""
     return {
         "logo_url": f"/uploads/branding/{organization_id}/logo.png",
-        "uploaded_at": datetime.utcnow().isoformat()
+        "uploaded_at": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -145,7 +145,7 @@ async def upload_favicon(
     """Upload organization favicon"""
     return {
         "favicon_url": f"/uploads/branding/{organization_id}/favicon.ico",
-        "uploaded_at": datetime.utcnow().isoformat()
+        "uploaded_at": datetime.now(timezone.utc).isoformat()
     }
 
 

@@ -1,7 +1,7 @@
 # @AI-HINT: Support Tickets API endpoints for customer support - Turso HTTP only
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.turso_http import execute_query, to_str, parse_date
 from app.schemas.support_ticket import (
@@ -40,7 +40,7 @@ async def create_support_ticket(
     - Any authenticated user can create tickets
     - Status defaults to 'open'
     """
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     result = execute_query(
         """INSERT INTO support_tickets (user_id, subject, description, category, priority, status, attachments, created_at, updated_at)
@@ -213,7 +213,7 @@ async def update_support_ticket(
         params.append(value)
     
     set_parts.append("updated_at = ?")
-    params.append(datetime.utcnow().isoformat())
+    params.append(datetime.now(timezone.utc).isoformat())
     params.append(ticket_id)
     
     execute_query(
@@ -271,7 +271,7 @@ async def assign_support_ticket(
     # Update ticket
     execute_query(
         "UPDATE support_tickets SET assigned_to = ?, status = 'in_progress', updated_at = ? WHERE id = ?",
-        [assign_data.assigned_to, datetime.utcnow().isoformat(), ticket_id]
+        [assign_data.assigned_to, datetime.now(timezone.utc).isoformat(), ticket_id]
     )
     
     # Fetch updated ticket
@@ -309,7 +309,7 @@ async def resolve_support_ticket(
     # Update ticket
     execute_query(
         "UPDATE support_tickets SET status = 'resolved', updated_at = ? WHERE id = ?",
-        [datetime.utcnow().isoformat(), ticket_id]
+        [datetime.now(timezone.utc).isoformat(), ticket_id]
     )
     
     # Fetch updated ticket
@@ -352,7 +352,7 @@ async def close_support_ticket(
     # Update ticket
     execute_query(
         "UPDATE support_tickets SET status = 'closed', updated_at = ? WHERE id = ?",
-        [datetime.utcnow().isoformat(), ticket_id]
+        [datetime.now(timezone.utc).isoformat(), ticket_id]
     )
     
     # Fetch updated ticket

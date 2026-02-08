@@ -12,7 +12,7 @@ Features:
 
 import uuid
 import re
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from typing import Dict, List, Any, Optional, Union
 from collections import defaultdict
 from sqlalchemy.orm import Session
@@ -135,8 +135,8 @@ class CustomFieldsService:
             "visible": visible,
             "editable": editable,
             "created_by": user_id,
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._field_definitions[field_id] = definition
@@ -206,7 +206,7 @@ class CustomFieldsService:
             if key in allowed:
                 field[key] = value
         
-        field["updated_at"] = datetime.utcnow().isoformat()
+        field["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         return {
             "success": True,
@@ -329,7 +329,7 @@ class CustomFieldsService:
         self._field_values[entity_key][field["id"]] = {
             "value": value,
             "updated_by": user_id,
-            "updated_at": datetime.utcnow().isoformat()
+            "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
         return {
@@ -443,7 +443,7 @@ class CustomFieldsService:
             "collapsible": collapsible,
             "collapsed_by_default": collapsed_by_default,
             "created_by": user_id,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         self._field_groups[group_id] = group
@@ -482,7 +482,7 @@ class CustomFieldsService:
             groups = list(self._field_groups.values())
         
         return {
-            "exported_at": datetime.utcnow().isoformat(),
+            "exported_at": datetime.now(timezone.utc).isoformat(),
             "entity_type": entity_type,
             "fields": fields,
             "groups": groups,

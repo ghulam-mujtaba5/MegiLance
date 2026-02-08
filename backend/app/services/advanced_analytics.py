@@ -13,7 +13,7 @@ Features:
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_, desc
@@ -51,7 +51,7 @@ class AdvancedAnalyticsService:
             from app.models.payment import Payment
             
             # Get historical revenue data (12 months)
-            end_date = datetime.utcnow()
+            end_date = datetime.now(timezone.utc)
             start_date = end_date - timedelta(days=365)
             
             payments = self.db.query(Payment).filter(
@@ -168,7 +168,7 @@ class AdvancedAnalyticsService:
                 },
                 "model_info": {
                     "type": "linear_regression",
-                    "last_updated": datetime.utcnow().isoformat()
+                    "last_updated": datetime.now(timezone.utc).isoformat()
                 }
             }
             
@@ -189,7 +189,7 @@ class AdvancedAnalyticsService:
             from app.models.project import Project
             
             if not end_date:
-                end_date = datetime.utcnow()
+                end_date = datetime.now(timezone.utc)
             if not start_date:
                 start_date = end_date - timedelta(days=30)
             
@@ -255,7 +255,7 @@ class AdvancedAnalyticsService:
             
             # Get users grouped by registration month
             users = self.db.query(User).filter(
-                User.created_at >= datetime.utcnow() - timedelta(days=180)
+                User.created_at >= datetime.now(timezone.utc) - timedelta(days=180)
             ).all()
             
             # Group users into cohorts
@@ -362,8 +362,8 @@ class AdvancedAnalyticsService:
                     continue
                     
                 # Calculate churn features
-                days_since_registration = (datetime.utcnow() - user.created_at).days if user.created_at else 0
-                days_since_last_login = (datetime.utcnow() - user.last_login).days if user.last_login else 30
+                days_since_registration = (datetime.now(timezone.utc) - user.created_at).days if user.created_at else 0
+                days_since_last_login = (datetime.now(timezone.utc) - user.last_login).days if user.last_login else 30
                 
                 # Count user activity
                 project_count = self.db.query(Project).filter(
@@ -446,7 +446,7 @@ class AdvancedAnalyticsService:
                         sum(p["churn_probability"] for p in predictions) / len(predictions), 3
                     ) if predictions else 0
                 },
-                "generated_at": datetime.utcnow().isoformat()
+                "generated_at": datetime.now(timezone.utc).isoformat()
             }
             
         except Exception as e:
@@ -469,7 +469,7 @@ class AdvancedAnalyticsService:
             from app.models.proposal import Proposal
             
             # Get projects from last 90 days
-            start_date = datetime.utcnow() - timedelta(days=90)
+            start_date = datetime.now(timezone.utc) - timedelta(days=90)
             
             projects = self.db.query(Project).filter(
                 Project.created_at >= start_date
@@ -523,7 +523,7 @@ class AdvancedAnalyticsService:
             return {
                 "period": {
                     "start": start_date.isoformat(),
-                    "end": datetime.utcnow().isoformat(),
+                    "end": datetime.now(timezone.utc).isoformat(),
                     "days": 90
                 },
                 "top_skills": trends,
@@ -564,7 +564,7 @@ class AdvancedAnalyticsService:
             from app.models.proposal import Proposal
             from app.models.contract import Contract
             
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             day_ago = now - timedelta(days=1)
             week_ago = now - timedelta(days=7)
             month_ago = now - timedelta(days=30)

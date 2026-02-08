@@ -6,7 +6,7 @@ Manages email, in-app, and push notifications
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import json
 from app.models.notification import Notification
@@ -50,7 +50,7 @@ class NotificationService:
                 'title': title,
                 'message': message,
                 'data': data or {},
-                'created_at': datetime.utcnow().isoformat(),
+                'created_at': datetime.now(timezone.utc).isoformat(),
                 'read': False
             }
             
@@ -86,7 +86,7 @@ class NotificationService:
                 content=notification_data['message'],
                 data=json.dumps(notification_data['data']) if notification_data.get('data') else None,
                 is_read=False,
-                created_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc)
             )
             self.db.add(notification)
             self.db.commit()
@@ -150,7 +150,7 @@ class NotificationService:
             ).update(
                 {
                     Notification.is_read: True,
-                    Notification.read_at: datetime.utcnow()
+                    Notification.read_at: datetime.now(timezone.utc)
                 },
                 synchronize_session=False
             )
@@ -170,7 +170,7 @@ class NotificationService:
             ).update(
                 {
                     Notification.is_read: True,
-                    Notification.read_at: datetime.utcnow()
+                    Notification.read_at: datetime.now(timezone.utc)
                 },
                 synchronize_session=False
             )

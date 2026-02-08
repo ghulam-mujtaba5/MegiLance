@@ -10,7 +10,7 @@ Complete Admin Service featuring:
 """
 
 from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.db.turso_http import execute_query, parse_rows
 
 class AdminService:
@@ -20,7 +20,7 @@ class AdminService:
     def get_platform_stats() -> Dict[str, Any]:
         """Get comprehensive platform statistics"""
         
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         week_ago = (now - timedelta(days=7)).isoformat()
         month_ago = (now - timedelta(days=30)).isoformat()
         
@@ -105,7 +105,7 @@ class AdminService:
     def get_user_analytics(days: int = 30) -> Dict[str, Any]:
         """Get user growth and engagement analytics"""
         
-        cutoff_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        cutoff_date = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
         
         # User growth
         growth_result = execute_query(
@@ -206,7 +206,7 @@ class AdminService:
     ) -> bool:
         """Flag a user for manual review"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """INSERT INTO fraud_flags (user_id, type, reason, severity, status, created_at)
@@ -251,7 +251,7 @@ class AdminService:
     def suspend_user(user_id: int, reason: str) -> bool:
         """Suspend a user account"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """UPDATE users SET is_active = 0, suspended_at = ?, suspension_reason = ?
@@ -272,7 +272,7 @@ class AdminService:
     def unsuspend_user(user_id: int) -> bool:
         """Unsuspend a user account"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """UPDATE users SET is_active = 1, suspended_at = NULL, suspension_reason = NULL
@@ -323,7 +323,7 @@ class AdminService:
     ) -> bool:
         """Take moderation action on reported content"""
         
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         
         result = execute_query(
             """UPDATE content_reports 

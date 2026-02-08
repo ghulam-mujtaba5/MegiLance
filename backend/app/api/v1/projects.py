@@ -6,13 +6,16 @@ No local SQLite fallback - all queries go directly to Turso
 import re
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.models.user import User
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.core.security import get_current_active_user
 from app.db.turso_http import get_turso_http
 from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
+import logging
+
+logger = logging.getLogger("megilance")
 
 router = APIRouter()
 
@@ -143,7 +146,7 @@ def list_projects(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] list_projects: {e}")
+        logger.error("list_projects failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database temporarily unavailable"
@@ -180,10 +183,10 @@ def get_my_projects(
         return projects
         
     except Exception as e:
-        print(f"[ERROR] get_my_projects: {e}")
+        logger.error("get_my_projects failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -210,10 +213,10 @@ def get_project(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] get_project: {e}")
+        logger.error("get_project failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -244,7 +247,7 @@ def create_project(
     
     try:
         turso = get_turso_http()
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         skills_str = ",".join(project.skills) if project.skills else ""
         
         # Insert project
@@ -276,7 +279,7 @@ def create_project(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] create_project: {e}")
+        logger.error("create_project failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database temporarily unavailable"
@@ -313,7 +316,7 @@ def update_project(
         
         if updates:
             updates.append("updated_at = ?")
-            params.append(datetime.utcnow().isoformat())
+            params.append(datetime.now(timezone.utc).isoformat())
             params.append(project_id)
             
             turso.execute(
@@ -334,10 +337,10 @@ def update_project(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] update_project: {e}")
+        logger.error("update_project failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )
 
 
@@ -363,8 +366,8 @@ def delete_project(
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[ERROR] delete_project: {e}")
+        logger.error("delete_project failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Database unavailable: {str(e)}"
+            detail="Database temporarily unavailable"
         )

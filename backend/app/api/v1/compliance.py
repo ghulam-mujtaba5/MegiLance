@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -284,8 +284,8 @@ async def generate_compliance_report(
     """Generate compliance report."""
     service = get_compliance_service(db)
     
-    period_start = datetime.fromisoformat(start_date) if start_date else datetime.utcnow().replace(day=1)
-    period_end = datetime.fromisoformat(end_date) if end_date else datetime.utcnow()
+    period_start = datetime.fromisoformat(start_date) if start_date else datetime.now(timezone.utc).replace(day=1)
+    period_end = datetime.fromisoformat(end_date) if end_date else datetime.now(timezone.utc)
     
     report = await service.generate_compliance_report(framework, period_start, period_end)
     return {"report": report}

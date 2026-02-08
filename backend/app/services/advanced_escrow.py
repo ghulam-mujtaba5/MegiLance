@@ -15,7 +15,7 @@ Features:
 import logging
 import secrets
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_
@@ -137,10 +137,10 @@ class AdvancedEscrowService:
                 "refunded_amount": 0.0,
                 "status": EscrowStatus.PENDING,
                 "description": description,
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "funded_at": None,
                 "released_at": None,
-                "expires_at": (datetime.utcnow() + timedelta(days=self.MAX_HOLD_PERIOD)).isoformat(),
+                "expires_at": (datetime.now(timezone.utc) + timedelta(days=self.MAX_HOLD_PERIOD)).isoformat(),
                 "stripe_payment_intent": None,
                 "metadata": {}
             }
@@ -225,7 +225,7 @@ class AdvancedEscrowService:
                 "status": "completed",
                 "payment_method": payment_method,
                 "payment_id": payment_id,
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "metadata": payment_details
             }
             self._transactions[escrow_id].append(transaction)
@@ -233,7 +233,7 @@ class AdvancedEscrowService:
             # Update escrow status
             escrow["status"] = EscrowStatus.FUNDED
             escrow["funded_amount"] = escrow["amount"]
-            escrow["funded_at"] = datetime.utcnow().isoformat()
+            escrow["funded_at"] = datetime.now(timezone.utc).isoformat()
             escrow["stripe_payment_intent"] = payment_id
             
             logger.info(f"Escrow funded: {escrow_id}")
@@ -283,7 +283,7 @@ class AdvancedEscrowService:
                     raise ValueError("Milestone already released")
                 release_amount = Decimal(str(milestone["amount"]))
                 milestone["status"] = "released"
-                milestone["released_at"] = datetime.utcnow().isoformat()
+                milestone["released_at"] = datetime.now(timezone.utc).isoformat()
             elif amount:
                 release_amount = Decimal(str(amount)).quantize(Decimal("0.01"))
             else:
@@ -312,7 +312,7 @@ class AdvancedEscrowService:
                 "milestone_id": milestone_id,
                 "released_by": released_by,
                 "notes": notes,
-                "created_at": datetime.utcnow().isoformat()
+                "created_at": datetime.now(timezone.utc).isoformat()
             }
             self._transactions[escrow_id].append(transaction)
             
@@ -322,7 +322,7 @@ class AdvancedEscrowService:
             # Update status
             if Decimal(str(escrow["released_amount"])) >= Decimal(str(escrow["funded_amount"])):
                 escrow["status"] = EscrowStatus.RELEASED
-                escrow["released_at"] = datetime.utcnow().isoformat()
+                escrow["released_at"] = datetime.now(timezone.utc).isoformat()
             else:
                 escrow["status"] = EscrowStatus.PARTIALLY_RELEASED
             
@@ -376,7 +376,7 @@ class AdvancedEscrowService:
             "reason": reason,
             "requested_by": requested_by,
             "status": "pending",
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         
         # If full refund and no releases, auto-approve
@@ -422,7 +422,7 @@ class AdvancedEscrowService:
             "status": "completed",
             "approved_by": admin_id,
             "notes": notes,
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         self._transactions[escrow_id].append(transaction)
         
@@ -467,7 +467,7 @@ class AdvancedEscrowService:
             "reason": reason,
             "evidence": evidence or [],
             "status": "open",
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "responses": [],
             "resolution": None
         }
@@ -487,7 +487,7 @@ class AdvancedEscrowService:
             "currency": escrow["currency"],
             "status": "completed",
             "dispute_id": dispute["id"],
-            "created_at": datetime.utcnow().isoformat()
+            "created_at": datetime.now(timezone.utc).isoformat()
         }
         self._transactions[escrow_id].append(transaction)
         
@@ -617,7 +617,7 @@ class AdvancedEscrowService:
             raise ValueError(f"Milestone cannot be completed in status: {milestone['status']}")
         
         milestone["status"] = "completed"
-        milestone["completed_at"] = datetime.utcnow().isoformat()
+        milestone["completed_at"] = datetime.now(timezone.utc).isoformat()
         
         return {
             "status": "completed",
