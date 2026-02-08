@@ -45,6 +45,9 @@ const statusVariantMap: Record<ProjectCardProps['status'], NonNullable<BadgeProp
 const ProjectCard: React.FC<ProjectCardProps> = (props) => {
   const { id, title, status, progress, budget, paid, freelancers, updatedAt } = props;
   const { resolvedTheme } = useTheme();
+
+  if (!resolvedTheme) return null;
+
   const themed = resolvedTheme === 'dark' ? dark : light;
 
   const menuItems = [
@@ -54,23 +57,23 @@ const ProjectCard: React.FC<ProjectCardProps> = (props) => {
   ];
 
   return (
-    <div className={cn(common.card, themed.theme)}>
+    <article className={cn(common.card, themed.theme)} aria-label={`Project: ${title}`}>
       <div className={common.cardHeader}>
-        <h3 className={common.title}>
-          <Link href={`/client/projects/${id}`} className={common.titleLink}>{title}</Link>
+        <h3 className={cn(common.title, themed.title)}>
+          <Link href={`/client/projects/${id}`} className={cn(common.titleLink, themed.titleLink)}>{title}</Link>
         </h3>
-        <ActionMenu items={menuItems} trigger={<MoreHorizontal size={20} />} />
+        <ActionMenu items={menuItems} trigger={<MoreHorizontal size={20} aria-hidden="true" />} />
       </div>
 
       <div className={common.cardContent}>
         <div className={common.statusRow}>
           <Badge variant={statusVariantMap[status] as BadgeProps['variant']} size="small">{status}</Badge>
-          <div className={common.financials}>
-            <span className={common.paid}>${paid.toLocaleString()}</span>
-            <span className={common.budget}>/ ${budget.toLocaleString()}</span>
+          <div className={cn(common.financials, themed.financials)}>
+            <span className={cn(common.paid, themed.paid)}>${paid.toLocaleString()}</span>
+            <span className={cn(common.budget, themed.budget)}>/ ${budget.toLocaleString()}</span>
           </div>
         </div>
-        <ProgressBar progress={progress} />
+        <ProgressBar progress={progress} aria-label={`Project progress: ${progress}%`} />
       </div>
 
       <div className={common.cardFooter}>
@@ -79,12 +82,14 @@ const ProjectCard: React.FC<ProjectCardProps> = (props) => {
             <UserAvatar key={f.id} src={f.avatarUrl} name={f.name} size={24} />
           ))}
           {freelancers.length > 3 && (
-            <div className={common.moreAvatars}>+{freelancers.length - 3}</div>
+            <div className={cn(common.moreAvatars, themed.moreAvatars)} aria-label={`${freelancers.length - 3} more team members`}>
+              +{freelancers.length - 3}
+            </div>
           )}
         </div>
-        <span className={common.updatedAt}>Updated {updatedAt}</span>
+        <span className={cn(common.updatedAt, themed.updatedAt)}>Updated {updatedAt}</span>
       </div>
-    </div>
+    </article>
   );
 };
 

@@ -1,4 +1,4 @@
-// @AI-HINT: Quick login component for MegiLance demo. Shows role-based buttons that auto-fill real credentials for rapid testing. Now works in both development and production for live demo purposes.
+// @AI-HINT: Quick login component for MegiLance demo. Shows role-based buttons that auto-fill credentials for rapid testing. ONLY visible in development mode.
 'use client';
 
 import React from 'react';
@@ -11,6 +11,8 @@ import commonStyles from './DevQuickLogin.common.module.css';
 import lightStyles from './DevQuickLogin.light.module.css';
 import darkStyles from './DevQuickLogin.dark.module.css';
 
+const IS_DEV = process.env.NODE_ENV === 'development';
+
 interface DevCredential {
   email: string;
   password: string;
@@ -19,31 +21,33 @@ interface DevCredential {
   icon: IconType;
 }
 
-// @AI-HINT: Real working credentials for quick login - HARDCODED for demo bypass
-// Universal password: Test123!@# - These are real seeded accounts in the database
-const DEV_CREDENTIALS: DevCredential[] = [
-  {
-    email: 'admin.real@megilance.com',
-    password: 'Test123!@#',
-    role: 'admin',
-    label: 'Admin Master',
-    icon: FaUserShield,
-  },
-  {
-    email: 'alex.fullstack@megilance.com',
-    password: 'Test123!@#',
-    role: 'freelancer',
-    label: 'Alex (Freelancer)',
-    icon: FaUserTie,
-  },
-  {
-    email: 'sarah.tech@megilance.com',
-    password: 'Test123!@#',
-    role: 'client',
-    label: 'Sarah (Client)',
-    icon: FaBriefcase,
-  },
-];
+// @AI-HINT: Demo credentials for development quick login only - NEVER shipped to production
+// These are seeded test accounts in the development database
+const DEV_CREDENTIALS: DevCredential[] = IS_DEV
+  ? [
+      {
+        email: 'admin.real@megilance.com',
+        password: 'Test123!@#',
+        role: 'admin',
+        label: 'Admin Master',
+        icon: FaUserShield,
+      },
+      {
+        email: 'alex.fullstack@megilance.com',
+        password: 'Test123!@#',
+        role: 'freelancer',
+        label: 'Alex (Freelancer)',
+        icon: FaUserTie,
+      },
+      {
+        email: 'sarah.tech@megilance.com',
+        password: 'Test123!@#',
+        role: 'client',
+        label: 'Sarah (Client)',
+        icon: FaBriefcase,
+      },
+    ]
+  : [];
 
 interface DevQuickLoginProps {
   onCredentialSelect: (email: string, password: string, role: 'admin' | 'freelancer' | 'client') => void;
@@ -78,8 +82,8 @@ const DevQuickLogin: React.FC<DevQuickLoginProps> = ({ onCredentialSelect, onAut
     setMounted(true);
   }, []);
 
-  // Show after mounting (both dev and production for demo)
-  if (!mounted) {
+  // Only show in development mode
+  if (!mounted || !IS_DEV || DEV_CREDENTIALS.length === 0) {
     return null;
   }
 

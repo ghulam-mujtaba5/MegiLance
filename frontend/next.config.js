@@ -73,6 +73,14 @@ const nextConfig = {
   // React Strict Mode: catches bugs early (Vercel best practice)
   reactStrictMode: true,
   
+  // Strip console.log and console.debug from production builds (security + performance)
+  // console.warn and console.error are preserved for monitoring
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production'
+      ? { exclude: ['warn', 'error'] }
+      : false,
+  },
+  
   // TypeScript: enforce type safety in builds
   typescript: {
     ignoreBuildErrors: false,
@@ -150,20 +158,10 @@ const nextConfig = {
   },
   
   // Security headers
+  // NOTE: Core security headers (X-Frame-Options, X-Content-Type-Options, HSTS, etc.)
+  // are set in middleware.ts to avoid duplication. Only non-security headers here.
   async headers() {
     return [
-      {
-        source: '/:path*',
-        headers: [
-          { key: 'X-DNS-Prefetch-Control', value: 'on' },
-          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self)' },
-        ],
-      },
       {
         source: '/api/:path*',
         headers: [

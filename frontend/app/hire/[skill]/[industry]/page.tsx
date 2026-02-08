@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { HireSkillIndustryClient } from './HireSkillIndustryClient';
-import { BASE_URL } from '@/lib/seo';
+import { BASE_URL, buildServiceJsonLd, buildBreadcrumbJsonLd, buildFAQJsonLd, jsonLdScriptProps } from '@/lib/seo';
 
 // ============ SKILL & INDUSTRY DATA ============
 const SKILLS = {
@@ -186,7 +186,23 @@ export default async function HireSkillIndustryPage({ params }: PageProps) {
   ];
   
   return (
-    <HireSkillIndustryClient
+    <>
+      <script {...jsonLdScriptProps(
+        buildServiceJsonLd(
+          `Hire ${skill.name} for ${industry.name}`,
+          `Find expert ${skill.name}s specializing in ${industry.name}. Average rate: $${skill.avgRate}/hr.`,
+          `/hire/${resolvedParams.skill}/${resolvedParams.industry}`
+        )
+      )} />
+      <script {...jsonLdScriptProps(
+        buildBreadcrumbJsonLd([
+          { name: 'Hire', path: '/hire' },
+          { name: skill.name, path: `/hire/${resolvedParams.skill}` },
+          { name: industry.name, path: `/hire/${resolvedParams.skill}/${resolvedParams.industry}` },
+        ])
+      )} />
+      <script {...jsonLdScriptProps(buildFAQJsonLd(faqs))} />
+      <HireSkillIndustryClient
       skill={{
         slug: resolvedParams.skill,
         ...skill,
@@ -200,5 +216,6 @@ export default async function HireSkillIndustryPage({ params }: PageProps) {
       faqs={faqs}
       freelancers={freelancers}
     />
+    </>
   );
 }

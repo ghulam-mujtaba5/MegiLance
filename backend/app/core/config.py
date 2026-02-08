@@ -159,6 +159,14 @@ def validate_production_settings(settings: Settings) -> None:
                 "Consider restricting to specific origins.",
                 RuntimeWarning
             )
+    elif settings.environment != "development":
+        # Staging, test, etc. — warn but don't crash
+        if "CHANGE_ME" in settings.secret_key:
+            warnings.warn(
+                f"WARNING: Default SECRET_KEY detected in '{settings.environment}' environment. "
+                "Set a strong SECRET_KEY environment variable for non-development environments.",
+                RuntimeWarning
+            )
 
 
 @lru_cache

@@ -9,12 +9,25 @@
   border-color: var(--color-primary-light-hover);
 }
 
+.title {
+  color: var(--color-text-primary-light);
+}
+
 .titleLink {
   color: var(--color-text-primary-light);
 }
 
+.titleLink:hover {
+  color: var(--color-primary, #4573df);
+}
+
 .financials {
   color: var(--color-text-primary-light);
+}
+
+.paid {
+  color: #059669;
+  font-weight: 600;
 }
 
 .budget {

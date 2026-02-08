@@ -5,6 +5,8 @@
 import React from 'react';
 
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import Header from '@/app/components/Header/Header';
 import PublicFooter from '@/app/components/Layout/PublicFooter/PublicFooter';
 import ThemeToggleButton from '@/app/components/ThemeToggleButton';
@@ -14,10 +16,15 @@ import InstallAppBanner from '@/app/components/PWA/InstallAppBanner/InstallAppBa
 import UpdateNotification from '@/app/components/PWA/UpdateNotification/UpdateNotification';
 import PageTransition from '@/app/components/Transitions/PageTransition';
 import Breadcrumbs from '@/app/components/Breadcrumbs/Breadcrumbs';
+import commonStyles from './AppChrome.common.module.css';
+import lightStyles from './AppChrome.light.module.css';
+import darkStyles from './AppChrome.dark.module.css';
 
 // Separate client component for the logic that uses hooks
 const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
+  const { resolvedTheme } = useTheme();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   /**
    * Determines if a given route should have minimal chrome.
@@ -51,15 +58,15 @@ const AppChromeClient: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const isMinimalChrome = isPortalOrAuthRoute(pathname);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className={cn(commonStyles.wrapper, themeStyles.wrapper)}>
       {!isMinimalChrome && <Header />}
       {!isMinimalChrome && (
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className={commonStyles.breadcrumbContainer}>
           <Breadcrumbs />
         </div>
       )}
       
-      <main id="main-content" role="main" className={isMinimalChrome ? "flex-1" : "flex-grow"}>
+      <main id="main-content" role="main" className={isMinimalChrome ? commonStyles.mainContent : commonStyles.mainContentGrow}>
         <PageTransition variant="fade">
           {children}
         </PageTransition>

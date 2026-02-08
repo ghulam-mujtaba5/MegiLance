@@ -1,4 +1,6 @@
 // @AI-HINT: Component to display similar jobs using the Matching Engine
+'use client';
+
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';

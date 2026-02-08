@@ -1,16 +1,18 @@
-// @AI-HINT: Public user profile - portfolio showcase, reviews, contact
+// @AI-HINT: Public user profile - portfolio showcase, reviews, contact. Fully theme-aware with CSS modules.
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { 
-  FaStar, FaMapMarkerAlt, FaClock, FaCheckCircle, FaDollarSign,
-  FaLinkedin, FaGithub, FaGlobe, FaEnvelope, FaPhone,
-  FaCalendar, FaAward, FaThumbsUp, FaComments
-} from 'react-icons/fa';
+import {
+  Star, MapPin, Clock, CheckCircle, DollarSign,
+  Linkedin, Github, Globe, Mail, Phone,
+  Calendar, Award, ThumbsUp, MessageCircle
+} from 'lucide-react';
 import Button from '@/app/components/Button/Button';
+import StarRating from '@/app/components/StarRating/StarRating';
+import Loading from '@/app/components/Loading/Loading';
 import Image from 'next/image';
 
 import commonStyles from './UserProfile.common.module.css';
@@ -55,30 +57,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedPortfolioItem, setSelectedPortfolioItem] = useState<PortfolioItem | null>(null);
 
-  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
-  const styles = {
-    container: cn(commonStyles.container, themeStyles.container),
-    header: cn(commonStyles.header, themeStyles.header),
-    avatar: cn(commonStyles.avatar, themeStyles.avatar),
-    nameSection: cn(commonStyles.nameSection, themeStyles.nameSection),
-    title: cn(commonStyles.title, themeStyles.title),
-    badge: cn(commonStyles.badge, themeStyles.badge),
-    stats: cn(commonStyles.stats, themeStyles.stats),
-    statItem: cn(commonStyles.statItem, themeStyles.statItem),
-    actions: cn(commonStyles.actions, themeStyles.actions),
-    section: cn(commonStyles.section, themeStyles.section),
-    sectionTitle: cn(commonStyles.sectionTitle, themeStyles.sectionTitle),
-    aboutText: cn(commonStyles.aboutText, themeStyles.aboutText),
-    skillsGrid: cn(commonStyles.skillsGrid, themeStyles.skillsGrid),
-    skillTag: cn(commonStyles.skillTag, themeStyles.skillTag),
-    portfolioGrid: cn(commonStyles.portfolioGrid, themeStyles.portfolioGrid),
-    portfolioCard: cn(commonStyles.portfolioCard, themeStyles.portfolioCard),
-    reviewCard: cn(commonStyles.reviewCard, themeStyles.reviewCard),
-    criteriaGrid: cn(commonStyles.criteriaGrid, themeStyles.criteriaGrid),
-    contactInfo: cn(commonStyles.contactInfo, themeStyles.contactInfo),
-    socialLinks: cn(commonStyles.socialLinks, themeStyles.socialLinks),
-    availability: cn(commonStyles.availability, themeStyles.availability),
-  };
+  if (!resolvedTheme) return null;
+
+  const themed = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
     loadProfile();
@@ -89,21 +70,17 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const loadProfile = async () => {
     try {
       const data = await (api.users as any).get?.(userId);
-      // Map backend fields to frontend expected format
       setProfile({
         ...data,
         avatarUrl: data.profile_image_url,
         hourlyRate: data.hourly_rate,
         joinedAt: data.joined_at,
-        // Use title from profile_data if available, else user_type
         title: data.title || data.user_type || 'Freelancer',
-        // Ensure skills is an array
         skills: Array.isArray(data.skills) ? data.skills : (data.skills ? [data.skills] : []),
-        // Map other fields if needed
         linkedinUrl: data.linkedin_url,
         githubUrl: data.github_url,
         websiteUrl: data.website_url,
-        phone: data.phone_number
+        phone: data.phone_number,
       });
     } catch (error) {
       console.error('Failed to load profile:', error);
@@ -115,7 +92,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const loadPortfolio = async () => {
     try {
       const data = await (api.portfolio as any).list?.(userId);
-      // Map backend fields
       const mappedPortfolio = data.map((item: any) => ({
         id: item.id,
         title: item.title,
@@ -123,7 +99,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         imageUrl: item.image_url || '/placeholder-project.jpg',
         projectUrl: item.project_url,
         tags: item.tags || [],
-        completedAt: item.created_at
+        completedAt: item.created_at,
       }));
       setPortfolio(mappedPortfolio);
     } catch (error) {
@@ -134,11 +110,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const loadReviews = async () => {
     try {
       const data = await (api.reviews as any).list?.({ user_id: Number(userId) });
-      // Map backend fields
       const mappedReviews = (data as any[]).map((item: any) => ({
         id: item.id,
         reviewerName: item.reviewer_name || 'Anonymous',
-        reviewerAvatar: '/default-avatar.png', // Not returned by API yet
+        reviewerAvatar: '/default-avatar.png',
         rating: item.rating,
         comment: item.review_text,
         projectTitle: item.project_title || 'Project',
@@ -147,8 +122,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
           quality: item.quality_rating || 0,
           communication: item.communication_rating || 0,
           timeliness: item.deadline_rating || 0,
-          professionalism: item.professionalism_rating || 0
-        }
+          professionalism: item.professionalism_rating || 0,
+        },
       }));
       setReviews(mappedReviews);
     } catch (error) {
@@ -159,243 +134,338 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
   const calculateAverageRating = () => {
     if (reviews.length === 0) return 0;
     const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return (sum / reviews.length).toFixed(1);
-  };
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <FaStar
-        key={i}
-        className={i < Math.floor(rating) ? 'text-yellow-500' : 'text-gray-300'}
-      />
-    ));
+    return sum / reviews.length;
   };
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <div className="text-center py-12">Loading profile...</div>
+      <div className={cn(commonStyles.container, themed.container)}>
+        <Loading size="lg" text="Loading profile..." />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className={styles.container}>
-        <div className="text-center py-12">Profile not found</div>
+      <div className={cn(commonStyles.container, themed.container)}>
+        <div className={commonStyles.emptyState} role="alert">
+          <p className={cn(commonStyles.emptyText, themed.emptyText)}>
+            Profile not found
+          </p>
+        </div>
       </div>
     );
   }
 
+  const avgRating = calculateAverageRating();
+
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.avatar}>
+    <div className={cn(commonStyles.container, themed.container)}>
+      {/* Profile Header */}
+      <header className={cn(commonStyles.header, themed.header)}>
+        <div className={commonStyles.avatar}>
           <Image
             src={profile.avatarUrl || '/default-avatar.png'}
-            alt={profile.name}
+            alt={`${profile.name}'s profile photo`}
             width={120}
             height={120}
-            className="rounded-full"
+            className={commonStyles.avatarImage}
           />
           {profile.verified && (
-            <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
-              <FaCheckCircle className="text-white" />
+            <div
+              className={cn(commonStyles.verifiedBadge, themed.verifiedBadge)}
+              aria-label="Verified user"
+            >
+              <CheckCircle size={16} aria-hidden="true" />
             </div>
           )}
         </div>
 
-        <div className={styles.nameSection}>
-          <div className="flex items-center gap-3">
-            <h1 className={styles.title}>{profile.name}</h1>
+        <div className={cn(commonStyles.nameSection, themed.nameSection)}>
+          <div className={commonStyles.nameRow}>
+            <h1 className={cn(commonStyles.title, themed.title)}>
+              {profile.name}
+            </h1>
             {profile.topRated && (
-              <span className={styles.badge}>
-                <FaAward className="mr-1" />
+              <span className={cn(commonStyles.badge, themed.badge)}>
+                <Award size={14} aria-hidden="true" />
                 Top Rated
               </span>
             )}
           </div>
-          <p className="text-xl opacity-90">{profile.title}</p>
-          
-          <div className="flex items-center gap-4 mt-2 text-sm">
-            <div className="flex items-center gap-1">
-              <FaMapMarkerAlt />
-              <span>{profile.location}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <FaClock />
-              <span>{profile.timezone}</span>
-            </div>
+          <p className={cn(commonStyles.subtitle, themed.subtitle)}>
+            {profile.title}
+          </p>
+
+          <div className={commonStyles.metaRow}>
+            {profile.location && (
+              <div className={cn(commonStyles.metaItem, themed.metaItem)}>
+                <MapPin size={14} aria-hidden="true" />
+                <span>{profile.location}</span>
+              </div>
+            )}
+            {profile.timezone && (
+              <div className={cn(commonStyles.metaItem, themed.metaItem)}>
+                <Clock size={14} aria-hidden="true" />
+                <span>{profile.timezone}</span>
+              </div>
+            )}
             {profile.hourlyRate && (
-              <div className="flex items-center gap-1">
-                <FaDollarSign />
+              <div className={cn(commonStyles.metaItem, themed.metaItem)}>
+                <DollarSign size={14} aria-hidden="true" />
                 <span>${profile.hourlyRate}/hr</span>
               </div>
             )}
           </div>
 
-          <div className={styles.stats}>
-            <div className={styles.statItem}>
-              <div className="flex items-center gap-1">
-                {renderStars(parseFloat(calculateAverageRating() || '0'))}
-              </div>
-              <span>{calculateAverageRating()} ({reviews.length} reviews)</span>
+          <div className={cn(commonStyles.stats, themed.stats)}>
+            <div className={cn(commonStyles.statItem, themed.statItem)}>
+              <StarRating rating={avgRating} showValue reviewCount={reviews.length} />
             </div>
-            <div className={styles.statItem}>
-              <FaThumbsUp className="text-green-500" />
+            <div className={cn(commonStyles.statItem, themed.statItem)}>
+              <ThumbsUp size={14} aria-hidden="true" />
               <span>{profile.projectsCompleted || 0} projects completed</span>
             </div>
-            <div className={styles.statItem}>
-              <FaCalendar />
+            <div className={cn(commonStyles.statItem, themed.statItem)}>
+              <Calendar size={14} aria-hidden="true" />
               <span>Joined {new Date(profile.joinedAt).toLocaleDateString()}</span>
             </div>
           </div>
 
-          <div className={styles.availability}>
-            <FaClock className="mr-2" />
-            {profile.availability === 'immediate' ? 'Available Now' : 
-             profile.availability === 'within-week' ? 'Available Within a Week' :
-             'Available Within a Month'}
+          <div className={cn(commonStyles.availability, themed.availability)}>
+            <Clock size={14} aria-hidden="true" />
+            <span>
+              {profile.availability === 'immediate'
+                ? 'Available Now'
+                : profile.availability === 'within-week'
+                  ? 'Available Within a Week'
+                  : 'Available Within a Month'}
+            </span>
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <Button variant="primary" size="lg">
-            <FaEnvelope className="mr-2" />
+        <div className={cn(commonStyles.actions, themed.actions)}>
+          <Button variant="primary" size="lg" aria-label={`Contact ${profile.name}`}>
+            <Mail size={16} aria-hidden="true" />
             Contact
           </Button>
-          <Button variant="secondary" size="lg">
+          <Button variant="secondary" size="lg" aria-label={`Hire ${profile.name}`}>
             Hire Now
           </Button>
         </div>
-      </div>
+      </header>
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>About</h2>
-        <p className={styles.aboutText}>{profile.bio}</p>
-      </div>
+      {/* About Section */}
+      {profile.bio && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="about-heading">
+          <h2 id="about-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            About
+          </h2>
+          <p className={cn(commonStyles.aboutText, themed.aboutText)}>
+            {profile.bio}
+          </p>
+        </section>
+      )}
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Skills</h2>
-        <div className={styles.skillsGrid}>
-          {profile.skills?.map((skill: string, index: number) => (
-            <span key={index} className={styles.skillTag}>
-              {skill}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Portfolio ({portfolio.length})</h2>
-        <div className={styles.portfolioGrid}>
-          {portfolio.map(item => (
-            <div
-              key={item.id}
-              className={styles.portfolioCard}
-              onClick={() => setSelectedPortfolioItem(item)}
-            >
-              <Image
-                src={item.imageUrl}
-                alt={item.title}
-                width={400}
-                height={300}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-              <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
-                <p className="text-sm opacity-75 mb-3">{item.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {item.tags.map((tag, index) => (
-                    <span key={index} className="text-xs px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>
-          Reviews & Ratings ({reviews.length})
-        </h2>
-        {reviews.map(review => (
-          <div key={review.id} className={styles.reviewCard}>
-            <div className="flex items-start gap-4">
-              <Image
-                src={review.reviewerAvatar}
-                alt={review.reviewerName}
-                width={50}
-                height={50}
-                className="rounded-full"
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="font-semibold">{review.reviewerName}</p>
-                    <p className="text-sm opacity-75">{review.projectTitle}</p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {renderStars(review.rating)}
-                    <span className="ml-2 font-semibold">{review.rating.toFixed(1)}</span>
-                  </div>
-                </div>
-                
-                <div className={styles.criteriaGrid}>
-                  <div>Quality: {renderStars(review.criteria.quality)}</div>
-                  <div>Communication: {renderStars(review.criteria.communication)}</div>
-                  <div>Timeliness: {renderStars(review.criteria.timeliness)}</div>
-                  <div>Professionalism: {renderStars(review.criteria.professionalism)}</div>
-                </div>
-
-                <p className="mt-3">{review.comment}</p>
-                <p className="text-sm opacity-50 mt-2">
-                  {new Date(review.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
+      {/* Skills Section */}
+      {profile.skills?.length > 0 && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="skills-heading">
+          <h2 id="skills-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            Skills
+          </h2>
+          <div className={cn(commonStyles.skillsGrid, themed.skillsGrid)}>
+            {profile.skills.map((skill: string, index: number) => (
+              <span key={index} className={cn(commonStyles.skillTag, themed.skillTag)}>
+                {skill}
+              </span>
+            ))}
           </div>
-        ))}
-      </div>
+        </section>
+      )}
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Contact Information</h2>
-        <div className={styles.contactInfo}>
+      {/* Portfolio Section */}
+      {portfolio.length > 0 && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="portfolio-heading">
+          <h2 id="portfolio-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            Portfolio ({portfolio.length})
+          </h2>
+          <div className={cn(commonStyles.portfolioGrid, themed.portfolioGrid)}>
+            {portfolio.map((item) => (
+              <button
+                key={item.id}
+                className={cn(commonStyles.portfolioCard, themed.portfolioCard)}
+                onClick={() => setSelectedPortfolioItem(item)}
+                aria-label={`View portfolio item: ${item.title}`}
+                type="button"
+              >
+                <Image
+                  src={item.imageUrl}
+                  alt={item.title}
+                  width={400}
+                  height={300}
+                  className={commonStyles.portfolioImage}
+                />
+                <div className={commonStyles.portfolioContent}>
+                  <h3 className={cn(commonStyles.portfolioTitle, themed.portfolioTitle)}>
+                    {item.title}
+                  </h3>
+                  <p className={cn(commonStyles.portfolioDesc, themed.portfolioDesc)}>
+                    {item.description}
+                  </p>
+                  <div className={commonStyles.portfolioTags}>
+                    {item.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className={cn(commonStyles.portfolioTag, themed.portfolioTag)}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Reviews Section */}
+      {reviews.length > 0 && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="reviews-heading">
+          <h2 id="reviews-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            Reviews & Ratings ({reviews.length})
+          </h2>
+          {reviews.map((review) => (
+            <article
+              key={review.id}
+              className={cn(commonStyles.reviewCard, themed.reviewCard)}
+              aria-label={`Review by ${review.reviewerName}`}
+            >
+              <div className={commonStyles.reviewHeader}>
+                <Image
+                  src={review.reviewerAvatar}
+                  alt={`${review.reviewerName}'s avatar`}
+                  width={50}
+                  height={50}
+                  className={commonStyles.reviewerAvatar}
+                />
+                <div className={commonStyles.reviewMeta}>
+                  <div className={commonStyles.reviewMetaTop}>
+                    <div>
+                      <p className={cn(commonStyles.reviewerName, themed.reviewerName)}>
+                        {review.reviewerName}
+                      </p>
+                      <p className={cn(commonStyles.reviewProject, themed.reviewProject)}>
+                        {review.projectTitle}
+                      </p>
+                    </div>
+                    <div className={commonStyles.reviewRating}>
+                      <StarRating rating={review.rating} size="sm" showValue />
+                    </div>
+                  </div>
+
+                  <div className={cn(commonStyles.criteriaGrid, themed.criteriaGrid)}>
+                    <div className={commonStyles.criteriaItem}>
+                      <span className={cn(commonStyles.criteriaLabel, themed.criteriaLabel)}>
+                        Quality
+                      </span>
+                      <StarRating rating={review.criteria.quality} size="sm" />
+                    </div>
+                    <div className={commonStyles.criteriaItem}>
+                      <span className={cn(commonStyles.criteriaLabel, themed.criteriaLabel)}>
+                        Communication
+                      </span>
+                      <StarRating rating={review.criteria.communication} size="sm" />
+                    </div>
+                    <div className={commonStyles.criteriaItem}>
+                      <span className={cn(commonStyles.criteriaLabel, themed.criteriaLabel)}>
+                        Timeliness
+                      </span>
+                      <StarRating rating={review.criteria.timeliness} size="sm" />
+                    </div>
+                    <div className={commonStyles.criteriaItem}>
+                      <span className={cn(commonStyles.criteriaLabel, themed.criteriaLabel)}>
+                        Professionalism
+                      </span>
+                      <StarRating rating={review.criteria.professionalism} size="sm" />
+                    </div>
+                  </div>
+
+                  <p className={cn(commonStyles.reviewComment, themed.reviewComment)}>
+                    {review.comment}
+                  </p>
+                  <time
+                    className={cn(commonStyles.reviewDate, themed.reviewDate)}
+                    dateTime={review.createdAt}
+                  >
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </time>
+                </div>
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
+
+      {/* Contact Section */}
+      <section className={cn(commonStyles.section, themed.section)} aria-labelledby="contact-heading">
+        <h2 id="contact-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+          Contact Information
+        </h2>
+        <div className={cn(commonStyles.contactInfo, themed.contactInfo)}>
           {profile.email && (
-            <div className="flex items-center gap-2">
-              <FaEnvelope />
+            <div className={cn(commonStyles.contactItem, themed.contactItem)}>
+              <Mail size={16} aria-hidden="true" />
               <span>{profile.email}</span>
             </div>
           )}
           {profile.phone && (
-            <div className="flex items-center gap-2">
-              <FaPhone />
+            <div className={cn(commonStyles.contactItem, themed.contactItem)}>
+              <Phone size={16} aria-hidden="true" />
               <span>{profile.phone}</span>
             </div>
           )}
         </div>
 
-        <div className={styles.socialLinks}>
+        <div className={cn(commonStyles.socialLinks, themed.socialLinks)}>
           {profile.linkedinUrl && (
-            <a href={profile.linkedinUrl} target="_blank" rel="noopener noreferrer">
-              <FaLinkedin /> LinkedIn
+            <a
+              href={profile.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(commonStyles.socialLink, themed.socialLink)}
+              aria-label="Visit LinkedIn profile"
+            >
+              <Linkedin size={16} aria-hidden="true" />
+              LinkedIn
             </a>
           )}
           {profile.githubUrl && (
-            <a href={profile.githubUrl} target="_blank" rel="noopener noreferrer">
-              <FaGithub /> GitHub
+            <a
+              href={profile.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(commonStyles.socialLink, themed.socialLink)}
+              aria-label="Visit GitHub profile"
+            >
+              <Github size={16} aria-hidden="true" />
+              GitHub
             </a>
           )}
           {profile.websiteUrl && (
-            <a href={profile.websiteUrl} target="_blank" rel="noopener noreferrer">
-              <FaGlobe /> Website
+            <a
+              href={profile.websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(commonStyles.socialLink, themed.socialLink)}
+              aria-label="Visit personal website"
+            >
+              <Globe size={16} aria-hidden="true" />
+              Website
             </a>
           )}
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -1,10 +1,8 @@
+// @AI-HINT: Re-export of PageTransition from Transitions folder for backwards compatibility.
+// The canonical implementation is in Transitions/PageTransition.tsx
 'use client';
 
-import React from 'react';
+import PageTransitionComponent from '@/app/components/Transitions/PageTransition';
 
-// TEMPORARY: Disabled Framer Motion to fix hydration errors
-// We'll re-enable with proper SSR handling after testing is complete
-export const PageTransition = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
-  // Simply render children without animation during testing phase
-  return <div className={className}>{children}</div>;
-};
+export const PageTransition = PageTransitionComponent;
+export default PageTransitionComponent;

@@ -1,4 +1,27 @@
 /* @AI-HINT: Common styles for the ProjectCard component. Uses camelCase for CSS module compatibility. */
+.card {
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  contain: layout style;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  contain: layout style;
+}
+
+.cardContent {
+  margin-bottom: 0.75rem;
+}
+
 .header {
   display: flex;
   align-items: flex-start;

@@ -1,16 +1,23 @@
-// @AI-HINT: Public Contact page. Lead capture and support routing. Uses PublicLayout via (main)/layout.tsx.
+// @AI-HINT: Public Contact page with ContactPage schema + BreadcrumbList for Google Rich Results.
 import type { Metadata } from 'next';
-import { buildMeta } from '@/lib/seo';
+import { buildMeta, buildContactPageJsonLd, buildBreadcrumbJsonLd, jsonLdScriptProps } from '@/lib/seo';
 import Contact from './Contact';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Contact',
-    description: 'Get in touch with MegiLance for support, sales, partnerships, and general inquiries.',
+    title: 'Contact Us',
+    description: 'Get in touch with the MegiLance team for support, partnerships, or general inquiries. We respond within 24 hours.',
     path: '/contact',
+    keywords: ['contact MegiLance', 'freelance support', 'customer service', 'help desk'],
   });
 }
 
 export default function ContactPage() {
-  return <Contact />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(buildContactPageJsonLd())} />
+      <script {...jsonLdScriptProps(buildBreadcrumbJsonLd([{ name: 'Contact', path: '/contact' }]))} />
+      <Contact />
+    </>
+  );
 }

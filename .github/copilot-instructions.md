@@ -1,6 +1,6 @@
 # MegiLance AI Agent Instructions
 
-> AI-powered freelancing platform: Next.js 14 + FastAPI + Turso (libSQL)
+> AI-powered freelancing platform: Next.js 16 + React 19 + FastAPI + Turso (libSQL)
 
 ## Agent Work Standards (HIGH PRIORITY)
 
@@ -20,7 +20,7 @@
 - Identify and fix issues based on your understanding
 - **Manually review all frontend elements** - examine CSS and TSX files for UI/UX, performance, security, and optimization issues
 - Check all perspectives: layout, accessibility, responsiveness, dark/light themes
-- **"Redesign" Definition**: When asked to "redesign", it means to **improve UI/UX** while strictly adhering to existing frontend architectures (Next.js 14, 3-file CSS modules). This implies a **from-scratch implementation** of the specific component/feature to ensure it meets modern standards, rather than patching existing code.
+- **"Redesign" Definition**: When asked to "redesign", it means to **improve UI/UX** while strictly adhering to existing frontend architectures (Next.js 16, 3-file CSS modules). This implies a **from-scratch implementation** of the specific component/feature to ensure it meets modern standards, rather than patching existing code.
 
 ### Development Tools & Environment
 - Prefer **CLI tools** for deployments, hosting, and database operations
@@ -38,7 +38,7 @@
 
 ## Architecture
 ```
-Frontend (Next.js 14) → Backend (FastAPI) → Turso (libSQL)
+Frontend (Next.js 16) → Backend (FastAPI) → Turso (libSQL)
                               ↓
                         File Storage (local/S3)
 ```

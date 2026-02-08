@@ -109,8 +109,7 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
             duration_ms = int((time.time() - start) * 1000)
             extra = logging.LoggerAdapter(logger, {"request_id": request_id, "path": request.url.path})
             extra.info(f"request.complete duration_ms={duration_ms} status={response.status_code if response else 'error'}")
-            response_headers = getattr(response, 'headers', None)
-            if response_headers is not None:
+            if response is not None:
                 response.headers["X-Request-Id"] = request_id
 
 app.add_middleware(RequestIDMiddleware)
@@ -147,9 +146,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         # Allow Swagger UI CDN resources for API docs
         response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://fastapi.tiangolo.com"
-        if settings.environment == "production":
-            # In production, set secure cookie flags
-            response.headers["Set-Cookie"] = "Path=/; Secure; HttpOnly; SameSite=Strict"
+        # Note: Cookie security flags (Secure, HttpOnly, SameSite) should be set
+        # on individual set_cookie() calls, not as a blanket header override.
         return response
 
 

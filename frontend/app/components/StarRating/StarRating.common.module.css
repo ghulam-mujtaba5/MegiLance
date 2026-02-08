@@ -1,11 +1,22 @@
+/* @AI-HINT: Common layout/structure styles for StarRating - supports fractional stars and size variants */
 .starRating {
-  display: flex;
-  gap: 0.25rem;
+  display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
 }
+
+.starsContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.sm .starsContainer { gap: 0.0625rem; }
+.lg .starsContainer { gap: 0.1875rem; }
 
 .star {
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .filled {
@@ -13,5 +24,36 @@
 }
 
 .empty {
-  opacity: 0.3;
+  opacity: 0.25;
 }
+
+.halfStarWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.halfStar {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.ratingValue {
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.sm .ratingValue { font-size: 0.75rem; }
+.lg .ratingValue { font-size: 1rem; }
+
+.reviewCount {
+  font-size: 0.8125rem;
+  opacity: 0.7;
+  line-height: 1;
+}
+
+.sm .reviewCount { font-size: 0.6875rem; }
+.lg .reviewCount { font-size: 0.9375rem; }

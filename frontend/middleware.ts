@@ -4,10 +4,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Rate limiting state (per-request, server-side tracking)
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 100;
-
 /**
  * Middleware to add security headers to all responses
  * and handle authentication redirects
@@ -42,9 +38,12 @@ export function middleware(request: NextRequest) {
 
   // === CONTENT SECURITY POLICY (CSP) ===
   if (process.env.NODE_ENV === 'production') {
+    // NOTE: 'unsafe-inline' is required by Next.js for inline scripts/styles.
+    // For maximum security, implement nonce-based CSP (see Next.js docs).
+    // 'unsafe-eval' has been removed - it's not needed in production builds.
     const cspDirectives = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",

@@ -1,6 +1,89 @@
-/* @AI-HINT: Common styles for PaginationBar. */
-.paginationBar { display: flex; align-items: center; justify-content: center; gap: 12px; padding-top: 12px; }
-.paginationInfo { color: var(--muted-foreground); font-size: 0.875rem; }
-.button { height: 32px; padding: 0 10px; border-radius: 8px; font-weight: 500; border: 1px solid transparent; transition: opacity 120ms ease, box-shadow 120ms ease; }
-.button:hover { opacity: 0.92; }
-.button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+/* @AI-HINT: Common layout/structure styles for PaginationBar with page numbers */
+.paginationBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+}
+
+.navButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.navButton:focus-visible {
+  outline: 2px solid var(--color-primary, #4573df);
+  outline-offset: 2px;
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+}
+
+.pageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.375rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pageButton:focus-visible {
+  outline: 2px solid var(--color-primary, #4573df);
+  outline-offset: 2px;
+}
+
+.pageButtonActive {
+  cursor: default;
+  font-weight: 600;
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-size: 0.875rem;
+  user-select: none;
+}
+
+.paginationInfo {
+  font-size: 0.8125rem;
+  margin-left: 0.75rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .pageNumbers {
+    display: none;
+  }
+
+  .paginationBar {
+    gap: 0.5rem;
+  }
+}

@@ -5,7 +5,7 @@ from .v1 import (
     analytics_pro, escrow_pro, notifications_pro, teams, audit, features,
     export_import, i18n, rate_limiting, webhooks, scheduler, reports, referrals, moderation,
     bulk_operations, saved_searches, activity_feed, api_keys, comments, file_versions, custom_fields,
-    templates, calendar, organizations, notification_preferences, two_factor, email_templates, integrations,
+    templates, organizations, notification_preferences, two_factor, email_templates, integrations,
     push_notifications, invoice_tax, contract_builder, skill_graph,
     social_login, timezone, backup_restore,
     portfolio_builder, compliance, learning_center,
@@ -205,8 +205,8 @@ api_router.include_router(custom_fields.router, prefix="/custom-fields", tags=["
 api_router.include_router(templates.router, tags=["templates"])
 
 # Calendar - Meeting scheduling and availability
-# TEMPORARILY DISABLED - calendar.py shadows built-in calendar module
-# api_router.include_router(calendar.router, tags=["calendar"])
+# NOTE: calendar.py has been superseded by availability_calendar.py
+# The old calendar.py shadowed Python's built-in calendar module
 
 # Organizations - Multi-tenant workspace management
 api_router.include_router(organizations.router, tags=["organizations"])

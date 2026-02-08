@@ -1,3 +1,38 @@
-/* @AI-HINT: Dark theme styles for PaginationBar. */
-.button { background: #0b1220; border-color: #1f2937; color: #e5e7eb; }
-.button:hover { filter: brightness(1.05); }
+/* @AI-HINT: Dark theme styles for PaginationBar */
+.navButton {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e5e7eb;
+}
+
+.navButton:hover:not(:disabled) {
+  background: #334155;
+  border-color: #475569;
+}
+
+.pageButton {
+  background: transparent;
+  color: #e5e7eb;
+}
+
+.pageButton:hover:not(:disabled) {
+  background: #334155;
+}
+
+.pageButtonActive {
+  background: #4573df;
+  color: #ffffff;
+  border-color: #4573df;
+}
+
+.pageButtonActive:hover {
+  background: #4573df;
+}
+
+.ellipsis {
+  color: #6b7280;
+}
+
+.paginationInfo {
+  color: #9ca3af;
+}

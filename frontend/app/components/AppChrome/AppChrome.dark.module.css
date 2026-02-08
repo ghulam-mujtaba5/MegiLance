@@ -1,0 +1,6 @@
+/* @AI-HINT: Dark theme colors for AppChrome */
+
+.wrapper {
+  background-color: var(--background);
+  color: var(--text-primary);
+}

@@ -1,21 +1,63 @@
-// @AI-HINT: Public Freelancers search page.
+// @AI-HINT: Public Freelancers search page with advanced filtering, sorting, and pagination.
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import Input from '@/app/components/Input/Input';
 import Button from '@/app/components/Button/Button';
-import { Search, MapPin, Star } from 'lucide-react';
+import {
+  Search, MapPin, Star, X, SlidersHorizontal, RefreshCw,
+  ChevronLeft, ChevronRight, Grid3X3, List, Filter, DollarSign,
+  Code, Palette, PenTool, Megaphone, BarChart3, Cpu, Globe, Zap, Users
+} from 'lucide-react';
 import Link from 'next/link';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
-import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 
 import common from './PublicFreelancers.common.module.css';
 import light from './PublicFreelancers.light.module.css';
 import dark from './PublicFreelancers.dark.module.css';
+
+const SKILL_CATEGORIES = [
+  { id: 'all', name: 'All Skills', icon: Grid3X3 },
+  { id: 'web-development', name: 'Web Development', icon: Code },
+  { id: 'mobile', name: 'Mobile Dev', icon: Cpu },
+  { id: 'design', name: 'Design', icon: Palette },
+  { id: 'writing', name: 'Writing', icon: PenTool },
+  { id: 'marketing', name: 'Marketing', icon: Megaphone },
+  { id: 'data', name: 'Data Science', icon: BarChart3 },
+  { id: 'ai', name: 'AI & ML', icon: Zap },
+  { id: 'devops', name: 'DevOps', icon: Globe },
+];
+
+const RATE_RANGES = [
+  { id: 'all', label: 'Any Rate', min: undefined as number | undefined, max: undefined as number | undefined },
+  { id: 'budget', label: 'Under $25/hr', min: 0, max: 25 },
+  { id: 'moderate', label: '$25 - $50/hr', min: 25, max: 50 },
+  { id: 'professional', label: '$50 - $100/hr', min: 50, max: 100 },
+  { id: 'expert', label: '$100 - $200/hr', min: 100, max: 200 },
+  { id: 'premium', label: '$200+/hr', min: 200, max: undefined as number | undefined },
+];
+
+const RATING_OPTIONS = [
+  { id: 0, label: 'Any Rating', stars: 0 },
+  { id: 4.5, label: '4.5 & up', stars: 5 },
+  { id: 4.0, label: '4.0 & up', stars: 4 },
+  { id: 3.5, label: '3.5 & up', stars: 4 },
+  { id: 3.0, label: '3.0 & up', stars: 3 },
+];
+
+const SORT_OPTIONS = [
+  { id: 'relevance', label: 'Most Relevant' },
+  { id: 'rating_high', label: 'Top Rated' },
+  { id: 'rate_low', label: 'Rate: Low to High' },
+  { id: 'rate_high', label: 'Rate: High to Low' },
+  { id: 'newest', label: 'Newest' },
+];
+
+const PAGE_SIZE = 24;
 
 interface Freelancer {
   id: string;
@@ -26,68 +68,111 @@ interface Freelancer {
   rating: number;
   location: string;
   avatarUrl?: string;
+  totalProjects?: number;
+}
+
+interface Filters {
+  search: string;
+  category: string;
+  rateRange: string;
+  minRating: number;
+  location: string;
+  sortBy: string;
 }
 
 const PublicFreelancers: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  const searchParams = useSearchParams();
+
+  const [filters, setFilters] = useState<Filters>({
+    search: searchParams.get('q') || '',
+    category: searchParams.get('category') || 'all',
+    rateRange: searchParams.get('rate') || 'all',
+    minRating: parseFloat(searchParams.get('rating') || '0'),
+    location: searchParams.get('location') || '',
+    sortBy: searchParams.get('sort') || 'relevance',
+  });
+
+  const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
+
+  if (!resolvedTheme) return null;
   const themed = resolvedTheme === 'dark' ? dark : light;
 
-  const [query, setQuery] = useState('');
-  const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Debounce search
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const timer = setTimeout(() => { setDebouncedSearch(filters.search); setCurrentPage(1); }, 400);
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
+  // Sync URL
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.search) params.set('q', filters.search);
+    if (filters.category !== 'all') params.set('category', filters.category);
+    if (filters.rateRange !== 'all') params.set('rate', filters.rateRange);
+    if (filters.minRating > 0) params.set('rating', filters.minRating.toString());
+    if (filters.location) params.set('location', filters.location);
+    if (filters.sortBy !== 'relevance') params.set('sort', filters.sortBy);
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    const newUrl = params.toString() ? `/freelancers?${params.toString()}` : '/freelancers';
+    window.history.replaceState({}, '', newUrl);
+  }, [filters, currentPage]);
+
+  // Fetch
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    searchFreelancers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, filters.category, filters.rateRange, filters.minRating, filters.location, filters.sortBy, currentPage]);
 
   const searchFreelancers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await api.search.freelancers(query) as { freelancers?: any[] } | any[];
-      // Map response to Freelancer interface
-      // Assuming API returns { freelancers: [...] } or [...]
-      const data = Array.isArray(res) ? res : ((res as { freelancers?: any[] }).freelancers || []);
-      
+      const rateConfig = RATE_RANGES.find(r => r.id === filters.rateRange);
+      const params: Record<string, any> = { limit: PAGE_SIZE };
+      if (rateConfig?.min !== undefined) params.min_rate = rateConfig.min;
+      if (rateConfig?.max !== undefined) params.max_rate = rateConfig.max;
+      if (filters.location) params.location = filters.location;
+
+      const res = await api.search.freelancers(debouncedSearch || '', params) as any;
+      const data = Array.isArray(res) ? res : (res?.freelancers || []);
+
       const mapped: Freelancer[] = data.map((f: any) => {
-        // Parse skills - can be string (comma-separated), JSON string array, array, or null
         let skillsArray: string[] = [];
         if (Array.isArray(f.skills)) {
           skillsArray = f.skills.map((s: any) => String(s).trim()).filter(Boolean);
         } else if (typeof f.skills === 'string' && f.skills) {
-          // Check if it's a JSON string array like '["React", "Node.js"]'
           if (f.skills.startsWith('[')) {
-            try {
-              const parsed = JSON.parse(f.skills);
-              if (Array.isArray(parsed)) {
-                skillsArray = parsed.map((s: any) => String(s).trim()).filter(Boolean);
-              }
-            } catch {
-              // Not valid JSON, treat as comma-separated
-              skillsArray = f.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
-            }
-          } else {
-            skillsArray = f.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
-          }
+            try { const parsed = JSON.parse(f.skills); if (Array.isArray(parsed)) skillsArray = parsed.map((s: any) => String(s).trim()).filter(Boolean); } catch { skillsArray = f.skills.split(',').map((s: string) => s.trim()).filter(Boolean); }
+          } else { skillsArray = f.skills.split(',').map((s: string) => s.trim()).filter(Boolean); }
         }
-        
-        // Generate realistic rating if rating is 0 (4.0 - 5.0 range based on name hash)
         let rating = f.rating || 0;
         if (rating === 0 && f.name) {
-          // Generate consistent pseudo-random rating based on name
           const hash = f.name.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
-          rating = 4.0 + (hash % 10) / 10; // 4.0 to 4.9
+          rating = 4.0 + (hash % 10) / 10;
         }
-        
         return {
           id: String(f.id),
           name: f.name || 'Unknown',
-          title: f.title || f.bio?.substring(0, 50) || 'Freelancer',
+          title: f.title || f.bio?.substring(0, 80) || 'Freelancer',
           hourlyRate: f.hourly_rate || f.hourlyRate || 0,
           skills: skillsArray,
-          rating: rating,
+          rating,
           location: f.location || 'Remote',
-          avatarUrl: f.profile_image_url || f.avatarUrl
+          avatarUrl: f.profile_image_url || f.avatarUrl,
+          totalProjects: f.total_projects || 0,
         };
       });
-      
+
       setFreelancers(mapped);
     } catch (err) {
       console.error(err);
@@ -97,97 +182,250 @@ const PublicFreelancers: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    searchFreelancers();
-  }, []); // Initial load
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const filteredFreelancers = useMemo(() => {
+    let result = [...freelancers];
+    if (filters.minRating > 0) result = result.filter(f => f.rating >= filters.minRating);
+    switch (filters.sortBy) {
+      case 'rating_high': result.sort((a, b) => b.rating - a.rating); break;
+      case 'rate_low': result.sort((a, b) => a.hourlyRate - b.hourlyRate); break;
+      case 'rate_high': result.sort((a, b) => b.hourlyRate - a.hourlyRate); break;
+    }
+    return result;
+  }, [freelancers, filters.minRating, filters.sortBy]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    searchFreelancers();
-  };
+  const totalPages = Math.max(1, Math.ceil(filteredFreelancers.length / PAGE_SIZE));
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const handleFilterChange = useCallback((key: keyof Filters, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    if (key !== 'search') setCurrentPage(1);
+  }, []);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const handleClearFilters = useCallback(() => {
+    setFilters({ search: '', category: 'all', rateRange: 'all', minRating: 0, location: '', sortBy: 'relevance' });
+    setCurrentPage(1);
+  }, []);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const activeFiltersCount = useMemo(() => {
+    let c = 0;
+    if (filters.category !== 'all') c++;
+    if (filters.rateRange !== 'all') c++;
+    if (filters.minRating > 0) c++;
+    if (filters.location) c++;
+    return c;
+  }, [filters]);
+
+  const renderFilters = () => (
+    <div className={common.filterGroups}>
+      {/* Hourly Rate */}
+      <div className={common.filterGroup}>
+        <h4 className={cn(common.filterLabel, themed.filterLabel)}>Hourly Rate</h4>
+        <div className={common.filterOptions}>
+          {RATE_RANGES.map(range => (
+            <label key={range.id} className={cn(common.filterOption, themed.filterOption)}>
+              <input type="radio" name="rate" checked={filters.rateRange === range.id} onChange={() => handleFilterChange('rateRange', range.id)} className={common.filterRadio} />
+              <span className={cn(common.filterRadioCustom, themed.filterRadioCustom, filters.rateRange === range.id && common.filterRadioActive)} />
+              <span>{range.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Min Rating */}
+      <div className={common.filterGroup}>
+        <h4 className={cn(common.filterLabel, themed.filterLabel)}>Minimum Rating</h4>
+        <div className={common.filterOptions}>
+          {RATING_OPTIONS.map(opt => (
+            <label key={opt.id} className={cn(common.filterOption, themed.filterOption)}>
+              <input type="radio" name="rating" checked={filters.minRating === opt.id} onChange={() => handleFilterChange('minRating', opt.id)} className={common.filterRadio} />
+              <span className={cn(common.filterRadioCustom, themed.filterRadioCustom, filters.minRating === opt.id && common.filterRadioActive)} />
+              <span className={common.ratingOptionLabel}>
+                {opt.stars > 0 && <span className={common.starsInline}>{[...Array(opt.stars)].map((_, i) => <Star key={i} size={12} fill="#facc15" color="#facc15" />)}</span>}
+                {opt.label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Location */}
+      <div className={common.filterGroup}>
+        <h4 className={cn(common.filterLabel, themed.filterLabel)}>Location</h4>
+        <input
+          type="text"
+          placeholder="e.g. USA, Remote..."
+          value={filters.location}
+          onChange={e => handleFilterChange('location', e.target.value)}
+          className={cn(common.locationInput, themed.locationInput)}
+        />
+      </div>
+
+      {activeFiltersCount > 0 && (
+        <button className={cn(common.clearFilters, themed.clearFilters)} onClick={handleClearFilters}>
+          <RefreshCw size={14} /> Clear all filters ({activeFiltersCount})
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <PageTransition>
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-         <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
-         <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
-         <ParticlesSystem count={12} className="absolute inset-0" />
-         <div className="absolute top-20 left-10 opacity-10 animate-float-slow">
-           <FloatingCube size={40} />
-         </div>
-         <div className="absolute bottom-40 right-20 opacity-10 animate-float-medium">
-           <FloatingSphere size={30} variant="gradient" />
-         </div>
-      </div>
-
       <div className={cn(common.page, themed.page)}>
         <ScrollReveal>
-          <header className={common.header}>
+          <header className={cn(common.header, themed.header)}>
             <h1 className={cn(common.title, themed.title)}>Hire Top Freelancers</h1>
-            <p className={cn(common.subtitle, themed.subtitle)}>Find the perfect talent for your next project.</p>
+            <p className={cn(common.subtitle, themed.subtitle)}>Find verified experts for any project. {filteredFreelancers.length > 0 ? `${filteredFreelancers.length}+ professionals available.` : ''}</p>
+            <div className={common.searchSection}>
+              <div className={cn(common.searchBar, themed.searchBar)}>
+                <Search className={common.searchIcon} size={20} />
+                <input type="text" placeholder="Search by skill, name, or specialty..." value={filters.search} onChange={e => handleFilterChange('search', e.target.value)} className={cn(common.searchInput, themed.searchInput)} aria-label="Search freelancers" />
+                {filters.search && <button onClick={() => handleFilterChange('search', '')} className={common.searchClear} aria-label="Clear search"><X size={16} /></button>}
+              </div>
+              <button className={cn(common.mobileFilterBtn, themed.mobileFilterBtn)} onClick={() => setShowMobileFilters(true)}>
+                <SlidersHorizontal size={18} /> Filters
+                {activeFiltersCount > 0 && <span className={cn(common.filterBadge, themed.filterBadge)}>{activeFiltersCount}</span>}
+              </button>
+            </div>
           </header>
-
-          <form onSubmit={handleSearch} className={common.controls}>
-            <Input
-              id="search"
-              placeholder="Search by skill, name, or title..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              iconBefore={<Search size={18} />}
-              className={common.searchInput}
-            />
-            <Button type="submit" variant="primary" size="md">Search</Button>
-          </form>
         </ScrollReveal>
 
-        {loading ? (
-          <div className={common.loading}>Loading freelancers...</div>
-        ) : error ? (
-          <div className={common.error}>{error}</div>
-        ) : (
-          <StaggerContainer className={common.grid}>
-            {freelancers.map(f => (
-              <StaggerItem key={f.id}>
-                <Link href={`/freelancers/${f.id}`} className={cn(common.card, themed.card)}>
-                  <div className={common.cardHeader}>
-                    <img 
-                      src={f.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=random`} 
-                      alt={f.name} 
-                      className={common.avatar} 
-                    />
-                    <div className={common.cardInfo}>
-                      <h3 className={common.name}>{f.name}</h3>
-                      <p className={common.role}>{f.title}</p>
-                    </div>
-                  </div>
-                  
-                  <div className={common.skills}>
-                    {(f.skills || []).slice(0, 3).map(s => (
-                      <span key={s} className={cn(common.skill, themed.skill)}>{s}</span>
-                    ))}
-                    {(f.skills || []).length > 3 && <span className={cn(common.skill, themed.skill)}>+{f.skills.length - 3}</span>}
-                  </div>
+        {/* Skill Category Pills */}
+        <div className={common.categoriesSection}>
+          <div className={common.categoriesScroll}>
+            {SKILL_CATEGORIES.map(cat => {
+              const Icon = cat.icon;
+              return (
+                <button key={cat.id} onClick={() => handleFilterChange('category', cat.id)} className={cn(common.categoryPill, themed.categoryPill, filters.category === cat.id && common.categoryPillActive, filters.category === cat.id && themed.categoryPillActive)}>
+                  <Icon size={16} /><span>{cat.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-                  <div className={common.footer}>
-                    <div className={common.rate}>${f.hourlyRate}/hr</div>
-                    <div className={common.ratingWrapper}>
-                      <Star size={14} fill="currentColor" className={cn(common.starIcon, themed.starIcon)} />
-                      <span>{f.rating.toFixed(1)}</span>
-                    </div>
-                    <div className={common.locationWrapper}>
-                      <MapPin size={14} />
-                      <span>{f.location}</span>
-                    </div>
+        <div className={common.mainLayout}>
+          {/* Sidebar Desktop */}
+          <aside className={cn(common.sidebar, themed.sidebar)}>
+            <div className={cn(common.sidebarCard, themed.sidebarCard)}>
+              <h3 className={cn(common.sidebarTitle, themed.sidebarTitle)}><Filter size={18} /> Filters</h3>
+              {renderFilters()}
+            </div>
+          </aside>
+
+          <div className={common.contentArea}>
+            {/* Toolbar */}
+            <div className={cn(common.toolbar, themed.toolbar)}>
+              <div className={cn(common.resultCount, themed.resultCount)}>
+                <strong>{filteredFreelancers.length}</strong> freelancers found
+                {filters.search && <span> for &ldquo;{filters.search}&rdquo;</span>}
+              </div>
+              <div className={common.toolbarActions}>
+                <select value={filters.sortBy} onChange={e => handleFilterChange('sortBy', e.target.value)} className={cn(common.sortSelect, themed.sortSelect)} aria-label="Sort results">
+                  {SORT_OPTIONS.map(opt => <option key={opt.id} value={opt.id}>{opt.label}</option>)}
+                </select>
+                <div className={cn(common.viewToggle, themed.viewToggle)}>
+                  <button onClick={() => setViewMode('grid')} className={cn(common.viewBtn, themed.viewBtn, viewMode === 'grid' && common.viewBtnActive, viewMode === 'grid' && themed.viewBtnActive)} aria-label="Grid view"><Grid3X3 size={18} /></button>
+                  <button onClick={() => setViewMode('list')} className={cn(common.viewBtn, themed.viewBtn, viewMode === 'list' && common.viewBtnActive, viewMode === 'list' && themed.viewBtnActive)} aria-label="List view"><List size={18} /></button>
+                </div>
+              </div>
+            </div>
+
+            {/* Active Filters */}
+            {activeFiltersCount > 0 && (
+              <div className={common.activeFilters}>
+                {filters.category !== 'all' && <span className={cn(common.activeTag, themed.activeTag)}>{SKILL_CATEGORIES.find(c => c.id === filters.category)?.name}<button onClick={() => handleFilterChange('category', 'all')} aria-label="Remove"><X size={12} /></button></span>}
+                {filters.rateRange !== 'all' && <span className={cn(common.activeTag, themed.activeTag)}>{RATE_RANGES.find(r => r.id === filters.rateRange)?.label}<button onClick={() => handleFilterChange('rateRange', 'all')} aria-label="Remove"><X size={12} /></button></span>}
+                {filters.minRating > 0 && <span className={cn(common.activeTag, themed.activeTag)}>{filters.minRating}+ stars<button onClick={() => handleFilterChange('minRating', 0)} aria-label="Remove"><X size={12} /></button></span>}
+                {filters.location && <span className={cn(common.activeTag, themed.activeTag)}>{filters.location}<button onClick={() => handleFilterChange('location', '')} aria-label="Remove"><X size={12} /></button></span>}
+                <button className={cn(common.clearAllBtn, themed.clearAllBtn)} onClick={handleClearFilters}>Clear all</button>
+              </div>
+            )}
+
+            {/* Freelancer Cards */}
+            {loading ? (
+              <div className={common.skeletonGrid}>
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className={cn(common.skeletonCard, themed.skeletonCard)}>
+                    <div className={cn(common.skeletonAvatar, themed.skeletonAvatar)} />
+                    <div className={cn(common.skeletonLine, themed.skeletonLine)} style={{ width: '60%' }} />
+                    <div className={cn(common.skeletonLine, themed.skeletonLine)} style={{ width: '80%' }} />
+                    <div className={common.skeletonTags}>{[...Array(3)].map((_, j) => <div key={j} className={cn(common.skeletonTag, themed.skeletonTag)} />)}</div>
                   </div>
-                </Link>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        )}
-        
-        {!loading && !error && freelancers.length === 0 && (
-          <div className={common.emptyState}>
-            No freelancers found matching your criteria.
+                ))}
+              </div>
+            ) : error ? (
+              <div className={cn(common.emptyState, themed.emptyState)}>
+                <Users size={48} className={common.emptyIcon} />
+                <h3>{error}</h3>
+                <Button variant="primary" size="md" onClick={searchFreelancers}>Retry</Button>
+              </div>
+            ) : filteredFreelancers.length === 0 ? (
+              <div className={cn(common.emptyState, themed.emptyState)}>
+                <Users size={48} className={common.emptyIcon} />
+                <h3>No freelancers found</h3>
+                <p>Try adjusting your search or filters.</p>
+                <Button variant="outline" size="md" onClick={handleClearFilters}><RefreshCw size={16} /> Clear all filters</Button>
+              </div>
+            ) : (
+              <StaggerContainer className={cn(viewMode === 'grid' ? common.grid : common.listView)}>
+                {filteredFreelancers.map(f => (
+                  <StaggerItem key={f.id}>
+                    <Link href={`/freelancers/${f.id}`} className={cn(common.card, themed.card)} aria-label={`View ${f.name}'s profile`}>
+                      <div className={common.cardHeader}>
+                        <img src={f.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=random&size=80`} alt={f.name} className={common.avatar} loading="lazy" width={64} height={64} />
+                        <div className={common.cardInfo}>
+                          <h3 className={cn(common.name, themed.name)}>{f.name}</h3>
+                          <p className={cn(common.role, themed.role)}>{f.title}</p>
+                        </div>
+                      </div>
+                      <div className={common.skills}>
+                        {(f.skills || []).slice(0, 4).map(s => <span key={s} className={cn(common.skill, themed.skill)}>{s}</span>)}
+                        {(f.skills || []).length > 4 && <span className={cn(common.skill, common.skillMore, themed.skillMore)}>+{f.skills.length - 4}</span>}
+                      </div>
+                      <div className={common.footer}>
+                        <div className={cn(common.rate, themed.rate)}><DollarSign size={14} />${f.hourlyRate}/hr</div>
+                        <div className={cn(common.ratingWrapper, themed.ratingWrapper)}><Star size={14} fill="#facc15" color="#facc15" /><span>{f.rating.toFixed(1)}</span></div>
+                        <div className={cn(common.locationWrapper, themed.locationWrapper)}><MapPin size={14} /><span>{f.location}</span></div>
+                      </div>
+                    </Link>
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            )}
+
+            {/* Pagination */}
+            {!loading && filteredFreelancers.length > 0 && totalPages > 1 && (
+              <nav className={cn(common.pagination, themed.pagination)} aria-label="Freelancer listing pages">
+                <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className={cn(common.pageBtn, themed.pageBtn)} aria-label="Previous"><ChevronLeft size={18} /></button>
+                {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                  let pn: number;
+                  if (totalPages <= 7) pn = i + 1;
+                  else if (currentPage <= 4) pn = i + 1;
+                  else if (currentPage >= totalPages - 3) pn = totalPages - 6 + i;
+                  else pn = currentPage - 3 + i;
+                  return <button key={pn} onClick={() => setCurrentPage(pn)} className={cn(common.pageBtn, themed.pageBtn, currentPage === pn && common.pageBtnActive, currentPage === pn && themed.pageBtnActive)} aria-label={`Page ${pn}`} aria-current={currentPage === pn ? 'page' : undefined}>{pn}</button>;
+                })}
+                <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className={cn(common.pageBtn, themed.pageBtn)} aria-label="Next"><ChevronRight size={18} /></button>
+              </nav>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Filters */}
+        {showMobileFilters && (
+          <div className={common.mobileOverlay}>
+            <div className={common.mobileBackdrop} onClick={() => setShowMobileFilters(false)} />
+            <div className={cn(common.mobilePanel, themed.mobilePanel)}>
+              <div className={cn(common.mobilePanelHeader, themed.mobilePanelHeader)}><h3>Filters</h3><button onClick={() => setShowMobileFilters(false)} aria-label="Close"><X size={20} /></button></div>
+              <div className={common.mobilePanelBody}>{renderFilters()}</div>
+              <div className={cn(common.mobilePanelFooter, themed.mobilePanelFooter)}>
+                <Button variant="ghost" size="md" onClick={handleClearFilters}>Clear all</Button>
+                <Button variant="primary" size="md" onClick={() => setShowMobileFilters(false)}>Show {filteredFreelancers.length} results</Button>
+              </div>
+            </div>
           </div>
         )}
       </div>

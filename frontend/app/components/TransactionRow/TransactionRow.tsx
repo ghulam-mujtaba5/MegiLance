@@ -1,4 +1,6 @@
 // @AI-HINT: This is the refactored TransactionRow component, using premium, theme-aware styles and the useMemo hook for a polished and efficient implementation.
+'use client';
+
 import React, { useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import commonStyles from './TransactionRow.common.module.css';

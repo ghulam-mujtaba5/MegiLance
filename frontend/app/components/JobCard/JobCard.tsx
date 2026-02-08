@@ -43,8 +43,11 @@ const JobCard: React.FC<JobCardProps> = ({
   location = 'Remote',
 }) => {
   const { resolvedTheme } = useTheme();
-  const themeStyles = resolvedTheme === 'dark' ? dark : light;
   const [isSaved, setIsSaved] = useState(false);
+
+  if (!resolvedTheme) return null;
+
+  const themeStyles = resolvedTheme === 'dark' ? dark : light;
 
   const displayBudget = budgetMin !== undefined && budgetMax !== undefined
     ? `$${budgetMin.toLocaleString()} - $${budgetMax.toLocaleString()}`

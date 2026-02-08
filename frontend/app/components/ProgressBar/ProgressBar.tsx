@@ -1,3 +1,4 @@
+// @AI-HINT: Accessible progress bar with multiple sizes, variants, striped/animated options. Uses 3-file CSS modules.
 'use client';
 
 import React from 'react';
@@ -6,8 +7,6 @@ import { cn } from '@/lib/utils';
 import commonStyles from './ProgressBar.common.module.css';
 import lightStyles from './ProgressBar.light.module.css';
 import darkStyles from './ProgressBar.dark.module.css';
-
-// @AI-HINT: This component has been fully refactored to use theme-aware CSS modules and the `cn` utility for dynamic class composition.
 
 interface ProgressBarProps {
   progress?: number; // A value from 0 to 100

@@ -1,4 +1,4 @@
-/* User Profile - Dark Theme */
+/* @AI-HINT: Dark theme colors for UserProfile component */
 
 .container {
   background: #1a202c;
@@ -12,6 +12,37 @@
 
 .title {
   color: #f7fafc;
+}
+
+.subtitle {
+  color: #cbd5e0;
+}
+
+.badge {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #1a202c;
+}
+
+.verifiedBadge {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+.metaItem {
+  color: #a0aec0;
+}
+
+.statItem {
+  color: #a0aec0;
+}
+
+.availability {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.emptyText {
+  color: #9ca3af;
 }
 
 .sectionTitle {
@@ -45,18 +76,55 @@
   border-color: #4a5568;
 }
 
+.portfolioTitle {
+  color: #f7fafc;
+}
+
+.portfolioDesc {
+  color: #a0aec0;
+}
+
+.portfolioTag {
+  background: #374151;
+  color: #d1d5db;
+}
+
 .reviewCard {
   background: #374151;
   border-color: #4a5568;
 }
 
-.socialLinks a {
+.reviewerName {
+  color: #f7fafc;
+}
+
+.reviewProject {
+  color: #9ca3af;
+}
+
+.criteriaLabel {
+  color: #a0aec0;
+}
+
+.reviewComment {
+  color: #d1d5db;
+}
+
+.reviewDate {
+  color: #6b7280;
+}
+
+.contactItem {
+  color: #d1d5db;
+}
+
+.socialLink {
   background: #1a202c;
   border-color: #4a5568;
   color: #e2e8f0;
 }
 
-.socialLinks a:hover {
+.socialLink:hover {
   background: #4573df;
   color: #ffffff;
   border-color: #4573df;

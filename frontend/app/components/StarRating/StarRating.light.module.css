@@ -1,3 +1,6 @@
+/* @AI-HINT: Light theme colors for StarRating */
+.star { color: #cbd5e1; }
+
 .filled {
   fill: #F2C94C;
   color: #F2C94C;
@@ -6,4 +9,12 @@
 
 .empty {
   color: #cbd5e1;
+}
+
+.ratingValue {
+  color: #1e293b;
+}
+
+.reviewCount {
+  color: #64748b;
 }

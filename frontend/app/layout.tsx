@@ -9,64 +9,25 @@ import './styles/theme.css';
 
 import ClientRoot from './ClientRoot';
 import GoogleAnalytics from './components/Analytics/GoogleAnalytics';
-import { BASE_URL, SITE_NAME } from '../lib/seo';
+import {
+  BASE_URL,
+  SITE_NAME,
+  buildWebSiteJsonLd,
+  buildOrganizationJsonLd,
+  buildSoftwareAppJsonLd,
+  buildSiteNavigationJsonLd,
+  jsonLdScriptProps,
+} from '../lib/seo';
 
-// Structured data for SEO (JSON-LD)
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebApplication',
-  name: SITE_NAME,
-  applicationCategory: 'BusinessApplication',
-  operatingSystem: 'Web',
-  description: 'AI-powered freelancing platform connecting top talent with global opportunities. Secure blockchain payments, smart matching, and seamless collaboration.',
-  url: BASE_URL,
-  author: {
-    '@type': 'Organization',
-    name: SITE_NAME,
-    url: BASE_URL,
-  },
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    reviewCount: '2500',
-  },
-};
-
-const orgJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: SITE_NAME,
-  url: BASE_URL,
-  logo: `${BASE_URL}/icon-512.png`,
-  sameAs: [
-    'https://www.linkedin.com/company/megilance',
-    'https://twitter.com/megilance',
-  ],
-  contactPoint: [
-    {
-      '@type': 'ContactPoint',
-      contactType: 'customer support',
-      email: 'support@megilance.com',
-    },
-  ],
-};
-
-const websiteJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  url: BASE_URL,
-  name: SITE_NAME,
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: `${BASE_URL}/search?q={search_term_string}`,
-    'query-input': 'required name=search_term_string',
-  },
-};
+// ── Structured data for Google rich results ──────────────────────────────
+// 1. WebSite – Enables Sitelinks SearchBox in Google SERP
+// 2. Organization – Shows brand Knowledge Panel with logo + social links
+// 3. SoftwareApplication – App rich result with rating
+// 4. SiteNavigationElement – Helps Google understand main nav for sitelinks
+const websiteJsonLd = buildWebSiteJsonLd();
+const orgJsonLd = buildOrganizationJsonLd();
+const appJsonLd = buildSoftwareAppJsonLd();
+const navJsonLd = buildSiteNavigationJsonLd();
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -188,19 +149,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {/* DNS prefetch for API */}
         <link rel="dns-prefetch" href="//api.stripe.com" />
         
-        {/* Structured Data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
+        {/* Structured Data for SEO – Google Rich Results */}
+        <script {...jsonLdScriptProps(websiteJsonLd)} />
+        <script {...jsonLdScriptProps(orgJsonLd)} />
+        <script {...jsonLdScriptProps(appJsonLd)} />
+        <script {...jsonLdScriptProps(navJsonLd)} />
         
         {/* Theme initialization - prevent flash */}
         <script

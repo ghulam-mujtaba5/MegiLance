@@ -245,6 +245,30 @@
   opacity: 0.9;
 }
 
+/* Thumbnail Fallback */
+.thumbnailFallback {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnailIcon {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Seller Avatar Fallback */
+.sellerAvatarFallback {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 /* Skeleton Loading State */
 .skeleton {
   animation: shimmer 1.5s infinite;

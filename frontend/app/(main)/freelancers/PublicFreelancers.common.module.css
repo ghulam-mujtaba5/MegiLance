@@ -1,147 +1,626 @@
+/* @AI-HINT: Public Freelancers – layout, structure, animations (common) */
+
 .page {
-  padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── Header ── */
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding: 2rem 0 1.5rem;
+}
+.title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.subtitle {
+  font-size: 1.05rem;
+  opacity: 0.7;
+  max-width: 560px;
   margin: 0 auto;
 }
 
-.header {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.subtitle {
-  font-size: 1.1rem;
-  opacity: 0.8;
-}
-
-.controls {
+.searchSection {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 640px;
+  margin: 1.25rem auto 0;
 }
-
+.searchBar {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+  transition: border-color 0.2s;
+}
+.searchBar:focus-within {
+  border-color: #4573df;
+}
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  opacity: 0.5;
+  pointer-events: none;
+}
 .searchInput {
   width: 100%;
-  max-width: 400px;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.85rem 2.5rem 0.85rem 2.75rem;
+  font-size: 0.95rem;
+}
+.searchClear {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+}
+.searchClear:hover {
+  opacity: 1;
 }
 
+.mobileFilterBtn {
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ── Category Pills ── */
+.categoriesSection {
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.categoriesSection::-webkit-scrollbar {
+  display: none;
+}
+.categoriesScroll {
+  display: flex;
+  gap: 0.5rem;
+  min-width: max-content;
+  padding: 0 0.25rem;
+}
+.categoryPill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.categoryPillActive {
+  font-weight: 600;
+}
+
+/* ── Main Layout ── */
+.mainLayout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+}
+.sidebarCard {
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+.sidebarTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid transparent;
+}
+.contentArea {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Filters ── */
+.filterGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.filterLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.filterOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.25rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.filterRadio {
+  display: none;
+}
+.filterRadioCustom {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.filterRadioActive {
+  border-color: #4573df !important;
+  background: #4573df;
+  box-shadow: inset 0 0 0 3px white;
+}
+.ratingOptionLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.starsInline {
+  display: flex;
+  gap: 1px;
+}
+.locationInput {
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  border-radius: 8px;
+  border: 1.5px solid;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.locationInput:focus {
+  border-color: #4573df;
+}
+.clearFilters {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.resultCount {
+  font-size: 0.9rem;
+}
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.sortSelect {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  border: 1.5px solid;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+.viewToggle {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid transparent;
+}
+.viewBtn {
+  padding: 0.4rem 0.6rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.viewBtnActive {
+  /* theme override */
+}
+
+/* ── Active Filters ── */
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+.activeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.activeTag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  opacity: 0.6;
+  padding: 2px;
+}
+.activeTag button:hover {
+  opacity: 1;
+}
+.clearAllBtn {
+  background: none;
+  border: none;
+  font-size: 0.82rem;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+}
+
+/* ── Grid & Cards ── */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
 }
-
-.card {
-  border-radius: 12px;
-  padding: 1.5rem;
+.listView {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  text-decoration: none !important;
+}
+.listView .card {
+  flex-direction: row;
+  align-items: center;
+}
+.listView .cardHeader {
+  margin-bottom: 0;
+}
+.listView .skills {
+  margin-bottom: 0;
 }
 
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  padding: 1.25rem;
+  text-decoration: none;
+  transition: transform 0.22s, box-shadow 0.22s;
+  cursor: pointer;
+}
 .card:hover {
   transform: translateY(-4px);
-  text-decoration: none !important;
-}
-
-.card * {
-  text-decoration: none !important;
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
 }
-
 .avatar {
   width: 64px;
   height: 64px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
-
 .cardInfo {
-  flex: 1;
+  overflow: hidden;
+  min-width: 0;
 }
-
 .name {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0;
+  font-weight: 700;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 .role {
-  font-size: 0.9rem;
-  opacity: 0.8;
-  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-top: 0.1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
 }
-
 .skill {
-  font-size: 0.8rem;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
   border-radius: 999px;
+  font-weight: 500;
+}
+.skillMore {
+  /* theme override */
 }
 
 .footer {
-  margin-top: 1rem;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid transparent;
+  font-size: 0.88rem;
 }
-
 .rate {
-  font-weight: 600;
-}
-
-.ratingWrapper {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.9rem;
+  gap: 0.2rem;
+  font-weight: 700;
 }
-
-.starIcon {
-  color: #facc15;
-}
-
+.ratingWrapper,
 .locationWrapper {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.9rem;
-  opacity: 0.7;
+  gap: 0.25rem;
+  font-size: 0.85rem;
 }
 
+/* ── Skeleton ── */
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+.skeletonCard {
+  border-radius: 14px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.skeletonAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+.skeletonLine {
+  height: 14px;
+  border-radius: 6px;
+}
+.skeletonTags {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+.skeletonTag {
+  width: 60px;
+  height: 22px;
+  border-radius: 999px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* ── Empty State ── */
 .emptyState {
   text-align: center;
-  padding: 2rem;
-  opacity: 0.7;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+.emptyIcon {
+  opacity: 0.3;
+  margin-bottom: 0.5rem;
+}
+.emptyState h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.emptyState p {
+  opacity: 0.6;
+  font-size: 0.95rem;
 }
 
-.loading {
-  text-align: center;
-  padding: 4rem;
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+}
+.pageBtn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pageBtn:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+.pageBtnActive {
+  font-weight: 700;
 }
 
-.error {
-  text-align: center;
-  padding: 4rem;
-  color: #e81123;
+/* ── Mobile Filter Panel ── */
+.mobileOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+.mobileBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.mobilePanel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 320px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  animation: slideIn 0.25s ease-out;
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+.mobilePanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid transparent;
+}
+.mobilePanelHeader h3 {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.mobilePanelHeader button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+}
+.mobilePanelBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.25rem;
+}
+.mobilePanelFooter {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid transparent;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+  .mobileFilterBtn {
+    display: flex;
+  }
+  .mobileOverlay {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1.25rem 1rem 3rem;
+  }
+  .title {
+    font-size: 1.6rem;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .skeletonGrid {
+    grid-template-columns: 1fr;
+  }
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchSection {
+    flex-direction: column;
+  }
+  .mobileFilterBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .categoriesScroll {
+    padding: 0 0.5rem;
+  }
 }

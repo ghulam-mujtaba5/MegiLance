@@ -1,16 +1,22 @@
-// @AI-HINT: Public Pricing page. Presents plan tiers and feature matrix. Uses PublicLayout via (main)/layout.tsx.
+// @AI-HINT: Public Pricing page with BreadcrumbList for Google Rich Results.
 import type { Metadata } from 'next';
-import { buildMeta } from '@/lib/seo';
+import { buildMeta, buildBreadcrumbJsonLd, jsonLdScriptProps } from '@/lib/seo';
 import Pricing from './Pricing';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Pricing',
-    description: 'Simple pricing with clear value. Choose a plan that fits your team and scale up anytime.',
+    title: 'Pricing & Plans',
+    description: 'Simple, transparent pricing. Start free with 5% fees, or upgrade to Premium for just 1%. No hidden charges, no subscriptions required.',
     path: '/pricing',
+    keywords: ['MegiLance pricing', 'freelance platform fees', 'cheap freelance marketplace', 'freelancer rates'],
   });
 }
 
 export default function PricingPage() {
-  return <Pricing />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(buildBreadcrumbJsonLd([{ name: 'Pricing', path: '/pricing' }]))} />
+      <Pricing />
+    </>
+  );
 }

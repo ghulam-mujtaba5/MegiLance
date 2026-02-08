@@ -1,3 +1,4 @@
+/* @AI-HINT: Common layout/structure styles for Loading component */
 .container {
   display: flex;
   flex-direction: column;
@@ -7,13 +8,21 @@
   gap: 1rem;
 }
 
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
 .spinner {
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
 }
 
 .sm {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .md {
@@ -29,6 +38,19 @@
 .text {
   font-size: 0.875rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 @keyframes spin {

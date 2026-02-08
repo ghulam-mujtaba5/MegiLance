@@ -1,7 +1,7 @@
 // @AI-HINT: Fiverr-style gig card component for marketplace listings with seller info, ratings, and pricing
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
@@ -67,6 +67,7 @@ const GigCard: React.FC<GigCardProps> = ({
 }) => {
   const { resolvedTheme } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
+  const [isFocusWithin, setIsFocusWithin] = useState(false);
   const [localFavorited, setLocalFavorited] = useState(isFavorited);
 
   if (!resolvedTheme) return null;
@@ -75,18 +76,18 @@ const GigCard: React.FC<GigCardProps> = ({
   const gigUrl = slug ? `/gigs/${slug}` : `/gigs/${id}`;
   const sellerUrl = `/freelancers/${seller.id}`;
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setLocalFavorited(!localFavorited);
     onFavoriteToggle?.(id);
-  };
+  }, [localFavorited, id, onFavoriteToggle]);
 
-  const handleQuickOrder = (e: React.MouseEvent) => {
+  const handleQuickOrder = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onQuickOrder?.(id);
-  };
+  }, [id, onQuickOrder]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -109,6 +110,12 @@ const GigCard: React.FC<GigCardProps> = ({
       className={cn(common.card, themed.theme, className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsFocusWithin(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          setIsFocusWithin(false);
+        }
+      }}
     >
       {/* Image Section */}
       <Link href={gigUrl} className={common.imageWrapper}>
@@ -122,16 +129,8 @@ const GigCard: React.FC<GigCardProps> = ({
             priority={isFeatured}
           />
         ) : (
-          <div
-            className={common.image}
-            style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <ShoppingCart size={48} color="rgba(255,255,255,0.5)" />
+          <div className={cn(common.image, common.thumbnailFallback)}>
+            <ShoppingCart size={48} className={common.thumbnailIcon} aria-hidden="true" />
           </div>
         )}
 
@@ -184,19 +183,7 @@ const GigCard: React.FC<GigCardProps> = ({
                 height={28}
               />
             ) : (
-              <div
-                style={{
-                  width: 28,
-                  height: 28,
-                  background: '#4573df',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  fontSize: 12,
-                  fontWeight: 600,
-                }}
-              >
+              <div className={cn(common.sellerAvatarFallback, themed.sellerAvatarFallback)}>
                 {seller.name.charAt(0).toUpperCase()}
               </div>
             )}
@@ -266,8 +253,8 @@ const GigCard: React.FC<GigCardProps> = ({
         </div>
       </div>
 
-      {/* Quick Actions on Hover */}
-      {isHovered && onQuickOrder && (
+      {/* Quick Actions - visible on hover AND focus for keyboard accessibility */}
+      {(isHovered || isFocusWithin) && onQuickOrder && (
         <div className={cn(common.quickActions, themed.quickActions)}>
           <button
             onClick={handleQuickOrder}
