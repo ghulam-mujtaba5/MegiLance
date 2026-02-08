@@ -3,7 +3,8 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { RefreshCw, Home } from 'lucide-react';
+import { LottieAnimation, errorAlertAnimation } from '@/app/components/Animations/LottieAnimation';
 
 export default function PortalError({
   error,
@@ -24,9 +25,14 @@ export default function PortalError({
     >
       <div className="text-center max-w-lg space-y-5">
         <div className="flex justify-center">
-          <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-            <AlertTriangle className="w-8 h-8 text-red-500" aria-hidden="true" />
-          </div>
+          <LottieAnimation
+            animationData={errorAlertAnimation}
+            width={120}
+            height={120}
+            loop={false}
+            keepLastFrame
+            ariaLabel="Error illustration"
+          />
         </div>
         
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">

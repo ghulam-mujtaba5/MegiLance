@@ -1,0 +1,247 @@
+/* @AI-HINT: External Projects page - light theme colors */
+
+.page {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.subtitle {
+  color: #6b7280;
+}
+
+.scrapeBtn {
+  background-color: #4573df;
+  color: white;
+}
+
+.scrapeBtn:hover:not(:disabled) {
+  background-color: #3a63c9;
+}
+
+/* Stats */
+.statCard {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.statIcon {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.statValue {
+  color: #111827;
+}
+
+.statLabel {
+  color: #9ca3af;
+}
+
+/* Toolbar */
+.toolbar {
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.searchIcon {
+  color: #9ca3af;
+}
+
+.searchInput {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  color: #111827;
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.filterSelect {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  color: #111827;
+}
+
+/* Category Tabs */
+.categoryTab {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.categoryTab:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.categoryTabActive {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.categoryCount {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: inherit;
+}
+
+/* Source badges */
+.sourceLabel {
+  color: #9ca3af;
+}
+
+.sourceBadge {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.sourceBadge:hover {
+  background-color: #e5e7eb;
+}
+
+.sourceBadgeActive {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.sourceDotRemoteok {
+  background-color: #10b981;
+}
+
+.sourceDotJobicy {
+  background-color: #6366f1;
+}
+
+.sourceDotArbeitnow {
+  background-color: #f59e0b;
+}
+
+/* Project Card */
+.projectCard {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.projectCard:hover {
+  border-color: #d1d5db;
+}
+
+.companyLogoPlaceholder {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.projectTitle {
+  color: #111827;
+}
+
+.companyName {
+  color: #6b7280;
+}
+
+.trustBadgeHigh {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.trustBadgeMedium {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+
+.trustBadgeLow {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.projectDescription {
+  color: #6b7280;
+}
+
+.tag {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.moreTags {
+  color: #9ca3af;
+}
+
+.cardFooter {
+  border-top-color: #f3f4f6;
+}
+
+.metaItem {
+  color: #9ca3af;
+}
+
+.budget {
+  color: #059669;
+}
+
+.applyBtn {
+  background-color: #4573df;
+  color: #ffffff;
+}
+
+.applyBtn:hover {
+  background-color: #3a63c9;
+}
+
+.sourceTag {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+/* Pagination */
+.pageBtn {
+  background-color: #ffffff;
+  border-color: #e5e7eb;
+  color: #374151;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.pageInfo {
+  color: #6b7280;
+}
+
+/* Loading */
+.spinner {
+  border-top-color: #4573df;
+}
+
+.loadingText {
+  color: #6b7280;
+}
+
+/* Empty */
+.emptyState {
+  background-color: #ffffff;
+}
+
+.emptyIcon {
+  color: #d1d5db;
+}
+
+.emptyText {
+  color: #6b7280;
+}
+
+/* Last Updated */
+.lastUpdated {
+  color: #9ca3af;
+}
+
+/* Scrape Result */
+.scrapeResult {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+}
+
+.scrapeResultDetails {
+  color: #6b7280;
+}

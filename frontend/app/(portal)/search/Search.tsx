@@ -9,6 +9,7 @@ import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { LottieAnimation, searchingAnimation, emptyBoxAnimation } from '@/app/components/Animations/LottieAnimation';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import common from './Search.common.module.css';
 import light from './Search.light.module.css';
@@ -216,7 +217,12 @@ const Search: React.FC = () => {
 
           {loading && (
             <div className={common.loadingState}>
-              <div className={common.spinner}></div>
+              <LottieAnimation
+                animationData={searchingAnimation}
+                width={100}
+                height={100}
+                ariaLabel="Searching"
+              />
               <p>Searching...</p>
             </div>
           )}
@@ -263,6 +269,9 @@ const Search: React.FC = () => {
           <EmptyState
             title="No results found"
             description="Try a different query or adjust filters to broaden your search."
+            animationData={emptyBoxAnimation}
+            animationWidth={140}
+            animationHeight={140}
             action={
               <button
                 type="button"
@@ -279,6 +288,9 @@ const Search: React.FC = () => {
           <EmptyState
             title="Start Searching"
             description="Enter keywords to find projects, freelancers, and more."
+            animationData={searchingAnimation}
+            animationWidth={140}
+            animationHeight={140}
           />
         )}
       </div>

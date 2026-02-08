@@ -5,6 +5,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { aiSparkleAnimation } from '@/app/components/Animations/LottieAnimation';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import Button from '@/app/components/Button/Button';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
@@ -40,8 +41,9 @@ const AnalyticsPage: React.FC = () => {
             <EmptyState
               title="Analytics coming soon"
               description="We’re preparing insightful dashboards. Stay tuned for charts and reports."
-              icon={<BarChart3 size={48} />}
-              action={
+              icon={<BarChart3 size={48} />}              animationData={aiSparkleAnimation}
+              animationWidth={130}
+              animationHeight={130}              action={
                 <Button
                   variant="primary"
                   iconBefore={<Bell size={18} />}

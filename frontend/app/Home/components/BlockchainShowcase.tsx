@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import commonStyles from './BlockchainShowcase.common.module.css';
 import lightStyles from './BlockchainShowcase.light.module.css';
 import darkStyles from './BlockchainShowcase.dark.module.css';
+import { LottieAnimation, walletAnimation } from '@/app/components/Animations/LottieAnimation';
 
 const blockchainFeatures = [
   {
@@ -80,6 +81,13 @@ const BlockchainShowcase: React.FC = () => {
             <FaBitcoin className={commonStyles.badgeIcon} />
             <span>Web3 Integration (FYP Module)</span>
           </div>
+          <LottieAnimation
+            animationData={walletAnimation}
+            width={100}
+            height={100}
+            ariaLabel="Blockchain wallet illustration"
+            className="mx-auto mb-2"
+          />
           <h2 className={commonStyles.title}>
             The Future of <span className={commonStyles.titleHighlight}>Secure Payments</span>
           </h2>

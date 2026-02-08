@@ -5,6 +5,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { welcomeWaveAnimation } from '@/app/components/Animations/LottieAnimation';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import Button from '@/app/components/Button/Button';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
@@ -41,6 +42,9 @@ const UserManagementPage: React.FC = () => {
               title="No users yet"
               description="Invite your team to collaborate with appropriate roles and permissions."
               icon={<Users size={48} />}
+              animationData={welcomeWaveAnimation}
+              animationWidth={120}
+              animationHeight={120}
               action={
                 <Button
                   variant="primary"

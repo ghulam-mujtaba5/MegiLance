@@ -12,6 +12,7 @@ import Select, { SelectOption } from '@/app/components/Select/Select';
 import ToggleSwitch from '@/app/components/ToggleSwitch/ToggleSwitch';
 import Card from '@/app/components/Card/Card';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { searchingAnimation } from '@/app/components/Animations/LottieAnimation';
 import MegaLoader from '@/app/components/Loading/MegaLoader';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
@@ -205,6 +206,9 @@ const JobAlertsPage: React.FC = () => {
                     title="No alerts yet"
                     description="Create your first job alert to start receiving notifications about new opportunities."
                     icon={<Bell size={48} />}
+                    animationData={searchingAnimation}
+                    animationWidth={120}
+                    animationHeight={120}
                     action={
                       <Button variant="primary" onClick={() => document.getElementById('alert-keywords')?.focus()}>
                         Create Alert Above

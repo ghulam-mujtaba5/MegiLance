@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 
 import StepCard from './StepCard';
 import type { StepCardProps } from './StepCard';
+import { LottieAnimation, workflowAnimation } from '@/app/components/Animations/LottieAnimation';
 import commonStyles from './HowItWorks.common.module.css';
 import lightStyles from './HowItWorks.light.module.css';
 import darkStyles from './HowItWorks.dark.module.css';
@@ -45,6 +46,13 @@ const HowItWorks: React.FC = () => {
       <div className={cn(commonStyles.container)}>
         <div className={cn(commonStyles.header)}>
           <span className={cn(commonStyles.tagline, themeStyles.tagline)}>The Process</span>
+          <LottieAnimation
+            animationData={workflowAnimation}
+            width={120}
+            height={120}
+            ariaLabel="Workflow process illustration"
+            className="mx-auto mb-2"
+          />
           <h2 className={cn(commonStyles.title, themeStyles.title)}>How MegiLance Works</h2>
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
             A simple, streamlined process for clients and freelancers to connect, collaborate, and achieve great things.

@@ -14,6 +14,7 @@ import Select from '@/app/components/Select/Select';
 import Button from '@/app/components/Button/Button';
 import Pagination from '@/app/components/Pagination/Pagination';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { walletAnimation, errorAlertAnimation } from '@/app/components/Animations/LottieAnimation';
 import Trend from '@/app/components/Trend/Trend';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
@@ -101,7 +102,7 @@ const Payments: React.FC = () => {
   }, [payments]);
 
   if (error) {
-    return <EmptyState title="Error Loading Payments" description="There was an issue retrieving your payment history. Please try again later." icon={<AlertTriangle size={48} />} />;
+    return <EmptyState title="Error Loading Payments" description="There was an issue retrieving your payment history. Please try again later." icon={<AlertTriangle size={48} />} animationData={errorAlertAnimation} animationWidth={120} animationHeight={120} />;
   }
 
   return (
@@ -161,6 +162,9 @@ const Payments: React.FC = () => {
             title="No Payments Found"
             description="It looks like there are no payments matching your criteria. Try adjusting your filters."
             icon={<SearchX size={48} />}
+            animationData={walletAnimation}
+            animationWidth={120}
+            animationHeight={120}
           />
         )}
 

@@ -101,7 +101,7 @@ class TursoHTTP:
                 "Content-Type": "application/json"
             },
             json={"statements": statements},
-            timeout=15
+            timeout=30
         )
         
         if response.status_code != 200:

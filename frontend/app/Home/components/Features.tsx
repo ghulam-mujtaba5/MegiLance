@@ -7,6 +7,7 @@ import { Cpu, ShieldCheck, Globe, Wallet } from 'lucide-react';
 
 import FeatureCard from './FeatureCard';
 import { StaggerContainer, StaggerItem } from '../../components/Animations/StaggerContainer';
+import { LottieAnimation, aiSparkleAnimation } from '../../components/Animations/LottieAnimation';
 import commonStyles from './Features.common.module.css';
 import lightStyles from './Features.light.module.css';
 import darkStyles from './Features.dark.module.css';
@@ -45,6 +46,13 @@ const Features: React.FC = () => {
       <div className={cn(commonStyles.container)}>
         <div className={cn(commonStyles.header)}>
           <span className={cn(commonStyles.tagline, themeStyles.tagline)}>Why MegiLance?</span>
+          <LottieAnimation
+            animationData={aiSparkleAnimation}
+            width={110}
+            height={110}
+            ariaLabel="AI-powered features illustration"
+            className="mx-auto mb-2"
+          />
           <h2 className={cn(commonStyles.title, themeStyles.title)}>A Smarter Way to Work</h2>
           <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
             We&apos;ve built a next-generation freelance ecosystem with tools and security you can trust.

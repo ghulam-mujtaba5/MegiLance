@@ -109,7 +109,7 @@ export class APIError extends Error {
 }
 
 // Request timeout (30 seconds)
-const REQUEST_TIMEOUT = 30000;
+const REQUEST_TIMEOUT = 60000;
 
 // Track if we're currently refreshing tokens to prevent race conditions
 let isRefreshing = false;
@@ -2582,6 +2582,64 @@ export const aiWritingApi = {
     }),
 };
 
+// ===========================
+// EXTERNAL PROJECTS (Scraped from RemoteOK, Jobicy, Arbeitnow)
+// ===========================
+export const externalProjectsApi = {
+  list: (filters?: {
+    query?: string;
+    category?: string;
+    source?: string;
+    project_type?: string;
+    experience_level?: string;
+    min_budget?: number;
+    tags?: string;
+    sort_by?: string;
+    sort_order?: string;
+    page?: number;
+    page_size?: number;
+  }) => {
+    const params = new URLSearchParams();
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '')
+          params.append(key, value.toString());
+      });
+    }
+    return apiFetch<{
+      projects: any[];
+      total: number;
+      page: number;
+      page_size: number;
+      has_more: boolean;
+      sources: string[];
+      last_scraped: string | null;
+    }>(`/external-projects?${params}`);
+  },
+
+  get: (projectId: number) =>
+    apiFetch<any>(`/external-projects/${projectId}`),
+
+  trackClick: (projectId: number) =>
+    apiFetch<{ apply_url: string; tracked: boolean }>(`/external-projects/${projectId}/click`, {
+      method: 'POST',
+    }),
+
+  getCategories: () =>
+    apiFetch<{ categories: { name: string; count: number }[] }>('/external-projects-categories'),
+
+  getStats: () =>
+    apiFetch<any>('/external-projects-stats'),
+
+  triggerScrape: () =>
+    apiFetch<any>('/external-projects/scrape', { method: 'POST' }),
+
+  flag: (projectId: number, reason: string) =>
+    apiFetch(`/external-projects/${projectId}/flag?reason=${encodeURIComponent(reason)}`, {
+      method: 'POST',
+    }),
+};
+
 export default {
   auth: authApi,
   analytics: analyticsApi,
@@ -2647,4 +2705,5 @@ export default {
   skillTaxonomy: skillTaxonomyApi,
   notesTags: notesTagsApi,
   reviewResponses: reviewResponsesApi,
+  externalProjects: externalProjectsApi,
 };

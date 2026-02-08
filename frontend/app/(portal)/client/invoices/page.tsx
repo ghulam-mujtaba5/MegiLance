@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { errorAlertAnimation, emptyBoxAnimation } from '@/app/components/Animations/LottieAnimation';
 import { invoicesApi } from '@/lib/api';
 import { 
   FileText, 
@@ -204,6 +205,9 @@ export default function ClientInvoicesPage() {
         <EmptyState
           title="Error loading invoices"
           description={error}
+          animationData={errorAlertAnimation}
+          animationWidth={110}
+          animationHeight={110}
           action={<Button variant="primary" onClick={() => window.location.reload()}>Retry</Button>}
         />
       ) : filteredInvoices.length === 0 ? (
@@ -211,6 +215,9 @@ export default function ClientInvoicesPage() {
           title="No invoices found"
           description="You don't have any invoices yet."
           icon={<FileText size={48} />}
+          animationData={emptyBoxAnimation}
+          animationWidth={120}
+          animationHeight={120}
         />
       ) : (
         <div className={cn(commonStyles.tableWrapper, themeStyles.tableWrapper)}>

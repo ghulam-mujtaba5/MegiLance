@@ -13,6 +13,7 @@ import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { LottieAnimation, mailSentAnimation, securityShieldAnimation } from '@/app/components/Animations/LottieAnimation';
 import { AnimatedOrb, ParticlesSystem } from '@/app/components/3D';
 import commonStyles from './ForgotPassword.common.module.css';
 import lightStyles from './ForgotPassword.light.module.css';
@@ -116,13 +117,33 @@ const ForgotPassword: React.FC = () => {
           <StaggerItem className={styles.formHeader}>
             <h1 className={styles.formTitle}>Forgot Password?</h1>
             {submitted ? (
-              <p className={styles.formSubtitle}>
-                If an account with that email exists, we&apos;ve sent instructions to reset your password.
-              </p>
+              <>
+                <LottieAnimation
+                  animationData={mailSentAnimation}
+                  width={140}
+                  height={140}
+                  ariaLabel="Email sent successfully"
+                  loop={false}
+                  keepLastFrame
+                  className="mx-auto my-4"
+                />
+                <p className={styles.formSubtitle}>
+                  If an account with that email exists, we&apos;ve sent instructions to reset your password.
+                </p>
+              </>
             ) : (
-              <p className={styles.formSubtitle}>
-                No problem. Enter your email and we&apos;ll send you a reset link.
-              </p>
+              <>
+                <LottieAnimation
+                  animationData={securityShieldAnimation}
+                  width={100}
+                  height={100}
+                  ariaLabel="Security shield"
+                  className="mx-auto my-2"
+                />
+                <p className={styles.formSubtitle}>
+                  No problem. Enter your email and we&apos;ll send you a reset link.
+                </p>
+              </>
             )}
           </StaggerItem>
 

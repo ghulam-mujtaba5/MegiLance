@@ -11,6 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 
 import AIShowcaseCard from './AIShowcaseCard';
+import { LottieAnimation, aiSparkleAnimation } from '@/app/components/Animations/LottieAnimation';
 import commonStyles from './AIShowcase.common.module.css';
 import lightStyles from './AIShowcase.light.module.css';
 import darkStyles from './AIShowcase.dark.module.css';
@@ -159,6 +160,13 @@ const AIShowcase: React.FC = () => {
             <Zap className={cn(commonStyles.badgeIcon)} />
             <span>AI-Powered Platform</span>
           </div>
+          <LottieAnimation
+            animationData={aiSparkleAnimation}
+            width={100}
+            height={100}
+            ariaLabel="AI-powered illustration"
+            className="mx-auto mb-2"
+          />
           <h2 className={cn(commonStyles.title, themeStyles.title)}>
             Smart Features for Freelance Success
           </h2>

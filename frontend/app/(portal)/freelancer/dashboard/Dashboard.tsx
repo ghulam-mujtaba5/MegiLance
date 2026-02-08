@@ -9,6 +9,7 @@ import { useFreelancerData } from '@/hooks/useFreelancer';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { searchingAnimation, emptyBoxAnimation } from '@/app/components/Animations/LottieAnimation';
 import StatCard from '@/app/components/StatCard/StatCard';
 import SellerStats, { SellerStatsData } from '@/app/components/SellerStats/SellerStats';
 import JobCard from './components/JobCard';
@@ -187,6 +188,9 @@ const Dashboard: React.FC = () => {
               <EmptyState
                 title="No jobs found"
                 description="We couldn't find any jobs matching your skills."
+                animationData={searchingAnimation}
+                animationWidth={120}
+                animationHeight={120}
                 action={
                   <Link href="/profile">
                     <Button variant="outline" size="sm">Update Profile</Button>
@@ -227,6 +231,9 @@ const Dashboard: React.FC = () => {
               <EmptyState
                 title="No proposals yet"
                 description="Start applying to jobs to see them here."
+                animationData={emptyBoxAnimation}
+                animationWidth={100}
+                animationHeight={100}
               />
             )}
           </div>

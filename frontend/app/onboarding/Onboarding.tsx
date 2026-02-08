@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '@/app/components/Button/Button';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { LottieAnimation, welcomeWaveAnimation, aiSparkleAnimation, walletAnimation } from '@/app/components/Animations/LottieAnimation';
 
 import commonStyles from './Onboarding.common.module.css';
 import lightStyles from './Onboarding.light.module.css';
@@ -40,6 +41,13 @@ const Onboarding: React.FC = () => {
         >
           {step === 1 && (
             <>
+              <LottieAnimation
+                animationData={welcomeWaveAnimation}
+                width={150}
+                height={150}
+                ariaLabel="Welcome wave"
+                className="mx-auto mb-6"
+              />
               <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>Welcome to MegiLance!</h2>
               <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>The AI-powered platform for the future of work. Let&apos;s get your profile set up.</p>
               <Button onClick={nextStep}>Get Started</Button>
@@ -47,6 +55,13 @@ const Onboarding: React.FC = () => {
           )}
           {step === 2 && (
             <>
+              <LottieAnimation
+                animationData={aiSparkleAnimation}
+                width={150}
+                height={150}
+                ariaLabel="AI-powered matching"
+                className="mx-auto mb-6"
+              />
               <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>How Our AI Works For You</h2>
               <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>Our AI helps you find the perfect projects by analyzing your skills and ranking your profile. A higher rank means more visibility to clients!</p>
               <Button onClick={nextStep}>Next</Button>
@@ -54,6 +69,13 @@ const Onboarding: React.FC = () => {
           )}
           {step === 3 && (
             <>
+              <LottieAnimation
+                animationData={walletAnimation}
+                width={150}
+                height={150}
+                ariaLabel="Connect your wallet"
+                className="mx-auto mb-6"
+              />
               <h2 className={cn(commonStyles.stepTitle, themeStyles.stepTitle)}>Connect Your Wallet</h2>
               <p className={cn(commonStyles.stepDescription, themeStyles.stepDescription)}>Securely connect your crypto wallet to receive USDC payments directly. All transactions are handled via smart contracts for your security.</p>
               <Button onClick={finishOnboarding}>Connect Wallet & Finish</Button>

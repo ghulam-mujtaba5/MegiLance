@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { PageTransition, ScrollReveal, LottieAnimation, notFoundAnimation } from '@/app/components/Animations';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import common from './NotFound.common.module.css';
 import light from './NotFound.light.module.css';
@@ -32,6 +32,14 @@ const NotFoundPage: React.FC = () => {
         <div className={common.container}>
           <ScrollReveal>
             <div className={common.content}>
+              {/* Animated 404 illustration */}
+              <LottieAnimation
+                animationData={notFoundAnimation}
+                width={220}
+                height={220}
+                ariaLabel="Page not found illustration"
+                className="mx-auto mb-4"
+              />
               <h1 className={common.title}>404</h1>
               <h2 className={common.subtitle}>Page Not Found</h2>
               <p className={common.description}>

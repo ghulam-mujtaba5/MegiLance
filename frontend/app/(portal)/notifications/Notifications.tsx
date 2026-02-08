@@ -8,6 +8,7 @@ import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { celebrationAnimation } from '@/app/components/Animations/LottieAnimation';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import { Loader2 } from 'lucide-react';
 import api from '@/lib/api';
@@ -199,6 +200,9 @@ const Notifications: React.FC = () => {
             <EmptyState
               title="No notifications"
               description="You're all caught up! New notifications will appear here."
+              animationData={celebrationAnimation}
+              animationWidth={130}
+              animationHeight={130}
               action={
                 <button
                   type="button"

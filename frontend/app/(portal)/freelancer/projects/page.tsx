@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { errorAlertAnimation, emptyBoxAnimation } from '@/app/components/Animations/LottieAnimation';
 import { contractsApi, proposalsApi } from '@/lib/api';
 import { 
   Briefcase, 
@@ -159,12 +160,18 @@ export default function FreelancerProjectsPage() {
         <EmptyState
           title="Error loading projects"
           description={error}
+          animationData={errorAlertAnimation}
+          animationWidth={110}
+          animationHeight={110}
           action={<Button variant="primary" onClick={() => window.location.reload()}>Retry</Button>}
         />
       ) : filteredProjects.length === 0 ? (
         <EmptyState
           title="No projects found"
           description="You don't have any active projects yet. Start by finding new job opportunities."
+          animationData={emptyBoxAnimation}
+          animationWidth={120}
+          animationHeight={120}
           action={
             <Link href="/freelancer/jobs">
               <Button variant="primary">Browse Jobs</Button>

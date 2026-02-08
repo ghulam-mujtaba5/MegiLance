@@ -36,7 +36,8 @@ from .v1 import (
     # Public clients showcase
     public_clients,
     # Fiverr/Upwork Feature Parity - Gig Marketplace & Seller Tiers
-    gigs, seller_stats, talent_invitations
+    gigs, seller_stats, talent_invitations,
+    external_projects,
 )
 # Import separately to avoid circular import in Python 3.13
 from .v1 import complete_integrations
@@ -402,3 +403,8 @@ api_router.include_router(seller_stats.router, prefix="/seller-stats", tags=["se
 
 # Talent Invitations - Upwork-style invite-to-bid system
 api_router.include_router(talent_invitations.router, prefix="/invitations", tags=["talent-invitations"])
+
+# ============================================================================
+# EXTERNAL PROJECT SCRAPER - Aggregate freelance projects from RemoteOK, Jobicy, Arbeitnow
+# ============================================================================
+api_router.include_router(external_projects.router, prefix="", tags=["external-projects"])

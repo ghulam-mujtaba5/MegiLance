@@ -11,6 +11,7 @@ import { useRecommendations } from '@/hooks/useRecommendations';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { emptyBoxAnimation, aiSparkleAnimation } from '@/app/components/Animations/LottieAnimation';
 import { 
   Briefcase, 
   DollarSign, 
@@ -142,6 +143,9 @@ const ClientDashboard: React.FC = () => {
               <EmptyState
                 title="No active projects"
                 description="Get started by posting your first job."
+                animationData={emptyBoxAnimation}
+                animationWidth={120}
+                animationHeight={120}
                 action={
                   <Link href="/client/post-job">
                     <Button variant="primary" size="md">Post a Job</Button>
@@ -178,6 +182,9 @@ const ClientDashboard: React.FC = () => {
               <EmptyState
                 title="No recommendations yet"
                 description="Complete your profile to get AI matches."
+                animationData={aiSparkleAnimation}
+                animationWidth={100}
+                animationHeight={100}
               />
             )}
           </div>

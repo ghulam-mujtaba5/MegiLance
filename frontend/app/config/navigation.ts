@@ -90,6 +90,7 @@ export const freelancerNavItems: NavItem[] = [
   { label: 'Wallet', href: '/freelancer/wallet', icon: 'Wallet' },
   { label: 'Reviews', href: '/freelancer/reviews', icon: 'Star' },
   { label: 'Job Alerts', href: '/freelancer/job-alerts', icon: 'Bell' },
+  { label: 'External Projects', href: '/external-projects', icon: 'Globe' },
   { label: 'Contracts', href: '/freelancer/contracts', icon: 'FileText' },
   { label: 'Saved Jobs', href: '/freelancer/saved-jobs', icon: 'Heart' },
   { label: 'Skills', href: '/freelancer/skills', icon: 'Wrench' },

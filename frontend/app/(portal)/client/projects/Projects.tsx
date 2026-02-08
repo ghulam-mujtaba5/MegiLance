@@ -16,6 +16,7 @@ import Select from '@/app/components/Select/Select';
 import Button from '@/app/components/Button/Button';
 import Pagination from '@/app/components/Pagination/Pagination';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { errorAlertAnimation, searchingAnimation } from '@/app/components/Animations/LottieAnimation';
 import common from './Projects.common.module.css';
 import light from './Projects.light.module.css';
 import dark from './Projects.dark.module.css';
@@ -97,7 +98,7 @@ const Projects: React.FC = () => {
   }, [sortedProjects, currentPage, itemsPerPage]);
 
   if (error) {
-    return <EmptyState title="Error" description="Failed to load projects. Please try again later." icon={<AlertTriangle size={48} />} />;
+    return <EmptyState title="Error" description="Failed to load projects. Please try again later." icon={<AlertTriangle size={48} />} animationData={errorAlertAnimation} animationWidth={120} animationHeight={120} />;
   }
 
   return (
@@ -150,6 +151,9 @@ const Projects: React.FC = () => {
             title="No Projects Found"
             description="It looks like there are no projects matching your criteria."
             icon={<SearchX size={48} />}
+            animationData={searchingAnimation}
+            animationWidth={120}
+            animationHeight={120}
           />
         )}
 

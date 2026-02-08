@@ -6,7 +6,7 @@ import { ThemeProvider, useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, RefreshCw, Home, MessageCircle } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
-import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { PageTransition, ScrollReveal, LottieAnimation, errorAlertAnimation } from '@/app/components/Animations';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 
 import common from './GlobalError.common.module.css';
@@ -38,6 +38,17 @@ const ErrorContent = ({ error, reset }: GlobalErrorProps) => {
       <PageTransition>
         <ScrollReveal>
           <div className={common.container}>
+            {/* Animated error illustration */}
+            <LottieAnimation
+              animationData={errorAlertAnimation}
+              width={160}
+              height={160}
+              ariaLabel="Error occurred illustration"
+              loop={false}
+              keepLastFrame
+              className="mx-auto mb-2"
+            />
+
             {/* Error Icon */}
             <div className={cn(common.iconWrapper, themed.iconWrapper)}>
               <AlertTriangle className={common.icon} />

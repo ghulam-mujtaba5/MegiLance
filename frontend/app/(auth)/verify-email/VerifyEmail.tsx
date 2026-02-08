@@ -12,6 +12,7 @@ import Button from '@/app/components/Button/Button';
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { LottieAnimation, successCheckAnimation, errorAlertAnimation, mailSentAnimation, loadingDotsAnimation } from '@/app/components/Animations/LottieAnimation';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import commonStyles from './VerifyEmail.common.module.css';
 import lightStyles from './VerifyEmail.light.module.css';
@@ -103,7 +104,12 @@ const VerifyEmail: React.FC = () => {
         {status === 'loading' && (
           <StaggerItem>
             <div className={styles.iconWrapper}>
-              <FaSpinner className={commonStyles.spinIcon} size={64} />
+              <LottieAnimation
+                animationData={loadingDotsAnimation}
+                width={80}
+                height={80}
+                ariaLabel="Verifying email"
+              />
             </div>
             <h1 className={styles.title}>Verifying Your Email</h1>
             <p className={styles.message}>Please wait while we verify your email address...</p>
@@ -113,7 +119,25 @@ const VerifyEmail: React.FC = () => {
         {status === 'success' && (
           <StaggerItem>
             <div className={styles.iconWrapper}>
-              <FaCheckCircle className={commonStyles.successIcon} size={64} />
+              {registered ? (
+                <LottieAnimation
+                  animationData={mailSentAnimation}
+                  width={100}
+                  height={100}
+                  loop={false}
+                  keepLastFrame
+                  ariaLabel="Email sent successfully"
+                />
+              ) : (
+                <LottieAnimation
+                  animationData={successCheckAnimation}
+                  width={100}
+                  height={100}
+                  loop={false}
+                  keepLastFrame
+                  ariaLabel="Email verified successfully"
+                />
+              )}
             </div>
             <h1 className={styles.title}>{registered ? 'Registration Successful!' : 'Email Verified!'}</h1>
             <p className={styles.message}>{message}</p>
@@ -141,7 +165,14 @@ const VerifyEmail: React.FC = () => {
         {status === 'error' && (
           <StaggerItem>
             <div className={styles.iconWrapper}>
-              <FaTimesCircle className={commonStyles.errorIcon} size={64} />
+              <LottieAnimation
+                animationData={errorAlertAnimation}
+                width={100}
+                height={100}
+                loop={false}
+                keepLastFrame
+                ariaLabel="Verification failed"
+              />
             </div>
             <h1 className={styles.title}>Verification Failed</h1>
             <p className={styles.message}>{message}</p>

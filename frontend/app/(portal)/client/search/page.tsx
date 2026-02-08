@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { searchingAnimation } from '@/app/components/Animations/LottieAnimation';
 import { searchApi } from '@/lib/api';
 import { 
   Search, 
@@ -157,6 +158,9 @@ export default function ClientSearchPage() {
           title="Search for freelancers"
           description="Enter keywords to find talented freelancers for your projects."
           icon={<Search size={48} />}
+          animationData={searchingAnimation}
+          animationWidth={130}
+          animationHeight={130}
         />
       ) : (
         <div className={commonStyles.resultsGrid}>
