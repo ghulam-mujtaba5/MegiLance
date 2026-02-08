@@ -77,6 +77,7 @@ api_router.include_router(stripe.router, prefix="/stripe", tags=["stripe"])
 api_router.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
 api_router.include_router(wallet.router, prefix="/wallet", tags=["wallet"])
 
+
 # Time tracking, invoices, and escrow
 api_router.include_router(time_entries.router, prefix="", tags=["time-tracking"])
 api_router.include_router(invoices.router, prefix="", tags=["invoices"])
