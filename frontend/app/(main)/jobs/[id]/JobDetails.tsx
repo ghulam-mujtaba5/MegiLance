@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FaClock, FaBriefcase, FaDollarSign, FaTag, FaMapMarkerAlt } from 'react-icons/fa';
+import { Clock, Briefcase } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Link from 'next/link';
 
@@ -100,10 +100,10 @@ const JobDetails: React.FC<JobDetailsProps> = ({ jobId }) => {
           <h1 className={styles.title}>{job.title}</h1>
           <div className={styles.meta}>
             <span className="flex items-center gap-1">
-              <FaBriefcase /> {job.category}
+              <Briefcase size={14} /> {job.category}
             </span>
             <span className="flex items-center gap-1">
-              <FaClock /> Posted {new Date(job.created_at).toLocaleDateString()}
+              <Clock size={14} /> Posted {new Date(job.created_at).toLocaleDateString()}
             </span>
           </div>
         </div>

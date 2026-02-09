@@ -6,7 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
 import { portalApi } from '@/lib/api';
+import { Plus, Star, Trash2, Award, CheckCircle, ThumbsUp } from 'lucide-react';
 import commonStyles from './Skills.common.module.css';
 import lightStyles from './Skills.light.module.css';
 import darkStyles from './Skills.dark.module.css';
@@ -40,6 +42,20 @@ export default function SkillsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newSkill, setNewSkill] = useState<{ name: string; level: Skill['level']; years_experience: number }>({ name: '', level: 'intermediate', years_experience: 1 });
   const [saving, setSaving] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadSkills();
@@ -59,15 +75,8 @@ export default function SkillsPage() {
         // API not available
       }
       
-      // Demo data
-      setSkills([
-        { id: '1', name: 'React', level: 'expert', years_experience: 5, endorsements: 24, verified: true },
-        { id: '2', name: 'TypeScript', level: 'advanced', years_experience: 4, endorsements: 18, verified: true },
-        { id: '3', name: 'Node.js', level: 'advanced', years_experience: 4, endorsements: 15, verified: false },
-        { id: '4', name: 'Python', level: 'intermediate', years_experience: 2, endorsements: 8, verified: false },
-        { id: '5', name: 'PostgreSQL', level: 'advanced', years_experience: 3, endorsements: 12, verified: true },
-        { id: '6', name: 'Figma', level: 'intermediate', years_experience: 2, endorsements: 5, verified: false },
-      ]);
+      // No data available — show empty state
+      setSkills([]);
     } catch (error) {
       console.error('Failed to load skills:', error);
     } finally {
@@ -80,34 +89,47 @@ export default function SkillsPage() {
     
     setSaving(true);
     try {
-      const skill: Skill = {
-        id: Date.now().toString(),
+      const skillData = {
         name: newSkill.name,
         level: newSkill.level,
         years_experience: newSkill.years_experience,
-        endorsements: 0,
-        verified: false,
       };
       
+      let addedSkill: Skill;
       try {
-        // API endpoint not yet implemented, use local state
+        const response = await portalApi.freelancer.addSkill(skillData) as { data?: Skill };
+        addedSkill = response.data || { ...skillData, id: Date.now().toString(), endorsements: 0, verified: false };
       } catch {
-        // API not available, add locally
+        addedSkill = { ...skillData, id: Date.now().toString(), endorsements: 0, verified: false };
       }
       
-      setSkills(prev => [...prev, skill]);
+      setSkills(prev => [...prev, addedSkill]);
       setNewSkill({ name: '', level: 'intermediate', years_experience: 1 });
       setShowAddModal(false);
+      showToast('Skill added successfully!');
     } catch (error) {
       console.error('Failed to add skill:', error);
+      showToast('Failed to add skill.', 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const handleRemoveSkill = async (skillId: string) => {
-    // API not yet available, just update local state
+    try {
+      await portalApi.freelancer.removeSkill(skillId);
+    } catch {
+      // API not available, remove locally
+    }
     setSkills(prev => prev.filter(s => s.id !== skillId));
+    setDeleteTargetId(null);
+    showToast('Skill removed.');
+  };
+
+  const confirmRemoveSkill = async () => {
+    if (deleteTargetId) {
+      await handleRemoveSkill(deleteTargetId);
+    }
   };
 
   const getLevelColor = (level: string) => {
@@ -133,10 +155,7 @@ export default function SkillsPage() {
           </p>
         </div>
         <Button variant="primary" onClick={() => setShowAddModal(true)}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
+          <Plus size={16} />
           Add Skill
         </Button>
       </div>
@@ -147,9 +166,7 @@ export default function SkillsPage() {
         </div>
       ) : skills.length === 0 ? (
         <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.5">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
+          <Star size={48} strokeWidth={1.5} opacity={0.5} />
           <h3>No Skills Added</h3>
           <p>Add your professional skills to improve your profile visibility</p>
           <Button variant="primary" onClick={() => setShowAddModal(true)}>Add Your First Skill</Button>
@@ -163,9 +180,7 @@ export default function SkillsPage() {
                   <h3 className={cn(commonStyles.skillName, themeStyles.skillName)}>
                     {skill.name}
                     {skill.verified && (
-                      <svg className={commonStyles.verifiedIcon} width="16" height="16" viewBox="0 0 24 24" fill="#4573df">
-                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                      </svg>
+                      <CheckCircle className={commonStyles.verifiedIcon} size={16} color="#4573df" />
                     )}
                   </h3>
                   <span className={cn(
@@ -178,13 +193,10 @@ export default function SkillsPage() {
                 </div>
                 <button
                   className={cn(commonStyles.removeBtn, themeStyles.removeBtn)}
-                  onClick={() => handleRemoveSkill(skill.id)}
+                  onClick={() => setDeleteTargetId(skill.id)}
                   aria-label="Remove skill"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                  </svg>
+                  <Trash2 size={16} />
                 </button>
               </div>
               
@@ -193,9 +205,7 @@ export default function SkillsPage() {
                   {skill.years_experience} year{skill.years_experience !== 1 ? 's' : ''} experience
                 </span>
                 <span className={cn(commonStyles.endorsements, themeStyles.endorsements)}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
-                  </svg>
+                  <ThumbsUp size={14} />
                   {skill.endorsements} endorsement{skill.endorsements !== 1 ? 's' : ''}
                 </span>
               </div>
@@ -291,6 +301,34 @@ export default function SkillsPage() {
               </Button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTargetId && (
+        <div className={commonStyles.modalOverlay} onClick={() => setDeleteTargetId(null)}>
+          <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={e => e.stopPropagation()}>
+            <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>Remove Skill</h2>
+            <p className={cn(commonStyles.confirmText, themeStyles.confirmText)}>
+              Are you sure you want to remove this skill from your profile?
+            </p>
+            <div className={commonStyles.modalActions}>
+              <Button variant="ghost" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
+              <Button variant="danger" onClick={confirmRemoveSkill}>Remove</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={cn(
+          commonStyles.toast,
+          themeStyles.toast,
+          toast.type === 'error' && commonStyles.toastError,
+          toast.type === 'error' && themeStyles.toastError
+        )}>
+          {toast.message}
         </div>
       )}
     </div>

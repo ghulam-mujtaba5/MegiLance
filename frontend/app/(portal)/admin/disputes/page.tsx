@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FiLoader, FiEye, FiFilter } from 'react-icons/fi';
+import { Loader2, Eye } from 'lucide-react';
 
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
@@ -123,7 +123,7 @@ const AdminDisputesPage: React.FC = () => {
 
       {loading ? (
         <div className={styles.loadingState}>
-          <FiLoader className={styles.spinner} />
+          <Loader2 className={styles.spinner} />
           <p>Loading disputes...</p>
         </div>
       ) : error ? (
@@ -167,7 +167,7 @@ const AdminDisputesPage: React.FC = () => {
                       onClick={() => handleViewDispute(dispute.id)}
                       title="View Details"
                     >
-                      <FiEye /> View
+                      <Eye size={14} /> View
                     </Button>
                   </td>
                 </tr>

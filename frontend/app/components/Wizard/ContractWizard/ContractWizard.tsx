@@ -10,7 +10,7 @@ import Select from '@/app/components/Select/Select';
 import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea';
 import Button from '@/app/components/Button/Button';
-import { FaFileContract, FaDollarSign, FaGavel, FaCheckCircle, FaPlus, FaTrash } from 'react-icons/fa';
+import { FileText, CheckCircle, Plus, Trash2 } from 'lucide-react';
 import api from '@/lib/api';
 
 import commonStyles from './ContractWizard.common.module.css';
@@ -73,6 +73,11 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const [contractData, setContractData] = useState<ContractData>({
     template: 'standard',
@@ -182,19 +187,19 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
 
   const validateStep1 = () => {
     if (!contractData.title.trim()) {
-      alert('Please enter a contract title');
+      showToast('Please enter a contract title', 'error');
       return false;
     }
     if (!contractData.scope.trim() || contractData.scope.length < 50) {
-      alert('Please provide a detailed scope (minimum 50 characters)');
+      showToast('Please provide a detailed scope (minimum 50 characters)', 'error');
       return false;
     }
     if (contractData.deliverables.filter(d => d.trim()).length === 0) {
-      alert('Please add at least one deliverable');
+      showToast('Please add at least one deliverable', 'error');
       return false;
     }
     if (!contractData.startDate || !contractData.endDate) {
-      alert('Please specify start and end dates');
+      showToast('Please specify start and end dates', 'error');
       return false;
     }
     return true;
@@ -203,25 +208,25 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
   const validateStep2 = () => {
     if (contractData.paymentType === 'fixed') {
       if (!contractData.totalAmount || parseFloat(contractData.totalAmount) <= 0) {
-        alert('Please enter a valid total amount');
+        showToast('Please enter a valid total amount', 'error');
         return false;
       }
       if (contractData.milestones.length === 0) {
-        alert('Please add at least one milestone for payment tracking');
+        showToast('Please add at least one milestone for payment tracking', 'error');
         return false;
       }
     } else if (contractData.paymentType === 'hourly') {
       if (!contractData.hourlyRate || parseFloat(contractData.hourlyRate) <= 0) {
-        alert('Please enter a valid hourly rate');
+        showToast('Please enter a valid hourly rate', 'error');
         return false;
       }
       if (!contractData.estimatedHours || parseFloat(contractData.estimatedHours) <= 0) {
-        alert('Please enter estimated hours');
+        showToast('Please enter estimated hours', 'error');
         return false;
       }
     } else if (contractData.paymentType === 'retainer') {
       if (!contractData.retainerAmount || parseFloat(contractData.retainerAmount) <= 0) {
-        alert('Please enter a valid retainer amount');
+        showToast('Please enter a valid retainer amount', 'error');
         return false;
       }
     }
@@ -230,7 +235,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
 
   const validateStep3 = () => {
     if (!contractData.terminationNotice || parseInt(contractData.terminationNotice) < 0) {
-      alert('Please specify termination notice period (days)');
+      showToast('Please specify termination notice period (days)', 'error');
       return false;
     }
     return true;
@@ -238,7 +243,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
 
   const handleComplete = async () => {
     if (!contractData.clientSignature.trim()) {
-      alert('Please provide your digital signature');
+      showToast('Please provide your digital signature', 'error');
       return;
     }
 
@@ -277,11 +282,11 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
       if (contract && contract.id) {
         router.push(`/contracts/${contract.id}`);
       } else {
-        alert('Failed to create contract. Please try again.');
+        showToast('Failed to create contract. Please try again.', 'error');
       }
     } catch (error) {
       console.error('Contract creation failed:', error);
-      alert('An error occurred. Please try again.');
+      showToast('An error occurred. Please try again.', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -307,7 +312,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
             )}
             onClick={() => setContractData(prev => ({ ...prev, template: template.value as any }))}
           >
-            <FaFileContract size={32} />
+            <FileText size={32} />
             <h3>{template.label}</h3>
             <p>{template.desc}</p>
           </div>
@@ -353,13 +358,13 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
                 size="sm"
                 onClick={() => removeDeliverable(index)}
               >
-                <FaTrash />
+                <Trash2 size={14} />
               </Button>
             </div>
           ))}
         </div>
         <Button variant="outline" onClick={addDeliverable}>
-          <FaPlus className={styles.mr2} />
+          <Plus size={14} className={styles.mr2} />
           Add Deliverable
         </Button>
       </div>
@@ -427,7 +432,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
                     size="sm"
                     onClick={() => removeMilestone(milestone.id)}
                   >
-                    <FaTrash />
+                    <Trash2 size={14} />
                   </Button>
                 </div>
                 <Input
@@ -461,7 +466,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
               </div>
             ))}
             <Button variant="outline" onClick={addMilestone}>
-              <FaPlus className={styles.mr2} />
+              <Plus size={14} className={styles.mr2} />
               Add Milestone
             </Button>
           </div>
@@ -621,7 +626,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
             required
           />
           <p className={cn(styles.textSmallMuted, styles.mt2)}>
-            <FaCheckCircle className={styles.inlineIcon} />
+            <CheckCircle size={16} className={styles.inlineIcon} />
             By signing, you agree to all terms and conditions
           </p>
         </div>
@@ -659,7 +664,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
     },
   ];
 
-  return (
+  return (<>
     <WizardContainer
       title="Create Contract"
       subtitle="Set up a legally binding agreement"
@@ -672,10 +677,19 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
       canGoBack={true}
       saveProgress={() => {
         localStorage.setItem('contract_draft', JSON.stringify(contractData));
-        alert('Progress saved!');
+        showToast('Progress saved!', 'success');
       }}
     />
-  );
+    {toast && (
+      <div style={{
+        position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+        borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+        backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+      }}>
+        {toast.message}
+      </div>
+    )}
+  </>);
 };
 
 export default ContractWizard;

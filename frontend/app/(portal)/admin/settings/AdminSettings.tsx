@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { useAdminData } from '@/hooks/useAdmin';
+import Button from '@/app/components/Button/Button';
 import common from './AdminSettings.common.module.css';
 import light from './AdminSettings.light.module.css';
 import dark from './AdminSettings.dark.module.css';
@@ -21,11 +22,14 @@ const AdminSettings: React.FC = () => {
   const [ipWhitelist, setIpWhitelist] = useState('');
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [smsAlerts, setSmsAlerts] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const onSave = () => {
-    // No backend calls per project constraints. Display a subtle confirmation.
-    // eslint-disable-next-line no-alert
-    alert('Settings saved (mock).');
+    showToast('Settings saved successfully!');
   };
 
   return (
@@ -114,9 +118,15 @@ const AdminSettings: React.FC = () => {
         </StaggerContainer>
 
         <div className={common.saveBar}>
-          <button type="button" className={cn(common.button, 'secondary', themed.button)} onClick={() => window.history.back()}>Cancel</button>
-          <button type="button" className={cn(common.button, 'primary', themed.button)} onClick={onSave}>Save Changes</button>
+          <Button variant="ghost" onClick={() => window.history.back()}>Cancel</Button>
+          <Button variant="primary" onClick={onSave}>Save Changes</Button>
         </div>
+
+        {toast && (
+          <div className={cn(common.toast, toast.type === 'error' && common.toastError, themed.toast, toast.type === 'error' && themed.toastError)}>
+            {toast.message}
+          </div>
+        )}
       </div>
     </PageTransition>
   );

@@ -7,20 +7,20 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { getAuthToken } from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './DisputeWizard.common.module.css';
 import lightStyles from './DisputeWizard.light.module.css';
 import darkStyles from './DisputeWizard.dark.module.css';
 import {
-  FaExclamationTriangle,
-  FaFileContract,
-  FaDollarSign,
-  FaCalendarAlt,
-  FaClock,
-  FaFileUpload,
-  FaCheckCircle,
-  FaTrash,
-  FaInfoCircle
-} from 'react-icons/fa';
+  AlertTriangle,
+  FileText,
+  DollarSign,
+  Clock,
+  FileUp,
+  CheckCircle,
+  Trash2,
+  Info
+} from 'lucide-react';
 import api from '@/lib/api';
 
 type DisputeType = 'payment' | 'quality' | 'deadline' | 'scope' | 'communication' | 'other';
@@ -86,6 +86,14 @@ export default function DisputeWizard({
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showEvidenceModal, setShowEvidenceModal] = useState(false);
+  const [skipEvidence, setSkipEvidence] = useState(false);
   const [disputeData, setDisputeData] = useState<DisputeData>({
     contractId,
     projectName,
@@ -146,7 +154,7 @@ export default function DisputeWizard({
   const Step1DisputeType = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.warningBox}>
-        <FaExclamationTriangle />
+        <AlertTriangle />
         <div>
           <h3>Before Filing a Dispute</h3>
           <p>We recommend trying to resolve the issue directly with the other party first. Disputes can affect both parties&apos; ratings and take time to resolve.</p>
@@ -154,7 +162,7 @@ export default function DisputeWizard({
       </div>
 
       <div className={commonStyles.contractInfo}>
-        <FaFileContract />
+        <FileText />
         <div>
           <div className={commonStyles.label}>Contract:</div>
           <div className={commonStyles.value}>{projectName || contractId}</div>
@@ -177,7 +185,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, disputeType: 'payment' })}
           >
-            <FaDollarSign className={commonStyles.typeIcon} />
+            <DollarSign className={commonStyles.typeIcon} />
             <h4>Payment Issue</h4>
             <p>Non-payment, partial payment, or payment disputes</p>
           </div>
@@ -191,7 +199,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, disputeType: 'quality' })}
           >
-            <FaCheckCircle className={commonStyles.typeIcon} />
+            <CheckCircle className={commonStyles.typeIcon} />
             <h4>Quality of Work</h4>
             <p>Work doesn&apos;t meet agreed standards or requirements</p>
           </div>
@@ -205,7 +213,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, disputeType: 'deadline' })}
           >
-            <FaClock className={commonStyles.typeIcon} />
+            <Clock className={commonStyles.typeIcon} />
             <h4>Missed Deadline</h4>
             <p>Work not delivered by agreed deadline</p>
           </div>
@@ -219,7 +227,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, disputeType: 'scope' })}
           >
-            <FaFileContract className={commonStyles.typeIcon} />
+            <FileText className={commonStyles.typeIcon} />
             <h4>Scope Creep</h4>
             <p>Work outside the agreed scope</p>
           </div>
@@ -233,7 +241,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, disputeType: 'communication' })}
           >
-            <FaInfoCircle className={commonStyles.typeIcon} />
+            <Info className={commonStyles.typeIcon} />
             <h4>Communication</h4>
             <p>Lack of communication or unresponsiveness</p>
           </div>
@@ -247,7 +255,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, disputeType: 'other' })}
           >
-            <FaExclamationTriangle className={commonStyles.typeIcon} />
+            <AlertTriangle className={commonStyles.typeIcon} />
             <h4>Other Issue</h4>
             <p>Different type of dispute</p>
           </div>
@@ -277,7 +285,7 @@ export default function DisputeWizard({
     return (
       <div className={commonStyles.stepContent}>
         <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-          <FaInfoCircle />
+          <Info />
           <p>Strong evidence increases the likelihood of a favorable resolution. Upload relevant screenshots, documents, chat logs, or other supporting materials.</p>
         </div>
 
@@ -295,7 +303,7 @@ export default function DisputeWizard({
                   setNewFileDesc('');
                   e.target.value = '';
                 } else if (file && !newFileDesc) {
-                  alert('Please add a description for this file');
+                  showToast('Please add a description for this file');
                 }
               }}
               style={{ display: 'none' }}
@@ -326,7 +334,7 @@ export default function DisputeWizard({
                 htmlFor="evidenceFile"
                 className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}
               >
-                <FaFileUpload /> Upload File
+                <FileUp /> Upload File
               </label>
             </div>
           </div>
@@ -338,7 +346,7 @@ export default function DisputeWizard({
             {disputeData.evidence.map((evidence) => (
               <div key={evidence.id} className={cn(commonStyles.evidenceItem, themeStyles.evidenceItem)}>
                 <div className={commonStyles.evidenceIcon}>
-                  <FaFileUpload />
+                  <FileUp />
                 </div>
                 <div className={commonStyles.evidenceInfo}>
                   <div className={commonStyles.evidenceName}>{evidence.file.name}</div>
@@ -353,7 +361,7 @@ export default function DisputeWizard({
                   onClick={() => removeEvidence(evidence.id)}
                   aria-label="Remove evidence file"
                 >
-                  <FaTrash />
+                  <Trash2 />
                 </button>
               </div>
             ))}
@@ -463,7 +471,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, resolutionPreference: 'refund' })}
           >
-            <FaDollarSign className={commonStyles.resolutionIcon} />
+            <DollarSign className={commonStyles.resolutionIcon} />
             <h4>Full Refund</h4>
             <p>Request complete refund of payment</p>
           </div>
@@ -477,7 +485,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, resolutionPreference: 'partial_refund' })}
           >
-            <FaDollarSign className={commonStyles.resolutionIcon} />
+            <DollarSign className={commonStyles.resolutionIcon} />
             <h4>Partial Refund</h4>
             <p>Request refund for incomplete work</p>
           </div>
@@ -491,7 +499,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, resolutionPreference: 'revision' })}
           >
-            <FaCheckCircle className={commonStyles.resolutionIcon} />
+            <CheckCircle className={commonStyles.resolutionIcon} />
             <h4>Work Revision</h4>
             <p>Request changes to meet requirements</p>
           </div>
@@ -505,7 +513,7 @@ export default function DisputeWizard({
             )}
             onClick={() => setDisputeData({ ...disputeData, resolutionPreference: 'mediation' })}
           >
-            <FaInfoCircle className={commonStyles.resolutionIcon} />
+            <Info className={commonStyles.resolutionIcon} />
             <h4>Mediation</h4>
             <p>Let our team help find a solution</p>
           </div>
@@ -632,7 +640,7 @@ export default function DisputeWizard({
       </div>
 
       <div className={cn(commonStyles.warningBox, themeStyles.warningBox)}>
-        <FaExclamationTriangle />
+        <AlertTriangle />
         <p><strong>Important:</strong> Filing a false or fraudulent dispute may result in account suspension. Please ensure all information provided is accurate and truthful.</p>
       </div>
     </div>
@@ -641,31 +649,31 @@ export default function DisputeWizard({
   // Validation
   const validateStep1 = async () => {
     if (disputeData.disputeType === 'other' && !disputeData.customType) {
-      alert('Please specify the type of issue');
+      showToast('Please specify the type of issue');
       return false;
     }
     return true;
   };
 
   const validateStep2 = async () => {
-    if (disputeData.evidence.length === 0) {
-      const proceed = confirm('You haven\'t uploaded any evidence. Disputes with evidence are more likely to be resolved favorably. Continue anyway?');
-      return proceed;
+    if (disputeData.evidence.length === 0 && !skipEvidence) {
+      setShowEvidenceModal(true);
+      return false;
     }
     return true;
   };
 
   const validateStep3 = async () => {
     if (!disputeData.title || disputeData.title.length < 10) {
-      alert('Please provide a descriptive title (at least 10 characters)');
+      showToast('Please provide a descriptive title (at least 10 characters)');
       return false;
     }
     if (!disputeData.description || disputeData.description.length < 100) {
-      alert('Please provide a detailed description (at least 100 characters)');
+      showToast('Please provide a detailed description (at least 100 characters)');
       return false;
     }
     if (!disputeData.desiredOutcome) {
-      alert('Please specify your desired outcome');
+      showToast('Please specify your desired outcome');
       return false;
     }
     return true;
@@ -673,7 +681,7 @@ export default function DisputeWizard({
 
   const validateStep5 = async () => {
     if (!disputeData.understoodProcess || !disputeData.agreedToTerms) {
-      alert('Please agree to the terms and confirm you understand the process');
+      showToast('Please agree to the terms and confirm you understand the process');
       return false;
     }
     return true;
@@ -711,7 +719,7 @@ export default function DisputeWizard({
       const result = await api.disputes.create(formData) as any;
 
       localStorage.removeItem(`dispute_draft_${contractId}`);
-      alert('Dispute submitted successfully. Our team will review it within 24 hours.');
+      showToast('Dispute submitted successfully. Our team will review it within 24 hours.', 'success');
 
       if (onComplete) {
         onComplete(result.id);
@@ -720,16 +728,13 @@ export default function DisputeWizard({
       }
     } catch (error) {
       console.error('Error submitting dispute:', error);
-      alert('Failed to submit dispute. Please try again.');
+      showToast('Failed to submit dispute. Please try again.');
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Your progress will be saved as a draft.')) {
-      saveDraft();
-      router.back();
-    }
+    setShowCancelModal(true);
   };
 
   const steps = [
@@ -770,16 +775,53 @@ export default function DisputeWizard({
   ];
 
   return (
-    <WizardContainer
-      title="File a Dispute"
-      subtitle={`Contract: ${projectName || contractId}`}
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-      isLoading={isSubmitting}
-      saveProgress={saveDraft}
-    />
+    <>
+      <WizardContainer
+        title="File a Dispute"
+        subtitle={`Contract: ${projectName || contractId}`}
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+        isLoading={isSubmitting}
+        saveProgress={saveDraft}
+      />
+      <Modal
+        isOpen={showCancelModal}
+        title="Cancel Dispute Filing"
+        onClose={() => setShowCancelModal(false)}
+        footer={
+          <>
+            <button onClick={() => setShowCancelModal(false)}>Continue Editing</button>
+            <button onClick={() => { saveDraft(); setShowCancelModal(false); router.back(); }}>Yes, Cancel</button>
+          </>
+        }
+      >
+        <p>Are you sure you want to cancel? Your progress will be saved as a draft.</p>
+      </Modal>
+      <Modal
+        isOpen={showEvidenceModal}
+        title="No Evidence Uploaded"
+        onClose={() => setShowEvidenceModal(false)}
+        footer={
+          <>
+            <button onClick={() => setShowEvidenceModal(false)}>Go Back</button>
+            <button onClick={() => { setSkipEvidence(true); setShowEvidenceModal(false); setCurrentStep(2); }}>Continue Without Evidence</button>
+          </>
+        }
+      >
+        <p>You haven&apos;t uploaded any evidence. Disputes with evidence are more likely to be resolved favorably. Continue anyway?</p>
+      </Modal>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

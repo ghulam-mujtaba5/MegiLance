@@ -2,7 +2,7 @@
 from sqlalchemy import String, Integer, Text, Float, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 import enum
 
@@ -37,8 +37,8 @@ class Milestone(Base):
     paid_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     feedback: Mapped[str] = mapped_column(Text, nullable=True)
     order_index: Mapped[int] = mapped_column(Integer, default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     contract: Mapped["Contract"] = relationship("Contract", back_populates="milestone_items")

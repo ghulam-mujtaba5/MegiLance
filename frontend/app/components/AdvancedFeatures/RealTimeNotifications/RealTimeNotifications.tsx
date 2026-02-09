@@ -6,9 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { getAuthToken } from '@/lib/api';
 import { 
-  FaBell, FaCheck, FaEnvelope, FaDollarSign, FaBriefcase, 
-  FaExclamationTriangle, FaTimes, FaEllipsisV 
-} from 'react-icons/fa';
+  Bell, Check, Mail, DollarSign, Briefcase, 
+  AlertTriangle, X, MoreVertical, type LucideIcon 
+} from 'lucide-react';
 import commonStyles from './RealTimeNotifications.common.module.css';
 import lightStyles from './RealTimeNotifications.light.module.css';
 import darkStyles from './RealTimeNotifications.dark.module.css';
@@ -32,12 +32,12 @@ interface RealTimeNotificationsProps {
   autoMarkAsRead?: boolean;
 }
 
-const notificationIcons = {
-  message: FaEnvelope,
-  payment: FaDollarSign,
-  project: FaBriefcase,
-  system: FaBell,
-  warning: FaExclamationTriangle,
+const notificationIcons: Record<string, LucideIcon> = {
+  message: Mail,
+  payment: DollarSign,
+  project: Briefcase,
+  system: Bell,
+  warning: AlertTriangle,
 };
 
 const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
@@ -227,7 +227,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Notifications"
       >
-        <FaBell />
+        <Bell size={20} />
         {unreadCount > 0 && <span className={styles.badge}>{unreadCount > 9 ? '9+' : unreadCount}</span>}
         {connectionStatus !== 'connected' && (
           <span className={styles.connectionIndicator} title={connectionStatus} />
@@ -240,7 +240,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
             <h3 className={styles.headerTitle}>Notifications</h3>
             {unreadCount > 0 && (
               <button onClick={handleMarkAllAsRead} className={styles.markAllButton}>
-                <FaCheck /> Mark all as read
+                <Check size={14} /> Mark all as read
               </button>
             )}
           </div>
@@ -248,7 +248,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
           <div className={styles.notificationList}>
             {notifications.length > 0 ? (
               notifications.slice(0, maxDisplayed).map((notification) => {
-                const Icon = notificationIcons[notification.type] || FaBell;
+                const Icon = notificationIcons[notification.type] || Bell;
                 return (
                   <div
                     key={notification.id}
@@ -259,7 +259,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
                     onClick={() => handleNotificationClick(notification)}
                   >
                     <div className={styles.notificationIcon}>
-                      <Icon />
+                      <Icon size={16} />
                     </div>
                     <div className={styles.notificationContent}>
                       <div className={styles.notificationTitle}>{notification.title}</div>
@@ -273,14 +273,14 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
                       onClick={(e) => handleDeleteNotification(notification.id, e)}
                       aria-label="Delete notification"
                     >
-                      <FaTimes />
+                      <X size={14} />
                     </button>
                   </div>
                 );
               })
             ) : (
               <div className={styles.emptyState}>
-                <FaBell />
+                <Bell size={24} />
                 <p>No notifications yet</p>
               </div>
             )}

@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { tagsApi } from '@/lib/api';
 import type { Tag, TagFormData } from '@/types/api';
 import { Tag as TagIcon, Plus, Edit2, Trash2, TrendingUp, Hash } from 'lucide-react';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
 import commonStyles from './Tags.common.module.css';
 import lightStyles from './Tags.light.module.css';
 import darkStyles from './Tags.dark.module.css';
@@ -27,6 +29,8 @@ const TagsManagement: React.FC = () => {
   const [name, setName] = useState('');
   const [tagType, setTagType] = useState<'skill' | 'priority' | 'location' | 'budget' | 'general'>('general');
   const [description, setDescription] = useState('');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTagId, setDeleteTagId] = useState<number | null>(null);
 
   useEffect(() => {
     loadTags();
@@ -94,8 +98,6 @@ const TagsManagement: React.FC = () => {
   };
 
   const handleDelete = async (tagId: number) => {
-    if (!confirm('Are you sure you want to delete this tag?')) return;
-
     try {
       setError(null);
       await tagsApi.delete(tagId);
@@ -336,7 +338,7 @@ const TagsManagement: React.FC = () => {
                     <Edit2 size={16} />
                   </button>
                   <button
-                    onClick={() => handleDelete(tag.id)}
+                    onClick={() => { setDeleteTagId(tag.id); setShowDeleteModal(true); }}
                     className={cn(commonStyles.actionBtn, themeStyles.actionBtn)}
                     data-action="delete"
                     aria-label="Delete tag"
@@ -349,6 +351,19 @@ const TagsManagement: React.FC = () => {
           ))}
         </div>
       )}
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => { setShowDeleteModal(false); setDeleteTagId(null); }}
+        title="Delete Tag"
+        size="small"
+      >
+        <p>Are you sure you want to delete this tag?</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteTagId(null); }}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (deleteTagId !== null) handleDelete(deleteTagId); setShowDeleteModal(false); setDeleteTagId(null); }}>Delete</Button>
+        </div>
+      </Modal>
     </div>
   );
 };

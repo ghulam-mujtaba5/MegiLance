@@ -307,7 +307,7 @@ async def admin_block_user(
     if not hasattr(current_user, 'role') or current_user.role != 'admin':
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    from datetime import timedelta
+    from datetime import timedelta, timezone
     
     service = ContentModerationService(db)
     

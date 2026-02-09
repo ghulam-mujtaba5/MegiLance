@@ -10,6 +10,7 @@ import { timeEntriesApi, contractsApi } from '@/lib/api';
 import type { TimeEntry, TimeEntrySummary, Contract } from '@/types/api';
 import { Play, Square, Clock, DollarSign, Calendar, Check, X, Download } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
+import Modal from '@/app/components/Modal/Modal';
 
 import commonStyles from './TimeTracking.common.module.css';
 import lightStyles from './TimeTracking.light.module.css';
@@ -35,6 +36,8 @@ const TimeTracking: React.FC = () => {
   // Filters
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteEntryId, setDeleteEntryId] = useState<number | null>(null);
 
   useEffect(() => {
     loadContracts();
@@ -151,8 +154,6 @@ const TimeTracking: React.FC = () => {
   };
 
   const handleDelete = async (entryId: number) => {
-    if (!confirm('Delete this time entry?')) return;
-    
     try {
       await timeEntriesApi.delete(entryId);
       loadTimeEntries();
@@ -407,7 +408,7 @@ const TimeTracking: React.FC = () => {
                             )}
                             {entry.status === 'draft' && (
                               <button
-                                onClick={() => handleDelete(entry.id)}
+                                onClick={() => { setDeleteEntryId(entry.id); setShowDeleteModal(true); }}
                                 className={cn(commonStyles.iconBtn, themeStyles.iconBtn, commonStyles.deleteBtn)}
                                 title="Delete"
                               >
@@ -425,6 +426,18 @@ const TimeTracking: React.FC = () => {
           </div>
         </>
       )}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => { setShowDeleteModal(false); setDeleteEntryId(null); }}
+        title="Delete Time Entry"
+        size="small"
+      >
+        <p>Are you sure you want to delete this time entry?</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteEntryId(null); }}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (deleteEntryId !== null) handleDelete(deleteEntryId); setShowDeleteModal(false); setDeleteEntryId(null); }}>Delete</Button>
+        </div>
+      </Modal>
     </div>
   );
 };

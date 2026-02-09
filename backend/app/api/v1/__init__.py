@@ -1,12 +1,12 @@
 # @AI-HINT: API v1 exports
 from . import (
     health, users, auth, projects, proposals, contracts, portfolio, payments,
-    client, upload, assessments, interviews, verification,
-    analytics_pro, escrow_pro, notifications_pro, teams, audit, features,
+    client, assessments, interviews, verification,
+    analytics_pro, escrow_pro, notifications_pro, teams, audit,
     export_import, i18n, rate_limiting, webhooks, scheduler,
     reports, referrals, moderation, bulk_operations, saved_searches,
     activity_feed, api_keys, comments, file_versions, custom_fields,
-    templates, calendar, organizations, notification_preferences, two_factor,
+    templates, organizations, notification_preferences, two_factor,
     email_templates, integrations, push_notifications, invoice_tax,
     contract_builder, skill_graph, social_login, timezone, backup_restore,
     portfolio_builder, compliance, learning_center,
@@ -16,36 +16,42 @@ from . import (
     time_entries, invoices, escrow, categories, favorites, tags,
     support_tickets, refunds, search, websocket, uploads, portal_endpoints,
     analytics, job_alerts, ai_services, fraud_detection, stripe,
-    user_feedback, custom_branding, audit_trail, career_development,
-    referral_program, communication_center, metrics_dashboard,
+    user_feedback, custom_branding, career_development,
+    communication_center, metrics_dashboard,
     data_analytics_export, availability_calendar,
-    review_responses, platform_compliance, notification_settings,
-    search_analytics, rate_cards, proposal_templates, portfolio_showcase,
+    review_responses,
+    search_analytics, rate_cards, proposal_templates,
     notes_tags, custom_statuses, skill_taxonomy, search_advanced,
-    realtime_notifications, ai_matching, security, video_communication, mock,
+    realtime_notifications, ai_matching, security, video_communication,
     # Version 2.0 features
-    multicurrency, ai_advanced, admin_analytics,  # admin_fraud_alerts temporarily disabled
+    multicurrency, ai_advanced, admin_analytics, admin_fraud_alerts,
     # Billion Dollar Upgrade
-    scope_change,
+    scope_change, wallet, community, workroom, feature_flags,
+    # Pakistan Payments
+    pakistan_payments,
     # Blog & News
     blog,
     # Public clients showcase
     public_clients,
     # Fiverr/Upwork Feature Parity - Gig Marketplace & Seller Tiers
-    gigs, seller_stats, talent_invitations
+    gigs, seller_stats, talent_invitations,
+    # External Projects
+    external_projects,
+    # AI Writing
+    ai_writing,
+    # Chatbot
+    chatbot,
 )
-
-# complete_integrations imported separately in routers.py to avoid circular import
 
 __all__ = [
     "health", "users", "auth", "projects", "proposals", "contracts",
-    "portfolio", "payments", "client", "upload", "assessments", "interviews",
+    "portfolio", "payments", "client", "assessments", "interviews",
     "verification", "analytics_pro", "escrow_pro", "notifications_pro",
-    "teams", "audit", "features", "export_import", "i18n", "rate_limiting",
+    "teams", "audit", "export_import", "i18n", "rate_limiting",
     "webhooks", "scheduler", "reports", "referrals",
     "moderation", "bulk_operations", "saved_searches", "activity_feed",
     "api_keys", "comments", "file_versions", "custom_fields", "templates",
-    "calendar", "organizations", "notification_preferences", "two_factor",
+    "organizations", "notification_preferences", "two_factor",
     "email_templates", "integrations", "push_notifications", "invoice_tax",
     "contract_builder", "skill_graph", "social_login", "timezone",
     "backup_restore", "portfolio_builder", "compliance",
@@ -56,15 +62,16 @@ __all__ = [
     "tags", "support_tickets", "refunds", "search", "websocket", "uploads",
     "portal_endpoints", "analytics", "job_alerts", "ai_services",
     "fraud_detection", "stripe", "user_feedback", "custom_branding",
-    "audit_trail", "career_development", "referral_program",
+    "career_development",
     "communication_center", "metrics_dashboard", "data_analytics_export",
     "availability_calendar", "review_responses",
-    "platform_compliance", "notification_settings", "search_analytics",
-    "rate_cards", "proposal_templates", "portfolio_showcase", "notes_tags",
+    "search_analytics",
+    "rate_cards", "proposal_templates", "notes_tags",
     "custom_statuses", "skill_taxonomy", "search_advanced",
     "realtime_notifications", "ai_matching", "security", "video_communication",
-    "mock", "multicurrency", "ai_advanced",
-    "admin_analytics", "scope_change", "blog", "public_clients",
-    # Fiverr/Upwork Feature Parity
-    "gigs", "seller_stats", "talent_invitations"
+    "multicurrency", "ai_advanced", "admin_analytics", "admin_fraud_alerts",
+    "scope_change", "wallet", "community", "workroom", "feature_flags",
+    "pakistan_payments", "blog", "public_clients",
+    "gigs", "seller_stats", "talent_invitations",
+    "external_projects", "ai_writing", "chatbot",
 ]

@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { FaTachometerAlt, FaBriefcase, FaFileContract, FaWallet, FaChartLine, FaUser, FaCog, FaPaperPlane } from 'react-icons/fa';
+import { Gauge, Briefcase, FileText, Wallet, TrendingUp, User, Settings, SendHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import MegiLanceLogo from '@/app/components/MegiLanceLogo/MegiLanceLogo';
 import commonStyles from './FreelancerSidebarNav.common.module.css';
@@ -13,14 +13,14 @@ import lightStyles from './FreelancerSidebarNav.light.module.css';
 import darkStyles from './FreelancerSidebarNav.dark.module.css';
 
 const navItems = [
-  { href: '/freelancer/dashboard', label: 'Dashboard', icon: FaTachometerAlt },
-  { href: '/freelancer/my-jobs', label: 'My Jobs', icon: FaBriefcase },
-  { href: '/freelancer/proposals', label: 'Proposals', icon: FaPaperPlane },
-  { href: '/freelancer/contracts', label: 'Contracts', icon: FaFileContract },
-  { href: '/freelancer/wallet', label: 'Wallet', icon: FaWallet },
-  { href: '/freelancer/analytics', label: 'Analytics', icon: FaChartLine },
-  { href: '/freelancer/profile', label: 'Profile', icon: FaUser },
-  { href: '/freelancer/settings', label: 'Settings', icon: FaCog },
+  { href: '/freelancer/dashboard', label: 'Dashboard', icon: Gauge },
+  { href: '/freelancer/my-jobs', label: 'My Jobs', icon: Briefcase },
+  { href: '/freelancer/proposals', label: 'Proposals', icon: SendHorizontal },
+  { href: '/freelancer/contracts', label: 'Contracts', icon: FileText },
+  { href: '/freelancer/wallet', label: 'Wallet', icon: Wallet },
+  { href: '/freelancer/analytics', label: 'Analytics', icon: TrendingUp },
+  { href: '/freelancer/profile', label: 'Profile', icon: User },
+  { href: '/freelancer/settings', label: 'Settings', icon: Settings },
 ];
 
 const FreelancerSidebarNav = () => {

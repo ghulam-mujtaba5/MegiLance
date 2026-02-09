@@ -548,3 +548,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+.confirmText {
+  font-size: 0.95rem;
+  line-height: 1.5;
+}

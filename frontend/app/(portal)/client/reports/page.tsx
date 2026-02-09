@@ -5,8 +5,10 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
+import Select from '@/app/components/Select/Select';
 import Loading from '@/app/components/Loading/Loading';
 import { portalApi, analyticsApi } from '@/lib/api';
+import { PageTransition, ScrollReveal } from '@/components/Animations';
 import { 
   BarChart3, 
   TrendingUp, 
@@ -75,7 +77,9 @@ export default function ClientReportsPage() {
   }
 
   return (
+    <PageTransition>
     <div className={cn(commonStyles.container, themeStyles.container)}>
+      <ScrollReveal>
       <div className={commonStyles.header}>
         <div>
           <h1 className={cn(commonStyles.title, themeStyles.title)}>Reports & Analytics</h1>
@@ -84,21 +88,23 @@ export default function ClientReportsPage() {
           </p>
         </div>
         <div className={commonStyles.headerActions}>
-          <select
+          <Select
+            id="date-range"
+            options={[
+              { value: '7d', label: 'Last 7 days' },
+              { value: '30d', label: 'Last 30 days' },
+              { value: '90d', label: 'Last 90 days' },
+              { value: '1y', label: 'Last year' },
+            ]}
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className={cn(commonStyles.dateSelect, themeStyles.dateSelect)}
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-            <option value="1y">Last year</option>
-          </select>
+          />
           <Button variant="outline" iconBefore={<Download size={18} />}>
             Export Report
           </Button>
         </div>
       </div>
+      </ScrollReveal>
 
       {loading ? (
         <Loading />
@@ -184,10 +190,39 @@ export default function ClientReportsPage() {
             <div className={cn(commonStyles.chartCard, themeStyles.chartCard)}>
               <h3 className={cn(commonStyles.chartTitle, themeStyles.chartTitle)}>
                 <PieChart size={20} />
-                Spending by Category
+                Spending Distribution
               </h3>
               <div className={commonStyles.chartPlaceholder}>
-                <p className={commonStyles.noData}>Category breakdown coming soon</p>
+                {spendingData.length > 0 ? (
+                  <div className={commonStyles.distributionChart}>
+                    {spendingData.map((item, index) => {
+                      const total = spendingData.reduce((s, d) => s + d.spending, 0);
+                      const pct = total > 0 ? Math.round((item.spending / total) * 100) : 0;
+                      const colors = ['#4573df', '#27AE60', '#F2C94C', '#e81123', '#ff9800', '#9b59b6'];
+                      return (
+                        <div key={index} className={commonStyles.distributionRow}>
+                          <span
+                            className={commonStyles.distributionDot}
+                            style={{ background: colors[index % colors.length] }}
+                          />
+                          <span className={commonStyles.distributionLabel}>{item.name}</span>
+                          <div className={commonStyles.distributionBarWrap}>
+                            <div
+                              className={commonStyles.distributionBarFill}
+                              style={{
+                                width: `${pct}%`,
+                                background: colors[index % colors.length],
+                              }}
+                            />
+                          </div>
+                          <span className={commonStyles.distributionValue}>{pct}%</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className={commonStyles.noData}>No spending data to display</p>
+                )}
               </div>
             </div>
           </div>
@@ -222,5 +257,6 @@ export default function ClientReportsPage() {
         </>
       )}
     </div>
+    </PageTransition>
   );
 }

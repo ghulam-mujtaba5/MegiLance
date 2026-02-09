@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { FaChartLine, FaExclamationTriangle, FaCheckCircle, FaLightbulb } from 'react-icons/fa';
+import { TrendingUp, AlertTriangle, CheckCircle, Lightbulb } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import api from '@/lib/api';
 
@@ -75,7 +75,7 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <FaChartLine className="text-blue-500" size={20} />
+        <TrendingUp className="text-blue-500" size={20} />
         <h3 className={styles.title}>Project Feasibility Check</h3>
       </div>
 
@@ -124,7 +124,7 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
           {result.flags.length > 0 && (
             <div className="mb-4">
               <h4 className="text-sm font-bold mb-2 flex items-center gap-2 text-red-500">
-                <FaExclamationTriangle /> Potential Issues
+                <AlertTriangle size={16} /> Potential Issues
               </h4>
               <ul className={styles.flagsList}>
                 {result.flags.map((flag, idx) => (
@@ -139,12 +139,12 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
           {result.recommendations.length > 0 && (
             <div className={styles.recommendations}>
               <h4 className="text-sm font-bold mb-2 flex items-center gap-2 text-blue-500">
-                <FaLightbulb /> Recommendations
+                <Lightbulb size={16} /> Recommendations
               </h4>
               <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
                 {result.recommendations.map((rec, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <FaCheckCircle className="mt-1 text-green-500 flex-shrink-0" size={12} />
+                    <CheckCircle className="mt-1 text-green-500 flex-shrink-0" size={12} />
                     <span>{rec}</span>
                   </li>
                 ))}

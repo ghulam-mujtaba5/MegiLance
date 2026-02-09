@@ -5,7 +5,12 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { timeEntriesApi as _timeEntriesApi } from '@/lib/api';
+import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Textarea from '@/app/components/Textarea/Textarea';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
+import { Clock, Play, Pause, Square, Trash2, Plus, X } from 'lucide-react';
 import commonStyles from './TimeEntries.common.module.css';
 import lightStyles from './TimeEntries.light.module.css';
 import darkStyles from './TimeEntries.dark.module.css';
@@ -89,6 +94,7 @@ export default function TimeEntriesPage() {
     tags: [] as string[],
   });
   const [tagInput, setTagInput] = useState('');
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -176,10 +182,9 @@ export default function TimeEntriesPage() {
   };
 
   const deleteEntry = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this time entry?')) return;
-
     try {
       await timeEntriesApi.delete(id);
+      setDeleteTargetId(null);
       loadData();
     } catch (error) {
       console.error('Failed to delete entry:', error);
@@ -220,13 +225,13 @@ export default function TimeEntriesPage() {
                   Track your work hours and manage time entries
                 </p>
               </div>
-              <button
+              <Button
+                variant="primary"
                 onClick={() => setShowTimer(true)}
                 disabled={!!activeTimer}
-                className={cn(commonStyles.startButton, themeStyles.startButton)}
               >
-                ⏱️ Start Timer
-              </button>
+                <Clock size={16} /> Start Timer
+              </Button>
             </div>
 
             {/* Week Summary */}
@@ -302,37 +307,33 @@ export default function TimeEntriesPage() {
             {/* Filters */}
             <ScrollReveal>
               <div className={commonStyles.filters}>
-                <select
+                <Select
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value as typeof dateRange)}
-                  className={cn(commonStyles.filterSelect, themeStyles.filterSelect)}
-                >
-                  <option value="today">Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                </select>
+                  options={[
+                    { value: 'today', label: 'Today' },
+                    { value: 'week', label: 'This Week' },
+                    { value: 'month', label: 'This Month' },
+                  ]}
+                />
 
-                <select
+                <Select
                   value={selectedProject}
                   onChange={(e) => setSelectedProject(e.target.value)}
-                  className={cn(commonStyles.filterSelect, themeStyles.filterSelect)}
-                >
-                  <option value="all">All Projects</option>
-                  {projects.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
+                  options={[
+                    { value: 'all', label: 'All Projects' },
+                    ...projects.map(p => ({ value: p.id, label: p.name })),
+                  ]}
+                />
 
-                <select
+                <Select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className={cn(commonStyles.filterSelect, themeStyles.filterSelect)}
-                >
-                  <option value="all">All Status</option>
-                  {Object.entries(statusConfig).map(([key, { label }]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
+                  options={[
+                    { value: 'all', label: 'All Status' },
+                    ...Object.entries(statusConfig).map(([key, { label }]) => ({ value: key, label })),
+                  ]}
+                />
               </div>
             </ScrollReveal>
           </div>
@@ -410,10 +411,11 @@ export default function TimeEntriesPage() {
                         </span>
                       )}
                       <button
-                        onClick={() => deleteEntry(entry.id)}
+                        onClick={() => setDeleteTargetId(entry.id)}
                         className={cn(commonStyles.deleteBtn, themeStyles.deleteBtn)}
+                        aria-label="Delete entry"
                       >
-                        🗑️
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -440,47 +442,41 @@ export default function TimeEntriesPage() {
               <div className={commonStyles.modalContent}>
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Project *</label>
-                  <select
+                  <Select
                     value={newEntry.project_id}
                     onChange={(e) => setNewEntry(prev => ({ ...prev, project_id: e.target.value }))}
-                    className={cn(commonStyles.select, themeStyles.select)}
-                  >
-                    <option value="">Select a project</option>
-                    {projects.map(p => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
+                    options={[
+                      { value: '', label: 'Select a project' },
+                      ...projects.map(p => ({ value: p.id, label: p.name })),
+                    ]}
+                  />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Task Description *</label>
-                  <input
-                    type="text"
+                  <Input
                     value={newEntry.task_description}
                     onChange={(e) => setNewEntry(prev => ({ ...prev, task_description: e.target.value }))}
                     placeholder="What are you working on?"
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Tags</label>
                   <div className={commonStyles.tagInput}>
-                    <input
-                      type="text"
+                    <Input
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                       placeholder="Add a tag"
-                      className={cn(commonStyles.input, themeStyles.input)}
                     />
-                    <button
-                      type="button"
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={addTag}
-                      className={cn(commonStyles.addTagBtn, themeStyles.addTagBtn)}
                     >
-                      Add
-                    </button>
+                      <Plus size={14} /> Add
+                    </Button>
                   </div>
                   {newEntry.tags.length > 0 && (
                     <div className={commonStyles.selectedTags}>
@@ -509,30 +505,40 @@ export default function TimeEntriesPage() {
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Notes (optional)</label>
-                  <textarea
+                  <Textarea
                     value={newEntry.notes}
                     onChange={(e) => setNewEntry(prev => ({ ...prev, notes: e.target.value }))}
                     placeholder="Any additional notes..."
                     rows={3}
-                    className={cn(commonStyles.textarea, themeStyles.textarea)}
                   />
                 </div>
               </div>
 
               <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
-                <button
-                  onClick={() => setShowTimer(false)}
-                  className={cn(commonStyles.cancelBtn, themeStyles.cancelBtn)}
-                >
-                  Cancel
-                </button>
-                <button
+                <Button variant="ghost" onClick={() => setShowTimer(false)}>Cancel</Button>
+                <Button
+                  variant="primary"
                   onClick={startTimer}
                   disabled={!newEntry.project_id || !newEntry.task_description.trim()}
-                  className={cn(commonStyles.startTimerBtn, themeStyles.startTimerBtn)}
                 >
-                  ⏱️ Start Timer
-                </button>
+                  <Clock size={16} /> Start Timer
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteTargetId && (
+          <div className={commonStyles.modalOverlay} onClick={() => setDeleteTargetId(null)}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={(e) => e.stopPropagation()}>
+              <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>Delete Time Entry</h2>
+              <p className={cn(commonStyles.confirmText, themeStyles.confirmText)}>
+                Are you sure you want to delete this time entry? This action cannot be undone.
+              </p>
+              <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
+                <Button variant="ghost" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
+                <Button variant="danger" onClick={() => deleteEntry(deleteTargetId)}>Delete</Button>
               </div>
             </div>
           </div>

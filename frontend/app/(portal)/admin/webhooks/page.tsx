@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { webhooksApi } from '@/lib/api';
+import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Badge from '@/app/components/Badge/Badge';
+import Modal from '@/app/components/Modal/Modal';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -52,6 +56,15 @@ export default function WebhooksPage() {
     events: [] as string[],
     secret: '',
   });
+
+  // Toast + delete confirmation
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const availableEvents = [
     { id: 'project.created', label: 'Project Created', category: 'Projects' },
@@ -158,23 +171,24 @@ export default function WebhooksPage() {
   };
 
   const handleDeleteWebhook = async (webhookId: string) => {
-    if (!confirm('Are you sure you want to delete this webhook?')) return;
-    
     try {
       await webhooksApi.delete(webhookId);
+      setDeleteTargetId(null);
+      showToast('Webhook deleted');
       loadWebhooks();
     } catch (error) {
       console.error('Failed to delete webhook:', error);
+      showToast('Failed to delete webhook', 'error');
     }
   };
 
   const handleTestWebhook = async (webhookId: string) => {
     try {
       await webhooksApi.test(webhookId);
-      alert('Test webhook sent!');
+      showToast('Test webhook sent!');
     } catch (error) {
       console.error('Failed to test webhook:', error);
-      alert('Failed to send test webhook');
+      showToast('Failed to send test webhook', 'error');
     }
   };
 
@@ -253,12 +267,9 @@ export default function WebhooksPage() {
                 Configure webhook endpoints for real-time event notifications
               </p>
             </div>
-            <button
-              className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-              onClick={() => setShowCreateModal(true)}
-            >
+            <Button variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
               + Add Webhook
-            </button>
+            </Button>
           </div>
         </ScrollReveal>
 
@@ -290,12 +301,9 @@ export default function WebhooksPage() {
             <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
               <span className={commonStyles.emptyIcon}>🔗</span>
               <p>No webhooks configured</p>
-              <button
-                className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-                onClick={() => setShowCreateModal(true)}
-              >
+              <Button variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
                 Add your first webhook
-              </button>
+              </Button>
             </div>
           ) : (
             webhooks.map((webhook) => (
@@ -341,30 +349,18 @@ export default function WebhooksPage() {
                 </div>
 
                 <div className={commonStyles.webhookActions}>
-                  <button
-                    className={cn(commonStyles.actionButton, themeStyles.actionButton)}
-                    onClick={() => handleTestWebhook(webhook.id)}
-                  >
+                  <Button variant="secondary" size="sm" onClick={() => handleTestWebhook(webhook.id)}>
                     🧪 Test
-                  </button>
-                  <button
-                    className={cn(commonStyles.actionButton, themeStyles.actionButton)}
-                    onClick={() => handleViewLogs(webhook)}
-                  >
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => handleViewLogs(webhook)}>
                     📋 Logs
-                  </button>
-                  <button
-                    className={cn(commonStyles.actionButton, themeStyles.actionButton)}
-                    onClick={() => handleToggleWebhook(webhook.id, webhook.status)}
-                  >
+                  </Button>
+                  <Button variant="secondary" size="sm" onClick={() => handleToggleWebhook(webhook.id, webhook.status)}>
                     {webhook.status === 'active' ? '⏸️ Pause' : '▶️ Enable'}
-                  </button>
-                  <button
-                    className={cn(commonStyles.dangerButton, themeStyles.dangerButton)}
-                    onClick={() => handleDeleteWebhook(webhook.id)}
-                  >
+                  </Button>
+                  <Button variant="danger" size="sm" onClick={() => setDeleteTargetId(webhook.id)}>
                     Delete
-                  </button>
+                  </Button>
                 </div>
               </StaggerItem>
             ))
@@ -387,33 +383,28 @@ export default function WebhooksPage() {
               <div className={commonStyles.modalBody}>
                 <div className={commonStyles.formGroup}>
                   <label>Name</label>
-                  <input
-                    type="text"
+                  <Input
                     value={newWebhook.name}
                     onChange={(e) => setNewWebhook({ ...newWebhook, name: e.target.value })}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     placeholder="e.g., Slack Notifications"
                   />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label>Endpoint URL</label>
-                  <input
+                  <Input
                     type="url"
                     value={newWebhook.url}
                     onChange={(e) => setNewWebhook({ ...newWebhook, url: e.target.value })}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     placeholder="https://example.com/webhooks"
                   />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label>Secret (optional)</label>
-                  <input
-                    type="text"
+                  <Input
                     value={newWebhook.secret}
                     onChange={(e) => setNewWebhook({ ...newWebhook, secret: e.target.value })}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     placeholder="Webhook signing secret"
                   />
                   <p className={cn(commonStyles.hint, themeStyles.hint)}>
@@ -453,19 +444,17 @@ export default function WebhooksPage() {
                 </div>
               </div>
               <div className={commonStyles.modalFooter}>
-                <button
-                  className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
-                  onClick={() => setShowCreateModal(false)}
-                >
+                <Button variant="secondary" size="md" onClick={() => setShowCreateModal(false)}>
                   Cancel
-                </button>
-                <button
-                  className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                </Button>
+                <Button
+                  variant="primary"
+                  size="md"
                   onClick={handleCreateWebhook}
                   disabled={!newWebhook.name.trim() || !newWebhook.url.trim() || newWebhook.events.length === 0}
                 >
                   Create Webhook
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -518,6 +507,24 @@ export default function WebhooksPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteTargetId && (
+        <Modal isOpen onClose={() => setDeleteTargetId(null)} title="Delete Webhook">
+          <p className={commonStyles.confirmText}>Are you sure you want to delete this webhook? This action cannot be undone.</p>
+          <div className={commonStyles.modalActions}>
+            <Button variant="secondary" size="sm" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
+            <Button variant="danger" size="sm" onClick={() => handleDeleteWebhook(deleteTargetId)}>Delete</Button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 }

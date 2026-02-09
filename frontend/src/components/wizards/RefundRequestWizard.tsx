@@ -9,7 +9,7 @@ import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardConta
 import commonStyles from './RefundRequestWizard.common.module.css';
 import lightStyles from './RefundRequestWizard.light.module.css';
 import darkStyles from './RefundRequestWizard.dark.module.css';
-import { FaUndo, FaExclamationTriangle, FaFileUpload, FaCalculator } from 'react-icons/fa';
+import { Undo2, AlertTriangle, FileUp, Calculator } from 'lucide-react';
 import api from '@/lib/api';
 
 interface EvidenceFile {
@@ -61,6 +61,11 @@ export default function RefundRequestWizard({
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const [refundData, setRefundData] = useState<RefundData>({
     paymentId,
@@ -115,7 +120,7 @@ export default function RefundRequestWizard({
   const Step1Reason = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaUndo className={commonStyles.icon} />
+        <Undo2 className={commonStyles.icon} />
         <div>
           <h2>Refund Request</h2>
           <p>Select the reason for requesting a refund</p>
@@ -123,7 +128,7 @@ export default function RefundRequestWizard({
       </div>
 
       <div className={cn(commonStyles.warningBox, themeStyles.warningBox)}>
-        <FaExclamationTriangle />
+        <AlertTriangle />
         <div>
           <strong>Important:</strong> Refund requests are carefully reviewed. Please provide accurate information and supporting evidence.
         </div>
@@ -180,7 +185,7 @@ export default function RefundRequestWizard({
   const Step2Evidence = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaFileUpload className={commonStyles.icon} />
+        <FileUp className={commonStyles.icon} />
         <div>
           <h2>Supporting Evidence</h2>
           <p>Upload documents to support your refund request</p>
@@ -197,7 +202,7 @@ export default function RefundRequestWizard({
           style={{ display: 'none' }}
         />
         <label htmlFor="evidence-upload" className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}>
-          <FaFileUpload />
+          <FileUp />
           Upload Evidence
         </label>
         <p className={commonStyles.uploadHint}>
@@ -260,7 +265,7 @@ export default function RefundRequestWizard({
   const Step3Calculation = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaCalculator className={commonStyles.icon} />
+        <Calculator className={commonStyles.icon} />
         <div>
           <h2>Refund Amount</h2>
           <p>Specify the amount you're requesting</p>
@@ -411,7 +416,7 @@ export default function RefundRequestWizard({
   const validateStep1 = async () => {
     if (!refundData.reason) return false;
     if (refundData.reasonDetails.length < 50) {
-      alert('Please provide more details (minimum 50 characters)');
+      showToast('Please provide more details (minimum 50 characters)');
       return false;
     }
     return true;
@@ -419,11 +424,11 @@ export default function RefundRequestWizard({
 
   const validateStep3 = async () => {
     if (refundData.refundAmount <= 0 || refundData.refundAmount > originalAmount) {
-      alert('Invalid refund amount');
+      showToast('Invalid refund amount');
       return false;
     }
     if (!refundData.justification || refundData.justification.length < 30) {
-      alert('Please provide justification for the refund amount');
+      showToast('Please provide justification for the refund amount');
       return false;
     }
     return true;
@@ -486,15 +491,26 @@ export default function RefundRequestWizard({
   ];
 
   return (
-    <WizardContainer
-      title="Refund Request"
-      subtitle={`Payment #${paymentId}`}
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      isLoading={isSubmitting}
-      completeBtnText="Submit Refund Request"
-    />
+    <>
+      <WizardContainer
+        title="Refund Request"
+        subtitle={`Payment #${paymentId}`}
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        isLoading={isSubmitting}
+        completeBtnText="Submit Refund Request"
+      />
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

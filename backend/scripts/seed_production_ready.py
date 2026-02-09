@@ -12,7 +12,7 @@ Creates realistic demo data for MegiLance platform including:
 import sys
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 import random
 
 # Add parent directory to path
@@ -453,7 +453,7 @@ def seed_users():
     """Seed demo users"""
     print("\n[2/5] Seeding users...")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     hashed_password = get_password_hash(DEFAULT_PASSWORD)
     
     created_count = 0
@@ -505,7 +505,7 @@ def seed_skills_and_categories():
     """Seed skills and categories"""
     print("\n[3/5] Seeding skills and categories...")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     skill_count = 0
     category_count = 0
     
@@ -548,7 +548,7 @@ def seed_projects():
     """Seed demo projects"""
     print("\n[4/5] Seeding projects...")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Get client IDs
     result = execute_query(
@@ -579,7 +579,7 @@ def seed_projects():
         client_id = random.choice(clients)
         
         # Create date in the past (within last 30 days)
-        created_date = (datetime.utcnow() - timedelta(days=random.randint(1, 30))).isoformat()
+        created_date = (datetime.now(timezone.utc) - timedelta(days=random.randint(1, 30))).isoformat()
         
         execute_query(
             """INSERT INTO projects (
@@ -614,7 +614,7 @@ def seed_proposals():
     """Seed demo proposals"""
     print("\n[5/5] Seeding proposals...")
     
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     # Get freelancer IDs
     result = execute_query(

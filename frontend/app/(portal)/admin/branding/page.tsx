@@ -6,6 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { brandingApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Textarea from '@/app/components/Textarea/Textarea';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import commonStyles from './Branding.common.module.css';
 import lightStyles from './Branding.light.module.css';
@@ -69,6 +72,13 @@ export default function BrandingPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadSettings();
@@ -93,19 +103,24 @@ export default function BrandingPage() {
       setSaving(true);
       await (brandingApi as any).updateConfig?.('default', settings) || await (brandingApi as any).updateSettings?.(settings);
       setHasChanges(false);
-      alert('Branding settings saved!');
+      showToast('Branding settings saved!');
     } catch (err) {
       console.error('Failed to save settings:', err);
-      alert('Failed to save settings');
+      showToast('Failed to save settings', 'error');
     } finally {
       setSaving(false);
     }
   };
 
   const handleReset = () => {
-    if (!confirm('Reset all branding settings to defaults?')) return;
+    setShowResetConfirm(true);
+  };
+
+  const confirmReset = () => {
     setSettings(DEFAULT_SETTINGS);
     setHasChanges(true);
+    setShowResetConfirm(false);
+    showToast('Settings reset to defaults.');
   };
 
   const updateField = (field: keyof BrandingSettings, value: any) => {
@@ -200,10 +215,10 @@ export default function BrandingPage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div className={commonStyles.tabsRow || ''} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+          <div className={commonStyles.tabsRow}>
             {tabs.map(tab => (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                style={{ padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontWeight: activeTab === tab.id ? 600 : 400, opacity: activeTab === tab.id ? 1 : 0.7 }}>
+                className={cn(commonStyles.tabBtn, themeStyles.tabBtn, activeTab === tab.id && commonStyles.tabBtnActive, activeTab === tab.id && themeStyles.tabBtnActive)}>
                 {tab.label}
               </button>
             ))}
@@ -216,38 +231,31 @@ export default function BrandingPage() {
               <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
                 <div className={commonStyles.formGroup}>
                   <label>Company Name</label>
-                  <input
-                    type="text"
+                  <Input
                     value={settings.company_name}
                     onChange={e => updateField('company_name', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
                 <div className={commonStyles.formGroup}>
                   <label>Tagline</label>
-                  <input
-                    type="text"
+                  <Input
                     value={settings.tagline}
                     onChange={e => updateField('tagline', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
                 <div className={commonStyles.formGroup}>
                   <label>Support Email</label>
-                  <input
+                  <Input
                     type="email"
                     value={settings.support_email}
                     onChange={e => updateField('support_email', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
                 <div className={commonStyles.formGroup}>
                   <label>Footer Text</label>
-                  <input
-                    type="text"
+                  <Input
                     value={settings.footer_text}
                     onChange={e => updateField('footer_text', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
               </div>
@@ -264,11 +272,9 @@ export default function BrandingPage() {
                         value={settings.primary_color}
                         onChange={e => updateField('primary_color', e.target.value)}
                       />
-                      <input
-                        type="text"
+                      <Input
                         value={settings.primary_color}
                         onChange={e => updateField('primary_color', e.target.value)}
-                        className={cn(commonStyles.input, themeStyles.input)}
                       />
                     </div>
                     <span className={commonStyles.colorHint}>Buttons, links, active states</span>
@@ -281,11 +287,9 @@ export default function BrandingPage() {
                         value={settings.secondary_color}
                         onChange={e => updateField('secondary_color', e.target.value)}
                       />
-                      <input
-                        type="text"
+                      <Input
                         value={settings.secondary_color}
                         onChange={e => updateField('secondary_color', e.target.value)}
-                        className={cn(commonStyles.input, themeStyles.input)}
                       />
                     </div>
                     <span className={commonStyles.colorHint}>Success states, positive actions</span>
@@ -298,11 +302,9 @@ export default function BrandingPage() {
                         value={settings.accent_color}
                         onChange={e => updateField('accent_color', e.target.value)}
                       />
-                      <input
-                        type="text"
+                      <Input
                         value={settings.accent_color}
                         onChange={e => updateField('accent_color', e.target.value)}
-                        className={cn(commonStyles.input, themeStyles.input)}
                       />
                     </div>
                     <span className={commonStyles.colorHint}>Highlights, notifications</span>
@@ -315,11 +317,10 @@ export default function BrandingPage() {
               <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
                 <div className={commonStyles.formGroup}>
                   <label>Logo (Light Mode)</label>
-                  <input
+                  <Input
                     type="url"
                     value={settings.logo_url}
                     onChange={e => updateField('logo_url', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     placeholder="https://... (image URL)"
                   />
                   {settings.logo_url && (
@@ -330,11 +331,10 @@ export default function BrandingPage() {
                 </div>
                 <div className={commonStyles.formGroup}>
                   <label>Logo (Dark Mode)</label>
-                  <input
+                  <Input
                     type="url"
                     value={settings.logo_dark_url}
                     onChange={e => updateField('logo_dark_url', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     placeholder="https://... (image URL)"
                   />
                   {settings.logo_dark_url && (
@@ -345,11 +345,10 @@ export default function BrandingPage() {
                 </div>
                 <div className={commonStyles.formGroup}>
                   <label>Favicon</label>
-                  <input
+                  <Input
                     type="url"
                     value={settings.favicon_url}
                     onChange={e => updateField('favicon_url', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     placeholder="https://... (32x32 icon URL)"
                   />
                 </div>
@@ -360,15 +359,11 @@ export default function BrandingPage() {
               <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
                 <div className={commonStyles.formGroup}>
                   <label>Font Family</label>
-                  <select
+                  <Select
                     value={settings.font_family}
                     onChange={e => updateField('font_family', e.target.value)}
-                    className={cn(commonStyles.input, themeStyles.input)}
-                  >
-                    {FONT_OPTIONS.map(font => (
-                      <option key={font} value={font}>{font}</option>
-                    ))}
-                  </select>
+                    options={FONT_OPTIONS.map(font => ({ value: font, label: font }))}
+                  />
                 </div>
                 <div className={cn(commonStyles.fontPreview, themeStyles.fontPreview)}>
                   <h3 style={{ fontFamily: settings.font_family }}>
@@ -388,20 +383,16 @@ export default function BrandingPage() {
                 <div className={commonStyles.formRow}>
                   <div className={commonStyles.formGroup}>
                     <label>Terms of Service URL</label>
-                    <input
-                      type="text"
+                    <Input
                       value={settings.terms_url}
                       onChange={e => updateField('terms_url', e.target.value)}
-                      className={cn(commonStyles.input, themeStyles.input)}
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
                     <label>Privacy Policy URL</label>
-                    <input
-                      type="text"
+                    <Input
                       value={settings.privacy_url}
                       onChange={e => updateField('privacy_url', e.target.value)}
-                      className={cn(commonStyles.input, themeStyles.input)}
                     />
                   </div>
                 </div>
@@ -410,21 +401,19 @@ export default function BrandingPage() {
                 <div className={commonStyles.formRow}>
                   <div className={commonStyles.formGroup}>
                     <label>🐦 Twitter</label>
-                    <input
+                    <Input
                       type="url"
                       value={settings.social_links.twitter || ''}
                       onChange={e => updateSocialLink('twitter', e.target.value)}
-                      className={cn(commonStyles.input, themeStyles.input)}
                       placeholder="https://twitter.com/..."
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
                     <label>💼 LinkedIn</label>
-                    <input
+                    <Input
                       type="url"
                       value={settings.social_links.linkedin || ''}
                       onChange={e => updateSocialLink('linkedin', e.target.value)}
-                      className={cn(commonStyles.input, themeStyles.input)}
                       placeholder="https://linkedin.com/company/..."
                     />
                   </div>
@@ -432,21 +421,19 @@ export default function BrandingPage() {
                 <div className={commonStyles.formRow}>
                   <div className={commonStyles.formGroup}>
                     <label>📘 Facebook</label>
-                    <input
+                    <Input
                       type="url"
                       value={settings.social_links.facebook || ''}
                       onChange={e => updateSocialLink('facebook', e.target.value)}
-                      className={cn(commonStyles.input, themeStyles.input)}
                       placeholder="https://facebook.com/..."
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
                     <label>📷 Instagram</label>
-                    <input
+                    <Input
                       type="url"
                       value={settings.social_links.instagram || ''}
                       onChange={e => updateSocialLink('instagram', e.target.value)}
-                      className={cn(commonStyles.input, themeStyles.input)}
                       placeholder="https://instagram.com/..."
                     />
                   </div>
@@ -461,10 +448,9 @@ export default function BrandingPage() {
                   <p className={commonStyles.hint}>
                     Add custom CSS to override default styles. Use with caution.
                   </p>
-                  <textarea
+                  <Textarea
                     value={settings.custom_css}
                     onChange={e => updateField('custom_css', e.target.value)}
-                    className={cn(commonStyles.textarea, themeStyles.input)}
                     rows={12}
                     placeholder="/* Custom CSS rules */"
                   />
@@ -486,6 +472,24 @@ export default function BrandingPage() {
           </ScrollReveal>
         )}
       </div>
+
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <Modal isOpen onClose={() => setShowResetConfirm(false)} title="Reset Branding">
+          <p className={commonStyles.confirmText}>Are you sure you want to reset all branding settings to defaults? This cannot be undone.</p>
+          <div className={commonStyles.modalActions}>
+            <Button variant="secondary" size="sm" onClick={() => setShowResetConfirm(false)}>Cancel</Button>
+            <Button variant="danger" size="sm" onClick={confirmReset}>Reset All</Button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 }

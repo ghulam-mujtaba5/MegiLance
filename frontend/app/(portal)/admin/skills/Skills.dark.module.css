@@ -165,3 +165,18 @@
 .modalFooter {
   border-color: rgba(255, 255, 255, 0.05);
 }
+
+.confirmText {
+  color: #d1d5db;
+}
+
+.toast {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.4);
+  color: #4ade80;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.4);
+  color: #f87171;
+}

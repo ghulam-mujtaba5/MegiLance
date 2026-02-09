@@ -7,9 +7,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { 
-  FaUser, FaBriefcase, FaCertificate, FaFileAlt, 
-  FaCheckCircle, FaArrowRight, FaArrowLeft 
-} from 'react-icons/fa';
+  User, Briefcase, Award, FileText, 
+  CheckCircle, ArrowRight, ArrowLeft 
+} from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea';
@@ -57,10 +57,10 @@ interface PortfolioItem {
 }
 
 const steps = [
-  { id: 1, title: 'Basic Info', icon: FaUser },
-  { id: 2, title: 'Professional', icon: FaBriefcase },
-  { id: 3, title: 'Portfolio', icon: FaFileAlt },
-  { id: 4, title: 'Verification', icon: FaCertificate },
+  { id: 1, title: 'Basic Info', icon: User },
+  { id: 2, title: 'Professional', icon: Briefcase },
+  { id: 3, title: 'Portfolio', icon: FileText },
+  { id: 4, title: 'Verification', icon: Award },
 ];
 
 const ProfileWizard: React.FC = () => {
@@ -237,7 +237,7 @@ const ProfileWizard: React.FC = () => {
           >
             <div className={styles.stepIcon}>
               {currentStep > step.id ? (
-                <FaCheckCircle size={24} />
+                <CheckCircle size={24} />
               ) : (
                 <step.icon size={24} />
               )}
@@ -504,7 +504,7 @@ const ProfileWizard: React.FC = () => {
             onClick={handleBack}
             disabled={loading}
           >
-            <FaArrowLeft className="mr-2" />
+            <ArrowLeft className="mr-2" size={16} />
             Back
           </Button>
         )}
@@ -517,12 +517,12 @@ const ProfileWizard: React.FC = () => {
           {currentStep < steps.length ? (
             <>
               Next
-              <FaArrowRight className="ml-2" />
+              <ArrowRight className="ml-2" size={16} />
             </>
           ) : (
             <>
               Complete Profile
-              <FaCheckCircle className="ml-2" />
+              <CheckCircle className="ml-2" size={16} />
             </>
           )}
         </Button>

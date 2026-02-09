@@ -4,8 +4,12 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { FileText, BarChart3, Star, Eye, Pencil, Copy, Trash2, Plus } from 'lucide-react';
 import { proposalTemplatesApi as _proposalTemplatesApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
+import Modal from '@/app/components/Modal/Modal';
+import Loader from '@/app/components/Loader/Loader';
+import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -44,6 +48,13 @@ export default function ProposalTemplatesPage() {
   const [editingTemplate, setEditingTemplate] = useState<Partial<ProposalTemplate> | null>(null);
   const [tagInput, setTagInput] = useState('');
   const [previewTemplate, setPreviewTemplate] = useState<ProposalTemplate | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ProposalTemplate | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadTemplates();
@@ -63,7 +74,7 @@ export default function ProposalTemplatesPage() {
 
   const handleSave = async () => {
     if (!editingTemplate?.name || !editingTemplate.cover_letter) {
-      alert('Please fill in name and cover letter');
+      showToast('Please fill in name and cover letter', 'error');
       return;
     }
     try {
@@ -74,19 +85,21 @@ export default function ProposalTemplatesPage() {
       }
       setShowModal(false);
       setEditingTemplate(null);
+      showToast('Template saved successfully');
       loadTemplates();
     } catch (err) {
-      console.error('Failed to save template:', err);
+      showToast('Failed to save template', 'error');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this template?')) return;
+  const handleDelete = async (template: ProposalTemplate) => {
     try {
-      await proposalTemplatesApi.delete(id);
+      await proposalTemplatesApi.delete(template.id);
+      setDeleteTarget(null);
+      showToast('Template deleted');
       loadTemplates();
     } catch (err) {
-      console.error('Failed to delete template:', err);
+      showToast('Failed to delete template', 'error');
     }
   };
 
@@ -166,7 +179,7 @@ export default function ProposalTemplatesPage() {
   if (loading) {
     return (
       <div className={cn(commonStyles.container, themeStyles.container)}>
-        <div className={commonStyles.loading}>Loading templates...</div>
+        <Loader size="lg" />
       </div>
     );
   }
@@ -192,7 +205,7 @@ export default function ProposalTemplatesPage() {
         <StaggerContainer delay={0.1} className={commonStyles.statsRow}>
           <StaggerItem>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>📄</span>
+              <span className={commonStyles.statIcon}><FileText size={20} /></span>
               <div className={commonStyles.statInfo}>
                 <strong>{templates.length}</strong>
                 <span>Templates</span>
@@ -201,7 +214,7 @@ export default function ProposalTemplatesPage() {
           </StaggerItem>
           <StaggerItem>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>📊</span>
+              <span className={commonStyles.statIcon}><BarChart3 size={20} /></span>
               <div className={commonStyles.statInfo}>
                 <strong>{templates.reduce((sum, t) => sum + (t.use_count || 0), 0)}</strong>
                 <span>Total Uses</span>
@@ -210,7 +223,7 @@ export default function ProposalTemplatesPage() {
           </StaggerItem>
           <StaggerItem>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>⭐</span>
+              <span className={commonStyles.statIcon}><Star size={20} /></span>
               <div className={commonStyles.statInfo}>
                 <strong>{templates.find(t => t.is_default)?.name || 'None'}</strong>
                 <span>Default Template</span>
@@ -222,14 +235,12 @@ export default function ProposalTemplatesPage() {
         {/* Templates Grid */}
         {templates.length === 0 ? (
           <ScrollReveal delay={0.2}>
-            <div className={cn(commonStyles.emptyCard, themeStyles.emptyCard)}>
-              <span>📝</span>
-              <h3>No Templates Yet</h3>
-              <p>Create your first proposal template to save time on future proposals.</p>
-              <Button variant="primary" onClick={openNewTemplate}>
-                Create Template
-              </Button>
-            </div>
+            <EmptyState
+              title="No Templates Yet"
+              description="Create your first proposal template to save time on future proposals."
+              actionLabel="Create Template"
+              onAction={openNewTemplate}
+            />
           </ScrollReveal>
         ) : (
           <StaggerContainer delay={0.2} className={commonStyles.templatesGrid}>
@@ -243,7 +254,7 @@ export default function ProposalTemplatesPage() {
                   )}
                 >
                   {template.is_default && (
-                    <div className={commonStyles.defaultBadge}>⭐ Default</div>
+                    <div className={commonStyles.defaultBadge}><Star size={14} /> Default</div>
                   )}
 
                   <div className={commonStyles.cardHeader}>
@@ -294,40 +305,44 @@ export default function ProposalTemplatesPage() {
                     <Button
                       variant="ghost"
                       size="sm"
+                      iconBefore={<Eye size={14} />}
                       onClick={() => setPreviewTemplate(template)}
                     >
-                      👁️ Preview
+                      Preview
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
+                      iconBefore={<Pencil size={14} />}
                       onClick={() => { setEditingTemplate(template); setShowModal(true); }}
                     >
-                      ✏️ Edit
+                      Edit
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
+                      iconBefore={<Copy size={14} />}
                       onClick={() => handleDuplicate(template)}
                     >
-                      📋 Duplicate
+                      Duplicate
                     </Button>
                     {!template.is_default && (
                       <Button
                         variant="ghost"
                         size="sm"
+                        iconBefore={<Star size={14} />}
                         onClick={() => handleSetDefault(template)}
                       >
-                        ⭐ Set Default
+                        Set Default
                       </Button>
                     )}
                     <Button
-                      variant="ghost"
+                      variant="danger"
                       size="sm"
-                      className={commonStyles.deleteBtn}
-                      onClick={() => handleDelete(template.id)}
+                      iconBefore={<Trash2 size={14} />}
+                      onClick={() => setDeleteTarget(template)}
                     >
-                      🗑️
+                      Delete
                     </Button>
                   </div>
                 </div>
@@ -336,6 +351,20 @@ export default function ProposalTemplatesPage() {
           </StaggerContainer>
         )}
       </div>
+
+      <Modal isOpen={deleteTarget !== null} title="Delete Template" onClose={() => setDeleteTarget(null)}>
+        <p>Are you sure you want to delete &quot;{deleteTarget?.name}&quot;? This action cannot be undone.</p>
+        <div className={commonStyles.cardActions} style={{ marginTop: '1.5rem', justifyContent: 'flex-end' }}>
+          <Button variant="secondary" size="sm" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <Button variant="danger" size="sm" onClick={() => deleteTarget && handleDelete(deleteTarget)}>Delete</Button>
+        </div>
+      </Modal>
+
+      {toast && (
+        <div className={cn(commonStyles.toast, themeStyles.toast, toast.type === 'error' && themeStyles.toastError)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 }

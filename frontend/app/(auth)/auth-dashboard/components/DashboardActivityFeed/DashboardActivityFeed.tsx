@@ -5,7 +5,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { FaDollarSign, FaBriefcase, FaTasks, FaUsers } from 'react-icons/fa';
+import { DollarSign, Briefcase, ListTodo, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardData } from '@/hooks/useDashboardData';
 
@@ -15,10 +15,10 @@ import darkStyles from './DashboardActivityFeed.dark.module.css';
 
 // Map string names from API data to actual React icon components
 const iconMap: { [key: string]: React.ElementType } = {
-  FaDollarSign,
-  FaBriefcase,
-  FaTasks,
-  FaUsers,
+  FaDollarSign: DollarSign,
+  FaBriefcase: Briefcase,
+  FaTasks: ListTodo,
+  FaUsers: Users,
 };
 
 const DashboardActivityFeed: React.FC = () => {

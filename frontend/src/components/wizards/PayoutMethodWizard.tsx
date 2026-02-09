@@ -7,21 +7,21 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './PayoutMethodWizard.common.module.css';
 import lightStyles from './PayoutMethodWizard.light.module.css';
 import darkStyles from './PayoutMethodWizard.dark.module.css';
 import {
-  FaUniversity,
-  FaPaypal,
-  FaCcStripe,
-  FaBitcoin,
-  FaGlobe,
-  FaShieldAlt,
-  FaFileUpload,
-  FaCheckCircle,
-  FaBell,
-  FaInfoCircle
-} from 'react-icons/fa';
+  Building,
+  CreditCard,
+  Bitcoin,
+  Globe,
+  ShieldCheck,
+  FileUp,
+  CheckCircle,
+  Bell,
+  Info
+} from 'lucide-react';
 
 type PayoutMethodType = 'bank' | 'paypal' | 'stripe' | 'wise' | 'crypto';
 
@@ -82,6 +82,12 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
   const [methodData, setMethodData] = useState<PayoutMethodData>({
     methodType: 'bank',
     isVerified: false,
@@ -135,7 +141,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
           )}
           onClick={() => setMethodData({ ...methodData, methodType: 'bank' })}
         >
-          <FaUniversity className={commonStyles.methodIcon} />
+          <Building className={commonStyles.methodIcon} />
           <h3>Bank Transfer</h3>
           <p className={commonStyles.methodDescription}>Direct deposit to your bank account</p>
           <div className={commonStyles.methodDetails}>
@@ -160,7 +166,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
           )}
           onClick={() => setMethodData({ ...methodData, methodType: 'paypal' })}
         >
-          <FaPaypal className={commonStyles.methodIcon} />
+          <CreditCard className={commonStyles.methodIcon} />
           <h3>PayPal</h3>
           <p className={commonStyles.methodDescription}>Fast and convenient PayPal payments</p>
           <div className={commonStyles.methodDetails}>
@@ -185,7 +191,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
           )}
           onClick={() => setMethodData({ ...methodData, methodType: 'stripe' })}
         >
-          <FaCcStripe className={commonStyles.methodIcon} />
+          <CreditCard className={commonStyles.methodIcon} />
           <h3>Stripe</h3>
           <p className={commonStyles.methodDescription}>Instant payouts with Stripe Connect</p>
           <div className={commonStyles.methodDetails}>
@@ -210,7 +216,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
           )}
           onClick={() => setMethodData({ ...methodData, methodType: 'wise' })}
         >
-          <FaGlobe className={commonStyles.methodIcon} />
+          <Globe className={commonStyles.methodIcon} />
           <h3>Wise (TransferWise)</h3>
           <p className={commonStyles.methodDescription}>Low-fee international transfers</p>
           <div className={commonStyles.methodDetails}>
@@ -235,7 +241,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
           )}
           onClick={() => setMethodData({ ...methodData, methodType: 'crypto' })}
         >
-          <FaBitcoin className={commonStyles.methodIcon} />
+          <Bitcoin className={commonStyles.methodIcon} />
           <h3>Cryptocurrency</h3>
           <p className={commonStyles.methodDescription}>Receive payments in crypto</p>
           <div className={commonStyles.methodDetails}>
@@ -253,7 +259,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
       </div>
 
       <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-        <FaInfoCircle />
+        <Info />
         <p>You can add multiple payout methods and switch between them anytime. One method can be set as your default.</p>
       </div>
     </div>
@@ -471,7 +477,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
               placeholder="0x..."
             />
             <small className={commonStyles.warning}>
-              <FaInfoCircle /> Double-check your wallet address. Transactions cannot be reversed.
+              <Info /> Double-check your wallet address. Transactions cannot be reversed.
             </small>
           </div>
         </>
@@ -483,7 +489,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
   const Step3Verification = () => (
     <div className={commonStyles.stepContent}>
       <div className={cn(commonStyles.verificationBox, themeStyles.verificationBox)}>
-        <FaShieldAlt className={commonStyles.verificationIcon} />
+        <ShieldCheck className={commonStyles.verificationIcon} />
         <h3>Account Verification</h3>
         <p>To ensure security and comply with regulations, we need to verify your payout method.</p>
       </div>
@@ -505,18 +511,18 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
                 style={{ display: 'none' }}
               />
               <label htmlFor="verificationDoc" className={commonStyles.uploadButton}>
-                <FaFileUpload /> Upload Document
+                <FileUp /> Upload Document
               </label>
               {methodData.verificationDocument && (
                 <div className={commonStyles.uploadedFile}>
-                  <FaCheckCircle /> {methodData.verificationDocument.name}
+                  <CheckCircle /> {methodData.verificationDocument.name}
                 </div>
               )}
             </div>
           </div>
 
           <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-            <FaInfoCircle />
+            <Info />
             <p><strong>Micro-deposit verification:</strong> We&apos;ll send two small deposits (less than $1 each) to your account within 1-3 business days. You&apos;ll need to verify these amounts to complete setup.</p>
           </div>
         </>
@@ -524,21 +530,21 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
 
       {methodData.methodType === 'paypal' && (
         <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-          <FaInfoCircle />
+          <Info />
           <p>We&apos;ll send a test payment of $0.01 to {methodData.paypalEmail}. Please confirm receipt in your PayPal account.</p>
         </div>
       )}
 
       {methodData.methodType === 'stripe' && (
         <div className={cn(commonStyles.successBox, themeStyles.successBox)}>
-          <FaCheckCircle />
+          <CheckCircle />
           <p>Stripe accounts are verified automatically through their platform. No additional verification needed.</p>
         </div>
       )}
 
       {methodData.methodType === 'wise' && (
         <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-          <FaInfoCircle />
+          <Info />
           <p>We&apos;ll send a verification email to {methodData.wiseEmail}. Please confirm your email to complete verification.</p>
         </div>
       )}
@@ -562,7 +568,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
           </div>
 
           <div className={cn(commonStyles.warningBox, themeStyles.warningBox)}>
-            <FaInfoCircle />
+            <Info />
             <p><strong>Important:</strong> Test transactions may take 15-60 minutes depending on network congestion. You can complete this step later.</p>
           </div>
         </>
@@ -616,7 +622,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
       </div>
 
       <div className={commonStyles.settingsSection}>
-        <h3><FaBell /> Notification Preferences</h3>
+        <h3><Bell /> Notification Preferences</h3>
         
         <div className={commonStyles.formGroup}>
           <label className={commonStyles.checkboxLabel}>
@@ -701,7 +707,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
 
         {methodData.isPrimary && (
           <div className={cn(commonStyles.primaryBadge, themeStyles.primaryBadge)}>
-            <FaCheckCircle /> Primary Method
+            <CheckCircle /> Primary Method
           </div>
         )}
       </div>
@@ -712,35 +718,35 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
   const validateStep2 = async () => {
     if (methodData.methodType === 'bank') {
       if (!methodData.accountHolderName || !methodData.bankName) {
-        alert('Please fill in all required bank details');
+        showToast('Please fill in all required bank details');
         return false;
       }
       if (methodData.country === 'US' && (!methodData.accountNumber || !methodData.routingNumber)) {
-        alert('Please enter your account and routing numbers');
+        showToast('Please enter your account and routing numbers');
         return false;
       }
       if (methodData.country !== 'US' && (!methodData.iban || !methodData.swiftCode)) {
-        alert('Please enter your IBAN and SWIFT code');
+        showToast('Please enter your IBAN and SWIFT code');
         return false;
       }
     } else if (methodData.methodType === 'paypal') {
       if (!methodData.paypalEmail || !methodData.paypalEmail.includes('@')) {
-        alert('Please enter a valid PayPal email');
+        showToast('Please enter a valid PayPal email');
         return false;
       }
     } else if (methodData.methodType === 'stripe') {
       if (!methodData.stripeAccountId) {
-        alert('Please enter your Stripe account ID');
+        showToast('Please enter your Stripe account ID');
         return false;
       }
     } else if (methodData.methodType === 'wise') {
       if (!methodData.wiseEmail || !methodData.wiseEmail.includes('@')) {
-        alert('Please enter a valid Wise email');
+        showToast('Please enter a valid Wise email');
         return false;
       }
     } else if (methodData.methodType === 'crypto') {
       if (!methodData.cryptoWallet || !methodData.cryptoNetwork) {
-        alert('Please enter your wallet address and select a network');
+        showToast('Please enter your wallet address and select a network');
         return false;
       }
     }
@@ -749,7 +755,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
 
   const validateStep3 = async () => {
     if (!methodData.isVerified && methodData.methodType !== 'stripe') {
-      alert('Please complete the verification process');
+      showToast('Please complete the verification process');
       return false;
     }
     return true;
@@ -768,7 +774,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
       // Clear draft
       localStorage.removeItem('payout_method_draft');
 
-      alert('Payout method added successfully!');
+      showToast('Payout method added successfully!', 'success');
       
       if (onComplete) {
         onComplete((result as any).id);
@@ -777,16 +783,13 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
       }
     } catch (error) {
       console.error('Error adding payout method:', error);
-      alert('Failed to add payout method. Please try again.');
+      showToast('Failed to add payout method. Please try again.');
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Your progress will be saved as a draft.')) {
-      saveDraft();
-      router.back();
-    }
+    setShowCancelModal(true);
   };
 
   const steps = [
@@ -819,16 +822,40 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
   ];
 
   return (
-    <WizardContainer
-      title="Add Payout Method"
-      subtitle="Set up a secure way to receive your earnings"
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-      isLoading={isSubmitting}
-      saveProgress={saveDraft}
-    />
+    <>
+      <WizardContainer
+        title="Add Payout Method"
+        subtitle="Set up a secure way to receive your earnings"
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+        isLoading={isSubmitting}
+        saveProgress={saveDraft}
+      />
+      <Modal
+        isOpen={showCancelModal}
+        title="Cancel Confirmation"
+        onClose={() => setShowCancelModal(false)}
+        footer={
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <button onClick={() => setShowCancelModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' }}>No, Continue</button>
+            <button onClick={() => { setShowCancelModal(false); saveDraft(); router.back(); }} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#e81123', color: '#fff', cursor: 'pointer' }}>Yes, Cancel</button>
+          </div>
+        }
+      >
+        <p>Are you sure you want to cancel? Your progress will be saved as a draft.</p>
+      </Modal>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

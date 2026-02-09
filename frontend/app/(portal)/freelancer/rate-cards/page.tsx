@@ -6,6 +6,10 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { rateCardsApi as _rateCardsApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
+import Modal from '@/app/components/Modal/Modal';
+import Loader from '@/app/components/Loader/Loader';
+import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { Clock, CalendarDays, DollarSign, Target, CreditCard, CheckCircle, Star, Pencil, Trash2 } from 'lucide-react';
 import commonStyles from './RateCards.common.module.css';
 import lightStyles from './RateCards.light.module.css';
 import darkStyles from './RateCards.dark.module.css';
@@ -38,10 +42,10 @@ interface PackageFeature {
 }
 
 const RATE_TYPES = [
-  { value: 'hourly', label: 'Hourly Rate', icon: '⏱️' },
-  { value: 'daily', label: 'Daily Rate', icon: '📅' },
-  { value: 'fixed', label: 'Fixed Price', icon: '💰' },
-  { value: 'milestone', label: 'Per Milestone', icon: '🎯' }
+  { value: 'hourly', label: 'Hourly Rate', icon: <Clock size={16} /> },
+  { value: 'daily', label: 'Daily Rate', icon: <CalendarDays size={16} /> },
+  { value: 'fixed', label: 'Fixed Price', icon: <DollarSign size={16} /> },
+  { value: 'milestone', label: 'Per Milestone', icon: <Target size={16} /> }
 ];
 
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'INR'];
@@ -54,6 +58,13 @@ export default function RateCardsPage() {
   const [editingCard, setEditingCard] = useState<Partial<RateCard> | null>(null);
   const [includeInput, setIncludeInput] = useState('');
   const [excludeInput, setExcludeInput] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<RateCard | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadCards();
@@ -73,30 +84,35 @@ export default function RateCardsPage() {
 
   const handleSave = async () => {
     if (!editingCard?.name || !editingCard.rate_amount) {
-      alert('Please fill in required fields');
+      showToast('Please fill in required fields.', 'error');
       return;
     }
     try {
       if (editingCard.id) {
         await rateCardsApi.update(editingCard.id, editingCard);
+        showToast('Rate card updated!');
       } else {
         await rateCardsApi.create(editingCard);
+        showToast('Rate card created!');
       }
       setShowModal(false);
       setEditingCard(null);
       loadCards();
     } catch (err) {
       console.error('Failed to save rate card:', err);
+      showToast('Failed to save rate card.', 'error');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this rate card?')) return;
+  const handleDelete = async (card: RateCard) => {
+    setDeleteTarget(null);
     try {
-      await rateCardsApi.delete(id);
+      await rateCardsApi.delete(card.id);
       loadCards();
+      showToast('Rate card deleted.');
     } catch (err) {
       console.error('Failed to delete rate card:', err);
+      showToast('Failed to delete rate card.', 'error');
     }
   };
 
@@ -184,7 +200,7 @@ export default function RateCardsPage() {
   if (loading) {
     return (
       <div className={cn(commonStyles.container, themeStyles.container)}>
-        <div className={commonStyles.loading}>Loading rate cards...</div>
+        <Loader size="lg" />
       </div>
     );
   }
@@ -210,21 +226,21 @@ export default function RateCardsPage() {
         <ScrollReveal delay={0.1}>
           <div className={commonStyles.statsRow}>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>💳</span>
+              <span className={commonStyles.statIcon}><CreditCard size={20} /></span>
               <div className={commonStyles.statInfo}>
                 <strong>{cards.length}</strong>
                 <span>Total Cards</span>
               </div>
             </div>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>✅</span>
+              <span className={commonStyles.statIcon}><CheckCircle size={20} /></span>
               <div className={commonStyles.statInfo}>
                 <strong>{cards.filter(c => c.is_active).length}</strong>
                 <span>Active</span>
               </div>
             </div>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>⭐</span>
+              <span className={commonStyles.statIcon}><Star size={20} /></span>
               <div className={commonStyles.statInfo}>
                 <strong>{cards.filter(c => c.is_featured).length}</strong>
                 <span>Featured</span>
@@ -236,14 +252,11 @@ export default function RateCardsPage() {
         {/* Cards Grid */}
         {cards.length === 0 ? (
           <ScrollReveal delay={0.2}>
-            <div className={cn(commonStyles.emptyCard, themeStyles.emptyCard)}>
-              <span>💳</span>
-              <h3>No Rate Cards Yet</h3>
-              <p>Create your first rate card to showcase your pricing to clients.</p>
-              <Button variant="primary" onClick={openNewCard}>
-                Create Rate Card
-              </Button>
-            </div>
+            <EmptyState
+              title="No Rate Cards Yet"
+              description="Create your first rate card to showcase your pricing to clients."
+              action={<Button variant="primary" onClick={openNewCard}>Create Rate Card</Button>}
+            />
           </ScrollReveal>
         ) : (
           <StaggerContainer className={commonStyles.cardsGrid}>
@@ -258,7 +271,7 @@ export default function RateCardsPage() {
                 )}
               >
                 {card.is_featured && (
-                  <div className={commonStyles.featuredBadge}>⭐ Featured</div>
+                  <div className={commonStyles.featuredBadge}><Star size={14} /> Featured</div>
                 )}
                 
                 <div className={commonStyles.cardHeader}>
@@ -323,16 +336,18 @@ export default function RateCardsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
+                    iconBefore={<Pencil size={14} />}
                     onClick={() => { setEditingCard(card); setShowModal(true); }}
                   >
-                    ✏️ Edit
+                    Edit
                   </Button>
                   <Button
                     variant="danger"
                     size="sm"
-                    onClick={() => handleDelete(card.id)}
+                    iconBefore={<Trash2 size={14} />}
+                    onClick={() => setDeleteTarget(card)}
                   >
-                    🗑️
+                    Delete
                   </Button>
                 </div>
               </StaggerItem>
@@ -474,6 +489,22 @@ export default function RateCardsPage() {
                 </Button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        <Modal isOpen={deleteTarget !== null} title="Delete Rate Card" onClose={() => setDeleteTarget(null)}>
+          <p>Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone.</p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="danger" onClick={() => deleteTarget && handleDelete(deleteTarget)}>Delete</Button>
+          </div>
+        </Modal>
+
+        {/* Toast */}
+        {toast && (
+          <div className={cn(commonStyles.toast, themeStyles.toast, toast.type === 'error' && commonStyles.toastError, toast.type === 'error' && themeStyles.toastError)}>
+            {toast.message}
           </div>
         )}
       </div>

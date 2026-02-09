@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { useTheme } from 'next-themes';
-import { FaBriefcase, FaTasks, FaUsers, FaChartBar, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { Briefcase, ListTodo, Users, BarChart3, ArrowUp, ArrowDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDashboardData } from '@/hooks/useDashboardData';
 
@@ -14,10 +14,10 @@ import darkStyles from './DashboardMetrics.dark.module.css';
 
 // Map string names from API data to actual React icon components
 const iconMap: { [key: string]: React.ElementType } = {
-  FaBriefcase,
-  FaTasks,
-  FaUsers,
-  FaChartBar,
+  FaBriefcase: Briefcase,
+  FaTasks: ListTodo,
+  FaUsers: Users,
+  FaChartBar: BarChart3,
 };
 
 const DashboardMetrics: React.FC = () => {
@@ -64,7 +64,7 @@ const DashboardMetrics: React.FC = () => {
             <div className={styles.metricValue}>{metric.value}</div>
             {metric.change && (
               <div className={cn(styles.metricChange, isPositive ? styles.positiveChange : styles.negativeChange)}>
-                {isPositive ? <FaArrowUp className={styles.changeIcon} /> : <FaArrowDown className={styles.changeIcon} />}
+                {isPositive ? <ArrowUp className={styles.changeIcon} size={14} /> : <ArrowDown className={styles.changeIcon} size={14} />}
                 <span>{metric.change}</span>
               </div>
             )}

@@ -11,3 +11,15 @@
 
 .button.primary { background: var(--primary); color: white; border: 1px solid rgba(0,0,0,0.12); }
 .button.secondary { background: var(--surface-elev); color: var(--text-primary); border: 1px solid var(--border); }
+
+/* Toast */
+.toast {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  color: #166534;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.3);
+  color: #991b1b;
+}

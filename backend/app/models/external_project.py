@@ -5,7 +5,7 @@
 from sqlalchemy import String, Integer, Float, DateTime, Text, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 
@@ -57,7 +57,7 @@ class ExternalProject(Base):
     
     # Timestamps
     posted_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    scraped_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    scraped_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     
     # Engagement tracking

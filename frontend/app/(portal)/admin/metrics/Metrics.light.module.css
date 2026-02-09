@@ -13,28 +13,27 @@
   color: #64748b;
 }
 
-.autoRefresh {
-  color: #64748b;
+/* Toggle */
+.toggleBtn {
+  background: #cbd5e1;
 }
 
-/* Time Range */
-.timeRangeSelector {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-}
-
-.rangeBtn {
-  color: #64748b;
-}
-
-.rangeBtn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-}
-
-.rangeBtnActive {
+.toggleActive {
   background: #4573df;
-  color: #ffffff;
+}
+
+.toggleLabel {
+  color: #64748b;
+}
+
+/* Empty chart message */
+.emptyChart {
+  color: #94a3b8;
+}
+
+/* Service icon */
+.serviceIcon {
+  color: #64748b;
 }
 
 /* Metric Cards */
@@ -114,17 +113,7 @@
   background: #f8fafc;
 }
 
-.statusHealthy {
-  background: #16a34a;
-}
 
-.statusDegraded {
-  background: #f59e0b;
-}
-
-.statusDown {
-  background: #dc2626;
-}
 
 .serviceName {
   color: #0f172a;
@@ -157,4 +146,16 @@
 
 .activityTime {
   color: #94a3b8;
+}
+
+/* Toast */
+.toast {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  color: #166534;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.3);
+  color: #991b1b;
 }

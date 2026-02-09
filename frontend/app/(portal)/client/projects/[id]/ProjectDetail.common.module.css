@@ -97,3 +97,31 @@
   padding: 2rem;
   opacity: 0.7;
 }
+
+.textDanger {
+  color: #ef4444;
+}
+
+.fraudResultWrapper {
+  margin-top: 0.75rem;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 1.75rem;
+  border-radius: 14px;
+  font-weight: 600;
+  z-index: 200;
+  animation: toastIn 0.4s ease;
+  backdrop-filter: blur(20px);
+}
+
+.toastError {}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

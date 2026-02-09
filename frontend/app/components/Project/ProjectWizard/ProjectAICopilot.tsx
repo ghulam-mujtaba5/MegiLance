@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { FaMagic, FaRobot, FaCheck, FaTimes } from 'react-icons/fa';
+import { Sparkles, Bot, Check, X } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import api from '@/lib/api';
 
@@ -106,7 +106,7 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
           onClick={() => setIsOpen(true)}
           className="w-full flex items-center justify-center gap-2 py-4 border-dashed border-2"
         >
-          <FaMagic className="text-purple-500" />
+          <Sparkles size={16} className="text-purple-500" />
           <span>Use AI Copilot to Draft Project</span>
         </Button>
       </div>
@@ -117,7 +117,7 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
-          <FaRobot className="text-purple-600 dark:text-purple-300" size={20} />
+          <Bot className="text-purple-600 dark:text-purple-300" size={20} />
         </div>
         <div>
           <h3 className={styles.title}>AI Project Copilot</h3>
@@ -127,7 +127,7 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
           onClick={() => setIsOpen(false)}
           className="ml-auto text-gray-400 hover:text-gray-600"
         >
-          <FaTimes />
+          <X size={16} />
         </button>
       </div>
 
@@ -159,7 +159,7 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
           disabled={!prompt.trim() || loading}
           size="sm"
         >
-          <FaMagic className="mr-2" />
+          <Sparkles size={14} className="mr-2" />
           Generate Draft
         </Button>
       </div>
@@ -167,7 +167,7 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
       {generatedData && (
         <div className={styles.resultArea}>
           <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
-            <FaCheck className="text-green-500" /> Generated Preview
+            <Check size={14} className="text-green-500" /> Generated Preview
           </h4>
           
           <div className={styles.generatedField}>

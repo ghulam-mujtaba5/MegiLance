@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { useRouter, useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FiArrowLeft, FiLoader, FiFileText, FiInfo, FiUpload } from 'react-icons/fi';
+import { ArrowLeft, Loader2, FileText, Info, Upload } from 'lucide-react';
 
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
@@ -100,7 +100,7 @@ const UserDisputeDetailsPage: React.FC = () => {
   if (loading) {
     return (
       <div className={cn(styles.container, styles.loadingState)}>
-        <FiLoader className={styles.spinner} />
+        <Loader2 className={styles.spinner} />
         <p>Loading dispute details...</p>
       </div>
     );
@@ -127,7 +127,7 @@ const UserDisputeDetailsPage: React.FC = () => {
         onClick={handleBack} 
         className="mb-4"
       >
-        <FiArrowLeft /> Back
+        <ArrowLeft size={16} /> Back
       </Button>
 
       <header className={styles.header}>
@@ -145,7 +145,7 @@ const UserDisputeDetailsPage: React.FC = () => {
       </header>
 
       <div className={styles.statusBanner}>
-        <FiInfo className={styles.statusIcon} />
+        <Info className={styles.statusIcon} />
         <div>
           <strong>Status: {dispute.status.replace('_', ' ')}</strong>
           <p>
@@ -180,7 +180,7 @@ const UserDisputeDetailsPage: React.FC = () => {
                   as="span"
                   isLoading={uploading}
                 >
-                  <FiUpload /> Add Evidence
+                  <Upload size={16} /> Add Evidence
                 </Button>
               </label>
             </div>
@@ -191,7 +191,7 @@ const UserDisputeDetailsPage: React.FC = () => {
           <div className={styles.evidenceList}>
             {dispute.evidence.map((item: any, index: number) => (
               <div key={index} className={styles.evidenceItem}>
-                <FiFileText className={styles.evidenceIcon} />
+                <FileText className={styles.evidenceIcon} />
                 <span className={styles.evidenceName}>{item.filename || `Evidence ${index + 1}`}</span>
                 <Button 
                   variant="link" 

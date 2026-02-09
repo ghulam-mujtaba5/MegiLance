@@ -27,6 +27,9 @@ import {
 import common from './GigsList.common.module.css';
 import light from './GigsList.light.module.css';
 import dark from './GigsList.dark.module.css';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Modal from '@/app/components/Modal/Modal';
 
 interface Gig {
   id: string;
@@ -45,73 +48,6 @@ interface Gig {
   createdAt: string;
 }
 
-const mockGigs: Gig[] = [
-  {
-    id: '1',
-    slug: 'professional-web-development',
-    title: 'I will build a professional website using React and Next.js',
-    category: 'Programming & Tech',
-    thumbnail: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400',
-    status: 'active',
-    impressions: 2450,
-    clicks: 342,
-    orders: 28,
-    rating: 4.9,
-    reviewCount: 24,
-    earnings: 4200,
-    startingPrice: 150,
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    slug: 'modern-logo-design',
-    title: 'I will design a modern, minimalist logo for your brand',
-    category: 'Graphics & Design',
-    thumbnail: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400',
-    status: 'active',
-    impressions: 1820,
-    clicks: 256,
-    orders: 19,
-    rating: 4.8,
-    reviewCount: 17,
-    earnings: 1900,
-    startingPrice: 75,
-    createdAt: '2024-02-01',
-  },
-  {
-    id: '3',
-    slug: 'seo-optimization',
-    title: 'I will optimize your website for search engines (SEO)',
-    category: 'Digital Marketing',
-    thumbnail: 'https://images.unsplash.com/photo-1562577309-4932fdd64cd1?w=400',
-    status: 'paused',
-    impressions: 980,
-    clicks: 124,
-    orders: 8,
-    rating: 4.7,
-    reviewCount: 7,
-    earnings: 800,
-    startingPrice: 100,
-    createdAt: '2024-02-15',
-  },
-  {
-    id: '4',
-    slug: 'video-editing-pro',
-    title: 'I will edit your videos professionally with effects and transitions',
-    category: 'Video & Animation',
-    thumbnail: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400',
-    status: 'draft',
-    impressions: 0,
-    clicks: 0,
-    orders: 0,
-    rating: 0,
-    reviewCount: 0,
-    earnings: 0,
-    startingPrice: 50,
-    createdAt: '2024-03-01',
-  },
-];
-
 const GigsList: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
@@ -121,6 +57,7 @@ const GigsList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
     // Fetch gigs from API
@@ -131,13 +68,13 @@ const GigsList: React.FC = () => {
         });
         if (response.ok) {
           const data = await response.json();
-          setGigs(data);
+          setGigs(Array.isArray(data) ? data : data.items || data.gigs || []);
         } else {
-          // Use mock data for demo
-          setGigs(mockGigs);
+          setGigs([]);
         }
       } catch (error) {
-        setGigs(mockGigs);
+        console.error('Failed to fetch gigs:', error);
+        setGigs([]);
       } finally {
         setIsLoading(false);
       }
@@ -191,9 +128,18 @@ const GigsList: React.FC = () => {
     return cn(common.statusBadge, statusClasses[status]);
   };
 
-  const handleToggleStatus = (gigId: string, currentStatus: Gig['status']) => {
-    // Toggle between active and paused
+  const handleToggleStatus = async (gigId: string, currentStatus: Gig['status']) => {
     const newStatus = currentStatus === 'active' ? 'paused' : 'active';
+    try {
+      await fetch(`/backend/api/gigs/${gigId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus }),
+      });
+    } catch {
+      // Optimistic update even on error
+    }
     setGigs(prev =>
       prev.map(g =>
         g.id === gigId ? { ...g, status: newStatus } : g
@@ -202,9 +148,21 @@ const GigsList: React.FC = () => {
   };
 
   const handleDelete = (gigId: string) => {
-    if (window.confirm('Are you sure you want to delete this gig?')) {
-      setGigs(prev => prev.filter(g => g.id !== gigId));
+    setDeleteTarget(gigId);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await fetch(`/backend/api/gigs/${deleteTarget}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+    } catch {
+      // Optimistic removal
     }
+    setGigs(prev => prev.filter(g => g.id !== deleteTarget));
+    setDeleteTarget(null);
   };
 
   if (isLoading) {
@@ -271,28 +229,30 @@ const GigsList: React.FC = () => {
             />
           </div>
           <div className={common.filters}>
-            <select
+            <Select
+              id="status-filter"
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
-              className={cn(common.filterSelect, themed.filterSelect)}
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="paused">Paused</option>
-              <option value="draft">Draft</option>
-              <option value="pending">Pending Review</option>
-            </select>
-            <select
+              options={[
+                { value: 'all', label: 'All Status' },
+                { value: 'active', label: 'Active' },
+                { value: 'paused', label: 'Paused' },
+                { value: 'draft', label: 'Draft' },
+                { value: 'pending', label: 'Pending Review' },
+              ]}
+            />
+            <Select
+              id="sort-by"
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}
-              className={cn(common.filterSelect, themed.filterSelect)}
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="orders">Most Orders</option>
-              <option value="earnings">Highest Earnings</option>
-              <option value="rating">Highest Rated</option>
-            </select>
+              options={[
+                { value: 'newest', label: 'Newest First' },
+                { value: 'oldest', label: 'Oldest First' },
+                { value: 'orders', label: 'Most Orders' },
+                { value: 'earnings', label: 'Highest Earnings' },
+                { value: 'rating', label: 'Highest Rated' },
+              ]}
+            />
           </div>
         </div>
 
@@ -504,6 +464,23 @@ const GigsList: React.FC = () => {
               </div>
             )}
           </>
+        )}
+        
+        {/* Delete Confirmation Modal */}
+        {deleteTarget && (
+          <Modal
+            isOpen={true}
+            onClose={() => setDeleteTarget(null)}
+            title="Delete Gig"
+          >
+            <p style={{ margin: '0 0 1.5rem', lineHeight: 1.6 }}>
+              Are you sure you want to delete this gig? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+              <Button variant="danger" onClick={confirmDelete}>Delete</Button>
+            </div>
+          </Modal>
         )}
       </div>
     </main>

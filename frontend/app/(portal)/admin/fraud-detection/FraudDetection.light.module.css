@@ -4,10 +4,6 @@
   background-color: #f8fafc;
 }
 
-.loading {
-  color: #64748b;
-}
-
 .title {
   color: #1e293b;
 }
@@ -30,41 +26,8 @@
   color: #64748b;
 }
 
-/* Tabs */
-.tabs {
-  border-color: #e2e8f0;
-}
-
-.tab {
-  color: #64748b;
-}
-
-.tab:hover {
-  background-color: #f1f5f9;
-  color: #1e293b;
-}
-
-.tabActive {
-  background-color: #4573df;
-  color: #ffffff;
-}
-
-/* Panel */
-.panel {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-}
-
-/* Filters */
-.select {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  color: #1e293b;
-}
-
-.select:focus {
-  border-color: #4573df;
-  outline: none;
+.statIcon {
+  color: #4573df;
 }
 
 /* Transaction Card */
@@ -104,94 +67,16 @@
   border: 1px solid #e2e8f0;
 }
 
+.alertType {
+  color: #1e293b;
+}
+
 .alertMessage {
   color: #1e293b;
 }
 
 .alertMeta {
   color: #64748b;
-}
-
-.resolveButton {
-  background-color: #16a34a;
-  color: #ffffff;
-}
-
-.resolveButton:hover {
-  background-color: #15803d;
-}
-
-.dismissButton {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
-.dismissButton:hover {
-  background-color: #e2e8f0;
-}
-
-/* Rules */
-.rulesHeader {
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 1rem;
-}
-
-.sectionTitle {
-  color: #1e293b;
-}
-
-.addRuleButton {
-  background-color: #4573df;
-  color: #ffffff;
-}
-
-.addRuleButton:hover {
-  background-color: #3b62c4;
-}
-
-.ruleCard {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.ruleName {
-  color: #1e293b;
-}
-
-.ruleCondition,
-.ruleAction {
-  color: #64748b;
-}
-
-/* Toggle */
-.toggleSlider {
-  background-color: #cbd5e1;
-}
-
-.toggle input:checked + .toggleSlider {
-  background-color: #4573df;
-}
-
-/* Modal */
-.modal {
-  background-color: #ffffff;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.modalHeader {
-  border-color: #e2e8f0;
-}
-
-.modalTitle {
-  color: #1e293b;
-}
-
-.closeButton {
-  color: #64748b;
-}
-
-.closeButton:hover {
-  background-color: #f1f5f9;
 }
 
 .detailLabel {
@@ -207,33 +92,14 @@
   color: #92400e;
 }
 
-.modalActions {
-  border-color: #e2e8f0;
+/* Toast */
+.toast {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  color: #166534;
 }
 
-.clearButton {
-  background-color: #16a34a;
-  color: #ffffff;
-}
-
-.clearButton:hover {
-  background-color: #15803d;
-}
-
-.blockButton {
-  background-color: #dc2626;
-  color: #ffffff;
-}
-
-.blockButton:hover {
-  background-color: #b91c1c;
-}
-
-.reviewButton {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
-.reviewButton:hover {
-  background-color: #e2e8f0;
+.toastError {
+  border-color: rgba(232, 17, 35, 0.3);
+  color: #991b1b;
 }

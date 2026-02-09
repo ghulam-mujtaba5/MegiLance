@@ -5,7 +5,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
-import { FaSignOutAlt, FaTachometerAlt, FaBriefcase, FaUsers, FaSun, FaMoon } from 'react-icons/fa';
+import { LogOut, Gauge, Briefcase, Users, Sun, Moon } from 'lucide-react';
 import { User } from '../../types';
 import { cn } from '@/lib/utils';
 
@@ -18,9 +18,9 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: FaTachometerAlt, badge: null },
-  { href: '/projects', label: 'Projects', icon: FaBriefcase, badge: '3' },
-  { href: '/clients', label: 'Clients', icon: FaUsers, badge: null },
+  { href: '/dashboard', label: 'Dashboard', icon: Gauge, badge: null },
+  { href: '/projects', label: 'Projects', icon: Briefcase, badge: '3' },
+  { href: '/clients', label: 'Clients', icon: Users, badge: null },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ user }) => {
@@ -53,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           onClick={toggleTheme}
           aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
         >
-          {resolvedTheme === 'light' ? <FaMoon /> : <FaSun />}
+          {resolvedTheme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
         </button>
       </div>
       <div className={styles.userProfile}>
@@ -78,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       </nav>
       <div className={styles.sidebarFooter}>
         <button className={styles.logoutButton}>
-          <FaSignOutAlt className={styles.navIcon} />
+          <LogOut className={styles.navIcon} size={18} />
           <span>Logout</span>
         </button>
       </div>

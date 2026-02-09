@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { FaLightbulb, FaPlus, FaRocket } from 'react-icons/fa';
+import { Lightbulb, Plus, Rocket } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import api from '@/lib/api';
 
@@ -72,7 +72,7 @@ const UpsellSuggestions: React.FC<UpsellSuggestionsProps> = ({
           size="sm"
           className="w-full border-dashed"
         >
-          <FaRocket className="mr-2 text-purple-500" />
+          <Rocket size={16} className="mr-2 text-purple-500" />
           Get AI Upsell Suggestions
         </Button>
       </div>
@@ -82,7 +82,7 @@ const UpsellSuggestions: React.FC<UpsellSuggestionsProps> = ({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <FaLightbulb className="text-yellow-500" />
+        <Lightbulb size={18} className="text-yellow-500" />
         <h3 className={styles.title}>Boost Your Proposal Value</h3>
       </div>
 
@@ -104,7 +104,7 @@ const UpsellSuggestions: React.FC<UpsellSuggestionsProps> = ({
                 onClick={() => onAdd(suggestion)}
                 className="ml-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
               >
-                <FaPlus />
+                <Plus size={16} />
               </Button>
             </div>
           ))}

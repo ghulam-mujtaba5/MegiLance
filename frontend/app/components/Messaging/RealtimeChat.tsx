@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useWebSocket } from '@/hooks/useWebSocket';
-import { FaPaperPlane, FaCircle } from 'react-icons/fa';
+import { SendHorizontal, Circle } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 
@@ -127,7 +127,7 @@ const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomId, currentUserId, curr
       <div className={styles.header}>
         <h2 className={styles.title}>Chat</h2>
         <div className={styles.status}>
-          <FaCircle className={connected ? 'text-green-500' : 'text-gray-400'} size={10} />
+          <Circle className={connected ? 'text-green-500' : 'text-gray-400'} size={10} fill={connected ? '#22c55e' : '#9ca3af'} />
           <span>{connected ? 'Connected' : 'Disconnected'}</span>
         </div>
       </div>
@@ -180,7 +180,7 @@ const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomId, currentUserId, curr
           onClick={handleSend}
           disabled={!connected || !newMessage.trim()}
         >
-          <FaPaperPlane />
+          <SendHorizontal size={18} />
         </Button>
       </div>
     </div>

@@ -1,7 +1,7 @@
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, TYPE_CHECKING
 import enum
 
@@ -59,8 +59,8 @@ class Contract(Base):
     milestones: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of milestones
     terms: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of terms
     blockchain_hash: Mapped[str] = mapped_column(String(255), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     project: Mapped["Project"] = relationship("Project")

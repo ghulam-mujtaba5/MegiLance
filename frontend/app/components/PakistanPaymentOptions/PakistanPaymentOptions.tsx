@@ -9,17 +9,18 @@ import commonStyles from './PakistanPaymentOptions.common.module.css';
 import lightStyles from './PakistanPaymentOptions.light.module.css';
 import darkStyles from './PakistanPaymentOptions.dark.module.css';
 import {
-  FaWallet,
-  FaUniversity,
-  FaMobileAlt,
-  FaExchangeAlt,
-  FaCheckCircle,
-  FaCopy,
-  FaExternalLinkAlt,
-  FaInfoCircle,
-  FaStar,
-} from 'react-icons/fa';
-import { SiPolygon, SiEthereum } from 'react-icons/si';
+  Wallet,
+  Building,
+  Smartphone,
+  ArrowLeftRight,
+  CheckCircle,
+  Copy,
+  ExternalLink,
+  Info,
+  Star,
+  Hexagon,
+  Diamond,
+} from 'lucide-react';
 
 // Payment provider types
 type PaymentProvider = 
@@ -67,7 +68,7 @@ const PAYMENT_PROVIDERS: PaymentProviderInfo[] = [
   {
     id: 'usdc_polygon',
     name: 'USDC (Polygon)',
-    icon: <SiPolygon size={24} />,
+    icon: <Hexagon size={24} />,
     feePercent: 0.1,
     feeFixed: 0.01,
     estimatedTime: '2-5 minutes',
@@ -77,7 +78,7 @@ const PAYMENT_PROVIDERS: PaymentProviderInfo[] = [
   {
     id: 'usdc_ethereum',
     name: 'USDC (Ethereum)',
-    icon: <SiEthereum size={24} />,
+    icon: <Diamond size={24} />,
     feePercent: 0.1,
     feeFixed: 5.00,
     estimatedTime: '5-15 minutes',
@@ -86,7 +87,7 @@ const PAYMENT_PROVIDERS: PaymentProviderInfo[] = [
   {
     id: 'jazzcash',
     name: 'JazzCash',
-    icon: <FaMobileAlt size={24} />,
+    icon: <Smartphone size={24} />,
     feePercent: 1.5,
     feeFixed: 0,
     estimatedTime: 'Instant',
@@ -95,7 +96,7 @@ const PAYMENT_PROVIDERS: PaymentProviderInfo[] = [
   {
     id: 'easypaisa',
     name: 'EasyPaisa',
-    icon: <FaMobileAlt size={24} />,
+    icon: <Smartphone size={24} />,
     feePercent: 1.5,
     feeFixed: 0,
     estimatedTime: 'Instant',
@@ -104,7 +105,7 @@ const PAYMENT_PROVIDERS: PaymentProviderInfo[] = [
   {
     id: 'airtm',
     name: 'AirTM',
-    icon: <FaExchangeAlt size={24} />,
+    icon: <ArrowLeftRight size={24} />,
     feePercent: 2.0,
     feeFixed: 0,
     estimatedTime: '15-30 minutes',
@@ -113,7 +114,7 @@ const PAYMENT_PROVIDERS: PaymentProviderInfo[] = [
   {
     id: 'wise',
     name: 'Wise',
-    icon: <FaUniversity size={24} />,
+    icon: <Building size={24} />,
     feePercent: 0.5,
     feeFixed: 1.00,
     estimatedTime: '1-2 business days',
@@ -122,7 +123,7 @@ const PAYMENT_PROVIDERS: PaymentProviderInfo[] = [
   {
     id: 'payoneer',
     name: 'Payoneer',
-    icon: <FaWallet size={24} />,
+    icon: <Wallet size={24} />,
     feePercent: 2.0,
     feeFixed: 0,
     estimatedTime: 'Instant',
@@ -202,7 +203,7 @@ export default function PakistanPaymentOptions({
         }
       } catch (error) {
         console.error('Failed to connect wallet:', error);
-        alert('Failed to connect wallet. Please install MetaMask.');
+        // MetaMask failed silently or show notification
       }
     } else {
       window.open('https://metamask.io/download/', '_blank');
@@ -283,7 +284,7 @@ export default function PakistanPaymentOptions({
             >
               {provider.recommended && (
                 <div className={cn(commonStyles.recommendedBadge, themeStyles.recommendedBadge)}>
-                  <FaStar /> Recommended
+                  <Star size={14} fill="#eab308" /> Recommended
                 </div>
               )}
               
@@ -304,7 +305,7 @@ export default function PakistanPaymentOptions({
               </div>
               
               {isSelected && (
-                <FaCheckCircle className={commonStyles.selectedIcon} />
+                <CheckCircle size={16} className={commonStyles.selectedIcon} />
               )}
             </div>
           );
@@ -346,7 +347,7 @@ export default function PakistanPaymentOptions({
                 </div>
 
                 <div className={cn(commonStyles.instructions, themeStyles.instructions)}>
-                  <FaInfoCircle />
+                  <Info size={16} />
                   <p>{provider.description}</p>
                 </div>
 
@@ -358,11 +359,11 @@ export default function PakistanPaymentOptions({
                         onClick={connectWallet}
                         className={cn(commonStyles.connectButton, themeStyles.connectButton)}
                       >
-                        <FaWallet /> Connect MetaMask
+                        <Wallet size={16} /> Connect MetaMask
                       </button>
                     ) : (
                       <div className={cn(commonStyles.walletConnected, themeStyles.walletConnected)}>
-                        <FaCheckCircle />
+                        <CheckCircle size={16} />
                         <span>Connected: {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}</span>
                       </div>
                     )}
@@ -375,13 +376,13 @@ export default function PakistanPaymentOptions({
                           onClick={() => copyToClipboard('0x742d35Cc6634C0532925a3b844Bc9e7595f1E123')}
                           className={commonStyles.copyButton}
                         >
-                          {copied ? <FaCheckCircle /> : <FaCopy />}
+                          {copied ? <CheckCircle size={14} /> : <Copy size={14} />}
                         </button>
                       </div>
                     </div>
 
                     <div className={cn(commonStyles.networkWarning, themeStyles.networkWarning)}>
-                      <FaInfoCircle />
+                      <Info size={16} />
                       <span>
                         {provider.id === 'usdc_polygon' 
                           ? 'Make sure you\'re on Polygon network. Gas fees are ~$0.01!'
@@ -416,7 +417,7 @@ export default function PakistanPaymentOptions({
                       onClick={initiatePayment}
                       className={cn(commonStyles.payButton, themeStyles.payButton)}
                     >
-                      Continue to {provider.name} <FaExternalLinkAlt />
+                      Continue to {provider.name} <ExternalLink size={14} />
                     </button>
                     <p>You'll be redirected to complete payment on {provider.name}</p>
                   </div>

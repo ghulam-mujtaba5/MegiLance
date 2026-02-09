@@ -345,3 +345,23 @@
     grid-template-columns: 1fr;
   }
 }
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 1.75rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  z-index: 200;
+  animation: toastIn 0.4s ease;
+  backdrop-filter: blur(20px);
+}
+
+.toastError {}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

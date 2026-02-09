@@ -7,11 +7,13 @@ import { blogApi, BlogPost } from '@/lib/api/blog';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
 import Badge from '@/app/components/Badge/Badge';
+import Modal from '@/app/components/Modal/Modal';
 import Loader from '@/app/components/Loader/Loader';
 
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,13 +32,12 @@ export default function AdminBlogPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this post?')) {
-      try {
-        await blogApi.delete(id);
-        fetchPosts();
-      } catch (error) {
-        console.error('Failed to delete post:', error);
-      }
+    try {
+      await blogApi.delete(id);
+      setDeleteTargetId(null);
+      fetchPosts();
+    } catch (error) {
+      console.error('Failed to delete post:', error);
     }
   };
 
@@ -89,7 +90,7 @@ export default function AdminBlogPage() {
                     <Link href={`/admin/blog/${post.slug}`}>
                       <Button variant="outline" size="sm">Edit</Button>
                     </Link>
-                    <Button variant="danger" size="sm" onClick={() => handleDelete(post.id)}>Delete</Button>
+                    <Button variant="danger" size="sm" onClick={() => setDeleteTargetId(post.id)}>Delete</Button>
                   </td>
                 </tr>
               ))}
@@ -104,6 +105,17 @@ export default function AdminBlogPage() {
           </table>
         </div>
       </Card>
+
+      {/* Delete Confirmation Modal */}
+      {deleteTargetId && (
+        <Modal isOpen onClose={() => setDeleteTargetId(null)} title="Delete Post">
+          <p style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>Are you sure you want to delete this post? This action cannot be undone.</p>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <Button variant="secondary" size="sm" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
+            <Button variant="danger" size="sm" onClick={() => handleDelete(deleteTargetId)}>Delete</Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

@@ -97,7 +97,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: [
       'lucide-react',
-      'react-icons',
       'recharts',
       'framer-motion',
       'chart.js',

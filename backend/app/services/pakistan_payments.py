@@ -96,7 +96,7 @@ class WalletConnection(BaseModel):
     wallet_address: str
     network: str = "polygon"  # polygon, ethereum, bsc
     is_verified: bool = False
-    connected_at: datetime = Field(default_factory=datetime.utcnow)
+    connected_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PaymentRequest(BaseModel):

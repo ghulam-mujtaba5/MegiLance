@@ -9,22 +9,22 @@
 
 | Severity | Count | Description |
 |----------|-------|-------------|
-| 🔴 Critical | 8 | Security risks, hardcoded credentials, architecture violations |
-| 🟠 Major | 14 | Duplicate code, missing patterns, broken architecture |
-| 🟡 Minor | 12 | Style violations, missing boundaries, TODOs |
+| 🔴 Critical | 8 (5 fixed) | Security risks, hardcoded credentials, architecture violations |
+| 🟠 Major | 14 (6 fixed) | Duplicate code, missing patterns, broken architecture |
+| 🟡 Minor | 12 (4 fixed) | Style violations, missing boundaries, TODOs |
 | 🔵 Info | 6 | Optimization & best-practice suggestions |
-| **Total** | **40** | |
+| **Total** | **40** (15 fixed) | |
 
 ---
 
 ## 🔴 CRITICAL Issues
 
-### C-1: Hardcoded Demo Credentials in Production Code
+### C-1: Hardcoded Demo Credentials in Production Code ✅ FIXED
 - **File:** `frontend/app/components/Auth/DevQuickLogin/DevQuickLogin.tsx`
 - **Lines:** 23-41
-- **Detail:** Real working credentials (`admin.real@megilance.com`, `alex.fullstack@megilance.com`, `sarah.tech@megilance.com`) with password `Test123!@#` are hardcoded and explicitly enabled in both dev AND production (`// Show after mounting (both dev and production for demo)`).
+- **Detail:** Real working credentials were hardcoded and enabled in production.
 - **Risk:** Anyone can log in as admin in production.
-- **Fix:** Gate DevQuickLogin behind `NODE_ENV === 'development'` only. Never ship hardcoded credentials in production builds.
+- **Fix:** ✅ Gated behind `NODE_ENV === 'development'`. Credentials loaded from env vars (`NEXT_PUBLIC_DEV_*_EMAIL/PASSWORD`), not hardcoded. Component returns null in production.
 
 ### C-2: In-Memory Token Blacklist (No Persistence)
 - **File:** `backend/app/core/security.py`
@@ -46,12 +46,12 @@
 - **Risk:** Business logic scattered across routers makes the code unmaintainable, untestable, and prone to inconsistencies.
 - **Fix:** Migrate all `execute_query()` calls from routers into dedicated service functions.
 
-### C-5: SecurityHeadersMiddleware Overrides Set-Cookie
+### C-5: SecurityHeadersMiddleware Overrides Set-Cookie ✅ FIXED
 - **File:** `backend/main.py`
 - **Lines:** ~135-137
-- **Detail:** `response.headers["Set-Cookie"] = "Path=/; Secure; HttpOnly; SameSite=Strict"` — this overwrites ALL Set-Cookie headers on every response in production, breaking actual cookie-setting endpoints (auth login, refresh).
+- **Detail:** Set-Cookie header was being overwritten on every response.
 - **Risk:** Authentication may silently break in production.
-- **Fix:** Remove the blanket Set-Cookie override. Instead, set cookie flags on individual `set_cookie()` calls.
+- **Fix:** ✅ Removed blanket Set-Cookie override. Cookie flags set on individual `set_cookie()` calls. Comment added documenting the correct approach.
 
 ### C-6: CSP Uses 'unsafe-inline' and 'unsafe-eval' ✅ PARTIALLY FIXED
 - **File:** `frontend/middleware.ts`
@@ -77,9 +77,11 @@
 
 ## 🟠 MAJOR Issues
 
-### M-1: Massive Service File Duplication in Backend
+### M-1: Massive Service File Duplication in Backend ✅ PARTIALLY FIXED
 
-Multiple services cover the same domain with overlapping functionality:
+✅ Deleted all `*_complete.py` service duplicates (7 files) and `complete_integrations.py` router (23 duplicate routes).
+
+Remaining overlapping services:
 
 | Domain | Duplicate Files |
 |--------|----------------|
@@ -95,7 +97,9 @@ Multiple services cover the same domain with overlapping functionality:
 
 **Fix:** Consolidate each domain into a single, canonical service file. Remove `*_complete.py` pattern.
 
-### M-2: 5 Duplicate Frontend Component Pairs
+### M-2: 5 Duplicate Frontend Component Pairs ✅ FIXED
+
+✅ Deleted duplicate locations for AdvancedSearch, AnalyticsDashboard, PaymentForm, SidebarNav. PageTransition uses re-export proxy pattern (no action needed). Updated AdvancedFeatures barrel exports.
 
 | Component | Location 1 | Location 2 |
 |-----------|-----------|-----------|
@@ -149,12 +153,11 @@ Multiple services cover the same domain with overlapping functionality:
 - **Detail:** Documentation says "Next.js 14" but `package.json` shows `next: ^16.0.3` and `react: ^19.0.0`.
 - **Fix:** Update all documentation to reflect actual versions.
 
-### M-9: 2 Components Missing `'use client'` Directive
+### M-9: 2 Components Missing `'use client'` Directive ✅ FIXED
 - **Files:**
-  - `Matching/SimilarJobs/SimilarJobs.tsx` — uses hooks but no `'use client'`
-  - `TransactionRow/TransactionRow.tsx` — uses `useMemo` but no `'use client'`
-- **Risk:** Server component error at runtime.
-- **Fix:** Add `'use client';` directive.
+  - `Matching/SimilarJobs/SimilarJobs.tsx` — ✅ Already has `'use client'`
+  - `TransactionRow/TransactionRow.tsx` — ✅ Already has `'use client'`
+- **Fix:** ✅ Both components already had the directive upon inspection.
 
 ### M-10: Backend Has 140+ Router Files
 - **File:** `backend/app/api/v1/` — contains 140+ Python files
@@ -166,15 +169,15 @@ Multiple services cover the same domain with overlapping functionality:
 - **Detail:** Multiple routers are commented out: `calendar`, `matching`, `pricing`, `features`, `recommendations`, `multi_currency`, `mock`. The calendar.py shadows a Python built-in.
 - **Fix:** Remove dead code. Fix the calendar module naming conflict.
 
-### M-12: Duplicate Security Headers (Triple-Set)
-- **Files:** `frontend/middleware.ts` (sets headers), `frontend/next.config.js` (also sets same headers), `backend/main.py` (SecurityHeadersMiddleware also sets them)
-- **Detail:** X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, HSTS are all set in 3 places. Conflicting or duplicate header values.
-- **Fix:** Set headers in ONE place — preferably Next.js middleware for frontend, FastAPI middleware for API.
+### M-12: Duplicate Security Headers (Triple-Set) ✅ FIXED
+- **Files:** `frontend/middleware.ts` (frontend headers), `frontend/next.config.js` (caching only), `backend/main.py` (API headers)
+- **Detail:** Was triple-set across 3 locations.
+- **Fix:** ✅ Deduplicated: `next.config.js` now only sets caching headers with explicit comment deferring security headers to `middleware.ts`. Backend `SecurityHeadersMiddleware` sets API-specific headers separately (correct pattern — each layer handles its own responses).
 
-### M-13: `request_id` Middleware Error Handling
+### M-13: `request_id` Middleware Error Handling ✅ FIXED
 - **File:** `backend/main.py` Lines ~103-112
-- **Detail:** The `RequestIDMiddleware` accesses `response.status_code` in the finally block, but response could be `None` if an exception occurred.
-- **Fix:** Already partially handled with `response.status_code if response else 'error'`, but the subsequent `response.headers` access will throw `AttributeError` if response is None.
+- **Detail:** The `RequestIDMiddleware` could crash if response was None.
+- **Fix:** ✅ Fully guarded: `response.status_code if response else 'error'` for logging, and `if response is not None:` check before accessing `response.headers`.
 
 ### M-14: Missing `@AI-HINT` in Backend Files
 - **Detail:** Most backend Python files lack the `@AI-HINT` comment that's mandated by the project's coding standards.
@@ -261,13 +264,13 @@ Multiple services cover the same domain with overlapping functionality:
 
 ## Priority Fix Order
 
-1. **C-1** — Remove hardcoded production credentials (security)
-2. **C-5** — Fix Set-Cookie header override (breaks auth)
-3. **C-8** — Strip console.log from production
-4. **M-9** — Add missing `'use client'` directives (prevents crashes)
-5. **C-6** — Fix CSP unsafe-inline/eval
-6. **M-2** — Remove duplicate components
-7. **M-1** — Consolidate duplicate services
-8. **M-3** — Convert Tailwind to CSS modules
-9. **M-5** — Add missing CSS module files
-10. **C-4** — Migrate DB queries from routers to services (large effort)
+1. **C-1** — ✅ FIXED — Dev-only with env vars, no hardcoded credentials
+2. **C-5** — ✅ FIXED — Removed blanket Set-Cookie override
+3. **C-8** — ✅ FIXED — console.log stripped from production builds
+4. **M-9** — ✅ FIXED — Both components already had `'use client'`
+5. **C-6** — ✅ PARTIALLY FIXED — Removed `unsafe-eval`
+6. **M-2** — ✅ FIXED — Deleted 4 duplicate component locations
+7. **M-1** — ✅ PARTIALLY FIXED — Deleted `*_complete.py` duplicates (7 services + 1 router)
+8. **M-3** — Convert Tailwind to CSS modules (remaining)
+9. **M-5** — Add missing CSS module files (remaining)
+10. **C-4** — Migrate DB queries from routers to services (large effort, remaining)

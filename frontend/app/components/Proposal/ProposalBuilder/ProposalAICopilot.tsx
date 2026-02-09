@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { FaRobot, FaMagic, FaTimes, FaCheck } from 'react-icons/fa';
+import { Bot, Sparkles, X, Check } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Select from '@/app/components/Select/Select';
 import api from '@/lib/api';
@@ -74,7 +74,7 @@ const ProposalAICopilot: React.FC<ProposalAICopilotProps> = ({
           onClick={() => setIsOpen(true)}
           className="w-full flex items-center justify-center gap-2 py-3 border-dashed border-2 border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/40"
         >
-          <FaRobot />
+          <Bot size={16} />
           <span>Generate Proposal with AI</span>
         </Button>
       </div>
@@ -85,7 +85,7 @@ const ProposalAICopilot: React.FC<ProposalAICopilotProps> = ({
     <div className={styles.container}>
       <div className={styles.header}>
         <div className="p-2 bg-blue-200 dark:bg-blue-800 rounded-full">
-          <FaRobot className="text-blue-700 dark:text-blue-200" size={16} />
+          <Bot className="text-blue-700 dark:text-blue-200" size={16} />
         </div>
         <div>
           <h3 className={styles.title}>AI Proposal Assistant</h3>
@@ -95,7 +95,7 @@ const ProposalAICopilot: React.FC<ProposalAICopilotProps> = ({
           onClick={() => setIsOpen(false)}
           className="ml-auto opacity-50 hover:opacity-100"
         >
-          <FaTimes />
+          <X size={16} />
         </button>
       </div>
 
@@ -132,7 +132,7 @@ const ProposalAICopilot: React.FC<ProposalAICopilotProps> = ({
           disabled={loading}
           size="sm"
         >
-          <FaMagic className="mr-2" />
+          <Sparkles size={14} className="mr-2" />
           Generate Draft
         </Button>
       </div>
@@ -142,7 +142,7 @@ const ProposalAICopilot: React.FC<ProposalAICopilotProps> = ({
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-bold">Preview</h4>
             <Button onClick={handleApply} variant="success" size="sm">
-              <FaCheck className="mr-2" /> Use This
+              <Check size={14} className="mr-2" /> Use This
             </Button>
           </div>
           <div className={styles.previewArea}>

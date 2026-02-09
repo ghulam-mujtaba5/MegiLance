@@ -9,7 +9,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 import random
 import json
 
@@ -247,7 +247,7 @@ def seed_all():
                 skills=json.dumps(skill_list),
                 client_id=clients[client_idx].id,
                 status=status,
-                created_at=datetime.utcnow() - timedelta(days=random.randint(1, 30))
+                created_at=datetime.now(timezone.utc) - timedelta(days=random.randint(1, 30))
             )
             projects.append(project)
             db.add(project)
@@ -276,7 +276,7 @@ def seed_all():
                         hourly_rate=freelancer.hourly_rate,
                         availability=random.choice(["immediately", "1-2_weeks", "2-4_weeks"]),
                         status="accepted" if project.status == "in_progress" and i == 0 else "submitted",
-                        created_at=datetime.utcnow() - timedelta(days=random.randint(1, 10))
+                        created_at=datetime.now(timezone.utc) - timedelta(days=random.randint(1, 10))
                     )
                     db.add(proposal)
                     proposals.append(proposal)
@@ -305,7 +305,7 @@ def seed_all():
                 contract_amount=proposal.bid_amount,
                 platform_fee=round(proposal.bid_amount * 0.1, 2),
                 status="completed" if project.status == "completed" else "active",
-                start_date=datetime.utcnow() - timedelta(days=random.randint(10, 30)),
+                start_date=datetime.now(timezone.utc) - timedelta(days=random.randint(10, 30)),
                 description=f"Contract for {project.title}",
                 terms="Standard terms apply."
             )
@@ -330,8 +330,8 @@ def seed_all():
                     due_date=contract.start_date + timedelta(days=7 * (i + 1)),
                     status=ms_status,
                     order_index=i,
-                    approved_at=datetime.utcnow() if ms_status in ["approved", "paid"] else None,
-                    paid_at=datetime.utcnow() if ms_status == "paid" else None
+                    approved_at=datetime.now(timezone.utc) if ms_status in ["approved", "paid"] else None,
+                    paid_at=datetime.now(timezone.utc) if ms_status == "paid" else None
                 )
                 db.add(milestone)
                 db.commit()
@@ -350,7 +350,7 @@ def seed_all():
                         status="completed",
                         platform_fee=round(milestone_amount * 0.1, 2),
                         freelancer_amount=round(milestone_amount * 0.9, 2),
-                        processed_at=datetime.utcnow(),
+                        processed_at=datetime.now(timezone.utc),
                         transaction_id=f"txn_{random.randint(100000, 999999)}"
                     )
                     db.add(payment)
@@ -441,7 +441,7 @@ def seed_all():
                 freelancer_id=freelancer.id,
                 title=f"Discussion: {project.title}",
                 status="active",
-                last_message_at=datetime.utcnow()
+                last_message_at=datetime.now(timezone.utc)
             )
             db.add(conv)
             db.commit()
@@ -467,7 +467,7 @@ def seed_all():
                     content=content,
                     message_type="text",
                     is_read=random.random() > 0.3,
-                    sent_at=datetime.utcnow() - timedelta(hours=random.randint(1, 48))
+                    sent_at=datetime.now(timezone.utc) - timedelta(hours=random.randint(1, 48))
                 )
                 db.add(msg)
                 messages_created += 1
@@ -497,7 +497,7 @@ def seed_all():
                     content=content,
                     is_read=random.random() > 0.3,
                     priority="normal",
-                    created_at=datetime.utcnow() - timedelta(hours=random.randint(1, 72))
+                    created_at=datetime.now(timezone.utc) - timedelta(hours=random.randint(1, 72))
                 )
                 db.add(notif)
                 notifications_created += 1
@@ -521,7 +521,7 @@ def seed_all():
                 description="I need help with my account. Please assist.",
                 status=random.choice(["open", "in_progress", "resolved"]),
                 priority=random.choice(["low", "medium", "high"]),
-                created_at=datetime.utcnow() - timedelta(days=random.randint(1, 7))
+                created_at=datetime.now(timezone.utc) - timedelta(days=random.randint(1, 7))
             )
             db.add(ticket)
             tickets_created += 1

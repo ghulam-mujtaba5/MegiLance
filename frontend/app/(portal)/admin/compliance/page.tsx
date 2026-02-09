@@ -4,8 +4,13 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import Button from '../../../components/Button/Button';
+import Button from '@/app/components/Button/Button';
+import Select from '@/app/components/Select/Select';
+import Badge from '@/app/components/Badge/Badge';
+import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { Loader } from '@/app/components/Loader/Loader';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
+import { Shield, RefreshCw, FileText, Clock, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import commonStyles from './Compliance.common.module.css';
 import lightStyles from './Compliance.light.module.css';
 import darkStyles from './Compliance.dark.module.css';
@@ -64,6 +69,13 @@ export default function CompliancePage() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
+  // Toast
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
   useEffect(() => {
     setMounted(true);
     loadComplianceData();
@@ -72,132 +84,30 @@ export default function CompliancePage() {
   const loadComplianceData = async () => {
     setLoading(true);
     try {
-      // Simulated API calls
-      setRules([
-        {
-          id: '1',
-          name: 'User Consent Collection',
-          description: 'Collect explicit consent before processing personal data',
-          category: 'gdpr',
-          status: 'compliant',
-          last_checked: new Date().toISOString(),
-          next_review: new Date(Date.now() + 2592000000).toISOString(),
-          automated: true
-        },
-        {
-          id: '2',
-          name: 'Data Encryption at Rest',
-          description: 'All personal data must be encrypted when stored',
-          category: 'security',
-          status: 'compliant',
-          last_checked: new Date().toISOString(),
-          next_review: new Date(Date.now() + 7776000000).toISOString(),
-          automated: true
-        },
-        {
-          id: '3',
-          name: 'Cookie Policy Display',
-          description: 'Display cookie consent banner to all visitors',
-          category: 'gdpr',
-          status: 'needs_review',
-          last_checked: new Date(Date.now() - 86400000).toISOString(),
-          next_review: new Date().toISOString(),
-          automated: false,
-          notes: 'Update required for new EU guidelines'
-        },
-        {
-          id: '4',
-          name: 'Financial Record Retention',
-          description: 'Keep transaction records for 7 years',
-          category: 'financial',
-          status: 'compliant',
-          last_checked: new Date().toISOString(),
-          next_review: new Date(Date.now() + 15552000000).toISOString(),
-          automated: true
-        },
-        {
-          id: '5',
-          name: 'WCAG 2.1 Accessibility',
-          description: 'Ensure platform meets AA accessibility standards',
-          category: 'accessibility',
-          status: 'non_compliant',
-          last_checked: new Date(Date.now() - 172800000).toISOString(),
-          next_review: new Date().toISOString(),
-          automated: true,
-          notes: 'Contrast issues detected on dashboard'
-        }
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('auth_token') : null;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      // Attempt to fetch compliance data from backend
+      const [rulesRes, policiesRes, requestsRes, reportsRes] = await Promise.allSettled([
+        fetch('/api/compliance/rules', { headers }),
+        fetch('/api/compliance/retention-policies', { headers }),
+        fetch('/api/compliance/data-requests', { headers }),
+        fetch('/api/compliance/reports', { headers })
       ]);
 
-      setPolicies([
-        {
-          id: '1',
-          data_type: 'Inactive User Accounts',
-          retention_period: 2,
-          period_unit: 'years',
-          action: 'anonymize',
-          is_active: true,
-          last_run: new Date(Date.now() - 86400000).toISOString(),
-          records_affected: 12
-        },
-        {
-          id: '2',
-          data_type: 'Chat Logs',
-          retention_period: 6,
-          period_unit: 'months',
-          action: 'archive',
-          is_active: true,
-          last_run: new Date(Date.now() - 43200000).toISOString(),
-          records_affected: 1450
-        },
-        {
-          id: '3',
-          data_type: 'Failed Login Attempts',
-          retention_period: 30,
-          period_unit: 'days',
-          action: 'delete',
-          is_active: true,
-          last_run: new Date().toISOString(),
-          records_affected: 89
-        }
-      ]);
-
-      setDataRequests([
-        {
-          id: 'REQ-001',
-          type: 'access',
-          user_email: 'user@example.com',
-          status: 'pending',
-          submitted_at: new Date(Date.now() - 172800000).toISOString(),
-          deadline: new Date(Date.now() + 2419200000).toISOString()
-        },
-        {
-          id: 'REQ-002',
-          type: 'deletion',
-          user_email: 'deleted@example.com',
-          status: 'completed',
-          submitted_at: new Date(Date.now() - 604800000).toISOString(),
-          completed_at: new Date(Date.now() - 86400000).toISOString(),
-          deadline: new Date(Date.now() + 1814400000).toISOString()
-        }
-      ]);
-
-      setReports([
-        {
-          id: 'REP-2025-05',
-          type: 'Monthly GDPR Audit',
-          generated_at: new Date(Date.now() - 86400000).toISOString(),
-          status: 'ready',
-          download_url: '#'
-        },
-        {
-          id: 'REP-2025-04',
-          type: 'Monthly GDPR Audit',
-          generated_at: new Date(Date.now() - 2678400000).toISOString(),
-          status: 'ready',
-          download_url: '#'
-        }
-      ]);
-
+      if (rulesRes.status === 'fulfilled' && rulesRes.value.ok) {
+        setRules(await rulesRes.value.json());
+      }
+      if (policiesRes.status === 'fulfilled' && policiesRes.value.ok) {
+        setPolicies(await policiesRes.value.json());
+      }
+      if (requestsRes.status === 'fulfilled' && requestsRes.value.ok) {
+        setDataRequests(await requestsRes.value.json());
+      }
+      if (reportsRes.status === 'fulfilled' && reportsRes.value.ok) {
+        setReports(await reportsRes.value.json());
+      }
     } catch (error) {
       console.error('Failed to load compliance data', error);
     } finally {
@@ -208,13 +118,12 @@ export default function CompliancePage() {
   if (!mounted || !resolvedTheme) return null;
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeVariant = (status: string): 'success' | 'warning' | 'default' | 'info' => {
     switch (status) {
-      case 'compliant': return 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400';
-      case 'non_compliant': return 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400';
-      case 'needs_review': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'not_applicable': return 'text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'compliant': case 'completed': return 'success';
+      case 'non_compliant': case 'rejected': return 'default';
+      case 'needs_review': case 'pending': case 'in_progress': return 'warning';
+      default: return 'info';
     }
   };
 
@@ -225,6 +134,18 @@ export default function CompliancePage() {
   const filteredRules = selectedCategory === 'all' 
     ? rules 
     : rules.filter(r => r.category === selectedCategory);
+
+  const compliantCount = rules.filter(r => r.status === 'compliant').length;
+  const issueCount = rules.filter(r => r.status === 'non_compliant' || r.status === 'needs_review').length;
+
+  const categoryOptions = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'gdpr', label: 'GDPR' },
+    { value: 'security', label: 'Security' },
+    { value: 'financial', label: 'Financial' },
+    { value: 'accessibility', label: 'Accessibility' },
+    { value: 'data_retention', label: 'Data Retention' }
+  ];
 
   return (
     <PageTransition>
@@ -238,201 +159,234 @@ export default function CompliancePage() {
               </p>
             </div>
             <div className={commonStyles.headerActions}>
-              <Button variant="outline" onClick={() => loadComplianceData()}>Refresh Data</Button>
-              <Button variant="primary">Generate Report</Button>
+              <Button variant="outline" onClick={() => { loadComplianceData(); showToast('Data refreshed'); }}>
+                <RefreshCw size={14} /> Refresh
+              </Button>
             </div>
           </header>
         </ScrollReveal>
 
+        {/* Stats */}
         <ScrollReveal delay={0.1}>
-          <div className={commonStyles.tabs}>
+          <div className={commonStyles.statsGrid}>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <Shield size={20} className={commonStyles.statIconGreen} />
+              <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{compliantCount}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Compliant</span>
+            </div>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <AlertTriangle size={20} className={commonStyles.statIconYellow} />
+              <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{issueCount}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Issues</span>
+            </div>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <Clock size={20} className={commonStyles.statIconBlue} />
+              <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{dataRequests.filter(r => r.status === 'pending').length}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Pending Requests</span>
+            </div>
+            <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
+              <FileText size={20} className={commonStyles.statIconPurple} />
+              <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{reports.length}</span>
+              <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Reports</span>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Tabs */}
+        <ScrollReveal delay={0.15}>
+          <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
             {(['overview', 'retention', 'requests', 'reports'] as TabType[]).map((tab) => (
-              <button
+              <Button
                 key={tab}
+                variant={activeTab === tab ? 'primary' : 'ghost'}
+                size="sm"
                 onClick={() => setActiveTab(tab)}
-                className={cn(
-                  commonStyles.tab,
-                  activeTab === tab ? commonStyles.activeTab : '',
-                  activeTab === tab ? themeStyles.activeTab : themeStyles.tab
-                )}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
+              </Button>
             ))}
           </div>
         </ScrollReveal>
 
-        <div className={commonStyles.content}>
-          {activeTab === 'overview' && (
-            <div className={commonStyles.overviewGrid}>
-              <ScrollReveal delay={0.2}>
-                <div className={cn(commonStyles.statsCard, themeStyles.card)}>
-                  <h3>Compliance Score</h3>
-                  <div className={commonStyles.scoreCircle}>
-                    <span className={commonStyles.scoreValue}>85%</span>
-                    <span className={commonStyles.scoreLabel}>Good</span>
-                  </div>
-                  <p className={commonStyles.scoreNote}>3 issues require attention</p>
-                </div>
-              </ScrollReveal>
-
-              <div className={commonStyles.rulesSection}>
+        {loading ? (
+          <div className={commonStyles.loading}><Loader size="lg" /></div>
+        ) : (
+          <div className={commonStyles.content}>
+            {/* Overview Tab */}
+            {activeTab === 'overview' && (
+              <>
                 <ScrollReveal delay={0.2}>
                   <div className={commonStyles.filterBar}>
-                    <select 
+                    <Select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className={cn(commonStyles.select, themeStyles.select)}
-                    >
-                      <option value="all">All Categories</option>
-                      <option value="gdpr">GDPR</option>
-                      <option value="security">Security</option>
-                      <option value="financial">Financial</option>
-                      <option value="accessibility">Accessibility</option>
-                    </select>
+                      options={categoryOptions}
+                    />
                   </div>
                 </ScrollReveal>
 
-                <StaggerContainer className={commonStyles.rulesList}>
-                  {filteredRules.map((rule) => (
-                    <StaggerItem key={rule.id} className={cn(commonStyles.ruleCard, themeStyles.card)}>
-                      <div className={commonStyles.ruleHeader}>
-                        <div className={commonStyles.ruleInfo}>
-                          <h4>{rule.name}</h4>
-                          <span className={commonStyles.categoryTag}>{rule.category.toUpperCase()}</span>
+                {filteredRules.length === 0 ? (
+                  <EmptyState
+                    title="No compliance rules"
+                    description="No compliance rules have been configured yet. They will appear here when the compliance API is connected."
+                  />
+                ) : (
+                  <StaggerContainer className={commonStyles.rulesList}>
+                    {filteredRules.map((rule) => (
+                      <StaggerItem key={rule.id} className={cn(commonStyles.ruleCard, themeStyles.ruleCard)}>
+                        <div className={commonStyles.ruleHeader}>
+                          <div>
+                            <h4 className={cn(commonStyles.ruleName, themeStyles.ruleName)}>{rule.name}</h4>
+                            <Badge variant="info">{rule.category.toUpperCase()}</Badge>
+                          </div>
+                          <Badge variant={getStatusBadgeVariant(rule.status)}>
+                            {getStatusLabel(rule.status)}
+                          </Badge>
                         </div>
-                        <span className={cn(commonStyles.statusBadge, getStatusColor(rule.status))}>
-                          {getStatusLabel(rule.status)}
-                        </span>
+                        <p className={cn(commonStyles.ruleDesc, themeStyles.ruleDesc)}>{rule.description}</p>
+                        <div className={cn(commonStyles.ruleMeta, themeStyles.ruleMeta)}>
+                          <span>Last checked: {new Date(rule.last_checked).toLocaleDateString()}</span>
+                          <span>Next review: {new Date(rule.next_review).toLocaleDateString()}</span>
+                          <Badge variant={rule.automated ? 'info' : 'default'}>
+                            {rule.automated ? '🤖 Automated' : '👤 Manual'}
+                          </Badge>
+                        </div>
+                        {rule.notes && (
+                          <div className={cn(commonStyles.ruleNotes, themeStyles.ruleNotes)}>
+                            Note: {rule.notes}
+                          </div>
+                        )}
+                      </StaggerItem>
+                    ))}
+                  </StaggerContainer>
+                )}
+              </>
+            )}
+
+            {/* Retention Tab */}
+            {activeTab === 'retention' && (
+              policies.length === 0 ? (
+                <EmptyState
+                  title="No retention policies"
+                  description="Data retention policies will appear here when configured."
+                />
+              ) : (
+                <StaggerContainer className={commonStyles.policiesList}>
+                  {policies.map((policy) => (
+                    <StaggerItem key={policy.id} className={cn(commonStyles.policyCard, themeStyles.policyCard)}>
+                      <div className={commonStyles.policyHeader}>
+                        <h4 className={cn(commonStyles.policyName, themeStyles.policyName)}>{policy.data_type}</h4>
+                        <Badge variant={policy.is_active ? 'success' : 'default'}>
+                          {policy.is_active ? 'Active' : 'Paused'}
+                        </Badge>
                       </div>
-                      <p className={commonStyles.ruleDesc}>{rule.description}</p>
-                      <div className={commonStyles.ruleMeta}>
-                        <span>Last checked: {new Date(rule.last_checked).toLocaleDateString()}</span>
-                        <span>Next review: {new Date(rule.next_review).toLocaleDateString()}</span>
-                        <span>{rule.automated ? '🤖 Automated' : '👤 Manual'}</span>
+                      <div className={commonStyles.policyDetails}>
+                        <div className={commonStyles.policyDetail}>
+                          <span className={cn(commonStyles.detailLabel, themeStyles.detailLabel)}>Retention</span>
+                          <span>{policy.retention_period} {policy.period_unit}</span>
+                        </div>
+                        <div className={commonStyles.policyDetail}>
+                          <span className={cn(commonStyles.detailLabel, themeStyles.detailLabel)}>Action</span>
+                          <Badge variant="info">{policy.action.toUpperCase()}</Badge>
+                        </div>
+                        <div className={commonStyles.policyDetail}>
+                          <span className={cn(commonStyles.detailLabel, themeStyles.detailLabel)}>Last Run</span>
+                          <span>{policy.last_run ? new Date(policy.last_run).toLocaleDateString() : 'Never'}</span>
+                        </div>
+                        <div className={commonStyles.policyDetail}>
+                          <span className={cn(commonStyles.detailLabel, themeStyles.detailLabel)}>Records</span>
+                          <span>{policy.records_affected || 0}</span>
+                        </div>
                       </div>
-                      {rule.notes && (
-                        <div className={cn(commonStyles.ruleNotes, themeStyles.notes)}>
-                          Note: {rule.notes}
+                      <div className={commonStyles.policyActions}>
+                        <Button variant="ghost" size="sm">Edit</Button>
+                        <Button variant="ghost" size="sm">Run Now</Button>
+                      </div>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              )
+            )}
+
+            {/* Requests Tab */}
+            {activeTab === 'requests' && (
+              dataRequests.length === 0 ? (
+                <EmptyState
+                  title="No data requests"
+                  description="Data subject requests (DSR) will appear here when submitted."
+                />
+              ) : (
+                <StaggerContainer className={commonStyles.requestsList}>
+                  {dataRequests.map((request) => (
+                    <StaggerItem key={request.id} className={cn(commonStyles.requestCard, themeStyles.requestCard)}>
+                      <div className={commonStyles.requestHeader}>
+                        <div className={commonStyles.requestMeta}>
+                          <Badge variant="info">{request.id}</Badge>
+                          <Badge variant="default">{request.type.toUpperCase()}</Badge>
+                        </div>
+                        <Badge variant={getStatusBadgeVariant(request.status)}>
+                          {getStatusLabel(request.status)}
+                        </Badge>
+                      </div>
+                      <p className={cn(commonStyles.requestEmail, themeStyles.requestEmail)}>
+                        {request.user_email}
+                      </p>
+                      <div className={cn(commonStyles.ruleMeta, themeStyles.ruleMeta)}>
+                        <span>Submitted: {new Date(request.submitted_at).toLocaleDateString()}</span>
+                        <span>Deadline: {new Date(request.deadline).toLocaleDateString()}</span>
+                        {request.completed_at && <span>Completed: {new Date(request.completed_at).toLocaleDateString()}</span>}
+                      </div>
+                      {request.status === 'pending' && (
+                        <div className={commonStyles.requestActions}>
+                          <Button variant="primary" size="sm">Process Request</Button>
                         </div>
                       )}
-                      <div className={commonStyles.ruleActions}>
-                        <Button variant="ghost" size="sm">View Details</Button>
-                        {rule.status !== 'compliant' && (
-                          <Button variant="outline" size="sm">Fix Issue</Button>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              )
+            )}
+
+            {/* Reports Tab */}
+            {activeTab === 'reports' && (
+              reports.length === 0 ? (
+                <EmptyState
+                  title="No reports"
+                  description="Compliance reports will appear here when generated."
+                />
+              ) : (
+                <StaggerContainer className={commonStyles.reportsList}>
+                  {reports.map((report) => (
+                    <StaggerItem key={report.id} className={cn(commonStyles.reportCard, themeStyles.reportCard)}>
+                      <div>
+                        <h4 className={cn(commonStyles.reportName, themeStyles.reportName)}>{report.type}</h4>
+                        <span className={cn(commonStyles.reportDate, themeStyles.reportDate)}>
+                          {new Date(report.generated_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className={commonStyles.reportActions}>
+                        {report.status === 'ready' ? (
+                          <Button variant="outline" size="sm">Download PDF</Button>
+                        ) : report.status === 'generating' ? (
+                          <Badge variant="warning">Generating...</Badge>
+                        ) : (
+                          <Badge variant="default">Failed</Badge>
                         )}
                       </div>
                     </StaggerItem>
                   ))}
                 </StaggerContainer>
-              </div>
-            </div>
-          )}
+              )
+            )}
+          </div>
+        )}
 
-          {activeTab === 'retention' && (
-            <StaggerContainer className={commonStyles.policiesList}>
-              <div className={commonStyles.sectionHeader}>
-                <h3>Data Retention Policies</h3>
-                <Button variant="primary" size="sm">Add Policy</Button>
-              </div>
-              {policies.map((policy) => (
-                <StaggerItem key={policy.id} className={cn(commonStyles.policyCard, themeStyles.card)}>
-                  <div className={commonStyles.policyHeader}>
-                    <h4>{policy.data_type}</h4>
-                    <div className={cn(commonStyles.toggle, policy.is_active ? commonStyles.active : '')}>
-                      {policy.is_active ? 'Active' : 'Paused'}
-                    </div>
-                  </div>
-                  <div className={commonStyles.policyDetails}>
-                    <div className={commonStyles.detailItem}>
-                      <label>Retention Period</label>
-                      <span>{policy.retention_period} {policy.period_unit}</span>
-                    </div>
-                    <div className={commonStyles.detailItem}>
-                      <label>Action</label>
-                      <span className={commonStyles.actionTag}>{policy.action.toUpperCase()}</span>
-                    </div>
-                    <div className={commonStyles.detailItem}>
-                      <label>Last Run</label>
-                      <span>{policy.last_run ? new Date(policy.last_run).toLocaleDateString() : 'Never'}</span>
-                    </div>
-                    <div className={commonStyles.detailItem}>
-                      <label>Records Affected</label>
-                      <span>{policy.records_affected || 0}</span>
-                    </div>
-                  </div>
-                  <div className={commonStyles.policyActions}>
-                    <Button variant="ghost" size="sm">Edit Policy</Button>
-                    <Button variant="ghost" size="sm">Run Now</Button>
-                  </div>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          )}
-
-          {activeTab === 'requests' && (
-            <StaggerContainer className={commonStyles.requestsList}>
-              <div className={commonStyles.sectionHeader}>
-                <h3>Data Subject Requests (DSR)</h3>
-              </div>
-              {dataRequests.length === 0 ? (
-                <div className={commonStyles.emptyState}>No pending requests</div>
-              ) : (
-                dataRequests.map((request) => (
-                  <StaggerItem key={request.id} className={cn(commonStyles.requestCard, themeStyles.card)}>
-                    <div className={commonStyles.requestHeader}>
-                      <div className={commonStyles.requestId}>
-                        <span className={commonStyles.idLabel}>{request.id}</span>
-                        <span className={commonStyles.typeLabel}>{request.type.toUpperCase()}</span>
-                      </div>
-                      <span className={cn(commonStyles.statusBadge, 
-                        request.status === 'completed' ? 'text-green-600 bg-green-100' : 
-                        request.status === 'rejected' ? 'text-red-600 bg-red-100' : 
-                        'text-blue-600 bg-blue-100'
-                      )}>
-                        {getStatusLabel(request.status)}
-                      </span>
-                    </div>
-                    <div className={commonStyles.requestBody}>
-                      <p><strong>User:</strong> {request.user_email}</p>
-                      <p><strong>Submitted:</strong> {new Date(request.submitted_at).toLocaleDateString()}</p>
-                      <p><strong>Deadline:</strong> {new Date(request.deadline).toLocaleDateString()}</p>
-                    </div>
-                    <div className={commonStyles.requestActions}>
-                      <Button variant="primary" size="sm">Process Request</Button>
-                    </div>
-                  </StaggerItem>
-                ))
-              )}
-            </StaggerContainer>
-          )}
-
-          {activeTab === 'reports' && (
-            <StaggerContainer className={commonStyles.reportsList}>
-              <div className={commonStyles.sectionHeader}>
-                <h3>Compliance Reports</h3>
-              </div>
-              {reports.map((report) => (
-                <StaggerItem key={report.id} className={cn(commonStyles.reportRow, themeStyles.card)}>
-                  <div className={commonStyles.reportInfo}>
-                    <span className={commonStyles.reportIcon}>📄</span>
-                    <div>
-                      <h4>{report.type}</h4>
-                      <span className={commonStyles.reportDate}>{new Date(report.generated_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <div className={commonStyles.reportStatus}>
-                    {report.status === 'ready' ? (
-                      <Button variant="outline" size="sm">Download PDF</Button>
-                    ) : (
-                      <span>{report.status}</span>
-                    )}
-                  </div>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          )}
-        </div>
+        {/* Toast */}
+        {toast && (
+          <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast, toast.type === 'error' && themeStyles.toastError)}>
+            {toast.message}
+          </div>
+        )}
       </div>
     </PageTransition>
   );

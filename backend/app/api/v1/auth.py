@@ -8,6 +8,7 @@ import json
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import JSONResponse
 
 from app.core.security import (
     authenticate_user,
@@ -299,6 +300,7 @@ def login_user(request: Request, credentials: LoginRequest):
     
     If user has 2FA enabled, returns requires_2fa=True and a temporary token.
     Uses Turso HTTP API directly - no SQLAlchemy session needed.
+    Sets refresh token as httpOnly cookie for security.
     """
     logger.info("Login attempt for email=%s", credentials.email)
 
@@ -379,18 +381,44 @@ def login_user(request: Request, credentials: LoginRequest):
         joined_at=user.joined_at
     )
     
-    return AuthResponse(
+    auth_response = AuthResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         user=user_data,
     )
+    
+    # Set refresh token as httpOnly cookie (XSS-resistant)
+    response = JSONResponse(content=auth_response.model_dump())
+    settings = get_settings()
+    is_production = settings.environment == "production"
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=is_production,
+        samesite="lax",
+        path="/api/auth/refresh",
+        max_age=settings.refresh_token_expire_minutes * 60,
+    )
+    return response
 
 
 @router.post("/refresh", response_model=Token)
-def refresh_token(request: RefreshTokenRequest):
-    """Refresh access token using refresh token"""
+def refresh_token(request: Request, body: RefreshTokenRequest = None):
+    """Refresh access token using refresh token from httpOnly cookie or request body"""
+    # Prefer httpOnly cookie, fall back to request body
+    token_value = request.cookies.get("refresh_token")
+    if not token_value and body and body.refresh_token:
+        token_value = body.refresh_token
+    
+    if not token_value:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No refresh token provided"
+        )
+    
     try:
-        payload = decode_token(request.refresh_token)
+        payload = decode_token(token_value)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -416,7 +444,23 @@ def refresh_token(request: RefreshTokenRequest):
     }
     access_token = create_access_token(subject=subject, custom_claims=custom_claims)
     new_refresh_token = create_refresh_token(subject=subject, custom_claims=custom_claims)
-    return Token(access_token=access_token, refresh_token=new_refresh_token)
+    
+    token_response = Token(access_token=access_token, refresh_token=new_refresh_token)
+    
+    # Set new refresh token as httpOnly cookie
+    response = JSONResponse(content=token_response.model_dump())
+    settings = get_settings()
+    is_production = settings.environment == "production"
+    response.set_cookie(
+        key="refresh_token",
+        value=new_refresh_token,
+        httponly=True,
+        secure=is_production,
+        samesite="lax",
+        path="/api/auth/refresh",
+        max_age=settings.refresh_token_expire_minutes * 60,
+    )
+    return response
 
 
 @router.get("/me", response_model=UserRead)

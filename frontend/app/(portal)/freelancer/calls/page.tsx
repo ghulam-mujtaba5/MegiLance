@@ -8,6 +8,9 @@ import { videoCallsApi } from '@/lib/api';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
+import Loader from '@/app/components/Loader/Loader';
 import commonStyles from './VideoCalls.common.module.css';
 import lightStyles from './VideoCalls.light.module.css';
 import darkStyles from './VideoCalls.dark.module.css';
@@ -50,6 +53,13 @@ export default function VideoCallsPage() {
 
   // Join by code
   const [roomCode, setRoomCode] = useState('');
+  const [endCallTarget, setEndCallTarget] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -163,12 +173,14 @@ export default function VideoCallsPage() {
   };
 
   const handleEndCall = async (roomId: string) => {
-    if (!confirm('Are you sure you want to end this call?')) return;
+    setEndCallTarget(null);
     try {
       await videoCallsApi.endCall(roomId);
       loadCalls();
+      showToast('Call ended successfully.');
     } catch (error) {
       console.error('Failed to end call:', error);
+      showToast('Failed to end call.', 'error');
     }
   };
 
@@ -180,7 +192,7 @@ export default function VideoCallsPage() {
       }
     } catch (error) {
       console.error('Failed to get recording:', error);
-      alert('Recording not available');
+      showToast('Recording not available.', 'error');
     }
   };
 
@@ -222,7 +234,7 @@ export default function VideoCallsPage() {
   if (loading) {
     return (
       <div className={cn(commonStyles.container, themeStyles.container)}>
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading video calls...</div>
+        <Loader size="lg" />
       </div>
     );
   }
@@ -392,7 +404,7 @@ export default function VideoCallsPage() {
                         </button>
                         <button
                           className={cn(commonStyles.endButton, themeStyles.endButton)}
-                          onClick={() => handleEndCall(call.room_id)}
+                          onClick={() => setEndCallTarget(call.room_id)}
                         >
                           End Call
                         </button>
@@ -526,6 +538,22 @@ export default function VideoCallsPage() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* End Call Confirmation Modal */}
+        <Modal isOpen={endCallTarget !== null} title="End Call" onClose={() => setEndCallTarget(null)}>
+          <p>Are you sure you want to end this call? All participants will be disconnected.</p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <Button variant="secondary" onClick={() => setEndCallTarget(null)}>Cancel</Button>
+            <Button variant="danger" onClick={() => endCallTarget && handleEndCall(endCallTarget)}>End Call</Button>
+          </div>
+        </Modal>
+
+        {/* Toast */}
+        {toast && (
+          <div className={cn(commonStyles.toast, themeStyles.toast, toast.type === 'error' && commonStyles.toastError, toast.type === 'error' && themeStyles.toastError)}>
+            {toast.message}
           </div>
         )}
       </div>

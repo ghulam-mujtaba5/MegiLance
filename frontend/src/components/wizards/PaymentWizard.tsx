@@ -7,23 +7,21 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './PaymentWizard.common.module.css';
 import lightStyles from './PaymentWizard.light.module.css';
 import darkStyles from './PaymentWizard.dark.module.css';
 import {
-  FaWallet,
-  FaUniversity,
-  FaPaypal,
-  FaCcStripe,
-  FaBitcoin,
-  FaShieldAlt,
-  FaFileUpload,
-  FaCheckCircle,
-  FaCreditCard,
-  FaPlus,
-  FaTrash,
-  FaInfoCircle
-} from 'react-icons/fa';
+  Wallet,
+  Building,
+  CreditCard,
+  Bitcoin,
+  ShieldCheck,
+  FileUp,
+  CheckCircle,
+  Plus,
+  Info
+} from 'lucide-react';
 
 type FlowType = 'withdrawal' | 'addFunds';
 type WithdrawalMethod = 'bank' | 'paypal' | 'stripe' | 'crypto';
@@ -104,6 +102,12 @@ export default function PaymentWizard({
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [savedMethods, setSavedMethods] = useState<SavedPaymentMethod[]>([]);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   // Withdrawal state
   const [withdrawalData, setWithdrawalData] = useState<WithdrawalData>({
@@ -181,7 +185,7 @@ export default function PaymentWizard({
   const Step1WithdrawalAmount = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.balanceCard}>
-        <FaWallet className={commonStyles.balanceIcon} />
+        <Wallet className={commonStyles.balanceIcon} />
         <div>
           <div className={commonStyles.balanceLabel}>Available Balance</div>
           <div className={commonStyles.balanceAmount}>${availableBalance.toFixed(2)}</div>
@@ -218,7 +222,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setWithdrawalData({ ...withdrawalData, method: 'bank' })}
           >
-            <FaUniversity className={commonStyles.methodIcon} />
+            <Building className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>Bank Transfer</div>
             <div className={commonStyles.methodFee}>1% fee</div>
           </div>
@@ -232,7 +236,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setWithdrawalData({ ...withdrawalData, method: 'paypal' })}
           >
-            <FaPaypal className={commonStyles.methodIcon} />
+            <CreditCard className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>PayPal</div>
             <div className={commonStyles.methodFee}>2.9% fee</div>
           </div>
@@ -246,7 +250,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setWithdrawalData({ ...withdrawalData, method: 'stripe' })}
           >
-            <FaCcStripe className={commonStyles.methodIcon} />
+            <CreditCard className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>Stripe</div>
             <div className={commonStyles.methodFee}>2.9% fee</div>
           </div>
@@ -260,7 +264,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setWithdrawalData({ ...withdrawalData, method: 'crypto' })}
           >
-            <FaBitcoin className={commonStyles.methodIcon} />
+            <Bitcoin className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>Cryptocurrency</div>
             <div className={commonStyles.methodFee}>0.5% fee</div>
           </div>
@@ -392,7 +396,7 @@ export default function PaymentWizard({
               placeholder="0x..."
             />
             <small className={commonStyles.warning}>
-              <FaInfoCircle /> Double-check your wallet address. Transactions cannot be reversed.
+              <Info /> Double-check your wallet address. Transactions cannot be reversed.
             </small>
           </div>
         </>
@@ -400,7 +404,7 @@ export default function PaymentWizard({
 
       {!withdrawalData.isVerified && (
         <div className={cn(commonStyles.verificationBox, themeStyles.verificationBox)}>
-          <FaShieldAlt className={commonStyles.verificationIcon} />
+          <ShieldCheck className={commonStyles.verificationIcon} />
           <div>
             <h4>Account Verification Required</h4>
             <p>For first-time withdrawals, please upload a verification document (ID or bank statement)</p>
@@ -416,11 +420,11 @@ export default function PaymentWizard({
                 style={{ display: 'none' }}
               />
               <label htmlFor="verificationDoc" className={commonStyles.uploadButton}>
-                <FaFileUpload /> Upload Document
+                <FileUp /> Upload Document
               </label>
               {withdrawalData.verificationDocument && (
                 <div className={commonStyles.uploadedFile}>
-                  <FaCheckCircle /> {withdrawalData.verificationDocument.name}
+                  <CheckCircle /> {withdrawalData.verificationDocument.name}
                 </div>
               )}
             </div>
@@ -433,7 +437,7 @@ export default function PaymentWizard({
   const Step3TaxInfo = () => (
     <div className={commonStyles.stepContent}>
       <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-        <FaInfoCircle />
+        <Info />
         <p>Tax information is required for withdrawals over $600/year (US) or as per your country&apos;s regulations.</p>
       </div>
 
@@ -578,7 +582,7 @@ export default function PaymentWizard({
           </div>
 
           <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-            <FaInfoCircle />
+            <Info />
             <small>Processing time: 3-5 business days for bank transfers, 1-2 days for other methods</small>
           </div>
         </div>
@@ -684,7 +688,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setAddFundsData({ ...addFundsData, method: 'card' })}
           >
-            <FaCreditCard className={commonStyles.methodIcon} />
+            <CreditCard className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>Credit/Debit Card</div>
             <div className={commonStyles.methodFee}>2.9% + $0.30</div>
           </div>
@@ -698,7 +702,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setAddFundsData({ ...addFundsData, method: 'bank' })}
           >
-            <FaUniversity className={commonStyles.methodIcon} />
+            <Building className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>Bank Transfer</div>
             <div className={commonStyles.methodFee}>1% fee</div>
           </div>
@@ -712,7 +716,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setAddFundsData({ ...addFundsData, method: 'paypal' })}
           >
-            <FaPaypal className={commonStyles.methodIcon} />
+            <CreditCard className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>PayPal</div>
             <div className={commonStyles.methodFee}>2.9% fee</div>
           </div>
@@ -726,7 +730,7 @@ export default function PaymentWizard({
             )}
             onClick={() => setAddFundsData({ ...addFundsData, method: 'crypto' })}
           >
-            <FaBitcoin className={commonStyles.methodIcon} />
+            <Bitcoin className={commonStyles.methodIcon} />
             <div className={commonStyles.methodName}>Cryptocurrency</div>
             <div className={commonStyles.methodFee}>0.5% fee</div>
           </div>
@@ -748,7 +752,7 @@ export default function PaymentWizard({
                 )}
                 onClick={() => setAddFundsData({ ...addFundsData, savedMethodId: method.id })}
               >
-                <FaCreditCard />
+                <CreditCard />
                 <div>
                   <div>**** {method.last4}</div>
                   {method.isDefault && <small className={commonStyles.defaultBadge}>Default</small>}
@@ -760,7 +764,7 @@ export default function PaymentWizard({
               className={cn(commonStyles.addNewMethod, themeStyles.addNewMethod)}
               onClick={() => setAddFundsData({ ...addFundsData, savedMethodId: undefined })}
             >
-              <FaPlus /> Add New Card
+              <Plus /> Add New Card
             </button>
           </div>
         </div>
@@ -945,13 +949,13 @@ export default function PaymentWizard({
           </div>
 
           <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-            <FaCheckCircle />
+            <CheckCircle />
             <small>Funds will be available immediately after payment confirmation</small>
           </div>
         </div>
 
         <div className={cn(commonStyles.secureBox, themeStyles.secureBox)}>
-          <FaShieldAlt />
+          <ShieldCheck />
           <div>
             <strong>Secure Payment</strong>
             <p>Your payment information is encrypted and secure. We never store your full card details.</p>
@@ -964,11 +968,11 @@ export default function PaymentWizard({
   // Validation functions
   const validateStep1Withdrawal = async () => {
     if (withdrawalData.amount < 10) {
-      alert('Minimum withdrawal amount is $10.00');
+      showToast('Minimum withdrawal amount is $10.00');
       return false;
     }
     if (withdrawalData.amount > availableBalance) {
-      alert('Insufficient balance');
+      showToast('Insufficient balance');
       return false;
     }
     return true;
@@ -977,22 +981,22 @@ export default function PaymentWizard({
   const validateStep2Account = async () => {
     if (withdrawalData.method === 'bank') {
       if (!withdrawalData.accountHolderName || !withdrawalData.accountNumber || !withdrawalData.routingNumber) {
-        alert('Please fill in all bank account details');
+        showToast('Please fill in all bank account details');
         return false;
       }
     } else if (withdrawalData.method === 'paypal') {
       if (!withdrawalData.paypalEmail || !withdrawalData.paypalEmail.includes('@')) {
-        alert('Please enter a valid PayPal email');
+        showToast('Please enter a valid PayPal email');
         return false;
       }
     } else if (withdrawalData.method === 'stripe') {
       if (!withdrawalData.stripeAccountId) {
-        alert('Please enter your Stripe account ID');
+        showToast('Please enter your Stripe account ID');
         return false;
       }
     } else if (withdrawalData.method === 'crypto') {
       if (!withdrawalData.cryptoWallet || !withdrawalData.cryptoNetwork) {
-        alert('Please enter your wallet address and select a network');
+        showToast('Please enter your wallet address and select a network');
         return false;
       }
     }
@@ -1001,7 +1005,7 @@ export default function PaymentWizard({
 
   const validateStep4Withdrawal = async () => {
     if (!withdrawalData.acceptFees) {
-      alert('Please accept the fees and terms to continue');
+      showToast('Please accept the fees and terms to continue');
       return false;
     }
     return true;
@@ -1009,7 +1013,7 @@ export default function PaymentWizard({
 
   const validateStep1AddFunds = async () => {
     if (addFundsData.amount < 10) {
-      alert('Minimum amount is $10.00');
+      showToast('Minimum amount is $10.00');
       return false;
     }
     return true;
@@ -1018,7 +1022,7 @@ export default function PaymentWizard({
   const validateStep2Payment = async () => {
     if (addFundsData.method === 'card' && !addFundsData.savedMethodId) {
       if (!addFundsData.cardNumber || !addFundsData.cardExpiry || !addFundsData.cardCVV || !addFundsData.cardHolderName) {
-        alert('Please fill in all card details');
+        showToast('Please fill in all card details');
         return false;
       }
     }
@@ -1027,7 +1031,7 @@ export default function PaymentWizard({
 
   const validateStep3Billing = async () => {
     if (!addFundsData.billingName || !addFundsData.billingAddress || !addFundsData.billingCity || !addFundsData.billingZip) {
-      alert('Please fill in all billing details');
+      showToast('Please fill in all billing details');
       return false;
     }
     return true;
@@ -1056,7 +1060,7 @@ export default function PaymentWizard({
       localStorage.removeItem(draftKey);
 
       // Show success and redirect
-      alert(`${flowType === 'withdrawal' ? 'Withdrawal' : 'Payment'} successful! Transaction ID: ${result.id}`);
+      showToast(`${flowType === 'withdrawal' ? 'Withdrawal' : 'Payment'} successful! Transaction ID: ${result.id}`, 'success');
       
       if (onComplete) {
         onComplete();
@@ -1065,16 +1069,13 @@ export default function PaymentWizard({
       }
     } catch (error) {
       console.error('Transaction error:', error);
-      alert('Transaction failed. Please try again.');
+      showToast('Transaction failed. Please try again.');
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Your progress will be saved as a draft.')) {
-      saveDraft();
-      router.back();
-    }
+    setShowCancelModal(true);
   };
 
   // Define wizard steps based on flow type
@@ -1141,19 +1142,43 @@ export default function PaymentWizard({
   const steps = flowType === 'withdrawal' ? withdrawalSteps : addFundsSteps;
 
   return (
-    <WizardContainer
-      title={flowType === 'withdrawal' ? 'Withdraw Funds' : 'Add Funds'}
-      subtitle={flowType === 'withdrawal' 
-        ? `Available balance: $${availableBalance.toFixed(2)}` 
-        : 'Add funds to your MegiLance wallet'
-      }
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-      isLoading={isSubmitting}
-      saveProgress={saveDraft}
-    />
+    <>
+      <WizardContainer
+        title={flowType === 'withdrawal' ? 'Withdraw Funds' : 'Add Funds'}
+        subtitle={flowType === 'withdrawal' 
+          ? `Available balance: $${availableBalance.toFixed(2)}` 
+          : 'Add funds to your MegiLance wallet'
+        }
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+        isLoading={isSubmitting}
+        saveProgress={saveDraft}
+      />
+      <Modal
+        isOpen={showCancelModal}
+        title="Cancel Confirmation"
+        onClose={() => setShowCancelModal(false)}
+        footer={
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <button onClick={() => setShowCancelModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' }}>No, Continue</button>
+            <button onClick={() => { setShowCancelModal(false); saveDraft(); router.back(); }} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#e81123', color: '#fff', cursor: 'pointer' }}>Yes, Cancel</button>
+          </div>
+        }
+      >
+        <p>Are you sure you want to cancel? Your progress will be saved as a draft.</p>
+      </Modal>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

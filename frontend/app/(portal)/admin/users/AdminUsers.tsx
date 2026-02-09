@@ -53,6 +53,11 @@ const AdminUsers: React.FC = () => {
   // The backend sorts by joined_at DESC by default.
   const [sortKey, setSortKey] = useState<keyof UserRow>('joined');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
 
   // Debounce search
   const [debouncedQuery, setDebouncedQuery] = useState(query);
@@ -174,9 +179,10 @@ const AdminUsers: React.FC = () => {
       fetchUsers();
       setSelected({});
       setModal(null);
+      showToast(`${selectedIds.length} user(s) ${kind === 'suspend' ? 'suspended' : 'restored'} successfully!`);
     } catch (err) {
       console.error('Failed to update users', err);
-      alert('Failed to update some users');
+      showToast('Failed to update some users. Please try again.', 'error');
     }
   };
 
@@ -380,6 +386,12 @@ const AdminUsers: React.FC = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {toast && (
+        <div className={cn(common.toast, toast.type === 'error' && common.toastError, themed.toast, toast.type === 'error' && themed.toastError)}>
+          {toast.message}
         </div>
       )}
       </main>

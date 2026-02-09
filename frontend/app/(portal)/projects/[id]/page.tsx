@@ -9,7 +9,7 @@ import api from '@/lib/api';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import Button from '@/app/components/Button/Button';
 import ProposalBuilder from '@/app/components/Proposal/ProposalBuilder/ProposalBuilder';
-import { FaClock, FaMoneyBillWave, FaTag, FaUser, FaCheckCircle } from 'react-icons/fa';
+import { Clock, Banknote, Tag, User, CheckCircle } from 'lucide-react';
 import SimilarJobs from '@/app/components/Matching/SimilarJobs/SimilarJobs';
 import RecommendedFreelancers from '@/app/components/Matching/RecommendedFreelancers/RecommendedFreelancers';
 
@@ -95,10 +95,10 @@ export default function ProjectDetailsPage() {
                 <h1 className="text-3xl font-bold mb-2">{project.title}</h1>
                 <div className="flex items-center gap-4 text-sm opacity-70">
                   <span className="flex items-center gap-1">
-                    <FaClock /> Posted {new Date(project.created_at).toLocaleDateString()}
+                    <Clock size={14} /> Posted {new Date(project.created_at).toLocaleDateString()}
                   </span>
                   <span className="flex items-center gap-1">
-                    <FaTag /> {project.category}
+                    <Tag size={14} /> {project.category}
                   </span>
                 </div>
               </div>
@@ -120,7 +120,7 @@ export default function ProjectDetailsPage() {
               )}>
                 <div className="text-sm opacity-70 mb-1">Budget</div>
                 <div className="font-bold text-lg flex items-center gap-2">
-                  <FaMoneyBillWave className="text-green-500" />
+                  <Banknote className="text-green-500" size={20} />
                   {project.budget_type === 'hourly' ? (
                     <span>${project.budget_min} - ${project.budget_max}/hr</span>
                   ) : (
@@ -135,7 +135,7 @@ export default function ProjectDetailsPage() {
               )}>
                 <div className="text-sm opacity-70 mb-1">Experience Level</div>
                 <div className="font-bold text-lg flex items-center gap-2">
-                  <FaUser className="text-blue-500" />
+                  <User className="text-blue-500" size={20} />
                   {project.experience_level}
                 </div>
               </div>
@@ -146,7 +146,7 @@ export default function ProjectDetailsPage() {
               )}>
                 <div className="text-sm opacity-70 mb-1">Status</div>
                 <div className="font-bold text-lg flex items-center gap-2">
-                  <FaCheckCircle className="text-purple-500" />
+                  <CheckCircle className="text-purple-500" size={20} />
                   {project.status}
                 </div>
               </div>

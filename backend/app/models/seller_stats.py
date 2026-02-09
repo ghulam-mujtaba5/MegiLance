@@ -4,7 +4,7 @@
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 import enum
 
@@ -127,7 +127,7 @@ class SellerStats(Base):
     
     # Current Level
     level: Mapped[str] = mapped_column(String(20), default="new_seller")
-    level_achieved_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    level_achieved_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     
     # Order Statistics
     total_orders: Mapped[int] = mapped_column(Integer, default=0)
@@ -189,7 +189,7 @@ class SellerStats(Base):
     gig_clicks: Mapped[int] = mapped_column(Integer, default=0)
     
     # Account Age
-    member_since: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    member_since: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     months_active: Mapped[int] = mapped_column(Integer, default=0)
     
     # Verification & Trust
@@ -203,8 +203,8 @@ class SellerStats(Base):
     restriction_reason: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Relationships
     user: Mapped["User"] = relationship("User", back_populates="seller_stats")

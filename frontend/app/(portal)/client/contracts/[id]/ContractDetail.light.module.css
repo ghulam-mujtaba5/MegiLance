@@ -1,20 +1,143 @@
-/* Light theme */
+/* @AI-HINT: Light theme colors for Contract Detail page */
+
 .container {
-  background-color: #f8f9fa;
-  color: #1a1a1a;
+  color: #1a202c;
 }
 
-.title, .sectionTitle {
-  color: #2d3748;
+.title {
+  color: #1a202c;
 }
 
+.sectionTitle {
+  color: #1e293b;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  color: #64748b;
+}
+
+.breadcrumbLink {
+  color: #4573df;
+}
+
+.breadcrumbLink:hover {
+  color: #3b63c9;
+}
+
+/* Overview Cards */
+.overviewCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.overviewCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.overviewLabel {
+  color: #64748b;
+}
+
+.overviewValue {
+  color: #1a202c;
+}
+
+.overviewSub {
+  color: #94a3b8;
+}
+
+/* Progress */
+.progressSection {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.progressTitle {
+  color: #334155;
+}
+
+.progressPercent {
+  color: #4573df;
+}
+
+.progressBarLarge {
+  background: #f1f5f9;
+}
+
+.progressFillLarge {
+  background: linear-gradient(90deg, #4573df, #6366f1);
+}
+
+.progressInfo {
+  color: #94a3b8;
+}
+
+/* Sections */
 .section {
-  background-color: #ffffff;
+  background: #ffffff;
   border-color: #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+/* Milestones */
 .milestoneItem {
-  background-color: #f7fafc;
-  border-color: #edf2f7;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.milestoneItem:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.milestoneNumber {
+  background: #eef2ff;
+  color: #4573df;
+}
+
+.milestoneMeta {
+  color: #94a3b8;
+}
+
+/* Freelancer Card */
+.freelancerCard {
+  background: #f8fafc;
+}
+
+.freelancerAvatar {
+  background: #eef2ff;
+  color: #4573df;
+}
+
+.freelancerName {
+  color: #1e293b;
+}
+
+.freelancerEmail {
+  color: #94a3b8;
+}
+
+/* Details */
+.detailLabel {
+  color: #94a3b8;
+}
+
+.detailValue {
+  color: #334155;
+}
+
+/* Error */
+.errorIcon {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.errorTitle {
+  color: #1e293b;
+}
+
+.errorText {
+  color: #94a3b8;
 }

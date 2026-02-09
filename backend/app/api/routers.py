@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from .v1 import (
-    health, users, mock, projects, proposals, contracts, portfolio, payments, 
-    auth, client, upload, assessments, interviews, verification,
-    analytics_pro, escrow_pro, notifications_pro, teams, audit, features,
+    health, users, projects, proposals, contracts, portfolio, payments, 
+    auth, client, assessments, interviews, verification,
+    analytics_pro, escrow_pro, notifications_pro, teams, audit,
     export_import, i18n, rate_limiting, webhooks, scheduler, reports, referrals, moderation,
     bulk_operations, saved_searches, activity_feed, api_keys, comments, file_versions, custom_fields,
     templates, organizations, notification_preferences, two_factor, email_templates, integrations,
@@ -15,11 +15,11 @@ from .v1 import (
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
     websocket, uploads, portal_endpoints, analytics, job_alerts, ai_services, fraud_detection, stripe, chatbot,
     # New enterprise features
-    user_feedback, custom_branding, audit_trail, career_development,
-    referral_program, communication_center, metrics_dashboard, data_analytics_export,
-    availability_calendar, review_responses, platform_compliance,
-    notification_settings, search_analytics, rate_cards, proposal_templates,
-    portfolio_showcase, notes_tags, custom_statuses, skill_taxonomy, search_advanced, realtime_notifications,
+    user_feedback, custom_branding, career_development,
+    communication_center, metrics_dashboard, data_analytics_export,
+    availability_calendar, review_responses,
+    search_analytics, rate_cards, proposal_templates,
+    notes_tags, custom_statuses, skill_taxonomy, search_advanced, realtime_notifications,
     ai_matching,
     # Version 2.0 Advanced Features
     security, video_communication,
@@ -39,8 +39,6 @@ from .v1 import (
     gigs, seller_stats, talent_invitations,
     external_projects,
 )
-# Import separately to avoid circular import in Python 3.13
-from .v1 import complete_integrations
 
 
 api_router = APIRouter()
@@ -102,31 +100,22 @@ api_router.include_router(realtime_notifications.router, prefix="/realtime", tag
 # AI-powered matching
 api_router.include_router(ai_matching.router, prefix="", tags=["ai-matching"])
 
+
 # Analytics and reporting
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 
 # Advanced Analytics Pro - ML predictions and BI
 api_router.include_router(analytics_pro.router, prefix="/analytics-pro", tags=["analytics-pro"])
 
-# AI Services - temporarily disabled for stability
-# api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
-
 # File uploads and client tools
 api_router.include_router(uploads.router, prefix="/uploads", tags=["uploads"])
-api_router.include_router(upload.router, prefix="/upload", tags=["upload"])
 api_router.include_router(client.router, prefix="/client", tags=["client"])
 
 # AI services
 api_router.include_router(ai_services.router, prefix="/ai", tags=["ai"])
 
-# Smart AI Matching - ML-powered freelancer-job matching
-# api_router.include_router(matching.router, prefix="/matching", tags=["matching"])
-
 # Skill Assessments - Professional skill verification
 api_router.include_router(assessments.router, prefix="/assessments", tags=["assessments"])
-
-# Smart Pricing - ML-powered pricing intelligence
-# api_router.include_router(pricing.router, prefix="/pricing", tags=["pricing"])
 
 # Video Interviews - WebRTC video calling
 api_router.include_router(interviews.router, prefix="/interviews", tags=["interviews"])
@@ -151,12 +140,6 @@ api_router.include_router(teams.router, prefix="/teams", tags=["teams"])
 
 # Audit Trail - Compliance and security logging
 api_router.include_router(audit.router, prefix="/audit", tags=["audit"])
-
-# Feature Flags & A/B Testing - Controlled rollout (disabled due to Python 3.14 compat)
-# api_router.include_router(features.router, prefix="/features", tags=["features"])
-
-# Recommendation Engine - AI-powered suggestions
-# api_router.include_router(recommendations.router, prefix="/recommendations", tags=["recommendations"])
 
 # Export/Import - Data portability and GDPR compliance
 api_router.include_router(export_import.router, prefix="/export-import", tags=["export-import"])
@@ -205,10 +188,6 @@ api_router.include_router(custom_fields.router, prefix="/custom-fields", tags=["
 
 # Templates - Reusable project/proposal/contract templates
 api_router.include_router(templates.router, tags=["templates"])
-
-# Calendar - Meeting scheduling and availability
-# NOTE: calendar.py has been superseded by availability_calendar.py
-# The old calendar.py shadowed Python's built-in calendar module
 
 # Organizations - Multi-tenant workspace management
 api_router.include_router(organizations.router, tags=["organizations"])
@@ -270,9 +249,6 @@ api_router.include_router(marketplace.router, tags=["marketplace"])
 # Subscription & Billing - Premium plans and payments
 api_router.include_router(subscription_billing.router, tags=["subscriptions"])
 
-# Multi-Currency - Enabled
-# api_router.include_router(multi_currency.router, tags=["currencies"])
-
 # Legal Document Center - NDAs, contracts, e-signatures
 api_router.include_router(legal_documents.router, tags=["legal-documents"])
 
@@ -289,13 +265,10 @@ api_router.include_router(user_feedback.router, tags=["user-feedback"])
 api_router.include_router(custom_branding.router, tags=["branding"])
 
 # Audit Trail - Comprehensive activity logging
-api_router.include_router(audit_trail.router, tags=["audit-trail"])
+# (consolidated into /audit above)
 
 # Career Development - Skill growth and career paths
 api_router.include_router(career_development.router, tags=["career"])
-
-# Referral Program - User acquisition and rewards
-api_router.include_router(referral_program.router, tags=["referral-program"])
 
 # Communication Center - Multi-channel messaging
 api_router.include_router(communication_center.router, tags=["communications"])
@@ -312,12 +285,6 @@ api_router.include_router(availability_calendar.router, tags=["availability"])
 # Review Responses - Business owner replies
 api_router.include_router(review_responses.router, tags=["review-responses"])
 
-# Platform Compliance - GDPR, HIPAA, SOC2
-api_router.include_router(platform_compliance.router, tags=["platform-compliance"])
-
-# Notification Settings - Granular notification preferences
-api_router.include_router(notification_settings.router, tags=["notification-settings"])
-
 # Search Analytics - Search insights and optimization
 api_router.include_router(search_analytics.router, tags=["search-analytics"])
 
@@ -326,9 +293,6 @@ api_router.include_router(rate_cards.router, tags=["rate-cards"])
 
 # Proposal Templates - Reusable proposal templates
 api_router.include_router(proposal_templates.router, tags=["proposal-templates"])
-
-# Portfolio Showcase - Advanced portfolio features
-api_router.include_router(portfolio_showcase.router, tags=["portfolio-showcase"])
 
 # Notes & Tags - Organization and metadata
 api_router.include_router(notes_tags.router, tags=["notes-tags"])
@@ -378,13 +342,7 @@ api_router.include_router(feature_flags.router, tags=["feature-flags"])
 # Stripe is NOT available in Pakistan - these are the alternatives
 api_router.include_router(pakistan_payments.router, prefix="/pk-payments", tags=["pakistan-payments"])
 
-# Mock endpoints (DISABLED - using real database endpoints)
-# api_router.include_router(mock.router, prefix="", tags=["mock"])
-
 # ============================================================================
-# COMPLETE IMPLEMENTATIONS WITH TURSO SUPPORT - All fixed endpoints
-# ============================================================================
-api_router.include_router(complete_integrations.router, prefix="", tags=["complete-integrations"])
 
 # Blog & News
 api_router.include_router(blog.router, prefix="/blog", tags=["blog"])

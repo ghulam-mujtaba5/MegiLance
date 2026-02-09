@@ -244,3 +244,12 @@
 .optionDesc {
   color: #94a3b8;
 }
+
+.confirmText {
+  color: #e2e8f0;
+}
+
+.toast {
+  background: #27ae60;
+  color: #fff;
+}

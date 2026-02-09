@@ -10,7 +10,7 @@ import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardConta
 import commonStyles from './PortfolioUploadWizard.common.module.css';
 import lightStyles from './PortfolioUploadWizard.light.module.css';
 import darkStyles from './PortfolioUploadWizard.dark.module.css';
-import { FaBriefcase, FaImage, FaCode, FaFileAlt, FaEye } from 'react-icons/fa';
+import { Briefcase, ImageIcon, Code, FileText, Eye } from 'lucide-react';
 
 interface ProjectImage {
   id: string;
@@ -69,6 +69,11 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const [portfolioData, setPortfolioData] = useState<PortfolioData>({
     title: '',
@@ -96,11 +101,11 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
     const maxSize = 5 * 1024 * 1024; // 5MB
     const validFiles = Array.from(files).filter(file => {
       if (!file.type.startsWith('image/')) {
-        alert(`${file.name} is not an image`);
+        showToast(`${file.name} is not an image`);
         return false;
       }
       if (file.size > maxSize) {
-        alert(`${file.name} exceeds 5MB limit`);
+        showToast(`${file.name} exceeds 5MB limit`);
         return false;
       }
       return true;
@@ -184,7 +189,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
   const Step1Details = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaBriefcase className={commonStyles.icon} />
+        <Briefcase className={commonStyles.icon} />
         <div>
           <h2>Project Details</h2>
           <p>Tell us about this portfolio piece</p>
@@ -274,7 +279,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
   const Step2Images = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaImage className={commonStyles.icon} />
+        <ImageIcon className={commonStyles.icon} />
         <div>
           <h2>Project Images</h2>
           <p>Upload screenshots or photos of your work</p>
@@ -291,7 +296,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           style={{ display: 'none' }}
         />
         <label htmlFor="portfolio-images" className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}>
-          <FaImage />
+          <ImageIcon />
           Select Images
         </label>
         <p className={commonStyles.uploadHint}>
@@ -346,7 +351,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
   const Step3Technologies = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaCode className={commonStyles.icon} />
+        <Code className={commonStyles.icon} />
         <div>
           <h2>Technologies Used</h2>
           <p>Select or add the tools and technologies</p>
@@ -412,7 +417,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
   const Step4CaseStudy = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaFileAlt className={commonStyles.icon} />
+        <FileText className={commonStyles.icon} />
         <div>
           <h2>Detailed Case Study</h2>
           <p>Provide context about your work (optional but recommended)</p>
@@ -485,7 +490,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
   const Step5Preview = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.previewHeader}>
-        <FaEye className={commonStyles.icon} />
+        <Eye className={commonStyles.icon} />
         <h2>Preview & Publish</h2>
       </div>
 
@@ -562,19 +567,19 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
 
   const validateStep1 = async () => {
     if (!portfolioData.title || portfolioData.title.length < 5) {
-      alert('Project title must be at least 5 characters');
+      showToast('Project title must be at least 5 characters');
       return false;
     }
     if (!portfolioData.category) {
-      alert('Please select a category');
+      showToast('Please select a category');
       return false;
     }
     if (!portfolioData.projectDate) {
-      alert('Please select completion date');
+      showToast('Please select completion date');
       return false;
     }
     if (!portfolioData.shortDescription || portfolioData.shortDescription.length < 50) {
-      alert('Short description must be at least 50 characters');
+      showToast('Short description must be at least 50 characters');
       return false;
     }
     return true;
@@ -582,7 +587,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
 
   const validateStep2 = async () => {
     if (portfolioData.images.length === 0) {
-      alert('Please upload at least one image');
+      showToast('Please upload at least one image');
       return false;
     }
     return true;
@@ -655,15 +660,26 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
   ];
 
   return (
-    <WizardContainer
-      title="Add Portfolio Project"
-      subtitle="Showcase your best work"
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      isLoading={isSubmitting}
-      completeBtnText="Publish Portfolio Item"
-    />
+    <>
+      <WizardContainer
+        title="Add Portfolio Project"
+        subtitle="Showcase your best work"
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        isLoading={isSubmitting}
+        completeBtnText="Publish Portfolio Item"
+      />
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

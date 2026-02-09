@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useId, useCallback, useMemo } from 'react';
-import { IoChevronDown } from 'react-icons/io5';
+import { ChevronDown } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -256,7 +256,8 @@ const Dropdown: React.FC<DropdownProps> = ({
         <span id={labelId} className={cn(commonStyles.label, themeStyles.label, !selected && commonStyles.placeholder)}>
           {selected ? selected.label : placeholder}
         </span>
-        <IoChevronDown 
+        <ChevronDown 
+          size={18}
           className={cn(commonStyles.caret, themeStyles.caret, isOpen && commonStyles.caretOpen)} 
           aria-hidden="true"
         />

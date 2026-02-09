@@ -111,3 +111,7 @@
 .level_intermediate { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
 .level_advanced { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
 .level_expert { background: rgba(34, 197, 94, 0.1); color: #16a34a; }
+
+.confirmText { color: #4b5563; }
+.toast { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.toastError { background: #fef2f2; color: #991b1b; border-color: #fecaca; }

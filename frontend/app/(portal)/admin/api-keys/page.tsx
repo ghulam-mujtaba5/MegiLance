@@ -5,6 +5,10 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { apiKeysApi } from '@/lib/api';
+import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Modal from '@/app/components/Modal/Modal';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './ApiKeys.common.module.css';
@@ -36,6 +40,15 @@ export default function ApiKeysPage() {
     permissions: [] as string[],
     expires_in_days: 90,
   });
+
+  // Revoke confirmation + toast
+  const [revokeTargetId, setRevokeTargetId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const availablePermissions = [
     { id: 'read:projects', label: 'Read Projects', description: 'View project data' },
@@ -132,13 +145,14 @@ export default function ApiKeysPage() {
   };
 
   const handleRevokeKey = async (keyId: string) => {
-    if (!confirm('Are you sure you want to revoke this API key? This action cannot be undone.')) return;
-    
     try {
       await apiKeysApi.revoke(keyId);
+      setRevokeTargetId(null);
+      showToast('API key revoked');
       loadApiKeys();
     } catch (error) {
       console.error('Failed to revoke API key:', error);
+      showToast('Failed to revoke API key', 'error');
     }
   };
 
@@ -204,12 +218,9 @@ export default function ApiKeysPage() {
                 Manage API keys for external integrations
               </p>
             </div>
-            <button
-              className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-              onClick={() => setShowCreateModal(true)}
-            >
+            <Button variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
               + Create New Key
-            </button>
+            </Button>
           </div>
         </ScrollReveal>
 
@@ -249,12 +260,9 @@ export default function ApiKeysPage() {
             <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
               <span className={commonStyles.emptyIcon}>🔑</span>
               <p>No API keys created yet</p>
-              <button
-                className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-                onClick={() => setShowCreateModal(true)}
-              >
+              <Button variant="primary" size="md" onClick={() => setShowCreateModal(true)}>
                 Create your first API key
-              </button>
+              </Button>
             </div>
           ) : (
             <StaggerContainer>
@@ -304,16 +312,13 @@ export default function ApiKeysPage() {
 
                     <div className={commonStyles.keyActions}>
                       {key.status === 'active' && (
-                        <button
-                          className={cn(commonStyles.dangerButton, themeStyles.dangerButton)}
-                          onClick={() => handleRevokeKey(key.id)}
-                        >
+                        <Button variant="danger" size="sm" onClick={() => setRevokeTargetId(key.id)}>
                           Revoke
-                        </button>
+                        </Button>
                       )}
-                      <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
+                      <Button variant="secondary" size="sm">
                         View Logs
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </StaggerItem>
@@ -345,12 +350,9 @@ export default function ApiKeysPage() {
                           <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
                             {newKeyData.key}
                           </code>
-                          <button
-                            onClick={() => copyToClipboard(newKeyData.key)}
-                            className={cn(commonStyles.copyButton, themeStyles.copyButton)}
-                          >
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(newKeyData.key)}>
                             📋
-                          </button>
+                          </Button>
                         </div>
                       </div>
 
@@ -360,23 +362,17 @@ export default function ApiKeysPage() {
                           <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
                             {newKeyData.secret}
                           </code>
-                          <button
-                            onClick={() => copyToClipboard(newKeyData.secret)}
-                            className={cn(commonStyles.copyButton, themeStyles.copyButton)}
-                          >
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(newKeyData.secret)}>
                             📋
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className={commonStyles.modalFooter}>
-                    <button
-                      className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
-                      onClick={closeCreateModal}
-                    >
+                    <Button variant="primary" size="md" onClick={closeCreateModal}>
                       Done
-                    </button>
+                    </Button>
                   </div>
                 </>
               ) : (
@@ -394,29 +390,27 @@ export default function ApiKeysPage() {
                   <div className={commonStyles.modalBody}>
                     <div className={commonStyles.formGroup}>
                       <label>Key Name</label>
-                      <input
-                        type="text"
+                      <Input
                         value={newKey.name}
                         onChange={(e) => setNewKey({ ...newKey, name: e.target.value })}
-                        className={cn(commonStyles.input, themeStyles.input)}
                         placeholder="e.g., Production API"
                       />
                     </div>
 
                     <div className={commonStyles.formGroup}>
                       <label>Expiration</label>
-                      <select
+                      <Select
                         value={newKey.expires_in_days}
                         onChange={(e) => setNewKey({ ...newKey, expires_in_days: Number(e.target.value) })}
-                        className={cn(commonStyles.select, themeStyles.select)}
-                      >
-                        <option value={30}>30 days</option>
-                        <option value={60}>60 days</option>
-                        <option value={90}>90 days</option>
-                        <option value={180}>180 days</option>
-                        <option value={365}>1 year</option>
-                        <option value={0}>Never expires</option>
-                      </select>
+                        options={[
+                          { value: 30, label: '30 days' },
+                          { value: 60, label: '60 days' },
+                          { value: 90, label: '90 days' },
+                          { value: 180, label: '180 days' },
+                          { value: 365, label: '1 year' },
+                          { value: 0, label: 'Never expires' },
+                        ]}
+                      />
                     </div>
 
                     <div className={commonStyles.formGroup}>
@@ -449,19 +443,17 @@ export default function ApiKeysPage() {
                     </div>
                   </div>
                   <div className={commonStyles.modalFooter}>
-                    <button
-                      className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
-                      onClick={closeCreateModal}
-                    >
+                    <Button variant="secondary" size="md" onClick={closeCreateModal}>
                       Cancel
-                    </button>
-                    <button
-                      className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="md"
                       onClick={handleCreateKey}
                       disabled={!newKey.name.trim() || newKey.permissions.length === 0}
                     >
                       Create Key
-                    </button>
+                    </Button>
                   </div>
                 </>
               )}
@@ -469,6 +461,24 @@ export default function ApiKeysPage() {
           </div>
         )}
       </div>
+
+      {/* Revoke Confirmation Modal */}
+      {revokeTargetId && (
+        <Modal isOpen onClose={() => setRevokeTargetId(null)} title="Revoke API Key">
+          <p className={commonStyles.confirmText}>Are you sure you want to revoke this API key? This action cannot be undone and any integrations using this key will stop working.</p>
+          <div className={commonStyles.modalActions}>
+            <Button variant="secondary" size="sm" onClick={() => setRevokeTargetId(null)}>Cancel</Button>
+            <Button variant="danger" size="sm" onClick={() => handleRevokeKey(revokeTargetId)}>Revoke Key</Button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 }

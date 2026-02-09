@@ -7,17 +7,17 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './MilestoneWizard.common.module.css';
 import lightStyles from './MilestoneWizard.light.module.css';
 import darkStyles from './MilestoneWizard.dark.module.css';
 import {
-  FaCheckCircle,
-  FaDollarSign,
-  FaCalendar,
-  FaListUl,
-  FaInfoCircle,
-  FaExclamationTriangle
-} from 'react-icons/fa';
+  CheckCircle,
+  DollarSign,
+  Calendar,
+  Info,
+  AlertTriangle
+} from 'lucide-react';
 
 type AmountType = 'fixed' | 'percentage';
 
@@ -68,6 +68,12 @@ export default function MilestoneWizard({
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [milestoneData, setMilestoneData] = useState<MilestoneData>({
     title: '',
     description: '',
@@ -142,7 +148,7 @@ export default function MilestoneWizard({
   const Step1Details = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.projectInfo}>
-        <FaCheckCircle className={commonStyles.icon} />
+        <CheckCircle className={commonStyles.icon} size={16} />
         <div>
           <div className={commonStyles.label}>Project:</div>
           <div className={commonStyles.value}>{projectName}</div>
@@ -184,7 +190,7 @@ export default function MilestoneWizard({
       </div>
 
       <div className={cn(commonStyles.tipBox, themeStyles.tipBox)}>
-        <FaInfoCircle />
+        <Info size={16} />
         <p><strong>💡 Tip:</strong> Be specific about deliverables. Clear milestones prevent disputes and ensure both parties are aligned on expectations.</p>
       </div>
     </div>
@@ -241,7 +247,7 @@ export default function MilestoneWizard({
             </div>
           </div>
           <div className={cn(commonStyles.calculatedAmount, themeStyles.calculatedAmount)}>
-            <FaDollarSign />
+            <DollarSign size={16} />
             <span>Calculated Amount: ${calculateAmount().toFixed(2)}</span>
           </div>
         </div>
@@ -271,7 +277,7 @@ export default function MilestoneWizard({
         <div className={commonStyles.formGroup}>
           <label htmlFor="dueDate">Due Date *</label>
           <div className={commonStyles.dateInput}>
-            <FaCalendar className={commonStyles.dateIcon} />
+            <Calendar className={commonStyles.dateIcon} size={16} />
             <input
               type="date"
               id="dueDate"
@@ -319,7 +325,7 @@ export default function MilestoneWizard({
   const Step3Criteria = () => (
     <div className={commonStyles.stepContent}>
       <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-        <FaInfoCircle />
+        <Info size={16} />
         <p>Acceptance criteria define what must be completed for this milestone to be approved. Be specific and measurable.</p>
       </div>
 
@@ -450,7 +456,7 @@ export default function MilestoneWizard({
               .filter(c => c.description)
               .map((criterion, index) => (
                 <li key={criterion.id}>
-                  <FaCheckCircle /> {criterion.description}
+                  <CheckCircle size={16} /> {criterion.description}
                 </li>
               ))}
           </ul>
@@ -470,7 +476,7 @@ export default function MilestoneWizard({
       </div>
 
       <div className={cn(commonStyles.warningBox, themeStyles.warningBox)}>
-        <FaExclamationTriangle />
+        <AlertTriangle size={16} />
         <p><strong>Important:</strong> Once created, milestone amount and due date can only be modified with mutual agreement from both parties.</p>
       </div>
     </div>
@@ -479,11 +485,11 @@ export default function MilestoneWizard({
   // Validation
   const validateStep1 = async () => {
     if (!milestoneData.title || milestoneData.title.trim().length < 5) {
-      alert('Please enter a title (at least 5 characters)');
+      showToast('Please enter a title (at least 5 characters)');
       return false;
     }
     if (!milestoneData.description || milestoneData.description.trim().length < 50) {
-      alert('Please enter a description (at least 50 characters)');
+      showToast('Please enter a description (at least 50 characters)');
       return false;
     }
     return true;
@@ -492,15 +498,15 @@ export default function MilestoneWizard({
   const validateStep2 = async () => {
     const amount = calculateAmount();
     if (amount <= 0) {
-      alert('Milestone amount must be greater than $0');
+      showToast('Milestone amount must be greater than $0');
       return false;
     }
     if (amount > contractValue) {
-      alert('Milestone amount cannot exceed contract value');
+      showToast('Milestone amount cannot exceed contract value');
       return false;
     }
     if (!milestoneData.dueDate) {
-      alert('Please select a due date');
+      showToast('Please select a due date');
       return false;
     }
     return true;
@@ -509,7 +515,7 @@ export default function MilestoneWizard({
   const validateStep3 = async () => {
     const validCriteria = milestoneData.acceptanceCriteria.filter(c => c.description.trim());
     if (validCriteria.length === 0) {
-      alert('Please add at least one acceptance criterion');
+      showToast('Please add at least one acceptance criterion');
       return false;
     }
     return true;
@@ -547,16 +553,13 @@ export default function MilestoneWizard({
       }
     } catch (error) {
       console.error('Error creating milestone:', error);
-      alert('Failed to create milestone. Please try again.');
+      showToast('Failed to create milestone. Please try again.');
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Your progress will be saved as a draft.')) {
-      saveDraft();
-      router.back();
-    }
+    setShowCancelModal(true);
   };
 
   const steps = [
@@ -590,16 +593,40 @@ export default function MilestoneWizard({
   ];
 
   return (
-    <WizardContainer
-      title="Create Milestone"
-      subtitle={`Project: ${projectName}`}
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-      isLoading={isSubmitting}
-      saveProgress={saveDraft}
-    />
+    <>
+      <WizardContainer
+        title="Create Milestone"
+        subtitle={`Project: ${projectName}`}
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+        isLoading={isSubmitting}
+        saveProgress={saveDraft}
+      />
+      <Modal
+        isOpen={showCancelModal}
+        title="Cancel Milestone Creation"
+        onClose={() => setShowCancelModal(false)}
+        footer={
+          <>
+            <button onClick={() => setShowCancelModal(false)}>Continue Editing</button>
+            <button onClick={() => { saveDraft(); setShowCancelModal(false); router.back(); }}>Yes, Cancel</button>
+          </>
+        }
+      >
+        <p>Are you sure you want to cancel? Your progress will be saved as a draft.</p>
+      </Modal>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

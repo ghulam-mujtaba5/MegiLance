@@ -8,6 +8,11 @@ import { cn } from '@/lib/utils';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import Button from '@/app/components/Button/Button';
+import Modal from '@/app/components/Modal/Modal';
+import Loader from '@/app/components/Loader/Loader';
+import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { Search, Bell, Sparkles, BarChart3, Pencil, Trash2, Play } from 'lucide-react';
 import commonStyles from './SavedSearches.common.module.css';
 import lightStyles from './SavedSearches.light.module.css';
 import darkStyles from './SavedSearches.dark.module.css';
@@ -41,6 +46,13 @@ export default function SavedSearchesPage() {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingSearch, setEditingSearch] = useState<SavedSearch | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<SavedSearch | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
   const [newSearch, setNewSearch] = useState({
     name: '',
     query: '',
@@ -173,6 +185,8 @@ export default function SavedSearchesPage() {
       alertEnabled: true,
       alertFrequency: 'daily'
     });
+    showToast(editingSearch ? 'Search updated successfully!' : 'Saved search created!');
+    setEditingSearch(null);
   };
 
   const toggleAlert = (id: string) => {
@@ -181,10 +195,10 @@ export default function SavedSearchesPage() {
     ));
   };
 
-  const deleteSearch = (id: string) => {
-    if (confirm('Are you sure you want to delete this saved search?')) {
-      setSearches(searches.filter(s => s.id !== id));
-    }
+  const deleteSearch = (search: SavedSearch) => {
+    setDeleteTarget(null);
+    setSearches(searches.filter(s => s.id !== search.id));
+    showToast('Saved search deleted.');
   };
 
   const runSearch = (search: SavedSearch) => {
@@ -212,7 +226,7 @@ export default function SavedSearchesPage() {
   if (loading) {
     return (
       <div className={cn(commonStyles.container, themeStyles.container)}>
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading saved searches...</div>
+        <Loader size="lg" />
       </div>
     );
   }
@@ -241,14 +255,14 @@ export default function SavedSearchesPage() {
         <ScrollReveal delay={0.1}>
           <div className={commonStyles.statsGrid}>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>🔍</span>
+              <span className={commonStyles.statIcon}><Search size={20} /></span>
               <div>
                 <div className={cn(commonStyles.statValue, themeStyles.statValue)}>{searches.length}</div>
                 <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Saved Searches</div>
               </div>
             </div>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>🔔</span>
+              <span className={commonStyles.statIcon}><Bell size={20} /></span>
               <div>
                 <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
                   {searches.filter(s => s.alertEnabled).length}
@@ -257,7 +271,7 @@ export default function SavedSearchesPage() {
               </div>
             </div>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>✨</span>
+              <span className={commonStyles.statIcon}><Sparkles size={20} /></span>
               <div>
                 <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
                   {searches.reduce((sum, s) => sum + s.newMatches, 0)}
@@ -266,7 +280,7 @@ export default function SavedSearchesPage() {
               </div>
             </div>
             <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-              <span className={commonStyles.statIcon}>📊</span>
+              <span className={commonStyles.statIcon}><BarChart3 size={20} /></span>
               <div>
                 <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
                   {searches.reduce((sum, s) => sum + s.matchCount, 0)}
@@ -280,17 +294,16 @@ export default function SavedSearchesPage() {
         {/* Saved Searches List */}
         {searches.length === 0 ? (
           <ScrollReveal delay={0.2}>
-            <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-              <span className={commonStyles.emptyIcon}>🔍</span>
-              <h2>No saved searches yet</h2>
-              <p>Create your first saved search to get notified when new jobs match your criteria.</p>
-              <button 
-                className={cn(commonStyles.createButton, themeStyles.createButton)}
-                onClick={() => setShowCreateModal(true)}
-              >
-                Create Saved Search
-              </button>
-            </div>
+            <EmptyState
+              title="No saved searches yet"
+              description="Create your first saved search to get notified when new jobs match your criteria."
+              icon={<Search size={48} />}
+              action={
+                <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+                  Create Saved Search
+                </Button>
+              }
+            />
           </ScrollReveal>
         ) : (
           <StaggerContainer className={commonStyles.searchesList} delay={0.2}>
@@ -312,24 +325,30 @@ export default function SavedSearchesPage() {
                       </p>
                     </div>
                     <div className={commonStyles.searchActions}>
-                      <button 
-                        className={cn(commonStyles.runButton, themeStyles.runButton)}
+                      <Button 
+                        variant="primary"
+                        size="sm"
+                        iconBefore={<Play size={14} />}
                         onClick={() => runSearch(search)}
                       >
-                        Run Search
-                      </button>
-                      <button 
-                        className={cn(commonStyles.editButton, themeStyles.editButton)}
+                        Run
+                      </Button>
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        iconBefore={<Pencil size={14} />}
                         onClick={() => setEditingSearch(search)}
                       >
-                        ✏️
-                      </button>
-                      <button 
-                        className={cn(commonStyles.deleteButton, themeStyles.deleteButton)}
-                        onClick={() => deleteSearch(search.id)}
+                        Edit
+                      </Button>
+                      <Button 
+                        variant="danger"
+                        size="sm"
+                        iconBefore={<Trash2 size={14} />}
+                        onClick={() => setDeleteTarget(search)}
                       >
-                        🗑️
-                      </button>
+                        Delete
+                      </Button>
                     </div>
                   </div>
                   
@@ -531,6 +550,20 @@ export default function SavedSearchesPage() {
             </div>
           </div>
         )}
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={deleteTarget !== null} title="Delete Saved Search" onClose={() => setDeleteTarget(null)}>
+        <p>Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone.</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (deleteTarget) deleteSearch(deleteTarget); }}>Delete</Button>
+        </div>
+      </Modal>
+
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast, toast.type === 'error' && themeStyles.toastError)}>
+          {toast.message}
+        </div>
+      )}
       </div>
     </PageTransition>
   );

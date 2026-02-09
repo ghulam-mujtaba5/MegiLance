@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './SkillAssessmentWizard.common.module.css';
 import lightStyles from './SkillAssessmentWizard.light.module.css';
 import darkStyles from './SkillAssessmentWizard.dark.module.css';
-import { FaCode, FaClock, FaCheckCircle, FaTrophy } from 'react-icons/fa';
+import { Code, Clock, CheckCircle, Trophy } from 'lucide-react';
 import api from '@/lib/api';
 
 interface Question {
@@ -111,7 +112,7 @@ export default function SkillAssessmentWizard({
   const Step1Level = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaCode className={commonStyles.icon} />
+        <Code className={commonStyles.icon} />
         <div>
           <h2>{skillName} Assessment</h2>
           <p>Select your skill level to begin the assessment</p>
@@ -181,7 +182,7 @@ export default function SkillAssessmentWizard({
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.progressBar}>
         <div className={commonStyles.timerBox}>
-          <FaClock />
+          <Clock />
           <span>Time Remaining: {formatTime(timeRemaining)}</span>
         </div>
         <div className={commonStyles.questionProgress}>
@@ -231,7 +232,7 @@ export default function SkillAssessmentWizard({
           passed && commonStyles.passedCard,
           passed && themeStyles.passedCard
         )}>
-          <FaTrophy className={commonStyles.trophyIcon} />
+          <Trophy className={commonStyles.trophyIcon} />
           <h2>{passed ? 'Congratulations!' : 'Assessment Complete'}</h2>
           <div className={commonStyles.scoreDisplay}>
             <div className={commonStyles.scoreCircle}>
@@ -242,7 +243,7 @@ export default function SkillAssessmentWizard({
           
           <div className={commonStyles.statusBadge}>
             {passed ? (
-              <><FaCheckCircle /> Passed</>
+              <><CheckCircle /> Passed</>
             ) : (
               <>Try Again</>
             )}
@@ -280,9 +281,13 @@ export default function SkillAssessmentWizard({
     );
   };
 
+  const [showUnansweredModal, setShowUnansweredModal] = useState(false);
+  const [skipUnansweredCheck, setSkipUnansweredCheck] = useState(false);
+
   const validateStep2 = async () => {
-    if (Object.keys(assessmentData.answers).length < assessmentData.questions.length) {
-      return confirm('You haven\'t answered all questions. Submit anyway?');
+    if (!skipUnansweredCheck && Object.keys(assessmentData.answers).length < assessmentData.questions.length) {
+      setShowUnansweredModal(true);
+      return false;
     }
     return true;
   };
@@ -335,20 +340,35 @@ export default function SkillAssessmentWizard({
   ];
 
   return (
-    <WizardContainer
-      title="Skill Assessment"
-      subtitle={skillName}
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={(step: number) => {
-        if (step === 1 && !assessmentData.startTime) {
-          setAssessmentData({ ...assessmentData, startTime: Date.now() });
+    <>
+      <WizardContainer
+        title="Skill Assessment"
+        subtitle={skillName}
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={(step: number) => {
+          if (step === 1 && !assessmentData.startTime) {
+            setAssessmentData({ ...assessmentData, startTime: Date.now() });
+          }
+          setCurrentStep(step);
+        }}
+        onComplete={handleComplete}
+        isLoading={isSubmitting}
+        completeBtnText="Complete Assessment"
+      />
+      <Modal
+        isOpen={showUnansweredModal}
+        title="Unanswered Questions"
+        onClose={() => setShowUnansweredModal(false)}
+        footer={
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <button onClick={() => setShowUnansweredModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' }}>Go Back</button>
+            <button onClick={() => { setShowUnansweredModal(false); setSkipUnansweredCheck(true); setCurrentStep(2); }} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#4573df', color: '#fff', cursor: 'pointer' }}>Submit Anyway</button>
+          </div>
         }
-        setCurrentStep(step);
-      }}
-      onComplete={handleComplete}
-      isLoading={isSubmitting}
-      completeBtnText="Complete Assessment"
-    />
+      >
+        <p>You haven&apos;t answered all questions. Are you sure you want to submit?</p>
+      </Modal>
+    </>
   );
 }

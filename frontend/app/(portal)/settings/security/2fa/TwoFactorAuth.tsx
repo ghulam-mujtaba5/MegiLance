@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { QRCodeCanvas } from 'qrcode.react';
-import { FaShieldAlt, FaKey, FaCheckCircle, FaTimesCircle, FaDownload } from 'react-icons/fa';
+import { ShieldCheck, KeyRound, CheckCircle, XCircle, Download } from 'lucide-react';
+import Modal from '@/app/components/Modal/Modal';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 
@@ -29,6 +30,7 @@ const TwoFactorAuth: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showDisableModal, setShowDisableModal] = useState(false);
   const [success, setSuccess] = useState('');
   const [checkingStatus, setCheckingStatus] = useState(true);
 
@@ -107,9 +109,7 @@ const TwoFactorAuth: React.FC = () => {
   };
 
   const handleDisable2FA = async () => {
-    if (!confirm('Are you sure you want to disable Two-Factor Authentication? This will make your account less secure.')) {
-      return;
-    }
+    setShowDisableModal(false);
 
     setLoading(true);
     setError('');
@@ -154,7 +154,7 @@ const TwoFactorAuth: React.FC = () => {
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>
-              <FaShieldAlt className="inline mr-2" />
+              <ShieldCheck className="inline mr-2" size={20} />
               Two-Factor Authentication
             </h1>
             <p className={styles.subtitle}>
@@ -164,12 +164,12 @@ const TwoFactorAuth: React.FC = () => {
           <div className={cn(styles.statusBadge, is2FAEnabled ? styles.statusEnabled : styles.statusDisabled)}>
             {is2FAEnabled ? (
               <>
-                <FaCheckCircle className="inline mr-2" />
+                <CheckCircle className="inline mr-2" size={16} />
                 Enabled
               </>
             ) : (
               <>
-                <FaTimesCircle className="inline mr-2" />
+                <XCircle className="inline mr-2" size={16} />
                 Disabled
               </>
             )}
@@ -178,14 +178,14 @@ const TwoFactorAuth: React.FC = () => {
 
         {error && (
           <div className={styles.errorMessage}>
-            <FaTimesCircle className="inline mr-2" />
+            <XCircle className="inline mr-2" size={16} />
             {error}
           </div>
         )}
 
         {success && (
           <div className={styles.successMessage}>
-            <FaCheckCircle className="inline mr-2" />
+            <CheckCircle className="inline mr-2" size={16} />
             {success}
           </div>
         )}
@@ -203,7 +203,7 @@ const TwoFactorAuth: React.FC = () => {
                 isLoading={loading}
                 disabled={loading}
               >
-                <FaKey className="mr-2" />
+                <KeyRound className="mr-2" size={16} />
                 Enable Two-Factor Authentication
               </Button>
             </div>
@@ -243,7 +243,7 @@ const TwoFactorAuth: React.FC = () => {
                   onClick={downloadBackupCodes}
                   size="sm"
                 >
-                  <FaDownload className="mr-2" />
+                  <Download className="mr-2" size={16} />
                   Download Codes
                 </Button>
               </div>
@@ -293,7 +293,7 @@ const TwoFactorAuth: React.FC = () => {
             <div className={styles.actions}>
               <Button 
                 variant="danger" 
-                onClick={handleDisable2FA}
+                onClick={() => setShowDisableModal(true)}
                 isLoading={loading}
                 disabled={loading}
               >
@@ -303,6 +303,21 @@ const TwoFactorAuth: React.FC = () => {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={showDisableModal}
+        title="Disable Two-Factor Authentication?"
+        onClose={() => setShowDisableModal(false)}
+        description="This will make your account less secure. Are you sure you want to disable 2FA?"
+        footer={
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <Button variant="secondary" onClick={() => setShowDisableModal(false)}>Cancel</Button>
+            <Button variant="danger" onClick={handleDisable2FA}>Disable 2FA</Button>
+          </div>
+        }
+      >
+        <p>You will no longer need a verification code to sign in. You can re-enable 2FA at any time.</p>
+      </Modal>
     </div>
   );
 };

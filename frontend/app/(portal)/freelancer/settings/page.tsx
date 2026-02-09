@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
-import { FiBell, FiLock, FiEye, FiMail, FiGlobe } from 'react-icons/fi';
+import { Bell, Lock, Eye, Mail, Globe } from 'lucide-react';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
@@ -101,7 +101,7 @@ const AccountSettingsPage = () => {
           {/* Profile Settings */}
           <section className={cn(commonStyles.section)}>
             <div className={cn(commonStyles.sectionHeader)}>
-              <FiMail className={cn(commonStyles.sectionIcon)} />
+              <Mail className={cn(commonStyles.sectionIcon)} />
               <div>
                 <h2 className={cn(commonStyles.sectionTitle)}>Public Profile</h2>
                 <p className={cn(commonStyles.sectionDescription)}>This information will be displayed on your public profile.</p>
@@ -171,7 +171,7 @@ const AccountSettingsPage = () => {
           {/* Notification Settings */}
           <section className={cn(commonStyles.section)}>
             <div className={cn(commonStyles.sectionHeader)}>
-              <FiBell className={cn(commonStyles.sectionIcon)} />
+              <Bell className={cn(commonStyles.sectionIcon)} />
               <div>
                 <h2 className={cn(commonStyles.sectionTitle)}>Notifications</h2>
                 <p className={cn(commonStyles.sectionDescription)}>Choose when and how you want to be notified.</p>
@@ -244,7 +244,7 @@ const AccountSettingsPage = () => {
           {/* Privacy Settings */}
           <section className={cn(commonStyles.section)}>
             <div className={cn(commonStyles.sectionHeader)}>
-              <FiEye className={cn(commonStyles.sectionIcon)} />
+              <Eye className={cn(commonStyles.sectionIcon)} />
               <div>
                 <h2 className={cn(commonStyles.sectionTitle)}>Privacy</h2>
                 <p className={cn(commonStyles.sectionDescription)}>Control who can see your information.</p>
@@ -319,7 +319,7 @@ const AccountSettingsPage = () => {
           {/* Security Settings */}
           <section className={cn(commonStyles.section)}>
             <div className={cn(commonStyles.sectionHeader)}>
-              <FiLock className={cn(commonStyles.sectionIcon)} />
+              <Lock className={cn(commonStyles.sectionIcon)} />
               <div>
                 <h2 className={cn(commonStyles.sectionTitle)}>Security</h2>
                 <p className={cn(commonStyles.sectionDescription)}>Manage your account security settings.</p>
@@ -353,7 +353,7 @@ const AccountSettingsPage = () => {
                 <Label>Connected Accounts</Label>
                 <div className={commonStyles.connectedAccounts}>
                   <div className={commonStyles.accountRow}>
-                    <FiGlobe className={commonStyles.accountIcon} />
+                    <Globe className={commonStyles.accountIcon} />
                     <span>Google</span>
                     <Button variant="danger" size="small">Disconnect</Button>
                   </div>

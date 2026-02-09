@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { useRouter, useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FiArrowLeft, FiDownload, FiExternalLink, FiLoader, FiAlertTriangle } from 'react-icons/fi';
+import { ArrowLeft, Download, Loader2, AlertTriangle } from 'lucide-react';
 
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
@@ -156,7 +156,7 @@ const ContractDetailsPage: React.FC = () => {
   if (loading) {
     return (
       <div className={cn(styles.container, styles.loadingState)}>
-        <FiLoader className={styles.spinner} />
+        <Loader2 className={styles.spinner} />
         <p>Loading contract details...</p>
       </div>
     );
@@ -183,7 +183,7 @@ const ContractDetailsPage: React.FC = () => {
           aria-label="Back to contracts"
           title="Back to contracts"
         >
-          <FiArrowLeft /> Back
+          <ArrowLeft size={16} /> Back
         </Button>
         
         <div className={styles.headerActions}>
@@ -194,7 +194,7 @@ const ContractDetailsPage: React.FC = () => {
               aria-label="Raise a dispute"
               title="Raise a dispute"
             >
-              <FiAlertTriangle /> Raise Dispute
+              <AlertTriangle size={16} /> Raise Dispute
             </Button>
           )}
           <Button 
@@ -203,7 +203,7 @@ const ContractDetailsPage: React.FC = () => {
             aria-label="Download contract"
             title="Download contract"
           >
-            <FiDownload /> Download
+            <Download size={16} /> Download
           </Button>
         </div>
       </header>

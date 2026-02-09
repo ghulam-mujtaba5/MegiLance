@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { favoritesApi } from '@/lib/api';
 import type { Favorite } from '@/types/api';
 import { Star, Briefcase, User, Trash2, ExternalLink } from 'lucide-react';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
+import Loader from '@/app/components/Loader/Loader';
 import commonStyles from './Favorites.common.module.css';
 import lightStyles from './Favorites.light.module.css';
 import darkStyles from './Favorites.dark.module.css';
@@ -19,6 +22,12 @@ const Favorites: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<string>('all');
+  const [deleteTarget, setDeleteTarget] = useState<Favorite | null>(null);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadFavorites();
@@ -39,15 +48,16 @@ const Favorites: React.FC = () => {
     }
   };
 
-  const handleRemove = async (favoriteId: number) => {
-    if (!confirm('Remove this item from favorites?')) return;
+  const handleRemove = async (favorite: Favorite) => {
+    setDeleteTarget(null);
 
     try {
       setError(null);
-      await favoritesApi.delete(favoriteId);
+      await favoritesApi.delete(favorite.id);
+      showToast('Removed from favorites.');
       loadFavorites();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to remove favorite');
+      showToast(err instanceof Error ? err.message : 'Failed to remove favorite', 'error');
     }
   };
 
@@ -155,9 +165,7 @@ const Favorites: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>
-          Loading favorites...
-        </div>
+        <Loader size="lg" />
       ) : favorites.length === 0 ? (
         <div className={cn(commonStyles.empty, themeStyles.empty)}>
           <Star size={48} />
@@ -204,7 +212,7 @@ const Favorites: React.FC = () => {
                   View
                 </a>
                 <button
-                  onClick={() => handleRemove(favorite.id)}
+                  onClick={() => setDeleteTarget(favorite)}
                   className={cn(commonStyles.removeBtn, themeStyles.removeBtn)}
                 >
                   <Trash2 size={16} />
@@ -213,6 +221,20 @@ const Favorites: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      <Modal isOpen={deleteTarget !== null} title="Remove Favorite" onClose={() => setDeleteTarget(null)}>
+        <p>Remove <strong>{deleteTarget?.target_type} #{deleteTarget?.target_id}</strong> from your favorites?</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (deleteTarget) handleRemove(deleteTarget); }}>Remove</Button>
+        </div>
+      </Modal>
+
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast, toast.type === 'error' && themeStyles.toastError)}>
+          {toast.message}
         </div>
       )}
     </div>

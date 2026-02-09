@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
@@ -17,10 +18,16 @@ const Install: React.FC = () => {
 
   if (!resolvedTheme) return null;
 
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
   // In a real implementation, we would check if the app can be installed
   // and handle the beforeinstallprompt event.
   const handleInstallClick = () => {
-    alert('PWA installation would be triggered here.');
+    showToast('PWA installation would be triggered here.', 'success');
   };
 
   return (
@@ -52,6 +59,15 @@ const Install: React.FC = () => {
           </Button>
         </ScrollReveal>
       </div>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 };

@@ -2,18 +2,22 @@
 # Provides test database, client, and common fixtures
 
 import pytest
+import sys
+import os
 from typing import Generator
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-from app.main import app
-from app.db.session import Base, get_db
-from app.core.security import create_access_token, get_password_hash
+# Ensure backend root is on the path so `main` can be imported directly
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from main import app
+from app.db.base import Base
+from app.db.session import get_db
+from app.core.security import create_access_token, create_refresh_token, get_password_hash
 from app.models.user import User
-from app.services.email_service import EmailService
-from app.services.stripe_service import StripeService
 
 
 # Test database URL (use in-memory SQLite for testing)
@@ -72,36 +76,12 @@ def test_user(db: Session) -> User:
     user = User(
         email="testuser@example.com",
         hashed_password=get_password_hash("TestPassword123!"),
-        first_name="Test",
-        last_name="User",
+        name="Test User",
         user_type="freelancer",
-        email_verified=True,
+        role="freelancer",
+        is_verified=True,
         is_active=True,
-        created_at=datetime.utcnow()
-    )
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
-
-
-@pytest.fixture
-def test_user_with_2fa(db: Session) -> User:
-    """Create test user with 2FA enabled"""
-    import pyotp
-    
-    secret = pyotp.random_base32()
-    user = User(
-        email="2fauser@example.com",
-        hashed_password=get_password_hash("TestPassword123!"),
-        first_name="TwoFactor",
-        last_name="User",
-        user_type="freelancer",
-        email_verified=True,
-        is_active=True,
-        two_factor_enabled=True,
-        two_factor_secret=secret,
-        created_at=datetime.utcnow()
+        joined_at=datetime.now(timezone.utc).isoformat()
     )
     db.add(user)
     db.commit()
@@ -115,12 +95,12 @@ def admin_user(db: Session) -> User:
     user = User(
         email="admin@example.com",
         hashed_password=get_password_hash("AdminPass123!"),
-        first_name="Admin",
-        last_name="User",
+        name="Admin User",
         user_type="admin",
-        email_verified=True,
+        role="admin",
+        is_verified=True,
         is_active=True,
-        created_at=datetime.utcnow()
+        joined_at=datetime.now(timezone.utc).isoformat()
     )
     db.add(user)
     db.commit()
@@ -134,11 +114,12 @@ def admin_user(db: Session) -> User:
 def auth_tokens(test_user: User) -> dict:
     """Create authentication tokens for test user"""
     access_token = create_access_token(
-        data={"sub": str(test_user.id), "type": "access"}
+        subject=test_user.email,
+        custom_claims={"user_id": test_user.id, "role": test_user.user_type}
     )
-    refresh_token = create_access_token(
-        data={"sub": str(test_user.id), "type": "refresh"},
-        expires_delta=timedelta(days=7)
+    refresh_token = create_refresh_token(
+        subject=test_user.email,
+        custom_claims={"user_id": test_user.id, "role": test_user.user_type}
     )
     return {
         "access_token": access_token,
@@ -158,65 +139,12 @@ def auth_headers(auth_tokens: dict) -> dict:
 def admin_headers(admin_user: User) -> dict:
     """Create admin authorization headers"""
     access_token = create_access_token(
-        data={"sub": str(admin_user.id), "type": "access"}
+        subject=admin_user.email,
+        custom_claims={"user_id": admin_user.id, "role": "admin"}
     )
     return {
         "Authorization": f"Bearer {access_token}"
     }
-
-
-# ==================== Token Fixtures ====================
-
-@pytest.fixture
-def verification_token(test_user: User) -> str:
-    """Create email verification token"""
-    from app.core.security import create_verification_token
-    return create_verification_token(test_user.email)
-
-
-@pytest.fixture
-def password_reset_token(test_user: User) -> str:
-    """Create password reset token"""
-    from app.core.security import create_password_reset_token
-    return create_password_reset_token(test_user.email)
-
-
-# ==================== Service Fixtures ====================
-
-@pytest.fixture
-def email_service() -> EmailService:
-    """Create email service instance"""
-    return EmailService()
-
-
-@pytest.fixture
-def stripe_service() -> StripeService:
-    """Create Stripe service instance"""
-    return StripeService()
-
-
-# ==================== WebSocket Fixtures ====================
-
-@pytest.fixture
-def websocket_client(client: TestClient) -> TestClient:
-    """Create WebSocket test client"""
-    return client
-
-
-# ==================== Payment Fixtures ====================
-
-@pytest.fixture
-def payment_intent_id(stripe_service: StripeService) -> str:
-    """Create test payment intent and return ID"""
-    try:
-        payment_intent = stripe_service.create_payment_intent(
-            amount=1000,
-            currency="usd",
-            customer_id="cus_test123"
-        )
-        return payment_intent["id"]
-    except Exception:
-        pytest.skip("Stripe not configured")
 
 
 # ==================== Configuration ====================

@@ -55,6 +55,15 @@
   font-size: 0.8125rem;
 }
 
+.statIconGreen { color: #27AE60; }
+.statIconYellow { color: #F2C94C; }
+.statIconBlue { color: #4573df; }
+.statIconPurple { color: #8b5cf6; }
+
+.content {
+  margin-top: 1rem;
+}
+
 /* Tabs */
 .tabs {
   display: flex;
@@ -342,4 +351,23 @@
     align-items: flex-start;
     gap: 1rem;
   }
+}
+
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  padding: 1rem 1.75rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 200;
+  animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import { FaShieldAlt } from 'react-icons/fa';
+import { Shield } from 'lucide-react';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -18,7 +18,7 @@ import lightStyles from './ResetPassword.light.module.css';
 import darkStyles from './ResetPassword.dark.module.css';
 
 const resetPasswordBranding = {
-  brandIcon: FaShieldAlt,
+  brandIcon: Shield,
   brandTitle: 'Strengthen Your Security',
   brandText: 'Create a new, strong password to protect your account. Make sure it&apos;s at least 8 characters long.',
 };
@@ -95,7 +95,18 @@ const ResetPassword: React.FC = () => {
 
   const styles = React.useMemo(() => {
     const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
-    return { ...commonStyles, ...themeStyles };
+    const merge = (key: keyof typeof commonStyles) => cn((commonStyles as any)[key], (themeStyles as any)[key]);
+    return {
+      loginPage: merge('loginPage'),
+      brandingSlot: merge('brandingSlot'),
+      formPanel: merge('formPanel'),
+      formContainer: merge('formContainer'),
+      formHeader: merge('formHeader'),
+      formTitle: merge('formTitle'),
+      formSubtitle: merge('formSubtitle'),
+      loginForm: merge('loginForm'),
+      submitButton: merge('submitButton'),
+    } as const;
   }, [resolvedTheme]);
 
   return (

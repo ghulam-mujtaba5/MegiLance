@@ -9,7 +9,7 @@ import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardConta
 import commonStyles from './SupportTicketWizard.common.module.css';
 import lightStyles from './SupportTicketWizard.light.module.css';
 import darkStyles from './SupportTicketWizard.dark.module.css';
-import { FaLifeRing, FaTag, FaFileUpload, FaCheckCircle } from 'react-icons/fa';
+import { LifeBuoy, Tag, FileUp, CheckCircle } from 'lucide-react';
 import api from '@/lib/api';
 
 interface Attachment {
@@ -99,6 +99,11 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
 
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const [ticketData, setTicketData] = useState<TicketData>({
     category: '',
@@ -117,7 +122,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
     const maxSize = 10 * 1024 * 1024; // 10MB
     const validFiles = Array.from(files).filter(file => {
       if (file.size > maxSize) {
-        alert(`${file.name} exceeds 10MB limit`);
+        showToast(`${file.name} exceeds 10MB limit`);
         return false;
       }
       return true;
@@ -155,7 +160,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
   const Step1Category = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaLifeRing className={commonStyles.icon} />
+        <LifeBuoy className={commonStyles.icon} />
         <div>
           <h2>How Can We Help?</h2>
           <p>Select the category that best describes your issue</p>
@@ -195,7 +200,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
                 )}
                 onClick={() => setTicketData({ ...ticketData, subcategory: sub })}
               >
-                <FaTag className={commonStyles.tagIcon} />
+                <Tag className={commonStyles.tagIcon} />
                 {sub}
               </div>
             ))}
@@ -209,7 +214,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
   const Step2Details = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaTag className={commonStyles.icon} />
+        <Tag className={commonStyles.icon} />
         <div>
           <h2>Describe Your Issue</h2>
           <p>Provide details to help us assist you better</p>
@@ -278,7 +283,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
   const Step3Attachments = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.header}>
-        <FaFileUpload className={commonStyles.icon} />
+        <FileUp className={commonStyles.icon} />
         <div>
           <h2>Add Attachments</h2>
           <p>Upload screenshots or files that help explain your issue (optional)</p>
@@ -295,7 +300,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
           style={{ display: 'none' }}
         />
         <label htmlFor="ticket-attachments" className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}>
-          <FaFileUpload />
+          <FileUp />
           Select Files
         </label>
         <p className={commonStyles.uploadHint}>
@@ -374,7 +379,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
   const Step4Review = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.successIcon}>
-        <FaCheckCircle />
+        <CheckCircle />
       </div>
       <h2 className={commonStyles.reviewTitle}>Review Your Support Ticket</h2>
 
@@ -445,7 +450,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
 
   const validateStep1 = async () => {
     if (!ticketData.category || !ticketData.subcategory) {
-      alert('Please select a category and subcategory');
+      showToast('Please select a category and subcategory');
       return false;
     }
     return true;
@@ -453,11 +458,11 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
 
   const validateStep2 = async () => {
     if (ticketData.subject.length < 10) {
-      alert('Subject must be at least 10 characters');
+      showToast('Subject must be at least 10 characters');
       return false;
     }
     if (ticketData.description.length < 50) {
-      alert('Description must be at least 50 characters');
+      showToast('Description must be at least 50 characters');
       return false;
     }
     return true;
@@ -520,15 +525,26 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
   ];
 
   return (
-    <WizardContainer
-      title="Create Support Ticket"
-      subtitle="Get help from our support team"
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      isLoading={isSubmitting}
-      completeBtnText="Submit Ticket"
-    />
+    <>
+      <WizardContainer
+        title="Create Support Ticket"
+        subtitle="Get help from our support team"
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        isLoading={isSubmitting}
+        completeBtnText="Submit Ticket"
+      />
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

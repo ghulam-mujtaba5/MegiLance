@@ -5,66 +5,68 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Textarea from '@/app/components/Textarea/Textarea';
+import Modal from '@/app/components/Modal/Modal';
+import Badge from '@/app/components/Badge/Badge';
+import { Loader } from '@/app/components/Loader/Loader';
+import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { Search, Plus, Edit3, Trash2, Star, StarOff, CheckCircle, Tag, Layers } from 'lucide-react';
 import commonStyles from './Skills.common.module.css';
 import lightStyles from './Skills.light.module.css';
 import darkStyles from './Skills.dark.module.css';
 
 interface Skill {
-  id: string;
+  id: number;
   name: string;
-  slug: string;
-  category_id: string;
-  parent_id?: string;
   description?: string;
-  is_verified: boolean;
-  is_featured: boolean;
-  usage_count: number;
-  synonyms: string[];
-  related_skills: string[];
+  category?: string;
+  icon?: string;
+  is_active: boolean;
+  sort_order: number;
   created_at: string;
+  updated_at?: string;
 }
 
-interface SkillCategory {
-  id: string;
+// Categories are derived from distinct skill.category values
+interface CategoryInfo {
   name: string;
-  slug: string;
-  description?: string;
-  icon?: string;
-  skills_count: number;
-  color: string;
+  count: number;
 }
 
 export default function SkillsAdminPage() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [skills, setSkills] = useState<Skill[]>([]);
-  const [categories, setCategories] = useState<SkillCategory[]>([]);
+  const [categories, setCategories] = useState<CategoryInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'skills' | 'categories'>('skills');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showVerifiedOnly, setShowVerifiedOnly] = useState(false);
-  const [isEditingSkill, setIsEditingSkill] = useState<Skill | null>(null);
-  const [isEditingCategory, setIsEditingCategory] = useState<SkillCategory | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
+  const [showActiveOnly, setShowActiveOnly] = useState(true);
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSkill, setEditingSkill] = useState<Skill | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  // Toast state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const [skillForm, setSkillForm] = useState({
     name: '',
-    category_id: '',
-    description: '',
-    synonyms: '',
-    is_verified: false,
-    is_featured: false
-  });
-
-  const [categoryForm, setCategoryForm] = useState({
-    name: '',
+    category: '',
     description: '',
     icon: '',
-    color: '#4573df'
+    is_active: true,
+    sort_order: 0
   });
 
   useEffect(() => {
@@ -75,178 +77,155 @@ export default function SkillsAdminPage() {
   const loadSkillsData = async () => {
     setLoading(true);
     try {
-      // Simulated API calls
-      setCategories([
-        { id: 'c1', name: 'Development', slug: 'development', description: 'Software development skills', icon: '💻', skills_count: 45, color: '#3b82f6' },
-        { id: 'c2', name: 'Design', slug: 'design', description: 'UI/UX and graphic design', icon: '🎨', skills_count: 28, color: '#ec4899' },
-        { id: 'c3', name: 'Marketing', slug: 'marketing', description: 'Digital marketing skills', icon: '📈', skills_count: 22, color: '#10b981' },
-        { id: 'c4', name: 'Writing', slug: 'writing', description: 'Content and copywriting', icon: '✍️', skills_count: 18, color: '#f59e0b' },
-        { id: 'c5', name: 'Data Science', slug: 'data-science', description: 'Analytics and ML', icon: '📊', skills_count: 15, color: '#8b5cf6' }
-      ]);
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('auth_token') : null;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      setSkills([
-        { id: 's1', name: 'React.js', slug: 'react-js', category_id: 'c1', is_verified: true, is_featured: true, usage_count: 1250, synonyms: ['React', 'ReactJS'], related_skills: ['s2', 's3'], created_at: new Date().toISOString() },
-        { id: 's2', name: 'TypeScript', slug: 'typescript', category_id: 'c1', is_verified: true, is_featured: true, usage_count: 980, synonyms: ['TS'], related_skills: ['s1'], created_at: new Date().toISOString() },
-        { id: 's3', name: 'Node.js', slug: 'node-js', category_id: 'c1', is_verified: true, is_featured: false, usage_count: 890, synonyms: ['Node', 'NodeJS'], related_skills: ['s1'], created_at: new Date().toISOString() },
-        { id: 's4', name: 'Python', slug: 'python', category_id: 'c1', is_verified: true, is_featured: true, usage_count: 1100, synonyms: [], related_skills: [], created_at: new Date().toISOString() },
-        { id: 's5', name: 'Figma', slug: 'figma', category_id: 'c2', is_verified: true, is_featured: true, usage_count: 750, synonyms: [], related_skills: [], created_at: new Date().toISOString() },
-        { id: 's6', name: 'Adobe Photoshop', slug: 'photoshop', category_id: 'c2', is_verified: true, is_featured: false, usage_count: 680, synonyms: ['Photoshop', 'PS'], related_skills: [], created_at: new Date().toISOString() },
-        { id: 's7', name: 'SEO', slug: 'seo', category_id: 'c3', is_verified: true, is_featured: true, usage_count: 520, synonyms: ['Search Engine Optimization'], related_skills: [], created_at: new Date().toISOString() },
-        { id: 's8', name: 'Content Writing', slug: 'content-writing', category_id: 'c4', is_verified: true, is_featured: false, usage_count: 410, synonyms: ['Copywriting'], related_skills: [], created_at: new Date().toISOString() },
-        { id: 's9', name: 'Machine Learning', slug: 'machine-learning', category_id: 'c5', is_verified: true, is_featured: true, usage_count: 380, synonyms: ['ML'], related_skills: [], created_at: new Date().toISOString() },
-        { id: 's10', name: 'Vue.js', slug: 'vue-js', category_id: 'c1', is_verified: false, is_featured: false, usage_count: 45, synonyms: ['Vue', 'VueJS'], related_skills: [], created_at: new Date().toISOString(), description: 'User-suggested skill' }
-      ]);
+      const res = await fetch('/api/skills/?active_only=false&limit=200', { headers });
+      if (!res.ok) throw new Error('Failed to load skills');
+      const data: Skill[] = await res.json();
+      setSkills(data);
+
+      // Derive categories from distinct category values
+      const catMap = new Map<string, number>();
+      data.forEach(s => {
+        const cat = s.category || 'Uncategorized';
+        catMap.set(cat, (catMap.get(cat) || 0) + 1);
+      });
+      const cats: CategoryInfo[] = Array.from(catMap.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      setCategories(cats);
     } catch (error) {
       console.error('Failed to load skills:', error);
+      showToast('Failed to load skills data', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateSkill = () => {
-    setIsCreating(true);
-    setIsEditingSkill(null);
-    setSkillForm({ name: '', category_id: categories[0]?.id || '', description: '', synonyms: '', is_verified: false, is_featured: false });
+  const openCreateModal = () => {
+    setEditingSkill(null);
+    setSkillForm({ name: '', category: '', description: '', icon: '', is_active: true, sort_order: 0 });
+    setIsModalOpen(true);
   };
 
-  const handleEditSkill = (skill: Skill) => {
-    setIsEditingSkill(skill);
-    setIsCreating(false);
+  const openEditModal = (skill: Skill) => {
+    setEditingSkill(skill);
     setSkillForm({
       name: skill.name,
-      category_id: skill.category_id,
+      category: skill.category || '',
       description: skill.description || '',
-      synonyms: skill.synonyms.join(', '),
-      is_verified: skill.is_verified,
-      is_featured: skill.is_featured
+      icon: skill.icon || '',
+      is_active: skill.is_active,
+      sort_order: skill.sort_order
     });
+    setIsModalOpen(true);
   };
 
   const handleSaveSkill = async () => {
-    if (!skillForm.name.trim() || !skillForm.category_id) return;
+    if (!skillForm.name.trim()) return;
 
-    if (isCreating) {
-      const newSkill: Skill = {
-        id: Date.now().toString(),
-        name: skillForm.name,
-        slug: skillForm.name.toLowerCase().replace(/\s+/g, '-'),
-        category_id: skillForm.category_id,
-        description: skillForm.description,
-        is_verified: skillForm.is_verified,
-        is_featured: skillForm.is_featured,
-        usage_count: 0,
-        synonyms: skillForm.synonyms.split(',').map(s => s.trim()).filter(Boolean),
-        related_skills: [],
-        created_at: new Date().toISOString()
+    try {
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('auth_token') : null;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const body = {
+        name: skillForm.name.trim(),
+        description: skillForm.description || null,
+        category: skillForm.category || null,
+        icon: skillForm.icon || null,
+        is_active: skillForm.is_active,
+        sort_order: skillForm.sort_order
       };
-      setSkills(prev => [newSkill, ...prev]);
-    } else if (isEditingSkill) {
-      setSkills(prev =>
-        prev.map(s =>
-          s.id === isEditingSkill.id
-            ? {
-                ...s,
-                name: skillForm.name,
-                category_id: skillForm.category_id,
-                description: skillForm.description,
-                is_verified: skillForm.is_verified,
-                is_featured: skillForm.is_featured,
-                synonyms: skillForm.synonyms.split(',').map(s => s.trim()).filter(Boolean)
-              }
-            : s
-        )
-      );
+
+      if (editingSkill) {
+        // Update
+        const res = await fetch(`/api/skills/${editingSkill.id}`, {
+          method: 'PATCH',
+          headers,
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Failed to update skill');
+        }
+        showToast('Skill updated successfully');
+      } else {
+        // Create
+        const res = await fetch('/api/skills/', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Failed to create skill');
+        }
+        showToast('Skill created successfully');
+      }
+
+      setIsModalOpen(false);
+      setEditingSkill(null);
+      loadSkillsData();
+    } catch (error: any) {
+      showToast(error.message || 'Failed to save skill', 'error');
     }
-
-    setIsCreating(false);
-    setIsEditingSkill(null);
   };
 
-  const handleDeleteSkill = async (skillId: string) => {
-    setSkills(prev => prev.filter(s => s.id !== skillId));
-  };
+  const handleDeleteSkill = async (id: number) => {
+    try {
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('auth_token') : null;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const handleVerifySkill = async (skillId: string) => {
-    setSkills(prev =>
-      prev.map(s => (s.id === skillId ? { ...s, is_verified: true } : s))
-    );
-  };
-
-  const handleToggleFeatured = async (skillId: string) => {
-    setSkills(prev =>
-      prev.map(s => (s.id === skillId ? { ...s, is_featured: !s.is_featured } : s))
-    );
-  };
-
-  const handleCreateCategory = () => {
-    setIsCreating(true);
-    setIsEditingCategory(null);
-    setCategoryForm({ name: '', description: '', icon: '', color: '#4573df' });
-  };
-
-  const handleEditCategory = (category: SkillCategory) => {
-    setIsEditingCategory(category);
-    setIsCreating(false);
-    setCategoryForm({
-      name: category.name,
-      description: category.description || '',
-      icon: category.icon || '',
-      color: category.color
-    });
-  };
-
-  const handleSaveCategory = async () => {
-    if (!categoryForm.name.trim()) return;
-
-    if (isCreating) {
-      const newCategory: SkillCategory = {
-        id: Date.now().toString(),
-        name: categoryForm.name,
-        slug: categoryForm.name.toLowerCase().replace(/\s+/g, '-'),
-        description: categoryForm.description,
-        icon: categoryForm.icon,
-        color: categoryForm.color,
-        skills_count: 0
-      };
-      setCategories(prev => [...prev, newCategory]);
-    } else if (isEditingCategory) {
-      setCategories(prev =>
-        prev.map(c =>
-          c.id === isEditingCategory.id
-            ? { ...c, name: categoryForm.name, description: categoryForm.description, icon: categoryForm.icon, color: categoryForm.color }
-            : c
-        )
-      );
+      const res = await fetch(`/api/skills/${id}`, { method: 'DELETE', headers });
+      if (!res.ok) throw new Error('Failed to delete skill');
+      showToast('Skill deactivated successfully');
+      setDeleteTargetId(null);
+      loadSkillsData();
+    } catch (error) {
+      showToast('Failed to delete skill', 'error');
     }
-
-    setIsCreating(false);
-    setIsEditingCategory(null);
   };
 
-  const handleDeleteCategory = async (categoryId: string) => {
-    setCategories(prev => prev.filter(c => c.id !== categoryId));
-    setSkills(prev => prev.filter(s => s.category_id !== categoryId));
-  };
+  const handleToggleActive = async (skill: Skill) => {
+    try {
+      const token = typeof window !== 'undefined' ? sessionStorage.getItem('auth_token') : null;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const getCategoryName = (categoryId: string) => {
-    return categories.find(c => c.id === categoryId)?.name || 'Unknown';
-  };
-
-  const getCategoryColor = (categoryId: string) => {
-    return categories.find(c => c.id === categoryId)?.color || '#64748b';
+      const res = await fetch(`/api/skills/${skill.id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ is_active: !skill.is_active })
+      });
+      if (!res.ok) throw new Error('Failed to update skill');
+      showToast(`Skill ${skill.is_active ? 'deactivated' : 'activated'}`);
+      loadSkillsData();
+    } catch (error) {
+      showToast('Failed to update skill', 'error');
+    }
   };
 
   const filteredSkills = skills.filter(skill => {
-    if (selectedCategory !== 'all' && skill.category_id !== selectedCategory) return false;
-    if (showVerifiedOnly && !skill.is_verified) return false;
+    if (selectedCategory !== 'all' && (skill.category || 'Uncategorized') !== selectedCategory) return false;
+    if (showActiveOnly && !skill.is_active) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      return skill.name.toLowerCase().includes(query) || skill.synonyms.some(s => s.toLowerCase().includes(query));
+      return skill.name.toLowerCase().includes(query) || (skill.description || '').toLowerCase().includes(query);
     }
     return true;
   });
 
-  const unverifiedCount = skills.filter(s => !s.is_verified).length;
+  const inactiveCount = skills.filter(s => !s.is_active).length;
+  const totalActive = skills.filter(s => s.is_active).length;
+
+  const categoryOptions = [
+    { value: 'all', label: `All Categories (${skills.length})` },
+    ...categories.map(c => ({ value: c.name, label: `${c.name} (${c.count})` }))
+  ];
 
   if (!mounted) return null;
 
@@ -266,324 +245,201 @@ export default function SkillsAdminPage() {
               </p>
             </div>
             <div className={commonStyles.headerActions}>
-              {unverifiedCount > 0 && (
-                <span className={cn(commonStyles.pendingBadge, themeStyles.pendingBadge)}>
-                  {unverifiedCount} pending verification
-                </span>
-              )}
-              <Button
-                variant="primary"
-                onClick={activeTab === 'skills' ? handleCreateSkill : handleCreateCategory}
-              >
-                Add {activeTab === 'skills' ? 'Skill' : 'Category'}
+              <div className={cn(commonStyles.statsRow, themeStyles.statsRow)}>
+                <Badge variant="info">{totalActive} active</Badge>
+                {inactiveCount > 0 && <Badge variant="warning">{inactiveCount} inactive</Badge>}
+                <Badge variant="default">{categories.length} categories</Badge>
+              </div>
+              <Button variant="primary" onClick={openCreateModal}>
+                <Plus size={16} /> Add Skill
               </Button>
             </div>
           </div>
         </ScrollReveal>
 
-        {/* Tabs */}
+        {/* Filters */}
         <ScrollReveal delay={0.1}>
-          <div className={cn(commonStyles.tabs, themeStyles.tabs)}>
-            <button
-              onClick={() => setActiveTab('skills')}
-              className={cn(
-                commonStyles.tab,
-                themeStyles.tab,
-                activeTab === 'skills' && commonStyles.tabActive,
-                activeTab === 'skills' && themeStyles.tabActive
-              )}
-            >
-              Skills ({skills.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('categories')}
-              className={cn(
-                commonStyles.tab,
-                themeStyles.tab,
-                activeTab === 'categories' && commonStyles.tabActive,
-                activeTab === 'categories' && themeStyles.tabActive
-              )}
-            >
-              Categories ({categories.length})
-            </button>
+          <div className={cn(commonStyles.filterBar, themeStyles.filterBar)}>
+            <div className={commonStyles.searchWrap}>
+              <Search size={16} className={commonStyles.searchIcon} />
+              <Input
+                type="text"
+                placeholder="Search skills..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              options={categoryOptions}
+            />
+            <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
+              <input
+                type="checkbox"
+                checked={!showActiveOnly}
+                onChange={(e) => setShowActiveOnly(!e.target.checked)}
+              />
+              Show inactive
+            </label>
           </div>
         </ScrollReveal>
 
         {loading ? (
-          <div className={commonStyles.loading}>Loading...</div>
+          <div className={commonStyles.loading}>
+            <Loader size="lg" />
+          </div>
+        ) : filteredSkills.length === 0 ? (
+          <EmptyState
+            title="No skills found"
+            description={searchQuery ? 'Try adjusting your search or filters.' : 'Create your first skill to get started.'}
+            actionLabel={!searchQuery ? 'Add Skill' : undefined}
+            onAction={!searchQuery ? openCreateModal : undefined}
+          />
         ) : (
-          <>
-            {activeTab === 'skills' && (
-              <>
-                {/* Filters */}
-                <ScrollReveal delay={0.2}>
-                  <div className={cn(commonStyles.filterBar, themeStyles.filterBar)}>
-                    <input
-                      type="text"
-                      placeholder="Search skills..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className={cn(commonStyles.searchInput, themeStyles.searchInput)}
-                    />
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className={cn(commonStyles.select, themeStyles.select)}
-                    >
-                      <option value="all">All Categories</option>
-                      {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>{cat.name}</option>
-                      ))}
-                    </select>
-                    <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
-                      <input
-                        type="checkbox"
-                        checked={showVerifiedOnly}
-                        onChange={(e) => setShowVerifiedOnly(e.target.checked)}
-                      />
-                      Verified only
-                    </label>
-                  </div>
-                </ScrollReveal>
-
-                {/* Skills List */}
-                <StaggerContainer className={commonStyles.skillsList}>
-                  {filteredSkills.length === 0 ? (
-                    <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-                      <p>No skills found</p>
-                    </div>
-                  ) : (
-                    filteredSkills.map(skill => (
-                      <StaggerItem key={skill.id} className={cn(commonStyles.skillCard, themeStyles.skillCard)}>
-                        <div className={commonStyles.skillInfo}>
-                          <div className={commonStyles.skillHeader}>
-                            <h4 className={cn(commonStyles.skillName, themeStyles.skillName)}>
-                              {skill.name}
-                              {skill.is_featured && (
-                                <span className={cn(commonStyles.featuredBadge, themeStyles.featuredBadge)}>
-                                  ⭐ Featured
-                                </span>
-                              )}
-                            </h4>
-                            <span
-                              className={cn(commonStyles.categoryTag, themeStyles.categoryTag)}
-                              style={{ backgroundColor: getCategoryColor(skill.category_id) + '20', color: getCategoryColor(skill.category_id) }}
-                            >
-                              {getCategoryName(skill.category_id)}
-                            </span>
-                          </div>
-                          {skill.description && (
-                            <p className={cn(commonStyles.skillDesc, themeStyles.skillDesc)}>
-                              {skill.description}
-                            </p>
-                          )}
-                          <div className={cn(commonStyles.skillMeta, themeStyles.skillMeta)}>
-                            <span>{skill.usage_count.toLocaleString()} uses</span>
-                            {skill.synonyms.length > 0 && (
-                              <span>Also: {skill.synonyms.join(', ')}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className={commonStyles.skillActions}>
-                          {!skill.is_verified && (
-                            <Button variant="success" size="sm" onClick={() => handleVerifySkill(skill.id)}>
-                              Verify
-                            </Button>
-                          )}
-                          <button
-                            onClick={() => handleToggleFeatured(skill.id)}
-                            className={cn(commonStyles.iconBtn, themeStyles.iconBtn)}
-                            title={skill.is_featured ? 'Remove from featured' : 'Add to featured'}
-                          >
-                            {skill.is_featured ? '⭐' : '☆'}
-                          </button>
-                          <Button variant="ghost" size="sm" onClick={() => handleEditSkill(skill)}>
-                            Edit
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDeleteSkill(skill.id)}>
-                            Delete
-                          </Button>
-                        </div>
-                      </StaggerItem>
-                    ))
-                  )}
-                </StaggerContainer>
-              </>
-            )}
-
-            {activeTab === 'categories' && (
-              <StaggerContainer className={commonStyles.categoriesGrid}>
-                {categories.map(category => (
-                  <StaggerItem
-                    key={category.id}
-                    className={cn(commonStyles.categoryCard, themeStyles.categoryCard)}
-                    style={{ borderLeftColor: category.color }}
-                  >
-                    <div className={commonStyles.categoryHeader}>
-                      <span className={commonStyles.categoryIcon}>{category.icon}</span>
-                      <h4 className={cn(commonStyles.categoryName, themeStyles.categoryName)}>
-                        {category.name}
-                      </h4>
-                    </div>
-                    {category.description && (
-                      <p className={cn(commonStyles.categoryDesc, themeStyles.categoryDesc)}>
-                        {category.description}
-                      </p>
+          <StaggerContainer className={commonStyles.skillsList}>
+            {filteredSkills.map(skill => (
+              <StaggerItem key={skill.id} className={cn(commonStyles.skillCard, themeStyles.skillCard)}>
+                <div className={commonStyles.skillInfo}>
+                  <div className={commonStyles.skillHeader}>
+                    <h4 className={cn(commonStyles.skillName, themeStyles.skillName)}>
+                      {skill.icon && <span className={commonStyles.skillIcon}>{skill.icon}</span>}
+                      {skill.name}
+                    </h4>
+                    {skill.category && (
+                      <Badge variant="default">{skill.category}</Badge>
                     )}
-                    <div className={cn(commonStyles.categoryMeta, themeStyles.categoryMeta)}>
-                      <span>{category.skills_count} skills</span>
-                    </div>
-                    <div className={commonStyles.categoryActions}>
-                      <Button variant="ghost" size="sm" onClick={() => handleEditCategory(category)}>
-                        Edit
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDeleteCategory(category.id)}>
-                        Delete
-                      </Button>
-                    </div>
-                  </StaggerItem>
-                ))}
-              </StaggerContainer>
-            )}
-          </>
+                    {!skill.is_active && (
+                      <Badge variant="warning">Inactive</Badge>
+                    )}
+                  </div>
+                  {skill.description && (
+                    <p className={cn(commonStyles.skillDesc, themeStyles.skillDesc)}>
+                      {skill.description}
+                    </p>
+                  )}
+                  <div className={cn(commonStyles.skillMeta, themeStyles.skillMeta)}>
+                    <span>Sort: {skill.sort_order}</span>
+                    <span>Created: {new Date(skill.created_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                <div className={commonStyles.skillActions}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleToggleActive(skill)}
+                    title={skill.is_active ? 'Deactivate' : 'Activate'}
+                  >
+                    {skill.is_active ? <StarOff size={14} /> : <CheckCircle size={14} />}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => openEditModal(skill)}>
+                    <Edit3 size={14} /> Edit
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setDeleteTargetId(skill.id)}>
+                    <Trash2 size={14} />
+                  </Button>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
         )}
 
-        {/* Skill Modal */}
-        {(isCreating && activeTab === 'skills') || isEditingSkill ? (
-          <div className={cn(commonStyles.modal, themeStyles.modal)}>
-            <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
-              <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-                <h2>{isEditingSkill ? 'Edit Skill' : 'New Skill'}</h2>
-                <button onClick={() => { setIsCreating(false); setIsEditingSkill(null); }} className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}>×</button>
+        {/* Create/Edit Skill Modal */}
+        <Modal
+          isOpen={isModalOpen}
+          title={editingSkill ? 'Edit Skill' : 'New Skill'}
+          onClose={() => { setIsModalOpen(false); setEditingSkill(null); }}
+        >
+          <div className={commonStyles.modalBody}>
+            <div className={commonStyles.formGroup}>
+              <label>Skill Name</label>
+              <Input
+                type="text"
+                value={skillForm.name}
+                onChange={(e) => setSkillForm(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="e.g. React.js"
+              />
+            </div>
+            <div className={commonStyles.formGroup}>
+              <label>Category</label>
+              <Input
+                type="text"
+                value={skillForm.category}
+                onChange={(e) => setSkillForm(prev => ({ ...prev, category: e.target.value }))}
+                placeholder="e.g. Development, Design, Marketing"
+              />
+            </div>
+            <div className={commonStyles.formGroup}>
+              <label>Description (optional)</label>
+              <Textarea
+                value={skillForm.description}
+                onChange={(e) => setSkillForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Brief description of the skill"
+                rows={3}
+              />
+            </div>
+            <div className={commonStyles.formRow}>
+              <div className={commonStyles.formGroup}>
+                <label>Icon (emoji)</label>
+                <Input
+                  type="text"
+                  value={skillForm.icon}
+                  onChange={(e) => setSkillForm(prev => ({ ...prev, icon: e.target.value }))}
+                  placeholder="💻"
+                />
               </div>
-              <div className={commonStyles.modalBody}>
-                <div className={commonStyles.formGroup}>
-                  <label>Skill Name</label>
-                  <input
-                    type="text"
-                    value={skillForm.name}
-                    onChange={(e) => setSkillForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="e.g. React.js"
-                    className={cn(commonStyles.input, themeStyles.input)}
-                  />
-                </div>
-                <div className={commonStyles.formGroup}>
-                  <label>Category</label>
-                  <select
-                    value={skillForm.category_id}
-                    onChange={(e) => setSkillForm(prev => ({ ...prev, category_id: e.target.value }))}
-                    className={cn(commonStyles.select, themeStyles.select)}
-                  >
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className={commonStyles.formGroup}>
-                  <label>Description (optional)</label>
-                  <textarea
-                    value={skillForm.description}
-                    onChange={(e) => setSkillForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Brief description of the skill"
-                    rows={3}
-                    className={cn(commonStyles.textarea, themeStyles.textarea)}
-                  />
-                </div>
-                <div className={commonStyles.formGroup}>
-                  <label>Synonyms (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={skillForm.synonyms}
-                    onChange={(e) => setSkillForm(prev => ({ ...prev, synonyms: e.target.value }))}
-                    placeholder="e.g. React, ReactJS"
-                    className={cn(commonStyles.input, themeStyles.input)}
-                  />
-                </div>
-                <div className={commonStyles.checkboxGroup}>
-                  <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
-                    <input
-                      type="checkbox"
-                      checked={skillForm.is_verified}
-                      onChange={(e) => setSkillForm(prev => ({ ...prev, is_verified: e.target.checked }))}
-                    />
-                    Verified skill
-                  </label>
-                  <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
-                    <input
-                      type="checkbox"
-                      checked={skillForm.is_featured}
-                      onChange={(e) => setSkillForm(prev => ({ ...prev, is_featured: e.target.checked }))}
-                    />
-                    Featured skill
-                  </label>
-                </div>
-              </div>
-              <div className={commonStyles.modalFooter}>
-                <Button variant="secondary" onClick={() => { setIsCreating(false); setIsEditingSkill(null); }}>Cancel</Button>
-                <Button variant="primary" onClick={handleSaveSkill}>Save Skill</Button>
+              <div className={commonStyles.formGroup}>
+                <label>Sort Order</label>
+                <Input
+                  type="number"
+                  value={String(skillForm.sort_order)}
+                  onChange={(e) => setSkillForm(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
+                  placeholder="0"
+                />
               </div>
             </div>
+            <div className={commonStyles.checkboxGroup}>
+              <label className={cn(commonStyles.checkbox, themeStyles.checkbox)}>
+                <input
+                  type="checkbox"
+                  checked={skillForm.is_active}
+                  onChange={(e) => setSkillForm(prev => ({ ...prev, is_active: e.target.checked }))}
+                />
+                Active
+              </label>
+            </div>
           </div>
-        ) : null}
+          <div className={commonStyles.modalFooter}>
+            <Button variant="secondary" onClick={() => { setIsModalOpen(false); setEditingSkill(null); }}>Cancel</Button>
+            <Button variant="primary" onClick={handleSaveSkill}>
+              {editingSkill ? 'Save Changes' : 'Create Skill'}
+            </Button>
+          </div>
+        </Modal>
 
-        {/* Category Modal */}
-        {(isCreating && activeTab === 'categories') || isEditingCategory ? (
-          <div className={cn(commonStyles.modal, themeStyles.modal)}>
-            <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
-              <div className={cn(commonStyles.modalHeader, themeStyles.modalHeader)}>
-                <h2>{isEditingCategory ? 'Edit Category' : 'New Category'}</h2>
-                <button onClick={() => { setIsCreating(false); setIsEditingCategory(null); }} className={cn(commonStyles.closeBtn, themeStyles.closeBtn)}>×</button>
-              </div>
-              <div className={commonStyles.modalBody}>
-                <div className={commonStyles.formGroup}>
-                  <label>Category Name</label>
-                  <input
-                    type="text"
-                    value={categoryForm.name}
-                    onChange={(e) => setCategoryForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="e.g. Development"
-                    className={cn(commonStyles.input, themeStyles.input)}
-                  />
-                </div>
-                <div className={commonStyles.formGroup}>
-                  <label>Description</label>
-                  <textarea
-                    value={categoryForm.description}
-                    onChange={(e) => setCategoryForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Brief description"
-                    rows={2}
-                    className={cn(commonStyles.textarea, themeStyles.textarea)}
-                  />
-                </div>
-                <div className={commonStyles.formRow}>
-                  <div className={commonStyles.formGroup}>
-                    <label>Icon (emoji)</label>
-                    <input
-                      type="text"
-                      value={categoryForm.icon}
-                      onChange={(e) => setCategoryForm(prev => ({ ...prev, icon: e.target.value }))}
-                      placeholder="💻"
-                      className={cn(commonStyles.input, themeStyles.input)}
-                    />
-                  </div>
-                  <div className={commonStyles.formGroup}>
-                    <label>Color</label>
-                    <input
-                      type="color"
-                      value={categoryForm.color}
-                      onChange={(e) => setCategoryForm(prev => ({ ...prev, color: e.target.value }))}
-                      className={cn(commonStyles.colorInput, themeStyles.colorInput)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={commonStyles.modalFooter}>
-                <Button variant="secondary" onClick={() => { setIsCreating(false); setIsEditingCategory(null); }}>Cancel</Button>
-                <Button variant="primary" onClick={handleSaveCategory}>Save Category</Button>
-              </div>
-            </div>
+        {/* Delete Confirmation Modal */}
+        <Modal
+          isOpen={deleteTargetId !== null}
+          title="Delete Skill"
+          onClose={() => setDeleteTargetId(null)}
+        >
+          <p className={commonStyles.confirmText}>
+            Are you sure you want to deactivate this skill? This is a soft delete — the skill will be marked as inactive.
+          </p>
+          <div className={commonStyles.modalFooter}>
+            <Button variant="secondary" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
+            <Button variant="danger" onClick={() => deleteTargetId && handleDeleteSkill(deleteTargetId)}>
+              Deactivate
+            </Button>
           </div>
-        ) : null}
+        </Modal>
+
+        {/* Toast */}
+        {toast && (
+          <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast, toast.type === 'error' && themeStyles.toastError)}>
+            {toast.message}
+          </div>
+        )}
       </div>
     </PageTransition>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import api, { setAuthToken, setRefreshToken } from '@/lib/api';
 import styles from './TestLogin.module.css';
@@ -14,38 +14,57 @@ interface DemoUser {
   color: string;
 }
 
-// @AI-HINT: FYP Quick Login page - HARDCODED credentials for demo bypass
-const DEMO_USERS: DemoUser[] = [
-  {
-    email: 'admin.real@megilance.com',
-    password: 'Test123!@#',
-    role: 'Admin',
-    description: 'Full platform access, analytics, user management',
-    dashboard: '/admin/dashboard',
-    color: '#e81123'
-  },
-  {
-    email: 'sarah.tech@megilance.com',
-    password: 'Test123!@#',
-    role: 'Client',
-    description: 'Post jobs, hire freelancers, manage projects',
-    dashboard: '/client/dashboard',
-    color: '#4573df'
-  },
-  {
-    email: 'alex.fullstack@megilance.com',
-    password: 'Test123!@#',
-    role: 'Freelancer',
-    description: 'Find jobs, submit proposals, track earnings',
-    dashboard: '/freelancer/dashboard',
-    color: '#27AE60'
-  }
-];
+const IS_DEV = process.env.NODE_ENV === 'development';
+
+// @AI-HINT: FYP Quick Login page — credentials loaded from environment variables only
+// Configure in .env.local: NEXT_PUBLIC_DEV_ADMIN_EMAIL, NEXT_PUBLIC_DEV_ADMIN_PASSWORD, etc.
+function getDemoUsers(): DemoUser[] {
+  if (!IS_DEV) return [];
+  return [
+    {
+      email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || '',
+      password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || '',
+      role: 'Admin',
+      description: 'Full platform access, analytics, user management',
+      dashboard: '/admin/dashboard',
+      color: '#e81123'
+    },
+    {
+      email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || '',
+      password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || '',
+      role: 'Client',
+      description: 'Post jobs, hire freelancers, manage projects',
+      dashboard: '/client/dashboard',
+      color: '#4573df'
+    },
+    {
+      email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || '',
+      password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || '',
+      role: 'Freelancer',
+      description: 'Find jobs, submit proposals, track earnings',
+      dashboard: '/freelancer/dashboard',
+      color: '#27AE60'
+    }
+  ].filter(u => u.email && u.password);
+}
 
 export default function DevQuickLogin() {
   const router = useRouter();
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState<string | null>(null);
+  const [demoUsers, setDemoUsers] = useState<DemoUser[]>([]);
+
+  useEffect(() => {
+    setDemoUsers(getDemoUsers());
+  }, []);
+
+  if (!IS_DEV) {
+    return (
+      <div className={styles.container}>
+        <p>This page is only available in development mode.</p>
+      </div>
+    );
+  }
 
   const loginAs = async (user: DemoUser) => {
     setLoading(user.role);
@@ -88,12 +107,14 @@ export default function DevQuickLogin() {
       <div className={styles.header}>
         <h1 className={styles.title}>🚀 FYP Quick Login</h1>
         <p className={styles.subtitle}>
-          Click any button below to instantly login as a demo user and explore the platform
+          {demoUsers.length > 0
+            ? 'Click any button below to instantly login as a demo user and explore the platform'
+            : 'No dev credentials configured. Set NEXT_PUBLIC_DEV_*_EMAIL and _PASSWORD in .env.local'}
         </p>
       </div>
       
       <div className={styles.userGrid}>
-        {DEMO_USERS.map((user) => (
+        {demoUsers.map((user) => (
           <div 
             key={user.email} 
             className={styles.userCard}
@@ -124,28 +145,6 @@ export default function DevQuickLogin() {
           <pre>{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
-      
-      <div className={styles.credentials}>
-        <h3>📋 All Demo Credentials (Universal Password: Test123!@#)</h3>
-        <table className={styles.credTable}>
-          <thead>
-            <tr>
-              <th>Role</th>
-              <th>Email</th>
-              <th>Password</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>Admin</td><td>admin.real@megilance.com</td><td>Test123!@#</td></tr>
-            <tr><td>Client (Sarah)</td><td>sarah.tech@megilance.com</td><td>Test123!@#</td></tr>
-            <tr><td>Client (Michael)</td><td>michael.ventures@megilance.com</td><td>Test123!@#</td></tr>
-            <tr><td>Freelancer (Alex)</td><td>alex.fullstack@megilance.com</td><td>Test123!@#</td></tr>
-            <tr><td>Freelancer (Emma)</td><td>emma.designer@megilance.com</td><td>Test123!@#</td></tr>
-            <tr><td>Freelancer (James)</td><td>james.devops@megilance.com</td><td>Test123!@#</td></tr>
-            <tr><td>Freelancer (Sophia)</td><td>sophia.data@megilance.com</td><td>Test123!@#</td></tr>
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }

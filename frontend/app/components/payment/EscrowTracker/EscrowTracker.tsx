@@ -5,9 +5,9 @@ import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { 
-  FaCheckCircle, FaClock, FaLock, FaUnlock,
-  FaExclamationTriangle, FaDownload 
-} from 'react-icons/fa';
+  CheckCircle, Clock, Lock, Unlock,
+  AlertTriangle, Download 
+} from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 
 import commonStyles from './EscrowTracker.common.module.css';
@@ -75,19 +75,19 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
   const getStatusIcon = (status: Milestone['status']) => {
     switch (status) {
       case 'pending':
-        return <FaClock />;
+        return <Clock size={16} />;
       case 'in_progress':
-        return <FaClock className={themeStyles.iconBlue} />;
+        return <Clock size={16} className={themeStyles.iconBlue} />;
       case 'submitted':
-        return <FaLock className={themeStyles.iconYellow} />;
+        return <Lock size={16} className={themeStyles.iconYellow} />;
       case 'approved':
-        return <FaUnlock className={themeStyles.iconGreen} />;
+        return <Unlock size={16} className={themeStyles.iconGreen} />;
       case 'paid':
-        return <FaCheckCircle className={themeStyles.iconGreen} />;
+        return <CheckCircle size={16} className={themeStyles.iconGreen} />;
       case 'disputed':
-        return <FaExclamationTriangle className={themeStyles.iconRed} />;
+        return <AlertTriangle size={16} className={themeStyles.iconRed} />;
       default:
-        return <FaClock />;
+        return <Clock size={16} />;
     }
   };
 
@@ -215,7 +215,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onReleaseFunds?.(milestone.id)}
                     >
-                      <FaUnlock className={styles.iconInline} />
+                      <Unlock size={14} className={styles.iconInline} />
                       Release Funds
                     </Button>
                   )}
@@ -226,7 +226,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onDispute?.(milestone.id)}
                     >
-                      <FaExclamationTriangle className={styles.iconInline} />
+                      <AlertTriangle size={14} className={styles.iconInline} />
                       Request Payment
                     </Button>
                   )}
@@ -237,7 +237,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onDownloadInvoice?.(milestone.id)}
                     >
-                      <FaDownload className={styles.iconInline} />
+                      <Download size={14} className={styles.iconInline} />
                       Download Invoice
                     </Button>
                   )}
@@ -250,7 +250,7 @@ const EscrowTracker: React.FC<EscrowTrackerProps> = ({
                       size="sm"
                       onClick={() => onDispute?.(milestone.id)}
                     >
-                      <FaExclamationTriangle className={styles.iconInline} />
+                      <AlertTriangle size={14} className={styles.iconInline} />
                       Raise Dispute
                     </Button>
                   )}

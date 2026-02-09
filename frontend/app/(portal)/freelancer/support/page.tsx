@@ -47,6 +47,7 @@ const SupportPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   const styles = useMemo(() => {
     const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
@@ -78,6 +79,7 @@ const SupportPage: React.FC = () => {
     if (!subject.trim() || !message.trim()) return;
 
     setIsSubmitting(true);
+    setSubmitError(false);
     try {
       const { supportTicketsApi } = await import('@/lib/api');
       await supportTicketsApi.create({
@@ -91,7 +93,8 @@ const SupportPage: React.FC = () => {
       setTimeout(() => setSubmitSuccess(false), 5000);
     } catch (error) {
       console.error('Failed to submit ticket:', error);
-      alert('Failed to submit ticket. Please try again.');
+      setSubmitError(true);
+      setTimeout(() => setSubmitError(false), 5000);
     } finally {
       setIsSubmitting(false);
     }
@@ -114,6 +117,11 @@ const SupportPage: React.FC = () => {
               {submitSuccess && (
                 <div className={cn(styles.successMessage)}>
                   ✅ Your ticket has been submitted successfully! We&apos;ll get back to you soon.
+                </div>
+              )}
+              {submitError && (
+                <div className={cn(styles.errorMessage)}>
+                  ❌ Failed to submit ticket. Please try again.
                 </div>
               )}
               <form className={cn(styles.form)} onSubmit={handleSubmitTicket}>

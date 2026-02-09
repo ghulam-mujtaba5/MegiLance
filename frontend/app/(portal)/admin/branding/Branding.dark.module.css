@@ -162,6 +162,38 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* Tab Buttons - Dark */
+.tabBtn {
+  color: #94a3b8;
+}
+
+.tabBtn:hover {
+  background: rgba(69, 115, 223, 0.12);
+  color: #e2e8f0;
+}
+
+.tabBtnActive {
+  background: rgba(69, 115, 223, 0.2);
+  color: #818cf8;
+}
+
+/* Toast - Dark */
+.toast {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.4);
+  color: #4ade80;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.4);
+  color: #f87171;
+}
+
+/* Confirm Text - Dark */
+.confirmText {
+  color: #cbd5e1;
+}
+
 /* Loading State */
 .loading {
   color: #94a3b8;

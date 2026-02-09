@@ -14,7 +14,7 @@ Creates all necessary demo data for testing and demonstration:
 
 import sys
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 import json
 import random
 import hashlib
@@ -48,7 +48,7 @@ def seed_database():
     # Default password for all demo users (meets all requirements)
     DEFAULT_PASSWORD = "Demo123!@#"
     hashed_password = get_password_hash(DEFAULT_PASSWORD)
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     
     print(f"\n[INFO] Default password for all demo users: {DEFAULT_PASSWORD}")
     
@@ -417,7 +417,7 @@ def seed_database():
                     project["skills"],
                     project["client_id"],
                     project["status"],
-                    (datetime.utcnow() - timedelta(days=random.randint(1, 30))).isoformat(),
+                    (datetime.now(timezone.utc) - timedelta(days=random.randint(1, 30))).isoformat(),
                     now,
                 ]
             )
@@ -476,7 +476,7 @@ def seed_database():
                     proposal["bid_amount"],
                     proposal["estimated_duration"],
                     proposal["status"],
-                    (datetime.utcnow() - timedelta(days=random.randint(1, 14))).isoformat(),
+                    (datetime.now(timezone.utc) - timedelta(days=random.randint(1, 14))).isoformat(),
                     now,
                 ]
             )
@@ -498,8 +498,8 @@ def seed_database():
             "description": "Development of cross-platform fitness tracking mobile application",
             "amount": 15000,
             "status": "active",
-            "start_date": (datetime.utcnow() - timedelta(days=14)).isoformat(),
-            "end_date": (datetime.utcnow() + timedelta(days=60)).isoformat(),
+            "start_date": (datetime.now(timezone.utc) - timedelta(days=14)).isoformat(),
+            "end_date": (datetime.now(timezone.utc) + timedelta(days=60)).isoformat(),
         },
         {
             "project_id": 7,  # DevOps
@@ -509,8 +509,8 @@ def seed_database():
             "description": "Setup of CI/CD pipeline with Docker and AWS",
             "amount": 2500,
             "status": "active",
-            "start_date": (datetime.utcnow() - timedelta(days=7)).isoformat(),
-            "end_date": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+            "start_date": (datetime.now(timezone.utc) - timedelta(days=7)).isoformat(),
+            "end_date": (datetime.now(timezone.utc) + timedelta(days=7)).isoformat(),
         },
     ]
     

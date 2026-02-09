@@ -1,9 +1,20 @@
-/* Client Wallet Light Theme */
+/* @AI-HINT: Light theme colors for Client Wallet. */
+
 .themeWrapper {
-  background: var(--background);
-  color: var(--text-primary);
+  background: #f8fafc;
+  color: #1e293b;
 }
 
 .subtitle {
-  color: var(--text-secondary);
-} 
+  color: #64748b;
+}
+
+.balanceCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.balanceCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}

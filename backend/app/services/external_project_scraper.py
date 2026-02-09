@@ -648,7 +648,7 @@ def save_projects_to_db(turso, projects: List[Dict[str, Any]]) -> Dict[str, int]
     saved = 0
     errors = 0
     batch_size = 25  # Turso HTTP API batch limit
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     # Build all statements for batch execution
     statements = []

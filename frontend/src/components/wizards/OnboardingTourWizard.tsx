@@ -7,24 +7,25 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './OnboardingTourWizard.common.module.css';
 import lightStyles from './OnboardingTourWizard.light.module.css';
 import darkStyles from './OnboardingTourWizard.dark.module.css';
 import {
-  FaRocket,
-  FaUserCircle,
-  FaBriefcase,
-  FaSearch,
-  FaComments,
-  FaFileContract,
-  FaDollarSign,
-  FaStar,
-  FaBook,
-  FaVideo,
-  FaUsers,
-  FaCheckCircle,
-  FaArrowRight
-} from 'react-icons/fa';
+  Rocket,
+  CircleUserRound,
+  Briefcase,
+  Search,
+  MessageCircle,
+  FileText,
+  DollarSign,
+  Star,
+  BookOpen,
+  Video,
+  Users,
+  CheckCircle,
+  ArrowRight
+} from 'lucide-react';
 
 type UserRole = 'freelancer' | 'client';
 
@@ -51,6 +52,7 @@ export default function OnboardingTourWizard({
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [showSkipModal, setShowSkipModal] = useState(false);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     role: initialRole || 'freelancer',
     hasCompletedProfileSetup: false,
@@ -72,7 +74,7 @@ export default function OnboardingTourWizard({
   const Step1Welcome = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.welcomeHeader}>
-        <FaRocket className={commonStyles.welcomeIcon} />
+        <Rocket className={commonStyles.welcomeIcon} />
         <h1>Welcome to MegiLance!</h1>
         <p className={commonStyles.welcomeSubtitle}>
           Your journey to {onboardingData.role === 'freelancer' ? 'finding amazing projects' : 'hiring top talent'} starts here
@@ -91,14 +93,14 @@ export default function OnboardingTourWizard({
             )}
             onClick={() => setOnboardingData({ ...onboardingData, role: 'freelancer' })}
           >
-            <FaUserCircle className={commonStyles.roleIcon} />
+            <CircleUserRound className={commonStyles.roleIcon} />
             <h4>Find Work as a Freelancer</h4>
             <p>Browse projects, submit proposals, and build your career</p>
             <ul className={commonStyles.roleFeatures}>
-              <li><FaCheckCircle /> Access thousands of projects</li>
-              <li><FaCheckCircle /> Build your portfolio</li>
-              <li><FaCheckCircle /> Secure payments</li>
-              <li><FaCheckCircle /> Grow your reputation</li>
+              <li><CheckCircle /> Access thousands of projects</li>
+              <li><CheckCircle /> Build your portfolio</li>
+              <li><CheckCircle /> Secure payments</li>
+              <li><CheckCircle /> Grow your reputation</li>
             </ul>
           </div>
 
@@ -111,14 +113,14 @@ export default function OnboardingTourWizard({
             )}
             onClick={() => setOnboardingData({ ...onboardingData, role: 'client' })}
           >
-            <FaBriefcase className={commonStyles.roleIcon} />
+            <Briefcase className={commonStyles.roleIcon} />
             <h4>Hire Freelancers for Projects</h4>
             <p>Post projects, review proposals, and manage your team</p>
             <ul className={commonStyles.roleFeatures}>
-              <li><FaCheckCircle /> Access vetted talent</li>
-              <li><FaCheckCircle /> Manage multiple projects</li>
-              <li><FaCheckCircle /> Track progress easily</li>
-              <li><FaCheckCircle /> Secure escrow payments</li>
+              <li><CheckCircle /> Access vetted talent</li>
+              <li><CheckCircle /> Manage multiple projects</li>
+              <li><CheckCircle /> Track progress easily</li>
+              <li><CheckCircle /> Secure escrow payments</li>
             </ul>
           </div>
         </div>
@@ -148,21 +150,21 @@ export default function OnboardingTourWizard({
   // STEP 2: Platform Overview
   const Step2PlatformOverview = () => {
     const freelancerFeatures = [
-      { icon: FaSearch, title: 'Browse Projects', description: 'Explore thousands of projects matching your skills', highlight: 'interestedFeatures' },
-      { icon: FaFileContract, title: 'Submit Proposals', description: 'Send customized proposals with your rates and timeline', highlight: 'interestedFeatures' },
-      { icon: FaComments, title: 'Real-time Messaging', description: 'Communicate instantly with clients', highlight: 'interestedFeatures' },
-      { icon: FaDollarSign, title: 'Secure Payments', description: 'Get paid safely through escrow protection', highlight: 'interestedFeatures' },
-      { icon: FaStar, title: 'Build Reputation', description: 'Earn reviews and climb the rankings', highlight: 'interestedFeatures' },
-      { icon: FaUserCircle, title: 'Showcase Portfolio', description: 'Display your best work to attract clients', highlight: 'interestedFeatures' }
+      { icon: Search, title: 'Browse Projects', description: 'Explore thousands of projects matching your skills', highlight: 'interestedFeatures' },
+      { icon: FileText, title: 'Submit Proposals', description: 'Send customized proposals with your rates and timeline', highlight: 'interestedFeatures' },
+      { icon: MessageCircle, title: 'Real-time Messaging', description: 'Communicate instantly with clients', highlight: 'interestedFeatures' },
+      { icon: DollarSign, title: 'Secure Payments', description: 'Get paid safely through escrow protection', highlight: 'interestedFeatures' },
+      { icon: Star, title: 'Build Reputation', description: 'Earn reviews and climb the rankings', highlight: 'interestedFeatures' },
+      { icon: CircleUserRound, title: 'Showcase Portfolio', description: 'Display your best work to attract clients', highlight: 'interestedFeatures' }
     ];
 
     const clientFeatures = [
-      { icon: FaBriefcase, title: 'Post Projects', description: 'Create detailed project listings in minutes', highlight: 'interestedFeatures' },
-      { icon: FaSearch, title: 'Search Talent', description: 'Find the perfect freelancer for your needs', highlight: 'interestedFeatures' },
-      { icon: FaFileContract, title: 'Review Proposals', description: 'Compare bids and choose the best fit', highlight: 'interestedFeatures' },
-      { icon: FaComments, title: 'Collaborate', description: 'Stay connected with your team', highlight: 'interestedFeatures' },
-      { icon: FaDollarSign, title: 'Escrow Protection', description: 'Only release payment when satisfied', highlight: 'interestedFeatures' },
-      { icon: FaStar, title: 'Leave Reviews', description: 'Build trust through honest feedback', highlight: 'interestedFeatures' }
+      { icon: Briefcase, title: 'Post Projects', description: 'Create detailed project listings in minutes', highlight: 'interestedFeatures' },
+      { icon: Search, title: 'Search Talent', description: 'Find the perfect freelancer for your needs', highlight: 'interestedFeatures' },
+      { icon: FileText, title: 'Review Proposals', description: 'Compare bids and choose the best fit', highlight: 'interestedFeatures' },
+      { icon: MessageCircle, title: 'Collaborate', description: 'Stay connected with your team', highlight: 'interestedFeatures' },
+      { icon: DollarSign, title: 'Escrow Protection', description: 'Only release payment when satisfied', highlight: 'interestedFeatures' },
+      { icon: Star, title: 'Leave Reviews', description: 'Build trust through honest feedback', highlight: 'interestedFeatures' }
     ];
 
     const features = onboardingData.role === 'freelancer' ? freelancerFeatures : clientFeatures;
@@ -193,7 +195,7 @@ export default function OnboardingTourWizard({
                 <Icon className={commonStyles.featureIcon} />
                 <h4>{feature.title}</h4>
                 <p>{feature.description}</p>
-                {isSelected && <FaCheckCircle className={commonStyles.selectedBadge} />}
+                {isSelected && <CheckCircle className={commonStyles.selectedBadge} />}
               </div>
             );
           })}
@@ -212,7 +214,7 @@ export default function OnboardingTourWizard({
   const Step3ProfileSetup = () => (
     <div className={commonStyles.stepContent}>
       <div className={commonStyles.profileHeader}>
-        <FaUserCircle className={commonStyles.profileIcon} />
+        <CircleUserRound className={commonStyles.profileIcon} />
         <h2>Complete Your Profile</h2>
         <p>A complete profile builds trust and {onboardingData.role === 'freelancer' ? 'helps you get hired faster' : 'attracts better freelancers'}</p>
       </div>
@@ -227,7 +229,7 @@ export default function OnboardingTourWizard({
             <p>Add a professional headshot to increase trust</p>
           </div>
           <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
-            Add Photo <FaArrowRight />
+            Add Photo <ArrowRight />
           </button>
         </div>
 
@@ -238,7 +240,7 @@ export default function OnboardingTourWizard({
             <p>Write a compelling bio highlighting your {onboardingData.role === 'freelancer' ? 'skills and experience' : 'business and needs'}</p>
           </div>
           <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
-            Write Bio <FaArrowRight />
+            Write Bio <ArrowRight />
           </button>
         </div>
 
@@ -251,7 +253,7 @@ export default function OnboardingTourWizard({
                 <p>Add skills so clients can find you easily</p>
               </div>
               <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
-                Add Skills <FaArrowRight />
+                Add Skills <ArrowRight />
               </button>
             </div>
 
@@ -262,7 +264,7 @@ export default function OnboardingTourWizard({
                 <p>Showcase your best work samples</p>
               </div>
               <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
-                Add Portfolio <FaArrowRight />
+                Add Portfolio <ArrowRight />
               </button>
             </div>
           </>
@@ -275,7 +277,7 @@ export default function OnboardingTourWizard({
             <p>Verify your email and phone for added security</p>
           </div>
           <button className={cn(commonStyles.actionButton, themeStyles.actionButton)}>
-            Verify Now <FaArrowRight />
+            Verify Now <ArrowRight />
           </button>
         </div>
       </div>
@@ -303,58 +305,58 @@ export default function OnboardingTourWizard({
       {onboardingData.role === 'freelancer' ? (
         <div className={commonStyles.actionsGrid}>
           <div className={cn(commonStyles.actionCard, themeStyles.actionCard)}>
-            <FaSearch className={commonStyles.actionIcon} />
+            <Search className={commonStyles.actionIcon} />
             <h3>Browse Projects</h3>
             <p>Explore projects matching your skills and interests</p>
             <button className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}>
-              Find Projects <FaArrowRight />
+              Find Projects <ArrowRight />
             </button>
           </div>
 
           <div className={cn(commonStyles.actionCard, themeStyles.actionCard)}>
-            <FaUserCircle className={commonStyles.actionIcon} />
+            <CircleUserRound className={commonStyles.actionIcon} />
             <h3>Complete Your Profile</h3>
             <p>Make a great first impression with a stellar profile</p>
             <button className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}>
-              Edit Profile <FaArrowRight />
+              Edit Profile <ArrowRight />
             </button>
           </div>
 
           <div className={cn(commonStyles.actionCard, themeStyles.actionCard)}>
-            <FaStar className={commonStyles.actionIcon} />
+            <Star className={commonStyles.actionIcon} />
             <h3>Build Your Portfolio</h3>
             <p>Showcase your best work to attract clients</p>
             <button className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}>
-              Add Portfolio <FaArrowRight />
+              Add Portfolio <ArrowRight />
             </button>
           </div>
         </div>
       ) : (
         <div className={commonStyles.actionsGrid}>
           <div className={cn(commonStyles.actionCard, themeStyles.actionCard)}>
-            <FaBriefcase className={commonStyles.actionIcon} />
+            <Briefcase className={commonStyles.actionIcon} />
             <h3>Post a Project</h3>
             <p>Create your first project listing and get proposals</p>
             <button className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}>
-              Post Project <FaArrowRight />
+              Post Project <ArrowRight />
             </button>
           </div>
 
           <div className={cn(commonStyles.actionCard, themeStyles.actionCard)}>
-            <FaSearch className={commonStyles.actionIcon} />
+            <Search className={commonStyles.actionIcon} />
             <h3>Search Freelancers</h3>
             <p>Browse our talent pool and find the perfect match</p>
             <button className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}>
-              Search Talent <FaArrowRight />
+              Search Talent <ArrowRight />
             </button>
           </div>
 
           <div className={cn(commonStyles.actionCard, themeStyles.actionCard)}>
-            <FaUserCircle className={commonStyles.actionIcon} />
+            <CircleUserRound className={commonStyles.actionIcon} />
             <h3>Complete Your Profile</h3>
             <p>Build trust with detailed company information</p>
             <button className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}>
-              Edit Profile <FaArrowRight />
+              Edit Profile <ArrowRight />
             </button>
           </div>
         </div>
@@ -366,38 +368,38 @@ export default function OnboardingTourWizard({
           {onboardingData.role === 'freelancer' ? (
             <>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Submit proposals within 24 hours of posting for better visibility</span>
               </div>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Personalize each proposal - avoid copy-paste templates</span>
               </div>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Respond to client messages quickly to show professionalism</span>
               </div>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Deliver work on time to build your reputation</span>
               </div>
             </>
           ) : (
             <>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Provide clear project descriptions to get better proposals</span>
               </div>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Set realistic budgets based on project complexity</span>
               </div>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Review freelancer portfolios and ratings carefully</span>
               </div>
               <div className={commonStyles.tip}>
-                <FaCheckCircle />
+                <CheckCircle />
                 <span>Communicate expectations clearly from the start</span>
               </div>
             </>
@@ -417,7 +419,7 @@ export default function OnboardingTourWizard({
 
       <div className={commonStyles.resourcesGrid}>
         <div className={cn(commonStyles.resourceCard, themeStyles.resourceCard)}>
-          <FaBook className={commonStyles.resourceIcon} />
+          <BookOpen className={commonStyles.resourceIcon} />
           <h3>Help Center</h3>
           <p>Browse articles and guides on every feature</p>
           <a href="/help" className={cn(commonStyles.resourceLink, themeStyles.resourceLink)}>
@@ -426,7 +428,7 @@ export default function OnboardingTourWizard({
         </div>
 
         <div className={cn(commonStyles.resourceCard, themeStyles.resourceCard)}>
-          <FaVideo className={commonStyles.resourceIcon} />
+          <Video className={commonStyles.resourceIcon} />
           <h3>Video Tutorials</h3>
           <p>Watch step-by-step video guides</p>
           <a href="/tutorials" className={cn(commonStyles.resourceLink, themeStyles.resourceLink)}>
@@ -435,7 +437,7 @@ export default function OnboardingTourWizard({
         </div>
 
         <div className={cn(commonStyles.resourceCard, themeStyles.resourceCard)}>
-          <FaUsers className={commonStyles.resourceIcon} />
+          <Users className={commonStyles.resourceIcon} />
           <h3>Community Forum</h3>
           <p>Connect with other users and share tips</p>
           <a href="/community" className={cn(commonStyles.resourceLink, themeStyles.resourceLink)}>
@@ -444,7 +446,7 @@ export default function OnboardingTourWizard({
         </div>
 
         <div className={cn(commonStyles.resourceCard, themeStyles.resourceCard)}>
-          <FaComments className={commonStyles.resourceIcon} />
+          <MessageCircle className={commonStyles.resourceIcon} />
           <h3>24/7 Support</h3>
           <p>Get help from our support team anytime</p>
           <a href="/support" className={cn(commonStyles.resourceLink, themeStyles.resourceLink)}>
@@ -503,10 +505,7 @@ export default function OnboardingTourWizard({
   };
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to skip the tour? You can always access it later from settings.')) {
-      localStorage.setItem('onboarding_skipped', 'true');
-      router.push(onboardingData.role === 'freelancer' ? '/freelancer/dashboard' : '/client/dashboard');
-    }
+    setShowSkipModal(true);
   };
 
   const steps = [
@@ -543,15 +542,30 @@ export default function OnboardingTourWizard({
   ];
 
   return (
-    <WizardContainer
-      title="Welcome to MegiLance"
-      subtitle="Let's get you started in just 5 simple steps"
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-      canSkip={true}
-    />
+    <>
+      <WizardContainer
+        title="Welcome to MegiLance"
+        subtitle="Let's get you started in just 5 simple steps"
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+        canSkip={true}
+      />
+      <Modal
+        isOpen={showSkipModal}
+        title="Skip Tour"
+        onClose={() => setShowSkipModal(false)}
+        footer={
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <button onClick={() => setShowSkipModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' }}>No, Continue</button>
+            <button onClick={() => { setShowSkipModal(false); localStorage.setItem('onboarding_skipped', 'true'); router.push(onboardingData.role === 'freelancer' ? '/freelancer/dashboard' : '/client/dashboard'); }} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#e81123', color: '#fff', cursor: 'pointer' }}>Yes, Skip</button>
+          </div>
+        }
+      >
+        <p>Are you sure you want to skip the tour? You can always access it later from settings.</p>
+      </Modal>
+    </>
   );
 }

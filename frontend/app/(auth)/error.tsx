@@ -3,7 +3,15 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import Link from 'next/link';
+import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
+import { AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Button from '@/app/components/Button/Button';
+
+import commonStyles from './AuthError.common.module.css';
+import lightStyles from './AuthError.light.module.css';
+import darkStyles from './AuthError.dark.module.css';
 
 export default function AuthError({
   error,
@@ -12,36 +20,37 @@ export default function AuthError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { resolvedTheme } = useTheme();
+  const router = useRouter();
+  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
   useEffect(() => {
     console.error('Auth error:', error);
   }, [error]);
 
+  if (!resolvedTheme) return null;
+
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4"
+      className={cn(commonStyles.container, themeStyles.container)}
       role="alert"
       aria-live="assertive"
     >
-      <div className="text-center max-w-md space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Something went wrong
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+      <div className={cn(commonStyles.card, themeStyles.card)}>
+        <div className={cn(commonStyles.iconWrap, themeStyles.iconWrap)}>
+          <AlertTriangle />
+        </div>
+        <h2 className={cn(commonStyles.title, themeStyles.title)}>Something went wrong</h2>
+        <p className={cn(commonStyles.message, themeStyles.message)}>
           We encountered an error loading this page. Please try again.
         </p>
-        <div className="flex gap-3 justify-center">
-          <button
-            onClick={reset}
-            className="px-4 py-2 bg-[#4573df] text-white rounded-lg text-sm font-medium hover:bg-[#3a62c4] transition-colors focus:outline-none focus:ring-2 focus:ring-[#4573df] focus:ring-offset-2"
-          >
+        <div className={commonStyles.actions}>
+          <Button variant="primary" size="md" onClick={reset}>
             Try again
-          </button>
-          <Link
-            href="/login"
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
+          </Button>
+          <Button variant="secondary" size="md" onClick={() => router.push('/login')}>
             Back to Login
-          </Link>
+          </Button>
         </div>
       </div>
     </div>

@@ -12,6 +12,7 @@ import Select, { SelectOption } from '@/app/components/Select/Select';
 import ToggleSwitch from '@/app/components/ToggleSwitch/ToggleSwitch';
 import Card from '@/app/components/Card/Card';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import Modal from '@/app/components/Modal/Modal';
 import { searchingAnimation } from '@/app/components/Animations/LottieAnimation';
 import MegaLoader from '@/app/components/Loading/MegaLoader';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
@@ -42,6 +43,7 @@ const JobAlertsPage: React.FC = () => {
   const [alerts, setAlerts] = useState<JobAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<JobAlert | null>(null);
 
   // Form State
   const [keywords, setKeywords] = useState('');
@@ -99,12 +101,11 @@ const JobAlertsPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this alert?')) return;
-
+  const handleDelete = async (alert: JobAlert) => {
+    setDeleteTarget(null);
     try {
-      await api.jobAlerts.delete(id);
-      setAlerts(alerts.filter(a => a.id !== id));
+      await api.jobAlerts.delete(alert.id);
+      setAlerts(alerts.filter(a => a.id !== alert.id));
       toaster.success('Job alert deleted.');
     } catch (error) {
       console.error('Failed to delete alert:', error);
@@ -240,7 +241,7 @@ const JobAlertsPage: React.FC = () => {
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            onClick={() => handleDelete(alert.id)}
+                            onClick={() => setDeleteTarget(alert)}
                             title="Delete Alert"
                             className={styles.deleteButton}
                           >
@@ -255,6 +256,15 @@ const JobAlertsPage: React.FC = () => {
             </section>
           </div>
         </main>
+
+        {/* Delete Confirmation Modal */}
+        <Modal isOpen={deleteTarget !== null} title="Delete Alert" onClose={() => setDeleteTarget(null)}>
+          <p>Are you sure you want to delete the alert for <strong>&quot;{deleteTarget?.keywords}&quot;</strong>?</p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="danger" onClick={() => deleteTarget && handleDelete(deleteTarget)}>Delete</Button>
+          </div>
+        </Modal>
       </div>
     </PageTransition>
   );

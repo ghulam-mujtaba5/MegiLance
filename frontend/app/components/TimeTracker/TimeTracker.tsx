@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
 import Select from '@/app/components/Select/Select';
-import { FaPlay, FaStop } from 'react-icons/fa';
+import { Play, Square } from 'lucide-react';
 import api from '@/lib/api';
 
 import commonStyles from './TimeTracker.common.module.css';
@@ -35,7 +35,13 @@ const TimeTracker: React.FC = () => {
   const [description, setDescription] = useState('');
   const [elapsedTime, setElapsedTime] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
@@ -109,7 +115,7 @@ const TimeTracker: React.FC = () => {
 
   const handleStart = async () => {
     if (!selectedContractId) {
-      alert('Please select a contract');
+      showToast('Please select a contract', 'error');
       return;
     }
     
@@ -122,7 +128,7 @@ const TimeTracker: React.FC = () => {
       setActiveEntry(entry);
     } catch (error) {
       console.error('Failed to start timer:', error);
-      alert('Failed to start timer');
+      showToast('Failed to start timer', 'error');
     } finally {
       setLoading(false);
     }
@@ -139,7 +145,7 @@ const TimeTracker: React.FC = () => {
       // Optionally refresh list or show summary
     } catch (error) {
       console.error('Failed to stop timer:', error);
-      alert('Failed to stop timer');
+      showToast('Failed to stop timer', 'error');
     } finally {
       setLoading(false);
     }
@@ -193,7 +199,7 @@ const TimeTracker: React.FC = () => {
             isLoading={loading}
             disabled={!selectedContractId}
           >
-            <FaPlay className={commonStyles.mr2} /> Start
+            <Play size={16} className={commonStyles.mr2} /> Start
           </Button>
         ) : (
           <Button
@@ -202,10 +208,16 @@ const TimeTracker: React.FC = () => {
             onClick={handleStop}
             isLoading={loading}
           >
-            <FaStop className={commonStyles.mr2} /> Stop
+            <Square size={16} className={commonStyles.mr2} /> Stop
           </Button>
         )}
       </div>
+
+      {toast && (
+        <div className={cn(commonStyles.toast, themeStyles.toast, toast.type === 'error' && commonStyles.toastError, toast.type === 'error' && themeStyles.toastError)}>
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 };

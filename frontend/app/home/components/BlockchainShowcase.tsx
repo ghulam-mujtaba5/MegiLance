@@ -4,7 +4,7 @@
 
 import React, { useRef } from 'react';
 import useAnimatedCounter from '@/hooks/useAnimatedCounter';
-import { FaBitcoin, FaShieldAlt, FaLock, FaGlobe, FaExchangeAlt, FaChartLine } from 'react-icons/fa';
+import { Bitcoin, ShieldCheck, Lock, Globe, ArrowLeftRight, TrendingUp } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
@@ -15,37 +15,37 @@ import { LottieAnimation, walletAnimation } from '@/app/components/Animations/Lo
 
 const blockchainFeatures = [
   {
-    icon: FaBitcoin,
+    icon: Bitcoin,
     title: "USDC Payments",
     description: "Get paid instantly in stable cryptocurrency. No more waiting for bank transfers or dealing with currency conversion fees.",
     benefit: "Instant Settlement"
   },
   {
-    icon: FaLock,
+    icon: Lock,
     title: "Smart Contract Escrow",
     description: "Automated escrow system ensures payments are released only when project milestones are completed and verified.",
     benefit: "100% Secure"
   },
   {
-    icon: FaShieldAlt,
+    icon: ShieldCheck,
     title: "Blockchain Security",
     description: "All transactions are recorded on the blockchain, providing immutable proof of payments and project completion.",
     benefit: "Tamper-Proof"
   },
   {
-    icon: FaGlobe,
+    icon: Globe,
     title: "Global Accessibility",
     description: "Work with clients worldwide without banking restrictions. Perfect for Pakistani freelancers accessing global markets.",
     benefit: "No Borders"
   },
   {
-    icon: FaExchangeAlt,
+    icon: ArrowLeftRight,
     title: "Low Transaction Fees",
     description: "Blockchain technology eliminates intermediaries, reducing transaction costs to less than 1% compared to traditional platforms.",
     benefit: "Save 90% on Fees"
   },
   {
-    icon: FaChartLine,
+    icon: TrendingUp,
     title: "Transparent Reputation",
     description: "Your reputation and work history are permanently stored on-chain, building an immutable professional profile.",
     benefit: "Verifiable History"
@@ -78,7 +78,7 @@ const BlockchainShowcase: React.FC = () => {
       <div className={commonStyles.container}>
         <div className={commonStyles.header}>
           <div className={commonStyles.badge}>
-            <FaBitcoin className={commonStyles.badgeIcon} />
+            <Bitcoin className={commonStyles.badgeIcon} />
             <span>Web3 Integration (FYP Module)</span>
           </div>
           <LottieAnimation

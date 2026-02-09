@@ -3,7 +3,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { IoClose } from 'react-icons/io5';
+import { X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -189,7 +189,7 @@ const Modal: React.FC<ModalProps> = ({
                 className={cn(commonStyles.closeButton, themeStyles.closeButton)} 
                 aria-label="Close modal"
               >
-                <IoClose aria-hidden="true" />
+                <X size={18} aria-hidden="true" />
               </button>
             </div>
             {description && (

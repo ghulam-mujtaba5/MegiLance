@@ -1,1 +1,0 @@
-$lines = Get-Content .env; foreach ($line in $lines) { if ($line -match "^([^#][^=]*)=(.*)$") { [System.Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim(), "Process") } }; python -m uvicorn main:app --reload --port 8000

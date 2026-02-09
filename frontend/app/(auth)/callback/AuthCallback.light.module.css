@@ -1,0 +1,49 @@
+/* @AI-HINT: Light theme for OAuth callback page */
+
+.container {
+  background: #f8fafc;
+}
+
+.card {
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.iconWrapSuccess {
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+}
+
+.iconWrapError {
+  background: rgba(232, 17, 35, 0.1);
+  color: #e81123;
+}
+
+.spinner {
+  border-color: rgba(69, 115, 223, 0.15);
+  border-top-color: #4573df;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.message {
+  color: #64748b;
+}
+
+.messageError {
+  color: #991b1b;
+}
+
+.toast {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  color: #166534;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.3);
+  color: #991b1b;
+}

@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { invoicesApi } from '@/lib/api';
 import type { Invoice, InvoiceFormData, InvoiceItem, Contract } from '@/types/api';
 import { FileText, Plus, Send, DollarSign, Calendar, Download, X, Check, Eye } from 'lucide-react';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
 import commonStyles from './Invoices.common.module.css';
 import lightStyles from './Invoices.light.module.css';
 import darkStyles from './Invoices.dark.module.css';
@@ -24,6 +26,8 @@ const Invoices: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteInvoiceId, setDeleteInvoiceId] = useState<number | null>(null);
 
   // Form state
   const [contractId, setContractId] = useState<number | null>(null);
@@ -144,8 +148,6 @@ const Invoices: React.FC = () => {
   };
 
   const handleDelete = async (invoiceId: number) => {
-    if (!confirm('Are you sure you want to delete this invoice?')) return;
-    
     try {
       setError(null);
       await invoicesApi.delete(invoiceId);
@@ -475,7 +477,7 @@ const Invoices: React.FC = () => {
                       </button>
                       {invoice.status === 'draft' && (
                         <button
-                          onClick={() => handleDelete(invoice.id)}
+                          onClick={() => { setDeleteInvoiceId(invoice.id); setShowDeleteModal(true); }}
                           className={cn(commonStyles.iconBtn, commonStyles.deleteBtn, themeStyles.iconBtn)}
                           data-action="delete"
                           title="Delete"
@@ -563,6 +565,19 @@ const Invoices: React.FC = () => {
           </div>
         </div>
       )}
+
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => { setShowDeleteModal(false); setDeleteInvoiceId(null); }}
+        title="Delete Invoice"
+        size="small"
+      >
+        <p>Are you sure you want to delete this invoice?</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteInvoiceId(null); }}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (deleteInvoiceId !== null) handleDelete(deleteInvoiceId); setShowDeleteModal(false); setDeleteInvoiceId(null); }}>Delete</Button>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -3,12 +3,13 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Loader from '@/app/components/Loader/Loader';
+import styles from '../../AuthShared.module.css';
 
 export default function SignupClientPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Store the role preference and redirect
     try {
       window.localStorage.setItem('signup_role', 'client');
     } catch (e) {
@@ -18,8 +19,8 @@ export default function SignupClientPage() {
   }, [router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    <div className={styles.centered}>
+      <Loader size="md" />
     </div>
   );
 }

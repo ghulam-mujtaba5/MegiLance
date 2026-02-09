@@ -246,3 +246,12 @@
 .optionDesc {
   color: #64748b;
 }
+
+.confirmText {
+  color: #334155;
+}
+
+.toast {
+  background: #27ae60;
+  color: #fff;
+}

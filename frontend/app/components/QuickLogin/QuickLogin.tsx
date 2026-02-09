@@ -11,15 +11,38 @@ import { Shield, User, Briefcase, X, ChevronRight } from 'lucide-react';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
+// Demo credentials loaded from environment variables only — never hardcoded in bundle
+const DEV_ACCOUNTS: Record<string, { email: string; password: string }> = IS_DEV
+  ? {
+      admin: {
+        email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || '',
+        password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || '',
+      },
+      client: {
+        email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || '',
+        password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || '',
+      },
+      freelancer: {
+        email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || '',
+        password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || '',
+      },
+    }
+  : {};
+
 export default function QuickLogin() {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
-  // Only show in development
+  // Only show in development when credentials are configured
   useEffect(() => {
-    if (IS_DEV) {
+    if (IS_DEV && DEV_ACCOUNTS.admin?.email) {
       setIsVisible(true);
     }
   }, []);
@@ -29,26 +52,14 @@ export default function QuickLogin() {
   const handleLogin = async (role: 'admin' | 'client' | 'freelancer') => {
     setLoading(role);
     try {
-      let email = '';
-      let password = '';
-
-      // Updated to match actual demo users in local_dev.db
-      switch (role) {
-        case 'admin':
-          email = 'admin@megilance.com';
-          password = 'Password123';
-          break;
-        case 'client':
-          email = 'client@demo.com';
-          password = 'Password123';
-          break;
-        case 'freelancer':
-          email = 'freelancer@demo.com';
-          password = 'Password123';
-          break;
+      const account = DEV_ACCOUNTS[role];
+      if (!account?.email || !account?.password) {
+        showToast(`Dev credentials for "${role}" not configured. Set NEXT_PUBLIC_DEV_${role.toUpperCase()}_EMAIL and _PASSWORD in .env.local`, 'error');
+        setLoading(null);
+        return;
       }
 
-      await authApi.login(email, password);
+      await authApi.login(account.email, account.password);
       
       // Redirect based on role
       switch (role) {
@@ -64,7 +75,7 @@ export default function QuickLogin() {
       }
       setIsOpen(false);
     } catch {
-      alert('Login failed. Make sure dev seed data exists.');
+      showToast('Login failed. Make sure dev seed data exists.', 'error');
     } finally {
       setLoading(null);
     }
@@ -128,6 +139,15 @@ export default function QuickLogin() {
       >
         {isOpen ? <ChevronRight /> : <Shield className="h-5 w-5" />}
       </Button>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }

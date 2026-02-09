@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { FaMagic, FaUserTie, FaBriefcase, FaUserShield, FaLaptopCode, FaTasks, FaUserCog } from 'react-icons/fa';
+import { Sparkles, User, Briefcase, ShieldCheck, Laptop, ListChecks, UserCog } from 'lucide-react';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
@@ -26,28 +26,28 @@ type UserRole = 'freelancer' | 'client' | 'admin';
 const roleConfig = {
   freelancer: {
     id: 'freelancer' as UserRole,
-    icon: FaUserTie,
+    icon: User,
     label: 'Freelancer',
     redirectPath: '/freelancer/dashboard',
-    brandIcon: FaLaptopCode,
+    brandIcon: Laptop,
     brandTitle: 'Build the Future',
     brandText: 'Access exclusive projects, secure your payments with USDC, and collaborate with top-tier clients from around the world.',
   },
   client: {
     id: 'client' as UserRole,
-    icon: FaBriefcase,
+    icon: Briefcase,
     label: 'Client',
     redirectPath: '/client/dashboard',
-    brandIcon: FaTasks,
+    brandIcon: ListChecks,
     brandTitle: 'Assemble Your Dream Team',
     brandText: 'Find, hire, and manage elite talent. Our AI-powered platform ensures you connect with the perfect freelancers for your projects.',
   },
   admin: {
     id: 'admin' as UserRole,
-    icon: FaUserShield,
+    icon: ShieldCheck,
     label: 'Admin',
     redirectPath: '/admin/dashboard',
-    brandIcon: FaUserCog,
+    brandIcon: UserCog,
     brandTitle: 'Oversee the Ecosystem',
     brandText: 'Manage platform operations, ensure quality and security, and empower our community of freelancers and clients.',
   },
@@ -201,7 +201,7 @@ const Passwordless: React.FC = () => {
           <StaggerContainer className={styles.formContainer}>
             {isPreviewMode() && (
               <StaggerItem>
-                <div role="status" aria-live="polite" className="mb-4 rounded-md border border-dashed border-[var(--border-color)] p-3 text-sm text-[var(--text-secondary)]">
+                <div role="status" aria-live="polite" className={commonStyles.previewBanner}>
                   <strong>Preview Mode:</strong> Auth checks are disabled. Use the quick links below to jump into dashboards.
                 </div>
               </StaggerItem>
@@ -234,13 +234,13 @@ const Passwordless: React.FC = () => {
 
             {submitted ? (
               <StaggerItem className={styles.successMessage}>
-                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 mx-auto mb-4">
-                  <FaMagic className="text-green-600 dark:text-green-400 text-2xl" />
+                <div className={commonStyles.successIconWrap}>
+                  <Sparkles size={28} />
                 </div>
-                <p className="text-center mb-4">
+                <p className={commonStyles.successText}>
                   We&apos;ve sent a magic link to <strong>{email}</strong>. Click the link to sign in.
                 </p>
-                <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
+                <p className={commonStyles.successSubtext}>
                   Didn&apos;t receive the email? Check your spam folder.
                 </p>
                 <Button 
@@ -278,7 +278,7 @@ const Passwordless: React.FC = () => {
                     isLoading={loading} 
                     disabled={loading} 
                     className={styles.submitButton}
-                    iconBefore={<FaMagic />}
+                    iconBefore={<Sparkles size={18} />}
                   >
                     {loading ? 'Sending Magic Link...' : 'Send Magic Link'}
                   </Button>
@@ -288,7 +288,7 @@ const Passwordless: React.FC = () => {
 
             <StaggerItem className={styles.signupPrompt}>
               <p>Want to use a password instead? <Link href="/login">Sign In</Link></p>
-              <p className="mt-1">Don&apos;t have an account? <Link href="/signup">Create one now</Link></p>
+              <p>Don&apos;t have an account? <Link href="/signup">Create one now</Link></p>
             </StaggerItem>
           </StaggerContainer>
         </div>

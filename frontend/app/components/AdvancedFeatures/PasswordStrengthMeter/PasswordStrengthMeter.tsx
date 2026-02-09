@@ -4,7 +4,7 @@
 import React, { useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { FaCheck, FaTimes } from 'react-icons/fa';
+import { Check, X } from 'lucide-react';
 import commonStyles from './PasswordStrengthMeter.common.module.css';
 import lightStyles from './PasswordStrengthMeter.light.module.css';
 import darkStyles from './PasswordStrengthMeter.dark.module.css';
@@ -106,9 +106,9 @@ const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
                 className={cn(styles.requirement, isMet && styles.requirementMet)}
               >
                 {isMet ? (
-                  <FaCheck className={styles.requirementIcon} />
+                  <Check size={14} className={styles.requirementIcon} />
                 ) : (
-                  <FaTimes className={styles.requirementIcon} />
+                  <X size={14} className={styles.requirementIcon} />
                 )}
                 {req.label}
               </li>

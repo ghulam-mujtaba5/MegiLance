@@ -5,6 +5,11 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { portfolioShowcaseApi as _portfolioShowcaseApi } from '@/lib/api';
+import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
+import Textarea from '@/app/components/Textarea/Textarea';
+import { Plus, Settings, Trash2, Edit3, Star, Eye, Heart, X } from 'lucide-react';
 import commonStyles from './Portfolio.common.module.css';
 import lightStyles from './Portfolio.light.module.css';
 import darkStyles from './Portfolio.dark.module.css';
@@ -90,6 +95,7 @@ export default function PortfolioShowcasePage() {
   });
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   useEffect(() => {
     loadPortfolio();
@@ -133,10 +139,9 @@ export default function PortfolioShowcasePage() {
   };
 
   const handleDeleteItem = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this portfolio item?')) return;
-
     try {
       await portfolioShowcaseApi.delete(id);
+      setDeleteTargetId(null);
       loadPortfolio();
     } catch (error) {
       console.error('Failed to delete item:', error);
@@ -249,22 +254,19 @@ export default function PortfolioShowcasePage() {
                 </p>
               </div>
               <div className={commonStyles.headerActions}>
-                <button
-                  onClick={() => setShowSettingsModal(true)}
-                  className={cn(commonStyles.settingsBtn, themeStyles.settingsBtn)}
-                >
-                  ⚙️ Settings
-                </button>
-                <button
+                <Button variant="ghost" onClick={() => setShowSettingsModal(true)}>
+                  <Settings size={16} /> Settings
+                </Button>
+                <Button
+                  variant="primary"
                   onClick={() => {
                     resetItemForm();
                     setEditingItem(null);
                     setShowItemModal(true);
                   }}
-                  className={cn(commonStyles.addBtn, themeStyles.addBtn)}
                 >
-                  ➕ Add Project
-                </button>
+                  <Plus size={16} /> Add Project
+                </Button>
               </div>
             </div>
 
@@ -360,13 +362,13 @@ export default function PortfolioShowcasePage() {
                             onClick={() => editItem(item)}
                             className={commonStyles.overlayBtn}
                           >
-                            ✏️
+                            <Edit3 size={16} />
                           </button>
                           <button
-                            onClick={() => handleDeleteItem(item.id)}
+                            onClick={() => setDeleteTargetId(item.id)}
                             className={commonStyles.overlayBtn}
                           >
-                            🗑️
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </div>
@@ -419,13 +421,13 @@ export default function PortfolioShowcasePage() {
                     )}
                     <div className={commonStyles.cardOverlay}>
                       <button onClick={() => toggleFeatured(item)} className={commonStyles.overlayBtn}>
-                        {item.featured ? '★' : '☆'}
+                        <Star size={16} fill={item.featured ? 'currentColor' : 'none'} />
                       </button>
                       <button onClick={() => editItem(item)} className={commonStyles.overlayBtn}>
-                        ✏️
+                        <Edit3 size={16} />
                       </button>
-                      <button onClick={() => handleDeleteItem(item.id)} className={commonStyles.overlayBtn}>
-                        🗑️
+                      <button onClick={() => setDeleteTargetId(item.id)} className={commonStyles.overlayBtn}>
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -481,76 +483,64 @@ export default function PortfolioShowcasePage() {
               <div className={commonStyles.modalContent}>
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Title *</label>
-                  <input
-                    type="text"
+                  <Input
                     value={newItem.title}
                     onChange={(e) => setNewItem(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Project title"
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
 
                 <div className={commonStyles.formRow}>
                   <div className={commonStyles.formGroup}>
                     <label className={cn(commonStyles.label, themeStyles.label)}>Category</label>
-                    <select
+                    <Select
                       value={newItem.category}
                       onChange={(e) => setNewItem(prev => ({ ...prev, category: e.target.value }))}
-                      className={cn(commonStyles.select, themeStyles.select)}
-                    >
-                      {categoryOptions.filter(c => c.value !== 'all').map(cat => (
-                        <option key={cat.value} value={cat.value}>{cat.label}</option>
-                      ))}
-                    </select>
+                      options={categoryOptions.filter(c => c.value !== 'all')}
+                    />
                   </div>
                   <div className={commonStyles.formGroup}>
                     <label className={cn(commonStyles.label, themeStyles.label)}>Client Name</label>
-                    <input
-                      type="text"
+                    <Input
                       value={newItem.client_name}
                       onChange={(e) => setNewItem(prev => ({ ...prev, client_name: e.target.value }))}
                       placeholder="Optional"
-                      className={cn(commonStyles.input, themeStyles.input)}
                     />
                   </div>
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Description</label>
-                  <textarea
+                  <Textarea
                     value={newItem.description}
                     onChange={(e) => setNewItem(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Describe your project..."
                     rows={4}
-                    className={cn(commonStyles.textarea, themeStyles.textarea)}
                   />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Project Link</label>
-                  <input
+                  <Input
                     type="url"
                     value={newItem.link}
                     onChange={(e) => setNewItem(prev => ({ ...prev, link: e.target.value }))}
                     placeholder="https://..."
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Tags</label>
                   <div className={commonStyles.tagInputRow}>
-                    <input
-                      type="text"
+                    <Input
                       value={tagInput}
                       onChange={(e) => setTagInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                       placeholder="Add a tag"
-                      className={cn(commonStyles.input, themeStyles.input)}
                     />
-                    <button onClick={addTag} className={cn(commonStyles.addTagBtn, themeStyles.addTagBtn)}>
-                      Add
-                    </button>
+                    <Button variant="ghost" size="sm" onClick={addTag}>
+                      <Plus size={14} /> Add
+                    </Button>
                   </div>
                   {newItem.tags.length > 0 && (
                     <div className={commonStyles.tagList}>
@@ -579,20 +569,15 @@ export default function PortfolioShowcasePage() {
               </div>
 
               <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
-                <button
-                  onClick={() => setShowItemModal(false)}
-                  disabled={saving}
-                  className={cn(commonStyles.cancelBtn, themeStyles.cancelBtn)}
-                >
-                  Cancel
-                </button>
-                <button
+                <Button variant="ghost" onClick={() => setShowItemModal(false)} disabled={saving}>Cancel</Button>
+                <Button
+                  variant="primary"
                   onClick={handleSaveItem}
                   disabled={saving || !newItem.title.trim()}
-                  className={cn(commonStyles.saveBtn, themeStyles.saveBtn)}
+                  isLoading={saving}
                 >
-                  {saving ? 'Saving...' : editingItem ? 'Update Project' : 'Add Project'}
-                </button>
+                  {editingItem ? 'Update Project' : 'Add Project'}
+                </Button>
               </div>
             </div>
           </div>
@@ -610,41 +595,37 @@ export default function PortfolioShowcasePage() {
                   onClick={() => setShowSettingsModal(false)}
                   className={cn(commonStyles.closeButton, themeStyles.closeButton)}
                 >
-                  ×
+                  <X size={18} />
                 </button>
               </div>
 
               <div className={commonStyles.modalContent}>
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Headline</label>
-                  <input
-                    type="text"
+                  <Input
                     value={settings.headline}
                     onChange={(e) => setSettings(prev => prev ? { ...prev, headline: e.target.value } : prev)}
                     placeholder="Full-Stack Developer & Designer"
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Bio</label>
-                  <textarea
+                  <Textarea
                     value={settings.bio}
                     onChange={(e) => setSettings(prev => prev ? { ...prev, bio: e.target.value } : prev)}
                     placeholder="Tell visitors about yourself..."
                     rows={3}
-                    className={cn(commonStyles.textarea, themeStyles.textarea)}
                   />
                 </div>
 
                 <div className={commonStyles.formGroup}>
                   <label className={cn(commonStyles.label, themeStyles.label)}>Contact Email</label>
-                  <input
+                  <Input
                     type="email"
                     value={settings.contact_email}
                     onChange={(e) => setSettings(prev => prev ? { ...prev, contact_email: e.target.value } : prev)}
                     placeholder="your@email.com"
-                    className={cn(commonStyles.input, themeStyles.input)}
                   />
                 </div>
 
@@ -661,19 +642,33 @@ export default function PortfolioShowcasePage() {
               </div>
 
               <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
-                <button
-                  onClick={() => setShowSettingsModal(false)}
-                  className={cn(commonStyles.cancelBtn, themeStyles.cancelBtn)}
-                >
-                  Cancel
-                </button>
-                <button
+                <Button variant="ghost" onClick={() => setShowSettingsModal(false)}>Cancel</Button>
+                <Button
+                  variant="primary"
                   onClick={saveSettings}
                   disabled={saving}
-                  className={cn(commonStyles.saveBtn, themeStyles.saveBtn)}
+                  isLoading={saving}
                 >
-                  {saving ? 'Saving...' : 'Save Settings'}
-                </button>
+                  Save Settings
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteTargetId && (
+          <div className={commonStyles.modalOverlay} onClick={() => setDeleteTargetId(null)}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={(e) => e.stopPropagation()}>
+              <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>Delete Project</h2>
+              <div className={commonStyles.modalContent}>
+                <p className={cn(commonStyles.confirmText, themeStyles.confirmText)}>
+                  Are you sure you want to delete this portfolio item? This action cannot be undone.
+                </p>
+              </div>
+              <div className={cn(commonStyles.modalFooter, themeStyles.modalFooter)}>
+                <Button variant="ghost" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
+                <Button variant="danger" onClick={() => handleDeleteItem(deleteTargetId)}>Delete</Button>
               </div>
             </div>
           </div>

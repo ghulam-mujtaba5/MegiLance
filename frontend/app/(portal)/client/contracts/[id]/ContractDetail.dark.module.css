@@ -1,19 +1,143 @@
-/* Dark theme */
-.container {
-  background-color: #1a202c;
-  color: #f7fafc;
-}
+/* @AI-HINT: Dark theme colors for Contract Detail page */
 
-.title, .sectionTitle {
+.container {
   color: #e2e8f0;
 }
 
-.section {
-  background-color: #2d3748;
-  border-color: #4a5568;
+.title {
+  color: #f1f5f9;
 }
 
+.sectionTitle {
+  color: #e2e8f0;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  color: #94a3b8;
+}
+
+.breadcrumbLink {
+  color: #7c9ef5;
+}
+
+.breadcrumbLink:hover {
+  color: #93b0ff;
+}
+
+/* Overview Cards */
+.overviewCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.overviewCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.overviewLabel {
+  color: #94a3b8;
+}
+
+.overviewValue {
+  color: #f1f5f9;
+}
+
+.overviewSub {
+  color: #64748b;
+}
+
+/* Progress */
+.progressSection {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.progressTitle {
+  color: #e2e8f0;
+}
+
+.progressPercent {
+  color: #7c9ef5;
+}
+
+.progressBarLarge {
+  background: #334155;
+}
+
+.progressFillLarge {
+  background: linear-gradient(90deg, #4573df, #6366f1);
+}
+
+.progressInfo {
+  color: #64748b;
+}
+
+/* Sections */
+.section {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Milestones */
 .milestoneItem {
-  background-color: #2d3748;
-  border-color: #4a5568;
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.milestoneItem:hover {
+  background: #1e293b;
+  border-color: #475569;
+}
+
+.milestoneNumber {
+  background: rgba(69, 115, 223, 0.15);
+  color: #7c9ef5;
+}
+
+.milestoneMeta {
+  color: #64748b;
+}
+
+/* Freelancer Card */
+.freelancerCard {
+  background: #0f172a;
+}
+
+.freelancerAvatar {
+  background: rgba(69, 115, 223, 0.15);
+  color: #7c9ef5;
+}
+
+.freelancerName {
+  color: #e2e8f0;
+}
+
+.freelancerEmail {
+  color: #64748b;
+}
+
+/* Details */
+.detailLabel {
+  color: #64748b;
+}
+
+.detailValue {
+  color: #e2e8f0;
+}
+
+/* Error */
+.errorIcon {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+}
+
+.errorTitle {
+  color: #f1f5f9;
+}
+
+.errorText {
+  color: #64748b;
 }

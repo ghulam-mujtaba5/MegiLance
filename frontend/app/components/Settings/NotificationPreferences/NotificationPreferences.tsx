@@ -6,9 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { 
-  FaBell, FaEnvelope, FaMobileAlt, FaSms,
-  FaSave, FaCheckCircle 
-} from 'react-icons/fa';
+  Bell, Mail, Smartphone, MessageSquare,
+  Save, CheckCircle 
+} from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Select from '@/app/components/Select/Select';
 
@@ -143,7 +143,7 @@ const NotificationPreferences: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          <FaBell className="mr-3" />
+          <Bell size={18} className="mr-3" />
           Notification Preferences
         </h1>
         <p className={styles.subtitle}>
@@ -157,10 +157,10 @@ const NotificationPreferences: React.FC = () => {
         <div className={styles.table}>
           <div className={styles.tableHeader}>
             <div className={styles.categoryCell}>Category</div>
-            <div><FaEnvelope /> Email</div>
-            <div><FaBell /> Push</div>
-            <div><FaSms /> SMS</div>
-            <div><FaMobileAlt /> In-App</div>
+            <div><Mail size={16} /> Email</div>
+            <div><Bell size={16} /> Push</div>
+            <div><MessageSquare size={16} /> SMS</div>
+            <div><Smartphone size={16} /> In-App</div>
           </div>
 
           {categories.map(category => (
@@ -254,7 +254,7 @@ const NotificationPreferences: React.FC = () => {
 
       {saved && (
         <div className={styles.successMessage}>
-          <FaCheckCircle className="mr-2" />
+          <CheckCircle size={16} className="mr-2" />
           Preferences saved successfully!
         </div>
       )}
@@ -266,7 +266,7 @@ const NotificationPreferences: React.FC = () => {
           isLoading={saving}
           disabled={saving}
         >
-          <FaSave className="mr-2" />
+          <Save size={16} className="mr-2" />
           Save Preferences
         </Button>
       </div>

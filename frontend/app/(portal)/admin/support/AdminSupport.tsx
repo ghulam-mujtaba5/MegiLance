@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
 import { useAdminData } from '@/hooks/useAdmin';
 import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
 import common from './AdminSupport.common.module.css';
 import light from './AdminSupport.light.module.css';
 import dark from './AdminSupport.dark.module.css';
@@ -122,6 +123,11 @@ const AdminSupport: React.FC = () => {
   const [newRequester, setNewRequester] = useState('');
   const [newPriority, setNewPriority] = useState<Ticket['priority']>('Low');
   const [newBody, setNewBody] = useState('');
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const resetNewForm = () => {
     setNewSubject('');
@@ -151,21 +157,23 @@ const AdminSupport: React.FC = () => {
   const assignSelected = () => {
     if (!selectedTicket) return;
     if (!String(selectedTicket.id).startsWith('local-')) {
-      alert('Assign is a mock action for remote tickets.');
+      showToast('Assign is a mock action for remote tickets.', 'error');
       return;
     }
     const name = prompt('Assign to (name):', selectedTicket.assignee ?? '');
     if (name === null) return;
     setLocalTickets(prev => prev.map(t => (t.id === selectedTicket.id ? { ...t, assignee: name.trim() || undefined } : t)));
+    showToast(`Ticket assigned to ${name.trim() || 'Unassigned'}`);
   };
 
   const resolveSelected = () => {
     if (!selectedTicket) return;
     if (!String(selectedTicket.id).startsWith('local-')) {
-      alert('Resolve is a mock action for remote tickets.');
+      showToast('Resolve is a mock action for remote tickets.', 'error');
       return;
     }
     setLocalTickets(prev => prev.map(t => (t.id === selectedTicket.id ? { ...t, status: 'Resolved' } : t)));
+    showToast('Ticket resolved!');
   };
 
   return (
@@ -329,6 +337,12 @@ const AdminSupport: React.FC = () => {
             <button type="button" className={cn(common.button, themed.button)} onClick={createTicket} disabled={!newSubject.trim() || !newRequester.trim() || !newBody.trim()}>Create</button>
           </div>
         </Modal>
+      )}
+
+      {toast && (
+        <div className={cn(common.toast, toast.type === 'error' && common.toastError, themed.toast, toast.type === 'error' && themed.toastError)}>
+          {toast.message}
+        </div>
       )}
     </PageTransition>
   );

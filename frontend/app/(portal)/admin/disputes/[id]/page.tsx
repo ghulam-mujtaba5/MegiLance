@@ -6,10 +6,14 @@ import { useTheme } from 'next-themes';
 import { useRouter, useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FiArrowLeft, FiLoader, FiFileText, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { ArrowLeft, FileText, CheckCircle } from 'lucide-react';
 
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
+import Textarea from '@/app/components/Textarea/Textarea';
+import Select from '@/app/components/Select/Select';
+import Loader from '@/app/components/Loader/Loader';
+import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 
 import commonStyles from './DisputeDetails.common.module.css';
@@ -106,7 +110,7 @@ const DisputeDetailsPage: React.FC = () => {
   if (loading) {
     return (
       <div className={cn(styles.container, styles.loadingState)}>
-        <FiLoader className={styles.spinner} />
+        <Loader size="lg" />
         <p>Loading dispute details...</p>
       </div>
     );
@@ -127,108 +131,119 @@ const DisputeDetailsPage: React.FC = () => {
   const isResolved = dispute.status === 'resolved' || dispute.status === 'closed';
 
   return (
-    <div className={cn(styles.container, styles[resolvedTheme])}>
-      <Button 
-        variant="ghost" 
-        onClick={handleBack} 
-        className="mb-4"
-      >
-        <FiArrowLeft /> Back to Disputes
-      </Button>
+    <PageTransition>
+      <div className={cn(styles.container)}>
+        <Button 
+          variant="ghost" 
+          onClick={handleBack}
+          iconBefore={<ArrowLeft size={16} />}
+        >
+          Back to Disputes
+        </Button>
 
-      <header className={styles.header}>
-        <div>
-          <h1 className={styles.title}>{dispute.title}</h1>
-          <div className={styles.meta}>
-            <Badge variant={getStatusBadgeVariant(dispute.status)}>
-              {dispute.status.replace('_', ' ')}
-            </Badge>
-            <span>Dispute #{dispute.id}</span>
-            <span>Contract #{dispute.contract_id}</span>
-            <span>Created: {new Date(dispute.created_at).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </header>
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Description</h2>
-        <p className={styles.description}>{dispute.description}</p>
-      </div>
-
-      {dispute.evidence && dispute.evidence.length > 0 && (
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Evidence</h2>
-          <div className={styles.evidenceList}>
-            {dispute.evidence.map((item: any, index: number) => (
-              <div key={index} className={styles.evidenceItem}>
-                <FiFileText className={styles.evidenceIcon} />
-                <span className={styles.evidenceName}>{item.filename || `Evidence ${index + 1}`}</span>
-                <Button 
-                  variant="link" 
-                  size="sm" 
-                  onClick={() => window.open(item.url, '_blank')}
-                >
-                  View
-                </Button>
+        <ScrollReveal>
+          <header className={styles.header}>
+            <div>
+              <h1 className={styles.title}>{dispute.title}</h1>
+              <div className={styles.meta}>
+                <Badge variant={getStatusBadgeVariant(dispute.status)}>
+                  {dispute.status.replace('_', ' ')}
+                </Badge>
+                <span>Dispute #{dispute.id}</span>
+                <span>Contract #{dispute.contract_id}</span>
+                <span>Created: {new Date(dispute.created_at).toLocaleDateString()}</span>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+          </header>
+        </ScrollReveal>
 
-      {isResolved ? (
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Resolution</h2>
-          <div className={styles.resolutionDetails}>
-            <p><strong>Resolved By:</strong> Admin #{dispute.resolved_by_id}</p>
-            <p><strong>Resolved At:</strong> {dispute.resolved_at ? new Date(dispute.resolved_at).toLocaleString() : 'N/A'}</p>
-            <div className="mt-4">
-              <strong>Resolution Note:</strong>
-              <p className={styles.description}>{dispute.resolution}</p>
-            </div>
+        <ScrollReveal delay={0.1}>
+          <div className={styles.section}>
+            <h2 className={styles.sectionTitle}>Description</h2>
+            <p className={styles.description}>{dispute.description}</p>
           </div>
-        </div>
-      ) : (
-        <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Resolve Dispute</h2>
-          <div className={styles.resolutionForm}>
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Resolution Note</label>
-              <textarea 
-                className={styles.textarea}
-                value={resolutionNote}
-                onChange={(e) => setResolutionNote(e.target.value)}
-                placeholder="Explain the resolution decision..."
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Contract Action</label>
-              <select 
-                className={styles.select}
-                value={contractAction}
-                onChange={(e) => setContractAction(e.target.value)}
-              >
-                <option value="active">Resume Contract (Set to Active)</option>
-                <option value="terminated">Terminate Contract</option>
-                <option value="completed">Mark as Completed</option>
-              </select>
-            </div>
+        </ScrollReveal>
 
-            <div className={styles.actions}>
-              <Button 
-                variant="primary" 
-                onClick={handleResolve}
-                isLoading={submitting}
-                disabled={submitting}
-              >
-                <FiCheckCircle /> Resolve Dispute
-              </Button>
+        {dispute.evidence && dispute.evidence.length > 0 && (
+          <ScrollReveal delay={0.15}>
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Evidence</h2>
+              <div className={styles.evidenceList}>
+                {dispute.evidence.map((item: any, index: number) => (
+                  <div key={index} className={styles.evidenceItem}>
+                    <FileText size={28} className={styles.evidenceIcon} />
+                    <span className={styles.evidenceName}>{item.filename || `Evidence ${index + 1}`}</span>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      onClick={() => window.open(item.url, '_blank')}
+                    >
+                      View
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+          </ScrollReveal>
+        )}
+
+        {isResolved ? (
+          <ScrollReveal delay={0.2}>
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Resolution</h2>
+              <div className={styles.resolutionDetails}>
+                <p><strong>Resolved By:</strong> Admin #{dispute.resolved_by_id}</p>
+                <p><strong>Resolved At:</strong> {dispute.resolved_at ? new Date(dispute.resolved_at).toLocaleString() : 'N/A'}</p>
+                <div className={styles.resolutionNote}>
+                  <strong>Resolution Note:</strong>
+                  <p className={styles.description}>{dispute.resolution}</p>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        ) : (
+          <ScrollReveal delay={0.2}>
+            <div className={styles.section}>
+              <h2 className={styles.sectionTitle}>Resolve Dispute</h2>
+              <div className={styles.resolutionForm}>
+                <div className={styles.formGroup}>
+                  <Textarea 
+                    value={resolutionNote}
+                    onChange={(e) => setResolutionNote(e.target.value)}
+                    placeholder="Explain the resolution decision..."
+                    rows={5}
+                  />
+                </div>
+                
+                <div className={styles.formGroup}>
+                  <Select 
+                    value={contractAction}
+                    onChange={(e) => setContractAction(e.target.value)}
+                    options={[
+                      { value: 'active', label: 'Resume Contract (Set to Active)' },
+                      { value: 'terminated', label: 'Terminate Contract' },
+                      { value: 'completed', label: 'Mark as Completed' },
+                    ]}
+                  />
+                </div>
+
+                <div className={styles.actions}>
+                  <Button 
+                    variant="primary" 
+                    onClick={handleResolve}
+                    isLoading={submitting}
+                    disabled={submitting}
+                    iconBefore={<CheckCircle size={16} />}
+                  >
+                    Resolve Dispute
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        )}
+      </div>
+    </PageTransition>
   );
 };
 

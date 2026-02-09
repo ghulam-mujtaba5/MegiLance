@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { Metadata } from 'next';
+import styles from './AuthShared.module.css';
 
 export const metadata: Metadata = {
   title: {
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-screen">
+    <main>
       {children}
-    </div>
+    </main>
   );
 }

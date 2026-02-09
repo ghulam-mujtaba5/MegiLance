@@ -88,6 +88,33 @@
   font-weight: 600;
 }
 
+.filterCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 6px;
+}
+
+/* Error Banner */
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: rgba(232, 17, 35, 0.08);
+  border: 1px solid rgba(232, 17, 35, 0.2);
+  border-radius: 10px;
+  color: #e81123;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
 /* States */
 .loadingState,
 .emptyState {

@@ -5,7 +5,7 @@ import React from 'react';
 import { ThemeProvider } from 'next-themes';
 import AppChrome from './components/AppChrome/AppChrome';
 import { ToasterProvider } from './components/Toast/ToasterProvider';
-import QuickLogin from '@/app/components/QuickLogin';
+import QuickLogin from '@/app/components/QuickLogin/QuickLogin';
 import StructuredData from '@/app/shared/StructuredData';
 import { AnalyticsProvider } from '@/app/shared/analytics/AnalyticsProvider';
 import WebVitalsReporter from './components/Analytics/WebVitalsReporter';

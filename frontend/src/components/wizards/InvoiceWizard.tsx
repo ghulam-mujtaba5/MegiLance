@@ -6,20 +6,19 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './InvoiceWizard.common.module.css';
 import lightStyles from './InvoiceWizard.light.module.css';
 import darkStyles from './InvoiceWizard.dark.module.css';
 import {
-  FaUser,
-  FaPlus,
-  FaTrash,
-  FaDollarSign,
-  FaFileInvoiceDollar,
-  FaCalendar,
-  FaImage,
-  FaPaperPlane,
-  FaInfoCircle
-} from 'react-icons/fa';
+  User,
+  Plus,
+  Trash2,
+  Receipt,
+  Calendar,
+  SendHorizontal,
+  Info
+} from 'lucide-react';
 import api from '@/lib/api';
 
 interface LineItem {
@@ -87,6 +86,12 @@ export default function InvoiceWizard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const [invoiceData, setInvoiceData] = useState<InvoiceData>({
     clientId: preselectedClient?.id || '',
@@ -212,7 +217,7 @@ export default function InvoiceWizard({
       <div className={commonStyles.stepContent}>
         {preselectedClient ? (
           <div className={cn(commonStyles.selectedClient, themeStyles.selectedClient)}>
-            <FaUser className={commonStyles.icon} />
+            <User className={commonStyles.icon} />
             <div>
               <h3>{preselectedClient.name}</h3>
               <p>{preselectedClient.email}</p>
@@ -248,7 +253,7 @@ export default function InvoiceWizard({
                     clientEmail: client.email
                   })}
                 >
-                  <FaUser />
+                  <User />
                   <div>
                     <h4>{client.name}</h4>
                     <p>{client.email}</p>
@@ -273,7 +278,7 @@ export default function InvoiceWizard({
           onClick={addLineItem}
           className={cn(commonStyles.addButton, themeStyles.addButton)}
         >
-          <FaPlus /> Add Item
+          <Plus /> Add Item
         </button>
       </div>
 
@@ -325,7 +330,7 @@ export default function InvoiceWizard({
                 className={commonStyles.removeButton}
                 aria-label="Remove invoice line item"
               >
-                <FaTrash />
+                <Trash2 />
               </button>
             )}
           </div>
@@ -387,7 +392,7 @@ export default function InvoiceWizard({
         <div className={commonStyles.formGroup}>
           <label htmlFor="dueDate">Due Date</label>
           <div className={commonStyles.dateInput}>
-            <FaCalendar />
+            <Calendar />
             <input
               type="date"
               id="dueDate"
@@ -473,7 +478,7 @@ export default function InvoiceWizard({
   const Step4Branding = () => (
     <div className={commonStyles.stepContent}>
       <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-        <FaInfoCircle />
+        <Info />
         <p>Customize your invoice with your business branding. This information will appear on the PDF invoice.</p>
       </div>
 
@@ -512,7 +517,7 @@ export default function InvoiceWizard({
 
       <div className={cn(commonStyles.previewBox, themeStyles.previewBox)}>
         <div className={commonStyles.previewHeader}>
-          <FaFileInvoiceDollar className={commonStyles.previewIcon} />
+          <Receipt className={commonStyles.previewIcon} />
           <h3>Invoice Preview</h3>
         </div>
 
@@ -583,7 +588,7 @@ export default function InvoiceWizard({
   // Validation
   const validateStep1 = async () => {
     if (!invoiceData.clientId) {
-      alert('Please select a client');
+      showToast('Please select a client');
       return false;
     }
     return true;
@@ -592,7 +597,7 @@ export default function InvoiceWizard({
   const validateStep2 = async () => {
     const validItems = invoiceData.lineItems.filter(item => item.description && item.amount > 0);
     if (validItems.length === 0) {
-      alert('Please add at least one line item with description and amount');
+      showToast('Please add at least one line item with description and amount');
       return false;
     }
     return true;
@@ -600,7 +605,7 @@ export default function InvoiceWizard({
 
   const validateStep3 = async () => {
     if (!invoiceData.dueDate) {
-      alert('Please select a due date');
+      showToast('Please select a due date');
       return false;
     }
     return true;
@@ -641,16 +646,13 @@ export default function InvoiceWizard({
       }
     } catch (error) {
       console.error('Error creating invoice:', error);
-      alert('Failed to create invoice. Please try again.');
+      showToast('Failed to create invoice. Please try again.');
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Your progress will be saved as a draft.')) {
-      saveDraft();
-      router.back();
-    }
+    setShowCancelModal(true);
   };
 
   const steps = [
@@ -684,18 +686,42 @@ export default function InvoiceWizard({
   ];
 
   return (
-    <WizardContainer
-      title="Create Invoice"
-      subtitle={invoiceData.clientName ? `For: ${invoiceData.clientName}` : 'New invoice'}
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-      isLoading={isSubmitting}
-      saveProgress={saveDraft}
-      completeBtnText="Create & Send Invoice"
-      completeBtnIcon={<FaPaperPlane />}
-    />
+    <>
+      <WizardContainer
+        title="Create Invoice"
+        subtitle={invoiceData.clientName ? `For: ${invoiceData.clientName}` : 'New invoice'}
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+        isLoading={isSubmitting}
+        saveProgress={saveDraft}
+        completeBtnText="Create & Send Invoice"
+        completeBtnIcon={<SendHorizontal />}
+      />
+      <Modal
+        isOpen={showCancelModal}
+        title="Cancel Invoice Creation"
+        onClose={() => setShowCancelModal(false)}
+        footer={
+          <>
+            <button onClick={() => setShowCancelModal(false)}>Continue Editing</button>
+            <button onClick={() => { saveDraft(); setShowCancelModal(false); router.back(); }}>Yes, Cancel</button>
+          </>
+        }
+      >
+        <p>Are you sure you want to cancel? Your progress will be saved as a draft.</p>
+      </Modal>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

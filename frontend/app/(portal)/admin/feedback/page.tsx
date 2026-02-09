@@ -5,6 +5,9 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
+import Button from '@/app/components/Button/Button';
+import Select from '@/app/components/Select/Select';
+import Textarea from '@/app/components/Textarea/Textarea';
 import commonStyles from './Feedback.common.module.css';
 import lightStyles from './Feedback.light.module.css';
 import darkStyles from './Feedback.dark.module.css';
@@ -46,6 +49,12 @@ export default function AdminFeedbackPage() {
   const [selectedFeedback, setSelectedFeedback] = useState<FeedbackItem | null>(null);
   const [responseText, setResponseText] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -176,7 +185,7 @@ export default function AdminFeedbackPage() {
     
     handleStatusUpdate(selectedFeedback.id, 'addressed');
     setResponseText('');
-    alert('Response sent successfully');
+    showToast('Response sent successfully');
   };
 
   if (!mounted || !resolvedTheme) return null;
@@ -259,18 +268,18 @@ export default function AdminFeedbackPage() {
                     </button>
                   ))}
                 </div>
-                <select 
+                <Select 
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className={cn(commonStyles.select, themeStyles.select)}
-                >
-                  <option value="all">All Types</option>
-                  <option value="bug">Bugs</option>
-                  <option value="feature">Features</option>
-                  <option value="improvement">Improvements</option>
-                  <option value="complaint">Complaints</option>
-                  <option value="praise">Praise</option>
-                </select>
+                  options={[
+                    { value: 'all', label: 'All Types' },
+                    { value: 'bug', label: 'Bugs' },
+                    { value: 'feature', label: 'Features' },
+                    { value: 'improvement', label: 'Improvements' },
+                    { value: 'complaint', label: 'Complaints' },
+                    { value: 'praise', label: 'Praise' },
+                  ]}
+                />
               </div>
             </ScrollReveal>
 
@@ -361,28 +370,28 @@ export default function AdminFeedbackPage() {
                     </div>
                   ) : (
                     <div className={commonStyles.responseForm}>
-                      <textarea
+                      <Textarea
                         value={responseText}
                         onChange={(e) => setResponseText(e.target.value)}
                         placeholder="Type your response here..."
-                        className={cn(commonStyles.textarea, themeStyles.input)}
                         rows={4}
                       />
                       <div className={commonStyles.responseActions}>
-                        <button 
-                          className={cn(commonStyles.actionButton, themeStyles.button)}
+                        <Button 
+                          variant="primary"
+                          size="sm"
                           onClick={handleSendResponse}
                           disabled={!responseText}
                         >
                           Send Response
-                        </button>
+                        </Button>
                         <div className={commonStyles.statusActions}>
-                          <button onClick={() => handleStatusUpdate(selectedFeedback.id, 'in_review')}>
+                          <Button variant="secondary" size="sm" onClick={() => handleStatusUpdate(selectedFeedback.id, 'in_review')}>
                             Mark In Review
-                          </button>
-                          <button onClick={() => handleStatusUpdate(selectedFeedback.id, 'addressed')}>
+                          </Button>
+                          <Button variant="secondary" size="sm" onClick={() => handleStatusUpdate(selectedFeedback.id, 'addressed')}>
                             Mark Addressed
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -397,6 +406,13 @@ export default function AdminFeedbackPage() {
           </div>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 }

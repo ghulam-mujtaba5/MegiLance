@@ -2,8 +2,7 @@
 'use client';
 
 import React from 'react';
-import { FaUserShield, FaUserTie, FaBriefcase, FaRocket } from 'react-icons/fa';
-import { IconType } from 'react-icons';
+import { ShieldCheck, UserCheck, Briefcase, Rocket, type LucideIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
@@ -18,35 +17,35 @@ interface DevCredential {
   password: string;
   role: 'admin' | 'freelancer' | 'client';
   label: string;
-  icon: IconType;
+  icon: LucideIcon;
 }
 
-// @AI-HINT: Demo credentials for development quick login only - NEVER shipped to production
-// These are seeded test accounts in the development database
+// @AI-HINT: Demo credentials loaded from environment variables only — nothing hardcoded
+// Configure via NEXT_PUBLIC_DEV_*_EMAIL and NEXT_PUBLIC_DEV_*_PASSWORD in .env.local
 const DEV_CREDENTIALS: DevCredential[] = IS_DEV
   ? [
       {
-        email: 'admin.real@megilance.com',
-        password: 'Test123!@#',
-        role: 'admin',
-        label: 'Admin Master',
-        icon: FaUserShield,
+        email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || '',
+        password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || '',
+        role: 'admin' as const,
+        label: 'Admin',
+        icon: ShieldCheck,
       },
       {
-        email: 'alex.fullstack@megilance.com',
-        password: 'Test123!@#',
-        role: 'freelancer',
-        label: 'Alex (Freelancer)',
-        icon: FaUserTie,
+        email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || '',
+        password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || '',
+        role: 'freelancer' as const,
+        label: 'Freelancer',
+        icon: UserCheck,
       },
       {
-        email: 'sarah.tech@megilance.com',
-        password: 'Test123!@#',
-        role: 'client',
-        label: 'Sarah (Client)',
-        icon: FaBriefcase,
+        email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || '',
+        password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || '',
+        role: 'client' as const,
+        label: 'Client',
+        icon: Briefcase,
       },
-    ]
+    ].filter(c => c.email && c.password)
   : [];
 
 interface DevQuickLoginProps {
@@ -98,8 +97,8 @@ const DevQuickLogin: React.FC<DevQuickLoginProps> = ({ onCredentialSelect, onAut
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <FaRocket className={styles.title} />
-        <h3 className={styles.title}>🚀 Quick Demo Login</h3>
+        <Rocket className={styles.title} size={18} />
+        <h3 className={styles.title}>Quick Demo Login</h3>
         <p className={styles.subtitle}>
           {autoLoginMode ? 'Click to instantly login' : 'Click to auto-fill credentials'}
         </p>

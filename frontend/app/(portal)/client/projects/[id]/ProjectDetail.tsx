@@ -13,6 +13,7 @@ import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import { PageTransition, ScrollReveal } from '@/components/Animations';
 import Button from '@/app/components/Button/Button';
 import Badge from '@/app/components/Badge/Badge';
+import Modal from '@/app/components/Modal/Modal';
 import { User, DollarSign, Clock, CheckCircle, XCircle, MessageSquare, Star, ShieldAlert } from 'lucide-react';
 import { FraudAlertBanner } from '@/app/components/AI';
 import common from './ProjectDetail.common.module.css';
@@ -46,6 +47,13 @@ const ProjectDetail: React.FC = () => {
   const [actionLoading, setActionLoading] = useState<number | null>(null);
   const [fraudCheckResults, setFraudCheckResults] = useState<Record<number, any>>({});
   const [checkingFraud, setCheckingFraud] = useState<number | null>(null);
+  const [acceptTarget, setAcceptTarget] = useState<number | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<number | null>(null);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const projectId = useMemo(() => {
     if (!rawId) return null;
@@ -86,7 +94,7 @@ const ProjectDetail: React.FC = () => {
   }, [loadProject, loadProposals]);
 
   const handleAcceptProposal = async (proposalId: number) => {
-    if (!confirm('Accept this proposal? This will create a contract and reject other proposals.')) return;
+    setAcceptTarget(null);
     
     setActionLoading(proposalId);
     try {
@@ -111,25 +119,26 @@ const ProjectDetail: React.FC = () => {
       await loadProject();
       await loadProposals();
       
-      alert('Proposal accepted! A contract has been created.');
+      showToast('Proposal accepted! A contract has been created.');
     } catch (err) {
       console.error('Failed to accept proposal:', err);
-      alert('Failed to accept proposal. Please try again.');
+      showToast('Failed to accept proposal. Please try again.', 'error');
     } finally {
       setActionLoading(null);
     }
   };
 
   const handleRejectProposal = async (proposalId: number) => {
-    if (!confirm('Reject this proposal?')) return;
+    setRejectTarget(null);
     
     setActionLoading(proposalId);
     try {
       await proposalsApi.reject(proposalId);
       await loadProposals();
+      showToast('Proposal rejected.');
     } catch (err) {
       console.error('Failed to reject proposal:', err);
-      alert('Failed to reject proposal. Please try again.');
+      showToast('Failed to reject proposal. Please try again.', 'error');
     } finally {
       setActionLoading(null);
     }
@@ -153,7 +162,7 @@ const ProjectDetail: React.FC = () => {
       setFraudCheckResults(prev => ({ ...prev, [proposalId]: result.analysis || result }));
     } catch (err) {
       console.error('Failed to check fraud:', err);
-      alert('Failed to check fraud risk.');
+      showToast('Failed to check fraud risk.', 'error');
     } finally {
       setCheckingFraud(null);
     }
@@ -333,14 +342,14 @@ const ProjectDetail: React.FC = () => {
                               onClick={() => handleCheckFraud(proposal.id)}
                               title="Check for fraud risk"
                             >
-                              <ShieldAlert size={16} className={fraudCheckResults[proposal.id]?.risk_level === 'high' ? 'text-red-500' : ''} /> 
+                          <ShieldAlert size={16} className={fraudCheckResults[proposal.id]?.risk_level === 'high' ? common.textDanger : ''} /> 
                               {fraudCheckResults[proposal.id] ? 'Risk Checked' : 'Check Risk'}
                             </Button>
                             <Button 
                               variant="danger" 
                               size="sm"
                               isLoading={actionLoading === proposal.id}
-                              onClick={() => handleRejectProposal(proposal.id)}
+                              onClick={() => setRejectTarget(proposal.id)}
                             >
                               <XCircle size={16} /> Reject
                             </Button>
@@ -348,7 +357,7 @@ const ProjectDetail: React.FC = () => {
                               variant="success" 
                               size="sm"
                               isLoading={actionLoading === proposal.id}
-                              onClick={() => handleAcceptProposal(proposal.id)}
+                              onClick={() => setAcceptTarget(proposal.id)}
                             >
                               <CheckCircle size={16} /> Accept & Hire
                             </Button>
@@ -356,7 +365,7 @@ const ProjectDetail: React.FC = () => {
                         )}
                         
                         {fraudCheckResults[proposal.id] && (
-                          <div className="mt-3">
+                          <div className={common.fraudResultWrapper}>
                             <FraudAlertBanner 
                               message={`Risk Score: ${fraudCheckResults[proposal.id].risk_score}/100. ${fraudCheckResults[proposal.id].recommendation}`}
                               severity={fraudCheckResults[proposal.id].risk_level as 'high' | 'medium' | 'low'}
@@ -388,6 +397,30 @@ const ProjectDetail: React.FC = () => {
           </ScrollReveal>
         </div>
       </main>
+
+      {/* Accept Proposal Modal */}
+      <Modal isOpen={acceptTarget !== null} title="Accept Proposal" onClose={() => setAcceptTarget(null)}>
+        <p>Accept this proposal? This will create a contract and reject other proposals.</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setAcceptTarget(null)}>Cancel</Button>
+          <Button variant="success" onClick={() => { if (acceptTarget) handleAcceptProposal(acceptTarget); }}>Accept &amp; Hire</Button>
+        </div>
+      </Modal>
+
+      {/* Reject Proposal Modal */}
+      <Modal isOpen={rejectTarget !== null} title="Reject Proposal" onClose={() => setRejectTarget(null)}>
+        <p>Are you sure you want to reject this proposal?</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setRejectTarget(null)}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (rejectTarget) handleRejectProposal(rejectTarget); }}>Reject</Button>
+        </div>
+      </Modal>
+
+      {toast && (
+        <div className={cn(common.toast, toast.type === 'error' && common.toastError, themed.toast, toast.type === 'error' && themed.toastError)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 };

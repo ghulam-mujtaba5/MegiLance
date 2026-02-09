@@ -7,21 +7,22 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import WizardContainer from '@/app/components/Wizard/WizardContainer/WizardContainer';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './MessagingWizard.common.module.css';
 import lightStyles from './MessagingWizard.light.module.css';
 import darkStyles from './MessagingWizard.dark.module.css';
 import {
-  FaSearch,
-  FaUser,
-  FaBriefcase,
-  FaFileContract,
-  FaQuestion,
-  FaDollarSign,
-  FaFileUpload,
-  FaTrash,
-  FaPaperclip,
-  FaInfoCircle
-} from 'react-icons/fa';
+  Search,
+  User,
+  Briefcase,
+  FileText,
+  CircleHelp,
+  DollarSign,
+  FileUp,
+  Trash2,
+  Paperclip,
+  Info
+} from 'lucide-react';
 
 type MessagePurpose = 'project_inquiry' | 'proposal_discussion' | 'contract_question' | 'general';
 type RecipientType = 'freelancer' | 'client';
@@ -134,6 +135,12 @@ export default function MessagingWizard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchResults, setSearchResults] = useState<Recipient[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const [messageData, setMessageData] = useState<MessageData>({
     recipient: preselectedRecipient || null,
@@ -234,7 +241,7 @@ export default function MessagingWizard({
             {preselectedRecipient.avatar ? (
               <img src={preselectedRecipient.avatar} alt={preselectedRecipient.name} />
             ) : (
-              <FaUser />
+              <User />
             )}
           </div>
           <div className={commonStyles.recipientInfo}>
@@ -248,7 +255,7 @@ export default function MessagingWizard({
       ) : (
         <>
           <div className={commonStyles.searchBox}>
-            <FaSearch className={commonStyles.searchIcon} />
+            <Search className={commonStyles.searchIcon} />
             <input
               type="text"
               placeholder={`Search for ${userType === 'client' ? 'freelancers' : 'clients'}...`}
@@ -280,7 +287,7 @@ export default function MessagingWizard({
                     {recipient.avatar ? (
                       <img src={recipient.avatar} alt={recipient.name} />
                     ) : (
-                      <FaUser />
+                      <User />
                     )}
                   </div>
                   <div className={commonStyles.recipientInfo}>
@@ -291,7 +298,7 @@ export default function MessagingWizard({
                     )}
                   </div>
                   <div className={commonStyles.recipientType}>
-                    {recipient.type === 'freelancer' ? <FaBriefcase /> : <FaDollarSign />}
+                    {recipient.type === 'freelancer' ? <Briefcase /> : <DollarSign />}
                   </div>
                 </div>
               ))}
@@ -312,7 +319,7 @@ export default function MessagingWizard({
   const Step2Purpose = () => (
     <div className={commonStyles.stepContent}>
       <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-        <FaInfoCircle />
+        <Info />
         <p>Selecting a purpose helps us provide relevant templates and context for your message.</p>
       </div>
 
@@ -326,7 +333,7 @@ export default function MessagingWizard({
           )}
           onClick={() => applyTemplate('project_inquiry')}
         >
-          <FaBriefcase className={commonStyles.purposeIcon} />
+          <Briefcase className={commonStyles.purposeIcon} />
           <h4>Project Inquiry</h4>
           <p>Ask about a project or job posting</p>
         </div>
@@ -340,7 +347,7 @@ export default function MessagingWizard({
           )}
           onClick={() => applyTemplate('proposal_discussion')}
         >
-          <FaDollarSign className={commonStyles.purposeIcon} />
+          <DollarSign className={commonStyles.purposeIcon} />
           <h4>Proposal Discussion</h4>
           <p>Follow up on a submitted proposal</p>
         </div>
@@ -354,7 +361,7 @@ export default function MessagingWizard({
           )}
           onClick={() => applyTemplate('contract_question')}
         >
-          <FaFileContract className={commonStyles.purposeIcon} />
+          <FileText className={commonStyles.purposeIcon} />
           <h4>Contract Question</h4>
           <p>Clarify contract terms or conditions</p>
         </div>
@@ -368,7 +375,7 @@ export default function MessagingWizard({
           )}
           onClick={() => setMessageData({ ...messageData, purpose: 'general', useTemplate: false })}
         >
-          <FaQuestion className={commonStyles.purposeIcon} />
+          <CircleHelp className={commonStyles.purposeIcon} />
           <h4>General Message</h4>
           <p>Start a general conversation</p>
         </div>
@@ -423,7 +430,7 @@ export default function MessagingWizard({
   const Step4Attachments = () => (
     <div className={commonStyles.stepContent}>
       <div className={cn(commonStyles.infoBox, themeStyles.infoBox)}>
-        <FaInfoCircle />
+        <Info />
         <p>Attachments are optional. You can attach relevant files like portfolios, designs, or documents (Max 10MB per file).</p>
       </div>
 
@@ -436,7 +443,7 @@ export default function MessagingWizard({
             const file = e.target.files?.[0];
             if (file) {
               if (file.size > 10 * 1024 * 1024) {
-                alert('File size must be less than 10MB');
+                showToast('File size must be less than 10MB');
                 return;
               }
               addAttachment(file);
@@ -450,7 +457,7 @@ export default function MessagingWizard({
           htmlFor="attachmentFile"
           className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}
         >
-          <FaFileUpload /> Add Attachment
+          <FileUp /> Add Attachment
         </label>
       </div>
 
@@ -460,7 +467,7 @@ export default function MessagingWizard({
           {messageData.attachments.map((attachment) => (
             <div key={attachment.id} className={cn(commonStyles.attachmentItem, themeStyles.attachmentItem)}>
               <div className={commonStyles.attachmentIcon}>
-                <FaPaperclip />
+                <Paperclip />
               </div>
               <div className={commonStyles.attachmentInfo}>
                 <div className={commonStyles.attachmentName}>{attachment.name}</div>
@@ -474,7 +481,7 @@ export default function MessagingWizard({
                 onClick={() => removeAttachment(attachment.id)}
                 aria-label="Remove attachment"
               >
-                <FaTrash />
+                <Trash2 />
               </button>
             </div>
           ))}
@@ -504,7 +511,7 @@ export default function MessagingWizard({
   // Validation
   const validateStep1 = async () => {
     if (!messageData.recipient) {
-      alert('Please select a recipient');
+      showToast('Please select a recipient');
       return false;
     }
     return true;
@@ -512,11 +519,11 @@ export default function MessagingWizard({
 
   const validateStep3 = async () => {
     if (!messageData.subject || messageData.subject.trim().length < 3) {
-      alert('Please enter a subject (at least 3 characters)');
+      showToast('Please enter a subject (at least 3 characters)');
       return false;
     }
     if (!messageData.message || messageData.message.trim().length < 20) {
-      alert('Please enter a message (at least 20 characters)');
+      showToast('Please enter a message (at least 20 characters)');
       return false;
     }
     return true;
@@ -558,16 +565,13 @@ export default function MessagingWizard({
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message. Please try again.');
+      showToast('Failed to send message. Please try again.');
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (confirm('Are you sure you want to cancel? Your progress will be saved as a draft.')) {
-      saveDraft();
-      router.back();
-    }
+    setShowCancelModal(true);
   };
 
   const steps = [
@@ -600,16 +604,40 @@ export default function MessagingWizard({
   ];
 
   return (
-    <WizardContainer
-      title="New Message"
-      subtitle={messageData.recipient ? `To: ${messageData.recipient.name}` : 'Compose a new message'}
-      steps={steps}
-      currentStep={currentStep}
-      onStepChange={setCurrentStep}
-      onComplete={handleComplete}
-      onCancel={handleCancel}
-      isLoading={isSubmitting}
-      saveProgress={saveDraft}
-    />
+    <>
+      <WizardContainer
+        title="New Message"
+        subtitle={messageData.recipient ? `To: ${messageData.recipient.name}` : 'Compose a new message'}
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={setCurrentStep}
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+        isLoading={isSubmitting}
+        saveProgress={saveDraft}
+      />
+      <Modal
+        isOpen={showCancelModal}
+        title="Cancel Message"
+        onClose={() => setShowCancelModal(false)}
+        footer={
+          <>
+            <button onClick={() => setShowCancelModal(false)}>Continue Editing</button>
+            <button onClick={() => { saveDraft(); setShowCancelModal(false); router.back(); }}>Yes, Cancel</button>
+          </>
+        }
+      >
+        <p>Are you sure you want to cancel? Your progress will be saved as a draft.</p>
+      </Modal>
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
+      )}
+    </>
   );
 }

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FaStar, FaPaperPlane, FaCheckCircle } from 'react-icons/fa';
+import { Star, SendHorizontal, CheckCircle } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 
 import commonStyles from './ReviewForm.common.module.css';
@@ -43,6 +43,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   const { resolvedTheme } = useTheme();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
   const [hoveredCriteria, setHoveredCriteria] = useState<{ [key: string]: number | null }>({});
 
@@ -82,18 +83,21 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     e.preventDefault();
 
     if (review.rating === 0) {
-      alert('Please provide an overall rating');
+      setToast({message: 'Please provide an overall rating', type: 'error'});
+      setTimeout(() => setToast(null), 3000);
       return;
     }
 
     if (review.comment.trim().length < 50) {
-      alert('Please write at least 50 characters in your review');
+      setToast({message: 'Please write at least 50 characters in your review', type: 'error'});
+      setTimeout(() => setToast(null), 3000);
       return;
     }
 
     const allCriteriaRated = Object.values(review.criteria).every(rating => rating > 0);
     if (!allCriteriaRated) {
-      alert('Please rate all criteria');
+      setToast({message: 'Please rate all criteria', type: 'error'});
+      setTimeout(() => setToast(null), 3000);
       return;
     }
 
@@ -116,7 +120,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       onSubmit?.();
     } catch (error) {
       console.error('Failed to submit review:', error);
-      alert('Failed to submit review. Please try again.');
+      setToast({message: 'Failed to submit review. Please try again.', type: 'error'});
+      setTimeout(() => setToast(null), 3000);
     } finally {
       setSubmitting(false);
     }
@@ -140,13 +145,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             onClick={() => onRate(rating)}
             aria-label={`Rate ${rating} stars`}
           >
-            <FaStar
+            <Star
               className={
                 rating <= (hoveredValue || currentRating)
                   ? 'text-yellow-500'
                   : 'text-gray-300'
               }
               size={32}
+              fill={rating <= (hoveredValue || currentRating) ? '#eab308' : 'none'}
             />
           </button>
         ))}
@@ -161,7 +167,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     return (
       <div className={styles.container}>
         <div className={styles.successMessage}>
-          <FaCheckCircle size={64} className="text-green-500 mb-4" />
+          <CheckCircle size={64} className="text-green-500 mb-4" />
           <h2 className="text-2xl font-bold mb-2">Review Submitted!</h2>
           <p>Thank you for your feedback. Your review helps build trust in our community.</p>
         </div>
@@ -259,11 +265,25 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             isLoading={submitting}
             disabled={submitting}
           >
-            <FaPaperPlane className="mr-2" />
+            <SendHorizontal size={16} className="mr-2" />
             Submit Review
           </Button>
         </div>
       </form>
+
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: '2rem', right: '2rem',
+          padding: '1rem 1.75rem', borderRadius: '14px', fontWeight: 600,
+          zIndex: 200, backdropFilter: 'blur(20px)',
+          background: toast.type === 'error' ? 'rgba(254,226,226,0.95)' : 'rgba(220,252,231,0.95)',
+          color: toast.type === 'error' ? '#991b1b' : '#166534',
+          border: `1px solid ${toast.type === 'error' ? 'rgba(232,17,35,0.3)' : 'rgba(39,174,96,0.3)'}`,
+          animation: 'toastIn 0.4s ease'
+        }}>
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 };

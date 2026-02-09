@@ -2,7 +2,7 @@
 from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 import enum
 
@@ -47,7 +47,7 @@ class Notification(Base):
     data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Additional notification data (stored as JSON string)
     is_read: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     read_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     priority: Mapped[str] = mapped_column(String(20), default=NotificationPriority.MEDIUM.value)
     action_url: Mapped[str] = mapped_column(String(500), nullable=True)  # Link to relevant page

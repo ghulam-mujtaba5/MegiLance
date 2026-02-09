@@ -6,6 +6,8 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { auditTrailApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import commonStyles from './Audit.common.module.css';
 import lightStyles from './Audit.light.module.css';
@@ -72,6 +74,12 @@ export default function AuditTrailPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadData();
@@ -105,7 +113,7 @@ export default function AuditTrailPage() {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Failed to export logs:', err);
-      alert('Failed to export audit logs');
+      showToast('Failed to export audit logs', 'error');
     }
   };
 
@@ -200,58 +208,54 @@ export default function AuditTrailPage() {
             <div className={commonStyles.filtersRow}>
               <div className={commonStyles.filterGroup}>
                 <label>Severity</label>
-                <select
+                <Select
                   value={filters.severity}
                   onChange={e => { setFilters({ ...filters, severity: e.target.value }); setPage(1); }}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                >
-                  <option value="">All</option>
-                  <option value="info">Info</option>
-                  <option value="warning">Warning</option>
-                  <option value="critical">Critical</option>
-                </select>
+                  options={[
+                    { value: '', label: 'All' },
+                    { value: 'info', label: 'Info' },
+                    { value: 'warning', label: 'Warning' },
+                    { value: 'critical', label: 'Critical' },
+                  ]}
+                />
               </div>
               <div className={commonStyles.filterGroup}>
                 <label>Resource Type</label>
-                <select
+                <Select
                   value={filters.resource_type}
                   onChange={e => { setFilters({ ...filters, resource_type: e.target.value }); setPage(1); }}
-                  className={cn(commonStyles.input, themeStyles.input)}
-                >
-                  <option value="">All</option>
-                  <option value="user">User</option>
-                  <option value="project">Project</option>
-                  <option value="contract">Contract</option>
-                  <option value="payment">Payment</option>
-                  <option value="proposal">Proposal</option>
-                  <option value="message">Message</option>
-                </select>
+                  options={[
+                    { value: '', label: 'All' },
+                    { value: 'user', label: 'User' },
+                    { value: 'project', label: 'Project' },
+                    { value: 'contract', label: 'Contract' },
+                    { value: 'payment', label: 'Payment' },
+                    { value: 'proposal', label: 'Proposal' },
+                    { value: 'message', label: 'Message' },
+                  ]}
+                />
               </div>
               <div className={commonStyles.filterGroup}>
                 <label>Date From</label>
-                <input
+                <Input
                   type="date"
                   value={filters.date_from}
                   onChange={e => { setFilters({ ...filters, date_from: e.target.value }); setPage(1); }}
-                  className={cn(commonStyles.input, themeStyles.input)}
                 />
               </div>
               <div className={commonStyles.filterGroup}>
                 <label>Date To</label>
-                <input
+                <Input
                   type="date"
                   value={filters.date_to}
                   onChange={e => { setFilters({ ...filters, date_to: e.target.value }); setPage(1); }}
-                  className={cn(commonStyles.input, themeStyles.input)}
                 />
               </div>
               <div className={commonStyles.filterGroup}>
                 <label>Search</label>
-                <input
-                  type="text"
+                <Input
                   value={filters.search}
                   onChange={e => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
-                  className={cn(commonStyles.input, themeStyles.input)}
                   placeholder="Search actions, users..."
                 />
               </div>
@@ -461,6 +465,12 @@ export default function AuditTrailPage() {
           </div>
         )}
       </div>
+
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 }

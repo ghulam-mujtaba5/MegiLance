@@ -4,8 +4,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import { User, Briefcase, Eye, EyeOff } from 'lucide-react';
 import api from '@/lib/api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { isPreviewMode } from '@/app/utils/flags';
@@ -30,14 +30,14 @@ const roleConfig = {
   client: {
     id: 'client' as UserRole,
     label: 'Client',
-    brandIcon: FaUserTie,
+    brandIcon: User,
     brandTitle: 'Find Top-Tier Talent',
-    brandText: 'Post projects, evaluate proposals, and collaborate with the world’s best freelancers, all in one place.',
+    brandText: 'Post projects, evaluate proposals, and collaborate with the world's best freelancers, all in one place.',
   },
   freelancer: {
     id: 'freelancer' as UserRole,
     label: 'Freelancer',
-    brandIcon: FaBriefcase,
+    brandIcon: Briefcase,
     brandTitle: 'Build Your Freelance Career',
     brandText: 'Showcase your skills, bid on exciting projects, and get paid securely for your expert work.',
   },
@@ -276,8 +276,8 @@ const Signup: React.FC = () => {
             </StaggerItem>
 
             <StaggerItem className={styles.socialAuth}>
-              <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}><FaGoogle className="mr-2" /> Continue with Google</Button>
-              <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}><FaGithub className="mr-2" /> Continue with GitHub</Button>
+              <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}>Continue with Google</Button>
+              <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}>Continue with GitHub</Button>
             </StaggerItem>
           </ClientOnly>
 
@@ -298,7 +298,7 @@ const Signup: React.FC = () => {
                 disabled={loading} 
                 iconAfter={
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 }
               />
@@ -313,7 +313,7 @@ const Signup: React.FC = () => {
                 disabled={loading} 
                 iconAfter={
                   <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
-                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 }
               />

@@ -66,18 +66,18 @@ export default function JobsPage() {
       // Handle different API response structures
       const data = Array.isArray(response) ? response : (response.projects || []);
       
-      // Mock AI matching if not present (for demo "Real World" feel)
+      // Normalize data — use API values or sensible defaults
       const enrichedData = data.map((job: any) => ({
         ...job,
-        match_score: job.match_score || Math.floor(Math.random() * 30) + 70, // Random 70-99 score
-        client_rating: job.client_rating || (Math.random() * 2 + 3), // Random 3-5 rating
-        is_verified: Math.random() > 0.3, // 70% verified
-        client_name: job.client_name || 'Tech Corp Inc.'
+        match_score: job.match_score || null,
+        client_rating: job.client_rating || null,
+        is_verified: job.is_verified ?? false,
+        client_name: job.client_name || 'Anonymous Client'
       }));
       
       // Sort based on tab
       if (activeTab === 'best-matches') {
-        enrichedData.sort((a: any, b: any) => b.match_score - a.match_score);
+        enrichedData.sort((a: any, b: any) => (b.match_score || 0) - (a.match_score || 0));
       } else if (activeTab === 'most-recent') {
         enrichedData.sort((a: any, b: any) => new Date(b.posted_at).getTime() - new Date(a.posted_at).getTime());
       }

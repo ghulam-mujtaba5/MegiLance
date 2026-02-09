@@ -29,6 +29,11 @@ export default function BlogPostForm({ initialData, onSubmit, isEditing = false 
   });
   const [tagsInput, setTagsInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
   const router = useRouter();
 
   useEffect(() => {
@@ -82,7 +87,7 @@ export default function BlogPostForm({ initialData, onSubmit, isEditing = false 
       router.push('/admin/blog');
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Failed to save post. Please try again.');
+      showToast('Failed to save post. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -193,6 +198,24 @@ export default function BlogPostForm({ initialData, onSubmit, isEditing = false 
           {isEditing ? 'Update Post' : 'Create Post'}
         </Button>
       </div>
+
+      {toast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          padding: '1rem 1.75rem',
+          borderRadius: '14px',
+          fontWeight: 600,
+          zIndex: 200,
+          backdropFilter: 'blur(20px)',
+          background: toast.type === 'error' ? 'rgba(254,226,226,0.95)' : 'rgba(220,252,231,0.95)',
+          border: `1px solid ${toast.type === 'error' ? 'rgba(232,17,35,0.3)' : 'rgba(39,174,96,0.3)'}`,
+          color: toast.type === 'error' ? '#991b1b' : '#166534',
+        }}>
+          {toast.message}
+        </div>
+      )}
     </form>
   );
 }

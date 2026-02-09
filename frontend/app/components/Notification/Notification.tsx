@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTheme } from 'next-themes';
-import { FiCheckCircle, FiAlertCircle, FiInfo, FiX, FiAlertTriangle } from 'react-icons/fi';
+import { CheckCircle, AlertCircle, Info, X, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import commonStyles from './Notification.common.module.css';
 import lightStyles from './Notification.light.module.css';
@@ -21,10 +21,10 @@ export interface NotificationProps {
 }
 
 const iconMap = {
-  success: FiCheckCircle,
-  error: FiAlertCircle,
-  warning: FiAlertTriangle,
-  info: FiInfo,
+  success: CheckCircle,
+  error: AlertCircle,
+  warning: AlertTriangle,
+  info: Info,
 };
 
 const positionMap = {
@@ -156,7 +156,7 @@ const Notification: React.FC<NotificationProps> = ({
             aria-label="Close notification"
             type="button"
           >
-            <FiX size={18} />
+            <X size={18} />
           </button>
         )}
       </div>

@@ -6,9 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { 
-  FaFileAlt, FaSave, FaPaperPlane, FaLightbulb,
-  FaClock, FaMoneyBillWave, FaCalendarAlt
-} from 'react-icons/fa';
+  FileText, Save, SendHorizontal, Lightbulb,
+  Clock, Banknote, CalendarDays
+} from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea';
@@ -329,7 +329,7 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
         {/* Sidebar - Templates */}
         <div className={styles.sidebar}>
           <h3 className={styles.sectionTitle}>
-            <FaLightbulb className="mr-2" />
+            <Lightbulb size={16} className="mr-2" />
             Quick Start Templates
           </h3>
           {proposalTemplates.map((template) => (
@@ -346,7 +346,7 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
           ))}
           
           <div className={styles.tip}>
-            <FaLightbulb />
+            <Lightbulb size={14} />
             <div>
               <strong>Pro Tip:</strong> Personalize the template with specific details about the client's project to stand out!
             </div>
@@ -363,7 +363,7 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
 
             <div className={styles.formSection}>
             <h3 className={styles.sectionTitle}>
-              <FaFileAlt className="mr-2" />
+              <FileText size={16} className="mr-2" />
               Cover Letter
             </h3>
             <Textarea
@@ -385,7 +385,7 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
 
           <div className={styles.formSection}>
             <h3 className={styles.sectionTitle}>
-              <FaMoneyBillWave className="mr-2" />
+              <Banknote size={16} className="mr-2" />
               Pricing & Timeline
             </h3>
             <div className={styles.formGrid}>
@@ -434,7 +434,7 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
 
           <div className={styles.formSection}>
             <h3 className={styles.sectionTitle}>
-              <FaFileAlt className="mr-2" />
+              <FileText size={16} className="mr-2" />
               Attachments (Optional)
             </h3>
             <FileUpload
@@ -459,7 +459,7 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
               isLoading={savingDraft}
               disabled={loading}
             >
-              <FaSave className="mr-2" />
+              <Save size={16} className="mr-2" />
               {savingDraft ? 'Saving...' : 'Save Draft'}
             </Button>
             <Button
@@ -468,7 +468,7 @@ const ProposalBuilder: React.FC<ProposalBuilderProps> = ({
               isLoading={loading}
               disabled={loading || savingDraft}
             >
-              <FaPaperPlane className="mr-2" />
+              <SendHorizontal size={16} className="mr-2" />
               Submit Proposal
             </Button>
           </div>

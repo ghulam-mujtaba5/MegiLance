@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '../../../components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
 import commonStyles from './Export.common.module.css';
 import lightStyles from './Export.light.module.css';
@@ -52,6 +54,12 @@ export default function DataExportPage() {
   const [includeArchived, setIncludeArchived] = useState(false);
   const [exportName, setExportName] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const fieldOptions: Record<DataType, string[]> = {
     users: ['id', 'email', 'name', 'role', 'status', 'created_at', 'last_login', 'total_earnings', 'total_spent', 'projects_count'],
@@ -121,7 +129,7 @@ export default function DataExportPage() {
 
   const handleCreateExport = async () => {
     if (!exportName) {
-      alert('Please enter an export name');
+      showToast('Please enter an export name', 'error');
       return;
     }
     
@@ -228,64 +236,60 @@ export default function DataExportPage() {
                   
                   <div className={commonStyles.formGroup}>
                     <label>Export Name</label>
-                    <input 
-                      type="text" 
+                    <Input
                       value={exportName}
                       onChange={(e) => setExportName(e.target.value)}
                       placeholder="e.g., Monthly User Report"
-                      className={cn(commonStyles.input, themeStyles.input)}
                     />
                   </div>
 
                   <div className={commonStyles.formRow}>
                     <div className={commonStyles.formGroup}>
                       <label>Data Type</label>
-                      <select 
+                      <Select
                         value={dataType}
                         onChange={(e) => {
                           setDataType(e.target.value as DataType);
                           setSelectedFields([]);
                         }}
-                        className={cn(commonStyles.select, themeStyles.select)}
-                      >
-                        <option value="users">Users</option>
-                        <option value="projects">Projects</option>
-                        <option value="transactions">Transactions</option>
-                        <option value="analytics">Analytics</option>
-                      </select>
+                        options={[
+                          { value: 'users', label: 'Users' },
+                          { value: 'projects', label: 'Projects' },
+                          { value: 'transactions', label: 'Transactions' },
+                          { value: 'analytics', label: 'Analytics' },
+                        ]}
+                      />
                     </div>
                     <div className={commonStyles.formGroup}>
                       <label>Format</label>
-                      <select 
+                      <Select
                         value={format}
                         onChange={(e) => setFormat(e.target.value as any)}
-                        className={cn(commonStyles.select, themeStyles.select)}
-                      >
-                        <option value="csv">CSV</option>
-                        <option value="json">JSON</option>
-                        <option value="xlsx">Excel (XLSX)</option>
-                        <option value="pdf">PDF</option>
-                      </select>
+                        options={[
+                          { value: 'csv', label: 'CSV' },
+                          { value: 'json', label: 'JSON' },
+                          { value: 'xlsx', label: 'Excel (XLSX)' },
+                          { value: 'pdf', label: 'PDF' },
+                        ]}
+                      />
                     </div>
                   </div>
 
                   <div className={commonStyles.formRow}>
                     <div className={commonStyles.formGroup}>
                       <label>Date Range (Start)</label>
-                      <input 
-                        type="date" 
+                      <Input
+                        type="date"
                         value={dateRange.start}
                         onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
-                        className={cn(commonStyles.input, themeStyles.input)}
                       />
                     </div>
                     <div className={commonStyles.formGroup}>
                       <label>Date Range (End)</label>
-                      <input 
-                        type="date" 
+                      <Input
+                        type="date"
                         value={dateRange.end}
                         onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
-                        className={cn(commonStyles.input, themeStyles.input)}
                       />
                     </div>
                   </div>
@@ -394,6 +398,13 @@ export default function DataExportPage() {
           )}
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast)}>
+          {toast.message}
+        </div>
+      )}
     </PageTransition>
   );
 }

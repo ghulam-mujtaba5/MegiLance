@@ -529,6 +529,34 @@
 }
 
 /* Responsive Design */
+
+.previewBanner {
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.linksColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.passwordlessLink {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.passwordlessLink:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   .formContainer {
     padding: 1.5rem;

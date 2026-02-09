@@ -4,9 +4,6 @@
   background-color: #f8fafc;
 }
 
-.loading {
-  color: #64748b;
-}
 
 .title {
   color: #1e293b;
@@ -16,13 +13,8 @@
   color: #64748b;
 }
 
-.exportButton {
-  background-color: #4573df;
-  color: #ffffff;
-}
-
-.exportButton:hover {
-  background-color: #3b62c4;
+.statIcon {
+  color: #4573df;
 }
 
 /* Stats */
@@ -37,25 +29,6 @@
 
 .statValue {
   color: #1e293b;
-}
-
-/* Tabs */
-.tabs {
-  border-color: #e2e8f0;
-}
-
-.tab {
-  color: #64748b;
-}
-
-.tab:hover {
-  background-color: #f1f5f9;
-  color: #1e293b;
-}
-
-.tabActive {
-  background-color: #4573df;
-  color: #ffffff;
 }
 
 /* Charts */
@@ -98,28 +71,6 @@
   border: 1px solid #e2e8f0;
 }
 
-/* Filters */
-.searchInput {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  color: #1e293b;
-}
-
-.searchInput:focus {
-  border-color: #4573df;
-  outline: none;
-}
-
-.searchInput::placeholder {
-  color: #94a3b8;
-}
-
-.select {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  color: #1e293b;
-}
-
 /* Table */
 .tableHeader {
   background-color: #f8fafc;
@@ -142,26 +93,12 @@
   color: #64748b;
 }
 
-.planBadge {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
 .amount {
   color: #1e293b;
 }
 
 .date {
   color: #64748b;
-}
-
-.actionButton {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
-.actionButton:hover {
-  background-color: #e2e8f0;
 }
 
 /* Plans */
@@ -178,6 +115,10 @@
   color: #1e293b;
 }
 
+.planPrice {
+  color: #1e293b;
+}
+
 .pricePeriod {
   color: #64748b;
 }
@@ -190,15 +131,6 @@
   color: #475569;
 }
 
-.editPlanButton {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
-.editPlanButton:hover {
-  background-color: #e2e8f0;
-}
-
 /* Empty */
 .emptyState {
   color: #64748b;
@@ -206,4 +138,16 @@
 
 .emptyState h3 {
   color: #1e293b;
+}
+
+/* Toast */
+.toast {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  color: #166534;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.3);
+  color: #991b1b;
 }

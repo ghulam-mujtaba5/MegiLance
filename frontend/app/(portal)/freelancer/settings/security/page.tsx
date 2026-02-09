@@ -5,6 +5,9 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { twoFactorApi as _twoFactorApi } from '@/lib/api';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
+import Loader from '@/app/components/Loader/Loader';
 import commonStyles from './Security.common.module.css';
 import lightStyles from './Security.light.module.css';
 import darkStyles from './Security.dark.module.css';
@@ -54,6 +57,15 @@ export default function SecuritySettingsPage() {
   const [loginAlerts, setLoginAlerts] = useState(true);
   const [unknownDeviceAlert, setUnknownDeviceAlert] = useState(true);
   const [passwordChangeAlert, setPasswordChangeAlert] = useState(true);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({message, type});
+    setTimeout(() => setToast(null), 3000);
+  };
+  const [showDisable2FAModal, setShowDisable2FAModal] = useState(false);
+  const [showRegenCodesModal, setShowRegenCodesModal] = useState(false);
+  const [terminateSessionId, setTerminateSessionId] = useState<string | null>(null);
+  const [showTerminateAllModal, setShowTerminateAllModal] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -119,41 +131,45 @@ export default function SecuritySettingsPage() {
       setShowBackupCodes(true);
     } catch (error) {
       console.error('Failed to verify 2FA:', error);
-      alert('Invalid verification code');
+      showToast('Invalid verification code', 'error');
     }
   };
 
   const handleDisable2FA = async () => {
-    if (!confirm('Are you sure you want to disable two-factor authentication?')) return;
+    setShowDisable2FAModal(false);
     try {
       await twoFactorApi.disable();
       setTwoFAStatus({ enabled: false });
+      showToast('Two-factor authentication disabled.');
     } catch (error) {
       console.error('Failed to disable 2FA:', error);
+      showToast('Failed to disable 2FA.', 'error');
     }
   };
 
   const handleRegenerateBackupCodes = async () => {
-    if (!confirm('This will invalidate your existing backup codes. Continue?')) return;
+    setShowRegenCodesModal(false);
     try {
       const response = await twoFactorApi.regenerateBackupCodes();
       setBackupCodes(response.codes || []);
       setShowBackupCodes(true);
+      showToast('Backup codes regenerated!');
     } catch (error) {
       console.error('Failed to regenerate backup codes:', error);
+      showToast('Failed to regenerate backup codes.', 'error');
     }
   };
 
   const handleTerminateSession = async (sessionId: string) => {
-    if (!confirm('End this session?')) return;
-    // API call would go here
+    setTerminateSessionId(null);
     setSessions(sessions.filter(s => s.id !== sessionId));
+    showToast('Session ended.');
   };
 
   const handleTerminateAllSessions = async () => {
-    if (!confirm('This will log you out of all other devices. Continue?')) return;
-    // API call would go here
+    setShowTerminateAllModal(false);
     setSessions(sessions.filter(s => s.is_current));
+    showToast('All other sessions ended.');
   };
 
   if (!mounted) return null;
@@ -163,7 +179,7 @@ export default function SecuritySettingsPage() {
   if (loading) {
     return (
       <div className={cn(commonStyles.container, themeStyles.container)}>
-        <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading security settings...</div>
+        <div className={cn(commonStyles.loading, themeStyles.loading)}><Loader size="lg" /></div>
       </div>
     );
   }
@@ -322,13 +338,13 @@ export default function SecuritySettingsPage() {
                 <div className={commonStyles.twoFAActions}>
                   <button
                     className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
-                    onClick={handleRegenerateBackupCodes}
+                    onClick={() => setShowRegenCodesModal(true)}
                   >
                     View Backup Codes
                   </button>
                   <button
                     className={cn(commonStyles.dangerButton, themeStyles.dangerButton)}
-                    onClick={handleDisable2FA}
+                    onClick={() => setShowDisable2FAModal(true)}
                   >
                     Disable 2FA
                   </button>
@@ -357,7 +373,7 @@ export default function SecuritySettingsPage() {
                     className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
                     onClick={() => {
                       navigator.clipboard.writeText(backupCodes.join('\n'));
-                      alert('Codes copied to clipboard');
+                      showToast('Codes copied to clipboard!');
                     }}
                   >
                     Copy All
@@ -389,7 +405,7 @@ export default function SecuritySettingsPage() {
               {sessions.length > 1 && (
                 <button
                   className={cn(commonStyles.dangerButton, themeStyles.dangerButton)}
-                  onClick={handleTerminateAllSessions}
+                  onClick={() => setShowTerminateAllModal(true)}
                 >
                   End All Other Sessions
                 </button>
@@ -433,7 +449,7 @@ export default function SecuritySettingsPage() {
                   {!session.is_current && (
                     <button
                       className={cn(commonStyles.endSessionButton, themeStyles.endSessionButton)}
-                      onClick={() => handleTerminateSession(session.id)}
+                      onClick={() => setTerminateSessionId(session.id)}
                     >
                       End Session
                     </button>
@@ -517,6 +533,48 @@ export default function SecuritySettingsPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Disable 2FA Modal */}
+      <Modal isOpen={showDisable2FAModal} title="Disable Two-Factor Authentication" onClose={() => setShowDisable2FAModal(false)}>
+        <p>Are you sure you want to disable two-factor authentication? This will make your account less secure.</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setShowDisable2FAModal(false)}>Cancel</Button>
+          <Button variant="danger" onClick={handleDisable2FA}>Disable 2FA</Button>
+        </div>
+      </Modal>
+
+      {/* Regenerate Backup Codes Modal */}
+      <Modal isOpen={showRegenCodesModal} title="Regenerate Backup Codes" onClose={() => setShowRegenCodesModal(false)}>
+        <p>This will invalidate your existing backup codes. Are you sure you want to continue?</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setShowRegenCodesModal(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleRegenerateBackupCodes}>Regenerate</Button>
+        </div>
+      </Modal>
+
+      {/* Terminate Session Modal */}
+      <Modal isOpen={terminateSessionId !== null} title="End Session" onClose={() => setTerminateSessionId(null)}>
+        <p>Are you sure you want to end this session?</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setTerminateSessionId(null)}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (terminateSessionId) handleTerminateSession(terminateSessionId); }}>End Session</Button>
+        </div>
+      </Modal>
+
+      {/* Terminate All Sessions Modal */}
+      <Modal isOpen={showTerminateAllModal} title="End All Sessions" onClose={() => setShowTerminateAllModal(false)}>
+        <p>This will log you out of all other devices. Continue?</p>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <Button variant="ghost" onClick={() => setShowTerminateAllModal(false)}>Cancel</Button>
+          <Button variant="danger" onClick={handleTerminateAllSessions}>End All</Button>
+        </div>
+      </Modal>
+
+      {toast && (
+        <div className={cn(commonStyles.toast, toast.type === 'error' && commonStyles.toastError, themeStyles.toast, toast.type === 'error' && themeStyles.toastError)}>
+          {toast.message}
         </div>
       )}
     </div>

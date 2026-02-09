@@ -8,6 +8,9 @@ import { integrationsApi } from '@/lib/api';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
+import Loader from '@/app/components/Loader/Loader';
 import commonStyles from './Integrations.common.module.css';
 import lightStyles from './Integrations.light.module.css';
 import darkStyles from './Integrations.dark.module.css';
@@ -156,6 +159,13 @@ export default function IntegrationsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [showSettings, setShowSettings] = useState<Integration | null>(null);
   const [connecting, setConnecting] = useState<string | null>(null);
+  const [disconnectTarget, setDisconnectTarget] = useState<Integration | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadIntegrations();
@@ -191,27 +201,28 @@ export default function IntegrationsPage() {
       const response = await integrationsApi.connect(provider) as any;
       
       if (response.auth_url) {
-        // OAuth flow - redirect to provider
         window.location.href = response.auth_url;
       } else {
-        // Direct connection successful
         loadIntegrations();
+        showToast(`${provider} connected successfully!`);
       }
     } catch (error) {
       console.error('Failed to connect:', error);
+      showToast('Failed to connect integration.', 'error');
     } finally {
       setConnecting(null);
     }
   };
 
-  const disconnectIntegration = async (id: string) => {
-    if (!confirm('Are you sure you want to disconnect this integration?')) return;
-
+  const disconnectIntegration = async (integration: Integration) => {
+    setDisconnectTarget(null);
     try {
-      await integrationsApi.disconnect(id);
+      await integrationsApi.disconnect(integration.id);
       loadIntegrations();
+      showToast(`${integration.name} disconnected.`);
     } catch (error) {
       console.error('Failed to disconnect:', error);
+      showToast('Failed to disconnect integration.', 'error');
     }
   };
 
@@ -225,8 +236,10 @@ export default function IntegrationsPage() {
           i.id === integration.id ? { ...i, sync_enabled: !i.sync_enabled } : i
         )
       );
+      showToast(`Auto-sync ${!integration.sync_enabled ? 'enabled' : 'disabled'}.`);
     } catch (error) {
       console.error('Failed to toggle sync:', error);
+      showToast('Failed to toggle sync.', 'error');
     }
   };
 
@@ -234,8 +247,10 @@ export default function IntegrationsPage() {
     try {
       await integrationsApi.sync(id);
       loadIntegrations();
+      showToast('Sync completed!');
     } catch (error) {
       console.error('Failed to sync:', error);
+      showToast('Sync failed. Please try again.', 'error');
     }
   };
 
@@ -283,9 +298,7 @@ export default function IntegrationsPage() {
         </ScrollReveal>
 
         {loading ? (
-          <div className={cn(commonStyles.loading, themeStyles.loading)}>
-            Loading integrations...
-          </div>
+          <Loader size="lg" />
         ) : (
           <StaggerContainer className={commonStyles.integrationsGrid} delay={0.2}>
             {filteredIntegrations.map(integration => {
@@ -368,7 +381,7 @@ export default function IntegrationsPage() {
                             ⚙️
                           </button>
                           <button
-                            onClick={() => disconnectIntegration(integration.id)}
+                            onClick={() => setDisconnectTarget(integration)}
                             className={cn(commonStyles.disconnectBtn, themeStyles.disconnectBtn)}
                           >
                             Disconnect
@@ -465,6 +478,22 @@ export default function IntegrationsPage() {
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Disconnect Confirmation Modal */}
+        <Modal isOpen={disconnectTarget !== null} title="Disconnect Integration" onClose={() => setDisconnectTarget(null)}>
+          <p>Are you sure you want to disconnect <strong>{disconnectTarget?.name}</strong>? This will revoke all permissions.</p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <Button variant="secondary" onClick={() => setDisconnectTarget(null)}>Cancel</Button>
+            <Button variant="danger" onClick={() => disconnectTarget && disconnectIntegration(disconnectTarget)}>Disconnect</Button>
+          </div>
+        </Modal>
+
+        {/* Toast */}
+        {toast && (
+          <div className={cn(commonStyles.toast, themeStyles.toast, toast.type === 'error' && commonStyles.toastError, toast.type === 'error' && themeStyles.toastError)}>
+            {toast.message}
           </div>
         )}
       </div>

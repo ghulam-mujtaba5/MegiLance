@@ -31,6 +31,11 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState('7d');
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
   const [metrics, setMetrics] = useState<Record<string, Metric>>({});
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [topFreelancers, setTopFreelancers] = useState<any[]>([]);
@@ -124,7 +129,7 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
         document.body.removeChild(a);
       }
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -143,7 +148,7 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
         document.body.removeChild(a);
       }
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -291,6 +296,15 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
             </div>
           </div>
         </>
+      )}
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
+        </div>
       )}
     </div>
   );

@@ -20,7 +20,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js';
-import { FaUsers, FaDollarSign, FaCheckCircle, FaTrophy } from 'react-icons/fa';
+import { Users, DollarSign, CheckCircle, Trophy } from 'lucide-react';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
@@ -232,7 +232,7 @@ const AnalyticsDashboard: React.FC = () => {
           <div className={styles.metricsGrid}>
             <div className={styles.metricCard}>
               <div className={cn(styles.metricIcon, 'bg-blue-500')}>
-                <FaUsers size={24} color="#ffffff" />
+                <Users size={24} color="#ffffff" />
               </div>
               <div>
                 <div className={styles.metricValue}>{summary?.total_users || 0}</div>
@@ -242,7 +242,7 @@ const AnalyticsDashboard: React.FC = () => {
 
             <div className={styles.metricCard}>
               <div className={cn(styles.metricIcon, 'bg-orange-500')}>
-                <FaTrophy size={24} color="#ffffff" />
+                <Trophy size={24} color="#ffffff" />
               </div>
               <div>
                 <div className={styles.metricValue}>{summary?.active_projects || 0}</div>
@@ -252,7 +252,7 @@ const AnalyticsDashboard: React.FC = () => {
 
             <div className={styles.metricCard}>
               <div className={cn(styles.metricIcon, 'bg-green-500')}>
-                <FaDollarSign size={24} color="#ffffff" />
+                <DollarSign size={24} color="#ffffff" />
               </div>
               <div>
                 <div className={styles.metricValue}>
@@ -264,7 +264,7 @@ const AnalyticsDashboard: React.FC = () => {
 
             <div className={styles.metricCard}>
               <div className={cn(styles.metricIcon, 'bg-purple-500')}>
-                <FaCheckCircle size={24} color="#ffffff" />
+                <CheckCircle size={24} color="#ffffff" />
               </div>
               <div>
                 <div className={styles.metricValue}>

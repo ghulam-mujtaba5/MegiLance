@@ -55,7 +55,7 @@ def create_all_tables():
 def seed_demo_data(engine):
     """Seed demo data for FYP evaluation"""
     from sqlalchemy.orm import sessionmaker
-    from datetime import datetime, timedelta
+    from datetime import datetime, timezone, timedelta
     import json
     
     # Hash for password "Password123"
@@ -88,8 +88,8 @@ def seed_demo_data(engine):
             is_verified=True,
             email_verified=True,
             bio="Platform administrator",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(admin)
         
@@ -108,8 +108,8 @@ def seed_demo_data(engine):
             bio="Business owner looking for talented freelancers",
             location="New York, USA",
             account_balance=5000.00,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(client)
         
@@ -130,8 +130,8 @@ def seed_demo_data(engine):
             hourly_rate=75.00,
             location="San Francisco, USA",
             account_balance=2500.00,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(freelancer1)
         
@@ -151,8 +151,8 @@ def seed_demo_data(engine):
             hourly_rate=65.00,
             location="London, UK",
             account_balance=1800.00,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(freelancer2)
         
@@ -204,8 +204,8 @@ def seed_demo_data(engine):
             skills="React,Node.js,PostgreSQL,Stripe",
             status="open",
             client_id=client.id,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(project1)
         
@@ -221,8 +221,8 @@ def seed_demo_data(engine):
             skills="Figma,Adobe XD,UI Design,UX Research",
             status="open",
             client_id=client.id,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(project2)
         
@@ -238,8 +238,8 @@ def seed_demo_data(engine):
             skills="Python,Data Visualization,PostgreSQL,Pandas",
             status="in_progress",
             client_id=client.id,
-            created_at=datetime.utcnow() - timedelta(days=10),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc) - timedelta(days=10),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(project3)
         
@@ -255,8 +255,8 @@ def seed_demo_data(engine):
             hourly_rate=42.00,
             availability="immediate",
             status="submitted",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(proposal1)
         
@@ -269,8 +269,8 @@ def seed_demo_data(engine):
             hourly_rate=60.00,
             availability="1-2_weeks",
             status="submitted",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(proposal2)
         
@@ -287,10 +287,10 @@ def seed_demo_data(engine):
             description="Fixed price contract for analytics dashboard. Payment upon completion of milestones.",
             terms="Standard contract terms apply. Intellectual property transfers upon final payment.",
             status="active",
-            start_date=datetime.utcnow() - timedelta(days=10),
-            end_date=datetime.utcnow() + timedelta(days=35),
-            created_at=datetime.utcnow() - timedelta(days=10),
-            updated_at=datetime.utcnow()
+            start_date=datetime.now(timezone.utc) - timedelta(days=10),
+            end_date=datetime.now(timezone.utc) + timedelta(days=35),
+            created_at=datetime.now(timezone.utc) - timedelta(days=10),
+            updated_at=datetime.now(timezone.utc)
         )
         session.add(contract1)
         
@@ -303,8 +303,8 @@ def seed_demo_data(engine):
             description="Set up development environment and establish database connection",
             amount=1000.00,
             status="completed",
-            due_date=datetime.utcnow() - timedelta(days=5),
-            created_at=datetime.utcnow() - timedelta(days=10)
+            due_date=datetime.now(timezone.utc) - timedelta(days=5),
+            created_at=datetime.now(timezone.utc) - timedelta(days=10)
         )
         session.add(milestone1)
         
@@ -314,8 +314,8 @@ def seed_demo_data(engine):
             description="Build the main dashboard interface with charts and tables",
             amount=2000.00,
             status="in_progress",
-            due_date=datetime.utcnow() + timedelta(days=10),
-            created_at=datetime.utcnow() - timedelta(days=10)
+            due_date=datetime.now(timezone.utc) + timedelta(days=10),
+            created_at=datetime.now(timezone.utc) - timedelta(days=10)
         )
         session.add(milestone2)
         
@@ -325,8 +325,8 @@ def seed_demo_data(engine):
             description="Final testing and deployment to production",
             amount=1500.00,
             status="pending",
-            due_date=datetime.utcnow() + timedelta(days=35),
-            created_at=datetime.utcnow() - timedelta(days=10)
+            due_date=datetime.now(timezone.utc) + timedelta(days=35),
+            created_at=datetime.now(timezone.utc) - timedelta(days=10)
         )
         session.add(milestone3)
         
@@ -343,7 +343,7 @@ def seed_demo_data(engine):
             payment_method="usdc",
             status="completed",
             description="Payment for Project Setup & Database Connection milestone",
-            created_at=datetime.utcnow() - timedelta(days=3)
+            created_at=datetime.now(timezone.utc) - timedelta(days=3)
         )
         session.add(payment1)
         
@@ -354,7 +354,7 @@ def seed_demo_data(engine):
             description="Built a complete SaaS platform with multi-tenant architecture, subscription billing, and analytics dashboard.",
             image_url="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800",
             project_url="https://example-saas.com",
-            created_at=datetime.utcnow() - timedelta(days=60)
+            created_at=datetime.now(timezone.utc) - timedelta(days=60)
         )
         session.add(portfolio1)
         
@@ -364,7 +364,7 @@ def seed_demo_data(engine):
             description="Designed a comprehensive healthcare management app with focus on accessibility and user experience.",
             image_url="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800",
             project_url="https://dribbble.com/example",
-            created_at=datetime.utcnow() - timedelta(days=45)
+            created_at=datetime.now(timezone.utc) - timedelta(days=45)
         )
         session.add(portfolio2)
         
@@ -375,7 +375,7 @@ def seed_demo_data(engine):
             reviewee_id=freelancer1.id,
             rating=5.0,
             comment="Sarah is an excellent developer! She delivered high-quality work on time and was very communicative throughout the project.",
-            created_at=datetime.utcnow() - timedelta(days=2)
+            created_at=datetime.now(timezone.utc) - timedelta(days=2)
         )
         session.add(review1)
         
@@ -386,7 +386,7 @@ def seed_demo_data(engine):
             title="Proposal Accepted!",
             content="Your proposal for 'Data Analytics Dashboard' has been accepted.",
             is_read=True,
-            created_at=datetime.utcnow() - timedelta(days=10)
+            created_at=datetime.now(timezone.utc) - timedelta(days=10)
         )
         session.add(notif1)
         
@@ -396,7 +396,7 @@ def seed_demo_data(engine):
             title="Milestone Completed",
             content="Sarah has marked 'Project Setup & Database Connection' as completed.",
             is_read=False,
-            created_at=datetime.utcnow() - timedelta(days=3)
+            created_at=datetime.now(timezone.utc) - timedelta(days=3)
         )
         session.add(notif2)
         

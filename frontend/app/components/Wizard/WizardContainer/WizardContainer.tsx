@@ -4,7 +4,7 @@
 import { ReactNode } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { FaCheck, FaCircle } from 'react-icons/fa';
+import { Check } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 
 import commonStyles from './WizardContainer.common.module.css';
@@ -147,7 +147,7 @@ const WizardContainer: React.FC<WizardContainerProps> = ({
                 )}
               >
                 {isCompleted ? (
-                  <FaCheck size={14} />
+                  <Check size={14} />
                 ) : (
                   <span>{index + 1}</span>
                 )}

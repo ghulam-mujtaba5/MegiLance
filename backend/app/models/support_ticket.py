@@ -4,7 +4,7 @@ Support ticket model for customer service
 from sqlalchemy import String, Integer, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
@@ -26,8 +26,8 @@ class SupportTicket(Base):
     status: Mapped[str] = mapped_column(String(20), default="open", index=True)  # open, in_progress, resolved, closed
     assigned_to: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), nullable=True)
     attachments: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string of file URLs
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     resolved_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     # Relationships

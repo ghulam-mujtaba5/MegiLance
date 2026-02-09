@@ -62,6 +62,14 @@ async def lifespan(app: FastAPI):
             else:
                 logger.warning("startup.turso_http_test_failed")
         logger.info("startup.mongodb_disabled - using Turso/SQLite only")
+        
+        # Initialize persistent token blacklist table and cleanup expired entries
+        try:
+            from app.services.token_blacklist_service import init_token_blacklist
+            init_token_blacklist()
+            logger.info("startup.token_blacklist_initialized")
+        except Exception as e:
+            logger.warning(f"startup.token_blacklist_init_warning: {e}")
     except Exception as e:
         logger.error(f"startup.database_failed error={e}")
     yield

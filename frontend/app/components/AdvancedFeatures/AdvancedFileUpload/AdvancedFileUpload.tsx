@@ -5,16 +5,15 @@ import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import {
-  FaCloudUploadAlt,
-  FaFile,
-  FaImage,
-  FaFilePdf,
-  FaFileWord,
-  FaFileExcel,
-  FaTimes,
-  FaCheck,
-  FaSpinner,
-} from 'react-icons/fa';
+  CloudUpload,
+  File,
+  Image,
+  FileText,
+  Sheet,
+  X,
+  Check,
+  Loader2,
+} from 'lucide-react';
 import commonStyles from './AdvancedFileUpload.common.module.css';
 import lightStyles from './AdvancedFileUpload.light.module.css';
 import darkStyles from './AdvancedFileUpload.dark.module.css';
@@ -41,19 +40,19 @@ interface AdvancedFileUploadProps {
 }
 
 const fileIcons: Record<string, React.ElementType> = {
-  'image/': FaImage,
-  'application/pdf': FaFilePdf,
-  'application/msword': FaFileWord,
-  'application/vnd.openxmlformats-officedocument.wordprocessingml': FaFileWord,
-  'application/vnd.ms-excel': FaFileExcel,
-  'application/vnd.openxmlformats-officedocument.spreadsheetml': FaFileExcel,
+  'image/': Image,
+  'application/pdf': FileText,
+  'application/msword': FileText,
+  'application/vnd.openxmlformats-officedocument.wordprocessingml': FileText,
+  'application/vnd.ms-excel': Sheet,
+  'application/vnd.openxmlformats-officedocument.spreadsheetml': Sheet,
 };
 
 const getFileIcon = (mimeType: string): React.ElementType => {
   for (const [key, Icon] of Object.entries(fileIcons)) {
     if (mimeType.startsWith(key)) return Icon;
   }
-  return FaFile;
+  return File;
 };
 
 const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
@@ -69,6 +68,7 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
   const { resolvedTheme } = useTheme();
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const styles = useMemo(() => {
@@ -136,7 +136,8 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
 
       // Check max files limit
       if (uploadedFiles.length + fileArray.length > maxFiles) {
-        alert(`Maximum ${maxFiles} files allowed`);
+        setToast({ message: `Maximum ${maxFiles} files allowed`, type: 'error' });
+        setTimeout(() => setToast(null), 3000);
         return;
       }
 
@@ -260,7 +261,7 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
       >
-        <FaCloudUploadAlt className={styles.dropzoneIcon} />
+        <CloudUpload className={styles.dropzoneIcon} size={48} />
         <p className={styles.dropzoneText}>
           Drag and drop {multiple ? 'files' : 'a file'} here, or{' '}
           <span className={styles.browseButton}>browse</span>
@@ -311,9 +312,9 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                 </div>
 
                 <div className={styles.fileStatus}>
-                  {file.status === 'uploading' && <FaSpinner className="animate-spin" />}
-                  {file.status === 'success' && <FaCheck style={{ color: '#27AE60' }} />}
-                  {file.status === 'error' && <FaTimes style={{ color: '#e81123' }} />}
+                  {file.status === 'uploading' && <Loader2 size={16} className="animate-spin" />}
+                  {file.status === 'success' && <Check size={16} style={{ color: '#27AE60' }} />}
+                  {file.status === 'error' && <X size={16} style={{ color: '#e81123' }} />}
                 </div>
 
                 <button
@@ -321,11 +322,22 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
                   className={styles.removeButton}
                   aria-label="Remove file"
                 >
-                  <FaTimes />
+                  <X size={14} />
                 </button>
               </div>
             );
           })}
+        </div>
+      )}
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: '2rem', right: '2rem', padding: '1rem 1.75rem',
+          borderRadius: '14px', fontWeight: 600, zIndex: 200,
+          background: toast.type === 'error' ? 'rgba(232,17,35,0.1)' : 'rgba(39,174,96,0.1)',
+          color: toast.type === 'error' ? '#e81123' : '#27AE60',
+          border: `1px solid ${toast.type === 'error' ? 'rgba(232,17,35,0.3)' : 'rgba(39,174,96,0.3)'}`,
+        }}>
+          {toast.message}
         </div>
       )}
     </div>

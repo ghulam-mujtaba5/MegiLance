@@ -4,7 +4,7 @@
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Boolean, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, TYPE_CHECKING
 import enum
 
@@ -121,8 +121,8 @@ class Gig(Base):
     meta_description: Mapped[Optional[str]] = mapped_column(String(160), nullable=True)
     
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     published_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     last_order_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     

@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { escrowApi, contractsApi } from '@/lib/api';
 import type { Escrow, EscrowBalance, Contract, EscrowFundData } from '@/types/api';
 import { Shield, DollarSign, Clock, CheckCircle, XCircle, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
 import commonStyles from './Escrow.common.module.css';
 import lightStyles from './Escrow.light.module.css';
 import darkStyles from './Escrow.dark.module.css';
@@ -30,6 +32,8 @@ const EscrowManagement: React.FC = () => {
   const [description, setDescription] = useState('');
   const [releaseAmount, setReleaseAmount] = useState<number>(0);
   const [releaseNotes, setReleaseNotes] = useState('');
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [refundEscrowId, setRefundEscrowId] = useState<number | null>(null);
 
   useEffect(() => {
     loadEscrows();
@@ -115,8 +119,6 @@ const EscrowManagement: React.FC = () => {
   };
 
   const handleRefund = async (escrowId: number) => {
-    if (!confirm('Are you sure you want to request a refund?')) return;
-
     try {
       setError(null);
       await escrowApi.refund(escrowId, {
@@ -393,7 +395,7 @@ const EscrowManagement: React.FC = () => {
                       Release Funds
                     </button>
                     <button
-                      onClick={() => handleRefund(escrow.id)}
+                      onClick={() => { setRefundEscrowId(escrow.id); setShowRefundModal(true); }}
                       className={cn(commonStyles.refundBtn, themeStyles.refundBtn)}
                     >
                       Request Refund
@@ -476,6 +478,19 @@ const EscrowManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      <Modal
+        isOpen={showRefundModal}
+        onClose={() => { setShowRefundModal(false); setRefundEscrowId(null); }}
+        title="Request Refund"
+        size="small"
+      >
+        <p>Are you sure you want to request a refund?</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Button variant="ghost" onClick={() => { setShowRefundModal(false); setRefundEscrowId(null); }}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (refundEscrowId !== null) handleRefund(refundEscrowId); setShowRefundModal(false); setRefundEscrowId(null); }}>Request Refund</Button>
+        </div>
+      </Modal>
     </div>
   );
 };

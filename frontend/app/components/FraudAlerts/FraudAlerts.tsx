@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
+import Modal from '@/app/components/Modal/Modal';
 import commonStyles from './FraudAlerts.common.module.css';
 import lightStyles from './FraudAlerts.light.module.css';
 import darkStyles from './FraudAlerts.dark.module.css';
@@ -40,6 +41,13 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAlert, setSelectedAlert] = useState<FraudAlert | null>(null);
   const [resolutionNotes, setResolutionNotes] = useState('');
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+  const [showBlockModal, setShowBlockModal] = useState(false);
+  const [blockUserId, setBlockUserId] = useState<number | null>(null);
 
   // Theme guard
   if (!resolvedTheme) return null;
@@ -107,7 +115,7 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
         setResolutionNotes('');
       }
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -120,11 +128,11 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
       });
 
       if (response.ok) {
-        alert('User blocked successfully');
+        showToast('User blocked successfully', 'success');
         setSelectedAlert(null);
       }
     } catch (err: any) {
-      alert(`Error: ${err.message}`);
+      showToast(`Error: ${err.message}`, 'error');
     }
   };
 
@@ -328,9 +336,8 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
                       variant="danger"
                       size="sm"
                       onClick={() => {
-                        if (confirm('Block this user?')) {
-                          handleBlockUser(alert.user_id);
-                        }
+                        setBlockUserId(alert.user_id);
+                        setShowBlockModal(true);
                       }}
                     >
                       🚫 Block User
@@ -344,6 +351,20 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
       )}
 
       {/* Modal */}
+      <Modal
+        isOpen={showBlockModal}
+        onClose={() => { setShowBlockModal(false); setBlockUserId(null); }}
+        title="Block User"
+        size="small"
+      >
+        <p>Are you sure you want to block this user?</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Button variant="ghost" onClick={() => { setShowBlockModal(false); setBlockUserId(null); }}>Cancel</Button>
+          <Button variant="danger" onClick={() => { if (blockUserId !== null) handleBlockUser(blockUserId); setShowBlockModal(false); setBlockUserId(null); }}>Block User</Button>
+        </div>
+      </Modal>
+
+      {/* Alert Detail Modal */}
       {selectedAlert && (
         <div className={cn(commonStyles.modal, themeStyles.modal)}>
           <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
@@ -418,9 +439,8 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
                   <Button
                     variant="danger"
                     onClick={() => {
-                      if (confirm('Block this user?')) {
-                        handleBlockUser(selectedAlert.user_id);
-                      }
+                      setBlockUserId(selectedAlert.user_id);
+                      setShowBlockModal(true);
                     }}
                   >
                     Block User
@@ -429,6 +449,15 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
               )}
             </div>
           </div>
+        </div>
+      )}
+      {toast && (
+        <div style={{
+          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+        }}>
+          {toast.message}
         </div>
       )}
     </div>

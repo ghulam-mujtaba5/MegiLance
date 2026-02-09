@@ -9,6 +9,8 @@ import Button from '@/app/components/Button/Button';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import Input from '@/app/components/Input/Input';
+import Select from '@/app/components/Select/Select';
 import commonStyles from './Availability.common.module.css';
 import lightStyles from './Availability.light.module.css';
 import darkStyles from './Availability.dark.module.css';
@@ -54,6 +56,13 @@ export default function AvailabilityPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showSlotModal, setShowSlotModal] = useState(false);
   const [editingSlot, setEditingSlot] = useState<Partial<TimeSlot> | null>(null);
+  const [deleteSlotId, setDeleteSlotId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     loadData();
@@ -93,13 +102,20 @@ export default function AvailabilityPage() {
     }
   };
 
-  const handleDeleteSlot = async (slotId: string) => {
-    if (!confirm('Delete this time slot?')) return;
+  const handleDeleteSlot = (slotId: string) => {
+    setDeleteSlotId(slotId);
+  };
+
+  const confirmDeleteSlot = async () => {
+    if (!deleteSlotId) return;
     try {
-      await (availabilityApi as any).deleteSlot(slotId);
+      await (availabilityApi as any).deleteSlot(deleteSlotId);
       loadData();
+      showToast('Time slot deleted');
     } catch (err) {
       console.error('Failed to delete slot:', err);
+    } finally {
+      setDeleteSlotId(null);
     }
   };
 
@@ -120,7 +136,7 @@ export default function AvailabilityPage() {
     if (!settings) return;
     try {
       await (availabilityApi as any).updateSettings(settings);
-      alert('Settings saved!');
+      showToast('Settings saved successfully!');
     } catch (err) {
       console.error('Failed to save settings:', err);
     }
@@ -353,50 +369,46 @@ export default function AvailabilityPage() {
                 
                 <div className={commonStyles.settingGroup}>
                   <label>Timezone</label>
-                  <select
+                  <Select
+                    id="timezone"
                     value={settings.timezone}
                     onChange={e => setSettings({ ...settings, timezone: e.target.value })}
-                    className={cn(commonStyles.input, themeStyles.input)}
-                  >
-                    <option value="UTC">UTC</option>
-                    <option value="America/New_York">Eastern Time</option>
-                    <option value="America/Los_Angeles">Pacific Time</option>
-                    <option value="Europe/London">London</option>
-                    <option value="Asia/Tokyo">Tokyo</option>
-                  </select>
+                    options={[
+                      { value: 'UTC', label: 'UTC' },
+                      { value: 'America/New_York', label: 'Eastern Time' },
+                      { value: 'America/Los_Angeles', label: 'Pacific Time' },
+                      { value: 'Europe/London', label: 'London' },
+                      { value: 'Asia/Tokyo', label: 'Tokyo' },
+                    ]}
+                  />
                 </div>
 
                 <div className={commonStyles.settingGroup}>
                   <label>Default Slot Duration (minutes)</label>
-                  <input
+                  <Input
                     type="number"
                     value={settings.default_slot_duration}
                     onChange={e => setSettings({ ...settings, default_slot_duration: parseInt(e.target.value) })}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     min={15}
-                    step={15}
                   />
                 </div>
 
                 <div className={commonStyles.settingGroup}>
                   <label>Buffer Time Between Meetings (minutes)</label>
-                  <input
+                  <Input
                     type="number"
                     value={settings.buffer_time}
                     onChange={e => setSettings({ ...settings, buffer_time: parseInt(e.target.value) })}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     min={0}
-                    step={5}
                   />
                 </div>
 
                 <div className={commonStyles.settingGroup}>
                   <label>Max Bookings Per Day</label>
-                  <input
+                  <Input
                     type="number"
                     value={settings.max_bookings_per_day}
                     onChange={e => setSettings({ ...settings, max_bookings_per_day: parseInt(e.target.value) })}
-                    className={cn(commonStyles.input, themeStyles.input)}
                     min={1}
                   />
                 </div>
@@ -497,6 +509,36 @@ export default function AvailabilityPage() {
                 </Button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Delete Slot Confirmation */}
+        {deleteSlotId && (
+          <div className={commonStyles.modalOverlay} onClick={() => setDeleteSlotId(null)}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={e => e.stopPropagation()}>
+              <h2>Delete Time Slot</h2>
+              <p style={{ margin: '0.5rem 0 1.5rem', lineHeight: 1.6 }}>
+                Are you sure you want to delete this time slot?
+              </p>
+              <div className={commonStyles.modalActions}>
+                <Button variant="secondary" onClick={() => setDeleteSlotId(null)}>Cancel</Button>
+                <Button variant="danger" onClick={confirmDeleteSlot}>Delete</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Toast notification */}
+        {toast && (
+          <div style={{
+            position: 'fixed', bottom: '1.5rem', right: '1.5rem',
+            padding: '0.75rem 1.25rem', borderRadius: '10px',
+            background: '#27ae60', color: '#fff', fontWeight: 500,
+            fontSize: '0.875rem', zIndex: 2000,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
+            animation: 'fadeIn 0.3s ease',
+          }}>
+            {toast}
           </div>
         )}
       </div>

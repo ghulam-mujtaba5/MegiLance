@@ -11,6 +11,10 @@ import { StaggerContainer, StaggerItem } from '@/app/components/Animations/Stagg
 import commonStyles from './Teams.common.module.css';
 import lightStyles from './Teams.light.module.css';
 import darkStyles from './Teams.dark.module.css';
+import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Badge from '@/app/components/Badge/Badge';
+import { Users, UserPlus, Mail, Shield, Eye, Trash2, RotateCw, X } from 'lucide-react';
 
 const teamsApi: any = _teamsApi;
 
@@ -50,6 +54,11 @@ export default function TeamsPage() {
     email: '',
     role: 'member',
   });
+  
+  // Confirmation modal state
+  const [confirmAction, setConfirmAction] = useState<{ type: string; id: string; label: string } | null>(null);
+  // Toast notification state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   const roles = [
     { id: 'owner', label: 'Owner', description: 'Full access to everything including billing' },
@@ -71,75 +80,16 @@ export default function TeamsPage() {
         teamsApi.getInvites().catch(() => null),
       ]);
       
-      // Use API data if available, otherwise fall back to demo data
+      // Use API data if available, otherwise show empty state
       let membersData: TeamMember[] = [];
       let invitesData: Invite[] = [];
       
       if (membersRes && (membersRes.members?.length > 0 || Array.isArray(membersRes) && membersRes.length > 0)) {
         membersData = membersRes.members || membersRes;
-      } else {
-        // Demo data for display when no real team members exist
-        membersData = [
-          {
-            id: '1',
-            name: 'John Smith',
-            email: 'john@example.com',
-            role: 'owner',
-            joined_at: new Date(Date.now() - 365 * 86400000).toISOString(),
-            last_active: new Date(Date.now() - 300000).toISOString(),
-            status: 'active',
-          },
-          {
-            id: '2',
-            name: 'Sarah Johnson',
-            email: 'sarah@example.com',
-            role: 'admin',
-            joined_at: new Date(Date.now() - 180 * 86400000).toISOString(),
-            last_active: new Date(Date.now() - 3600000).toISOString(),
-            status: 'active',
-          },
-          {
-            id: '3',
-            name: 'Mike Chen',
-            email: 'mike@example.com',
-            role: 'member',
-            joined_at: new Date(Date.now() - 90 * 86400000).toISOString(),
-            last_active: new Date(Date.now() - 86400000).toISOString(),
-            status: 'active',
-          },
-          {
-            id: '4',
-            name: 'Emily Davis',
-            email: 'emily@example.com',
-            role: 'viewer',
-            joined_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-            status: 'inactive',
-          },
-        ];
       }
 
       if (invitesRes && (invitesRes.invites?.length > 0 || Array.isArray(invitesRes) && invitesRes.length > 0)) {
         invitesData = invitesRes.invites || invitesRes;
-      } else {
-        // Demo invites data
-        invitesData = [
-          {
-            id: '1',
-            email: 'new.member@example.com',
-            role: 'member',
-            sent_at: new Date(Date.now() - 86400000).toISOString(),
-            expires_at: new Date(Date.now() + 6 * 86400000).toISOString(),
-            status: 'pending',
-          },
-          {
-            id: '2',
-            email: 'contractor@example.com',
-            role: 'viewer',
-            sent_at: new Date(Date.now() - 172800000).toISOString(),
-            expires_at: new Date(Date.now() + 5 * 86400000).toISOString(),
-            status: 'pending',
-          },
-        ];
       }
 
       setMembers(membersData);
@@ -179,34 +129,45 @@ export default function TeamsPage() {
   };
 
   const handleRemoveMember = async (memberId: string) => {
-    if (!confirm('Are you sure you want to remove this team member?')) return;
-    
-    try {
-      await teamsApi.removeMember(memberId);
-      loadTeamData();
-    } catch (error) {
-      console.error('Failed to remove member:', error);
-    }
+    setConfirmAction({ type: 'remove-member', id: memberId, label: 'remove this team member' });
   };
 
   const handleResendInvite = async (inviteId: string) => {
     try {
       await teamsApi.resendInvite(inviteId);
-      alert('Invite resent!');
+      showToast('Invite resent successfully!', 'success');
     } catch (error) {
       console.error('Failed to resend invite:', error);
+      showToast('Failed to resend invite', 'error');
     }
   };
 
   const handleCancelInvite = async (inviteId: string) => {
-    if (!confirm('Are you sure you want to cancel this invite?')) return;
-    
+    setConfirmAction({ type: 'cancel-invite', id: inviteId, label: 'cancel this invite' });
+  };
+
+  const executeConfirmAction = async () => {
+    if (!confirmAction) return;
     try {
-      await teamsApi.cancelInvite(inviteId);
+      if (confirmAction.type === 'remove-member') {
+        await teamsApi.removeMember(confirmAction.id);
+        showToast('Team member removed', 'success');
+      } else if (confirmAction.type === 'cancel-invite') {
+        await teamsApi.cancelInvite(confirmAction.id);
+        showToast('Invite cancelled', 'success');
+      }
       loadTeamData();
     } catch (error) {
-      console.error('Failed to cancel invite:', error);
+      console.error('Action failed:', error);
+      showToast('Action failed. Please try again.', 'error');
+    } finally {
+      setConfirmAction(null);
     }
+  };
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
   };
 
   const formatDate = (dateStr: string) => {
@@ -259,12 +220,12 @@ export default function TeamsPage() {
                 Manage your team members and permissions
               </p>
             </div>
-            <button
-              className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+            <Button
+              variant="primary"
               onClick={() => setShowInviteModal(true)}
             >
-              + Invite Member
-            </button>
+              <UserPlus size={16} /> Invite Member
+            </Button>
           </div>
         </ScrollReveal>
 
@@ -338,28 +299,30 @@ export default function TeamsPage() {
                         <p className={cn(commonStyles.memberEmail, themeStyles.memberEmail)}>{member.email}</p>
                       </div>
                     </div>
-                    <div className={commonStyles.memberMeta}>
-                      <span className={cn(commonStyles.roleBadge, themeStyles.roleBadge)}>{member.role}</span>
+                      <div className={commonStyles.memberMeta}>
+                      <Badge variant={member.role === 'owner' ? 'primary' : member.role === 'admin' ? 'warning' : 'default'}>{member.role}</Badge>
                       <span className={cn(commonStyles.statusText, themeStyles.statusText)}>
                         {member.status === 'active' ? 'Active' : 'Inactive'}
                       </span>
                       <div className={commonStyles.actions}>
-                        <button 
-                          className={cn(commonStyles.actionButton, themeStyles.actionButton)}
+                        <Button 
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
                             setSelectedMember(member);
                             setShowRoleModal(true);
                           }}
                         >
-                          Edit Role
-                        </button>
+                          <Shield size={14} /> Edit Role
+                        </Button>
                         {member.role !== 'owner' && (
-                          <button 
-                            className={cn(commonStyles.actionButton, themeStyles.actionButton, commonStyles.dangerButton)}
+                          <Button 
+                            variant="danger"
+                            size="sm"
                             onClick={() => handleRemoveMember(member.id)}
                           >
-                            Remove
-                          </button>
+                            <Trash2 size={14} /> Remove
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -389,18 +352,20 @@ export default function TeamsPage() {
                         </div>
                       </div>
                       <div className={commonStyles.actions}>
-                        <button 
-                          className={cn(commonStyles.actionButton, themeStyles.actionButton)}
+                        <Button 
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleResendInvite(invite.id)}
                         >
-                          Resend
-                        </button>
-                        <button 
-                          className={cn(commonStyles.actionButton, themeStyles.actionButton, commonStyles.dangerButton)}
+                          <RotateCw size={14} /> Resend
+                        </Button>
+                        <Button 
+                          variant="danger"
+                          size="sm"
                           onClick={() => handleCancelInvite(invite.id)}
                         >
-                          Cancel
-                        </button>
+                          <X size={14} /> Cancel
+                        </Button>
                       </div>
                     </div>
                   </StaggerItem>
@@ -417,9 +382,8 @@ export default function TeamsPage() {
               <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>Invite Team Member</h2>
               <div className={commonStyles.formGroup}>
                 <label className={cn(commonStyles.label, themeStyles.label)}>Email Address</label>
-                <input
+                <Input
                   type="email"
-                  className={cn(commonStyles.input, themeStyles.input)}
                   value={inviteForm.email}
                   onChange={e => setInviteForm({ ...inviteForm, email: e.target.value })}
                   placeholder="colleague@example.com"
@@ -454,18 +418,18 @@ export default function TeamsPage() {
                 </div>
               </div>
               <div className={commonStyles.modalActions}>
-                <button
-                  className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
+                <Button
+                  variant="ghost"
                   onClick={() => setShowInviteModal(false)}
                 >
                   Cancel
-                </button>
-                <button
-                  className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                </Button>
+                <Button
+                  variant="primary"
                   onClick={handleInvite}
                 >
                   Send Invite
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -504,14 +468,45 @@ export default function TeamsPage() {
                 </div>
               </div>
               <div className={commonStyles.modalActions}>
-                <button
-                  className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
+                <Button
+                  variant="ghost"
                   onClick={() => setShowRoleModal(false)}
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Confirmation Modal */}
+        {confirmAction && (
+          <div className={commonStyles.modalOverlay}>
+            <div className={cn(commonStyles.modal, themeStyles.modal)}>
+              <h2 className={cn(commonStyles.modalTitle, themeStyles.modalTitle)}>Confirm Action</h2>
+              <p className={cn(commonStyles.confirmText, themeStyles.confirmText)}>
+                Are you sure you want to {confirmAction.label}? This action cannot be undone.
+              </p>
+              <div className={commonStyles.modalActions}>
+                <Button variant="ghost" onClick={() => setConfirmAction(null)}>
+                  Cancel
+                </Button>
+                <Button variant="danger" onClick={executeConfirmAction}>
+                  Confirm
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Toast notification */}
+        {toast && (
+          <div className={cn(
+            commonStyles.toast,
+            themeStyles.toast,
+            toast.type === 'error' && commonStyles.toastError
+          )}>
+            {toast.message}
           </div>
         )}
       </div>

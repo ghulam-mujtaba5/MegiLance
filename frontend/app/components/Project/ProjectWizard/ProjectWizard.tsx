@@ -7,10 +7,10 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { 
-  FaFileAlt, FaMoneyBillWave, FaUsers, FaCheckCircle,
-  FaArrowRight, FaArrowLeft, FaClock,
-  FaCode, FaMobileAlt, FaPaintBrush, FaPenNib, FaBullhorn, FaChartLine, FaServer, FaEllipsisH
-} from 'react-icons/fa';
+  FileText, Banknote, Users, CheckCircle,
+  ArrowRight, ArrowLeft, Clock,
+  Code, Smartphone, Paintbrush, PenLine, Megaphone, TrendingUp, Server, MoreHorizontal
+} from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import Textarea from '@/app/components/Textarea/Textarea';
@@ -42,21 +42,21 @@ interface ProjectData {
 }
 
 const steps = [
-  { id: 1, title: 'Project Details', icon: FaFileAlt },
-  { id: 2, title: 'Budget & Timeline', icon: FaMoneyBillWave },
-  { id: 3, title: 'Skills Required', icon: FaUsers },
-  { id: 4, title: 'Review & Post', icon: FaCheckCircle },
+  { id: 1, title: 'Project Details', icon: FileText },
+  { id: 2, title: 'Budget & Timeline', icon: Banknote },
+  { id: 3, title: 'Skills Required', icon: Users },
+  { id: 4, title: 'Review & Post', icon: CheckCircle },
 ];
 
 const categories = [
-  { value: 'WEB_DEVELOPMENT', label: 'Web Development', icon: FaCode },
-  { value: 'MOBILE_DEVELOPMENT', label: 'Mobile Development', icon: FaMobileAlt },
-  { value: 'DESIGN', label: 'Design & Creative', icon: FaPaintBrush },
-  { value: 'WRITING', label: 'Writing & Content', icon: FaPenNib },
-  { value: 'MARKETING', label: 'Marketing & Sales', icon: FaBullhorn },
-  { value: 'DATA_SCIENCE', label: 'Data Science & Analytics', icon: FaChartLine },
-  { value: 'DEVOPS', label: 'DevOps & Cloud', icon: FaServer },
-  { value: 'OTHER', label: 'Other', icon: FaEllipsisH },
+  { value: 'WEB_DEVELOPMENT', label: 'Web Development', icon: Code },
+  { value: 'MOBILE_DEVELOPMENT', label: 'Mobile Development', icon: Smartphone },
+  { value: 'DESIGN', label: 'Design & Creative', icon: Paintbrush },
+  { value: 'WRITING', label: 'Writing & Content', icon: PenLine },
+  { value: 'MARKETING', label: 'Marketing & Sales', icon: Megaphone },
+  { value: 'DATA_SCIENCE', label: 'Data Science & Analytics', icon: TrendingUp },
+  { value: 'DEVOPS', label: 'DevOps & Cloud', icon: Server },
+  { value: 'OTHER', label: 'Other', icon: MoreHorizontal },
 ];
 
 const ProjectWizard: React.FC = () => {
@@ -261,7 +261,7 @@ const ProjectWizard: React.FC = () => {
               >
                 <div className={styles.stepIcon}>
                   {currentStep > step.id ? (
-                    <FaCheckCircle size={24} />
+                    <CheckCircle size={24} />
                   ) : (
                     <step.icon size={24} />
                   )}
@@ -336,7 +336,7 @@ const ProjectWizard: React.FC = () => {
                     )}
                     onClick={() => setProjectData({ ...projectData, budgetType: 'fixed' })}
                   >
-                    <FaMoneyBillWave className="mr-2" />
+                    <Banknote className="mr-2" size={16} />
                     Fixed Price
                   </button>
                   <button
@@ -347,7 +347,7 @@ const ProjectWizard: React.FC = () => {
                     )}
                     onClick={() => setProjectData({ ...projectData, budgetType: 'hourly' })}
                   >
-                    <FaClock className="mr-2" />
+                    <Clock className="mr-2" size={16} />
                     Hourly Rate
                   </button>
                 </div>
@@ -492,7 +492,7 @@ const ProjectWizard: React.FC = () => {
               onClick={handleBack}
               disabled={loading}
             >
-              <FaArrowLeft className="mr-2" />
+              <ArrowLeft className="mr-2" size={16} />
               Back
             </Button>
           )}
@@ -505,12 +505,12 @@ const ProjectWizard: React.FC = () => {
             {currentStep < steps.length ? (
               <>
                 Next
-                <FaArrowRight className="ml-2" />
+                <ArrowRight className="ml-2" size={16} />
               </>
             ) : (
               <>
                 Post Project
-                <FaCheckCircle className="ml-2" />
+                <CheckCircle className="ml-2" size={16} />
               </>
             )}
           </Button>

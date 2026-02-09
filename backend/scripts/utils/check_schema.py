@@ -10,12 +10,12 @@ for c in cols:
     
 # Try to manually insert a user
 from app.core.security import get_password_hash
-from datetime import datetime
+from datetime import datetime, timezone
 
 email = "manual@example.com"
 password = "TestPass123!"
 hashed = get_password_hash(password)
-now = datetime.utcnow().isoformat()
+now = datetime.now(timezone.utc).isoformat()
 
 try:
     cursor.execute("""

@@ -4,7 +4,7 @@
 import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import type { IconType } from 'react-icons';
+import type { LucideIcon } from 'lucide-react';
 
 // Import dedicated styles for the Branding Panel
 import commonStyles from './BrandingPanel.common.module.css';
@@ -12,7 +12,7 @@ import lightStyles from './BrandingPanel.light.module.css';
 import darkStyles from './BrandingPanel.dark.module.css';
 
 export interface RoleConfig {
-  brandIcon: IconType;
+  brandIcon: LucideIcon;
   brandTitle: string;
   brandText: string;
 }

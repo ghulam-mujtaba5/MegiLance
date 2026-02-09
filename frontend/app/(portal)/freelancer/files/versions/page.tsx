@@ -45,6 +45,11 @@ export default function FileVersionsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedVersions, setSelectedVersions] = useState<string[]>([]);
   const [comparing, setComparing] = useState(false);
+  const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
+  const showToast = (message: string, type: 'success' | 'error' = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const fileId = searchParams.get('fileId');
 
@@ -145,7 +150,7 @@ export default function FileVersionsPage() {
 
   const handleRestore = async (versionId: string) => {
     // API call would go here
-    alert(`Version ${versionId} restored as current version`);
+    showToast(`Version ${versionId} restored as current version`, 'success');
     fetchFileVersions(fileId!);
   };
 
@@ -310,6 +315,15 @@ export default function FileVersionsPage() {
               ))}
             </StaggerContainer>
           </>
+        )}
+        {toast && (
+          <div style={{
+            position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
+            borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
+            backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
+          }}>
+            {toast.message}
+          </div>
         )}
       </div>
     </PageTransition>

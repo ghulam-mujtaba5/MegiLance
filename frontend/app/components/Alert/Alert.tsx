@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { FiInfo, FiCheckCircle, FiAlertTriangle, FiXCircle, FiX } from 'react-icons/fi';
+import { Info, CheckCircle, AlertTriangle, XCircle, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import commonStyles from './Alert.common.module.css';
@@ -27,10 +27,10 @@ export interface AlertProps {
 }
 
 const ICONS: { [key: string]: React.ReactNode } = {
-  info: <FiInfo />,
-  success: <FiCheckCircle />,
-  warning: <FiAlertTriangle />,
-  danger: <FiXCircle />,
+  info: <Info size={18} />,
+  success: <CheckCircle size={18} />,
+  warning: <AlertTriangle size={18} />,
+  danger: <XCircle size={18} />,
 };
 
 const Alert: React.FC<AlertProps> = ({
@@ -81,7 +81,7 @@ const Alert: React.FC<AlertProps> = ({
           className={cn(commonStyles.alertCloseButton, themeStyles.alertCloseButton)} 
           aria-label={`Close ${variant} alert: ${title}`}
         >
-          <FiX aria-hidden="true" />
+          <X size={16} aria-hidden="true" />
         </button>
       )}
     </div>

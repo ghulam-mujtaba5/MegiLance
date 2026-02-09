@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import Modal from '@/app/components/Modal/Modal';
+import Button from '@/app/components/Button/Button';
+import Loader from '@/app/components/Loader/Loader';
 import commonStyles from './Subscription.common.module.css';
 import lightStyles from './Subscription.light.module.css';
 import darkStyles from './Subscription.dark.module.css';
@@ -53,6 +56,13 @@ export default function SubscriptionPage() {
   const [billingHistory, setBillingHistory] = useState<BillingHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -168,34 +178,39 @@ export default function SubscriptionPage() {
       
       if (res.ok) {
         await fetchSubscriptionData();
+        showToast('Plan upgraded successfully!');
       } else {
         const error = await res.json().catch(() => ({}));
-        console.error('[Subscription] Upgrade failed:', error.detail || 'Unknown error');
+        showToast(error.detail || 'Upgrade failed. Please try again.', 'error');
       }
     } catch (error) {
       console.error('[Subscription] Upgrade error:', error);
+      showToast('Failed to upgrade plan. Please try again.', 'error');
     }
   };
 
   const handleCancel = async () => {
-    if (confirm('Are you sure you want to cancel your subscription?')) {
-      try {
-        const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-        const res = await fetch('/backend/api/subscriptions/cancel', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ immediate: false }),
-        });
-        
-        if (res.ok) {
-          setSubscription(prev => prev ? { ...prev, cancelAtPeriodEnd: true } : null);
-        }
-      } catch (error) {
-        console.error('[Subscription] Cancel error:', error);
+    setShowCancelConfirm(false);
+    try {
+      const token = localStorage.getItem('token') || localStorage.getItem('access_token');
+      const res = await fetch('/backend/api/subscriptions/cancel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ immediate: false }),
+      });
+      
+      if (res.ok) {
+        setSubscription(prev => prev ? { ...prev, cancelAtPeriodEnd: true } : null);
+        showToast('Subscription will be canceled at end of billing period.');
+      } else {
+        showToast('Failed to cancel subscription.', 'error');
       }
+    } catch (error) {
+      console.error('[Subscription] Cancel error:', error);
+      showToast('Failed to cancel subscription.', 'error');
     }
   };
 
@@ -218,7 +233,7 @@ export default function SubscriptionPage() {
         </ScrollReveal>
 
         {loading ? (
-          <div className={cn(commonStyles.loading, themeStyles.loading)}>Loading subscription data...</div>
+          <Loader size="lg" />
         ) : (
           <>
             {/* Current Plan Card */}
@@ -387,6 +402,22 @@ export default function SubscriptionPage() {
               </ScrollReveal>
             )}
           </>
+        )}
+
+        {/* Cancel Confirmation Modal */}
+        <Modal isOpen={showCancelConfirm} title="Cancel Subscription" onClose={() => setShowCancelConfirm(false)}>
+          <p>Are you sure you want to cancel your subscription? Your plan will remain active until the end of the current billing period.</p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+            <Button variant="secondary" onClick={() => setShowCancelConfirm(false)}>Keep Plan</Button>
+            <Button variant="danger" onClick={handleCancel}>Cancel Subscription</Button>
+          </div>
+        </Modal>
+
+        {/* Toast */}
+        {toast && (
+          <div className={cn(commonStyles.toast, themeStyles.toast, toast.type === 'error' && commonStyles.toastError, toast.type === 'error' && themeStyles.toastError)}>
+            {toast.message}
+          </div>
         )}
       </div>
     </PageTransition>

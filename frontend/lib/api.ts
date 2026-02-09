@@ -51,28 +51,16 @@ export function getAuthToken(): string | null {
 }
 
 export function setRefreshToken(token: string | null) {
-  if (typeof window !== 'undefined') {
-    try {
-      if (token) {
-        localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, token);
-      } else {
-        localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-      }
-    } catch (e) {
-      console.warn('Storage unavailable:', e);
-    }
-  }
+  // Refresh token is now stored as httpOnly cookie by the backend.
+  // This function is kept for backward compatibility but is a no-op.
+  // The cookie is automatically sent with requests to /api/auth/refresh.
 }
 
 export function getRefreshToken(): string | null {
-  if (typeof window !== 'undefined') {
-    try {
-      return localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
-    } catch (e) {
-      console.warn('Storage unavailable:', e);
-    }
-  }
-  return null;
+  // Refresh token is now stored as httpOnly cookie — not accessible from JS.
+  // Return a sentinel value to indicate the cookie-based flow should be used.
+  // The actual token is sent automatically via credentials: 'include'.
+  return '__httponly_cookie__';
 }
 
 // Clear all authentication data
@@ -87,8 +75,11 @@ export function clearAuthData() {
       localStorage.removeItem('access_token');
       localStorage.removeItem('user');
       localStorage.removeItem('portal_area');
-      // Clear cookie
+      // Clear auth cookie
       document.cookie = 'auth_token=; path=/; max-age=0; SameSite=Lax';
+      // Clear refresh token cookie (httpOnly cookie can't be cleared from JS,
+      // but we attempt it anyway — the backend logout endpoint should clear it)
+      document.cookie = 'refresh_token=; path=/api/auth/refresh; max-age=0; SameSite=Lax';
     } catch (e) {
       console.warn('Storage unavailable:', e);
     }
@@ -124,16 +115,15 @@ function addRefreshSubscriber(callback: (token: string) => void) {
   refreshSubscribers.push(callback);
 }
 
-// Attempt to refresh the access token using refresh token
+// Attempt to refresh the access token using httpOnly refresh cookie
 async function attemptTokenRefresh(): Promise<string | null> {
-  const refreshTokenValue = getRefreshToken();
-  if (!refreshTokenValue) return null;
-
+  // The refresh token is stored as an httpOnly cookie.
+  // It's sent automatically via credentials: 'include'.
   try {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: refreshTokenValue }),
+      body: JSON.stringify({}),
       credentials: 'include',
     });
 

@@ -1,0 +1,57 @@
+/* @AI-HINT: Dev-only quick login button - dark theme colors */
+
+.card {
+  background-color: rgba(30, 30, 30, 0.95);
+  border-color: rgba(69, 115, 223, 0.2);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.footer {
+  color: var(--muted-foreground, #9ca3af);
+}
+
+.toggleButtonOpen {
+  background-color: var(--muted, #374151);
+  color: var(--muted-foreground, #9ca3af);
+}
+
+.toggleButtonClosed {
+  background-color: var(--primary, #4573df);
+  color: var(--primary-foreground, #ffffff);
+}
+
+.adminButton {
+  border-color: rgba(254, 202, 202, 0.3);
+}
+
+.adminButton:hover {
+  background-color: rgba(127, 29, 29, 0.2);
+}
+
+.clientButton {
+  border-color: rgba(191, 219, 254, 0.3);
+}
+
+.clientButton:hover {
+  background-color: rgba(30, 58, 138, 0.2);
+}
+
+.freelancerButton {
+  border-color: rgba(187, 247, 208, 0.3);
+}
+
+.freelancerButton:hover {
+  background-color: rgba(20, 83, 45, 0.2);
+}
+
+.adminIcon {
+  color: #f87171;
+}
+
+.clientIcon {
+  color: #60a5fa;
+}
+
+.freelancerIcon {
+  color: #4ade80;
+}

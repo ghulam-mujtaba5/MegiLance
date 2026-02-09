@@ -11,7 +11,8 @@ class LoginRequest(BaseModel):
 
 
 class RefreshTokenRequest(BaseModel):
-    refresh_token: str = Field(min_length=10)
+    refresh_token: Optional[str] = Field(default=None, min_length=10)
+    # refresh_token can come from request body OR httpOnly cookie
 
 
 class Token(BaseModel):

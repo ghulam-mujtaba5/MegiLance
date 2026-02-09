@@ -160,12 +160,12 @@ def validate_production_settings(settings: Settings) -> None:
                 RuntimeWarning
             )
     elif settings.environment != "development":
-        # Staging, test, etc. — warn but don't crash
-        if "CHANGE_ME" in settings.secret_key:
-            warnings.warn(
-                f"WARNING: Default SECRET_KEY detected in '{settings.environment}' environment. "
-                "Set a strong SECRET_KEY environment variable for non-development environments.",
-                RuntimeWarning
+        # Staging, test, etc. — BLOCK insecure secret keys (not just warn)
+        if "CHANGE_ME" in settings.secret_key or len(settings.secret_key) < 32:
+            raise ValueError(
+                f"CRITICAL: Insecure SECRET_KEY detected in '{settings.environment}' environment. "
+                "Set a strong, random SECRET_KEY environment variable (at least 32 characters). "
+                "Default keys are only allowed in 'development' mode."
             )
 
 

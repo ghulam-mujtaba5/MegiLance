@@ -3,7 +3,7 @@
 
 from app.db.turso_http import execute_query
 from app.core.security import get_password_hash
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 # Test password hashing
@@ -12,7 +12,7 @@ hashed = get_password_hash(password)
 print(f"✓ Password hashed: {len(hashed)} chars")
 
 # Test INSERT
-now = datetime.utcnow().isoformat()
+now = datetime.now(timezone.utc).isoformat()
 try:
     result = execute_query(
         """INSERT INTO users (email, hashed_password, is_active, name, user_type, 

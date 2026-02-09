@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { FaCheckCircle, FaTimesCircle, FaSpinner } from 'react-icons/fa';
 import Button from '@/app/components/Button/Button';
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';

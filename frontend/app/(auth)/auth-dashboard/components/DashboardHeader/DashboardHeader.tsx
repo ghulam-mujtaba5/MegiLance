@@ -3,7 +3,7 @@
 'use client';
 
 import React from 'react';
-import { FaBell } from 'react-icons/fa';
+import { Bell } from 'lucide-react';
 import { User } from '../../types';
 import { cn } from '@/lib/utils';
 
@@ -36,7 +36,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userRole, user, style
       </div>
       <div className={styles.actions}>
         <button className={styles.notificationBtn} aria-label={`View ${user.notificationCount} notifications`}>
-          <FaBell className={styles.notificationIcon} />
+          <Bell className={styles.notificationIcon} size={20} />
           {user && user.notificationCount > 0 && (
             <span className={styles.notificationBadge}>{user.notificationCount}</span>
           )}

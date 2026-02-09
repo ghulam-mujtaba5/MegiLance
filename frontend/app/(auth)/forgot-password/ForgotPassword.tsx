@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
-import { FaKey } from 'react-icons/fa';
+import { KeyRound } from 'lucide-react';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';
@@ -20,7 +20,7 @@ import lightStyles from './ForgotPassword.light.module.css';
 import darkStyles from './ForgotPassword.dark.module.css';
 
 const forgotPasswordBranding = {
-  brandIcon: FaKey,
+  brandIcon: KeyRound,
   brandTitle: 'Secure Your Account',
   brandText: 'Enter your email to receive a secure link to reset your password and regain access to your account.',
 };
@@ -125,7 +125,6 @@ const ForgotPassword: React.FC = () => {
                   ariaLabel="Email sent successfully"
                   loop={false}
                   keepLastFrame
-                  className="mx-auto my-4"
                 />
                 <p className={styles.formSubtitle}>
                   If an account with that email exists, we&apos;ve sent instructions to reset your password.
@@ -138,7 +137,6 @@ const ForgotPassword: React.FC = () => {
                   width={100}
                   height={100}
                   ariaLabel="Security shield"
-                  className="mx-auto my-2"
                 />
                 <p className={styles.formSubtitle}>
                   No problem. Enter your email and we&apos;ll send you a reset link.
@@ -174,7 +172,7 @@ const ForgotPassword: React.FC = () => {
 
           <StaggerItem className={styles.signupPrompt}>
             <p>Remembered your password? <Link href="/login">Back to Sign In</Link></p>
-            <p className="mt-1">Or <Link href="/passwordless">sign in with a magic link</Link></p>
+            <p>Or <Link href="/passwordless">sign in with a magic link</Link></p>
           </StaggerItem>
         </StaggerContainer>
       </div>

@@ -4,7 +4,7 @@
 import { useState, useRef, useId, DragEvent, ChangeEvent, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { FaCloudUploadAlt, FaTimes, FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { CloudUpload, X, CheckCircle, Loader2 } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 
 import commonStyles from './FileUpload.common.module.css';
@@ -263,7 +263,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           
           {uploading ? (
             <div className={styles.progress} role="progressbar" aria-valuenow={uploadProgress} aria-valuemin={0} aria-valuemax={100}>
-              <FaSpinner className="animate-spin" size={48} aria-hidden="true" />
+              <Loader2 className="animate-spin" size={48} aria-hidden="true" />
               <div className={styles.progressBar}>
                 <div style={{ width: `${uploadProgress}%` }} />
               </div>
@@ -271,7 +271,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             </div>
           ) : (
             <>
-              <FaCloudUploadAlt className={styles.icon} size={48} aria-hidden="true" />
+              <CloudUpload className={styles.icon} size={48} aria-hidden="true" />
               <p className={styles.text}>
                 Drag and drop your file here, or click to browse
               </p>
@@ -283,10 +283,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
         </div>
       ) : (
         <div className={styles.success} role="status" aria-live="polite">
-          <FaCheckCircle size={24} className="text-green-500" aria-hidden="true" />
+          <CheckCircle size={24} className="text-green-500" aria-hidden="true" />
           <span>File uploaded successfully!</span>
           <Button variant="danger" size="sm" onClick={handleRemove} aria-label="Remove uploaded file">
-            <FaTimes aria-hidden="true" /> Remove
+            <X size={16} aria-hidden="true" /> Remove
           </Button>
           {uploadType !== 'document' && (
             <div className={styles.preview}>

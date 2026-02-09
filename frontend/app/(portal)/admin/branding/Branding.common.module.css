@@ -307,6 +307,78 @@
 }
 
 /* ==========================================
+   TABS ROW - Premium Pill Navigation
+   ========================================== */
+.tabsRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tabBtn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  background: none;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0.7;
+}
+
+.tabBtn:hover {
+  opacity: 1;
+}
+
+.tabBtnActive {
+  font-weight: 700;
+  opacity: 1;
+}
+
+/* ==========================================
+   TOAST NOTIFICATION - Floating Feedback
+   ========================================== */
+.toast {
+  position: fixed;
+  bottom: 5rem;
+  right: 2rem;
+  padding: 1rem 1.75rem;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 200;
+  animation: toastIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.toastError {
+  /* color overrides in theme files */
+}
+
+/* ==========================================
+   CONFIRM TEXT & MODAL ACTIONS
+   ========================================== */
+.confirmText {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* ==========================================
    TAB CONTENT - Smooth Transitions
    ========================================== */
 .tabContent {

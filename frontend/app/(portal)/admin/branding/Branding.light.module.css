@@ -157,6 +157,38 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* Tab Buttons - Light */
+.tabBtn {
+  color: #64748b;
+}
+
+.tabBtn:hover {
+  background: rgba(69, 115, 223, 0.08);
+  color: #334155;
+}
+
+.tabBtnActive {
+  background: rgba(69, 115, 223, 0.12);
+  color: #4573df;
+}
+
+/* Toast - Light */
+.toast {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+  color: #166534;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.3);
+  color: #991b1b;
+}
+
+/* Confirm Text - Light */
+.confirmText {
+  color: #475569;
+}
+
 /* Loading State */
 .loading {
   color: #64748b;

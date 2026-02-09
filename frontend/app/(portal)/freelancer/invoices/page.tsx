@@ -11,6 +11,9 @@ import { StaggerContainer, StaggerItem } from '@/app/components/Animations/Stagg
 import commonStyles from './Invoices.common.module.css';
 import lightStyles from './Invoices.light.module.css';
 import darkStyles from './Invoices.dark.module.css';
+import Button from '@/app/components/Button/Button';
+import Input from '@/app/components/Input/Input';
+import Textarea from '@/app/components/Textarea/Textarea';
 
 interface Invoice {
   id: number;
@@ -60,6 +63,9 @@ export default function InvoicesPage() {
     notes: '',
     items: [{ description: '', quantity: 1, rate: 0, amount: 0 }] as InvoiceItem[],
   });
+  
+  // Delete confirmation
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -73,78 +79,11 @@ export default function InvoicesPage() {
         status: filter !== 'all' ? filter : undefined 
       }) as any;
       
-      // Use API data if available, otherwise fall back to demo data
+      // Use API data if available, otherwise show empty state
       let invoiceData: Invoice[] = [];
       
       if (response && (response.invoices?.length > 0 || Array.isArray(response) && response.length > 0)) {
         invoiceData = response.invoices || response;
-      } else {
-        // Demo data for display when no real invoices exist
-        invoiceData = [
-          {
-            id: 1,
-            invoice_number: 'INV-2025-001',
-            client_name: 'Tech Solutions Inc.',
-            client_email: 'billing@techsolutions.com',
-            project_title: 'Website Redesign',
-            amount: 3500,
-            currency: 'USD',
-            status: 'paid',
-            due_date: '2025-11-15',
-            created_at: '2025-11-01',
-            items: [
-              { description: 'UI Design', quantity: 20, rate: 100, amount: 2000 },
-              { description: 'Frontend Development', quantity: 15, rate: 100, amount: 1500 },
-            ],
-          },
-          {
-            id: 2,
-            invoice_number: 'INV-2025-002',
-            client_name: 'StartupXYZ',
-            client_email: 'hello@startupxyz.io',
-            project_title: 'Mobile App MVP',
-            amount: 5000,
-            currency: 'USD',
-            status: 'sent',
-            due_date: '2025-12-01',
-            created_at: '2025-11-20',
-            items: [
-              { description: 'App Development', quantity: 40, rate: 125, amount: 5000 },
-            ],
-          },
-          {
-            id: 3,
-            invoice_number: 'INV-2025-003',
-            client_name: 'Creative Agency',
-            client_email: 'accounts@creativeagency.com',
-            project_title: 'Brand Identity',
-            amount: 2000,
-            currency: 'USD',
-            status: 'overdue',
-            due_date: '2025-11-10',
-            created_at: '2025-10-25',
-            items: [
-              { description: 'Logo Design', quantity: 1, rate: 1200, amount: 1200 },
-              { description: 'Brand Guidelines', quantity: 1, rate: 800, amount: 800 },
-            ],
-          },
-          {
-            id: 4,
-            invoice_number: 'INV-2025-004',
-            client_name: 'Enterprise Corp',
-            client_email: 'finance@enterprise.com',
-            project_title: 'API Integration',
-            amount: 8500,
-            currency: 'USD',
-            status: 'draft',
-            due_date: '2025-12-15',
-            created_at: '2025-11-25',
-            items: [
-              { description: 'Backend Development', quantity: 50, rate: 150, amount: 7500 },
-              { description: 'Documentation', quantity: 10, rate: 100, amount: 1000 },
-            ],
-          },
-        ];
       }
 
       setInvoices(invoiceData);
@@ -195,12 +134,18 @@ export default function InvoicesPage() {
   };
 
   const handleDeleteInvoice = async (invoiceId: number) => {
-    if (!confirm('Are you sure you want to delete this invoice?')) return;
+    setDeleteTargetId(invoiceId);
+  };
+
+  const confirmDeleteInvoice = async () => {
+    if (!deleteTargetId) return;
     try {
-      await invoicesApi.delete(invoiceId);
+      await invoicesApi.delete(deleteTargetId);
       loadInvoices();
     } catch (error) {
       console.error('Failed to delete invoice:', error);
+    } finally {
+      setDeleteTargetId(null);
     }
   };
 
@@ -265,12 +210,12 @@ export default function InvoicesPage() {
                 Create and manage invoices for your projects
               </p>
             </div>
-            <button
-              className={cn(commonStyles.createButton, themeStyles.createButton)}
+            <Button
+              variant="primary"
               onClick={() => setShowCreateModal(true)}
             >
               + Create Invoice
-            </button>
+            </Button>
           </div>
         </ScrollReveal>
 
@@ -335,12 +280,12 @@ export default function InvoicesPage() {
               <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
                 <span className={commonStyles.emptyIcon}>📄</span>
                 <p>No invoices found</p>
-                <button
-                  className={cn(commonStyles.createButton, themeStyles.createButton)}
+                <Button
+                  variant="primary"
                   onClick={() => setShowCreateModal(true)}
                 >
                   Create your first invoice
-                </button>
+                </Button>
               </div>
             </ScrollReveal>
           ) : (
@@ -447,41 +392,35 @@ export default function InvoicesPage() {
                 <div className={commonStyles.formGrid}>
                   <div className={commonStyles.formGroup}>
                     <label>Client Name *</label>
-                    <input
-                      type="text"
+                    <Input
                       value={newInvoice.client_name}
                       onChange={(e) => setNewInvoice({ ...newInvoice, client_name: e.target.value })}
-                      className={cn(commonStyles.input, themeStyles.input)}
                       placeholder="Enter client name"
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
                     <label>Client Email *</label>
-                    <input
+                    <Input
                       type="email"
                       value={newInvoice.client_email}
                       onChange={(e) => setNewInvoice({ ...newInvoice, client_email: e.target.value })}
-                      className={cn(commonStyles.input, themeStyles.input)}
                       placeholder="client@email.com"
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
                     <label>Project Title</label>
-                    <input
-                      type="text"
+                    <Input
                       value={newInvoice.project_title}
                       onChange={(e) => setNewInvoice({ ...newInvoice, project_title: e.target.value })}
-                      className={cn(commonStyles.input, themeStyles.input)}
                       placeholder="Project name"
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
                     <label>Due Date *</label>
-                    <input
+                    <Input
                       type="date"
                       value={newInvoice.due_date}
                       onChange={(e) => setNewInvoice({ ...newInvoice, due_date: e.target.value })}
-                      className={cn(commonStyles.input, themeStyles.input)}
                     />
                   </div>
                 </div>
@@ -547,10 +486,9 @@ export default function InvoicesPage() {
 
                 <div className={commonStyles.formGroup}>
                   <label>Notes</label>
-                  <textarea
-                    value={newInvoice.notes}
+                  <Textarea
+                    value={newInvoice.notes || ''}
                     onChange={(e) => setNewInvoice({ ...newInvoice, notes: e.target.value })}
-                    className={cn(commonStyles.textarea, themeStyles.textarea)}
                     placeholder="Additional notes or payment terms..."
                     rows={3}
                   />
@@ -558,19 +496,19 @@ export default function InvoicesPage() {
               </div>
 
               <div className={commonStyles.modalFooter}>
-                <button
-                  className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}
+                <Button
+                  variant="ghost"
                   onClick={() => setShowCreateModal(false)}
                 >
                   Cancel
-                </button>
-                <button
-                  className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                </Button>
+                <Button
+                  variant="primary"
                   onClick={handleCreateInvoice}
                   disabled={!newInvoice.client_name || !newInvoice.client_email || !newInvoice.due_date}
                 >
                   Create Invoice
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -652,17 +590,35 @@ export default function InvoicesPage() {
               </div>
 
               <div className={commonStyles.modalFooter}>
-                <button className={cn(commonStyles.secondaryButton, themeStyles.secondaryButton)}>
+                <Button variant="ghost">
                   📥 Download PDF
-                </button>
+                </Button>
                 {selectedInvoice.status === 'draft' && (
-                  <button
-                    className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                  <Button
+                    variant="primary"
                     onClick={() => { handleSendInvoice(selectedInvoice.id); setSelectedInvoice(null); }}
                   >
                     📤 Send Invoice
-                  </button>
+                  </Button>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteTargetId && (
+          <div className={cn(commonStyles.modal, themeStyles.modal)}>
+            <div className={cn(commonStyles.modalContent, themeStyles.modalContent)}>
+              <div className={commonStyles.modalHeader}>
+                <h2>Confirm Delete</h2>
+              </div>
+              <div className={commonStyles.modalBody}>
+                <p>Are you sure you want to delete this invoice? This action cannot be undone.</p>
+              </div>
+              <div className={commonStyles.modalFooter}>
+                <Button variant="ghost" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
+                <Button variant="danger" onClick={confirmDeleteInvoice}>Delete Invoice</Button>
               </div>
             </div>
           </div>

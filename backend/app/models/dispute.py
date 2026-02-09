@@ -2,7 +2,7 @@
 from sqlalchemy import String, Integer, Text, DateTime, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING
 import enum
 
@@ -42,11 +42,11 @@ class Dispute(Base):
     evidence: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of evidence URLs
     status: Mapped[str] = mapped_column(String(20), default=DisputeStatus.OPEN.value, index=True)
     assigned_to: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)  # Admin/mediator
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
     resolved_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     resolution: Mapped[str] = mapped_column(Text, nullable=True)
     resolution_amount: Mapped[float] = mapped_column(Float, nullable=True)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     contract: Mapped["Contract"] = relationship("Contract", back_populates="disputes")

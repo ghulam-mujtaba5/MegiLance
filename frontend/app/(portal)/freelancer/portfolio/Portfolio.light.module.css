@@ -197,3 +197,5 @@
 .saveBtn:hover {
   box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
 }
+
+.confirmText { color: #4b5563; }

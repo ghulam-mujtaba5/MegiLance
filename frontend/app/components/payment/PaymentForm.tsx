@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
-import { FaCreditCard, FaLock } from 'react-icons/fa';
+import { CreditCard, Lock } from 'lucide-react';
 
 import commonStyles from './PaymentForm.common.module.css';
 import lightStyles from './PaymentForm.light.module.css';
@@ -113,7 +113,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     <form onSubmit={handleSubmit} className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>
-          <FaCreditCard className="inline mr-2" />
+          <CreditCard size={18} className="inline mr-2" />
           Payment Details
         </h2>
         <div className={styles.amount}>
@@ -143,7 +143,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
       <div className={styles.footer}>
         <div className={styles.securityBadge}>
-          <FaLock className="mr-2" />
+          <Lock size={14} className="mr-2" />
           Secured by Stripe
         </div>
       </div>

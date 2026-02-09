@@ -133,3 +133,14 @@
   color: #60a5fa;
   font-weight: 600;
 }
+
+.toast {
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(39, 174, 96, 0.4);
+  color: #4ade80;
+}
+
+.toastError {
+  border-color: rgba(232, 17, 35, 0.4);
+  color: #f87171;
+}

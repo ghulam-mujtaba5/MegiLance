@@ -1,7 +1,7 @@
 from sqlalchemy import String, Integer, Float, DateTime, ForeignKey, Boolean, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 class ReferralStatus(enum.Enum):
@@ -21,8 +21,8 @@ class Referral(Base):
     referral_code: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     reward_amount: Mapped[float] = mapped_column(Float, default=0.0)
     is_paid: Mapped[bool] = mapped_column(Boolean, default=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     completed_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     # Relationships

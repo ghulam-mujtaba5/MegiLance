@@ -26,9 +26,8 @@ logger = logging.getLogger(__name__)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
-# In-memory token blacklist (should use Redis in production)
-# Format: {token_jti: expiry_timestamp}
-_token_blacklist: Set[str] = set()
+# Token blacklist is now DB-backed via token_blacklist_service
+# See: app/services/token_blacklist_service.py
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -178,17 +177,15 @@ def decode_token(token: str) -> dict:
 
 
 def add_token_to_blacklist(token: str, expiry: datetime) -> None:
-    """Add token to blacklist (revoked tokens)"""
-    _token_blacklist.add(token)
-    logger.info(f"Token added to blacklist, expires at {expiry}")
-    
-    # In production, use Redis:
-    # redis_client.setex(f"blacklist:{token}", expiry, "1")
+    """Add token to persistent blacklist (Turso DB-backed)"""
+    from app.services.token_blacklist_service import add_token_to_blacklist as _add
+    _add(token, expiry, reason="logout")
 
 
 def is_token_blacklisted(token: str) -> bool:
-    """Check if token is blacklisted"""
-    return token in _token_blacklist
+    """Check if token is blacklisted (Turso DB-backed with memory cache)"""
+    from app.services.token_blacklist_service import is_token_blacklisted as _check
+    return _check(token)
 
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Union[User, UserProxy]:

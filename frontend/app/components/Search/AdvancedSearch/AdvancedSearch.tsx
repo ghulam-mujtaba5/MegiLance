@@ -7,9 +7,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { 
-  FaSearch, FaFilter, FaStar, FaMapMarkerAlt, FaDollarSign,
-  FaClock, FaBookmark, FaSave, FaTimes, FaChevronDown
-} from 'react-icons/fa';
+  Search, SlidersHorizontal, Star, MapPin, DollarSign,
+  Clock, Bookmark, Save, X, ChevronDown
+} from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Select from '@/app/components/Select/Select';
 
@@ -223,7 +223,7 @@ const AdvancedSearch: React.FC = () => {
     <div className={styles.container}>
       <form onSubmit={handleSearch} className={styles.searchBar}>
         <div className="relative flex-1">
-          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Search size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search projects, freelancers, or skills..."
@@ -256,7 +256,7 @@ const AdvancedSearch: React.FC = () => {
         </div>
 
         <Button variant="primary" type="submit" isLoading={loading}>
-          <FaSearch className="mr-2" />
+          <Search size={16} className="mr-2" />
           Search
         </Button>
 
@@ -265,14 +265,14 @@ const AdvancedSearch: React.FC = () => {
           className={styles.filterToggle}
           onClick={() => setShowFilters(!showFilters)}
         >
-          <FaFilter className="mr-2" />
+          <SlidersHorizontal size={16} className="mr-2" />
           Filters
           {activeFilterCount > 0 && (
             <span className="ml-2 bg-primary-500 text-white rounded-full px-2 py-1 text-xs">
               {activeFilterCount}
             </span>
           )}
-          <FaChevronDown className={`ml-2 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          <ChevronDown size={16} className={`ml-2 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
         </button>
       </form>
 
@@ -345,7 +345,7 @@ const AdvancedSearch: React.FC = () => {
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <FaDollarSign className="inline mr-1" />
+                <DollarSign size={14} className="inline mr-1" />
                 Budget Range
               </label>
               <div className="flex gap-2">
@@ -368,7 +368,7 @@ const AdvancedSearch: React.FC = () => {
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <FaMapMarkerAlt className="inline mr-1" />
+                <MapPin size={14} className="inline mr-1" />
                 Location
               </label>
               <input
@@ -382,7 +382,7 @@ const AdvancedSearch: React.FC = () => {
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <FaStar className="inline mr-1" />
+                <Star size={14} className="inline mr-1" />
                 Minimum Rating
               </label>
               <Select
@@ -399,7 +399,7 @@ const AdvancedSearch: React.FC = () => {
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <FaClock className="inline mr-1" />
+                <Clock size={14} className="inline mr-1" />
                 Availability
               </label>
               <Select
@@ -446,11 +446,11 @@ const AdvancedSearch: React.FC = () => {
 
           <div className="flex gap-3 mt-6">
             <Button variant="outline" onClick={clearFilters}>
-              <FaTimes className="mr-2" />
+              <X size={14} className="mr-2" />
               Clear Filters
             </Button>
             <Button variant="secondary" onClick={() => setShowSaveDialog(true)}>
-              <FaSave className="mr-2" />
+              <Save size={14} className="mr-2" />
               Save Search
             </Button>
           </div>
@@ -460,7 +460,7 @@ const AdvancedSearch: React.FC = () => {
       {savedSearches.length > 0 && (
         <div className={styles.savedSearches}>
           <h3 className="font-semibold mb-3">
-            <FaBookmark className="inline mr-2" />
+            <Bookmark size={14} className="inline mr-2" />
             Saved Searches
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -470,7 +470,7 @@ const AdvancedSearch: React.FC = () => {
                   {search.name}
                 </button>
                 <button onClick={() => deleteSavedSearch(search.id)} aria-label="Delete saved search">
-                  <FaTimes />
+                  <X size={14} />
                 </button>
               </div>
             ))}

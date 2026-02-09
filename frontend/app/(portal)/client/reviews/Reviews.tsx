@@ -54,6 +54,7 @@ const Reviews: React.FC = () => {
   const [eligibleContracts, setEligibleContracts] = useState<any[]>([]);
   const [selectedContractId, setSelectedContractId] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadEligible() {
@@ -126,6 +127,7 @@ const Reviews: React.FC = () => {
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
+    setSubmitError(null);
     try {
       const contract = eligibleContracts.find(c => String(c.id) === selectedContractId);
       if (!contract) throw new Error("Contract not found");
@@ -145,7 +147,7 @@ const Reviews: React.FC = () => {
       window.location.reload();
     } catch (e) {
       console.error(e);
-      alert('Failed to submit review');
+      setSubmitError('Failed to submit review. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -164,6 +166,66 @@ const Reviews: React.FC = () => {
               </div>
             </section>
           </ScrollReveal>
+
+          {/* Filters & Sort Toolbar */}
+          <ScrollReveal>
+            <div className={common.toolbar}>
+              <div className={common.toolbarLeft}>
+                <Input
+                  id="review-search"
+                  type="text"
+                  placeholder="Search by project, freelancer, or text..."
+                  value={query}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
+                  aria-label="Search reviews"
+                />
+                <Select
+                  id="review-rating-filter"
+                  options={[
+                    { value: 'All', label: 'All Ratings' },
+                    { value: '5', label: '★★★★★ (5)' },
+                    { value: '4', label: '★★★★ (4)' },
+                    { value: '3', label: '★★★ (3)' },
+                    { value: '2', label: '★★ (2)' },
+                    { value: '1', label: '★ (1)' },
+                  ]}
+                  value={String(rating)}
+                  onChange={(e) => setRating(e.target.value === 'All' ? 'All' : Number(e.target.value))}
+                />
+              </div>
+              <div className={common.toolbarRight}>
+                <Select
+                  id="review-sort-key"
+                  options={[
+                    { value: 'created', label: 'Sort by Date' },
+                    { value: 'rating', label: 'Sort by Rating' },
+                    { value: 'project', label: 'Sort by Project' },
+                    { value: 'freelancer', label: 'Sort by Freelancer' },
+                  ]}
+                  value={sortKey}
+                  onChange={(e) => setSortKey(e.target.value as SortKey)}
+                />
+                <Select
+                  id="review-sort-dir"
+                  options={[
+                    { value: 'desc', label: 'Newest First' },
+                    { value: 'asc', label: 'Oldest First' },
+                  ]}
+                  value={sortDir}
+                  onChange={(e) => setSortDir(e.target.value as 'asc' | 'desc')}
+                />
+              </div>
+            </div>
+          </ScrollReveal>
+
+          {/* Summary */}
+          {!loading && (
+            <div className={common.resultsSummary}>
+              Showing {paged.length} of {sorted.length} review{sorted.length !== 1 ? 's' : ''}
+              {query && <> matching &quot;{query}&quot;</>}
+              {rating !== 'All' && <> with {rating} star{rating !== 1 ? 's' : ''}</>}
+            </div>
+          )}
 
           <section className={common.list} aria-live="polite">
             <h2 className={common.srOnly}>Review List</h2>
@@ -238,6 +300,7 @@ const Reviews: React.FC = () => {
           <section className={common.editor} aria-labelledby="leave-review-title">
 
           <h2 id="new-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Leave a Review</h2>
+          {submitError && <div className={common.submitError}>{submitError}</div>}
           <div className={common.editorForm}>
             
             {eligibleContracts.length > 0 ? (

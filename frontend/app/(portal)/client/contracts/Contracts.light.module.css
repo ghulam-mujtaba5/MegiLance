@@ -1,9 +1,154 @@
-/* Light theme */
-.container {
-  background-color: #f8f9fa;
-  color: #1a1a1a;
+/* @AI-HINT: Light theme colors for Client Contracts page */
+
+.theme {
+  color: #1a202c;
 }
 
 .title {
-  color: #2d3748;
+  color: #1a202c;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* KPI Cards */
+.kpiCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.kpiCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.kpiIcon {
+  background: #eef2ff;
+  color: #4573df;
+}
+
+.kpiLabel {
+  color: #64748b;
+}
+
+.kpiValue {
+  color: #1a202c;
+}
+
+/* Status Tabs */
+.statusTab {
+  color: #64748b;
+  background: #f1f5f9;
+  border-color: transparent;
+}
+
+.statusTab:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.statusTabActive {
+  background: #4573df;
+  color: #ffffff;
+  border-color: #4573df;
+}
+
+.tabCount {
+  background: rgba(0, 0, 0, 0.08);
+  color: #475569;
+}
+
+.statusTabActive .tabCount {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Contract Card */
+.card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+.cardTitle {
+  color: #1a202c;
+}
+
+/* Freelancer */
+.freelancerInfo {
+  border-bottom-color: #f1f5f9;
+}
+
+.freelancerAvatar {
+  background: #eef2ff;
+  color: #4573df;
+}
+
+.freelancerName {
+  color: #334155;
+}
+
+.freelancerLabel {
+  color: #94a3b8;
+}
+
+/* Card Stats */
+.cardStatLabel {
+  color: #94a3b8;
+}
+
+.cardStatValue {
+  color: #1e293b;
+}
+
+/* Progress */
+.progressLabel {
+  color: #94a3b8;
+}
+
+.progressValue {
+  color: #4573df;
+}
+
+.progressBar {
+  background: #f1f5f9;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df, #6366f1);
+}
+
+/* Card Footer */
+.cardFooter {
+  border-top-color: #f1f5f9;
+}
+
+.cardDate {
+  color: #94a3b8;
+}
+
+/* Empty State */
+.emptyIcon {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.emptyTitle {
+  color: #334155;
+}
+
+.emptyText {
+  color: #94a3b8;
+}
+
+/* Skeleton */
+.skeletonCard {
+  background: linear-gradient(110deg, #f1f5f9 8%, #e2e8f0 18%, #f1f5f9 33%);
+  background-size: 200% 100%;
 }

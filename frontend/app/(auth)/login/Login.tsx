@@ -4,9 +4,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FaGoogle, FaGithub, FaUserTie, FaBriefcase, FaUserShield } from 'react-icons/fa';
+import { User, Briefcase, ShieldCheck, Eye, EyeOff, Laptop, ListChecks, UserCog } from 'lucide-react';
 import Tabs from '@/app/components/Tabs/Tabs';
-import { FaEye, FaEyeSlash, FaLaptopCode, FaTasks, FaUserCog } from 'react-icons/fa';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
@@ -29,28 +28,28 @@ type UserRole = 'freelancer' | 'client' | 'admin';
 const roleConfig = {
   freelancer: {
     id: 'freelancer' as UserRole,
-    icon: FaUserTie,
+    icon: User,
     label: 'Freelancer',
     redirectPath: '/freelancer/dashboard',
-    brandIcon: FaLaptopCode,
+    brandIcon: Laptop,
     brandTitle: 'Build the Future',
     brandText: 'Access exclusive projects, secure your payments with USDC, and collaborate with top-tier clients from around the world.',
   },
   client: {
     id: 'client' as UserRole,
-    icon: FaBriefcase,
+    icon: Briefcase,
     label: 'Client',
     redirectPath: '/client/dashboard',
-    brandIcon: FaTasks,
+    brandIcon: ListChecks,
     brandTitle: 'Assemble Your Dream Team',
     brandText: 'Find, hire, and manage elite talent. Our AI-powered platform ensures you connect with the perfect freelancers for your projects.',
   },
   admin: {
     id: 'admin' as UserRole,
-    icon: FaUserShield,
+    icon: ShieldCheck,
     label: 'Admin',
     redirectPath: '/admin/dashboard',
-    brandIcon: FaUserCog,
+    brandIcon: UserCog,
     brandTitle: 'Oversee the Ecosystem',
     brandText: 'Manage platform operations, ensure quality and security, and empower our community of freelancers and clients.',
   },
@@ -305,7 +304,7 @@ const Login: React.FC = () => {
       <div className={styles.formPanel}>
         <StaggerContainer className={styles.formContainer}>
           {isPreviewMode() && (
-            <div role="status" aria-live="polite" className="mb-4 rounded-md border border-dashed border-[var(--border-color)] p-3 text-sm text-[var(--text-secondary)]">
+            <div role="status" aria-live="polite" className={commonStyles.previewBanner}>
               <strong>Preview Mode:</strong> Auth checks are disabled. Use the quick links below to jump into dashboards.
             </div>
           )}
@@ -328,10 +327,10 @@ const Login: React.FC = () => {
 
           <StaggerItem className={styles.socialAuth}>
             <Button variant="social" provider="google" onClick={() => handleSocialLogin('google')} disabled={loading}>
-              <FaGoogle className="mr-2" /> Continue with Google
+              Continue with Google
             </Button>
             <Button variant="social" provider="github" onClick={() => handleSocialLogin('github')} disabled={loading}>
-              <FaGithub className="mr-2" /> Continue with GitHub
+              Continue with GitHub
             </Button>
           </StaggerItem>
 
@@ -412,7 +411,7 @@ const Login: React.FC = () => {
                   autoComplete="current-password"
                   iconAfter={
                     <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggle} aria-label="Toggle password visibility">
-                      {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   }
                 />
@@ -426,11 +425,11 @@ const Login: React.FC = () => {
               >
                 Remember me
               </Checkbox>
-              <div className="flex flex-col items-end">
+              <div className={commonStyles.linksColumn}>
                 <Link href="/forgot-password" className={styles.forgotPasswordLink}>
                   Forgot Password?
                 </Link>
-                <Link href="/passwordless" className="text-xs mt-1 text-primary-4573df hover:underline">
+                <Link href="/passwordless" className={commonStyles.passwordlessLink}>
                   Sign in without password
                 </Link>
               </div>
