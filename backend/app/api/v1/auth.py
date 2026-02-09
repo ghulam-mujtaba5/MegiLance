@@ -388,7 +388,7 @@ def login_user(request: Request, credentials: LoginRequest):
     )
     
     # Set refresh token as httpOnly cookie (XSS-resistant)
-    response = JSONResponse(content=auth_response.model_dump())
+    response = JSONResponse(content=auth_response.model_dump(mode='json'))
     settings = get_settings()
     is_production = settings.environment == "production"
     response.set_cookie(
@@ -448,7 +448,7 @@ def refresh_token(request: Request, body: RefreshTokenRequest = None):
     token_response = Token(access_token=access_token, refresh_token=new_refresh_token)
     
     # Set new refresh token as httpOnly cookie
-    response = JSONResponse(content=token_response.model_dump())
+    response = JSONResponse(content=token_response.model_dump(mode='json'))
     settings = get_settings()
     is_production = settings.environment == "production"
     response.set_cookie(
