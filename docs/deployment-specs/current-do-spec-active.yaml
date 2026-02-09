@@ -84,6 +84,27 @@ services:
   - key: NEXT_PUBLIC_API_URL
     scope: RUN_AND_BUILD_TIME
     value: https://megilance.site/api
+  - key: NEXT_PUBLIC_SHOW_DEMO_LOGIN
+    scope: RUN_AND_BUILD_TIME
+    value: "true"
+  - key: NEXT_PUBLIC_DEV_ADMIN_EMAIL
+    scope: RUN_AND_BUILD_TIME
+    value: admin@megilance.com
+  - key: NEXT_PUBLIC_DEV_ADMIN_PASSWORD
+    scope: RUN_AND_BUILD_TIME
+    value: Admin@123
+  - key: NEXT_PUBLIC_DEV_CLIENT_EMAIL
+    scope: RUN_AND_BUILD_TIME
+    value: client1@example.com
+  - key: NEXT_PUBLIC_DEV_CLIENT_PASSWORD
+    scope: RUN_AND_BUILD_TIME
+    value: Client@123
+  - key: NEXT_PUBLIC_DEV_FREELANCER_EMAIL
+    scope: RUN_AND_BUILD_TIME
+    value: freelancer1@example.com
+  - key: NEXT_PUBLIC_DEV_FREELANCER_PASSWORD
+    scope: RUN_AND_BUILD_TIME
+    value: Freelancer@123
   github:
     branch: main
     deploy_on_push: true

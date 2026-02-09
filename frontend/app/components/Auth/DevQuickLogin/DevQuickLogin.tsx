@@ -1,4 +1,4 @@
-// @AI-HINT: Quick login component for MegiLance demo. Shows role-based buttons that auto-fill credentials for rapid testing. ONLY visible in development mode.
+// @AI-HINT: Quick login component for MegiLance demo. Shows role-based buttons that auto-fill credentials for rapid testing. Visible when NEXT_PUBLIC_SHOW_DEMO_LOGIN=true or in development mode.
 'use client';
 
 import React from 'react';
@@ -10,7 +10,7 @@ import commonStyles from './DevQuickLogin.common.module.css';
 import lightStyles from './DevQuickLogin.light.module.css';
 import darkStyles from './DevQuickLogin.dark.module.css';
 
-const IS_DEV = process.env.NODE_ENV === 'development';
+const SHOW_DEMO_LOGIN = process.env.NEXT_PUBLIC_SHOW_DEMO_LOGIN === 'true' || process.env.NODE_ENV === 'development';
 
 interface DevCredential {
   email: string;
@@ -20,27 +20,26 @@ interface DevCredential {
   icon: LucideIcon;
 }
 
-// @AI-HINT: Demo credentials loaded from environment variables only — nothing hardcoded
-// Configure via NEXT_PUBLIC_DEV_*_EMAIL and NEXT_PUBLIC_DEV_*_PASSWORD in .env.local
-const DEV_CREDENTIALS: DevCredential[] = IS_DEV
+// @AI-HINT: Demo credentials for showcase — available when NEXT_PUBLIC_SHOW_DEMO_LOGIN=true
+const DEV_CREDENTIALS: DevCredential[] = SHOW_DEMO_LOGIN
   ? [
       {
-        email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || '',
-        password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || '',
+        email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || 'admin@megilance.com',
+        password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || 'Admin@123',
         role: 'admin' as const,
         label: 'Admin',
         icon: ShieldCheck,
       },
       {
-        email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || '',
-        password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || '',
+        email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || 'freelancer1@example.com',
+        password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || 'Freelancer@123',
         role: 'freelancer' as const,
         label: 'Freelancer',
         icon: UserCheck,
       },
       {
-        email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || '',
-        password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || '',
+        email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || 'client1@example.com',
+        password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || 'Client@123',
         role: 'client' as const,
         label: 'Client',
         icon: Briefcase,
@@ -81,8 +80,8 @@ const DevQuickLogin: React.FC<DevQuickLoginProps> = ({ onCredentialSelect, onAut
     setMounted(true);
   }, []);
 
-  // Only show in development mode
-  if (!mounted || !IS_DEV || DEV_CREDENTIALS.length === 0) {
+  // Only show when demo login is enabled
+  if (!mounted || !SHOW_DEMO_LOGIN || DEV_CREDENTIALS.length === 0) {
     return null;
   }
 

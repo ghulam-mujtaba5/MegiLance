@@ -9,22 +9,22 @@ import { authApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Shield, User, Briefcase, X, ChevronRight } from 'lucide-react';
 
-const IS_DEV = process.env.NODE_ENV === 'development';
+const SHOW_DEMO_LOGIN = process.env.NEXT_PUBLIC_SHOW_DEMO_LOGIN === 'true' || process.env.NODE_ENV === 'development';
 
-// Demo credentials loaded from environment variables only — never hardcoded in bundle
-const DEV_ACCOUNTS: Record<string, { email: string; password: string }> = IS_DEV
+// Demo credentials available when NEXT_PUBLIC_SHOW_DEMO_LOGIN=true or in dev mode
+const DEV_ACCOUNTS: Record<string, { email: string; password: string }> = SHOW_DEMO_LOGIN
   ? {
       admin: {
-        email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || '',
-        password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || '',
+        email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || 'admin@megilance.com',
+        password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || 'Admin@123',
       },
       client: {
-        email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || '',
-        password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || '',
+        email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || 'client1@example.com',
+        password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || 'Client@123',
       },
       freelancer: {
-        email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || '',
-        password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || '',
+        email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || 'freelancer1@example.com',
+        password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || 'Freelancer@123',
       },
     }
   : {};
@@ -40,14 +40,14 @@ export default function QuickLogin() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  // Only show in development when credentials are configured
+  // Show when demo login is enabled and credentials are configured
   useEffect(() => {
-    if (IS_DEV && DEV_ACCOUNTS.admin?.email) {
+    if (SHOW_DEMO_LOGIN && DEV_ACCOUNTS.admin?.email) {
       setIsVisible(true);
     }
   }, []);
 
-  if (!isVisible || !IS_DEV) return null;
+  if (!isVisible || !SHOW_DEMO_LOGIN) return null;
 
   const handleLogin = async (role: 'admin' | 'client' | 'freelancer') => {
     setLoading(role);
@@ -124,7 +124,7 @@ export default function QuickLogin() {
             </Button>
           </div>
           <div className="mt-3 text-xs text-muted-foreground text-center">
-            Dev-only quick login
+            Quick demo login
           </div>
         </Card>
       )}

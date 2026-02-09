@@ -14,32 +14,31 @@ interface DemoUser {
   color: string;
 }
 
-const IS_DEV = process.env.NODE_ENV === 'development';
+const SHOW_DEMO_LOGIN = process.env.NEXT_PUBLIC_SHOW_DEMO_LOGIN === 'true' || process.env.NODE_ENV === 'development';
 
-// @AI-HINT: FYP Quick Login page — credentials loaded from environment variables only
-// Configure in .env.local: NEXT_PUBLIC_DEV_ADMIN_EMAIL, NEXT_PUBLIC_DEV_ADMIN_PASSWORD, etc.
+// @AI-HINT: FYP Quick Login page — available when NEXT_PUBLIC_SHOW_DEMO_LOGIN=true or in dev mode
 function getDemoUsers(): DemoUser[] {
-  if (!IS_DEV) return [];
+  if (!SHOW_DEMO_LOGIN) return [];
   return [
     {
-      email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || '',
-      password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || '',
+      email: process.env.NEXT_PUBLIC_DEV_ADMIN_EMAIL || 'admin@megilance.com',
+      password: process.env.NEXT_PUBLIC_DEV_ADMIN_PASSWORD || 'Admin@123',
       role: 'Admin',
       description: 'Full platform access, analytics, user management',
       dashboard: '/admin/dashboard',
       color: '#e81123'
     },
     {
-      email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || '',
-      password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || '',
+      email: process.env.NEXT_PUBLIC_DEV_CLIENT_EMAIL || 'client1@example.com',
+      password: process.env.NEXT_PUBLIC_DEV_CLIENT_PASSWORD || 'Client@123',
       role: 'Client',
       description: 'Post jobs, hire freelancers, manage projects',
       dashboard: '/client/dashboard',
       color: '#4573df'
     },
     {
-      email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || '',
-      password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || '',
+      email: process.env.NEXT_PUBLIC_DEV_FREELANCER_EMAIL || 'freelancer1@example.com',
+      password: process.env.NEXT_PUBLIC_DEV_FREELANCER_PASSWORD || 'Freelancer@123',
       role: 'Freelancer',
       description: 'Find jobs, submit proposals, track earnings',
       dashboard: '/freelancer/dashboard',
@@ -58,10 +57,10 @@ export default function DevQuickLogin() {
     setDemoUsers(getDemoUsers());
   }, []);
 
-  if (!IS_DEV) {
+  if (!SHOW_DEMO_LOGIN) {
     return (
       <div className={styles.container}>
-        <p>This page is only available in development mode.</p>
+        <p>Demo login is not enabled on this environment.</p>
       </div>
     );
   }
