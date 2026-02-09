@@ -238,8 +238,7 @@ export default function ProposalTemplatesPage() {
             <EmptyState
               title="No Templates Yet"
               description="Create your first proposal template to save time on future proposals."
-              actionLabel="Create Template"
-              onAction={openNewTemplate}
+              action={<Button variant="primary" size="sm" onClick={openNewTemplate}>Create Template</Button>}
             />
           </ScrollReveal>
         ) : (

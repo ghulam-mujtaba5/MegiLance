@@ -155,8 +155,8 @@ export default function AdminTagsPage() {
                 </div>
                 <span className={cn(commonStyles.usageCount, themeStyles.usageCount)}>{tag.usage_count} uses</span>
                 <div className={commonStyles.tagActions}>
-                  <Button variant="ghost" size="sm" iconBefore={<Edit size={14} />} onClick={() => openEdit(tag)} />
-                  <Button variant="ghost" size="sm" iconBefore={<Trash2 size={14} />} onClick={() => setDeleteTarget(tag)} />
+                  <Button variant="ghost" size="sm" iconBefore={<Edit size={14} />} onClick={() => openEdit(tag)}>{" "}</Button>
+                  <Button variant="ghost" size="sm" iconBefore={<Trash2 size={14} />} onClick={() => setDeleteTarget(tag)}>{" "}</Button>
                 </div>
               </StaggerItem>
             ))}
@@ -165,8 +165,7 @@ export default function AdminTagsPage() {
           <EmptyState
             title="No tags found"
             description={search ? 'Try a different search term.' : 'Create your first tag to get started.'}
-            actionLabel="Add Tag"
-            onAction={() => { setFormName(''); setFormType('general'); setShowCreateModal(true); }}
+            action={<Button variant="primary" size="sm" onClick={() => { setFormName(''); setFormType('general'); setShowCreateModal(true); }}>Add Tag</Button>}
           />
         )}
 

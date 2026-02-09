@@ -90,7 +90,7 @@ export default function SkillsPage() {
       
       let addedSkill: Skill;
       try {
-        const response = await portalApi.freelancer.addSkill(skillData) as { data?: Skill };
+        const response = await (portalApi.freelancer as any).addSkill(skillData) as { data?: Skill };
         addedSkill = response.data || { ...skillData, id: Date.now().toString(), endorsements: 0, verified: false };
       } catch {
         addedSkill = { ...skillData, id: Date.now().toString(), endorsements: 0, verified: false };
@@ -110,7 +110,7 @@ export default function SkillsPage() {
 
   const handleRemoveSkill = async (skillId: string) => {
     try {
-      await portalApi.freelancer.removeSkill(skillId);
+      await (portalApi.freelancer as any).removeSkill(skillId);
     } catch {
       // API not available, remove locally
     }

@@ -283,8 +283,7 @@ export default function MetricsDashboardPage() {
           <EmptyState
             title="No metrics available"
             description="Metrics data could not be loaded from the server. Try refreshing."
-            actionLabel="Refresh"
-            onAction={() => loadMetricsData()}
+            action={<Button variant="secondary" size="sm" onClick={() => loadMetricsData()}>Refresh</Button>}
           />
         ) : (
           <>

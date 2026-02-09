@@ -330,8 +330,7 @@ export default function FraudDetectionPage() {
                     description={riskFilter !== 'all' || statusFilter !== 'all'
                       ? 'Try adjusting your filters.'
                       : 'No flagged transactions found. The system is monitoring for suspicious activity.'}
-                    actionLabel="Refresh"
-                    onAction={fetchFraudData}
+                    action={<Button variant="secondary" size="sm" onClick={fetchFraudData}>Refresh</Button>}
                   />
                 )}
               </>

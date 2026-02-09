@@ -293,8 +293,7 @@ export default function SkillsAdminPage() {
           <EmptyState
             title="No skills found"
             description={searchQuery ? 'Try adjusting your search or filters.' : 'Create your first skill to get started.'}
-            actionLabel={!searchQuery ? 'Add Skill' : undefined}
-            onAction={!searchQuery ? openCreateModal : undefined}
+            action={!searchQuery ? <Button variant="primary" size="sm" onClick={openCreateModal}>Add Skill</Button> : undefined}
           />
         ) : (
           <StaggerContainer className={commonStyles.skillsList}>
