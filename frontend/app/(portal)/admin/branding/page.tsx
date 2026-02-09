@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { brandingApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
+import Modal from '@/app/components/Modal/Modal';
 import Select from '@/app/components/Select/Select';
 import Textarea from '@/app/components/Textarea/Textarea';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
