@@ -49,13 +49,6 @@ export default function SkillsPage() {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   };
-  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
 
   useEffect(() => {
     loadSkills();

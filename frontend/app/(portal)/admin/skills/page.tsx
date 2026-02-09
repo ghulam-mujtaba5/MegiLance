@@ -10,7 +10,7 @@ import Select from '@/app/components/Select/Select';
 import Textarea from '@/app/components/Textarea/Textarea';
 import Modal from '@/app/components/Modal/Modal';
 import Badge from '@/app/components/Badge/Badge';
-import { Loader } from '@/app/components/Loader/Loader';
+import Loader from '@/app/components/Loader/Loader';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';

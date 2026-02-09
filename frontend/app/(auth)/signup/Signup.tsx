@@ -32,7 +32,7 @@ const roleConfig = {
     label: 'Client',
     brandIcon: User,
     brandTitle: 'Find Top-Tier Talent',
-    brandText: 'Post projects, evaluate proposals, and collaborate with the world's best freelancers, all in one place.',
+    brandText: 'Post projects, evaluate proposals, and collaborate with the world\u2019s best freelancers, all in one place.',
   },
   freelancer: {
     id: 'freelancer' as UserRole,

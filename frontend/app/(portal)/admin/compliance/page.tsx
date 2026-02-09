@@ -8,7 +8,7 @@ import Button from '@/app/components/Button/Button';
 import Select from '@/app/components/Select/Select';
 import Badge from '@/app/components/Badge/Badge';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
-import { Loader } from '@/app/components/Loader/Loader';
+import Loader from '@/app/components/Loader/Loader';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
 import { Shield, RefreshCw, FileText, Clock, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import commonStyles from './Compliance.common.module.css';
