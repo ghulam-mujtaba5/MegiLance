@@ -72,20 +72,42 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
         justifyContent: 'center', 
         alignItems: 'center', 
         minHeight: '100vh',
-        background: 'var(--bg-primary, #f8fafc)',
         flexDirection: 'column',
         gap: '1rem'
-      }}>
+      }}
+        className="portal-auth-loading"
+      >
         <div style={{
           width: '40px',
           height: '40px',
-          border: '3px solid #e2e8f0',
-          borderTopColor: '#4573df',
+          border: '3px solid var(--border-color, #e2e8f0)',
+          borderTopColor: 'var(--primary-color, #4573df)',
           borderRadius: '50%',
           animation: 'spin 1s linear infinite'
         }} />
-        <p style={{ color: '#64748b' }}>Verifying authentication...</p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        <p style={{ color: 'var(--text-secondary, #64748b)', fontSize: '0.875rem' }}>Verifying authentication...</p>
+        <style>{`
+          @keyframes spin { to { transform: rotate(360deg); } }
+          .portal-auth-loading {
+            background: #f8fafc;
+          }
+          @media (prefers-color-scheme: dark) {
+            .portal-auth-loading {
+              background: #0f172a;
+            }
+            .portal-auth-loading p {
+              color: #94a3b8 !important;
+            }
+          }
+          [data-theme="dark"] .portal-auth-loading,
+          .dark .portal-auth-loading {
+            background: #0f172a;
+          }
+          [data-theme="dark"] .portal-auth-loading p,
+          .dark .portal-auth-loading p {
+            color: #94a3b8 !important;
+          }
+        `}</style>
       </div>
     );
   }

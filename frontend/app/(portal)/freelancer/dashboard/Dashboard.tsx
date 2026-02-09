@@ -1,4 +1,4 @@
-// @AI-HINT: Redesigned Freelancer Dashboard with modern UI/UX including Seller Stats
+// @AI-HINT: Redesigned Freelancer Dashboard with modern UI/UX, quick actions, seller stats
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -20,14 +20,18 @@ import {
   Eye,
   Search,
   ArrowRight,
-  Package
+  Package,
+  MessageSquare,
+  User,
+  Settings,
+  BarChart3
 } from 'lucide-react';
 
 import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
 import darkStyles from './Dashboard.dark.module.css';
 
-// Mock seller stats for demo
+// Mock seller stats — used as fallback when API unavailable
 const getMockSellerStats = (): SellerStatsData => ({
   userId: 1,
   level: {
@@ -77,7 +81,6 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     setMounted(true);
     
-    // Fetch seller stats from API
     const fetchSellerStats = async () => {
       try {
         const response = await fetch('/backend/api/seller-stats/me', {
@@ -87,10 +90,9 @@ const Dashboard: React.FC = () => {
           const data = await response.json();
           setSellerStats(data);
         } else {
-          // Use mock data for demo
           setSellerStats(getMockSellerStats());
         }
-      } catch (error) {
+      } catch {
         setSellerStats(getMockSellerStats());
       }
     };
@@ -100,16 +102,32 @@ const Dashboard: React.FC = () => {
 
   const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  const metrics = useMemo(() => {
-    return {
-      earnings: analytics?.totalEarnings || '$0',
-      activeJobs: analytics?.activeProjects || 0,
-      proposalsSent: analytics?.pendingProposals || 0,
-      profileViews: analytics?.profileViews || 0
-    };
-  }, [analytics]);
+  const metrics = useMemo(() => ({
+    earnings: analytics?.totalEarnings || '$0',
+    activeJobs: analytics?.activeProjects || 0,
+    proposalsSent: analytics?.pendingProposals || 0,
+    profileViews: analytics?.profileViews || 0,
+  }), [analytics]);
 
-  if (!mounted) return null;
+  // Quick actions for the grid
+  const quickActions = [
+    { label: 'Find Work', href: '/jobs', icon: Search, color: 'primary' as const },
+    { label: 'My Gigs', href: '/freelancer/gigs', icon: Package, color: 'success' as const },
+    { label: 'Proposals', href: '/freelancer/proposals', icon: FileText, color: 'info' as const },
+    { label: 'Messages', href: '/freelancer/messages', icon: MessageSquare, color: 'purple' as const },
+    { label: 'Analytics', href: '/freelancer/analytics', icon: BarChart3, color: 'warning' as const },
+    { label: 'Profile', href: '/freelancer/profile', icon: User, color: 'danger' as const },
+  ];
+
+  if (!mounted) {
+    return (
+      <div className={cn(commonStyles.dashboardContainer)} style={{ minHeight: '100vh', padding: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(commonStyles.dashboardContainer, themeStyles.dashboardContainer)}>
@@ -119,14 +137,14 @@ const Dashboard: React.FC = () => {
           <h1>Welcome back, Freelancer</h1>
           <p>You have new job matches waiting for you.</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div className={commonStyles.headerActions}>
           <Link href="/freelancer/gigs">
-            <Button variant="outline" size="lg" iconBefore={<Package size={20} />}>
+            <Button variant="outline" size="lg" iconBefore={<Package size={18} />}>
               My Gigs
             </Button>
           </Link>
           <Link href="/jobs">
-            <Button variant="primary" size="lg" iconBefore={<Search size={20} />}>
+            <Button variant="primary" size="lg" iconBefore={<Search size={18} />}>
               Find Work
             </Button>
           </Link>
@@ -134,9 +152,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Seller Stats Section */}
-      {sellerStats && (
-        <SellerStats stats={sellerStats} />
-      )}
+      {sellerStats && <SellerStats stats={sellerStats} />}
 
       {/* Stats Grid */}
       <div className={commonStyles.statsGrid}>
@@ -166,6 +182,21 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
+      {/* Quick Actions */}
+      <div className={commonStyles.quickActionsSection}>
+        <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Quick Actions</h2>
+        <div className={commonStyles.quickActionsGrid}>
+          {quickActions.map((action) => (
+            <Link key={action.label} href={action.href} className={cn(commonStyles.quickActionCard, themeStyles.quickActionCard)}>
+              <div className={cn(commonStyles.quickActionIcon, commonStyles[`quickActionIcon-${action.color}`])}>
+                <action.icon size={20} />
+              </div>
+              <span className={cn(commonStyles.quickActionLabel, themeStyles.quickActionLabel)}>{action.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Main Content Grid */}
       <div className={commonStyles.mainContentGrid}>
         {/* Left Column */}
@@ -173,7 +204,7 @@ const Dashboard: React.FC = () => {
           <div className={commonStyles.sectionHeader}>
             <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Recommended Jobs</h2>
             <Link href="/jobs" className={cn(commonStyles.viewAllLink, themeStyles.viewAllLink)}>
-              View All Jobs <ArrowRight size={16} className="inline ml-1" />
+              View All <ArrowRight size={16} />
             </Link>
           </div>
           
@@ -187,12 +218,12 @@ const Dashboard: React.FC = () => {
             ) : (
               <EmptyState
                 title="No jobs found"
-                description="We couldn't find any jobs matching your skills."
+                description="We couldn&apos;t find any jobs matching your skills."
                 animationData={searchingAnimation}
                 animationWidth={120}
                 animationHeight={120}
                 action={
-                  <Link href="/profile">
+                  <Link href="/freelancer/profile">
                     <Button variant="outline" size="sm">Update Profile</Button>
                   </Link>
                 }
@@ -205,7 +236,7 @@ const Dashboard: React.FC = () => {
         <div className={commonStyles.sectionContainer}>
           <div className={commonStyles.sectionHeader}>
             <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Recent Proposals</h2>
-            <Link href="/proposals" className={cn(commonStyles.viewAllLink, themeStyles.viewAllLink)}>
+            <Link href="/freelancer/proposals" className={cn(commonStyles.viewAllLink, themeStyles.viewAllLink)}>
               View All
             </Link>
           </div>
@@ -215,10 +246,8 @@ const Dashboard: React.FC = () => {
               proposals.slice(0, 5).map((proposal) => (
                 <div key={proposal.id} className={cn(commonStyles.proposalCard, themeStyles.proposalCard)}>
                   <div className={commonStyles.proposalInfo}>
-                    <div className={cn(commonStyles.proposalInfo, themeStyles.proposalInfo)}>
-                      <h4>{proposal.projectTitle}</h4>
-                    </div>
-                    <span className="text-xs opacity-70">
+                    <h4 className={cn(themeStyles.proposalTitle)}>{proposal.projectTitle}</h4>
+                    <span className={cn(commonStyles.proposalDate, themeStyles.proposalDate)}>
                       {new Date(proposal.sentDate).toLocaleDateString()}
                     </span>
                   </div>

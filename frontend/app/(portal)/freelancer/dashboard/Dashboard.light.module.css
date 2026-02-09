@@ -1,81 +1,40 @@
-/* Freelancer Dashboard Light Theme */
+/* @AI-HINT: Freelancer Dashboard — light theme colours */
 
 .dashboardContainer {
   background-color: #f8fafc;
   color: #0f172a;
 }
 
-.welcomeText h1 {
-  color: #0f172a;
-}
+.welcomeText h1 { color: #0f172a; }
+.welcomeText p   { color: #64748b; }
 
-.welcomeText p {
-  color: #64748b;
-}
+/* ── Section titles & links ─────────── */
+.sectionTitle { color: #0f172a; }
+.viewAllLink  { color: #4573df; }
 
-.statCard {
+/* ── Quick Actions ──────────────────── */
+.quickActionCard {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
-
-.statCard:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.statHeader {
-  color: #64748b;
-}
-
-.statValue {
-  color: #0f172a;
-}
-
-.viewAllLink {
-  color: #4573df;
-}
-
-.jobCard {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.jobCard:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+.quickActionCard:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
   border-color: #cbd5e1;
 }
+.quickActionLabel { color: #334155; }
 
-.jobTitle {
-  color: #0f172a;
-}
-
-.jobClient {
-  color: #64748b;
-}
-
-.tag {
-  background-color: #f1f5f9;
-  color: #475569;
-}
-
-.jobFooter {
-  border-color: #f1f5f9;
-}
-
-.jobBudget {
-  color: #0f172a;
-}
-
+/* ── Proposal cards ─────────────────── */
 .proposalCard {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
 }
-
-.proposalInfo h4 {
-  color: #0f172a;
+.proposalCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
-
+.proposalTitle { color: #0f172a; }
+.proposalDate  { color: #94a3b8; }
 .proposalStatus {
   background-color: #f1f5f9;
   color: #475569;

@@ -8,7 +8,7 @@ import {
   Bell, Search, HelpCircle, Sun, Moon, LogOut, User, Settings, 
   X, Check, CheckCheck, ExternalLink, MessageSquare, FileText,
   Briefcase, CreditCard, AlertCircle, Clock, ChevronRight,
-  Keyboard, BookOpen, Mail, Shield, Wallet
+  Keyboard, BookOpen, Mail, Shield, Wallet, Menu
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -31,6 +31,7 @@ interface Notification {
 
 interface PortalNavbarProps {
   userType?: 'client' | 'freelancer' | 'admin' | 'general';
+  onMenuToggle?: () => void;
 }
 
 // Fetch real notifications from API
@@ -74,7 +75,7 @@ function formatTimeAgo(dateStr: string): string {
   return date.toLocaleDateString();
 }
 
-const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client' }) => {
+const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenuToggle }) => {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
@@ -227,6 +228,17 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client' }) => {
     <header className={cn(commonStyles.navbar, styles.navbar)}>
       <div className={cn(commonStyles.container, styles.container)}>
         <div className={commonStyles.leftSection}>
+          {/* Mobile hamburger menu */}
+          {onMenuToggle && (
+            <button 
+              className={cn(commonStyles.menuButton, styles.actionButton)}
+              onClick={onMenuToggle}
+              aria-label="Toggle navigation menu"
+              title="Menu"
+            >
+              <Menu size={22} />
+            </button>
+          )}
           <h1 className={cn(commonStyles.pageTitle, styles.pageTitle)}>
             {getPageTitle()}
           </h1>

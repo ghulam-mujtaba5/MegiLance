@@ -1,8 +1,8 @@
-// @AI-HINT: This is the Sidebar component. It provides the main navigation for the application dashboard. It is designed to be responsive, themed, and accessible, with a collapsible state, using a per-component CSS module architecture.
+// @AI-HINT: This is the Sidebar component. It provides the main navigation for the application dashboard. It is designed to be responsive, themed, and accessible, with a collapsible state and mobile drawer support, using a per-component CSS module architecture.
 'use client';
 
-import React, { useState, useId, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useId, useCallback, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -19,11 +19,13 @@ interface SidebarProps {
   isCollapsed: boolean;
   toggleSidebar: () => void;
   userType?: 'admin' | 'client' | 'freelancer';
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 // AI-HINT: Role-aware navigation is provided by the shared SidebarNav component.
 
-const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType, isMobileOpen = false, onMobileClose }) => {
   const { resolvedTheme } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
   const uniqueId = useId();
@@ -36,11 +38,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
       e.preventDefault();
       toggleSidebar();
     }
-  }, [toggleSidebar]);
+    // Escape closes mobile sidebar
+    if (e.key === 'Escape' && isMobileOpen && onMobileClose) {
+      onMobileClose();
+    }
+  }, [toggleSidebar, isMobileOpen, onMobileClose]);
+
+  // Close mobile sidebar on Escape key (window-level)
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && onMobileClose) onMobileClose();
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [isMobileOpen, onMobileClose]);
 
   const [user, setUser] = useState<{ name: string; avatar?: string; role?: string } | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     try {
       const storedUser = window.localStorage.getItem('user');
       if (storedUser) {
@@ -56,6 +72,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
     }
   }, [userType]);
 
+  // Listen for user updates from other components
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'user') {
+        try {
+          const parsedUser = e.newValue ? JSON.parse(e.newValue) : null;
+          if (parsedUser) {
+            setUser({
+              name: parsedUser.full_name || parsedUser.name || 'User',
+              avatar: parsedUser.profile_image_url || parsedUser.avatar,
+              role: parsedUser.user_type || parsedUser.role || userType
+            });
+          }
+        } catch { /* ignore */ }
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [userType]);
+
   if (!resolvedTheme) return null;
 
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
@@ -66,7 +102,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
       className={cn(
         commonStyles.sidebar,
         themeStyles.sidebar,
-        isCollapsed ? commonStyles.sidebarCollapsed : commonStyles.sidebarExpanded
+        isCollapsed ? commonStyles.sidebarCollapsed : commonStyles.sidebarExpanded,
+        isMobileOpen && commonStyles.sidebarMobileOpen
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -80,34 +117,50 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
             className={cn(
               commonStyles.logoText,
               themeStyles.logoText,
-              isCollapsed && commonStyles.logoTextCollapsed
+              isCollapsed && !isMobileOpen && commonStyles.logoTextCollapsed
             )}
-            aria-hidden={isCollapsed}
+            aria-hidden={isCollapsed && !isMobileOpen}
           >
             MegiLance
           </span>
         </div>
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          className={cn(commonStyles.toggleButton, themeStyles.toggleButton)}
-          title={isCollapsed ? 'Expand Sidebar (Ctrl+[)' : 'Collapse Sidebar (Ctrl+[)'}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-expanded={!isCollapsed}
-          aria-controls={navId}
-        >
-          {isCollapsed ? <ChevronRight size={20} aria-hidden="true" /> : <ChevronLeft size={20} aria-hidden="true" />}
-        </button>
+        
+        {/* Mobile close button */}
+        {isMobileOpen && onMobileClose && (
+          <button
+            type="button"
+            onClick={onMobileClose}
+            className={cn(commonStyles.mobileCloseButton, themeStyles.toggleButton)}
+            aria-label="Close sidebar"
+          >
+            <X size={20} aria-hidden="true" />
+          </button>
+        )}
+
+        {/* Desktop toggle button */}
+        {!isMobileOpen && (
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            className={cn(commonStyles.toggleButton, themeStyles.toggleButton)}
+            title={isCollapsed ? 'Expand Sidebar (Ctrl+[)' : 'Collapse Sidebar (Ctrl+[)'}
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={!isCollapsed}
+            aria-controls={navId}
+          >
+            {isCollapsed ? <ChevronRight size={20} aria-hidden="true" /> : <ChevronLeft size={20} aria-hidden="true" />}
+          </button>
+        )}
       </header>
 
       <nav id={navId} className={cn(commonStyles.sidebarNavContainer, themeStyles.sidebarNavContainer)} role="navigation">
-        <SidebarNav isCollapsed={isCollapsed} userType={userType} />
+        <SidebarNav isCollapsed={isCollapsed && !isMobileOpen} userType={userType} />
       </nav>
 
       <div className={commonStyles.divider} role="separator" aria-hidden="true"></div>
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>
-        <div className={cn(commonStyles.userInfo)}>
+        <div className={cn(commonStyles.userInfo, themeStyles.userInfo)}>
           <UserAvatar 
             src={user?.avatar} 
             name={user?.name || 'User'} 
@@ -117,9 +170,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType 
           <div
             className={cn(
               commonStyles.userDetails,
-              isCollapsed && commonStyles.userDetailsCollapsed
+              isCollapsed && !isMobileOpen && commonStyles.userDetailsCollapsed
             )}
-            aria-hidden={isCollapsed}
+            aria-hidden={isCollapsed && !isMobileOpen}
           >
             <span className={cn(commonStyles.userName, themeStyles.userName)}>
               {user?.name || 'Loading...'}

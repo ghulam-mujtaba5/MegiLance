@@ -1,7 +1,7 @@
 // @AI-HINT: This is the main AppLayout component that creates the shell for authenticated users, combining the Sidebar and Navbar for a cohesive application experience.
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import PortalNavbar from '../Layout/PortalNavbar/PortalNavbar';
 import PortalFooter from '../Layout/PortalFooter/PortalFooter';
@@ -11,14 +11,7 @@ import ErrorBoundary from '@/app/components/ErrorBoundary/ErrorBoundary';
 
 import { useTheme } from 'next-themes';
 import { usePathname } from 'next/navigation';
-import { User as UserIcon, Settings, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  dashboardNavItems,
-  clientNavItems,
-  freelancerNavItems,
-  adminNavItems,
-} from '@/app/config/navigation';
 
 import commonStyles from './AppLayout.common.module.css';
 import lightStyles from './AppLayout.light.module.css';
@@ -63,8 +56,14 @@ function getStoredUser(): UserData {
   }
 }
 
+const COLLAPSED_KEY = 'sidebar_collapsed';
+
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(COLLAPSED_KEY) === 'true';
+  });
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [user, setUser] = useState<UserData>(DEFAULT_USER);
   const { resolvedTheme } = useTheme();
   const pathname = usePathname();
@@ -98,14 +97,10 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [pathname]);
 
-  const profileMenuItems = useMemo(() => {
-    const basePath = `/${area}`;
-    return [
-      { label: 'Your Profile', href: `${basePath}/profile`, icon: <UserIcon size={16} /> },
-      { label: 'Settings', href: `${basePath}/settings`, icon: <Settings size={16} /> },
-      { label: 'Sign out', href: '/logout', icon: <LogOut size={16} /> },
-    ];
-  }, [area]);
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
 
   // Remember the current portal area for cross-route redirects from public pages
   useEffect(() => {
@@ -114,9 +109,22 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     }
   }, [area]);
 
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  const toggleSidebar = useCallback(() => {
+    // On mobile, toggle mobile-open state instead
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      setIsMobileOpen(prev => !prev);
+    } else {
+      setIsCollapsed(prev => {
+        const next = !prev;
+        window.localStorage.setItem(COLLAPSED_KEY, String(next));
+        return next;
+      });
+    }
+  }, []);
+
+  const closeMobileSidebar = useCallback(() => {
+    setIsMobileOpen(false);
+  }, []);
 
   if (!resolvedTheme) return null; // Avoid rendering until theme is loaded to prevent flash of unstyled content
 
@@ -143,9 +151,31 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </div>
 
       <div className={cn(commonStyles.appLayout, themeStyles.appLayout)}>
-        <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} userType={(area as string) === 'general' ? undefined : area} />
-        <div className={cn(commonStyles.mainContent, isCollapsed && commonStyles.sidebarCollapsed)}>
-          <PortalNavbar userType={area} />
+        {/* Mobile overlay backdrop */}
+        <div
+          className={cn(
+            commonStyles.mobileOverlay,
+            themeStyles.mobileOverlay,
+            isMobileOpen && commonStyles.mobileOverlayVisible,
+            isMobileOpen && themeStyles.mobileOverlayVisible
+          )}
+          onClick={closeMobileSidebar}
+          aria-hidden="true"
+        />
+
+        <Sidebar 
+          isCollapsed={isCollapsed} 
+          toggleSidebar={toggleSidebar} 
+          userType={(area as string) === 'general' ? undefined : area}
+          isMobileOpen={isMobileOpen}
+          onMobileClose={closeMobileSidebar}
+        />
+
+        <div className={cn(
+          commonStyles.mainContent,
+          isCollapsed && commonStyles.mainContentCollapsed
+        )}>
+          <PortalNavbar userType={area} onMenuToggle={toggleSidebar} />
 
           <ErrorBoundary>
             <main 
@@ -155,10 +185,16 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               aria-label={`${area.charAt(0).toUpperCase() + area.slice(1)} Dashboard content`}
             >
               {children}
-              <PortalFooter />
             </main>
           </ErrorBoundary>
-          <ChatbotAgent />
+
+          <div className={commonStyles.footerWrapper}>
+            <PortalFooter />
+          </div>
+
+          <ErrorBoundary>
+            <ChatbotAgent />
+          </ErrorBoundary>
         </div>
       </div>
     </>

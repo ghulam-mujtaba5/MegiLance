@@ -1,4 +1,4 @@
-// @AI-HINT: Redesigned Client Dashboard with modern UI/UX. 
+// @AI-HINT: Redesigned Client Dashboard with modern UI/UX, quick actions, and activity feed.
 // Production-ready: Uses real API data, no mock fallbacks.
 'use client';
 
@@ -18,7 +18,13 @@ import {
   Clock, 
   MessageSquare, 
   Plus,
-  ArrowRight
+  ArrowRight,
+  Search,
+  FileText,
+  Users,
+  CreditCard,
+  Star,
+  TrendingUp
 } from 'lucide-react';
 
 import StatCard from './components/StatCard';
@@ -33,7 +39,6 @@ const ClientDashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { projects, payments, loading, error } = useClientData();
-  // Use dedicated recommendations hook
   const { recommendations: freelancers, loading: recLoading, error: recError } = useRecommendations(5);
 
   useEffect(() => {
@@ -42,7 +47,6 @@ const ClientDashboard: React.FC = () => {
 
   const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
-  // Use real data - no demo fallbacks
   const displayProjects = useMemo(() => {
     if (!Array.isArray(projects)) return [];
     return projects;
@@ -58,16 +62,25 @@ const ClientDashboard: React.FC = () => {
       return sum + amount;
     }, 0) : 0;
     
-    // Count pending proposals from projects
     const pendingProposals = displayProjects.reduce((sum, p) => sum + (p.proposals_count || 0), 0);
     
     return {
       totalSpent: `$${totalSpent.toLocaleString()}`,
       activeProjects,
       pendingProposals,
-      unreadMessages: 0 // Will be fetched from messages API when available
+      unreadMessages: 0
     };
   }, [displayProjects, payments]);
+
+  // Quick actions for the grid
+  const quickActions = [
+    { label: 'Post a Job', href: '/client/post-job', icon: Plus, color: 'primary' as const },
+    { label: 'Find Talent', href: '/client/hire', icon: Search, color: 'success' as const },
+    { label: 'My Projects', href: '/client/projects', icon: Briefcase, color: 'info' as const },
+    { label: 'Contracts', href: '/client/contracts', icon: FileText, color: 'warning' as const },
+    { label: 'Payments', href: '/client/payments', icon: CreditCard, color: 'danger' as const },
+    { label: 'Messages', href: '/client/messages', icon: MessageSquare, color: 'purple' as const },
+  ];
 
   if (!mounted) {
     return (
@@ -85,13 +98,20 @@ const ClientDashboard: React.FC = () => {
       <div className={commonStyles.headerSection}>
         <div className={cn(commonStyles.welcomeText, themeStyles.welcomeText)}>
           <h1>Welcome back</h1>
-          <p>Here's what's happening with your projects today.</p>
+          <p>Here&apos;s what&apos;s happening with your projects today.</p>
         </div>
-        <Link href="/client/post-job">
-          <Button variant="primary" size="lg" iconBefore={<Plus size={20} />}>
-            Post a Job
-          </Button>
-        </Link>
+        <div className={commonStyles.headerActions}>
+          <Link href="/client/hire">
+            <Button variant="outline" size="lg" iconBefore={<Search size={18} />}>
+              Find Talent
+            </Button>
+          </Link>
+          <Link href="/client/post-job">
+            <Button variant="primary" size="lg" iconBefore={<Plus size={20} />}>
+              Post a Job
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -121,6 +141,21 @@ const ClientDashboard: React.FC = () => {
         />
       </div>
 
+      {/* Quick Actions */}
+      <div className={commonStyles.quickActionsSection}>
+        <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Quick Actions</h2>
+        <div className={commonStyles.quickActionsGrid}>
+          {quickActions.map((action) => (
+            <Link key={action.label} href={action.href} className={cn(commonStyles.quickActionCard, themeStyles.quickActionCard)}>
+              <div className={cn(commonStyles.quickActionIcon, commonStyles[`quickActionIcon-${action.color}`])}>
+                <action.icon size={20} />
+              </div>
+              <span className={cn(commonStyles.quickActionLabel, themeStyles.quickActionLabel)}>{action.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {/* Main Content Grid */}
       <div className={commonStyles.mainContentGrid}>
         {/* Left Column */}
@@ -128,7 +163,7 @@ const ClientDashboard: React.FC = () => {
           <div className={commonStyles.sectionHeader}>
             <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Active Projects</h2>
             <Link href="/client/projects" className={cn(commonStyles.viewAllLink, themeStyles.viewAllLink)}>
-              View All Projects <ArrowRight size={16} className="inline ml-1" />
+              View All <ArrowRight size={16} />
             </Link>
           </div>
           

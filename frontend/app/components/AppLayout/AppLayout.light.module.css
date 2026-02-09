@@ -14,6 +14,18 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+.skipLink:focus {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
 .skipLink:hover {
   background-color: #3562ce;
+}
+
+.mobileOverlay {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.mobileOverlayVisible {
+  background-color: rgba(0, 0, 0, 0.3);
 }
