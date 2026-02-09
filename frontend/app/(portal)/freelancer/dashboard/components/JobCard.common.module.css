@@ -1,10 +1,14 @@
+/* @AI-HINT: Freelancer JobCard — layout & animations */
+
 .card {
-  border-radius: 0.75rem;
+  border-radius: 14px;
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: all 0.2s ease;
+  transition: transform 0.22s cubic-bezier(.4,0,.2,1),
+              box-shadow 0.22s cubic-bezier(.4,0,.2,1),
+              border-color 0.22s cubic-bezier(.4,0,.2,1);
 }
 
 .card:hover {
@@ -22,12 +26,16 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
 }
 
 .title {
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .client {
@@ -35,9 +43,10 @@
 }
 
 .budget {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
   white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
 .tags {
@@ -47,10 +56,11 @@
 }
 
 .tag {
-  padding: 0.25rem 0.625rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .footer {
@@ -67,5 +77,5 @@
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.875rem;
+  font-size: 0.813rem;
 }
