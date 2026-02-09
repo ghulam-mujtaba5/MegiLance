@@ -45,7 +45,8 @@ import {
   Tag,
   List,
   Activity,
-  Heart
+  Heart,
+  Globe
 } from 'lucide-react';
 import {
   clientNavItems,
@@ -86,6 +87,9 @@ const iconMap: Record<string, React.ReactNode> = {
   Tag: <Tag size={18} />,
   List: <List size={18} />,
   Activity: <Activity size={18} />,
+  Globe: <Globe size={18} />,
+  Mail: <Mail size={18} />,
+  Home: <Home size={18} />,
 };
 
 // Define the structure for a navigation item
@@ -96,6 +100,7 @@ export interface NavItem {
   badge?: string | number;
   submenu?: NavItem[];
   status?: FeatureStatus;
+  section?: string;
 }
 
 // Define the props for the SidebarNav component
@@ -127,7 +132,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       icon: item.icon && iconMap[item.icon] ? iconMap[item.icon] : <HelpCircle size={18} />,
       badge: item.badge,
       submenu: item.submenu ? mapConfigItems(item.submenu) : undefined,
-      status: 'complete' // Default status
+      status: 'complete', // Default status
+      section: item.section,
     }));
   };
 
@@ -178,6 +184,14 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
             
             return (
               <React.Fragment key={item.href}>
+                {item.section && !isCollapsed && (
+                  <li className={styles.sidebarNavSectionHeader} aria-hidden="true">
+                    <span className={cn(styles.sidebarNavSectionLabel, themeStyles.sectionLabel)}>{item.section}</span>
+                  </li>
+                )}
+                {item.section && isCollapsed && (
+                  <li className={styles.sidebarNavSectionDivider} aria-hidden="true" />
+                )}
                 <li className={styles.sidebarNavItem}>
                   <Link
                     href={item.submenu ? '#' : item.href}

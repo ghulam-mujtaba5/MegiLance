@@ -1,54 +1,66 @@
-/* Admin Dashboard Light Theme */
+/* @AI-HINT: Admin Dashboard light theme — cards, quick actions, activity feed */
 
 .dashboardContainer {
   background-color: #f8fafc;
   color: #0f172a;
 }
 
-.welcomeText h1 {
-  color: #0f172a;
-}
+.headerTitle { color: #0f172a; }
+.headerSubtitle { color: #64748b; }
 
-.welcomeText p {
-  color: #64748b;
-}
-
+/* Stats */
 .statCard {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
-
 .statCard:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
+.statLabel { color: #64748b; }
+.statValue { color: #0f172a; }
 
-.statHeader {
-  color: #64748b;
+.accent_blue  { background: rgba(59,130,246,0.1); color: #2563eb; }
+.accent_green { background: rgba(22,163,74,0.1);  color: #16a34a; }
+.accent_amber { background: rgba(245,158,11,0.1); color: #d97706; }
+.accent_red   { background: rgba(239,68,68,0.1);  color: #dc2626; }
+
+/* Quick Actions */
+.quickAction {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
-
-.statValue {
-  color: #0f172a;
+.quickAction:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  border-color: #cbd5e1;
 }
-
-.viewAllLink {
+.quickActionIcon {
+  background-color: #f1f5f9;
   color: #4573df;
 }
+.quickActionLabel { color: #0f172a; }
+.quickActionDesc  { color: #94a3b8; }
 
+/* Sections */
+.sectionTitle { color: #0f172a; }
+.viewAllLink { color: #4573df; }
+
+.tableWrapper {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+/* Activity */
 .activityItem {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
 }
-
 .activityIcon {
   background-color: #eff6ff;
   color: #3b82f6;
 }
+.activityName { color: #0f172a; }
+.activityDesc { color: #64748b; }
 
-.activityContent h4 {
-  color: #0f172a;
-}
-
-.activityContent p {
-  color: #64748b;
-}
+.emptyState { color: #94a3b8; }

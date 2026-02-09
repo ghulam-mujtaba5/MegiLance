@@ -47,3 +47,11 @@
   border-left-color: #4573df;
   color: #1e40af;
 }
+
+.sectionLabel {
+  color: #9ca3af;
+}
+
+.sidebarNavSectionDivider {
+  background-color: #e5e7eb;
+}

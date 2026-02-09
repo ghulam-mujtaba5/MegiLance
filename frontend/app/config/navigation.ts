@@ -9,6 +9,7 @@ export interface NavItem {
   badge?: string | number;
   submenu?: NavItem[];
   status?: string;
+  section?: string; // Optional section header to display above this item
 }
 
 export interface ProfileMenuItem {
@@ -78,62 +79,70 @@ export const dashboardNavItems: NavItem[] = [];
 
 // Freelancer-specific navigation
 export const freelancerNavItems: NavItem[] = [
-  { label: 'Dashboard', href: '/freelancer/dashboard', icon: 'LayoutDashboard' },
+  { label: 'Dashboard', href: '/freelancer/dashboard', icon: 'LayoutDashboard', section: 'Overview' },
   { label: 'Messages', href: '/freelancer/messages', icon: 'MessageSquare' },
-  { label: 'My Jobs', href: '/freelancer/my-jobs', icon: 'Briefcase' },
+  { label: 'My Jobs', href: '/freelancer/my-jobs', icon: 'Briefcase', section: 'Work' },
   { label: 'Proposals', href: '/freelancer/proposals', icon: 'FileText' },
   { label: 'Projects', href: '/freelancer/projects', icon: 'FolderGit2' },
-  { label: 'Time Tracking', href: '/freelancer/time-entries', icon: 'Calendar' },
-  { label: 'Invoices', href: '/freelancer/invoices', icon: 'FileText' },
-  { label: 'Portfolio', href: '/freelancer/portfolio', icon: 'User' },
-  { label: 'Analytics', href: '/freelancer/analytics', icon: 'LineChart' },
-  { label: 'Wallet', href: '/freelancer/wallet', icon: 'Wallet' },
-  { label: 'Reviews', href: '/freelancer/reviews', icon: 'Star' },
-  { label: 'Job Alerts', href: '/freelancer/job-alerts', icon: 'Bell' },
-  { label: 'External Projects', href: '/external-projects', icon: 'Globe' },
   { label: 'Contracts', href: '/freelancer/contracts', icon: 'FileText' },
-  { label: 'Saved Jobs', href: '/freelancer/saved-jobs', icon: 'Heart' },
+  { label: 'External Projects', href: '/external-projects', icon: 'Globe' },
+  { label: 'Time Tracking', href: '/freelancer/time-entries', icon: 'Calendar', section: 'Finance' },
+  { label: 'Invoices', href: '/freelancer/invoices', icon: 'FileText' },
+  { label: 'Wallet', href: '/freelancer/wallet', icon: 'Wallet' },
+  { label: 'Portfolio', href: '/freelancer/portfolio', icon: 'User', section: 'Profile' },
   { label: 'Skills', href: '/freelancer/skills', icon: 'Wrench' },
   { label: 'Rank', href: '/freelancer/rank', icon: 'TrendingUp' },
-  { label: 'Support', href: '/freelancer/support', icon: 'HelpCircle' },
+  { label: 'Reviews', href: '/freelancer/reviews', icon: 'Star' },
+  { label: 'Analytics', href: '/freelancer/analytics', icon: 'LineChart' },
+  { label: 'Job Alerts', href: '/freelancer/job-alerts', icon: 'Bell' },
+  { label: 'Saved Jobs', href: '/freelancer/saved-jobs', icon: 'Heart' },
+  { label: 'Support', href: '/freelancer/support', icon: 'HelpCircle', section: 'Settings' },
   { label: 'Settings', href: '/freelancer/settings', icon: 'Settings' },
 ];
 
 // Client-specific navigation
 export const clientNavItems: NavItem[] = [
-  { label: 'Dashboard', href: '/client/dashboard', icon: 'LayoutDashboard' },
+  { label: 'Dashboard', href: '/client/dashboard', icon: 'LayoutDashboard', section: 'Overview' },
   { label: 'Messages', href: '/client/messages', icon: 'MessageSquare' },
-  { label: 'Post Job', href: '/client/post-job', icon: 'TrendingUp' },
+  { label: 'Post Job', href: '/client/post-job', icon: 'TrendingUp', section: 'Hiring' },
   { label: 'Hire', href: '/client/hire', icon: 'Users' },
   { label: 'Talent Search', href: '/client/search', icon: 'Search' },
-  { label: 'Projects', href: '/client/projects', icon: 'Briefcase' },
+  { label: 'Projects', href: '/client/projects', icon: 'Briefcase', section: 'Projects' },
   { label: 'Contracts', href: '/client/contracts', icon: 'FileText' },
   { label: 'Invoices', href: '/client/invoices', icon: 'FileText' },
   { label: 'Reports', href: '/client/reports', icon: 'BarChart3' },
+  { label: 'Payments', href: '/client/payments', icon: 'CreditCard', section: 'Finance' },
   { label: 'Escrow', href: '/client/escrow', icon: 'Lock' },
-  { label: 'Payments', href: '/client/payments', icon: 'CreditCard' },
-  { label: 'Reviews', href: '/client/reviews', icon: 'Star' },
   { label: 'Wallet', href: '/client/wallet', icon: 'Wallet' },
-  { label: 'Help', href: '/client/help', icon: 'HelpCircle' },
+  { label: 'Reviews', href: '/client/reviews', icon: 'Star' },
+  { label: 'Help', href: '/client/help', icon: 'HelpCircle', section: 'Settings' },
   { label: 'Settings', href: '/client/settings', icon: 'Settings' },
 ];
 
-// Admin navigation
+// Admin navigation — grouped with submenus for better UX
 export const adminNavItems: NavItem[] = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: 'LayoutDashboard' },
-  { label: 'Users', href: '/admin/users', icon: 'Users' },
+  { label: 'Dashboard', href: '/admin/dashboard', icon: 'LayoutDashboard', section: 'Overview' },
+  { label: 'Analytics', href: '/admin/analytics', icon: 'LineChart' },
+  { label: 'Users', href: '/admin/users', icon: 'Users', section: 'Management' },
   { label: 'Projects', href: '/admin/projects', icon: 'Briefcase' },
-  { label: 'Disputes', href: '/admin/disputes', icon: 'Gavel' },
-  { label: 'Tags', href: '/admin/tags', icon: 'Tag' },
-  { label: 'Categories', href: '/admin/categories', icon: 'List' },
+  { label: 'Messages', href: '/admin/messages', icon: 'MessageSquare' },
+  { label: 'Categories', href: '/admin/categories', icon: 'List', section: 'Content' },
   { label: 'Skills', href: '/admin/skills', icon: 'Wrench' },
-  { label: 'Refunds', href: '/admin/refunds', icon: 'History' },
-  { label: 'Payments', href: '/admin/payments', icon: 'CreditCard' },
-  { label: 'AI Monitoring', href: '/admin/ai-monitoring', icon: 'Bot' },
-  { label: 'Content Moderation', href: '/admin/moderation', icon: 'ShieldAlert' },
+  { label: 'Tags', href: '/admin/tags', icon: 'Tag' },
+  { label: 'Payments', href: '/admin/payments', icon: 'CreditCard', section: 'Financial', submenu: [
+    { label: 'Transactions', href: '/admin/payments' },
+    { label: 'Refunds', href: '/admin/refunds' },
+    { label: 'Billing', href: '/admin/billing' },
+  ]},
+  { label: 'Disputes', href: '/admin/disputes', icon: 'Gavel' },
+  { label: 'Content Moderation', href: '/admin/moderation', icon: 'ShieldAlert', section: 'Security' },
+  { label: 'Fraud Detection', href: '/admin/fraud-detection', icon: 'ShieldAlert' },
+  { label: 'Security', href: '/admin/security', icon: 'Lock' },
+  { label: 'Audit Logs', href: '/admin/audit', icon: 'FileText' },
+  { label: 'Compliance', href: '/admin/compliance', icon: 'ShieldAlert' },
+  { label: 'AI Monitoring', href: '/admin/ai-monitoring', icon: 'Bot', section: 'System' },
   { label: 'System Health', href: '/admin/health', icon: 'Activity' },
   { label: 'Support', href: '/admin/support', icon: 'HelpCircle' },
-  { label: 'Audit Logs', href: '/admin/audit', icon: 'ShieldAlert' },
   { label: 'Settings', href: '/admin/settings', icon: 'Settings' },
 ];
 
