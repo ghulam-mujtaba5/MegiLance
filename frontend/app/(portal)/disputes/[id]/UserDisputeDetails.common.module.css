@@ -4,6 +4,25 @@
   margin: 0 auto;
 }
 
+.disputeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.disputeTitle {
+  margin-bottom: 0;
+}
+
+.fileInputWrapper {
+  position: relative;
+}
+
+.hiddenInput {
+  display: none;
+}
+
 .header {
   display: flex;
   justify-content: space-between;

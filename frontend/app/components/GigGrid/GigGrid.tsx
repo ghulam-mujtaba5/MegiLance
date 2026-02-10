@@ -158,7 +158,7 @@ const GigGrid: React.FC<GigGridProps> = ({
               {page}
             </button>
           ) : (
-            <span key={index} className={common.pageButton} style={{ border: 'none' }}>
+            <span key={index} className={cn(common.pageButton, common.ellipsis)}>
               {page}
             </span>
           )

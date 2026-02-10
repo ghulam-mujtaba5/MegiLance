@@ -4,9 +4,9 @@ Handles uploading of user files (avatars, portfolio images, documents)
 Enhanced with path traversal protection and content validation
 """
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status
-from app.db.turso_http import execute_query, to_str
 from app.core.security import get_current_user
 from app.core.rate_limiter import api_rate_limit
+from app.services.uploads_service import get_user_avatar_url, update_user_avatar, clear_user_avatar
 import os
 import re
 import uuid
@@ -209,14 +209,7 @@ async def upload_avatar(
     file_content = validate_file(file, ALLOWED_IMAGE_TYPES, MAX_AVATAR_SIZE)
     
     # Get current avatar
-    result = execute_query(
-        "SELECT profile_image_url FROM users WHERE id = ?",
-        [current_user['id']]
-    )
-    
-    old_avatar = None
-    if result and result.get("rows"):
-        old_avatar = to_str(result["rows"][0][0])
+    old_avatar = get_user_avatar_url(current_user['id'])
     
     # Delete old avatar if exists (with path validation)
     if old_avatar:
@@ -231,10 +224,7 @@ async def upload_avatar(
     relative_path = save_uploaded_file(file_content, file.filename or "avatar.jpg", AVATAR_DIR)
     
     # Update user profile
-    execute_query(
-        "UPDATE users SET profile_image_url = ?, updated_at = ? WHERE id = ?",
-        [relative_path, datetime.now(timezone.utc).isoformat(), current_user['id']]
-    )
+    update_user_avatar(current_user['id'], relative_path)
     
     return {
         "url": f"/uploads/{relative_path}",
@@ -322,22 +312,12 @@ async def delete_uploaded_file(
         )
     
     # Get user's current profile image
-    result = execute_query(
-        "SELECT profile_image_url FROM users WHERE id = ?",
-        [current_user['id']]
-    )
-    
-    user_image = None
-    if result and result.get("rows"):
-        user_image = to_str(result["rows"][0][0])
+    user_image = get_user_avatar_url(current_user['id'])
     
     # Security check: ensure file belongs to current user
     if user_image == file_path:
         # Clear the profile image reference
-        execute_query(
-            "UPDATE users SET profile_image_url = NULL, updated_at = ? WHERE id = ?",
-            [datetime.now(timezone.utc).isoformat(), current_user['id']]
-        )
+        clear_user_avatar(current_user['id'])
         # Delete file
         full_path.unlink()
         return {"message": "File deleted successfully"}

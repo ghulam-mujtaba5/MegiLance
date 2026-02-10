@@ -361,12 +361,14 @@ export default function PortfolioShowcasePage() {
                           <button
                             onClick={() => editItem(item)}
                             className={commonStyles.overlayBtn}
+                            aria-label={`Edit ${item.title}`}
                           >
                             <Edit3 size={16} />
                           </button>
                           <button
                             onClick={() => setDeleteTargetId(item.id)}
                             className={commonStyles.overlayBtn}
+                            aria-label={`Delete ${item.title}`}
                           >
                             <Trash2 size={16} />
                           </button>
@@ -420,13 +422,13 @@ export default function PortfolioShowcasePage() {
                       </span>
                     )}
                     <div className={commonStyles.cardOverlay}>
-                      <button onClick={() => toggleFeatured(item)} className={commonStyles.overlayBtn}>
+                      <button onClick={() => toggleFeatured(item)} className={commonStyles.overlayBtn} aria-label={item.featured ? `Unfeature ${item.title}` : `Feature ${item.title}`}>
                         <Star size={16} fill={item.featured ? 'currentColor' : 'none'} />
                       </button>
-                      <button onClick={() => editItem(item)} className={commonStyles.overlayBtn}>
+                      <button onClick={() => editItem(item)} className={commonStyles.overlayBtn} aria-label={`Edit ${item.title}`}>
                         <Edit3 size={16} />
                       </button>
-                      <button onClick={() => setDeleteTargetId(item.id)} className={commonStyles.overlayBtn}>
+                      <button onClick={() => setDeleteTargetId(item.id)} className={commonStyles.overlayBtn} aria-label={`Delete ${item.title}`}>
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -475,6 +477,7 @@ export default function PortfolioShowcasePage() {
                   onClick={() => setShowItemModal(false)}
                   className={cn(commonStyles.closeButton, themeStyles.closeButton)}
                   disabled={saving}
+                  aria-label="Close dialog"
                 >
                   ×
                 </button>
@@ -547,7 +550,7 @@ export default function PortfolioShowcasePage() {
                       {newItem.tags.map(tag => (
                         <span key={tag} className={cn(commonStyles.selectedTag, themeStyles.selectedTag)}>
                           {tag}
-                          <button onClick={() => setNewItem(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }))}>
+                          <button onClick={() => setNewItem(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }))} aria-label={`Remove tag ${tag}`}>
                             ×
                           </button>
                         </span>
@@ -594,6 +597,7 @@ export default function PortfolioShowcasePage() {
                 <button
                   onClick={() => setShowSettingsModal(false)}
                   className={cn(commonStyles.closeButton, themeStyles.closeButton)}
+                  aria-label="Close settings"
                 >
                   <X size={18} />
                 </button>

@@ -1,3 +1,4 @@
+# @AI-HINT: Conversation model for messaging threads between users
 """Conversation models for MegiLance platform"""
 from sqlalchemy import String, Integer, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship

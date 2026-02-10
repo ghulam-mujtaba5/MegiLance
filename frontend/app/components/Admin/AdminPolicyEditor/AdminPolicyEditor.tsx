@@ -49,7 +49,7 @@ const AdminPolicyEditor: React.FC = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // TODO: Implement policy save API call
+      // DEFERRED: Requires backend admin policy CRUD API endpoint
       // await api.admin.updatePolicy(selectedPolicy, content);
       await new Promise(resolve => setTimeout(resolve, 1500));
       mockPolicies[selectedPolicy].content = content;

@@ -1,3 +1,4 @@
+# @AI-HINT: JSON data loader utility for loading static data files (skills, categories, etc.)
 from __future__ import annotations
 
 import json

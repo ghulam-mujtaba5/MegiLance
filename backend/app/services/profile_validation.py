@@ -1,3 +1,4 @@
+# @AI-HINT: Profile completeness validation service - checks required fields before user actions
 from typing import List, Dict, Any, Optional
 from app.models.user import User
 

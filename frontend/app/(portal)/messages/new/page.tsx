@@ -1,6 +1,7 @@
 // @AI-HINT: Route page for new message wizard
 import { Metadata } from 'next';
 import MessagingWizard from '@/src/components/wizards/MessagingWizard';
+import commonStyles from './NewMessage.common.module.css';
 
 export const metadata: Metadata = {
   title: 'New Message - MegiLance',
@@ -13,7 +14,7 @@ export default function NewMessagePage() {
   const userType = 'client'; // or 'freelancer'
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 1rem' }}>
+    <div className={commonStyles.pageContainer}>
       <MessagingWizard
         userId={userId}
         userType={userType}

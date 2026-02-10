@@ -1,6 +1,7 @@
 // @AI-HINT: Add payout method page - settings route for configuring withdrawal methods
 import { Metadata } from 'next';
 import PayoutMethodWizard from '@/src/components/wizards/PayoutMethodWizard';
+import commonStyles from './AddPayoutMethod.common.module.css';
 
 export const metadata: Metadata = {
   title: 'Add Payout Method - MegiLance',
@@ -12,7 +13,7 @@ export default function AddPayoutMethodPage() {
   const userId = 'current-user-id'; // Replace with actual auth
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
+    <div className={commonStyles.pageContainer}>
       <PayoutMethodWizard userId={userId} />
     </div>
   );

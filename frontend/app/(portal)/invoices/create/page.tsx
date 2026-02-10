@@ -1,6 +1,7 @@
 // @AI-HINT: Route page for invoice creation wizard
 import { Metadata } from 'next';
 import InvoiceWizard from '@/src/components/wizards/InvoiceWizard';
+import commonStyles from './CreateInvoice.common.module.css';
 
 export const metadata: Metadata = {
   title: 'Create Invoice - MegiLance',
@@ -12,7 +13,7 @@ export default function CreateInvoicePage() {
   const userId = 'current-user-id';
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem 1rem' }}>
+    <div className={commonStyles.pageContainer}>
       <InvoiceWizard userId={userId} />
     </div>
   );

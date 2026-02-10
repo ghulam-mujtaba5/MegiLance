@@ -5,6 +5,7 @@ import React, { useState, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import { cn } from '@/lib/utils';
+import { uploadsApi } from '@/lib/api';
 import commonStyles from './FileShareComponent.common.module.css';
 import lightStyles from './FileShareComponent.light.module.css';
 import darkStyles from './FileShareComponent.dark.module.css';
@@ -12,6 +13,8 @@ import darkStyles from './FileShareComponent.dark.module.css';
 const FileShareComponent: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!resolvedTheme) return null;
@@ -30,12 +33,15 @@ const FileShareComponent: React.FC = () => {
 
   const handleSendFile = async () => {
     if (selectedFile) {
+      setUploading(true);
+      setError(null);
       try {
-        // TODO: Implement file upload API call
-        // await api.messages.uploadFile(selectedFile);
+        await uploadsApi.upload('document', selectedFile);
         setSelectedFile(null);
-      } catch (error) {
-        // Handle upload error
+      } catch (err: any) {
+        setError(err.message || 'Failed to upload file');
+      } finally {
+        setUploading(false);
       }
     }
   };

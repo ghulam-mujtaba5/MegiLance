@@ -539,7 +539,7 @@ export default function SecuritySettingsPage() {
       {/* Disable 2FA Modal */}
       <Modal isOpen={showDisable2FAModal} title="Disable Two-Factor Authentication" onClose={() => setShowDisable2FAModal(false)}>
         <p>Are you sure you want to disable two-factor authentication? This will make your account less secure.</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={commonStyles.actionRow}>
           <Button variant="ghost" onClick={() => setShowDisable2FAModal(false)}>Cancel</Button>
           <Button variant="danger" onClick={handleDisable2FA}>Disable 2FA</Button>
         </div>
@@ -548,7 +548,7 @@ export default function SecuritySettingsPage() {
       {/* Regenerate Backup Codes Modal */}
       <Modal isOpen={showRegenCodesModal} title="Regenerate Backup Codes" onClose={() => setShowRegenCodesModal(false)}>
         <p>This will invalidate your existing backup codes. Are you sure you want to continue?</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={commonStyles.actionRow}>
           <Button variant="ghost" onClick={() => setShowRegenCodesModal(false)}>Cancel</Button>
           <Button variant="primary" onClick={handleRegenerateBackupCodes}>Regenerate</Button>
         </div>
@@ -557,7 +557,7 @@ export default function SecuritySettingsPage() {
       {/* Terminate Session Modal */}
       <Modal isOpen={terminateSessionId !== null} title="End Session" onClose={() => setTerminateSessionId(null)}>
         <p>Are you sure you want to end this session?</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={commonStyles.actionRow}>
           <Button variant="ghost" onClick={() => setTerminateSessionId(null)}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (terminateSessionId) handleTerminateSession(terminateSessionId); }}>End Session</Button>
         </div>
@@ -566,7 +566,7 @@ export default function SecuritySettingsPage() {
       {/* Terminate All Sessions Modal */}
       <Modal isOpen={showTerminateAllModal} title="End All Sessions" onClose={() => setShowTerminateAllModal(false)}>
         <p>This will log you out of all other devices. Continue?</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={commonStyles.actionRow}>
           <Button variant="ghost" onClick={() => setShowTerminateAllModal(false)}>Cancel</Button>
           <Button variant="danger" onClick={handleTerminateAllSessions}>End All</Button>
         </div>

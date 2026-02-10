@@ -1,4 +1,4 @@
-/* @AI-HINT: Main application layout with skip link, mobile overlay, and screen reader utilities */
+/* @AI-HINT: Overhauled application layout with modern spacing, smooth transitions, and optimized content area */
 
 /* ===== SCREEN READER ONLY (Accessibility) ===== */
 .srOnly {
@@ -48,27 +48,34 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  margin-left: 280px;
+  margin-left: 272px;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
+  position: relative;
 }
 
-/* Collapsed sidebar state — standalone class (CSS Modules compatible) */
+/* Collapsed sidebar state */
 .mainContentCollapsed {
-  margin-left: 80px;
+  margin-left: 72px;
 }
 
 .pageContent {
   flex-grow: 1;
-  padding: 1.5rem 2rem;
+  padding: 1.75rem 2rem 2rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  gap: 0;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* ===== FOOTER WRAPPER ===== */
 .footerWrapper {
   flex-shrink: 0;
+  margin-top: auto;
 }
 
 /* ===== MOBILE OVERLAY BACKDROP ===== */
@@ -86,13 +93,23 @@
 }
 
 /* ===== RESPONSIVE ===== */
+@media (max-width: 1400px) {
+  .pageContent {
+    padding: 1.5rem 1.75rem 2rem;
+  }
+}
+
 @media (max-width: 1024px) {
   .mainContent {
     margin-left: 260px;
   }
   
   .mainContentCollapsed {
-    margin-left: 80px;
+    margin-left: 72px;
+  }
+  
+  .pageContent {
+    padding: 1.25rem 1.5rem 1.5rem;
   }
 }
 
@@ -107,6 +124,7 @@
   
   .pageContent {
     padding: 1rem;
+    max-width: 100%;
   }
   
   .mobileOverlay {

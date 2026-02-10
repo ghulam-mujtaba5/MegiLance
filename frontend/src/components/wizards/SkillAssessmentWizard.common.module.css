@@ -305,3 +305,26 @@
     text-align: center;
   }
 }
+
+.modalButtonGroup {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modalBtnSecondary {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: transparent;
+  cursor: pointer;
+}
+
+.modalBtnPrimary {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #4573df;
+  color: #fff;
+  cursor: pointer;
+}

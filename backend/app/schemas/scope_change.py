@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Scope Change API - modification request and approval models
 from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from datetime import datetime

@@ -1,3 +1,4 @@
+# @AI-HINT: Email sending service using SMTP for transactional emails and notifications
 # Email Service Configuration
 # This module provides email sending capabilities using SMTP
 

@@ -275,7 +275,7 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
           multiple={multiple}
           accept={acceptedTypes.join(',')}
           onChange={handleFileInputChange}
-          style={{ display: 'none' }}
+          className={commonStyles.hiddenInput}
         />
       </div>
 
@@ -313,8 +313,8 @@ const AdvancedFileUpload: React.FC<AdvancedFileUploadProps> = ({
 
                 <div className={styles.fileStatus}>
                   {file.status === 'uploading' && <Loader2 size={16} className="animate-spin" />}
-                  {file.status === 'success' && <Check size={16} style={{ color: '#27AE60' }} />}
-                  {file.status === 'error' && <X size={16} style={{ color: '#e81123' }} />}
+                  {file.status === 'success' && <Check size={16} className={commonStyles.successIcon} />}
+                  {file.status === 'error' && <X size={16} className={commonStyles.errorIcon} />}
                 </div>
 
                 <button

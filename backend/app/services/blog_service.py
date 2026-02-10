@@ -1,3 +1,4 @@
+# @AI-HINT: Blog CMS service - CRUD operations for blog posts
 from typing import List, Optional
 from datetime import datetime, timezone
 from fastapi import HTTPException

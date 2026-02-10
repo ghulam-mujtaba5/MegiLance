@@ -1,11 +1,10 @@
-// @AI-HINT: Dedicated footer for the portal area. Simple and clean.
+// @AI-HINT: Dedicated footer for the portal area. Minimal and clean.
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import StatusIndicator from '@/app/components/StatusIndicator/StatusIndicator';
 
 import commonStyles from './PortalFooter.common.module.css';
 import lightStyles from './PortalFooter.light.module.css';
@@ -19,17 +18,19 @@ const PortalFooter = () => {
     <footer className={cn(commonStyles.footer, styles.footer)}>
       <div className={commonStyles.container}>
         <p className={cn(commonStyles.copyright, styles.copyright)}>
-          &copy; {new Date().getFullYear()} MegiLance. All rights reserved.
+          &copy; {new Date().getFullYear()} MegiLance
         </p>
         <div className={commonStyles.links}>
           <Link href="/help" className={cn(commonStyles.link, styles.link)}>
-            Help Center <StatusIndicator status="incomplete" className="ml-1 scale-75" />
+            Help
           </Link>
+          <span className={cn(commonStyles.separator, styles.separator)} aria-hidden="true">&middot;</span>
           <Link href="/terms" className={cn(commonStyles.link, styles.link)}>
-            Terms <StatusIndicator status="complete" className="ml-1 scale-75" />
+            Terms
           </Link>
+          <span className={cn(commonStyles.separator, styles.separator)} aria-hidden="true">&middot;</span>
           <Link href="/privacy" className={cn(commonStyles.link, styles.link)}>
-            Privacy <StatusIndicator status="complete" className="ml-1 scale-75" />
+            Privacy
           </Link>
         </div>
       </div>

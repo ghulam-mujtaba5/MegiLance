@@ -206,6 +206,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
             placeholder="E-commerce Platform Redesign"
             maxLength={100}
             className={cn(commonStyles.input, themeStyles.input)}
+            aria-label="Project title"
           />
         </div>
 
@@ -234,6 +235,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
             onChange={(e) => setPortfolioData({ ...portfolioData, clientName: e.target.value })}
             placeholder="Acme Corporation (or leave blank)"
             className={cn(commonStyles.input, themeStyles.input)}
+            aria-label="Client or company name"
           />
         </div>
 
@@ -257,6 +259,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           onChange={(e) => setPortfolioData({ ...portfolioData, projectUrl: e.target.value })}
           placeholder="https://project-demo.com"
           className={cn(commonStyles.input, themeStyles.input)}
+          aria-label="Project URL"
         />
       </div>
 
@@ -269,6 +272,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           rows={3}
           maxLength={300}
           className={cn(commonStyles.textarea, themeStyles.textarea)}
+          aria-label="Short project description"
         />
         <div className={commonStyles.charCount}>{portfolioData.shortDescription.length}/300</div>
       </div>
@@ -293,7 +297,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           accept="image/*"
           onChange={(e) => addImages(e.target.files)}
           id="portfolio-images"
-          style={{ display: 'none' }}
+          className={commonStyles.hiddenInput}
         />
         <label htmlFor="portfolio-images" className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}>
           <ImageIcon />
@@ -317,6 +321,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
                   onChange={(e) => updateImage(image.id, 'caption', e.target.value)}
                   placeholder="Add caption..."
                   className={cn(commonStyles.input, themeStyles.input)}
+                  aria-label="Image caption"
                 />
                 <div className={commonStyles.imageActions}>
                   <button
@@ -386,6 +391,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
               onKeyPress={(e) => e.key === 'Enter' && addCustomTech()}
               placeholder="Type technology name..."
               className={cn(commonStyles.input, themeStyles.input)}
+              aria-label="Custom technology name"
             />
             <button
               onClick={addCustomTech}
@@ -404,7 +410,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
             {portfolioData.technologies.map(tech => (
               <div key={tech} className={cn(commonStyles.selectedTechTag, themeStyles.selectedTechTag)}>
                 {tech}
-                <button onClick={() => toggleTechnology(tech)}>×</button>
+                <button onClick={() => toggleTechnology(tech)} aria-label={`Remove ${tech}`}>×</button>
               </div>
             ))}
           </div>
@@ -435,6 +441,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           placeholder="What problem were you solving? What were the client's needs?"
           rows={4}
           className={cn(commonStyles.textarea, themeStyles.textarea)}
+          aria-label="Challenge or problem description"
         />
       </div>
 
@@ -449,6 +456,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           placeholder="How did you approach the problem? What was your strategy?"
           rows={4}
           className={cn(commonStyles.textarea, themeStyles.textarea)}
+          aria-label="Solution or approach description"
         />
       </div>
 
@@ -463,6 +471,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           placeholder="What were the outcomes? Metrics, feedback, impact..."
           rows={4}
           className={cn(commonStyles.textarea, themeStyles.textarea)}
+          aria-label="Results or impact description"
         />
       </div>
 
@@ -477,6 +486,7 @@ export default function PortfolioUploadWizard({ userId }: PortfolioUploadWizardP
           placeholder="What was your specific contribution? Team collaboration?"
           rows={3}
           className={cn(commonStyles.textarea, themeStyles.textarea)}
+          aria-label="Your role description"
         />
       </div>
 

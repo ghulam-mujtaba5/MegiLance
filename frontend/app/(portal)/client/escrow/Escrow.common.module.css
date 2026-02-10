@@ -1,4 +1,9 @@
 /* Common Styles */
+
+.fadedIcon {
+  opacity: 0.3;
+}
+
 .container {
   padding: 2rem;
   max-width: 1200px;

@@ -1,6 +1,7 @@
 // @AI-HINT: Route page for dispute resolution wizard
 import { Metadata } from 'next';
 import DisputeWizard from '@/src/components/wizards/DisputeWizard';
+import commonStyles from './CreateDispute.common.module.css';
 
 export const metadata: Metadata = {
   title: 'File Dispute - MegiLance',
@@ -21,7 +22,7 @@ export default function CreateDisputePage({
 
   if (!contractId) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <div className={commonStyles.loadingWrapper}>
         <h1>Contract ID Required</h1>
         <p>Please select a contract to file a dispute.</p>
       </div>
@@ -29,7 +30,7 @@ export default function CreateDisputePage({
   }
 
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1rem' }}>
+    <div className={commonStyles.pageContainer}>
       <DisputeWizard
         contractId={contractId}
         projectName={projectName}

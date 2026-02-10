@@ -74,7 +74,7 @@ const SentimentAnalyzer: React.FC<SentimentAnalyzerProps> = ({
           className={cn(commonStyles.gaugeFill, fillClass)} 
           style={{ width: `${percentage}%` }}
         />
-        <div className={commonStyles.marker} style={{ left: '50%' }} />
+        <div className={commonStyles.marker} />
       </div>
 
       <div className={commonStyles.labels}>

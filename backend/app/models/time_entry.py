@@ -1,3 +1,4 @@
+# @AI-HINT: Time entry model for tracking freelancer work hours on contracts
 """
 Time entry model for tracking freelancer work hours
 """

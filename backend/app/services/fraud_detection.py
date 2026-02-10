@@ -1,3 +1,4 @@
+# @AI-HINT: AI-powered fraud detection service for identifying suspicious user activities
 """
 Fraud Detection Service
 AI-powered fraud detection for suspicious activities

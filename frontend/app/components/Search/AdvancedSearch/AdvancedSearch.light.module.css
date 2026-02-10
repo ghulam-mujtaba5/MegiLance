@@ -65,3 +65,40 @@
 .savedSearchItem:hover {
   border-color: #4573df;
 }
+
+.searchIcon {
+  color: #9ca3af;
+}
+
+.filterCountBadge {
+  background: #4573df;
+  color: #ffffff;
+}
+
+.filterInput,
+.filterInputFull {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.filterInput:focus,
+.filterInputFull:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.dialogInner {
+  background: #ffffff;
+}
+
+.dialogInput {
+  background: #ffffff;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+.dialogInput:focus {
+  border-color: #4573df;
+  outline: none;
+}

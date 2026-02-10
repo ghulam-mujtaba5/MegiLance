@@ -23,3 +23,47 @@
 .recommendations {
   border-color: #e5e7eb;
 }
+
+.headerIcon {
+  color: #3b82f6;
+}
+
+.emptyText {
+  color: #6b7280;
+}
+
+.scoreCard {
+  background: #f9fafb;
+}
+
+.scoreCardLabel {
+  color: #6b7280;
+}
+
+.scoreCardValueHigh {
+  color: #22c55e;
+}
+
+.scoreCardValueLow {
+  color: #ef4444;
+}
+
+.scoreCardValueWarning {
+  color: #eab308;
+}
+
+.sectionTitleWarning {
+  color: #ef4444;
+}
+
+.sectionTitleInfo {
+  color: #3b82f6;
+}
+
+.recList {
+  color: #4b5563;
+}
+
+.recIcon {
+  color: #22c55e;
+}

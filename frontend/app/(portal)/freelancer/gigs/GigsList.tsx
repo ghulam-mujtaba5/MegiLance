@@ -169,7 +169,7 @@ const GigsList: React.FC = () => {
     return (
       <main className={cn(common.page, themed.themeWrapper)}>
         <div className={common.container}>
-          <div style={{ textAlign: 'center', padding: '80px 24px' }}>
+          <div className={common.emptyState}>
             Loading gigs...
           </div>
         </div>
@@ -225,6 +225,7 @@ const GigsList: React.FC = () => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search gigs..."
+              aria-label="Search gigs"
               className={cn(common.searchInput, themed.searchInput)}
             />
           </div>
@@ -337,12 +338,12 @@ const GigsList: React.FC = () => {
                     <td onClick={e => e.stopPropagation()}>
                       <div className={common.actions}>
                         <Link href={`/gigs/${gig.slug}`}>
-                          <button className={cn(common.actionButton, themed.actionButton, themed.actionView)}>
+                          <button className={cn(common.actionButton, themed.actionButton, themed.actionView)} aria-label={`View ${gig.title}`}>
                             <Eye size={16} />
                           </button>
                         </Link>
                         <Link href={`/freelancer/gigs/${gig.id}/edit`}>
-                          <button className={cn(common.actionButton, themed.actionButton, themed.actionEdit)}>
+                          <button className={cn(common.actionButton, themed.actionButton, themed.actionEdit)} aria-label={`Edit ${gig.title}`}>
                             <Edit2 size={16} />
                           </button>
                         </Link>
@@ -350,6 +351,7 @@ const GigsList: React.FC = () => {
                           <button
                             className={cn(common.actionButton, themed.actionButton)}
                             onClick={() => handleToggleStatus(gig.id, gig.status)}
+                            aria-label={gig.status === 'active' ? `Pause ${gig.title}` : `Activate ${gig.title}`}
                           >
                             {gig.status === 'active' ? <Pause size={16} /> : <Play size={16} />}
                           </button>
@@ -357,6 +359,7 @@ const GigsList: React.FC = () => {
                         <button
                           className={cn(common.actionButton, themed.actionButton, themed.actionDelete)}
                           onClick={() => handleDelete(gig.id)}
+                          aria-label={`Delete ${gig.title}`}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -473,10 +476,10 @@ const GigsList: React.FC = () => {
             onClose={() => setDeleteTarget(null)}
             title="Delete Gig"
           >
-            <p style={{ margin: '0 0 1.5rem', lineHeight: 1.6 }}>
+            <p className={common.confirmText}>
               Are you sure you want to delete this gig? This action cannot be undone.
             </p>
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <div className={common.actionRow}>
               <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
               <Button variant="danger" onClick={confirmDelete}>Delete</Button>
             </div>

@@ -75,6 +75,14 @@ const NotificationPreferences: React.FC = () => {
     digestSettings: cn(commonStyles.digestSettings, themeStyles.digestSettings),
     actions: cn(commonStyles.actions, themeStyles.actions),
     successMessage: cn(commonStyles.successMessage, themeStyles.successMessage),
+    loadingState: commonStyles.loadingState,
+    titleIcon: commonStyles.titleIcon,
+    categoryDescription: commonStyles.categoryDescription,
+    quietHoursGrid: commonStyles.quietHoursGrid,
+    fieldLabel: commonStyles.fieldLabel,
+    timeInput: cn(commonStyles.timeInput, themeStyles.timeInput),
+    quietHoursNote: commonStyles.quietHoursNote,
+    inlineIcon: commonStyles.inlineIcon,
   };
 
   useEffect(() => {
@@ -134,7 +142,7 @@ const NotificationPreferences: React.FC = () => {
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className="text-center py-12">Loading preferences...</div>
+        <div className={styles.loadingState}>Loading preferences...</div>
       </div>
     );
   }
@@ -143,7 +151,7 @@ const NotificationPreferences: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>
-          <Bell size={18} className="mr-3" />
+          <Bell size={18} className={styles.titleIcon} />
           Notification Preferences
         </h1>
         <p className={styles.subtitle}>
@@ -167,7 +175,7 @@ const NotificationPreferences: React.FC = () => {
             <div key={category.key} className={styles.tableRow}>
               <div className={styles.categoryCell}>
                 <strong>{category.label}</strong>
-                <span className="text-sm opacity-75">{category.description}</span>
+                <span className={styles.categoryDescription}>{category.description}</span>
               </div>
               <div>
                 <input
@@ -226,27 +234,27 @@ const NotificationPreferences: React.FC = () => {
             ]}
           />
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className={styles.quietHoursGrid}>
             <div>
-              <label className="block text-sm font-semibold mb-2">Quiet Hours Start</label>
+              <label className={styles.fieldLabel}>Quiet Hours Start</label>
               <input
                 type="time"
                 value={digest.quietHoursStart}
                 onChange={(e) => setDigest({ ...digest, quietHoursStart: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg"
+                className={styles.timeInput}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2">Quiet Hours End</label>
+              <label className={styles.fieldLabel}>Quiet Hours End</label>
               <input
                 type="time"
                 value={digest.quietHoursEnd}
                 onChange={(e) => setDigest({ ...digest, quietHoursEnd: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg"
+                className={styles.timeInput}
               />
             </div>
           </div>
-          <p className="text-sm opacity-75 mt-2">
+          <p className={styles.quietHoursNote}>
             No notifications will be sent during quiet hours (except urgent payments)
           </p>
         </div>
@@ -254,7 +262,7 @@ const NotificationPreferences: React.FC = () => {
 
       {saved && (
         <div className={styles.successMessage}>
-          <CheckCircle size={16} className="mr-2" />
+          <CheckCircle size={16} className={styles.inlineIcon} />
           Preferences saved successfully!
         </div>
       )}
@@ -266,7 +274,7 @@ const NotificationPreferences: React.FC = () => {
           isLoading={saving}
           disabled={saving}
         >
-          <Save size={16} className="mr-2" />
+          <Save size={16} className={styles.inlineIcon} />
           Save Preferences
         </Button>
       </div>

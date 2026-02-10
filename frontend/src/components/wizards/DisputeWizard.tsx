@@ -306,7 +306,7 @@ export default function DisputeWizard({
                   showToast('Please add a description for this file');
                 }
               }}
-              style={{ display: 'none' }}
+              className={commonStyles.hiddenInput}
             />
             
             <div className={commonStyles.uploadControls}>
@@ -328,6 +328,7 @@ export default function DisputeWizard({
                 onChange={(e) => setNewFileDesc(e.target.value)}
                 placeholder="Brief description of this evidence"
                 className={commonStyles.descInput}
+                aria-label="Evidence file description"
               />
 
               <label

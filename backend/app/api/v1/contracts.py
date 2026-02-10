@@ -9,7 +9,7 @@ import re
 import logging
 
 from app.core.security import get_current_active_user
-from app.db.turso_http import execute_query, to_str, parse_date
+from app.services import contracts_service
 from app.models.user import User
 from app.schemas.contract import ContractCreate, ContractRead, ContractUpdate
 from pydantic import BaseModel, Field, field_validator
@@ -82,55 +82,6 @@ class DirectHireRequest(BaseModel):
         return v
 
 
-def _get_val(row: list, idx: int):
-    """Extract value from Turso row"""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if cell.get("type") == "null":
-        return None
-    return cell.get("value")
-
-
-def _safe_str(val):
-    """Convert bytes to string if needed"""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
-
-
-def _contract_from_row(row: list) -> dict:
-    """Convert Turso row to contract dict"""
-    return {
-        "id": _safe_str(_get_val(row, 0)),
-        "project_id": int(_get_val(row, 1) or 0),
-        "freelancer_id": int(_get_val(row, 2) or 0),
-        "client_id": int(_get_val(row, 3) or 0),
-        "amount": float(_get_val(row, 4) or 0),
-        "contract_amount": float(_get_val(row, 4) or 0),
-        
-        # New fields
-        "contract_type": _safe_str(_get_val(row, 5)),
-        "currency": _safe_str(_get_val(row, 6)),
-        "hourly_rate": float(_get_val(row, 7) or 0) if _get_val(row, 7) else None,
-        "retainer_amount": float(_get_val(row, 8) or 0) if _get_val(row, 8) else None,
-        "retainer_frequency": _safe_str(_get_val(row, 9)),
-        
-        "status": _safe_str(_get_val(row, 10)),
-        "start_date": parse_date(_get_val(row, 11)),
-        "end_date": parse_date(_get_val(row, 12)),
-        "description": _safe_str(_get_val(row, 13)),
-        "milestones": _safe_str(_get_val(row, 14)),
-        "terms": _safe_str(_get_val(row, 15)),
-        "created_at": parse_date(_get_val(row, 16)),
-        "updated_at": parse_date(_get_val(row, 17)),
-        "job_title": _safe_str(_get_val(row, 18)),
-        "client_name": _safe_str(_get_val(row, 19))
-    }
-
-
 @router.get("/", response_model=List[ContractRead])
 def list_contracts(
     skip: int = Query(0, ge=0, le=10000),
@@ -139,44 +90,14 @@ def list_contracts(
     current_user: User = Depends(get_current_active_user)
 ):
     """List contracts for current user"""
-    where_sql = "WHERE (c.client_id = ? OR c.freelancer_id = ?)"
-    params = [current_user.id, current_user.id]
-    
     if status:
         if status.lower() not in VALID_CONTRACT_STATUSES:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Invalid status. Must be one of: {', '.join(VALID_CONTRACT_STATUSES)}"
             )
-        where_sql += " AND c.status = ?"
-        params.append(status.lower())
     
-    params.extend([limit, skip])
-    
-    query = f"""
-        SELECT 
-            c.id, c.project_id, c.freelancer_id, c.client_id, c.amount as total_amount,
-            c.contract_type, c.currency, c.hourly_rate, c.retainer_amount, c.retainer_frequency,
-            c.status,
-            c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
-            p.title as job_title,
-            u.name as client_name
-        FROM contracts c
-        LEFT JOIN projects p ON c.project_id = p.id
-        LEFT JOIN users u ON c.client_id = u.id
-        {where_sql}
-        ORDER BY c.created_at DESC
-        LIMIT ? OFFSET ?
-    """
-    
-    result = execute_query(query, params)
-    
-    contracts = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            contracts.append(_contract_from_row(row))
-    
-    return contracts
+    return contracts_service.query_user_contracts(current_user.id, status, limit, skip)
 
 
 @router.get("/{contract_id}", response_model=ContractRead)
@@ -194,28 +115,12 @@ def get_contract(
             detail="Invalid contract ID format"
         )
     
-    query = """
-        SELECT 
-            c.id, c.project_id, c.freelancer_id, c.client_id, c.amount as total_amount,
-            c.contract_type, c.currency, c.hourly_rate, c.retainer_amount, c.retainer_frequency,
-            c.status,
-            c.start_date, c.end_date, c.description, c.milestones, c.terms, c.created_at, c.updated_at,
-            p.title as job_title,
-            u.name as client_name
-        FROM contracts c
-        LEFT JOIN projects p ON c.project_id = p.id
-        LEFT JOIN users u ON c.client_id = u.id
-        WHERE c.id = ?
-    """
+    raw_row = contracts_service.fetch_contract_with_joins(contract_id)
     
-    result = execute_query(query, [contract_id])
-    
-    if not result or not result.get("rows"):
+    if not raw_row:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contract not found")
     
-    row = result["rows"][0]
-    client_id = int(_get_val(row, 3) or 0)
-    freelancer_id = int(_get_val(row, 2) or 0)
+    client_id, freelancer_id = contracts_service.get_contract_parties(raw_row)
     
     # Check authorization
     if client_id != current_user.id and freelancer_id != current_user.id:
@@ -225,7 +130,7 @@ def get_contract(
             detail="Not authorized to view this contract"
         )
     
-    return _contract_from_row(row)
+    return contracts_service.contract_from_row(raw_row)
 
 
 @router.post("/direct", response_model=ContractRead, status_code=status.HTTP_201_CREATED)
@@ -234,7 +139,7 @@ def create_direct_contract(
     current_user: User = Depends(get_current_active_user)
 ):
     """Create a direct hire contract (creates project -> proposal -> contract)"""
-    user_type = _safe_str(current_user.user_type)
+    user_type = contracts_service._safe_str(current_user.user_type)
     if not user_type or user_type.lower() != "client":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -252,25 +157,18 @@ def create_direct_contract(
     validate_rate(hire_data.rate, hire_data.rate_type)
     
     # Check if freelancer exists
-    result = execute_query(
-        "SELECT id, user_type, is_active FROM users WHERE id = ?",
-        [hire_data.freelancer_id]
-    )
+    freelancer_data = contracts_service.fetch_user_for_contract(hire_data.freelancer_id)
     
-    if not result or not result.get("rows"):
+    if not freelancer_data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Freelancer not found")
     
-    freelancer_row = result["rows"][0]
-    freelancer_type = _safe_str(_get_val(freelancer_row, 1))
-    is_active = _get_val(freelancer_row, 2)
-    
-    if not freelancer_type or freelancer_type.lower() != "freelancer":
+    if not freelancer_data["user_type"] or freelancer_data["user_type"].lower() != "freelancer":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User is not a freelancer"
         )
     
-    if not is_active:
+    if not freelancer_data["is_active"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Freelancer account is not active"
@@ -284,46 +182,21 @@ def create_direct_contract(
     
     try:
         # 1. Create Project
-        project_result = execute_query(
-            """INSERT INTO projects (title, description, client_id, budget_min, budget_max, 
-               budget_type, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            [
-                title,
-                description,
-                current_user.id,
-                hire_data.rate,
-                hire_data.rate,
-                hire_data.rate_type.lower(),
-                "in_progress",
-                now,
-                now
-            ]
+        project_id = contracts_service.insert_project(
+            title, description, current_user.id, hire_data.rate,
+            hire_data.rate_type.lower(), now
         )
         
-        if not project_result:
+        if not project_id:
             raise HTTPException(status_code=500, detail="Failed to create project")
-            
-        project_id = project_result.get("last_insert_rowid")
         
         # 2. Create Proposal (Accepted)
-        proposal_result = execute_query(
-            """INSERT INTO proposals (project_id, freelancer_id, cover_letter, estimated_hours, 
-               hourly_rate, status, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            [
-                project_id,
-                hire_data.freelancer_id,
-                "Direct Hire",
-                0,
-                hire_data.rate if hire_data.rate_type.lower() == 'hourly' else 0,
-                "accepted",
-                now,
-                now
-            ]
+        proposal_ok = contracts_service.insert_proposal(
+            project_id, hire_data.freelancer_id, hire_data.rate,
+            hire_data.rate_type.lower(), now
         )
         
-        if not proposal_result:
+        if not proposal_ok:
             raise HTTPException(status_code=500, detail="Failed to create proposal")
             
         # 3. Create Contract
@@ -344,12 +217,7 @@ def create_direct_contract(
             retainer_amount = hire_data.rate
             retainer_frequency = rt
         
-        insert_result = execute_query(
-            """INSERT INTO contracts (project_id, freelancer_id, client_id, amount, 
-               contract_type, currency, hourly_rate, retainer_amount, retainer_frequency,
-               contract_amount, platform_fee, status, start_date, end_date, description, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            [
+        insert_ok = contracts_service.insert_contract([
                 project_id,
                 hire_data.freelancer_id,
                 current_user.id,
@@ -367,10 +235,9 @@ def create_direct_contract(
                 description,
                 now,
                 now
-            ]
-        )
+            ])
         
-        if not insert_result:
+        if not insert_ok:
             raise HTTPException(status_code=500, detail="Failed to create contract")
         
         logger.info(f"Direct contract {contract_id} created by client {current_user.id} for freelancer {hire_data.freelancer_id}")
@@ -412,7 +279,7 @@ def create_contract(
     current_user: User = Depends(get_current_active_user)
 ):
     """Create a new contract"""
-    user_type = _safe_str(current_user.user_type)
+    user_type = contracts_service._safe_str(current_user.user_type)
     if not user_type or user_type.lower() != "client":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -434,59 +301,43 @@ def create_contract(
         )
     
     # Check if project exists and belongs to client
-    result = execute_query(
-        "SELECT id, client_id, title FROM projects WHERE id = ?",
-        [contract.project_id]
-    )
+    project_data = contracts_service.fetch_project_for_contract(contract.project_id)
     
-    if not result or not result.get("rows"):
+    if not project_data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     
-    project_row = result["rows"][0]
-    project_client_id = int(_get_val(project_row, 1) or 0)
-    project_title = _safe_str(_get_val(project_row, 2))
-    
-    if project_client_id != current_user.id:
+    if project_data["client_id"] != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to create contract for this project"
         )
     
-    # Check if freelancer exists and is active
-    result = execute_query(
-        "SELECT id, user_type, is_active FROM users WHERE id = ?",
-        [contract.freelancer_id]
-    )
+    project_title = project_data["title"]
     
-    if not result or not result.get("rows"):
+    # Check if freelancer exists and is active
+    freelancer_data = contracts_service.fetch_user_for_contract(contract.freelancer_id)
+    
+    if not freelancer_data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Freelancer not found")
     
-    freelancer_row = result["rows"][0]
-    freelancer_type = _safe_str(_get_val(freelancer_row, 1))
-    is_active = _get_val(freelancer_row, 2)
-    
-    if not freelancer_type or freelancer_type.lower() != "freelancer":
+    if not freelancer_data["user_type"] or freelancer_data["user_type"].lower() != "freelancer":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User is not a freelancer"
         )
     
-    if not is_active:
+    if not freelancer_data["is_active"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Freelancer account is not active"
         )
     
     # Check if proposal exists and is accepted
-    result = execute_query(
-        "SELECT id, status FROM proposals WHERE project_id = ? AND freelancer_id = ?",
-        [contract.project_id, contract.freelancer_id]
-    )
+    proposal_status = contracts_service.fetch_proposal_status(contract.project_id, contract.freelancer_id)
     
-    if not result or not result.get("rows"):
+    if proposal_status is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal not found")
     
-    proposal_status = _safe_str(_get_val(result["rows"][0], 1))
     if proposal_status != "accepted":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -494,13 +345,7 @@ def create_contract(
         )
     
     # Check for existing active contract
-    result = execute_query(
-        """SELECT id FROM contracts 
-           WHERE project_id = ? AND freelancer_id = ? AND status IN ('pending', 'active')""",
-        [contract.project_id, contract.freelancer_id]
-    )
-    
-    if result and result.get("rows"):
+    if contracts_service.has_active_contract(contract.project_id, contract.freelancer_id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="An active contract already exists for this project and freelancer"
@@ -516,12 +361,7 @@ def create_contract(
     now = datetime.now(timezone.utc).isoformat()
     
     try:
-        insert_result = execute_query(
-            """INSERT INTO contracts (project_id, freelancer_id, client_id, amount, 
-               contract_type, currency, hourly_rate, retainer_amount, retainer_frequency,
-               contract_amount, platform_fee, status, start_date, end_date, description, milestones, terms, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            [
+        insert_ok = contracts_service.insert_contract_full([
                 contract.project_id,
                 contract.freelancer_id,
                 current_user.id,
@@ -541,10 +381,9 @@ def create_contract(
                 terms,
                 now,
                 now
-            ]
-        )
+            ])
         
-        if not insert_result:
+        if not insert_ok:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to create contract"
@@ -603,20 +442,14 @@ def update_contract(
         )
     
     # Get existing contract
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, client_id, amount, status,
-           start_date, end_date, description, milestones, terms, created_at, updated_at
-           FROM contracts WHERE id = ?""",
-        [contract_id]
-    )
+    existing = contracts_service.fetch_contract_for_update(contract_id)
     
-    if not result or not result.get("rows"):
+    if not existing:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contract not found")
     
-    row = result["rows"][0]
-    client_id = int(_get_val(row, 3) or 0)
-    freelancer_id = int(_get_val(row, 2) or 0)
-    current_status = _safe_str(_get_val(row, 5))
+    client_id = existing["client_id"]
+    freelancer_id = existing["freelancer_id"]
+    current_status = existing["status"]
     
     # Check authorization
     if client_id != current_user.id and freelancer_id != current_user.id:
@@ -678,10 +511,7 @@ def update_contract(
     values.append(contract_id)
     
     try:
-        execute_query(
-            f"UPDATE contracts SET {', '.join(set_parts)} WHERE id = ?",
-            values
-        )
+        contracts_service.update_contract_fields(contract_id, set_parts, values)
         logger.info(f"Contract {contract_id} updated by user {current_user.id}")
     except Exception as e:
         logger.error(f"Failed to update contract {contract_id}: {e}")
@@ -710,17 +540,13 @@ def delete_contract(
         )
     
     # Get contract
-    result = execute_query(
-        "SELECT id, client_id, status FROM contracts WHERE id = ?",
-        [contract_id]
-    )
+    contract_data = contracts_service.fetch_contract_status(contract_id)
     
-    if not result or not result.get("rows"):
+    if not contract_data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contract not found")
     
-    row = result["rows"][0]
-    client_id = int(_get_val(row, 1) or 0)
-    current_status = _safe_str(_get_val(row, 2))
+    client_id = contract_data["client_id"]
+    current_status = contract_data["status"]
     
     # Only client can delete
     if client_id != current_user.id:
@@ -739,10 +565,7 @@ def delete_contract(
     
     # Soft delete - set status to cancelled
     try:
-        execute_query(
-            "UPDATE contracts SET status = 'cancelled', updated_at = ? WHERE id = ?",
-            [datetime.now(timezone.utc).isoformat(), contract_id]
-        )
+        contracts_service.cancel_contract(contract_id, datetime.now(timezone.utc).isoformat())
         logger.info(f"Contract {contract_id} cancelled by client {current_user.id}")
     except Exception as e:
         logger.error(f"Failed to cancel contract {contract_id}: {e}")

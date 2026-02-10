@@ -297,6 +297,7 @@ export default function ClientContractsPage() {
           <div className={commonStyles.controls}>
             <Input
               id="contract-search"
+              aria-label="Search contracts"
               iconBefore={<Search size={18} />}
               placeholder="Search by title or freelancer..."
               value={searchQuery}
@@ -306,6 +307,7 @@ export default function ClientContractsPage() {
             <div className={commonStyles.filters}>
               <Select
                 id="sort-contracts"
+                aria-label="Sort contracts"
                 options={SORT_OPTIONS}
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value)}
@@ -406,7 +408,7 @@ export default function ClientContractsPage() {
                           month: 'short', day: 'numeric', year: 'numeric'
                         })}
                       </span>
-                      <span className={cn(commonStyles.cardDate, themeStyles.cardDate)} style={{ fontWeight: 500 }}>
+                      <span className={cn(commonStyles.cardDate, themeStyles.cardDate, commonStyles.labelBold)}>
                         View Details <ArrowRight size={12} />
                       </span>
                     </div>

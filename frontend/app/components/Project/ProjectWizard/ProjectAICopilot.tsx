@@ -45,6 +45,19 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
     fieldLabel: cn(commonStyles.fieldLabel, themeStyles.fieldLabel),
     fieldValue: cn(commonStyles.fieldValue, themeStyles.fieldValue),
     sparkles: cn(commonStyles.sparkles, themeStyles.sparkles),
+    triggerWrapper: commonStyles.triggerWrapper,
+    triggerButton: commonStyles.triggerButton,
+    triggerIcon: themeStyles.triggerIcon,
+    botIconWrapper: cn(commonStyles.botIconWrapper, themeStyles.botIconWrapper),
+    botIcon: themeStyles.botIcon,
+    poweredBy: cn(commonStyles.poweredBy, themeStyles.poweredBy),
+    closeButton: cn(commonStyles.closeButton, themeStyles.closeButton),
+    inlineIcon: commonStyles.inlineIcon,
+    previewTitle: commonStyles.previewTitle,
+    checkIcon: themeStyles.checkIcon,
+    skillTags: commonStyles.skillTags,
+    skillTag: cn(commonStyles.skillTag, themeStyles.skillTag),
+    applyWrapper: commonStyles.applyWrapper,
   };
 
   const handleGenerate = async () => {
@@ -100,13 +113,13 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
 
   if (!isOpen) {
     return (
-      <div className="mb-6">
+      <div className={styles.triggerWrapper}>
         <Button 
           variant="secondary" 
           onClick={() => setIsOpen(true)}
-          className="w-full flex items-center justify-center gap-2 py-4 border-dashed border-2"
+          className={styles.triggerButton}
         >
-          <Sparkles size={16} className="text-purple-500" />
+          <Sparkles size={16} className={styles.triggerIcon} />
           <span>Use AI Copilot to Draft Project</span>
         </Button>
       </div>
@@ -116,16 +129,16 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
-          <Bot className="text-purple-600 dark:text-purple-300" size={20} />
+        <div className={styles.botIconWrapper}>
+          <Bot className={styles.botIcon} size={20} />
         </div>
         <div>
           <h3 className={styles.title}>AI Project Copilot</h3>
-          <p className="text-xs text-gray-500">Powered by MegiLance AI</p>
+          <p className={styles.poweredBy}>Powered by MegiLance AI</p>
         </div>
         <button 
           onClick={() => setIsOpen(false)}
-          className="ml-auto text-gray-400 hover:text-gray-600"
+          className={styles.closeButton}
         >
           <X size={16} />
         </button>
@@ -159,15 +172,15 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
           disabled={!prompt.trim() || loading}
           size="sm"
         >
-          <Sparkles size={14} className="mr-2" />
+          <Sparkles size={14} className={styles.inlineIcon} />
           Generate Draft
         </Button>
       </div>
 
       {generatedData && (
         <div className={styles.resultArea}>
-          <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
-            <Check size={14} className="text-green-500" /> Generated Preview
+          <h4 className={styles.previewTitle}>
+            <Check size={14} className={styles.checkIcon} /> Generated Preview
           </h4>
           
           <div className={styles.generatedField}>
@@ -184,16 +197,16 @@ const ProjectAICopilot: React.FC<ProjectAICopilotProps> = ({ onApply }) => {
 
           <div className={styles.generatedField}>
             <div className={styles.fieldLabel}>Suggested Skills</div>
-            <div className="flex flex-wrap gap-2">
+            <div className={styles.skillTags}>
               {generatedData.skills?.map(skill => (
-                <span key={skill} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                <span key={skill} className={styles.skillTag}>
                   {skill}
                 </span>
               ))}
             </div>
           </div>
 
-          <div className="flex justify-end mt-4">
+          <div className={styles.applyWrapper}>
             <Button onClick={handleApply} variant="success" size="sm">
               Apply to Form
             </Button>

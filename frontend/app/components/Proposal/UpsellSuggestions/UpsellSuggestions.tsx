@@ -43,6 +43,12 @@ const UpsellSuggestions: React.FC<UpsellSuggestionsProps> = ({
     itemContent: cn(commonStyles.itemContent, themeStyles.itemContent),
     itemTitle: cn(commonStyles.itemTitle, themeStyles.itemTitle),
     itemDesc: cn(commonStyles.itemDesc, themeStyles.itemDesc),
+    triggerWrapper: commonStyles.triggerWrapper,
+    triggerButton: commonStyles.triggerButton,
+    iconRocket: cn(commonStyles.iconRocket, themeStyles.iconRocket),
+    iconLightbulb: cn(commonStyles.iconLightbulb, themeStyles.iconLightbulb),
+    loadingState: cn(commonStyles.loadingState, themeStyles.loadingState),
+    addButton: cn(commonStyles.addButton, themeStyles.addButton),
   };
 
   const handleGenerate = async () => {
@@ -64,15 +70,15 @@ const UpsellSuggestions: React.FC<UpsellSuggestionsProps> = ({
 
   if (!suggestions.length && !loading) {
     return (
-      <div className="mt-4">
+      <div className={styles.triggerWrapper}>
         <Button
           variant="secondary"
           onClick={handleGenerate}
           disabled={!proposalContent || proposalContent.length < 50}
           size="sm"
-          className="w-full border-dashed"
+          className={styles.triggerButton}
         >
-          <Rocket size={16} className="mr-2 text-purple-500" />
+          <Rocket size={16} className={styles.iconRocket} />
           Get AI Upsell Suggestions
         </Button>
       </div>
@@ -82,12 +88,12 @@ const UpsellSuggestions: React.FC<UpsellSuggestionsProps> = ({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Lightbulb size={18} className="text-yellow-500" />
+        <Lightbulb size={18} className={styles.iconLightbulb} />
         <h3 className={styles.title}>Boost Your Proposal Value</h3>
       </div>
 
       {loading ? (
-        <div className="text-center py-4 text-sm text-gray-500">
+        <div className={styles.loadingState}>
           Analyzing project scope...
         </div>
       ) : (
@@ -102,7 +108,7 @@ const UpsellSuggestions: React.FC<UpsellSuggestionsProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onAdd(suggestion)}
-                className="ml-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                className={styles.addButton}
               >
                 <Plus size={16} />
               </Button>

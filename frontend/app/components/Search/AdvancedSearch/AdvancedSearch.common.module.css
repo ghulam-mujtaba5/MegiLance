@@ -13,6 +13,19 @@
   align-items: center;
 }
 
+.searchInputWrapper {
+  position: relative;
+  flex: 1;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
 .searchInput {
   width: 100%;
   padding: 0.875rem 1rem 0.875rem 3rem;
@@ -102,6 +115,35 @@
   border-bottom: none;
 }
 
+.suggestionText {
+  font-weight: 500;
+}
+
+.suggestionCount {
+  font-size: 0.875rem;
+  opacity: 0.75;
+}
+
+.inlineIcon {
+  margin-right: 0.5rem;
+}
+
+.filterCountBadge {
+  margin-left: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.chevronIcon {
+  margin-left: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.chevronIconOpen {
+  transform: rotate(180deg);
+}
+
 .recentSearches {
   display: flex;
   gap: 1rem;
@@ -109,6 +151,26 @@
   margin-bottom: 1.5rem;
   padding: 1rem;
   border-radius: 8px;
+  align-items: center;
+}
+
+.recentLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.recentButton {
+  font-size: 0.875rem;
+  opacity: 0.75;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+}
+
+.recentButton:hover {
+  opacity: 1;
 }
 
 .savedSearches {
@@ -182,6 +244,93 @@
   gap: 0.5rem;
 }
 
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.inlineLabelIcon {
+  display: inline;
+  margin-right: 0.25rem;
+}
+
+.budgetInputGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filterInput {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.filterInputFull {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.filterActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.savedSearchesTitle {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.savedSearchesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dialogInner {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  max-width: 28rem;
+  width: 100%;
+}
+
+.dialogTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.dialogInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.dialogActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {
@@ -192,7 +341,8 @@
     flex-direction: column;
   }
 
-  .filtersPanel .grid {
+  .filtersPanel .grid,
+  .filterGrid {
     grid-template-columns: 1fr;
   }
 

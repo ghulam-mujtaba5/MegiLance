@@ -124,7 +124,7 @@ const ThemeToggleButton: React.FC = () => {
               animate={{ rotate: 0, opacity: 1, scale: 1 }}
               exit={{ rotate: 90, opacity: 0, scale: 0 }}
               transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className={commonStyles.iconCenter}
             >
               <Sun size={24} />
             </motion.div>
@@ -135,7 +135,7 @@ const ThemeToggleButton: React.FC = () => {
               animate={{ rotate: 0, opacity: 1, scale: 1 }}
               exit={{ rotate: -90, opacity: 0, scale: 0 }}
               transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className={commonStyles.iconCenter}
             >
               <Moon size={24} />
             </motion.div>

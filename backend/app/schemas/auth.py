@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for authentication - tokens, login, registration requests/responses
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field

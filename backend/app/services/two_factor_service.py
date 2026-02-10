@@ -332,5 +332,45 @@ class TwoFactorService:
             return self.verify_token(two_factor_secret, token)
 
 
+    def get_2fa_status(self, user_id) -> dict:
+        """
+        Get current 2FA status for a user from the database.
+
+        Args:
+            user_id: The user's ID
+
+        Returns:
+            dict with 'enabled', 'status', and 'backup_codes_remaining' keys,
+            or None if user not found.
+        """
+        from app.db.turso_http import execute_query, parse_rows
+
+        result = execute_query(
+            "SELECT two_factor_enabled, two_factor_backup_codes FROM users WHERE id = ?",
+            [user_id]
+        )
+        rows = parse_rows(result)
+
+        if not rows:
+            return None
+
+        row = rows[0]
+        enabled = bool(row.get('two_factor_enabled', 0))
+        backup_codes_json = row.get('two_factor_backup_codes')
+
+        codes_remaining = 0
+        if backup_codes_json:
+            try:
+                codes_remaining = len(json.loads(backup_codes_json))
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        return {
+            "enabled": enabled,
+            "status": "enabled" if enabled else "disabled",
+            "backup_codes_remaining": codes_remaining,
+        }
+
+
 # Singleton instance
 two_factor_service = TwoFactorService()

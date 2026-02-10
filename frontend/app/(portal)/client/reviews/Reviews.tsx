@@ -304,8 +304,8 @@ const Reviews: React.FC = () => {
           <div className={common.editorForm}>
             
             {eligibleContracts.length > 0 ? (
-              <div style={{ marginBottom: '1rem' }}>
-                <label className={common.ratingLabel} style={{ display: 'block', marginBottom: '0.5rem' }}>Select Contract to Review:</label>
+              <div className={common.formGroup}>
+                <label className={cn(common.ratingLabel, common.formLabel)}>Select Contract to Review:</label>
                 <Select
                   id="contract-select"
                   options={eligibleContracts.map(c => ({ 
@@ -317,7 +317,7 @@ const Reviews: React.FC = () => {
                 />
               </div>
             ) : (
-              <div style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
+              <div className={common.helperText}>
                 No completed contracts pending review.
               </div>
             )}

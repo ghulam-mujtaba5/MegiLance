@@ -1,14 +1,6 @@
 /* @AI-HINT: Portal Projects page - layout, structure, animations */
 
 .page {
-  min-height: 100vh;
-  padding: 2rem;
-}
-
-@media (min-width: 768px) {
-  .page {
-    padding: 2rem 2rem;
-  }
 }
 
 .header {

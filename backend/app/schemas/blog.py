@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Blog CMS API - create, update, and response models
 from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict

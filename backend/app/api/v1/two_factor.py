@@ -1,23 +1,20 @@
-# @AI-HINT: Two-Factor Authentication API endpoints
+# @AI-HINT: Two-Factor Authentication API endpoints using Turso DB-backed service
 """
 Two-Factor Authentication API - 2FA management endpoints.
 
 Features:
-- Setup TOTP authenticator
-- Verify 2FA codes
+- Setup TOTP authenticator with QR code
+- Verify 2FA codes (TOTP + backup codes)
 - Manage backup codes
-- Trusted device management
+- Persistent storage via Turso HTTP
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Optional
 from pydantic import BaseModel
 
-from app.db.session import get_db
 from app.core.security import get_current_active_user
-from app.models.user import User
-from app.services.two_factor import get_two_factor_service, TwoFactorMethod
+from app.services.two_factor_service import two_factor_service
 
 router = APIRouter(prefix="/2fa", tags=["two-factor-auth"])
 
@@ -25,227 +22,145 @@ router = APIRouter(prefix="/2fa", tags=["two-factor-auth"])
 # Request/Response Models
 class VerifyCodeRequest(BaseModel):
     code: str
-    method: Optional[TwoFactorMethod] = None
-
-
-class TrustDeviceRequest(BaseModel):
-    device_name: str
-    device_fingerprint: str
-
-
-class CheckDeviceRequest(BaseModel):
-    device_fingerprint: str
+    is_backup_code: bool = False
 
 
 # Endpoints
 @router.get("/status")
 async def get_2fa_status(
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user=Depends(get_current_active_user)
 ):
     """Get current 2FA status."""
-    service = get_two_factor_service(db)
-    status = await service.get_2fa_status(current_user["id"])
-    return status
+    user_id = current_user.id if hasattr(current_user, 'id') else current_user.get('id')
+    
+    status_data = two_factor_service.get_2fa_status(user_id)
+    
+    if status_data is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return status_data
 
 
 @router.post("/totp/setup")
 async def start_totp_setup(
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user=Depends(get_current_active_user)
 ):
-    """Start TOTP authenticator setup. Returns QR code data."""
-    service = get_two_factor_service(db)
+    """Start TOTP authenticator setup. Returns QR code and backup codes."""
+    user_data = {
+        "id": current_user.id if hasattr(current_user, 'id') else current_user.get('id'),
+        "email": current_user.email if hasattr(current_user, 'email') else current_user.get('email'),
+    }
     
-    result = await service.start_totp_setup(
-        user_id=current_user["id"],
-        email=current_user["email"]
-    )
+    result = two_factor_service.setup_2fa_for_user_turso(user_data)
     
     return {
-        "message": "Scan the QR code with your authenticator app",
-        **result
+        "message": "Scan the QR code with your authenticator app, then verify with a code",
+        "qr_code": result["qr_code"],
+        "secret": result["secret"],
+        "backup_codes": result["backup_codes"],
+        "provisioning_uri": result["provisioning_uri"],
     }
 
 
 @router.post("/totp/verify-setup")
 async def verify_totp_setup(
     request: VerifyCodeRequest,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user=Depends(get_current_active_user)
 ):
-    """Verify TOTP setup with a code from authenticator app."""
-    service = get_two_factor_service(db)
+    """Verify TOTP setup with a code from authenticator app to enable 2FA."""
+    user_data = {
+        "id": current_user.id if hasattr(current_user, 'id') else current_user.get('id'),
+    }
     
-    result = await service.verify_totp_setup(
-        user_id=current_user["id"],
-        code=request.code
-    )
+    success = two_factor_service.enable_2fa_turso(user_data, request.code)
     
-    if not result["success"]:
+    if not success:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=result.get("error", "Verification failed")
+            detail="Invalid verification code. Make sure the code from your authenticator app is correct."
         )
     
-    return result
+    return {"success": True, "message": "2FA enabled successfully!"}
 
 
 @router.post("/verify")
 async def verify_2fa_code(
     request: VerifyCodeRequest,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user=Depends(get_current_active_user)
 ):
     """Verify a 2FA code (TOTP or backup code)."""
-    service = get_two_factor_service(db)
+    user_data = {
+        "id": current_user.id if hasattr(current_user, 'id') else current_user.get('id'),
+        "two_factor_enabled": True,
+    }
     
-    result = await service.verify_code(
-        user_id=current_user["id"],
-        code=request.code,
-        method=request.method
+    success = two_factor_service.verify_2fa_login_turso(
+        user_data,
+        request.code,
+        is_backup_code=request.is_backup_code
     )
     
-    if not result["success"]:
+    if not success:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=result.get("error", "Invalid code")
+            detail="Invalid code"
         )
     
-    return result
+    return {"success": True, "method": "backup_code" if request.is_backup_code else "totp"}
 
 
 @router.post("/disable")
 async def disable_2fa(
     request: VerifyCodeRequest,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user=Depends(get_current_active_user)
 ):
-    """Disable 2FA (requires valid code)."""
-    service = get_two_factor_service(db)
+    """Disable 2FA (requires valid TOTP code first)."""
+    user_data = {
+        "id": current_user.id if hasattr(current_user, 'id') else current_user.get('id'),
+        "two_factor_enabled": True,
+    }
     
-    result = await service.disable_2fa(
-        user_id=current_user["id"],
-        code=request.code
-    )
-    
-    if not result["success"]:
+    # Verify code before disabling
+    valid = two_factor_service.verify_2fa_login_turso(user_data, request.code)
+    if not valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=result.get("error", "Failed to disable 2FA")
+            detail="Invalid code. Provide a valid TOTP code to disable 2FA."
         )
     
-    return result
+    two_factor_service.disable_2fa_turso(user_data)
+    
+    return {"success": True, "message": "2FA disabled"}
 
 
 @router.post("/backup-codes/regenerate")
 async def regenerate_backup_codes(
     request: VerifyCodeRequest,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user=Depends(get_current_active_user)
 ):
     """Regenerate backup codes (requires valid TOTP code)."""
-    service = get_two_factor_service(db)
+    user_data = {
+        "id": current_user.id if hasattr(current_user, 'id') else current_user.get('id'),
+        "email": current_user.email if hasattr(current_user, 'email') else current_user.get('email'),
+        "two_factor_enabled": True,
+    }
     
-    result = await service.regenerate_backup_codes(
-        user_id=current_user["id"],
-        code=request.code
-    )
-    
-    if not result["success"]:
+    # Verify TOTP code first
+    valid = two_factor_service.verify_2fa_login_turso(user_data, request.code)
+    if not valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=result.get("error", "Failed to regenerate codes")
+            detail="Invalid TOTP code"
         )
     
-    return result
-
-
-# Trusted Devices
-@router.get("/devices")
-async def get_trusted_devices(
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
-):
-    """Get all trusted devices."""
-    service = get_two_factor_service(db)
-    devices = await service.get_trusted_devices(current_user["id"])
-    return {"devices": devices}
-
-
-@router.post("/devices/trust")
-async def trust_device(
-    request: TrustDeviceRequest,
-    req: Request,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
-):
-    """Add current device as trusted."""
-    service = get_two_factor_service(db)
+    # Re-setup generates new backup codes while preserving the existing secret
+    result = two_factor_service.setup_2fa_for_user_turso(user_data)
     
-    # Get request info
-    user_agent = req.headers.get("user-agent")
-    ip_address = req.client.host if req.client else None
+    # Re-enable since setup resets enabled flag
+    two_factor_service.enable_2fa_turso(user_data, request.code)
     
-    device = await service.trust_device(
-        user_id=current_user["id"],
-        device_fingerprint=request.device_fingerprint,
-        device_name=request.device_name,
-        user_agent=user_agent,
-        ip_address=ip_address
-    )
-    
-    return {"device": device, "message": "Device trusted"}
-
-
-@router.post("/devices/check")
-async def check_device_trusted(
-    request: CheckDeviceRequest,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
-):
-    """Check if a device is trusted."""
-    service = get_two_factor_service(db)
-    
-    is_trusted = await service.is_trusted_device(
-        user_id=current_user["id"],
-        device_fingerprint=request.device_fingerprint
-    )
-    
-    return {"trusted": is_trusted}
-
-
-@router.delete("/devices/{device_id}")
-async def revoke_device(
-    device_id: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
-):
-    """Revoke a trusted device."""
-    service = get_two_factor_service(db)
-    
-    success = await service.revoke_trusted_device(
-        user_id=current_user["id"],
-        device_id=device_id
-    )
-    
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Device not found"
-        )
-    
-    return {"message": "Device revoked"}
-
-
-@router.delete("/devices")
-async def revoke_all_devices(
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
-):
-    """Revoke all trusted devices."""
-    service = get_two_factor_service(db)
-    
-    count = await service.revoke_all_devices(current_user["id"])
-    
-    return {"message": f"Revoked {count} devices"}
+    return {
+        "success": True,
+        "backup_codes": result["backup_codes"],
+        "message": "New backup codes generated. Save them securely!"
+    }

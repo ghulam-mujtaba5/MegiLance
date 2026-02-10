@@ -183,7 +183,7 @@ const ProjectDetail: React.FC = () => {
       <main className={cn(common.page, themed.themeWrapper)}>
         <div className={common.container}>
            <Skeleton height={100} width='100%' />
-           <div style={{ marginTop: '2rem' }}>
+           <div className={common.sectionSpacing}>
              <Skeleton height={200} width='100%' />
            </div>
         </div>
@@ -401,7 +401,7 @@ const ProjectDetail: React.FC = () => {
       {/* Accept Proposal Modal */}
       <Modal isOpen={acceptTarget !== null} title="Accept Proposal" onClose={() => setAcceptTarget(null)}>
         <p>Accept this proposal? This will create a contract and reject other proposals.</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={common.actionRow}>
           <Button variant="ghost" onClick={() => setAcceptTarget(null)}>Cancel</Button>
           <Button variant="success" onClick={() => { if (acceptTarget) handleAcceptProposal(acceptTarget); }}>Accept &amp; Hire</Button>
         </div>
@@ -410,7 +410,7 @@ const ProjectDetail: React.FC = () => {
       {/* Reject Proposal Modal */}
       <Modal isOpen={rejectTarget !== null} title="Reject Proposal" onClose={() => setRejectTarget(null)}>
         <p>Are you sure you want to reject this proposal?</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={common.actionRow}>
           <Button variant="ghost" onClick={() => setRejectTarget(null)}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (rejectTarget) handleRejectProposal(rejectTarget); }}>Reject</Button>
         </div>

@@ -103,6 +103,19 @@ const ProjectWizard: React.FC = () => {
     reviewItem: cn(commonStyles.reviewItem, themeStyles.reviewItem),
     reviewLabel: cn(commonStyles.reviewLabel, themeStyles.reviewLabel),
     reviewValue: cn(commonStyles.reviewValue, themeStyles.reviewValue),
+    backgroundOverlay: commonStyles.backgroundOverlay,
+    orbTopRight: commonStyles.orbTopRight,
+    orbBottomLeft: commonStyles.orbBottomLeft,
+    particlesLayer: commonStyles.particlesLayer,
+    floatingCubeWrapper: commonStyles.floatingCubeWrapper,
+    floatingSphereWrapper: commonStyles.floatingSphereWrapper,
+    fullWidth: commonStyles.fullWidth,
+    fullWidthSpaced: commonStyles.fullWidthSpaced,
+    budgetLabel: commonStyles.budgetLabel,
+    inlineIcon: commonStyles.inlineIcon,
+    trailingIcon: commonStyles.trailingIcon,
+    reviewTitle: cn(commonStyles.reviewTitle, themeStyles.reviewTitle),
+    errorMessage: cn(commonStyles.errorMessage, themeStyles.errorMessage),
   };
 
   const progress = (currentStep / steps.length) * 100;
@@ -221,14 +234,14 @@ const ProjectWizard: React.FC = () => {
     <PageTransition>
       <div className={styles.container}>
         {/* Background Elements */}
-        <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-           <AnimatedOrb variant="blue" size={400} blur={80} opacity={0.15} className="absolute top-0 right-0" />
-           <AnimatedOrb variant="purple" size={300} blur={60} opacity={0.1} className="absolute bottom-0 left-0" />
-           <ParticlesSystem count={15} className="absolute inset-0" />
-           <div className="absolute top-20 left-10 opacity-20 animate-float-slow">
+        <div className={styles.backgroundOverlay}>
+           <AnimatedOrb variant="blue" size={400} blur={80} opacity={0.15} className={styles.orbTopRight} />
+           <AnimatedOrb variant="purple" size={300} blur={60} opacity={0.1} className={styles.orbBottomLeft} />
+           <ParticlesSystem count={15} className={styles.particlesLayer} />
+           <div className={styles.floatingCubeWrapper}>
              <FloatingCube size={40} />
            </div>
-           <div className="absolute bottom-40 right-20 opacity-20 animate-float-medium">
+           <div className={styles.floatingSphereWrapper}>
              <FloatingSphere size={30} variant="gradient" />
            </div>
         </div>
@@ -276,7 +289,7 @@ const ProjectWizard: React.FC = () => {
         <StaggerContainer className={styles.content} key={currentStep}>
           {currentStep === 1 && (
             <div className={styles.formGrid}>
-              <StaggerItem className="col-span-2">
+              <StaggerItem className={styles.fullWidth}>
                 <Input
                   name="title"
                   label="Project Title"
@@ -287,7 +300,7 @@ const ProjectWizard: React.FC = () => {
                   helpText={`${projectData.title.length} characters (minimum 10)`}
                 />
               </StaggerItem>
-              <StaggerItem className="col-span-2">
+              <StaggerItem className={styles.fullWidth}>
                 <Textarea
                   name="description"
                   label="Project Description"
@@ -299,7 +312,7 @@ const ProjectWizard: React.FC = () => {
                   helpText={`${projectData.description.length}/1000 characters (minimum 100)`}
                 />
               </StaggerItem>
-              <StaggerItem className="col-span-2">
+              <StaggerItem className={styles.fullWidth}>
                 <Select
                   id="category"
                   label="Project Category"
@@ -308,7 +321,7 @@ const ProjectWizard: React.FC = () => {
                   options={categories}
                 />
               </StaggerItem>
-              <StaggerItem className="col-span-2">
+              <StaggerItem className={styles.fullWidth}>
                 <FileUpload
                   label="Attachments (Optional)"
                   accept="image/*,.pdf,.doc,.docx"
@@ -325,8 +338,8 @@ const ProjectWizard: React.FC = () => {
 
           {currentStep === 2 && (
             <div className={styles.formGrid}>
-              <StaggerItem className="col-span-2">
-                <label className="block text-sm font-semibold mb-2">Budget Type</label>
+              <StaggerItem className={styles.fullWidth}>
+                <label className={styles.budgetLabel}>Budget Type</label>
                 <div className={styles.budgetToggle}>
                   <button
                     type="button"
@@ -336,7 +349,7 @@ const ProjectWizard: React.FC = () => {
                     )}
                     onClick={() => setProjectData({ ...projectData, budgetType: 'fixed' })}
                   >
-                    <Banknote className="mr-2" size={16} />
+                    <Banknote className={styles.inlineIcon} size={16} />
                     Fixed Price
                   </button>
                   <button
@@ -347,7 +360,7 @@ const ProjectWizard: React.FC = () => {
                     )}
                     onClick={() => setProjectData({ ...projectData, budgetType: 'hourly' })}
                   >
-                    <Clock className="mr-2" size={16} />
+                    <Clock className={styles.inlineIcon} size={16} />
                     Hourly Rate
                   </button>
                 </div>
@@ -374,10 +387,7 @@ const ProjectWizard: React.FC = () => {
                   error={errors.budgetMax}
                 />
               </StaggerItem>
-              <StaggerItem className="col-span-2">
-                <Select
-                  id="duration"
-                  label="Project Duration"
+              <StaggerItem className={styles.fullWidth}>
                   value={projectData.duration}
                   onChange={(e) => setProjectData({ ...projectData, duration: e.target.value })}
                   options={[
@@ -392,7 +402,7 @@ const ProjectWizard: React.FC = () => {
                 />
               </StaggerItem>
 
-              <StaggerItem className="col-span-2 mt-4">
+              <StaggerItem className={styles.fullWidthSpaced}>
                  <FeasibilityAnalyzer 
                     projectDescription={projectData.description}
                     budgetMin={parseFloat(projectData.budgetMin) || 0}
@@ -405,7 +415,7 @@ const ProjectWizard: React.FC = () => {
 
           {currentStep === 3 && (
             <div className={styles.formGrid}>
-              <StaggerItem className="col-span-2">
+              <StaggerItem className={styles.fullWidth}>
                 <TagsInput
                   id="skills"
                   label="Required Skills (Add at least 2)"
@@ -415,7 +425,7 @@ const ProjectWizard: React.FC = () => {
                   error={errors.skills}
                 />
               </StaggerItem>
-              <StaggerItem className="col-span-2">
+              <StaggerItem className={styles.fullWidth}>
                 <Select
                   id="experienceLevel"
                   label="Experience Level Required"
@@ -435,7 +445,7 @@ const ProjectWizard: React.FC = () => {
           {currentStep === 4 && (
             <div className={styles.reviewSection}>
               <StaggerItem>
-                <h3 className="text-xl font-bold mb-4">Review Your Project</h3>
+                <h3 className={styles.reviewTitle}>Review Your Project</h3>
               </StaggerItem>
               
               <StaggerItem className={styles.reviewItem}>
@@ -480,7 +490,7 @@ const ProjectWizard: React.FC = () => {
           )}
 
           {errors.general && (
-            <StaggerItem className="text-red-500 text-center mt-4">{errors.general}</StaggerItem>
+            <StaggerItem className={styles.errorMessage}>{errors.general}</StaggerItem>
           )}
         </StaggerContainer>
 
@@ -492,7 +502,7 @@ const ProjectWizard: React.FC = () => {
               onClick={handleBack}
               disabled={loading}
             >
-              <ArrowLeft className="mr-2" size={16} />
+              <ArrowLeft className={styles.inlineIcon} size={16} />
               Back
             </Button>
           )}
@@ -505,12 +515,12 @@ const ProjectWizard: React.FC = () => {
             {currentStep < steps.length ? (
               <>
                 Next
-                <ArrowRight className="ml-2" size={16} />
+                <ArrowRight className={styles.trailingIcon} size={16} />
               </>
             ) : (
               <>
                 Post Project
-                <CheckCircle className="ml-2" size={16} />
+                <CheckCircle className={styles.trailingIcon} size={16} />
               </>
             )}
           </Button>

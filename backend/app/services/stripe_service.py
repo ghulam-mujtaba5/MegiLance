@@ -2,6 +2,8 @@
 # Manages all Stripe operations including payment processing, refunds, and platform fees
 
 import stripe
+import json
+import logging
 from typing import Optional, Dict, Any, List
 from decimal import Decimal
 from datetime import datetime, timezone
@@ -10,6 +12,9 @@ from sqlalchemy.orm import Session
 from ..core.config import get_settings
 from ..models.user import User
 from ..models.payment import Payment
+from ..db.turso_http import execute_query
+
+logger = logging.getLogger(__name__)
 
 
 class StripeService:
@@ -440,6 +445,33 @@ class StripeService:
     def format_amount_from_stripe(self, amount_cents: int) -> float:
         """Convert cents from Stripe to dollars"""
         return amount_cents / 100
+
+    # ===== Turso Webhook DB Operations =====
+
+    def update_payment_status_turso(self, payment_id: int, new_status: str) -> None:
+        """Update a payment record's status via Turso."""
+        execute_query(
+            "UPDATE payments SET status = ?, updated_at = datetime('now') WHERE id = ?",
+            [new_status, payment_id]
+        )
+
+    def create_payment_notification_turso(
+        self, user_id: int, notification_type: str, title: str, content: str, data: dict
+    ) -> None:
+        """Create a payment-related notification via Turso."""
+        execute_query(
+            """INSERT INTO notifications 
+            (user_id, notification_type, title, content, data, is_read, created_at, priority)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'), 'high')""",
+            [user_id, notification_type, title, content, json.dumps(data), 0]
+        )
+
+    def complete_refund_turso(self, refund_id: int) -> None:
+        """Mark a refund as completed via Turso."""
+        execute_query(
+            "UPDATE refunds SET status = 'completed', processed_at = datetime('now') WHERE id = ?",
+            [refund_id]
+        )
 
 
 # Singleton instance

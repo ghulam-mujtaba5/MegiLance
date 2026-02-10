@@ -233,6 +233,7 @@ export default function InvoiceWizard({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={cn(commonStyles.searchInput, themeStyles.searchInput)}
+                aria-label="Search clients"
               />
             </div>
 
@@ -299,6 +300,7 @@ export default function InvoiceWizard({
               onChange={(e) => updateLineItem(item.id, 'description', e.target.value)}
               placeholder="Item description"
               className={commonStyles.descInput}
+              aria-label="Line item description"
             />
             <input
               type="number"

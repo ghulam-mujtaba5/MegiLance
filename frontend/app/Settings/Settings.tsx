@@ -25,8 +25,8 @@ const Settings: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen p-6 md:p-8" style={{ background: resolvedTheme === 'dark' ? '#0f172a' : '#f8fafc' }}>
-      <div className="max-w-4xl mx-auto">
+    <div>
+      <div>
         <div className="flex items-center gap-3 mb-8">
           <SettingsIcon size={28} className={resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'} />
           <h1 className={`text-2xl md:text-3xl font-bold ${resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'}`}>

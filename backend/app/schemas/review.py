@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Review API - rating submission and response models
 """Review schemas for MegiLance platform"""
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional, Dict, Any

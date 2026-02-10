@@ -495,7 +495,7 @@ export default function RateCardsPage() {
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteTarget !== null} title="Delete Rate Card" onClose={() => setDeleteTarget(null)}>
           <p>Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone.</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <div className={commonStyles.actionRow}>
             <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
             <Button variant="danger" onClick={() => deleteTarget && handleDelete(deleteTarget)}>Delete</Button>
           </div>

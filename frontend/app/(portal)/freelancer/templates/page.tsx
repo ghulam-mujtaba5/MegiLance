@@ -353,7 +353,7 @@ export default function ProposalTemplatesPage() {
 
       <Modal isOpen={deleteTarget !== null} title="Delete Template" onClose={() => setDeleteTarget(null)}>
         <p>Are you sure you want to delete &quot;{deleteTarget?.name}&quot;? This action cannot be undone.</p>
-        <div className={commonStyles.cardActions} style={{ marginTop: '1.5rem', justifyContent: 'flex-end' }}>
+        <div className={cn(commonStyles.cardActions, commonStyles.actionRow)}>
           <Button variant="secondary" size="sm" onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button variant="danger" size="sm" onClick={() => deleteTarget && handleDelete(deleteTarget)}>Delete</Button>
         </div>

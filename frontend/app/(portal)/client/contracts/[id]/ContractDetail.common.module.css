@@ -1,5 +1,19 @@
 /* @AI-HINT: Common styles for Client Contract Detail page */
 
+.inlineIcon {
+  display: inline;
+  margin-right: 4px;
+}
+
+.emptyIcon {
+  opacity: 0.4;
+  margin-bottom: 8px;
+}
+
+.sectionSpacing {
+  margin-bottom: 1.5rem;
+}
+
 .container {
   padding: 1.5rem 2rem 2rem;
   max-width: 1200px;

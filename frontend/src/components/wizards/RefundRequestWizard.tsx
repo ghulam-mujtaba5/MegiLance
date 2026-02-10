@@ -172,6 +172,7 @@ export default function RefundRequestWizard({
             placeholder="Describe what happened and why you're requesting a refund..."
             rows={4}
             className={cn(commonStyles.textarea, themeStyles.textarea)}
+            aria-label="Refund reason details"
           />
           <div className={commonStyles.charCount}>
             {refundData.reasonDetails.length}/500 characters
@@ -199,7 +200,7 @@ export default function RefundRequestWizard({
           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
           onChange={(e) => addEvidence(e.target.files)}
           id="evidence-upload"
-          style={{ display: 'none' }}
+          className={commonStyles.hiddenInput}
         />
         <label htmlFor="evidence-upload" className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}>
           <FileUp />
@@ -248,6 +249,7 @@ export default function RefundRequestWizard({
                   onChange={(e) => updateEvidence(evidence.id, 'description', e.target.value)}
                   placeholder="Briefly describe this evidence..."
                   className={cn(commonStyles.input, themeStyles.input)}
+                  aria-label="Evidence description"
                 />
               </div>
             </div>
@@ -353,6 +355,7 @@ export default function RefundRequestWizard({
           placeholder="Explain why this refund amount is appropriate..."
           rows={4}
           className={cn(commonStyles.textarea, themeStyles.textarea)}
+          aria-label="Refund amount justification"
         />
       </div>
     </div>

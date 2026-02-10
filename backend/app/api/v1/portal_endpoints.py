@@ -1,6 +1,6 @@
 """
 @AI-HINT: Client and Freelancer portal endpoints - dashboards, projects, proposals
-Uses Turso HTTP API directly - NO SQLite fallback
+Uses service layer for all DB operations
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from typing import Optional
@@ -8,8 +8,8 @@ from datetime import datetime, timezone
 import json
 
 from app.core.security import get_current_active_user
-from app.db.turso_http import execute_query, to_str, parse_date
 from app.models.user import User
+from app.services import portal_service
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -42,16 +42,6 @@ class CreateProjectRequest(BaseModel):
     category: Optional[str] = "Web Development"
     budget_type: Optional[str] = "Fixed"
     timeline: Optional[str] = "1-3 months"
-
-
-def _get_val(row: list, idx: int):
-    """Extract value from Turso row"""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if cell.get("type") == "null":
-        return None
-    return cell.get("value")
 
 
 def _safe_str(val):
@@ -91,64 +81,8 @@ async def get_freelancer_user(current_user: User = Depends(get_current_active_us
 @router.get("/client/dashboard/stats", response_model=ClientDashboardStats)
 async def get_client_dashboard_stats(client: User = Depends(get_client_user)):
     """Get client dashboard statistics"""
-    total_projects = 0
-    active_projects = 0
-    completed_projects = 0
-    total_spent = 0.0
-    active_freelancers = 0
-    pending_proposals = 0
-    
-    result = execute_query(
-        "SELECT COUNT(*) FROM projects WHERE client_id = ?", [client.id]
-    )
-    if result and result.get("rows"):
-        total_projects = int(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status IN ('open', 'in_progress')",
-        [client.id]
-    )
-    if result and result.get("rows"):
-        active_projects = int(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status = 'completed'",
-        [client.id]
-    )
-    if result and result.get("rows"):
-        completed_projects = int(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE from_user_id = ? AND status = 'completed'",
-        [client.id]
-    )
-    if result and result.get("rows"):
-        total_spent = float(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COUNT(DISTINCT freelancer_id) FROM contracts WHERE client_id = ? AND status IN ('active', 'in_progress')",
-        [client.id]
-    )
-    if result and result.get("rows"):
-        active_freelancers = int(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        """SELECT COUNT(*) FROM proposals pr
-           JOIN projects p ON pr.project_id = p.id
-           WHERE p.client_id = ? AND pr.status = 'submitted'""",
-        [client.id]
-    )
-    if result and result.get("rows"):
-        pending_proposals = int(_get_val(result["rows"][0], 0) or 0)
-    
-    return ClientDashboardStats(
-        total_projects=total_projects,
-        active_projects=active_projects,
-        completed_projects=completed_projects,
-        total_spent=total_spent,
-        active_freelancers=active_freelancers,
-        pending_proposals=pending_proposals
-    )
+    data = portal_service.get_client_stats(client.id)
+    return ClientDashboardStats(**data)
 
 
 @router.get("/client/projects")
@@ -159,44 +93,7 @@ async def get_client_projects(
     client: User = Depends(get_client_user)
 ):
     """Get client's projects"""
-    where_sql = "WHERE client_id = ?"
-    params = [client.id]
-    
-    if status:
-        where_sql += " AND status = ?"
-        params.append(status)
-    
-    # Get total
-    count_result = execute_query(f"SELECT COUNT(*) FROM projects {where_sql}", params)
-    total = 0
-    if count_result and count_result.get("rows"):
-        total = int(_get_val(count_result["rows"][0], 0) or 0)
-    
-    # Get projects
-    params.extend([limit, skip])
-    result = execute_query(
-        f"""SELECT id, title, description, status, budget_min, budget_max, created_at, updated_at
-            FROM projects {where_sql}
-            ORDER BY created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
-    )
-    
-    projects = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            projects.append({
-                "id": int(_get_val(row, 0) or 0),
-                "title": _safe_str(_get_val(row, 1)),
-                "description": _safe_str(_get_val(row, 2)),
-                "status": _safe_str(_get_val(row, 3)),
-                "budget_min": float(_get_val(row, 4) or 0),
-                "budget_max": float(_get_val(row, 5) or 0),
-                "created_at": parse_date(_get_val(row, 6)),
-                "updated_at": parse_date(_get_val(row, 7))
-            })
-    
-    return {"total": total, "projects": projects}
+    return portal_service.get_client_projects_list(client.id, status, limit, skip)
 
 
 @router.post("/client/projects", status_code=status.HTTP_201_CREATED)
@@ -206,48 +103,23 @@ async def create_client_project(
 ):
     """Create a new project"""
     now = datetime.now(timezone.utc).isoformat()
-    
-    # Determine budget range based on type
+
     budget_min = project_data.budget * 0.8 if project_data.budget_type == 'Fixed' else project_data.budget
     budget_max = project_data.budget
-    
-    result = execute_query(
-        """INSERT INTO projects (title, description, client_id, budget_min, budget_max, 
-           budget_type, category, estimated_duration, status, skills, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            project_data.title,
-            project_data.description,
-            client.id,
-            budget_min,
-            budget_max,
-            project_data.budget_type,
-            project_data.category,
-            project_data.timeline,
-            "open",
-            json.dumps(project_data.skills),
-            now,
-            now
-        ]
+
+    result = portal_service.create_project(
+        client.id, project_data.title, project_data.description,
+        budget_min, budget_max, project_data.budget_type, project_data.category,
+        project_data.timeline, project_data.skills, now
     )
-    
+
     if not result:
         raise HTTPException(status_code=500, detail="Failed to create project")
-    
-    # Get the created project
-    get_result = execute_query(
-        "SELECT id, title, status FROM projects WHERE client_id = ? ORDER BY id DESC LIMIT 1",
-        [client.id]
-    )
-    
-    project_id = 0
-    if get_result and get_result.get("rows"):
-        project_id = int(_get_val(get_result["rows"][0], 0) or 0)
-    
+
     return {
-        "id": project_id,
-        "title": project_data.title,
-        "status": "open",
+        "id": result["id"],
+        "title": result["title"],
+        "status": result["status"],
         "message": "Project created successfully"
     }
 
@@ -260,51 +132,7 @@ async def get_client_proposals(
     client: User = Depends(get_client_user)
 ):
     """Get proposals for client's projects"""
-    where_sql = "WHERE p.client_id = ?"
-    params = [client.id]
-    
-    if project_id:
-        where_sql += " AND pr.project_id = ?"
-        params.append(project_id)
-    
-    # Get total
-    count_result = execute_query(
-        f"""SELECT COUNT(*) FROM proposals pr
-            JOIN projects p ON pr.project_id = p.id
-            {where_sql}""",
-        params
-    )
-    total = 0
-    if count_result and count_result.get("rows"):
-        total = int(_get_val(count_result["rows"][0], 0) or 0)
-    
-    # Get proposals
-    params.extend([limit, skip])
-    result = execute_query(
-        f"""SELECT pr.id, pr.project_id, pr.freelancer_id, pr.status, 
-            pr.estimated_hours, pr.hourly_rate, pr.created_at
-            FROM proposals pr
-            JOIN projects p ON pr.project_id = p.id
-            {where_sql}
-            ORDER BY pr.created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
-    )
-    
-    proposals = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            proposals.append({
-                "id": int(_get_val(row, 0) or 0),
-                "project_id": int(_get_val(row, 1) or 0),
-                "freelancer_id": int(_get_val(row, 2) or 0),
-                "status": _safe_str(_get_val(row, 3)),
-                "estimated_hours": float(_get_val(row, 4) or 0),
-                "hourly_rate": float(_get_val(row, 5) or 0),
-                "created_at": parse_date(_get_val(row, 6))
-            })
-    
-    return {"total": total, "proposals": proposals}
+    return portal_service.get_client_proposals_list(client.id, project_id, limit, skip)
 
 
 @router.get("/client/payments")
@@ -314,38 +142,7 @@ async def get_client_payments(
     client: User = Depends(get_client_user)
 ):
     """Get client's payment history"""
-    # Get total
-    count_result = execute_query(
-        "SELECT COUNT(*) FROM payments WHERE from_user_id = ?",
-        [client.id]
-    )
-    total = 0
-    if count_result and count_result.get("rows"):
-        total = int(_get_val(count_result["rows"][0], 0) or 0)
-    
-    # Get payments
-    result = execute_query(
-        """SELECT id, amount, status, payment_type, description, created_at
-           FROM payments
-           WHERE from_user_id = ?
-           ORDER BY created_at DESC
-           LIMIT ? OFFSET ?""",
-        [client.id, limit, skip]
-    )
-    
-    payments = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            payments.append({
-                "id": int(_get_val(row, 0) or 0),
-                "amount": float(_get_val(row, 1) or 0),
-                "status": _safe_str(_get_val(row, 2)),
-                "payment_type": _safe_str(_get_val(row, 3)),
-                "description": _safe_str(_get_val(row, 4)),
-                "created_at": parse_date(_get_val(row, 5))
-            })
-    
-    return {"total": total, "payments": payments}
+    return portal_service.get_payments_list(client.id, "from", limit, skip)
 
 
 @router.get("/client/spending/monthly")
@@ -354,35 +151,14 @@ async def get_client_monthly_spending(
     client: User = Depends(get_client_user)
 ):
     """Get client's monthly spending for chart display"""
-    from datetime import datetime, timedelta
-    
-    # Get spending grouped by month for the last N months
-    result = execute_query(
-        """SELECT 
-            strftime('%Y-%m', created_at) as month,
-            COALESCE(SUM(amount), 0) as total
-           FROM payments 
-           WHERE from_user_id = ? 
-             AND status = 'completed'
-             AND created_at >= date('now', '-' || ? || ' months')
-           GROUP BY strftime('%Y-%m', created_at)
-           ORDER BY month ASC""",
-        [client.id, months]
-    )
-    
-    monthly_data = {}
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            month_key = _safe_str(_get_val(row, 0))
-            amount = float(_get_val(row, 1) or 0)
-            if month_key:
-                monthly_data[month_key] = amount
-    
-    # Build response with all months (fill gaps with 0)
+    from datetime import timedelta
+
+    monthly_data = portal_service.get_monthly_payment_data(client.id, "from", months)
+
     spending = []
     today = datetime.now()
     month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
+
     for i in range(months - 1, -1, -1):
         target_date = today - timedelta(days=i * 30)
         month_key = target_date.strftime('%Y-%m')
@@ -391,35 +167,20 @@ async def get_client_monthly_spending(
             "name": month_name,
             "spending": monthly_data.get(month_key, 0)
         })
-    
+
     return {"spending": spending}
 
 
 @router.get("/client/wallet")
 async def get_client_wallet(client: User = Depends(get_client_user)):
     """Get client's wallet balance and transactions"""
-    pending_payments = 0.0
-    total_spent = 0.0
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE from_user_id = ? AND status = 'pending'",
-        [client.id]
-    )
-    if result and result.get("rows"):
-        pending_payments = float(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE from_user_id = ? AND status = 'completed'",
-        [client.id]
-    )
-    if result and result.get("rows"):
-        total_spent = float(_get_val(result["rows"][0], 0) or 0)
-    
+    wallet = portal_service.get_wallet_payments(client.id, "from")
+
     return {
         "balance": float(client.account_balance or 0.0) if hasattr(client, 'account_balance') else 0.0,
         "currency": "USD",
-        "pending_payments": pending_payments,
-        "total_spent": total_spent
+        "pending_payments": wallet["pending"],
+        "total_spent": wallet["completed"]
     }
 
 
@@ -428,68 +189,8 @@ async def get_client_wallet(client: User = Depends(get_client_user)):
 @router.get("/freelancer/dashboard/stats", response_model=FreelancerDashboardStats)
 async def get_freelancer_dashboard_stats(freelancer: User = Depends(get_freelancer_user)):
     """Get freelancer dashboard statistics"""
-    total_earnings = 0.0
-    active_projects = 0
-    completed_projects = 0
-    pending_proposals = 0
-    total_proposals = 0
-    avg_rating = None
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'completed'",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        total_earnings = float(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status IN ('active', 'in_progress')",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        active_projects = int(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status = 'completed'",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        completed_projects = int(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COUNT(*) FROM proposals WHERE freelancer_id = ? AND status = 'submitted'",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        pending_proposals = int(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COUNT(*) FROM proposals WHERE freelancer_id = ?",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        total_proposals = int(_get_val(result["rows"][0], 0) or 0)
-    
-    success_rate = (completed_projects / total_proposals * 100) if total_proposals > 0 else 0.0
-    
-    # Get average rating
-    result = execute_query(
-        "SELECT AVG(rating) FROM reviews WHERE reviewee_id = ?",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        rating_val = _get_val(result["rows"][0], 0)
-        if rating_val:
-            avg_rating = round(float(rating_val), 2)
-    
-    return FreelancerDashboardStats(
-        total_earnings=total_earnings,
-        active_projects=active_projects,
-        completed_projects=completed_projects,
-        pending_proposals=pending_proposals,
-        success_rate=round(success_rate, 2),
-        average_rating=avg_rating
-    )
+    data = portal_service.get_freelancer_stats(freelancer.id)
+    return FreelancerDashboardStats(**data)
 
 
 @router.get("/freelancer/jobs")
@@ -500,54 +201,7 @@ async def get_freelancer_jobs(
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get available jobs for freelancer"""
-    where_sql = "WHERE status = 'open'"
-    params = []
-    
-    if category:
-        where_sql += " AND category LIKE ?"
-        params.append(f"%{category}%")
-    
-    # Get total
-    count_result = execute_query(f"SELECT COUNT(*) FROM projects {where_sql}", params)
-    total = 0
-    if count_result and count_result.get("rows"):
-        total = int(_get_val(count_result["rows"][0], 0) or 0)
-    
-    # Get jobs
-    params.extend([limit, skip])
-    result = execute_query(
-        f"""SELECT p.id, p.title, p.description, p.budget_min, p.budget_max, p.created_at, u.name, p.skills
-            FROM projects p
-            JOIN users u ON p.client_id = u.id
-            {where_sql}
-            ORDER BY p.created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
-    )
-    
-    jobs = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            skills_val = _get_val(row, 7)
-            skills_list = []
-            if skills_val:
-                try:
-                    skills_list = json.loads(skills_val)
-                except:
-                    skills_list = []
-            
-            jobs.append({
-                "id": int(_get_val(row, 0) or 0),
-                "title": _safe_str(_get_val(row, 1)),
-                "description": _safe_str(_get_val(row, 2)),
-                "budget_min": float(_get_val(row, 3) or 0),
-                "budget_max": float(_get_val(row, 4) or 0),
-                "created_at": parse_date(_get_val(row, 5)),
-                "client_name": _safe_str(_get_val(row, 6)),
-                "skills": skills_list
-            })
-    
-    return {"total": total, "jobs": jobs}
+    return portal_service.get_available_jobs(category, limit, skip)
 
 
 @router.get("/freelancer/projects")
@@ -558,48 +212,7 @@ async def get_freelancer_projects(
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get freelancer's active contracts/projects"""
-    where_sql = "WHERE freelancer_id = ?"
-    params = [freelancer.id]
-    
-    if status:
-        where_sql += " AND status = ?"
-        params.append(status)
-    
-    # Get total
-    count_result = execute_query(f"SELECT COUNT(*) FROM contracts {where_sql}", params)
-    total = 0
-    if count_result and count_result.get("rows"):
-        total = int(_get_val(count_result["rows"][0], 0) or 0)
-    
-    # Get contracts
-    params.extend([limit, skip])
-    result = execute_query(
-        f"""SELECT c.id, c.project_id, c.status, c.start_date, c.end_date, c.total_amount, c.created_at,
-            p.title, u.name as client_name
-            FROM contracts c
-            JOIN projects p ON c.project_id = p.id
-            JOIN users u ON p.client_id = u.id
-            {where_sql}
-            ORDER BY c.created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
-    )
-    
-    projects = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            projects.append({
-                "id": int(_get_val(row, 0) or 0),
-                "project_id": int(_get_val(row, 1) or 0),
-                "status": _safe_str(_get_val(row, 2)),
-                "start_date": parse_date(_get_val(row, 3)),
-                "end_date": parse_date(_get_val(row, 4)),
-                "total_amount": float(_get_val(row, 5) or 0),
-                "title": _safe_str(_get_val(row, 7)),
-                "client_name": _safe_str(_get_val(row, 8))
-            })
-    
-    return {"total": total, "projects": projects}
+    return portal_service.get_freelancer_contracts(freelancer.id, status, limit, skip)
 
 
 @router.post("/freelancer/proposals", status_code=status.HTTP_201_CREATED)
@@ -611,51 +224,22 @@ async def submit_freelancer_proposal(
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Submit a proposal for a project"""
-    # Check if project exists
-    result = execute_query("SELECT id FROM projects WHERE id = ?", [project_id])
-    if not result or not result.get("rows"):
+    if not portal_service.check_project_exists(project_id):
         raise HTTPException(status_code=404, detail="Project not found")
-    
-    # Check if already submitted proposal
-    result = execute_query(
-        "SELECT id FROM proposals WHERE project_id = ? AND freelancer_id = ?",
-        [project_id, freelancer.id]
-    )
-    if result and result.get("rows"):
+
+    if portal_service.check_proposal_exists(project_id, freelancer.id):
         raise HTTPException(status_code=400, detail="Proposal already submitted for this project")
-    
+
     now = datetime.now(timezone.utc).isoformat()
     hourly_rate = bid_amount / delivery_time if delivery_time > 0 else float(freelancer.hourly_rate or 0)
-    
-    result = execute_query(
-        """INSERT INTO proposals (project_id, freelancer_id, cover_letter, estimated_hours, 
-           hourly_rate, status, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            project_id,
-            freelancer.id,
-            cover_letter,
-            delivery_time,
-            hourly_rate,
-            "submitted",
-            now,
-            now
-        ]
+
+    proposal_id = portal_service.create_proposal(
+        project_id, freelancer.id, cover_letter, delivery_time, hourly_rate, now
     )
-    
-    if not result:
+
+    if proposal_id is None:
         raise HTTPException(status_code=500, detail="Failed to submit proposal")
-    
-    # Get created proposal
-    get_result = execute_query(
-        "SELECT id FROM proposals WHERE project_id = ? AND freelancer_id = ? ORDER BY id DESC LIMIT 1",
-        [project_id, freelancer.id]
-    )
-    
-    proposal_id = 0
-    if get_result and get_result.get("rows"):
-        proposal_id = int(_get_val(get_result["rows"][0], 0) or 0)
-    
+
     return {
         "id": proposal_id,
         "project_id": project_id,
@@ -667,26 +251,7 @@ async def submit_freelancer_proposal(
 @router.get("/freelancer/portfolio")
 async def get_freelancer_portfolio(freelancer: User = Depends(get_freelancer_user)):
     """Get freelancer's portfolio items"""
-    result = execute_query(
-        """SELECT id, title, description, image_url, project_url, created_at
-           FROM portfolio_items
-           WHERE freelancer_id = ?
-           ORDER BY created_at DESC""",
-        [freelancer.id]
-    )
-    
-    items = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            items.append({
-                "id": int(_get_val(row, 0) or 0),
-                "title": _safe_str(_get_val(row, 1)),
-                "description": _safe_str(_get_val(row, 2)),
-                "image_url": _safe_str(_get_val(row, 3)),
-                "project_url": _safe_str(_get_val(row, 4)),
-                "created_at": parse_date(_get_val(row, 5))
-            })
-    
+    items = portal_service.get_freelancer_portfolio_items(freelancer.id)
     return {"portfolio_items": items}
 
 
@@ -700,7 +265,7 @@ async def get_freelancer_skills(freelancer: User = Depends(get_freelancer_user))
             skills_data = json.loads(skills_str)
         except json.JSONDecodeError:
             skills_data = [s.strip() for s in skills_str.split(",") if s.strip()]
-    
+
     return {
         "skills": skills_data,
         "hourly_rate": float(freelancer.hourly_rate or 0.0) if hasattr(freelancer, 'hourly_rate') else 0.0
@@ -710,26 +275,11 @@ async def get_freelancer_skills(freelancer: User = Depends(get_freelancer_user))
 @router.get("/freelancer/earnings")
 async def get_freelancer_earnings(freelancer: User = Depends(get_freelancer_user)):
     """Get freelancer's earnings breakdown"""
-    total_earnings = 0.0
-    pending_earnings = 0.0
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'completed'",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        total_earnings = float(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'pending'",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        pending_earnings = float(_get_val(result["rows"][0], 0) or 0)
-    
+    wallet = portal_service.get_wallet_payments(freelancer.id, "to")
+
     return {
-        "total_earnings": total_earnings,
-        "pending_earnings": pending_earnings,
+        "total_earnings": wallet["completed"],
+        "pending_earnings": wallet["pending"],
         "available_balance": float(freelancer.account_balance or 0.0) if hasattr(freelancer, 'account_balance') else 0.0,
         "currency": "USD"
     }
@@ -738,28 +288,13 @@ async def get_freelancer_earnings(freelancer: User = Depends(get_freelancer_user
 @router.get("/freelancer/wallet")
 async def get_freelancer_wallet(freelancer: User = Depends(get_freelancer_user)):
     """Get freelancer's wallet balance"""
-    pending_earnings = 0.0
-    total_earned = 0.0
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'pending'",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        pending_earnings = float(_get_val(result["rows"][0], 0) or 0)
-    
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'completed'",
-        [freelancer.id]
-    )
-    if result and result.get("rows"):
-        total_earned = float(_get_val(result["rows"][0], 0) or 0)
-    
+    wallet = portal_service.get_wallet_payments(freelancer.id, "to")
+
     return {
         "balance": float(freelancer.account_balance or 0.0) if hasattr(freelancer, 'account_balance') else 0.0,
         "currency": "USD",
-        "pending_earnings": pending_earnings,
-        "total_earned": total_earned
+        "pending_earnings": wallet["pending"],
+        "total_earned": wallet["completed"]
     }
 
 
@@ -769,35 +304,14 @@ async def get_freelancer_monthly_earnings(
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get freelancer's monthly earnings for chart display"""
-    from datetime import datetime, timedelta
-    
-    # Get earnings grouped by month for the last N months
-    result = execute_query(
-        """SELECT 
-            strftime('%Y-%m', created_at) as month,
-            COALESCE(SUM(amount), 0) as total
-           FROM payments 
-           WHERE to_user_id = ? 
-             AND status = 'completed'
-             AND created_at >= date('now', '-' || ? || ' months')
-           GROUP BY strftime('%Y-%m', created_at)
-           ORDER BY month ASC""",
-        [freelancer.id, months]
-    )
-    
-    monthly_data = {}
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            month_key = _safe_str(_get_val(row, 0))
-            amount = float(_get_val(row, 1) or 0)
-            if month_key:
-                monthly_data[month_key] = amount
-    
-    # Build response with all months (fill gaps with 0)
+    from datetime import timedelta
+
+    monthly_data = portal_service.get_monthly_payment_data(freelancer.id, "to", months)
+
     earnings = []
     today = datetime.now()
     month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
+
     for i in range(months - 1, -1, -1):
         target_date = today - timedelta(days=i * 30)
         month_key = target_date.strftime('%Y-%m')
@@ -806,7 +320,7 @@ async def get_freelancer_monthly_earnings(
             "month": month_name,
             "amount": monthly_data.get(month_key, 0)
         })
-    
+
     return {"earnings": earnings}
 
 
@@ -817,38 +331,7 @@ async def get_freelancer_payments(
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get freelancer's payment history"""
-    # Get total
-    count_result = execute_query(
-        "SELECT COUNT(*) FROM payments WHERE to_user_id = ?",
-        [freelancer.id]
-    )
-    total = 0
-    if count_result and count_result.get("rows"):
-        total = int(_get_val(count_result["rows"][0], 0) or 0)
-    
-    # Get payments
-    result = execute_query(
-        """SELECT id, amount, status, payment_type, description, created_at
-           FROM payments
-           WHERE to_user_id = ?
-           ORDER BY created_at DESC
-           LIMIT ? OFFSET ?""",
-        [freelancer.id, limit, skip]
-    )
-    
-    payments = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            payments.append({
-                "id": int(_get_val(row, 0) or 0),
-                "amount": float(_get_val(row, 1) or 0),
-                "status": _safe_str(_get_val(row, 2)),
-                "payment_type": _safe_str(_get_val(row, 3)),
-                "description": _safe_str(_get_val(row, 4)),
-                "created_at": parse_date(_get_val(row, 5))
-            })
-    
-    return {"total": total, "payments": payments}
+    return portal_service.get_payments_list(freelancer.id, "to", limit, skip)
 
 
 # ============ SHARED ENDPOINTS ============
@@ -859,37 +342,7 @@ async def list_freelancers(
     limit: int = Query(50, ge=1, le=200)
 ):
     """List all freelancers - public endpoint"""
-    # Get total
-    count_result = execute_query(
-        "SELECT COUNT(*) FROM users WHERE user_type = 'Freelancer' AND is_active = 1", []
-    )
-    total = 0
-    if count_result and count_result.get("rows"):
-        total = int(_get_val(count_result["rows"][0], 0) or 0)
-    
-    # Get freelancers
-    result = execute_query(
-        """SELECT id, name, email, bio, hourly_rate, location, skills
-           FROM users
-           WHERE user_type = 'Freelancer' AND is_active = 1
-           LIMIT ? OFFSET ?""",
-        [limit, skip]
-    )
-    
-    freelancers = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            freelancers.append({
-                "id": int(_get_val(row, 0) or 0),
-                "name": _safe_str(_get_val(row, 1)),
-                "email": _safe_str(_get_val(row, 2)),
-                "bio": _safe_str(_get_val(row, 3)),
-                "hourly_rate": float(_get_val(row, 4) or 0),
-                "location": _safe_str(_get_val(row, 5)),
-                "skills": _safe_str(_get_val(row, 6))
-            })
-    
-    return {"total": total, "freelancers": freelancers}
+    return portal_service.list_all_freelancers(limit, skip)
 
 @router.post("/freelancer/withdraw")
 async def withdraw_funds(
@@ -900,37 +353,14 @@ async def withdraw_funds(
     current_balance = float(freelancer.account_balance or 0.0)
     if amount > current_balance:
         raise HTTPException(status_code=400, detail="Insufficient funds")
-    
+
     now = datetime.now(timezone.utc).isoformat()
-    
-    # 1. Create payment record
-    result = execute_query(
-        """INSERT INTO payments (from_user_id, to_user_id, amount, payment_type, payment_method, 
-           status, description, platform_fee, freelancer_amount, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            freelancer.id,
-            freelancer.id,
-            amount,
-            "withdrawal",
-            "bank_transfer",
-            "pending",
-            f"Withdrawal of ",
-            0,
-            amount,
-            now,
-            now
-        ]
-    )
-    
-    if not result:
+
+    success = portal_service.create_withdrawal(freelancer.id, amount, now)
+    if not success:
         raise HTTPException(status_code=500, detail="Failed to process withdrawal")
-        
-    # 2. Update user balance
+
     new_balance = current_balance - amount
-    update_result = execute_query(
-        "UPDATE users SET account_balance = ? WHERE id = ?",
-        [new_balance, freelancer.id]
-    )
-    
+    portal_service.update_user_balance(freelancer.id, new_balance)
+
     return {"message": "Withdrawal requested successfully", "new_balance": new_balance}

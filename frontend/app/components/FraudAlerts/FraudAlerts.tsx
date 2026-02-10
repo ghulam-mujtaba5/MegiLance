@@ -358,7 +358,7 @@ export default function FraudAlerts({ className = '' }: FraudAlertsProps) {
         size="small"
       >
         <p>Are you sure you want to block this user?</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+        <div className={commonStyles.modalActions}>
           <Button variant="ghost" onClick={() => { setShowBlockModal(false); setBlockUserId(null); }}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (blockUserId !== null) handleBlockUser(blockUserId); setShowBlockModal(false); setBlockUserId(null); }}>Block User</Button>
         </div>

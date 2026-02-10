@@ -122,14 +122,16 @@ const Projects: React.FC = () => {
             <Input
               iconBefore={<Search size={18} />}
               placeholder="Search by project title..."
+              aria-label="Search projects"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={common.searchInput}
             />
             <div className={common.filters}>
-              <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
+              <Select id="status-filter" aria-label="Filter by status" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
               <Select
                 id="sort-key"
+                aria-label="Sort projects by"
                 options={SORT_OPTIONS}
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as 'updatedAt' | 'title' | 'budget' | 'progress')}

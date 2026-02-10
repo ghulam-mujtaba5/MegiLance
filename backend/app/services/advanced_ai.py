@@ -768,3 +768,73 @@ def get_advanced_ai_service(db: Session = Depends(get_db)) -> AdvancedAIService:
         )
     return AdvancedAIService(db)
 
+
+# ============================================================================
+# Turso HTTP helpers for AI Copilot endpoints
+# ============================================================================
+
+from app.db.turso_http import execute_query as turso_query, to_str as turso_to_str
+
+
+def get_project_for_proposal(project_id: int) -> Optional[Dict[str, Any]]:
+    """Get project details for proposal generation (Turso HTTP). Returns None if not found."""
+    result = turso_query("""
+        SELECT p.id, p.title, p.description, p.budget_min, p.budget_max,
+               p.budget_type, p.skills_required, p.experience_level
+        FROM projects p WHERE p.id = ?
+    """, [project_id])
+
+    if not result or not result.get("rows"):
+        return None
+
+    row = result["rows"][0]
+
+    def get_val(r, idx):
+        cell = r[idx] if idx < len(r) else None
+        if isinstance(cell, dict):
+            return cell.get("value") if cell.get("type") != "null" else None
+        return cell
+
+    return {
+        "title": get_val(row, 1) or "the project",
+        "description": get_val(row, 2) or "",
+        "budget_min": float(get_val(row, 3) or 0),
+        "budget_max": float(get_val(row, 4) or 0),
+        "budget_type": get_val(row, 5) or "fixed",
+    }
+
+
+def get_user_profile_for_proposal(user_id) -> Dict[str, Any]:
+    """Get user profile for proposal generation (Turso HTTP)."""
+    result = turso_query("""
+        SELECT full_name, skills, hourly_rate, bio, completed_projects
+        FROM users WHERE id = ?
+    """, [user_id])
+
+    freelancer_name = "there"
+    freelancer_skills = []
+    hourly_rate = 50
+
+    if result and result.get("rows"):
+        row = result["rows"][0]
+
+        def get_val(r, idx):
+            cell = r[idx] if idx < len(r) else None
+            if isinstance(cell, dict):
+                return cell.get("value") if cell.get("type") != "null" else None
+            return cell
+
+        freelancer_name = get_val(row, 0) or "there"
+        skills_str = get_val(row, 1) or "[]"
+        try:
+            freelancer_skills = json.loads(skills_str) if skills_str else []
+        except Exception:
+            freelancer_skills = []
+        hourly_rate = float(get_val(row, 2) or 50)
+
+    return {
+        "name": freelancer_name,
+        "skills": freelancer_skills,
+        "hourly_rate": hourly_rate,
+    }
+

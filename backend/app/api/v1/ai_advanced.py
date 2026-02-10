@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from app.db.session import get_db
 from app.core.security import get_current_user
-from app.services.advanced_ai import get_advanced_ai_service, AdvancedAIService
+from app.services.advanced_ai import get_advanced_ai_service, AdvancedAIService, get_project_for_proposal, get_user_profile_for_proposal
 from app.models.user import User
 
 router = APIRouter()
@@ -562,52 +562,20 @@ async def generate_proposal(
     - Proposed milestones and timeline
     - Suggested rate
     """
-    from app.db.turso_http import execute_query, to_str
-    import json
-    
-    # Get project details
-    project_result = execute_query("""
-        SELECT p.id, p.title, p.description, p.budget_min, p.budget_max, 
-               p.budget_type, p.skills_required, p.experience_level
-        FROM projects p WHERE p.id = ?
-    """, [request.project_id])
-    
-    if not project_result or not project_result.get("rows"):
+    project_data = get_project_for_proposal(request.project_id)
+    if not project_data:
         raise HTTPException(status_code=404, detail="Project not found")
     
-    row = project_result["rows"][0]
+    project_title = project_data["title"]
+    project_desc = project_data["description"]
+    budget_min = project_data["budget_min"]
+    budget_max = project_data["budget_max"]
+    budget_type = project_data["budget_type"]
     
-    def get_val(r, idx):
-        cell = r[idx] if idx < len(r) else None
-        if isinstance(cell, dict):
-            return cell.get("value") if cell.get("type") != "null" else None
-        return cell
-    
-    project_title = get_val(row, 1) or "the project"
-    project_desc = get_val(row, 2) or ""
-    budget_min = float(get_val(row, 3) or 0)
-    budget_max = float(get_val(row, 4) or 0)
-    budget_type = get_val(row, 5) or "fixed"
-    
-    # Get freelancer profile
-    user_result = execute_query("""
-        SELECT full_name, skills, hourly_rate, bio, completed_projects
-        FROM users WHERE id = ?
-    """, [current_user.id])
-    
-    freelancer_name = "there"
-    freelancer_skills = []
-    hourly_rate = 50
-    
-    if user_result and user_result.get("rows"):
-        urow = user_result["rows"][0]
-        freelancer_name = get_val(urow, 0) or "there"
-        skills_str = get_val(urow, 1) or "[]"
-        try:
-            freelancer_skills = json.loads(skills_str) if skills_str else []
-        except:
-            freelancer_skills = []
-        hourly_rate = float(get_val(urow, 2) or 50)
+    profile_data = get_user_profile_for_proposal(current_user.id)
+    freelancer_name = profile_data["name"]
+    freelancer_skills = profile_data["skills"]
+    hourly_rate = profile_data["hourly_rate"]
     
     # Generate cover letter based on tone
     tone_templates = {

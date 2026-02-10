@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Contract API - create, update, and response models
 from datetime import datetime
 from typing import Optional
 from enum import Enum

@@ -72,3 +72,7 @@
   font-weight: 600;
   margin-bottom: 1rem;
 }
+
+.chartContainer {
+  height: 300px;
+}

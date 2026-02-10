@@ -44,3 +44,30 @@
 .itemDesc {
   font-size: 0.75rem;
 }
+
+.triggerWrapper {
+  margin-top: 1rem;
+}
+
+.triggerButton {
+  width: 100%;
+  border-style: dashed;
+}
+
+.iconRocket {
+  margin-right: 0.5rem;
+}
+
+.iconLightbulb {
+  flex-shrink: 0;
+}
+
+.loadingState {
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.addButton {
+  margin-left: 0.5rem;
+}

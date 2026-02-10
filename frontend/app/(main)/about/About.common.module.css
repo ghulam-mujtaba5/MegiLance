@@ -155,6 +155,26 @@
   outline-offset: 2px;
 }
 
+.iconStyle {
+  margin-bottom: 1rem;
+}
+
+.iconError { composes: iconStyle; color: var(--color-error); }
+.iconWarning { composes: iconStyle; color: var(--color-warning); }
+.iconAccent { composes: iconStyle; color: var(--color-accent); }
+.iconPrimary { composes: iconStyle; color: var(--color-primary); }
+.iconSuccess { composes: iconStyle; color: var(--color-success); }
+
+.acknowledgements {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.acknowledgementText {
+  text-align: center;
+  line-height: 1.8;
+}
+
 /* Responsive */
 @media (min-width: 640px) {
   .card { grid-column: span 6; }

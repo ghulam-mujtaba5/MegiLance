@@ -83,6 +83,71 @@
   animation: pulse 2s infinite;
 }
 
+.triggerWrapper {
+  margin-bottom: 1.5rem;
+}
+
+.triggerButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-style: dashed;
+  border-width: 2px;
+}
+
+.botIconWrapper {
+  padding: 0.5rem;
+  border-radius: 9999px;
+}
+
+.poweredBy {
+  font-size: 0.75rem;
+}
+
+.closeButton {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.inlineIcon {
+  margin-right: 0.5rem;
+}
+
+.previewTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skillTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skillTag {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.applyWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
 @keyframes pulse {
   0% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.1); }

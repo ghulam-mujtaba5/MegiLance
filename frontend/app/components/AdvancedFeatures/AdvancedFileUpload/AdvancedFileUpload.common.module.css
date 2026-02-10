@@ -144,3 +144,15 @@
   color: #e81123;
   margin-top: 4px;
 }
+
+.hiddenInput {
+  display: none;
+}
+
+.successIcon {
+  color: #27AE60;
+}
+
+.errorIcon {
+  color: #e81123;
+}

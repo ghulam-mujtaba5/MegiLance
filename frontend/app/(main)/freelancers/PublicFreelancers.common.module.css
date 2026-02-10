@@ -454,6 +454,12 @@
   height: 14px;
   border-radius: 6px;
 }
+.skeletonShort {
+  width: 60%;
+}
+.skeletonLong {
+  width: 80%;
+}
 .skeletonTags {
   display: flex;
   gap: 0.4rem;

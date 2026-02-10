@@ -3,16 +3,18 @@
 Price estimation, freelancer matching, fraud detection
 """
 
+import json
 import logging
+import re
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Optional
 
 logger = logging.getLogger("megilance")
 
-from app.db.turso_http import execute_query, to_str
 from app.core.security import get_current_user
 from app.models.project import ProjectCategory
+from app.services import ai_services_service
 
 router = APIRouter(tags=["AI Services"])  # Prefix is added in routers.py
 
@@ -106,74 +108,40 @@ async def match_freelancers_to_project(
     - **limit**: Maximum number of matches to return
     """
     try:
-        # Get project details
-        project_result = execute_query(
-            "SELECT id, title, skills_required, category FROM projects WHERE id = ?",
-            [project_id]
-        )
-        
-        if not project_result or not project_result.get("rows"):
+        project = ai_services_service.get_project_with_skills(project_id)
+        if not project:
             raise HTTPException(status_code=404, detail="Project not found")
-        
-        project_row = project_result["rows"][0]
-        skills_str = to_str(project_row[2]) or ""
-        category = to_str(project_row[3])
-        
-        # Parse skills
-        import json
-        try:
-            required_skills = json.loads(skills_str) if skills_str else []
-        except:
-            required_skills = skills_str.split(",") if skills_str else []
-        
-        # Find freelancers with matching skills
-        freelancers_result = execute_query(
-            """SELECT u.id, u.full_name, u.email, u.skills, u.hourly_rate, u.rating,
-                      u.profile_image, u.bio, u.completed_projects
-               FROM users u
-               WHERE u.user_type = 'Freelancer' AND u.is_active = 1
-               LIMIT ?""",
-            [limit * 3]  # Get more to score and filter
-        )
-        
+
+        required_skills = project["required_skills"]
+        freelancers = ai_services_service.get_active_freelancers(limit * 3)
+
         matches = []
-        if freelancers_result and freelancers_result.get("rows"):
-            for row in freelancers_result["rows"]:
-                freelancer_id = row[0].get("value") if row[0].get("type") != "null" else None
-                freelancer_skills_str = to_str(row[3]) or ""
-                
-                try:
-                    freelancer_skills = json.loads(freelancer_skills_str) if freelancer_skills_str else []
-                except:
-                    freelancer_skills = freelancer_skills_str.split(",") if freelancer_skills_str else []
-                
-                # Calculate match score based on skill overlap
-                if isinstance(freelancer_skills, list) and isinstance(required_skills, list):
-                    matching_skills = set([s.lower() for s in freelancer_skills]) & set([s.lower() for s in required_skills])
-                    score = len(matching_skills) / max(len(required_skills), 1)
-                else:
-                    score = 0.5  # Default score
-                
-                rating = row[5].get("value") if row[5].get("type") != "null" else 0
-                
-                matches.append({
-                    "freelancer_id": freelancer_id,
-                    "name": to_str(row[1]),
-                    "email": to_str(row[2]),
-                    "skills": freelancer_skills,
-                    "hourly_rate": row[4].get("value") if row[4].get("type") != "null" else None,
-                    "rating": rating,
-                    "profile_image": to_str(row[6]),
-                    "bio": to_str(row[7]),
-                    "completed_projects": row[8].get("value") if row[8].get("type") != "null" else 0,
-                    "match_score": round(score * 100, 2),
-                    "match_reason": f"Matched {len(matching_skills) if isinstance(required_skills, list) else 0} skills"
-                })
-        
-        # Sort by match score and limit
+        for fl in freelancers:
+            freelancer_skills = fl["skills"]
+            if isinstance(freelancer_skills, list) and isinstance(required_skills, list):
+                matching_skills = set([s.lower() for s in freelancer_skills]) & set([s.lower() for s in required_skills])
+                score = len(matching_skills) / max(len(required_skills), 1)
+            else:
+                matching_skills = set()
+                score = 0.5
+
+            matches.append({
+                "freelancer_id": fl["freelancer_id"],
+                "name": fl["name"],
+                "email": fl["email"],
+                "skills": freelancer_skills,
+                "hourly_rate": fl["hourly_rate"],
+                "rating": fl["rating"],
+                "profile_image": fl["profile_image"],
+                "bio": fl["bio"],
+                "completed_projects": fl["completed_projects"],
+                "match_score": round(score * 100, 2),
+                "match_reason": f"Matched {len(matching_skills)} skills"
+            })
+
         matches.sort(key=lambda x: x["match_score"], reverse=True)
         matches = matches[:limit]
-        
+
         return {
             "project_id": project_id,
             "matches": matches,
@@ -217,37 +185,11 @@ async def estimate_project_price(
         }
         multiplier = complexity_multipliers.get(complexity.lower(), 1.0)
         
-        # Get average rates for the category
-        # Use average of min and max budget since 'budget' column doesn't exist
-        result = execute_query(
-            """SELECT AVG((budget_min + budget_max) / 2) as avg_budget, COUNT(*) as project_count
-               FROM projects
-               WHERE category = ? AND status IN ('completed', 'in_progress')""",
-            [category.value if hasattr(category, 'value') else str(category)]
-        )
-        
-        avg_budget = 500  # Default
-        if result and result.get("rows"):
-            row = result["rows"][0]
-            if row[0].get("type") != "null" and row[0].get("value"):
-                avg_budget = float(row[0].get("value"))
-        
-        # Get average hourly rates for freelancers with matching skills
+        category_value = category.value if hasattr(category, 'value') else str(category)
+        avg_budget = ai_services_service.get_category_avg_budget(category_value)
+
         skills_pattern = "%".join(skills_required[:3]) if skills_required else "%"
-        rate_result = execute_query(
-            """SELECT AVG(hourly_rate) as avg_rate
-               FROM users
-               WHERE user_type = 'Freelancer' 
-               AND hourly_rate IS NOT NULL
-               AND skills LIKE ?""",
-            [f"%{skills_pattern}%"]
-        )
-        
-        avg_hourly = 35  # Default
-        if rate_result and rate_result.get("rows"):
-            row = rate_result["rows"][0]
-            if row[0].get("type") != "null" and row[0].get("value"):
-                avg_hourly = float(row[0].get("value"))
+        avg_hourly = ai_services_service.get_skills_avg_hourly_rate(skills_pattern)
         
         # Calculate estimates
         hours = estimated_hours or 40
@@ -300,28 +242,14 @@ async def estimate_freelancer_hourly_rate(
     - **average_rating**: Average client rating
     """
     try:
-        # Get freelancer data
-        result = execute_query(
-            """SELECT id, full_name, skills, hourly_rate, rating, completed_projects,
-                      years_experience
-               FROM users
-               WHERE id = ? AND user_type = 'Freelancer'""",
-            [freelancer_id]
-        )
-        
-        if not result or not result.get("rows"):
+        fl = ai_services_service.get_freelancer_for_rate_estimation(freelancer_id)
+        if not fl:
             raise HTTPException(status_code=404, detail="Freelancer not found")
-        
-        row = result["rows"][0]
-        current_rate = row[3].get("value") if row[3].get("type") != "null" else None
-        db_rating = row[4].get("value") if row[4].get("type") != "null" else 0
-        db_completed = row[5].get("value") if row[5].get("type") != "null" else 0
-        db_experience = row[6].get("value") if row[6].get("type") != "null" else 0
-        
-        # Use provided or database values
-        actual_rating = average_rating or db_rating or 0
-        actual_completed = completed_projects or db_completed or 0
-        actual_experience = years_experience or db_experience or 0
+
+        current_rate = fl["current_rate"]
+        actual_rating = average_rating or fl["rating"] or 0
+        actual_completed = completed_projects or fl["completed_projects"] or 0
+        actual_experience = years_experience or fl["years_experience"] or 0
         
         # Base rate calculation
         base_rate = 25  # Minimum rate
@@ -384,25 +312,17 @@ async def check_user_fraud_risk(
         )
     
     try:
-        # Get user data
-        result = execute_query(
-            """SELECT id, email, full_name, created_at, is_active, is_verified,
-                      user_type, bio
-               FROM users WHERE id = ?""",
-            [user_id]
-        )
-        
-        if not result or not result.get("rows"):
+        user_data = ai_services_service.get_user_for_fraud_check(user_id)
+        if not user_data:
             raise HTTPException(status_code=404, detail="User not found")
-        
-        row = result["rows"][0]
-        email = to_str(row[1]) or ""
-        bio = to_str(row[7]) or ""
-        is_verified = row[5].get("value") if row[5].get("type") != "null" else False
-        
+
+        email = user_data["email"]
+        bio = user_data["bio"]
+        is_verified = user_data["is_verified"]
+
         risk_factors = []
         risk_score = 0
-        
+
         # Check for suspicious email domains
         suspicious_domains = ["tempmail", "guerrilla", "10minute", "throwaway"]
         for domain in suspicious_domains:
@@ -410,29 +330,24 @@ async def check_user_fraud_risk(
                 risk_factors.append("Suspicious email domain")
                 risk_score += 30
                 break
-        
+
         # Check if unverified
         if not is_verified:
             risk_factors.append("Unverified account")
             risk_score += 20
-        
+
         # Check bio for fraud keywords
         fraud_keywords = ["guaranteed", "risk free", "wire transfer", "western union"]
         for keyword in fraud_keywords:
             if keyword.lower() in bio.lower():
                 risk_factors.append(f"Suspicious term in bio: {keyword}")
                 risk_score += 15
-        
+
         # Check complaint history
-        complaint_result = execute_query(
-            "SELECT COUNT(*) FROM support_tickets WHERE user_id = ? AND priority = 'urgent'",
-            [user_id]
-        )
-        if complaint_result and complaint_result.get("rows"):
-            complaints = complaint_result["rows"][0][0].get("value") or 0
-            if complaints > 3:
-                risk_factors.append(f"High complaint count: {complaints}")
-                risk_score += complaints * 5
+        complaints = ai_services_service.get_urgent_ticket_count(user_id)
+        if complaints > 3:
+            risk_factors.append(f"High complaint count: {complaints}")
+            risk_score += complaints * 5
         
         risk_score = min(risk_score, 100)
         
@@ -464,40 +379,33 @@ async def check_project_fraud_risk(
     - **project_id**: ID of the project to analyze
     """
     try:
-        result = execute_query(
-            """SELECT id, title, description, budget, client_id
-               FROM projects WHERE id = ?""",
-            [project_id]
-        )
-        
-        if not result or not result.get("rows"):
+        proj = ai_services_service.get_project_for_fraud_check(project_id)
+        if not proj:
             raise HTTPException(status_code=404, detail="Project not found")
-        
-        row = result["rows"][0]
-        title = to_str(row[1]) or ""
-        description = to_str(row[2]) or ""
-        budget = row[3].get("value") if row[3].get("type") != "null" else 0
-        
+
+        title = proj["title"]
+        description = proj["description"]
+        budget = proj["budget"]
+
         risk_factors = []
         risk_score = 0
-        
+
         # Check for fraud keywords in title/description
-        fraud_keywords = ["guaranteed income", "easy money", "wire transfer", 
+        fraud_keywords = ["guaranteed income", "easy money", "wire transfer",
                          "western union", "personal information", "advance payment"]
-        
+
         text_to_check = f"{title} {description}".lower()
         for keyword in fraud_keywords:
             if keyword in text_to_check:
                 risk_factors.append(f"Suspicious term: {keyword}")
                 risk_score += 20
-        
+
         # Unusually high or low budget
         if budget and (budget > 100000 or budget < 5):
             risk_factors.append(f"Unusual budget: ${budget}")
             risk_score += 15
-        
+
         # Check for contact info in description
-        import re
         if re.search(r'\b[\w.-]+@[\w.-]+\.\w+\b', description):
             risk_factors.append("Email address in description")
             risk_score += 25
@@ -535,33 +443,26 @@ async def check_proposal_fraud_risk(
     - **proposal_id**: ID of the proposal to analyze
     """
     try:
-        result = execute_query(
-            """SELECT id, cover_letter, bid_amount, freelancer_id
-               FROM proposals WHERE id = ?""",
-            [proposal_id]
-        )
-        
-        if not result or not result.get("rows"):
+        prop = ai_services_service.get_proposal_for_fraud_check(proposal_id)
+        if not prop:
             raise HTTPException(status_code=404, detail="Proposal not found")
-        
-        row = result["rows"][0]
-        cover_letter = to_str(row[1]) or ""
-        bid_amount = row[2].get("value") if row[2].get("type") != "null" else 0
-        
+
+        cover_letter = prop["cover_letter"]
+        bid_amount = prop["bid_amount"]
+
         risk_factors = []
         risk_score = 0
-        
+
         # Check for fraud keywords
         fraud_keywords = ["guaranteed", "outside platform", "direct payment",
                          "personal email", "whatsapp", "telegram"]
-        
+
         for keyword in fraud_keywords:
             if keyword.lower() in cover_letter.lower():
                 risk_factors.append(f"Suspicious term: {keyword}")
                 risk_score += 20
-        
+
         # Check for contact info
-        import re
         if re.search(r'\b[\w.-]+@[\w.-]+\.\w+\b', cover_letter):
             risk_factors.append("Email address in cover letter")
             risk_score += 30
@@ -791,27 +692,19 @@ async def get_profile_optimization_suggestions(
         )
     
     try:
-        result = execute_query(
-            """SELECT id, full_name, bio, skills, hourly_rate, portfolio_url,
-                      profile_image, completed_projects, rating, years_experience
-               FROM users WHERE id = ?""",
-            [user_id]
-        )
-        
-        if not result or not result.get("rows"):
+        profile = ai_services_service.get_user_profile_for_suggestions(user_id)
+        if not profile:
             raise HTTPException(status_code=404, detail="User not found")
-        
-        row = result["rows"][0]
-        bio = to_str(row[2]) or ""
-        skills_str = to_str(row[3]) or ""
-        hourly_rate = row[4].get("value") if row[4].get("type") != "null" else None
-        portfolio_url = to_str(row[5])
-        profile_image = to_str(row[6])
-        completed_projects = row[7].get("value") if row[7].get("type") != "null" else 0
-        
+
+        bio = profile["bio"]
+        skills_str = profile["skills_str"]
+        hourly_rate = profile["hourly_rate"]
+        portfolio_url = profile["portfolio_url"]
+        profile_image = profile["profile_image"]
+
         suggestions = []
         profile_score = 100
-        
+
         # Check bio
         if not bio:
             suggestions.append({
@@ -829,12 +722,11 @@ async def get_profile_optimization_suggestions(
                 "impact": "+10 profile visibility"
             })
             profile_score -= 10
-        
+
         # Check skills
-        import json
         try:
             skills = json.loads(skills_str) if skills_str else []
-        except:
+        except Exception:
             skills = skills_str.split(",") if skills_str else []
         
         if len(skills) < 3:
@@ -926,69 +818,33 @@ async def recommend_jobs_for_user(
         )
     
     try:
-        # Get user skills
-        user_result = execute_query(
-            "SELECT skills, hourly_rate FROM users WHERE id = ?",
-            [user_id]
-        )
-        
-        if not user_result or not user_result.get("rows"):
+        user_data = ai_services_service.get_user_skills_and_rate(user_id)
+        if not user_data:
             raise HTTPException(status_code=404, detail="User not found")
-        
-        user_row = user_result["rows"][0]
-        skills_str = to_str(user_row[0]) or ""
-        hourly_rate = user_row[1].get("value") if user_row[1].get("type") != "null" else 0
-        
-        import json
-        try:
-            user_skills = json.loads(skills_str) if skills_str else []
-        except:
-            user_skills = skills_str.split(",") if skills_str else []
-        
+
+        user_skills = user_data["skills"]
         user_skills_lower = [s.lower().strip() for s in user_skills if s]
-        
-        # Get open projects
-        projects_result = execute_query(
-            """SELECT id, title, description, skills_required, budget_min, budget_max, category
-               FROM projects
-               WHERE status = 'open'
-               ORDER BY created_at DESC
-               LIMIT ?""",
-            [limit * 3]
-        )
-        
+
+        projects = ai_services_service.get_open_projects(limit * 3)
+
         recommendations = []
-        if projects_result and projects_result.get("rows"):
-            for row in projects_result["rows"]:
-                project_id = row[0].get("value") if row[0].get("type") != "null" else None
-                title = to_str(row[1])
-                description = to_str(row[2]) or ""
-                proj_skills_str = to_str(row[3]) or ""
-                budget_min = row[4].get("value") if row[4].get("type") != "null" else 0
-                budget_max = row[5].get("value") if row[5].get("type") != "null" else 0
-                category = to_str(row[6])
-                
-                try:
-                    proj_skills = json.loads(proj_skills_str) if proj_skills_str else []
-                except:
-                    proj_skills = proj_skills_str.split(",") if proj_skills_str else []
-                
-                proj_skills_lower = [s.lower().strip() for s in proj_skills if s]
-                
-                # Calculate match score
-                matching_skills = set(user_skills_lower) & set(proj_skills_lower)
-                match_score = len(matching_skills) / max(len(proj_skills_lower), 1) * 100
-                
-                if match_score > 0:
-                    recommendations.append({
-                        "project_id": project_id,
-                        "title": title,
-                        "category": category,
-                        "budget_range": f"${budget_min}-${budget_max}",
-                        "matching_skills": list(matching_skills),
-                        "match_score": round(match_score, 1),
-                        "match_reason": f"Matched {len(matching_skills)} of {len(proj_skills_lower)} required skills"
-                    })
+        for proj in projects:
+            proj_skills = proj["skills"]
+            proj_skills_lower = [s.lower().strip() for s in proj_skills if s]
+
+            matching_skills = set(user_skills_lower) & set(proj_skills_lower)
+            match_score = len(matching_skills) / max(len(proj_skills_lower), 1) * 100
+
+            if match_score > 0:
+                recommendations.append({
+                    "project_id": proj["project_id"],
+                    "title": proj["title"],
+                    "category": proj["category"],
+                    "budget_range": f"${proj['budget_min']}-${proj['budget_max']}",
+                    "matching_skills": list(matching_skills),
+                    "match_score": round(match_score, 1),
+                    "match_reason": f"Matched {len(matching_skills)} of {len(proj_skills_lower)} required skills"
+                })
         
         # Sort by match score
         recommendations.sort(key=lambda x: x["match_score"], reverse=True)

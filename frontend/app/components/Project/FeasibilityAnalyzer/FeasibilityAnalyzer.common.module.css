@@ -53,3 +53,83 @@
   padding-top: 1rem;
   border-top: 1px solid;
 }
+
+.emptyState {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.emptyText {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.resultArea {
+  animation: fadeIn 0.3s ease;
+}
+
+.scoresGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.scoreCard {
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.scoreCardLabel {
+  font-size: 0.75rem;
+}
+
+.scoreCardValue {
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.flagsSection {
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recList {
+  font-size: 0.875rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.recItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.recIcon {
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.reanalyzeWrapper {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}

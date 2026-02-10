@@ -99,7 +99,7 @@ export class APIError extends Error {
   }
 }
 
-// Request timeout (30 seconds)
+// Request timeout (60 seconds)
 const REQUEST_TIMEOUT = 60000;
 
 // Track if we're currently refreshing tokens to prevent race conditions
@@ -343,7 +343,12 @@ export const authApi = {
     });
   },
 
-  logout: () => {
+  logout: async () => {
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    } catch {
+      // Still clear local data even if backend call fails
+    }
     clearAuthData();
   },
 
@@ -503,10 +508,10 @@ export const invoicesApi = {
   delete: (invoiceId: number) =>
     apiFetch(`/invoices/${invoiceId}`, { method: 'DELETE' }),
 
-  markAsPaid: (invoiceId: number, paymentId: number) =>
+  markAsPaid: (invoiceId: number, paymentId?: number) =>
     apiFetch(`/invoices/${invoiceId}/pay`, {
       method: 'POST',
-      body: JSON.stringify({ payment_id: paymentId }),
+      body: JSON.stringify(paymentId ? { payment_id: paymentId } : {}),
     }),
 
   send: (invoiceId: number) =>

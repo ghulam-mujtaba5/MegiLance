@@ -119,15 +119,15 @@ async def search_freelancers(
     return results
 
 
-@router.get("/autocomplete", response_model=AutocompleteResponse)
-async def autocomplete(
+@router.get("/autocomplete-fts", response_model=AutocompleteResponse)
+async def autocomplete_fts(
     q: str = Query(..., min_length=1, description="Search query"),
     type: str = Query("all", pattern="^(all|projects|skills)$"),
     limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db)
 ):
     """
-    Autocomplete suggestions for search queries
+    FTS5-powered autocomplete suggestions for search queries
     
     Returns suggestions from:
     - Project titles

@@ -145,7 +145,7 @@ class AdvancedSecurityService:
         elif method == "sms":
             # Store phone number and send verification SMS
             code = self._generate_verification_code()
-            # TODO: Integrate with Twilio for SMS
+            # DEFERRED: Integrate with Twilio for SMS (requires Twilio API credentials)
             
             execute_query("""
                 INSERT INTO mfa_methods (user_id, method, contact, verification_code, code_expires_at, created_at)
@@ -340,7 +340,7 @@ class AdvancedSecurityService:
             
             if last_location_result and last_location_result.get("rows"):
                 # Check for impossible travel
-                # TODO: Implement geolocation distance calculation
+                # DEFERRED: Implement geolocation distance calculation (requires MaxMind GeoIP)
                 risk_factors.append({
                     "factor": "new_location",
                     "weight": 20.0,
@@ -367,7 +367,7 @@ class AdvancedSecurityService:
                 risk_score += weight
         
         # Check known malicious IPs (simplified - would integrate with threat intelligence)
-        # TODO: Integrate with IP reputation services
+        # DEFERRED: Integrate with IP reputation services (requires AbuseIPDB or similar API)
         
         # Check unusual login time
         from datetime import datetime

@@ -88,7 +88,7 @@ const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({
           </svg>
           
           <div className={commonStyles.progressTextContainer}>
-            <div className={commonStyles.rankIconWrapper} style={{ color: 'var(--rank-color)' }}>
+            <div className={cn(commonStyles.rankIconWrapper, commonStyles.rankColor)}>
               <RankIcon size={24} />
             </div>
             <p className={cn(commonStyles.scoreValue, themeStyles.scoreValue)}>{score}</p>
@@ -111,7 +111,7 @@ const FreelancerRankVisualizer: React.FC<FreelancerRankVisualizerProps> = ({
                 </div>
                 <span>{currentRank.goal}</span>
               </div>
-              <p className={cn(commonStyles.scoreLabel, themeStyles.scoreLabel)} style={{ marginTop: '0.5rem' }}>
+              <p className={cn(commonStyles.scoreLabel, themeStyles.scoreLabel, commonStyles.topSpacing)}>
                 {pointsToNext} points to {currentRank.next}
               </p>
             </>

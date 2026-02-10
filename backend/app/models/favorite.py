@@ -1,3 +1,4 @@
+# @AI-HINT: Favorite model for user bookmarks on projects, freelancers, and gigs
 """
 Favorite model for user bookmarks
 """

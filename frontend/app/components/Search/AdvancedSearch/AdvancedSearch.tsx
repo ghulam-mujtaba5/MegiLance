@@ -92,6 +92,30 @@ const AdvancedSearch: React.FC = () => {
     activeFilters: cn(commonStyles.activeFilters, themeStyles.activeFilters),
     filterBadge: cn(commonStyles.filterBadge, themeStyles.filterBadge),
     saveDialog: cn(commonStyles.saveDialog, themeStyles.saveDialog),
+    searchInputWrapper: commonStyles.searchInputWrapper,
+    searchIcon: cn(commonStyles.searchIcon, themeStyles.searchIcon),
+    suggestionText: commonStyles.suggestionText,
+    suggestionCount: commonStyles.suggestionCount,
+    inlineIcon: commonStyles.inlineIcon,
+    filterCountBadge: cn(commonStyles.filterCountBadge, themeStyles.filterCountBadge),
+    chevronIcon: commonStyles.chevronIcon,
+    chevronIconOpen: commonStyles.chevronIconOpen,
+    recentLabel: commonStyles.recentLabel,
+    recentButton: commonStyles.recentButton,
+    filterGrid: commonStyles.filterGrid,
+    inlineLabelIcon: commonStyles.inlineLabelIcon,
+    budgetInputGroup: commonStyles.budgetInputGroup,
+    filterInput: cn(commonStyles.filterInput, themeStyles.filterInput),
+    filterInputFull: cn(commonStyles.filterInputFull, themeStyles.filterInputFull),
+    checkboxLabel: commonStyles.checkboxLabel,
+    checkbox: commonStyles.checkbox,
+    filterActions: commonStyles.filterActions,
+    savedSearchesTitle: commonStyles.savedSearchesTitle,
+    savedSearchesList: commonStyles.savedSearchesList,
+    dialogInner: cn(commonStyles.dialogInner, themeStyles.dialogInner),
+    dialogTitle: commonStyles.dialogTitle,
+    dialogInput: cn(commonStyles.dialogInput, themeStyles.dialogInput),
+    dialogActions: commonStyles.dialogActions,
   };
 
   useEffect(() => {
@@ -222,8 +246,8 @@ const AdvancedSearch: React.FC = () => {
   return (
     <div className={styles.container}>
       <form onSubmit={handleSearch} className={styles.searchBar}>
-        <div className="relative flex-1">
-          <Search size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <div className={styles.searchInputWrapper}>
+          <Search size={18} className={styles.searchIcon} />
           <input
             type="text"
             placeholder="Search projects, freelancers, or skills..."
@@ -245,9 +269,9 @@ const AdvancedSearch: React.FC = () => {
                     setShowSuggestions(false);
                   }}
                 >
-                  <span className="font-medium">{suggestion.text}</span>
+                  <span className={styles.suggestionText}>{suggestion.text}</span>
                   {suggestion.count && (
-                    <span className="text-sm opacity-75">({suggestion.count})</span>
+                    <span className={styles.suggestionCount}>({suggestion.count})</span>
                   )}
                 </button>
               ))}
@@ -256,7 +280,7 @@ const AdvancedSearch: React.FC = () => {
         </div>
 
         <Button variant="primary" type="submit" isLoading={loading}>
-          <Search size={16} className="mr-2" />
+          <Search size={16} className={styles.inlineIcon} />
           Search
         </Button>
 
@@ -265,24 +289,24 @@ const AdvancedSearch: React.FC = () => {
           className={styles.filterToggle}
           onClick={() => setShowFilters(!showFilters)}
         >
-          <SlidersHorizontal size={16} className="mr-2" />
+          <SlidersHorizontal size={16} className={styles.inlineIcon} />
           Filters
           {activeFilterCount > 0 && (
-            <span className="ml-2 bg-primary-500 text-white rounded-full px-2 py-1 text-xs">
+            <span className={styles.filterCountBadge}>
               {activeFilterCount}
             </span>
           )}
-          <ChevronDown size={16} className={`ml-2 transform transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+          <ChevronDown size={16} className={cn(styles.chevronIcon, showFilters && styles.chevronIconOpen)} />
         </button>
       </form>
 
       {recentSearches.length > 0 && (
         <div className={styles.recentSearches}>
-          <span className="text-sm font-semibold">Recent:</span>
+          <span className={styles.recentLabel}>Recent:</span>
           {recentSearches.map((search, index) => (
             <button
               key={index}
-              className="text-sm opacity-75 hover:opacity-100"
+              className={styles.recentButton}
               onClick={() => {
                 setFilters({ ...filters, query: search });
                 handleSearch();
@@ -296,7 +320,7 @@ const AdvancedSearch: React.FC = () => {
 
       {showFilters && (
         <div className={styles.filtersPanel}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={styles.filterGrid}>
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>Category</label>
               <Select
@@ -345,30 +369,30 @@ const AdvancedSearch: React.FC = () => {
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <DollarSign size={14} className="inline mr-1" />
+                <DollarSign size={14} className={styles.inlineLabelIcon} />
                 Budget Range
               </label>
-              <div className="flex gap-2">
+              <div className={styles.budgetInputGroup}>
                 <input
                   type="number"
                   placeholder="Min"
                   value={filters.budgetMin}
                   onChange={(e) => setFilters({ ...filters, budgetMin: e.target.value })}
-                  className="flex-1 px-3 py-2 border rounded-lg"
+                  className={styles.filterInput}
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={filters.budgetMax}
                   onChange={(e) => setFilters({ ...filters, budgetMax: e.target.value })}
-                  className="flex-1 px-3 py-2 border rounded-lg"
+                  className={styles.filterInput}
                 />
               </div>
             </div>
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <MapPin size={14} className="inline mr-1" />
+                <MapPin size={14} className={styles.inlineLabelIcon} />
                 Location
               </label>
               <input
@@ -376,13 +400,13 @@ const AdvancedSearch: React.FC = () => {
                 placeholder="City, country, or remote"
                 value={filters.location}
                 onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg"
+                className={styles.filterInputFull}
               />
             </div>
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <Star size={14} className="inline mr-1" />
+                <Star size={14} className={styles.inlineLabelIcon} />
                 Minimum Rating
               </label>
               <Select
@@ -399,7 +423,7 @@ const AdvancedSearch: React.FC = () => {
 
             <div className={styles.filterGroup}>
               <label className={styles.filterLabel}>
-                <Clock size={14} className="inline mr-1" />
+                <Clock size={14} className={styles.inlineLabelIcon} />
                 Availability
               </label>
               <Select
@@ -416,12 +440,12 @@ const AdvancedSearch: React.FC = () => {
             </div>
 
             <div className={styles.filterGroup}>
-              <label className="flex items-center gap-2">
+              <label className={styles.checkboxLabel}>
                 <input
                   type="checkbox"
                   checked={filters.verified}
                   onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
-                  className="w-5 h-5"
+                  className={styles.checkbox}
                 />
                 <span className={styles.filterLabel}>Verified Only</span>
               </label>
@@ -444,13 +468,13 @@ const AdvancedSearch: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
+          <div className={styles.filterActions}>
             <Button variant="outline" onClick={clearFilters}>
-              <X size={14} className="mr-2" />
+              <X size={14} className={styles.inlineIcon} />
               Clear Filters
             </Button>
             <Button variant="secondary" onClick={() => setShowSaveDialog(true)}>
-              <Save size={14} className="mr-2" />
+              <Save size={14} className={styles.inlineIcon} />
               Save Search
             </Button>
           </div>
@@ -459,11 +483,11 @@ const AdvancedSearch: React.FC = () => {
 
       {savedSearches.length > 0 && (
         <div className={styles.savedSearches}>
-          <h3 className="font-semibold mb-3">
-            <Bookmark size={14} className="inline mr-2" />
+          <h3 className={styles.savedSearchesTitle}>
+            <Bookmark size={14} className={styles.inlineLabelIcon} />
             Saved Searches
           </h3>
-          <div className="flex flex-wrap gap-2">
+          <div className={styles.savedSearchesList}>
             {savedSearches.map(search => (
               <div key={search.id} className={styles.savedSearchItem}>
                 <button onClick={() => loadSavedSearch(search)}>
@@ -480,16 +504,16 @@ const AdvancedSearch: React.FC = () => {
 
       {showSaveDialog && (
         <div className={styles.saveDialog}>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md">
-            <h3 className="text-xl font-semibold mb-4">Save Search</h3>
+          <div className={styles.dialogInner}>
+            <h3 className={styles.dialogTitle}>Save Search</h3>
             <input
               type="text"
               placeholder="Search name..."
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg mb-4"
+              className={styles.dialogInput}
             />
-            <div className="flex gap-3">
+            <div className={styles.dialogActions}>
               <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
                 Cancel
               </Button>

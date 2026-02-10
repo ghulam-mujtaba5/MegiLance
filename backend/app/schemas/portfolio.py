@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Portfolio API - item creation, update, and response models
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 from datetime import datetime

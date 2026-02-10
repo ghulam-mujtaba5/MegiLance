@@ -260,3 +260,8 @@
     justify-content: flex-start;
   }
 }
+
+.inlineIcon {
+  display: inline;
+  margin-right: 0.5rem;
+}

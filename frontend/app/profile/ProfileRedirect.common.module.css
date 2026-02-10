@@ -1,0 +1,8 @@
+/* @AI-HINT: Profile redirect page – layout and structure */
+
+.loadingWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}

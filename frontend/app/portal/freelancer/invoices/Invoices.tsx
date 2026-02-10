@@ -140,7 +140,7 @@ const Invoices: React.FC = () => {
   const handleMarkAsPaid = async (invoiceId: number) => {
     try {
       setError(null);
-      await invoicesApi.markAsPaid(invoiceId, 1); // TODO: Get payment ID
+      await invoicesApi.markAsPaid(invoiceId);
       loadInvoices();
     } catch (err: any) {
       setError(err.message || 'Failed to mark invoice as paid');
@@ -573,7 +573,7 @@ const Invoices: React.FC = () => {
         size="small"
       >
         <p>Are you sure you want to delete this invoice?</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+        <div className={commonStyles.modalActions}>
           <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteInvoiceId(null); }}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (deleteInvoiceId !== null) handleDelete(deleteInvoiceId); setShowDeleteModal(false); setDeleteInvoiceId(null); }}>Delete</Button>
         </div>

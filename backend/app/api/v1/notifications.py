@@ -4,7 +4,7 @@ from typing import List, Optional
 from datetime import datetime, timezone
 import json
 
-from app.db.turso_http import execute_query, parse_rows
+from app.services import notifications_service
 from app.core.security import get_current_user_from_token
 
 router = APIRouter()
@@ -32,34 +32,20 @@ def create_notification(
     now = datetime.now(timezone.utc).isoformat()
     data_json = json.dumps(notification.get("data")) if notification.get("data") else None
     
-    result = execute_query(
-        """INSERT INTO notifications (user_id, notification_type, title, content, data, 
-                                      priority, action_url, expires_at, is_read, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            user_id,
-            notification.get("notification_type"),
-            notification.get("title"),
-            notification.get("content"),
-            data_json,
-            notification.get("priority", "medium"),
-            notification.get("action_url"),
-            notification.get("expires_at"),
-            False,
-            now
-        ]
+    new_id = notifications_service.insert_notification(
+        user_id=user_id,
+        notification_type=notification.get("notification_type"),
+        title=notification.get("title"),
+        content=notification.get("content"),
+        data_json=data_json,
+        priority=notification.get("priority", "medium"),
+        action_url=notification.get("action_url"),
+        expires_at=notification.get("expires_at"),
+        now=now
     )
     
-    if not result:
+    if not new_id:
         raise HTTPException(status_code=500, detail="Failed to create notification")
-    
-    # Get new ID
-    id_result = execute_query("SELECT last_insert_rowid() as id", [])
-    new_id = 0
-    if id_result and id_result.get("rows"):
-        id_rows = parse_rows(id_result)
-        if id_rows:
-            new_id = id_rows[0].get("id", 0)
     
     return {
         "id": new_id,
@@ -107,49 +93,21 @@ def get_notifications(
     where_sql = " AND ".join(where_clauses)
     
     # Get total count
-    count_result = execute_query(
-        f"SELECT COUNT(*) as total FROM notifications WHERE {where_sql}",
-        params
-    )
-    total = 0
-    if count_result and count_result.get("rows"):
-        count_rows = parse_rows(count_result)
-        if count_rows:
-            total = count_rows[0].get("total", 0)
+    total = notifications_service.query_notification_count(where_sql, list(params))
     
     # Get unread count
-    unread_result = execute_query(
-        "SELECT COUNT(*) as unread FROM notifications WHERE user_id = ? AND is_read = 0",
-        [user_id]
-    )
-    unread_count = 0
-    if unread_result and unread_result.get("rows"):
-        unread_rows = parse_rows(unread_result)
-        if unread_rows:
-            unread_count = unread_rows[0].get("unread", 0)
+    unread_count = notifications_service.query_unread_count(user_id)
     
     # Get notifications
-    params.extend([limit, skip])
-    result = execute_query(
-        f"""SELECT id, user_id, notification_type, title, content, data, priority,
-                   action_url, is_read, read_at, expires_at, created_at
-            FROM notifications WHERE {where_sql}
-            ORDER BY created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
-    )
+    notifications = notifications_service.query_notifications(where_sql, list(params), limit, skip)
     
-    notifications = []
-    if result and result.get("rows"):
-        for row in parse_rows(result):
-            # Parse JSON data field
-            if row.get("data"):
-                try:
-                    row["data"] = json.loads(row["data"])
-                except:
-                    pass
-            row["is_read"] = bool(row.get("is_read"))
-            notifications.append(row)
+    for row in notifications:
+        if row.get("data"):
+            try:
+                row["data"] = json.loads(row["data"])
+            except:
+                pass
+        row["is_read"] = bool(row.get("is_read"))
     
     return {
         "total": total,
@@ -166,21 +124,10 @@ def get_notification(
     """Get a specific notification"""
     user_id = current_user.get("user_id")
     
-    result = execute_query(
-        """SELECT id, user_id, notification_type, title, content, data, priority,
-                  action_url, is_read, read_at, expires_at, created_at
-           FROM notifications WHERE id = ?""",
-        [notification_id]
-    )
+    notification = notifications_service.fetch_notification_by_id(notification_id)
     
-    if not result or not result.get("rows"):
+    if not notification:
         raise HTTPException(status_code=404, detail="Notification not found")
-    
-    rows = parse_rows(result)
-    if not rows:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    
-    notification = rows[0]
     
     if notification.get("user_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
@@ -188,10 +135,7 @@ def get_notification(
     # Auto-mark as read when viewed
     if not notification.get("is_read"):
         now = datetime.now(timezone.utc).isoformat()
-        execute_query(
-            "UPDATE notifications SET is_read = 1, read_at = ? WHERE id = ?",
-            [now, notification_id]
-        )
+        notifications_service.mark_notification_as_read(notification_id, now)
         notification["is_read"] = True
         notification["read_at"] = now
     
@@ -215,21 +159,12 @@ def update_notification(
     """Update a notification (mark as read/unread)"""
     user_id = current_user.get("user_id")
     
-    result = execute_query(
-        "SELECT id, user_id, is_read, read_at FROM notifications WHERE id = ?",
-        [notification_id]
-    )
+    existing = notifications_service.fetch_notification_for_permission(notification_id)
     
-    if not result or not result.get("rows"):
+    if not existing:
         raise HTTPException(status_code=404, detail="Notification not found")
     
-    rows = parse_rows(result)
-    if not rows:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    
-    notification = rows[0]
-    
-    if notification.get("user_id") != user_id:
+    if existing.get("user_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
     # Build update query
@@ -240,27 +175,17 @@ def update_notification(
         updates.append("is_read = ?")
         params.append(1 if notification_update["is_read"] else 0)
         
-        if notification_update["is_read"] and not notification.get("read_at"):
+        if notification_update["is_read"] and not existing.get("read_at"):
             updates.append("read_at = ?")
             params.append(datetime.now(timezone.utc).isoformat())
     
     if updates:
-        params.append(notification_id)
-        execute_query(
-            f"UPDATE notifications SET {', '.join(updates)} WHERE id = ?",
-            params
-        )
+        notifications_service.update_notification_fields(notification_id, ", ".join(updates), params)
     
     # Fetch updated notification
-    result = execute_query(
-        """SELECT id, user_id, notification_type, title, content, data, priority,
-                  action_url, is_read, read_at, expires_at, created_at
-           FROM notifications WHERE id = ?""",
-        [notification_id]
-    )
-    
-    rows = parse_rows(result)
-    updated = rows[0] if rows else {}
+    updated = notifications_service.fetch_notification_by_id(notification_id)
+    if not updated:
+        updated = {}
     
     if updated.get("data"):
         try:
@@ -280,10 +205,7 @@ def mark_all_read(
     user_id = current_user.get("user_id")
     now = datetime.now(timezone.utc).isoformat()
     
-    execute_query(
-        "UPDATE notifications SET is_read = 1, read_at = ? WHERE user_id = ? AND is_read = 0",
-        [now, user_id]
-    )
+    notifications_service.mark_all_read(user_id, now)
     
     return {"message": "All notifications marked as read"}
 
@@ -296,22 +218,15 @@ def delete_notification(
     """Delete a notification"""
     user_id = current_user.get("user_id")
     
-    result = execute_query(
-        "SELECT id, user_id FROM notifications WHERE id = ?",
-        [notification_id]
-    )
+    owner = notifications_service.fetch_notification_owner(notification_id)
     
-    if not result or not result.get("rows"):
+    if not owner:
         raise HTTPException(status_code=404, detail="Notification not found")
     
-    rows = parse_rows(result)
-    if not rows:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    
-    if rows[0].get("user_id") != user_id:
+    if owner.get("user_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
     
-    execute_query("DELETE FROM notifications WHERE id = ?", [notification_id])
+    notifications_service.delete_notification_record(notification_id)
     
     return {"message": "Notification deleted successfully"}
 
@@ -323,61 +238,10 @@ def get_unread_count(
     """Get count of unread notifications for current user"""
     user_id = current_user.get("user_id")
     
-    result = execute_query(
-        "SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0",
-        [user_id]
-    )
-    
-    count = 0
-    if result and result.get("rows"):
-        rows = parse_rows(result)
-        if rows:
-            count = rows[0].get("count", 0)
+    count = notifications_service.query_unread_count(user_id)
     
     return {"unread_count": count}
 
 
-# Utility function to send notifications (can be used by other modules)
-def send_notification(
-    user_id: int,
-    notification_type: str,
-    title: str,
-    content: str,
-    data: dict = None,
-    priority: str = "medium",
-    action_url: str = None,
-    expires_at: str = None,
-):
-    """Helper function to send a notification"""
-    now = datetime.now(timezone.utc).isoformat()
-    data_json = json.dumps(data) if data else None
-    
-    result = execute_query(
-        """INSERT INTO notifications (user_id, notification_type, title, content, data, 
-                                      priority, action_url, expires_at, is_read, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [user_id, notification_type, title, content, data_json, priority, action_url, expires_at, False, now]
-    )
-    
-    if not result:
-        return None
-    
-    id_result = execute_query("SELECT last_insert_rowid() as id", [])
-    new_id = 0
-    if id_result and id_result.get("rows"):
-        id_rows = parse_rows(id_result)
-        if id_rows:
-            new_id = id_rows[0].get("id", 0)
-    
-    return {
-        "id": new_id,
-        "user_id": user_id,
-        "notification_type": notification_type,
-        "title": title,
-        "content": content,
-        "data": data,
-        "priority": priority,
-        "action_url": action_url,
-        "is_read": False,
-        "created_at": now
-    }
+# Re-export send_notification from service for backward compatibility
+send_notification = notifications_service.send_notification

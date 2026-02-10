@@ -1,0 +1,5 @@
+/* @AI-HINT: Profile redirect page – light theme */
+
+.loadingWrapper {
+  background: var(--bg-primary, #f8fafc);
+}

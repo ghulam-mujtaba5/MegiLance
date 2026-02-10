@@ -1,5 +1,19 @@
 /* AI-HINT: Common styles for the modernized Client Reviews page. Defines the main layout, header, controls, card grid, and editor form. */
 
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.helperText {
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
+}
+
 .page {
   padding: var(--spacing-6) var(--spacing-8);
 }

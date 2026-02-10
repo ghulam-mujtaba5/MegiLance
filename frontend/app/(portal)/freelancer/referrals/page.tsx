@@ -255,6 +255,7 @@ export default function ReferralPage() {
                 type="text" 
                 value={shareLinks?.direct_link || ''} 
                 readOnly 
+                aria-label="Referral link"
                 className={cn(commonStyles.shareInput, themeStyles.shareInput)}
               />
               <button onClick={copyLink} className={cn(commonStyles.copyLinkBtn, themeStyles.copyLinkBtn)}>

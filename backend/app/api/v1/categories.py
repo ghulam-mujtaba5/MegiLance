@@ -4,7 +4,7 @@ from typing import List, Optional
 from datetime import datetime, timezone
 import re
 
-from app.db.turso_http import execute_query, parse_rows
+from app.services import categories_service
 from app.core.security import get_current_user_from_token
 
 router = APIRouter(prefix="/categories", tags=["categories"])
@@ -40,55 +40,35 @@ async def create_category(
     name = category.get("name", "")
     
     # Check if category name exists
-    result = execute_query(
-        "SELECT id FROM categories WHERE LOWER(name) = LOWER(?)",
-        [name]
-    )
-    if result and result.get("rows"):
+    if categories_service.check_category_name_exists(name):
         raise HTTPException(status_code=400, detail="Category name already exists")
     
     # Verify parent category exists
     parent_id = category.get("parent_id")
     if parent_id:
-        result = execute_query("SELECT id FROM categories WHERE id = ?", [parent_id])
-        if not result or not result.get("rows"):
+        if not categories_service.check_category_exists_by_id(parent_id):
             raise HTTPException(status_code=404, detail="Parent category not found")
     
     # Generate slug
     slug = generate_slug(name)
-    result = execute_query("SELECT id FROM categories WHERE slug = ?", [slug])
-    if result and result.get("rows"):
+    if categories_service.check_slug_exists(slug):
         slug = f"{slug}-{int(datetime.now(timezone.utc).timestamp())}"
     
     now = datetime.now(timezone.utc).isoformat()
     
     # Create category
-    result = execute_query(
-        """INSERT INTO categories (name, slug, description, icon, parent_id, sort_order, is_active, project_count, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            name,
-            slug,
-            category.get("description"),
-            category.get("icon"),
-            parent_id,
-            category.get("sort_order", 0),
-            1,
-            0,
-            now,
-            now
-        ]
+    new_id = categories_service.insert_category(
+        name=name,
+        slug=slug,
+        description=category.get("description"),
+        icon=category.get("icon"),
+        parent_id=parent_id,
+        sort_order=category.get("sort_order", 0),
+        now=now
     )
     
-    if not result:
+    if not new_id:
         raise HTTPException(status_code=500, detail="Failed to create category")
-    
-    id_result = execute_query("SELECT last_insert_rowid() as id", [])
-    new_id = 0
-    if id_result and id_result.get("rows"):
-        id_rows = parse_rows(id_result)
-        if id_rows:
-            new_id = id_rows[0].get("id", 0)
     
     return {
         "id": new_id,
@@ -128,17 +108,7 @@ async def list_categories(
     
     where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
     
-    result = execute_query(
-        f"""SELECT id, name, slug, description, icon, parent_id, sort_order, is_active, project_count, created_at, updated_at
-            FROM categories WHERE {where_sql}
-            ORDER BY sort_order, name""",
-        params
-    )
-    
-    if not result:
-        return []
-    
-    rows = parse_rows(result)
+    rows = categories_service.query_categories(where_sql, params)
     for row in rows:
         row["is_active"] = bool(row.get("is_active"))
     return rows
@@ -155,17 +125,7 @@ async def get_category_tree(
     """
     where_sql = "is_active = 1" if active_only else "1=1"
     
-    result = execute_query(
-        f"""SELECT id, name, slug, description, icon, parent_id, sort_order, is_active, project_count, created_at, updated_at
-            FROM categories WHERE {where_sql}
-            ORDER BY sort_order, name""",
-        []
-    )
-    
-    if not result:
-        return []
-    
-    all_categories = parse_rows(result)
+    all_categories = categories_service.query_categories(where_sql, [])
     for cat in all_categories:
         cat["is_active"] = bool(cat.get("is_active"))
         cat["children"] = []
@@ -187,20 +147,11 @@ async def get_category_tree(
 @router.get("/{slug}", response_model=dict)
 async def get_category(slug: str):
     """Get a category by slug"""
-    result = execute_query(
-        """SELECT id, name, slug, description, icon, parent_id, sort_order, is_active, project_count, created_at, updated_at
-           FROM categories WHERE slug = ?""",
-        [slug]
-    )
+    cat = categories_service.fetch_category_by_slug(slug)
     
-    if not result or not result.get("rows"):
+    if not cat:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    rows = parse_rows(result)
-    if not rows:
-        raise HTTPException(status_code=404, detail="Category not found")
-    
-    cat = rows[0]
     cat["is_active"] = bool(cat.get("is_active"))
     return cat
 
@@ -220,26 +171,16 @@ async def update_category(
     if role.lower() != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    result = execute_query(
-        "SELECT id, name, slug FROM categories WHERE id = ?",
-        [category_id]
-    )
-    if not result or not result.get("rows"):
+    existing = categories_service.fetch_category_name_and_slug(category_id)
+    if not existing:
         raise HTTPException(status_code=404, detail="Category not found")
-    
-    rows = parse_rows(result)
-    category = rows[0]
     
     updates = []
     params = []
     
     # Check name uniqueness if changing name
-    if "name" in update_data and update_data["name"] != category.get("name"):
-        check = execute_query(
-            "SELECT id FROM categories WHERE LOWER(name) = LOWER(?) AND id != ?",
-            [update_data["name"], category_id]
-        )
-        if check and check.get("rows"):
+    if "name" in update_data and update_data["name"] != existing.get("name"):
+        if categories_service.check_category_name_exists(update_data["name"], exclude_id=category_id):
             raise HTTPException(status_code=400, detail="Category name already exists")
         
         updates.append("name = ?")
@@ -252,8 +193,7 @@ async def update_category(
         if update_data["parent_id"] == category_id:
             raise HTTPException(status_code=400, detail="Category cannot be its own parent")
         
-        check = execute_query("SELECT id FROM categories WHERE id = ?", [update_data["parent_id"]])
-        if not check or not check.get("rows"):
+        if not categories_service.check_category_exists_by_id(update_data["parent_id"]):
             raise HTTPException(status_code=404, detail="Parent category not found")
         
         updates.append("parent_id = ?")
@@ -274,25 +214,13 @@ async def update_category(
     if updates:
         updates.append("updated_at = ?")
         params.append(datetime.now(timezone.utc).isoformat())
-        params.append(category_id)
-        
-        execute_query(
-            f"UPDATE categories SET {', '.join(updates)} WHERE id = ?",
-            params
-        )
+        categories_service.update_category_fields(category_id, ", ".join(updates), params)
     
     # Fetch updated category
-    result = execute_query(
-        """SELECT id, name, slug, description, icon, parent_id, sort_order, is_active, project_count, created_at, updated_at
-           FROM categories WHERE id = ?""",
-        [category_id]
-    )
-    
-    rows = parse_rows(result)
-    if not rows:
+    cat = categories_service.fetch_category_by_id(category_id)
+    if not cat:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    cat = rows[0]
     cat["is_active"] = bool(cat.get("is_active"))
     return cat
 
@@ -311,38 +239,26 @@ async def delete_category(
     if role.lower() != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    result = execute_query(
-        "SELECT id, project_count FROM categories WHERE id = ?",
-        [category_id]
-    )
-    if not result or not result.get("rows"):
+    cat_data = categories_service.fetch_category_project_count(category_id)
+    if not cat_data:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    rows = parse_rows(result)
-    category = rows[0]
-    
     # Check for children
-    result = execute_query(
-        "SELECT COUNT(*) as count FROM categories WHERE parent_id = ?",
-        [category_id]
-    )
-    if result and result.get("rows"):
-        count_rows = parse_rows(result)
-        children = count_rows[0].get("count", 0) if count_rows else 0
-        if children > 0:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Cannot delete category with {children} child categories"
-            )
+    children = categories_service.count_child_categories(category_id)
+    if children > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot delete category with {children} child categories"
+        )
     
     # Check for projects
-    project_count = category.get("project_count", 0)
+    project_count = cat_data.get("project_count", 0)
     if project_count > 0:
         raise HTTPException(
             status_code=400,
             detail=f"Cannot delete category with {project_count} projects. Set to inactive instead."
         )
     
-    execute_query("DELETE FROM categories WHERE id = ?", [category_id])
+    categories_service.delete_category_record(category_id)
     
     return None

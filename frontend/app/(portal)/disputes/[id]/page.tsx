@@ -162,14 +162,14 @@ const UserDisputeDetailsPage: React.FC = () => {
       </div>
 
       <div className={styles.section}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 className={styles.sectionTitle} style={{ marginBottom: 0 }}>Evidence</h2>
+        <div className={commonStyles.disputeHeader}>
+          <h2 className={cn(styles.sectionTitle, commonStyles.disputeTitle)}>Evidence</h2>
           {!isResolved && (
-            <div style={{ position: 'relative' }}>
+            <div className={commonStyles.fileInputWrapper}>
               <input
                 type="file"
                 id="evidence-upload"
-                style={{ display: 'none' }}
+                className={commonStyles.hiddenInput}
                 onChange={handleUploadEvidence}
                 disabled={uploading}
               />

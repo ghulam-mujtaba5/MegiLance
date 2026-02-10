@@ -470,12 +470,28 @@ def create_order(
     # Calculate pricing
     quantity = order_data.quantity or 1
     base_price = price * quantity
-    extras_price = 0.0  # TODO: Calculate extras price
+    
+    # Calculate extras price from selected extras
+    extras_price = 0.0
+    extra_delivery_days = 0
+    if order_data.selected_extras:
+        extras_result = turso.execute("SELECT extras FROM gigs WHERE id = ?", [gig_id])
+        if extras_result and extras_result.get("rows"):
+            extras_raw = extras_result["rows"][0][0]
+            extras_str = extras_raw.get("value") if isinstance(extras_raw, dict) else extras_raw
+            if extras_str and extras_str != "null":
+                available_extras = json.loads(extras_str)
+                extras_by_id = {e.get("id", ""): e for e in available_extras}
+                for extra_id in order_data.selected_extras:
+                    if extra_id in extras_by_id:
+                        extras_price += extras_by_id[extra_id].get("price", 0)
+                        extra_delivery_days += extras_by_id[extra_id].get("delivery_days_add", 0)
+    
     service_fee = base_price * 0.05  # 5% service fee
     total_price = base_price + extras_price + service_fee
     
-    # Calculate deadline
-    deadline = (datetime.now(timezone.utc) + timedelta(days=delivery_days)).isoformat()
+    # Calculate deadline (include extra days from extras)
+    deadline = (datetime.now(timezone.utc) + timedelta(days=delivery_days + extra_delivery_days)).isoformat()
     
     # Generate order number
     order_number = _generate_order_number()

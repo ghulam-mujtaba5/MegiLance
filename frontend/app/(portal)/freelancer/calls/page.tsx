@@ -544,7 +544,7 @@ export default function VideoCallsPage() {
         {/* End Call Confirmation Modal */}
         <Modal isOpen={endCallTarget !== null} title="End Call" onClose={() => setEndCallTarget(null)}>
           <p>Are you sure you want to end this call? All participants will be disconnected.</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <div className={commonStyles.actionRow}>
             <Button variant="secondary" onClick={() => setEndCallTarget(null)}>Cancel</Button>
             <Button variant="danger" onClick={() => endCallTarget && handleEndCall(endCallTarget)}>End Call</Button>
           </div>

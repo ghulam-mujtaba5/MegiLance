@@ -1,13 +1,10 @@
 # @AI-HINT: Proposals API - CRUD for freelancer proposals on projects
-# Uses Turso HTTP API directly - NO SQLite fallback
+# Delegates to proposals_service for all data access
 # Enhanced with input validation, security measures, and standardized responses
 # Auto-creates contracts when proposals are accepted
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from typing import List, Optional
-from datetime import datetime, timedelta, timezone
-import re
-import uuid
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,10 +22,10 @@ from app.core.responses import (
     validate_length,
     validate_range
 )
-from app.db.turso_http import execute_query, to_str, parse_date
 from app.models.user import User
 from app.schemas.proposal import ProposalCreate, ProposalRead, ProposalUpdate
 from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
+from app.services import proposals_service
 
 router = APIRouter()
 
@@ -101,16 +98,6 @@ def _validate_proposal_input(proposal) -> None:
         )
 
 
-def _get_val(row: list, idx: int):
-    """Extract value from Turso row"""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if cell.get("type") == "null":
-        return None
-    return cell.get("value")
-
-
 def _safe_str(val):
     """Convert bytes to string if needed"""
     if val is None:
@@ -120,64 +107,13 @@ def _safe_str(val):
     return str(val) if val else None
 
 
-def _proposal_from_row(row: list) -> dict:
-    """Convert Turso row to proposal dict"""
-    data = {
-        "id": int(_get_val(row, 0) or 0),
-        "project_id": int(_get_val(row, 1) or 0),
-        "freelancer_id": int(_get_val(row, 2) or 0),
-        "cover_letter": _safe_str(_get_val(row, 3)),
-        "bid_amount": float(_get_val(row, 4) or 0),
-        "estimated_hours": float(_get_val(row, 5) or 0),
-        "hourly_rate": float(_get_val(row, 6) or 0),
-        "availability": _safe_str(_get_val(row, 7)),
-        "attachments": _safe_str(_get_val(row, 8)),
-        "status": _safe_str(_get_val(row, 9)),
-        "is_draft": bool(_get_val(row, 10)),
-        "created_at": parse_date(_get_val(row, 11)),
-        "updated_at": parse_date(_get_val(row, 12))
-    }
-    
-    # Optional fields from joins
-    if len(row) > 13:
-        data["job_title"] = _safe_str(_get_val(row, 13))
-    if len(row) > 14:
-        data["client_name"] = _safe_str(_get_val(row, 14))
-        
-    return data
-
-
 @router.get("/drafts", response_model=List[ProposalRead])
 def list_draft_proposals(
     project_id: Optional[int] = Query(None),
     current_user: User = Depends(get_current_active_user)
 ):
     """Get all draft proposals for the current user"""
-    where_sql = "WHERE p.freelancer_id = ? AND p.is_draft = 1"
-    params = [current_user.id]
-    
-    if project_id:
-        where_sql += " AND p.project_id = ?"
-        params.append(project_id)
-    
-    # Join with projects to get title
-    result = execute_query(
-        f"""SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
-            p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
-            p.is_draft, p.created_at, p.updated_at,
-            pr.title as job_title
-            FROM proposals p
-            LEFT JOIN projects pr ON p.project_id = pr.id
-            {where_sql}""",
-        params
-    )
-    
-    drafts = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            drafts.append(_proposal_from_row(row))
-    
-    return drafts
+    return proposals_service.get_draft_proposals(current_user.id, project_id)
 
 
 @router.post("/draft", response_model=ProposalRead, status_code=status.HTTP_201_CREATED)
@@ -197,50 +133,22 @@ def create_draft_proposal(
     _validate_proposal_input(proposal)
     
     # Check if project exists
-    result = execute_query("SELECT id FROM projects WHERE id = ?", [proposal.project_id])
-    if not result or not result.get("rows"):
+    if not proposals_service.project_exists(proposal.project_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     
-    now = datetime.now(timezone.utc).isoformat()
+    result = proposals_service.create_draft_proposal(current_user.id, {
+        "project_id": proposal.project_id,
+        "cover_letter": proposal.cover_letter or "",
+        "bid_amount": proposal.bid_amount or 0,
+        "estimated_hours": proposal.estimated_hours or 0,
+        "hourly_rate": proposal.hourly_rate or 0,
+        "availability": proposal.availability or "",
+        "attachments": proposal.attachments or "",
+    })
     
-    insert_result = execute_query(
-        """INSERT INTO proposals (project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status, is_draft,
-           created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            proposal.project_id,
-            current_user.id,
-            proposal.cover_letter or "",
-            proposal.bid_amount or 0,
-            proposal.estimated_hours or 0,
-            proposal.hourly_rate or 0,
-            proposal.availability or "",
-            proposal.attachments or "",
-            "draft",
-            1,
-            now,
-            now
-        ]
-    )
-    
-    if not insert_result:
+    if not result:
         raise HTTPException(status_code=500, detail="Failed to create draft proposal")
-    
-    # Get created proposal
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE freelancer_id = ? AND project_id = ? AND is_draft = 1
-           ORDER BY id DESC LIMIT 1""",
-        [current_user.id, proposal.project_id]
-    )
-    
-    if result and result.get("rows"):
-        return _proposal_from_row(result["rows"][0])
-    
-    raise HTTPException(status_code=500, detail="Failed to retrieve draft proposal")
+    return result
 
 
 @router.get("/", response_model=List[ProposalRead])
@@ -253,58 +161,14 @@ def list_proposals(
 ):
     """List proposals for current user"""
     user_type = _safe_str(current_user.user_type)
-    
-    if user_type and user_type.lower() == "freelancer":
-        where_sql = "WHERE p.freelancer_id = ?"
-        params = [current_user.id]
-    else:
-        # Get all project IDs for this client
-        proj_result = execute_query(
-            "SELECT id FROM projects WHERE client_id = ?",
-            [current_user.id]
-        )
-        project_ids = []
-        if proj_result and proj_result.get("rows"):
-            project_ids = [int(_get_val(row, 0) or 0) for row in proj_result["rows"]]
-        
-        if not project_ids:
-            return []
-        
-        placeholders = ",".join(["?" for _ in project_ids])
-        where_sql = f"WHERE p.project_id IN ({placeholders})"
-        params = project_ids
-    
-    if project_id:
-        where_sql += " AND p.project_id = ?"
-        params.append(project_id)
-    
-    if status:
-        where_sql += " AND p.status = ?"
-        params.append(status)
-    
-    params.extend([limit, skip])
-    
-    # Join with projects and users to get job title and client name
-    result = execute_query(
-        f"""SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
-            p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
-            p.is_draft, p.created_at, p.updated_at,
-            pr.title as job_title, u.name as client_name
-            FROM proposals p
-            LEFT JOIN projects pr ON p.project_id = pr.id
-            LEFT JOIN users u ON pr.client_id = u.id
-            {where_sql}
-            ORDER BY p.created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
+    return proposals_service.list_proposals(
+        user_id=current_user.id,
+        user_type=user_type,
+        project_id=project_id,
+        status_filter=status,
+        limit=limit,
+        skip=skip
     )
-    
-    proposals = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            proposals.append(_proposal_from_row(row))
-    
-    return proposals
 
 
 @router.get("/{proposal_id}", response_model=ProposalRead)
@@ -313,34 +177,14 @@ def get_proposal(
     current_user: User = Depends(get_current_active_user)
 ):
     """Get a specific proposal"""
-    # Join to get job title and client name
-    result = execute_query(
-        """SELECT p.id, p.project_id, p.freelancer_id, p.cover_letter, p.bid_amount,
-           p.estimated_hours, p.hourly_rate, p.availability, p.attachments, p.status,
-           p.is_draft, p.created_at, p.updated_at,
-           pr.title as job_title, u.name as client_name
-           FROM proposals p
-           LEFT JOIN projects pr ON p.project_id = pr.id
-           LEFT JOIN users u ON pr.client_id = u.id
-           WHERE p.id = ?""",
-        [proposal_id]
-    )
-    
-    if not result or not result.get("rows"):
+    proposal = proposals_service.get_proposal_with_joins(proposal_id)
+    if not proposal:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal not found")
     
-    row = result["rows"][0]
-    freelancer_id = int(_get_val(row, 2) or 0)
-    project_id = int(_get_val(row, 1) or 0)
+    is_proposal_owner = proposal["freelancer_id"] == current_user.id
     
-    is_proposal_owner = freelancer_id == current_user.id
-    
-    # Check if user is project owner
-    proj_result = execute_query("SELECT client_id FROM projects WHERE id = ?", [project_id])
-    is_project_owner = False
-    if proj_result and proj_result.get("rows"):
-        client_id = int(_get_val(proj_result["rows"][0], 0) or 0)
-        is_project_owner = client_id == current_user.id
+    client_id = proposals_service.get_project_client_id(proposal["project_id"])
+    is_project_owner = client_id == current_user.id
     
     if not is_proposal_owner and not is_project_owner:
         raise HTTPException(
@@ -348,7 +192,7 @@ def get_proposal(
             detail="Not authorized to view this proposal"
         )
     
-    return _proposal_from_row(row)
+    return proposal
 
 
 @router.post("/", response_model=ProposalRead, status_code=status.HTTP_201_CREATED)
@@ -383,11 +227,10 @@ def create_proposal(
         )
     
     # Check if project exists and is open
-    result = execute_query("SELECT id, status FROM projects WHERE id = ?", [proposal.project_id])
-    if not result or not result.get("rows"):
+    project_status = proposals_service.get_project_status(proposal.project_id)
+    if project_status is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     
-    project_status = _safe_str(_get_val(result["rows"][0], 1))
     if project_status != "open":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -395,57 +238,25 @@ def create_proposal(
         )
     
     # Check if already submitted
-    result = execute_query(
-        "SELECT id FROM proposals WHERE project_id = ? AND freelancer_id = ? AND is_draft = 0",
-        [proposal.project_id, current_user.id]
-    )
-    if result and result.get("rows"):
+    if proposals_service.has_submitted_proposal(proposal.project_id, current_user.id):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You have already submitted a proposal for this project"
         )
     
-    now = datetime.now(timezone.utc).isoformat()
-    bid_amount = proposal.bid_amount or (proposal.estimated_hours * proposal.hourly_rate)
+    result = proposals_service.create_proposal(current_user.id, {
+        "project_id": proposal.project_id,
+        "cover_letter": proposal.cover_letter or "",
+        "bid_amount": proposal.bid_amount,
+        "estimated_hours": proposal.estimated_hours or 0,
+        "hourly_rate": proposal.hourly_rate or 0,
+        "availability": proposal.availability or "",
+        "attachments": proposal.attachments or "",
+    })
     
-    insert_result = execute_query(
-        """INSERT INTO proposals (project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status, is_draft,
-           created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            proposal.project_id,
-            current_user.id,
-            proposal.cover_letter or "",
-            bid_amount,
-            proposal.estimated_hours or 0,
-            proposal.hourly_rate or 0,
-            proposal.availability or "",
-            proposal.attachments or "",
-            "submitted",
-            0,
-            now,
-            now
-        ]
-    )
-    
-    if not insert_result:
+    if not result:
         raise HTTPException(status_code=500, detail="Failed to create proposal")
-    
-    # Get created proposal
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE freelancer_id = ? AND project_id = ? AND is_draft = 0
-           ORDER BY id DESC LIMIT 1""",
-        [current_user.id, proposal.project_id]
-    )
-    
-    if result and result.get("rows"):
-        return _proposal_from_row(result["rows"][0])
-    
-    raise HTTPException(status_code=500, detail="Failed to retrieve created proposal")
+    return result
 
 
 @router.put("/{proposal_id}", response_model=ProposalRead)
@@ -455,29 +266,17 @@ def update_proposal(
     current_user: User = Depends(get_current_active_user)
 ):
     """Update a proposal"""
-    # Get existing proposal
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE id = ?""",
-        [proposal_id]
-    )
-    
-    if not result or not result.get("rows"):
+    existing = proposals_service.get_proposal_raw(proposal_id)
+    if not existing:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal not found")
     
-    row = result["rows"][0]
-    freelancer_id = int(_get_val(row, 2) or 0)
-    prop_status = _safe_str(_get_val(row, 9))
-    
-    if freelancer_id != current_user.id:
+    if existing["freelancer_id"] != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this proposal"
         )
     
-    if prop_status != "submitted":
+    if existing["status"] != "submitted":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot update proposal that is not in submitted status"
@@ -485,38 +284,10 @@ def update_proposal(
     
     update_data = proposal.model_dump(exclude_unset=True, exclude_none=True)
     
-    if not update_data:
-        return _proposal_from_row(row)
-    
-    # Build update query
-    set_parts = []
-    values = []
-    for key, value in update_data.items():
-        set_parts.append(f"{key} = ?")
-        values.append(value if value is not None else "")
-    
-    set_parts.append("updated_at = ?")
-    values.append(datetime.now(timezone.utc).isoformat())
-    values.append(proposal_id)
-    
-    execute_query(
-        f"UPDATE proposals SET {', '.join(set_parts)} WHERE id = ?",
-        values
-    )
-    
-    # Fetch updated proposal
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE id = ?""",
-        [proposal_id]
-    )
-    
-    if result and result.get("rows"):
-        return _proposal_from_row(result["rows"][0])
-    
-    raise HTTPException(status_code=500, detail="Failed to retrieve updated proposal")
+    result = proposals_service.update_proposal(proposal_id, update_data)
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to retrieve updated proposal")
+    return result
 
 
 @router.delete("/{proposal_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -525,30 +296,23 @@ def delete_proposal(
     current_user: User = Depends(get_current_active_user)
 ):
     """Delete a proposal"""
-    result = execute_query(
-        "SELECT id, freelancer_id, status FROM proposals WHERE id = ?",
-        [proposal_id]
-    )
-    
-    if not result or not result.get("rows"):
+    entry = proposals_service.get_proposal_for_delete(proposal_id)
+    if not entry:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal not found")
     
-    freelancer_id = int(_get_val(result["rows"][0], 1) or 0)
-    prop_status = _safe_str(_get_val(result["rows"][0], 2))
-    
-    if freelancer_id != current_user.id:
+    if entry["freelancer_id"] != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to delete this proposal"
         )
     
-    if prop_status != "submitted":
+    if entry["status"] != "submitted":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot delete proposal that is not in submitted status"
         )
     
-    execute_query("DELETE FROM proposals WHERE id = ?", [proposal_id])
+    proposals_service.delete_proposal(proposal_id)
     return
 
 
@@ -558,124 +322,29 @@ def accept_proposal(
     current_user: User = Depends(get_current_active_user)
 ):
     """Client accepts a proposal - creates a contract automatically"""
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE id = ?""",
-        [proposal_id]
-    )
-    
-    if not result or not result.get("rows"):
+    details = proposals_service.get_proposal_with_project_details(proposal_id)
+    if not details:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal not found")
     
-    row = result["rows"][0]
-    project_id = int(_get_val(row, 1) or 0)
-    freelancer_id = int(_get_val(row, 2) or 0)
-    bid_amount = float(_get_val(row, 4) or 0)
-    hourly_rate = float(_get_val(row, 6) or 0)
-    prop_status = _safe_str(_get_val(row, 9))
-    
-    # Check if user is project owner
-    proj_result = execute_query(
-        "SELECT client_id, title, description, budget_type FROM projects WHERE id = ?", 
-        [project_id]
-    )
-    if not proj_result or not proj_result.get("rows"):
+    if not details.get("project_title"):
         raise HTTPException(status_code=404, detail="Project not found")
     
-    proj_row = proj_result["rows"][0]
-    client_id = int(_get_val(proj_row, 0) or 0)
-    project_title = _safe_str(_get_val(proj_row, 1)) or "Untitled Project"
-    project_description = _safe_str(_get_val(proj_row, 2)) or ""
-    budget_type = _safe_str(_get_val(proj_row, 3)) or "fixed"
-    
-    if client_id != current_user.id:
+    if details["client_id"] != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only the project owner can accept proposals"
         )
     
-    if prop_status != "submitted":
+    if details["status"] != "submitted":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Proposal is not in submitted status"
         )
     
-    now = datetime.now(timezone.utc).isoformat()
-    
-    # Accept proposal
-    execute_query(
-        "UPDATE proposals SET status = ?, updated_at = ? WHERE id = ?",
-        ["accepted", now, proposal_id]
-    )
-    
-    # Update project status
-    execute_query(
-        "UPDATE projects SET status = ?, updated_at = ? WHERE id = ?",
-        ["in_progress", now, project_id]
-    )
-    
-    # Reject other proposals
-    execute_query(
-        "UPDATE proposals SET status = ?, updated_at = ? WHERE project_id = ? AND id != ? AND status = ?",
-        ["rejected", now, project_id, proposal_id, "submitted"]
-    )
-    
-    # === Create contract automatically ===
-    contract_amount = bid_amount if bid_amount > 0 else hourly_rate
-    platform_fee = contract_amount * 0.1  # 10% platform fee
-    start_date = now
-    # Default end date: 30 days from now
-    end_date = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
-    
-    try:
-        contract_result = execute_query(
-            """INSERT INTO contracts (project_id, freelancer_id, client_id, winning_bid_id,
-               contract_type, amount, currency, contract_amount, platform_fee,
-               status, start_date, end_date, description, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            [
-                project_id,
-                freelancer_id,
-                current_user.id,
-                proposal_id,
-                "fixed",
-                contract_amount,
-                "USD",
-                contract_amount,
-                platform_fee,
-                "active",
-                start_date,
-                end_date,
-                f"Contract for: {project_title}\n\n{project_description[:500] if project_description else 'N/A'}",
-                now,
-                now
-            ]
-        )
-        
-        if contract_result:
-            logger.info(f"Contract created for project {project_id} on proposal {proposal_id} acceptance")
-        else:
-            logger.error(f"Failed to create contract for proposal {proposal_id}")
-            
-    except Exception as e:
-        logger.error(f"Contract creation error on proposal {proposal_id}: {str(e)}")
-        # Don't fail the whole operation, the proposal is already accepted
-    
-    # Return updated proposal
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE id = ?""",
-        [proposal_id]
-    )
-    
-    if result and result.get("rows"):
-        return _proposal_from_row(result["rows"][0])
-    
-    raise HTTPException(status_code=500, detail="Failed to retrieve updated proposal")
+    result = proposals_service.accept_proposal(proposal_id, current_user.id, details)
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to retrieve updated proposal")
+    return result
 
 
 @router.post("/{proposal_id}/reject", response_model=ProposalRead)
@@ -684,57 +353,27 @@ def reject_proposal(
     current_user: User = Depends(get_current_active_user)
 ):
     """Client rejects a proposal"""
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE id = ?""",
-        [proposal_id]
-    )
-    
-    if not result or not result.get("rows"):
+    existing = proposals_service.get_proposal_raw(proposal_id)
+    if not existing:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proposal not found")
     
-    row = result["rows"][0]
-    project_id = int(_get_val(row, 1) or 0)
-    prop_status = _safe_str(_get_val(row, 9))
-    
-    # Check if user is project owner
-    proj_result = execute_query("SELECT client_id FROM projects WHERE id = ?", [project_id])
-    if not proj_result or not proj_result.get("rows"):
+    client_id = proposals_service.get_project_client_id(existing["project_id"])
+    if client_id is None:
         raise HTTPException(status_code=404, detail="Project not found")
     
-    client_id = int(_get_val(proj_result["rows"][0], 0) or 0)
     if client_id != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only the project owner can reject proposals"
         )
     
-    if prop_status != "submitted":
+    if existing["status"] != "submitted":
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Proposal is not in submitted status"
         )
     
-    now = datetime.now(timezone.utc).isoformat()
-    
-    # Reject proposal
-    execute_query(
-        "UPDATE proposals SET status = ?, updated_at = ? WHERE id = ?",
-        ["rejected", now, proposal_id]
-    )
-    
-    # Return updated proposal
-    result = execute_query(
-        """SELECT id, project_id, freelancer_id, cover_letter, bid_amount,
-           estimated_hours, hourly_rate, availability, attachments, status,
-           is_draft, created_at, updated_at
-           FROM proposals WHERE id = ?""",
-        [proposal_id]
-    )
-    
-    if result and result.get("rows"):
-        return _proposal_from_row(result["rows"][0])
-    
-    raise HTTPException(status_code=500, detail="Failed to retrieve updated proposal")
+    result = proposals_service.reject_proposal(proposal_id)
+    if not result:
+        raise HTTPException(status_code=500, detail="Failed to retrieve updated proposal")
+    return result

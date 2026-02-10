@@ -222,7 +222,7 @@ export default function EscrowPage() {
           <Loading text="Loading escrow transactions..." />
         ) : filteredTransactions.length === 0 ? (
           <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-            <DollarSign size={48} strokeWidth={1.5} style={{ opacity: 0.3 }} />
+            <DollarSign size={48} strokeWidth={1.5} className={commonStyles.fadedIcon} />
             <h3>No Escrow Transactions</h3>
             <p>{filter !== 'all' ? `No ${filter} transactions found. Try a different filter.` : 'Escrow transactions will appear here when you fund contracts.'}</p>
           </div>

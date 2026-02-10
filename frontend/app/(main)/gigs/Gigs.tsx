@@ -254,6 +254,7 @@ const Gigs: React.FC = () => {
                 value={filters.minPrice || ''}
                 onChange={e => handleFilterChange('minPrice', e.target.value ? Number(e.target.value) : undefined)}
                 className={cn(common.priceInput, themed.priceInput)}
+                aria-label="Minimum price"
               />
             </div>
             <span className={common.priceDivider}>—</span>
@@ -265,6 +266,7 @@ const Gigs: React.FC = () => {
                 value={filters.maxPrice || ''}
                 onChange={e => handleFilterChange('maxPrice', e.target.value ? Number(e.target.value) : undefined)}
                 className={cn(common.priceInput, themed.priceInput)}
+                aria-label="Maximum price"
               />
             </div>
           </div>
@@ -347,6 +349,7 @@ const Gigs: React.FC = () => {
                 value={filters.search}
                 onChange={e => handleFilterChange('search', e.target.value)}
                 className={cn(common.searchInput, themed.searchInput)}
+                aria-label="Search gigs"
               />
             </div>
             <button
@@ -452,6 +455,7 @@ const Gigs: React.FC = () => {
                   value={sortBy}
                   onChange={e => setSortBy(e.target.value)}
                   className={cn(common.sortSelect, themed.sortSelect)}
+                  aria-label="Sort gigs by"
                 >
                   <option value="recommended">Recommended</option>
                   <option value="best_selling">Best Selling</option>

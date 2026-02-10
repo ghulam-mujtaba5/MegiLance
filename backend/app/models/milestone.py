@@ -1,3 +1,4 @@
+# @AI-HINT: Milestone model for contract payment phases with submission and approval tracking
 """Milestone models for MegiLance platform"""
 from sqlalchemy import String, Integer, Text, Float, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship

@@ -1,13 +1,13 @@
-/* @AI-HINT: Common/layout styles for PortalNavbar with dropdowns and animations */
+/* @AI-HINT: Common/layout styles for PortalNavbar with breadcrumbs, dropdowns, and animations */
 
 .navbar {
   position: sticky;
   top: 0;
   z-index: 40;
   width: 100%;
-  height: 64px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  height: 56px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid transparent;
   transition: all 0.2s ease;
 }
@@ -17,16 +17,18 @@
   align-items: center;
   justify-content: space-between;
   height: 100%;
-  padding: 0 1.5rem;
+  padding: 0 1.25rem;
   max-width: 100%;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .leftSection {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex-shrink: 0;
+  gap: 0.5rem;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* Mobile hamburger menu button */
@@ -34,13 +36,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   border: none;
   background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 @media (min-width: 769px) {
@@ -49,25 +52,64 @@
   }
 }
 
+/* Breadcrumb Navigation */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.breadcrumbLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.breadcrumbHomeIcon {
+  flex-shrink: 0;
+}
+
+.breadcrumbSeparator {
+  flex-shrink: 0;
+  opacity: 0.35;
+}
+
+.breadcrumbCurrent {
+  font-weight: 600;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .breadcrumb {
+    display: none;
+  }
+}
+
+/* Legacy page title - kept for fallback */
 .pageTitle {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: -0.01em;
   margin: 0;
   display: none;
 }
 
-@media (min-width: 768px) {
-  .pageTitle {
-    display: block;
-  }
-}
-
 /* Search */
 .searchContainer {
   position: relative;
   flex: 1;
-  max-width: 400px;
+  max-width: 360px;
   display: none;
   align-items: center;
 }
@@ -80,16 +122,16 @@
 
 .searchIcon {
   position: absolute;
-  left: 12px;
+  left: 10px;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .searchInput {
   width: 100%;
-  padding: 0.5rem 2.5rem 0.5rem 2.5rem;
+  padding: 0.4rem 2.25rem 0.4rem 2.25rem;
   border-radius: 8px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   border: 1px solid transparent;
   outline: none;
   transition: all 0.2s ease;
@@ -97,7 +139,7 @@
 
 .searchInput:focus {
   border-color: var(--color-primary, #4573df);
-  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+  box-shadow: 0 0 0 2px rgba(69, 115, 223, 0.12);
 }
 
 .searchClear {
@@ -171,7 +213,7 @@
 .rightSection {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 
 /* Action Buttons */
@@ -180,13 +222,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   border: none;
   background: transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .actionButton:hover {
@@ -194,19 +236,19 @@
 }
 
 .actionButtonActive {
-  background: rgba(69, 115, 223, 0.15) !important;
+  background: rgba(69, 115, 223, 0.12) !important;
 }
 
 /* Badge */
 .badge {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
-  font-size: 0.65rem;
+  top: 5px;
+  right: 5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 0.6rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -243,10 +285,10 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 380px;
-  max-height: 500px;
+  width: 360px;
+  max-height: 480px;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   z-index: 100;
   animation: dropdownSlide 0.2s ease;
   overflow: hidden;
@@ -256,13 +298,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 0.875rem 1rem;
   border-bottom: 1px solid rgba(128, 128, 128, 0.1);
 }
 
 .notificationTitle {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.9375rem;
 }
 
 .markAllRead {
@@ -502,28 +544,37 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  .navbar {
+    height: 52px;
+  }
+
   .container {
-    padding: 0 1rem;
-    gap: 0.5rem;
+    padding: 0 0.75rem;
+    gap: 0.375rem;
   }
 
   .searchContainer {
     display: none;
   }
 
+  .actionButton {
+    width: 34px;
+    height: 34px;
+  }
+
   .notificationDropdown {
     position: fixed;
-    top: 64px;
+    top: 52px;
     left: 0;
     right: 0;
     width: 100%;
     border-radius: 0 0 12px 12px;
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 52px);
   }
 
   .helpDropdown {
     position: fixed;
-    top: 64px;
+    top: 52px;
     left: 0;
     right: 0;
     width: 100%;

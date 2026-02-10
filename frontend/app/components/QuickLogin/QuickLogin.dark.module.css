@@ -55,3 +55,11 @@
 .freelancerIcon {
   color: #4ade80;
 }
+
+.toastSuccess {
+  background-color: #27AE60;
+}
+
+.toastError {
+  background-color: #e81123;
+}

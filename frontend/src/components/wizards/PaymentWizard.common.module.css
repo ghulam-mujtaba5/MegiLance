@@ -440,3 +440,30 @@
     width: 100%;
   }
 }
+
+.hiddenInput {
+  display: none;
+}
+
+.modalButtonGroup {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modalBtnSecondary {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: transparent;
+  cursor: pointer;
+}
+
+.modalBtnDanger {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #e81123;
+  color: #fff;
+  cursor: pointer;
+}

@@ -47,7 +47,7 @@ const AISettings: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      // TODO: Implement AI settings save API call
+      // DEFERRED: Requires backend admin AI settings API endpoint
       // await api.admin.updateAISettings({
       //   fraudDetectionThreshold: settings.fraudDetectionThreshold[0],
       //   matchmakingRankWeight: settings.matchmakingRankWeight[0],

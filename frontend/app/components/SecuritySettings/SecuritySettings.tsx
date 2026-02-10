@@ -72,18 +72,19 @@ const SecuritySettings: React.FC = () => {
             </h2>
             <form onSubmit={handlePasswordUpdate}>
               {error && (
-                <div style={{ padding: '0.75rem', marginBottom: '1rem', backgroundColor: '#fee', color: '#c00', borderRadius: '0.5rem' }}>
+                <div className={cn(common.errorMessage, themed.errorMessage)}>
                   {error}
                 </div>
               )}
               {success && (
-                <div style={{ padding: '0.75rem', marginBottom: '1rem', backgroundColor: '#efe', color: '#090', borderRadius: '0.5rem' }}>
+                <div className={cn(common.successMessage, themed.successMessage)}>
                   {success}
                 </div>
               )}
               <div className={common.formGroup}>
-                <label className={cn(common.label, themed.label)}>Current Password</label>
+                <label htmlFor="current-password" className={cn(common.label, themed.label)}>Current Password</label>
                 <input 
+                  id="current-password"
                   type="password" 
                   className={cn(common.input, themed.input)} 
                   placeholder="••••••••"
@@ -93,8 +94,9 @@ const SecuritySettings: React.FC = () => {
                 />
               </div>
               <div className={common.formGroup}>
-                <label className={cn(common.label, themed.label)}>New Password</label>
+                <label htmlFor="new-password" className={cn(common.label, themed.label)}>New Password</label>
                 <input 
+                  id="new-password"
                   type="password" 
                   className={cn(common.input, themed.input)} 
                   placeholder="••••••••"
@@ -105,8 +107,9 @@ const SecuritySettings: React.FC = () => {
                 />
               </div>
               <div className={common.formGroup}>
-                <label className={cn(common.label, themed.label)}>Confirm New Password</label>
+                <label htmlFor="confirm-password" className={cn(common.label, themed.label)}>Confirm New Password</label>
                 <input 
+                  id="confirm-password"
                   type="password" 
                   className={cn(common.input, themed.input)} 
                   placeholder="••••••••"

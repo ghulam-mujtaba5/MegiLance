@@ -1,3 +1,4 @@
+# @AI-HINT: Verification model for KYC/identity verification documents and status tracking
 from sqlalchemy import String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base

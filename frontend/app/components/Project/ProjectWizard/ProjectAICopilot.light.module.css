@@ -14,3 +14,36 @@
   border-color: #e2e8f0;
   color: #334155;
 }
+
+.triggerIcon {
+  color: #a855f7;
+}
+
+.botIconWrapper {
+  background: #f3e8ff;
+}
+
+.botIcon {
+  color: #9333ea;
+}
+
+.poweredBy {
+  color: #6b7280;
+}
+
+.closeButton {
+  color: #9ca3af;
+}
+
+.closeButton:hover {
+  color: #4b5563;
+}
+
+.checkIcon {
+  color: #22c55e;
+}
+
+.skillTag {
+  background: #dbeafe;
+  color: #1e40af;
+}

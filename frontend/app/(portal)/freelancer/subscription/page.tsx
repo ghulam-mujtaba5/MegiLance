@@ -407,7 +407,7 @@ export default function SubscriptionPage() {
         {/* Cancel Confirmation Modal */}
         <Modal isOpen={showCancelConfirm} title="Cancel Subscription" onClose={() => setShowCancelConfirm(false)}>
           <p>Are you sure you want to cancel your subscription? Your plan will remain active until the end of the current billing period.</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <div className={commonStyles.actionRow}>
             <Button variant="secondary" onClick={() => setShowCancelConfirm(false)}>Keep Plan</Button>
             <Button variant="danger" onClick={handleCancel}>Cancel Subscription</Button>
           </div>

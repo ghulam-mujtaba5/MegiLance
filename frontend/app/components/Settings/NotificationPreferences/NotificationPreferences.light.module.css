@@ -44,6 +44,17 @@
   color: #718096;
 }
 
+.timeInput {
+  border-color: #e2e8f0;
+  background: #ffffff;
+  color: #2d3748;
+}
+
+.timeInput:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
 .successMessage {
   background: #c6f6d5;
   color: #22543d;

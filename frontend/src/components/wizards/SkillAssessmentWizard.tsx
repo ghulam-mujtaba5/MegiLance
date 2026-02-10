@@ -361,9 +361,9 @@ export default function SkillAssessmentWizard({
         title="Unanswered Questions"
         onClose={() => setShowUnansweredModal(false)}
         footer={
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button onClick={() => setShowUnansweredModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' }}>Go Back</button>
-            <button onClick={() => { setShowUnansweredModal(false); setSkipUnansweredCheck(true); setCurrentStep(2); }} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#4573df', color: '#fff', cursor: 'pointer' }}>Submit Anyway</button>
+          <div className={commonStyles.modalButtonGroup}>
+            <button onClick={() => setShowUnansweredModal(false)} className={commonStyles.modalBtnSecondary}>Go Back</button>
+            <button onClick={() => { setShowUnansweredModal(false); setSkipUnansweredCheck(true); setCurrentStep(2); }} className={commonStyles.modalBtnPrimary}>Submit Anyway</button>
           </div>
         }
       >

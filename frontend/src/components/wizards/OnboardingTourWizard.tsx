@@ -558,9 +558,9 @@ export default function OnboardingTourWizard({
         title="Skip Tour"
         onClose={() => setShowSkipModal(false)}
         footer={
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button onClick={() => setShowSkipModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' }}>No, Continue</button>
-            <button onClick={() => { setShowSkipModal(false); localStorage.setItem('onboarding_skipped', 'true'); router.push(onboardingData.role === 'freelancer' ? '/freelancer/dashboard' : '/client/dashboard'); }} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#e81123', color: '#fff', cursor: 'pointer' }}>Yes, Skip</button>
+          <div className={commonStyles.modalButtonGroup}>
+            <button onClick={() => setShowSkipModal(false)} className={commonStyles.modalBtnSecondary}>No, Continue</button>
+            <button onClick={() => { setShowSkipModal(false); localStorage.setItem('onboarding_skipped', 'true'); router.push(onboardingData.role === 'freelancer' ? '/freelancer/dashboard' : '/client/dashboard'); }} className={commonStyles.modalBtnDanger}>Yes, Skip</button>
           </div>
         }
       >

@@ -1,3 +1,4 @@
+# @AI-HINT: Refund model for payment reversals and dispute-triggered refunds
 """
 Refund model for payment reversals
 """

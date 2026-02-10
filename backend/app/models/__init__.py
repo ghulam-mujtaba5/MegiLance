@@ -1,3 +1,4 @@
+# @AI-HINT: Models package init - exports all SQLAlchemy ORM models for the platform
 """MegiLance database models"""
 
 from .user import User, UserType

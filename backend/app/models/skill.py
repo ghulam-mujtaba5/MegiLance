@@ -1,3 +1,4 @@
+# @AI-HINT: Skill model for the platform skill taxonomy with categories and proficiency levels
 """Skill models for MegiLance platform"""
 from sqlalchemy import String, Integer, Text, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship

@@ -1,3 +1,4 @@
+# @AI-HINT: Proposal model - freelancer bids on projects with pricing and cover letter
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base

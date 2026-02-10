@@ -456,7 +456,7 @@ const ChatbotAgent: React.FC = () => {
               animate={{ rotate: 0, opacity: 1, scale: 1 }}
               exit={{ rotate: 90, opacity: 0, scale: 0 }}
               transition={{ duration: 0.3, type: 'spring' }}
-              style={{ display: 'flex' }}
+              className={commonStyles.flexCenter}
             >
               <X size={24} />
             </motion.div>
@@ -467,7 +467,7 @@ const ChatbotAgent: React.FC = () => {
               animate={{ rotate: 0, opacity: 1, scale: 1 }}
               exit={{ rotate: -90, opacity: 0, scale: 0 }}
               transition={{ duration: 0.3, type: 'spring' }}
-              style={{ display: 'flex' }}
+              className={commonStyles.flexCenter}
             >
               <MessageSquare size={24} />
             </motion.div>

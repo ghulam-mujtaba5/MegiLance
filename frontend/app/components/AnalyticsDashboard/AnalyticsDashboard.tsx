@@ -188,6 +188,7 @@ export default function AnalyticsDashboard({ className = '' }: AnalyticsDashboar
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
             className={cn(commonStyles.dateSelect, themeStyles.dateSelect)}
+            aria-label="Select date range"
           >
             <option value="1d">Last 24 Hours</option>
             <option value="7d">Last 7 Days</option>

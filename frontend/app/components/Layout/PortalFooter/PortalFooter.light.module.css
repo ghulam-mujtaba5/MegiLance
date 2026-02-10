@@ -1,18 +1,22 @@
 /* @AI-HINT: Light theme styles for the PortalFooter. */
 
 .footer {
-  border-top: 1px solid var(--border-light);
-  background-color: var(--background-light);
+  border-top: 1px solid var(--border-light, #e8eaed);
+  background-color: transparent;
 }
 
 .copyright {
-  color: var(--text-tertiary-light);
+  color: var(--text-tertiary-light, #9ca3af);
 }
 
 .link {
-  color: var(--text-secondary-light);
+  color: var(--text-tertiary-light, #9ca3af);
 }
 
 .link:hover {
-  color: var(--primary-4573df);
+  color: var(--primary-4573df, #4573df);
+}
+
+.separator {
+  color: var(--text-tertiary-light, #9ca3af);
 }

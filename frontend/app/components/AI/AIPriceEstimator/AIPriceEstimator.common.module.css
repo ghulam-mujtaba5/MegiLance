@@ -132,3 +132,8 @@
     gap: 0.75rem;
   }
 }
+
+.inlineIcon {
+  display: inline;
+  margin-right: 4px;
+}

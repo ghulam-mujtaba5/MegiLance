@@ -517,7 +517,7 @@ export default function AvailabilityPage() {
           <div className={commonStyles.modalOverlay} onClick={() => setDeleteSlotId(null)}>
             <div className={cn(commonStyles.modal, themeStyles.modal)} onClick={e => e.stopPropagation()}>
               <h2>Delete Time Slot</h2>
-              <p style={{ margin: '0.5rem 0 1.5rem', lineHeight: 1.6 }}>
+              <p className={commonStyles.confirmText}>
                 Are you sure you want to delete this time slot?
               </p>
               <div className={commonStyles.modalActions}>
@@ -530,14 +530,7 @@ export default function AvailabilityPage() {
 
         {/* Toast notification */}
         {toast && (
-          <div style={{
-            position: 'fixed', bottom: '1.5rem', right: '1.5rem',
-            padding: '0.75rem 1.25rem', borderRadius: '10px',
-            background: '#27ae60', color: '#fff', fontWeight: 500,
-            fontSize: '0.875rem', zIndex: 2000,
-            boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-            animation: 'fadeIn 0.3s ease',
-          }}>
+          <div className={commonStyles.successToast}>
             {toast}
           </div>
         )}

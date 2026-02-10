@@ -250,7 +250,7 @@ const ClientWallet: React.FC = () => {
                       ))}
                       {sorted.length === 0 && (
                         <div className={common.emptyState}>
-                          <DollarSign size={32} style={{ opacity: 0.3, marginBottom: 8 }} />
+                          <DollarSign size={32} className={common.fadedIcon} />
                           <p>No transactions found.</p>
                         </div>
                       )}

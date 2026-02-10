@@ -86,7 +86,7 @@ const About: React.FC = () => {
           </ScrollReveal>
           <StaggerContainer className={styles.grid}>
             <StaggerItem className={styles.card} tabIndex={0} aria-labelledby="problem-fees-title">
-              <DollarSign size={32} style={{ marginBottom: '1rem', color: 'var(--color-error)' }} />
+              <DollarSign size={32} className={common.iconError} />
               <h3 id="problem-fees-title" className={styles.cardTitle}>High Platform Fees</h3>
               <p className={styles.cardBody}>
                 Major platforms charge 10-20% commission, significantly reducing freelancer earnings. 
@@ -94,7 +94,7 @@ const About: React.FC = () => {
               </p>
             </StaggerItem>
             <StaggerItem className={styles.card} tabIndex={0} aria-labelledby="problem-payments-title">
-              <Globe size={32} style={{ marginBottom: '1rem', color: 'var(--color-warning)' }} />
+              <Globe size={32} className={common.iconWarning} />
               <h3 id="problem-payments-title" className={styles.cardTitle}>Payment Barriers</h3>
               <p className={styles.cardBody}>
                 Pakistani freelancers can&apos;t access PayPal and rely on slower alternatives like Payoneer 
@@ -102,7 +102,7 @@ const About: React.FC = () => {
               </p>
             </StaggerItem>
             <StaggerItem className={styles.card} tabIndex={0} aria-labelledby="problem-trust-title">
-              <Shield size={32} style={{ marginBottom: '1rem', color: 'var(--color-accent)' }} />
+              <Shield size={32} className={common.iconAccent} />
               <h3 id="problem-trust-title" className={styles.cardTitle}>Trust Deficit</h3>
               <p className={styles.cardBody}>
                 Centralized platforms use opaque algorithms for ranking and disputes. Freelancers lack 
@@ -122,7 +122,7 @@ const About: React.FC = () => {
           </ScrollReveal>
           <StaggerContainer className={styles.grid}>
             <StaggerItem className={styles.card} tabIndex={0} aria-labelledby="solution-ai-title">
-              <Brain size={32} style={{ marginBottom: '1rem', color: 'var(--color-primary)' }} />
+              <Brain size={32} className={common.iconPrimary} />
               <h3 id="solution-ai-title" className={styles.cardTitle}>AI-Powered Intelligence</h3>
               <p className={styles.cardBody}>
                 Machine learning analyzes skills, project history, and verified reviews to generate 
@@ -131,7 +131,7 @@ const About: React.FC = () => {
               </p>
             </StaggerItem>
             <StaggerItem className={styles.card} tabIndex={0} aria-labelledby="solution-blockchain-title">
-              <Lock size={32} style={{ marginBottom: '1rem', color: 'var(--color-success)' }} />
+              <Lock size={32} className={common.iconSuccess} />
               <h3 id="solution-blockchain-title" className={styles.cardTitle}>Blockchain Security</h3>
               <p className={styles.cardBody}>
                 Smart Contract Escrow guarantees trustless payments. Funds lock automatically when 
@@ -140,7 +140,7 @@ const About: React.FC = () => {
               </p>
             </StaggerItem>
             <StaggerItem className={styles.card} tabIndex={0} aria-labelledby="solution-speed-title">
-              <Zap size={32} style={{ marginBottom: '1rem', color: 'var(--color-warning)' }} />
+              <Zap size={32} className={common.iconWarning} />
               <h3 id="solution-speed-title" className={styles.cardTitle}>Modern Tech Stack</h3>
               <p className={styles.cardBody}>
                 Next.js 14 delivers fast, SEO-optimized pages. FastAPI provides high-performance 
@@ -191,7 +191,7 @@ const About: React.FC = () => {
           </ScrollReveal>
           <StaggerContainer className={styles.grid}>
             <StaggerItem className={styles.card} tabIndex={0}>
-              <TrendingUp size={32} style={{ marginBottom: '1rem', color: 'var(--color-success)' }} />
+              <TrendingUp size={32} className={common.iconSuccess} />
               <h3 className={styles.cardTitle}>$455B+ Market</h3>
               <p className={styles.cardBody}>
                 The global gig economy is forecast to surpass $455 billion, fueled by growing 
@@ -199,7 +199,7 @@ const About: React.FC = () => {
               </p>
             </StaggerItem>
             <StaggerItem className={styles.card} tabIndex={0}>
-              <Users size={32} style={{ marginBottom: '1rem', color: 'var(--color-primary)' }} />
+              <Users size={32} className={common.iconPrimary} />
               <h3 className={styles.cardTitle}>Pakistan&apos;s Potential</h3>
               <p className={styles.cardBody}>
                 Pakistan&apos;s freelance exports contribute hundreds of millions annually. The nation&apos;s 
@@ -207,7 +207,7 @@ const About: React.FC = () => {
               </p>
             </StaggerItem>
             <StaggerItem className={styles.card} tabIndex={0}>
-              <Star size={32} style={{ marginBottom: '1rem', color: 'var(--color-warning)' }} />
+              <Star size={32} className={common.iconWarning} />
               <h3 className={styles.cardTitle}>Our Vision</h3>
               <p className={styles.cardBody}>
                 Create a secure, low-cost payment infrastructure via crypto-based escrow, bypassing 
@@ -283,8 +283,8 @@ const About: React.FC = () => {
               <span aria-hidden="true" className={styles.sectionNote}>Thank you to everyone who made this possible</span>
             </div>
           </ScrollReveal>
-          <div className={styles.card} style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <p className={styles.cardBody} style={{ textAlign: 'center', lineHeight: '1.8' }}>
+          <div className={cn(styles.card, common.acknowledgements)}>
+            <p className={cn(styles.cardBody, common.acknowledgementText)}>
               Special thanks to our supervisor <strong>Dr. Junaid</strong> for solid advice, honest feedback, 
               and pushing us when things got tough. The <strong>Department of Computer Science at COMSATS 
               University Islamabad, Lahore Campus</strong> provided the tools and environment for meaningful 

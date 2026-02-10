@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Payment API - transaction, payout, and balance models
 from datetime import datetime
 from typing import Optional
 

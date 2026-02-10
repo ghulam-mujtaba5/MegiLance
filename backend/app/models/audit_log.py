@@ -1,3 +1,4 @@
+# @AI-HINT: Audit log model for compliance logging of user actions and security events
 """Audit log models for MegiLance platform"""
 from sqlalchemy import String, Integer, DateTime, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship

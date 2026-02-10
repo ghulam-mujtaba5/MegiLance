@@ -208,7 +208,7 @@ export default function RecommendedFreelancers({
   return (
     <div className={commonStyles.container}>
       {/* SVG Gradient Definitions */}
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
+      <svg width="0" height="0" className={commonStyles.srOnly}>
         <defs>
           <linearGradient id="matchGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#4573df" />

@@ -121,10 +121,8 @@ const Dashboard: React.FC = () => {
 
   if (!mounted) {
     return (
-      <div className={cn(commonStyles.dashboardContainer)} style={{ minHeight: '100vh', padding: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-          <Loading />
-        </div>
+      <div className={cn(commonStyles.dashboardContainer, commonStyles.loadingContainer)}>
+        <Loading />
       </div>
     );
   }

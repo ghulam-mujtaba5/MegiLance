@@ -1,3 +1,4 @@
+# @AI-HINT: ProjectTag association model for many-to-many project-tag relationships
 """
 ProjectTag model for project-tag association
 """

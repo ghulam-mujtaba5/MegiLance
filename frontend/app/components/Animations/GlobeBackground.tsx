@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from 'next-themes';
+import commonStyles from './GlobeBackground.common.module.css';
 
 // Dynamically import Globe to avoid SSR issues with Three.js
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
@@ -43,17 +44,7 @@ const GlobeBackground = () => {
   ];
 
   return (
-    <div style={{ 
-      position: 'absolute', 
-      top: 0, 
-      left: 0, 
-      width: '100%', 
-      height: '100%', 
-      zIndex: -1,
-      opacity: 0.4,
-      pointerEvents: 'none',
-      overflow: 'hidden'
-    }}>
+    <div className={commonStyles.canvasWrapper}>
       <Globe
         ref={globeEl}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"

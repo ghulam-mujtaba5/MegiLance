@@ -1,3 +1,4 @@
+# @AI-HINT: Invoice model for billing and payment tracking with line items
 """
 Invoice model for billing and payment tracking
 """

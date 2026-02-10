@@ -107,6 +107,51 @@
   margin-top: 2rem;
 }
 
+.loadingState {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.titleIcon {
+  margin-right: 0.75rem;
+}
+
+.categoryDescription {
+  font-size: 0.875rem;
+  opacity: 0.75;
+}
+
+.quietHoursGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.timeInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.quietHoursNote {
+  font-size: 0.875rem;
+  opacity: 0.75;
+  margin-top: 0.5rem;
+}
+
+.inlineIcon {
+  margin-right: 0.5rem;
+}
+
 .successMessage {
   display: flex;
   align-items: center;

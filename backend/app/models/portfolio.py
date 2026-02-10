@@ -1,3 +1,4 @@
+# @AI-HINT: Portfolio item model for freelancer work showcase with media attachments
 from sqlalchemy import String, Integer, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base

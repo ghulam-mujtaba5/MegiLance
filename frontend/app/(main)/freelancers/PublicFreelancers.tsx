@@ -350,8 +350,8 @@ const PublicFreelancers: React.FC = () => {
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className={cn(common.skeletonCard, themed.skeletonCard)}>
                     <div className={cn(common.skeletonAvatar, themed.skeletonAvatar)} />
-                    <div className={cn(common.skeletonLine, themed.skeletonLine)} style={{ width: '60%' }} />
-                    <div className={cn(common.skeletonLine, themed.skeletonLine)} style={{ width: '80%' }} />
+                    <div className={cn(common.skeletonLine, common.skeletonShort, themed.skeletonLine)} />
+                    <div className={cn(common.skeletonLine, common.skeletonLong, themed.skeletonLine)} />
                     <div className={common.skeletonTags}>{[...Array(3)].map((_, j) => <div key={j} className={cn(common.skeletonTag, themed.skeletonTag)} />)}</div>
                   </div>
                 ))}

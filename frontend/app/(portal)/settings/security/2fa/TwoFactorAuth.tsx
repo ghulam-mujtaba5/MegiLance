@@ -310,7 +310,7 @@ const TwoFactorAuth: React.FC = () => {
         onClose={() => setShowDisableModal(false)}
         description="This will make your account less secure. Are you sure you want to disable 2FA?"
         footer={
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+          <div className={commonStyles.modalActions}>
             <Button variant="secondary" onClick={() => setShowDisableModal(false)}>Cancel</Button>
             <Button variant="danger" onClick={handleDisable2FA}>Disable 2FA</Button>
           </div>

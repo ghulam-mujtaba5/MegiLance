@@ -1,3 +1,4 @@
+# @AI-HINT: Database seeding script - populates demo/development data for users, projects, skills
 import json
 from sqlalchemy.orm import Session
 from app.db.session import engine

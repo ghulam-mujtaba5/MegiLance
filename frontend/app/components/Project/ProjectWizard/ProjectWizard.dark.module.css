@@ -92,3 +92,7 @@
   border-top-color: #1e293b;
   background-color: #0f172a;
 }
+
+.errorMessage {
+  color: #ff6b6b;
+}

@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Dispute API - creation, update, and response models
 """Dispute schemas for MegiLance platform"""
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional

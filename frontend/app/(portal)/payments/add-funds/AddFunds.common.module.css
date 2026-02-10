@@ -1,0 +1,7 @@
+/* @AI-HINT: Add Funds page layout */
+
+.pageContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+}

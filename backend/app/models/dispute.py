@@ -1,3 +1,4 @@
+# @AI-HINT: Dispute model for contract disagreements with admin arbitration workflow
 """Dispute models for MegiLance platform"""
 from sqlalchemy import String, Integer, Text, DateTime, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship

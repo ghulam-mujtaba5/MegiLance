@@ -49,7 +49,7 @@ const withPWA = withPWAInit({
       },
     },
     {
-      urlPattern: /\/backend\/api\/.*$/i,
+      urlPattern: /\/api\/.*$/i,
       handler: 'NetworkFirst',
       options: {
         cacheName: 'api-cache',

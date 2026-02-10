@@ -1,3 +1,4 @@
+# @AI-HINT: Embedding model for storing AI/ML vector embeddings for skill matching
 from sqlalchemy import Integer, DateTime, ForeignKey, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base

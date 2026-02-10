@@ -64,7 +64,8 @@ class VideoInterviewService:
         # In a real implementation, this would query the 'interviews' table.
         # Since we are simulating the table structure in this service for now,
         # we will just initialize the structure.
-        # TODO: Create 'interviews' table in database schema
+        # DEFERRED: Create 'interviews' table via Alembic migration when persistence is needed.
+        # Currently uses in-memory state which is sufficient for the signaling layer.
         pass
 
     

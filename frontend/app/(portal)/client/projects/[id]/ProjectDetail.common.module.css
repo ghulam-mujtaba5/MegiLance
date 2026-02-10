@@ -16,6 +16,17 @@
 .actions { display: flex; gap: var(--spacing-2); }
 .button { padding: 10px 14px; border-radius: var(--border-radius-md); border: 1px solid transparent; cursor: pointer; font-weight: var(--font-weight-medium); }
 
+.sectionSpacing {
+  margin-top: 2rem;
+}
+
+.actionRow {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
 .isNotVisible { opacity: 0; transform: translateY(16px); }
 .isVisible { opacity: 1; transform: translateY(0); transition: opacity .6s ease-out, transform .6s ease-out; }
 

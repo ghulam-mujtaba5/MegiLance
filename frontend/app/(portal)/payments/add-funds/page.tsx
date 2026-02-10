@@ -1,6 +1,7 @@
 // @AI-HINT: Add funds page - route for adding money to MegiLance wallet
 import { Metadata } from 'next';
 import PaymentWizard from '@/src/components/wizards/PaymentWizard';
+import commonStyles from './AddFunds.common.module.css';
 
 export const metadata: Metadata = {
   title: 'Add Funds - MegiLance',
@@ -12,7 +13,7 @@ export default function AddFundsPage() {
   const userId = 'current-user-id'; // Replace with actual auth
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
+    <div className={commonStyles.pageContainer}>
       <PaymentWizard 
         flowType="addFunds"
         userId={userId}

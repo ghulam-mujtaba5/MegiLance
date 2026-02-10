@@ -281,7 +281,7 @@ const AnalyticsDashboard: React.FC = () => {
           <div className={styles.chartCard}>
             <h2 className={styles.chartTitle}>Registration Trends (30 Days)</h2>
             {registrationData && (
-              <div style={{ height: '300px' }}>
+              <div className={commonStyles.chartContainer}>
                 <Line data={registrationData} options={chartOptions} />
               </div>
             )}
@@ -290,7 +290,7 @@ const AnalyticsDashboard: React.FC = () => {
           <div className={styles.chartCard}>
             <h2 className={styles.chartTitle}>Revenue Trends (30 Days)</h2>
             {revenueData && (
-              <div style={{ height: '300px' }}>
+              <div className={commonStyles.chartContainer}>
                 <Bar data={revenueData} options={chartOptions} />
               </div>
             )}
@@ -299,7 +299,7 @@ const AnalyticsDashboard: React.FC = () => {
           <div className={styles.chartCard}>
             <h2 className={styles.chartTitle}>User Distribution</h2>
             {userDistribution && (
-              <div style={{ height: '300px' }}>
+              <div className={commonStyles.chartContainer}>
                 <Doughnut data={userDistribution} options={doughnutOptions} />
               </div>
             )}

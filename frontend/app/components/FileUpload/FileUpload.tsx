@@ -257,7 +257,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             multiple={multiple}
             required={required}
             disabled={disabled}
-            style={{ display: 'none' }}
+            className={commonStyles.hiddenInput}
             aria-label={`Upload ${uploadType} file`}
           />
           

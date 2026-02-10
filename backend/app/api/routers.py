@@ -1,3 +1,4 @@
+# @AI-HINT: Central router registry - aggregates all v1 API routers into master router
 from fastapi import APIRouter
 from .v1 import (
     health, users, projects, proposals, contracts, portfolio, payments, 
@@ -15,16 +16,15 @@ from .v1 import (
     time_entries, invoices, escrow, categories, favorites, tags, support_tickets, refunds, search,
     websocket, uploads, portal_endpoints, analytics, job_alerts, ai_services, fraud_detection, stripe, chatbot,
     # New enterprise features
-    user_feedback, custom_branding, career_development,
-    communication_center, metrics_dashboard, data_analytics_export,
+    user_feedback, data_analytics_export,
     availability_calendar, review_responses,
-    search_analytics, rate_cards, proposal_templates,
-    notes_tags, custom_statuses, skill_taxonomy, search_advanced, realtime_notifications,
+    rate_cards, proposal_templates,
+    notes_tags, custom_statuses, search_advanced, realtime_notifications,
     ai_matching,
     # Version 2.0 Advanced Features
     security, video_communication,
     # Now enabled - all modules working
-    multicurrency, ai_advanced, admin_fraud_alerts, admin_analytics,
+    multicurrency, ai_advanced, admin_fraud_alerts,
     # AI Writing Assistant
     ai_writing,
     # Billion Dollar Upgrade Features
@@ -261,20 +261,7 @@ api_router.include_router(workflow_automation.router, tags=["workflows"])
 # User Feedback - NPS surveys and feature requests
 api_router.include_router(user_feedback.router, tags=["user-feedback"])
 
-# Custom Branding - White-label support
-api_router.include_router(custom_branding.router, tags=["branding"])
 
-# Audit Trail - Comprehensive activity logging
-# (consolidated into /audit above)
-
-# Career Development - Skill growth and career paths
-api_router.include_router(career_development.router, tags=["career"])
-
-# Communication Center - Multi-channel messaging
-api_router.include_router(communication_center.router, tags=["communications"])
-
-# Metrics Dashboard - Real-time business metrics
-api_router.include_router(metrics_dashboard.router, tags=["metrics"])
 
 # Data Analytics Export - BI and reporting exports
 api_router.include_router(data_analytics_export.router, tags=["data-export"])
@@ -284,9 +271,6 @@ api_router.include_router(availability_calendar.router, tags=["availability"])
 
 # Review Responses - Business owner replies
 api_router.include_router(review_responses.router, tags=["review-responses"])
-
-# Search Analytics - Search insights and optimization
-api_router.include_router(search_analytics.router, tags=["search-analytics"])
 
 # Rate Cards - Freelancer pricing structures
 api_router.include_router(rate_cards.router, tags=["rate-cards"])
@@ -299,9 +283,6 @@ api_router.include_router(notes_tags.router, tags=["notes-tags"])
 
 # Custom Statuses - Workflow customization
 api_router.include_router(custom_statuses.router, tags=["custom-statuses"])
-
-# Skill Taxonomy - Hierarchical skill management
-api_router.include_router(skill_taxonomy.router, tags=["skill-taxonomy"])
 
 # ========================================
 # VERSION 2.0 ADVANCED FEATURES
@@ -321,9 +302,6 @@ api_router.include_router(ai_advanced.router, prefix="/ai-advanced", tags=["ai-a
 
 # Admin Fraud Alerts - Real-time fraud monitoring
 api_router.include_router(admin_fraud_alerts.router, prefix="/admin/fraud-alerts", tags=["admin-fraud"])
-
-# Admin Analytics - Dashboard and insights
-api_router.include_router(admin_analytics.router, prefix="/admin", tags=["admin-analytics"])
 
 # ========================================
 # BILLION DOLLAR UPGRADE FEATURES

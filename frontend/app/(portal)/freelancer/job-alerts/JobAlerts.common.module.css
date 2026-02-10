@@ -167,6 +167,13 @@
   gap: var(--space-2);
 }
 
+.actionRow {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
 .deleteButton {
   opacity: 0.7;
   transition: opacity 0.2s;

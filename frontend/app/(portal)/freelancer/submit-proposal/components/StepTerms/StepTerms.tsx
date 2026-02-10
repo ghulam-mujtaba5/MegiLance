@@ -158,7 +158,7 @@ const StepTerms: React.FC<StepTermsProps> = ({ data, updateData, errors }) => {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    style={{ overflow: 'hidden' }}
+                    className={common.overflowHidden}
                   >
                     <ul className={cn(common.termsList, themed.termsList)}>
                       {section.items.map((item, index) => {

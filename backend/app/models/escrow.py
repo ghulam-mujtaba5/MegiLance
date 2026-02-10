@@ -1,3 +1,4 @@
+# @AI-HINT: Escrow model for secure payment holding between client and freelancer
 """
 Escrow model for secure payment holding
 """

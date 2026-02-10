@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import StatusIndicator, { FeatureStatus } from '@/app/components/StatusIndicator/StatusIndicator';
 import styles from './SidebarNav.common.module.css';
 import lightStyles from './SidebarNav.light.module.css';
 import darkStyles from './SidebarNav.dark.module.css';
@@ -99,7 +98,6 @@ export interface NavItem {
   icon: React.ReactNode | string;
   badge?: string | number;
   submenu?: NavItem[];
-  status?: FeatureStatus;
   section?: string;
 }
 
@@ -132,7 +130,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
       icon: item.icon && iconMap[item.icon] ? iconMap[item.icon] : <HelpCircle size={18} />,
       badge: item.badge,
       submenu: item.submenu ? mapConfigItems(item.submenu) : undefined,
-      status: 'complete', // Default status
       section: item.section,
     }));
   };
@@ -171,11 +168,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
 
   return (
     <aside className={sidebarClasses}>
-      <div className={styles.sidebarNavHeader}>
-        <div className={styles.sidebarNavLogo}>
-          {isCollapsed ? 'M' : 'MegiLance'}
-        </div>
-      </div>
       <nav className={styles.sidebarNavNav}>
         <ul className={styles.sidebarNavList}>
           {computedNavItems.map((item) => {
@@ -190,7 +182,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                   </li>
                 )}
                 {item.section && isCollapsed && (
-                  <li className={styles.sidebarNavSectionDivider} aria-hidden="true" />
+                  <li className={cn(styles.sidebarNavSectionDivider, themeStyles.sidebarNavSectionDivider)} aria-hidden="true" />
                 )}
                 <li className={styles.sidebarNavItem}>
                   <Link
@@ -202,7 +194,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                       isActive && themeStyles.navLinkActive
                     )}
                     aria-current={isActive ? 'page' : undefined}
-                    title={item.label}
+                    title={isCollapsed ? undefined : item.label}
                     data-testid={`sidebar-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     onClick={(e) => {
                       if (item.submenu) {
@@ -217,9 +209,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                     {!isCollapsed && (
                       <>
                         <span className={styles.sidebarNavLabel}>{item.label}</span>
-                        {item.status && (
-                          <StatusIndicator status={item.status} className="ml-2 scale-75 origin-left" />
-                        )}
                         {item.badge && (
                           <span className={cn(styles.badge, themeStyles.badge)}>{item.badge}</span>
                         )}
@@ -231,6 +220,12 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                       </>
                     )}
                   </Link>
+                  {/* Tooltip for collapsed state */}
+                  {isCollapsed && (
+                    <span className={cn(styles.tooltip, themeStyles.tooltip)} role="tooltip">
+                      {item.label}
+                    </span>
+                  )}
                 </li>
                 {item.submenu && !isCollapsed && isSubmenuOpen && (
                   <ul className={cn(styles.sidebarNavList, styles.sidebarNavListNested)}>
@@ -245,7 +240,8 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                               themeStyles.navLinkInactive,
                               isSubActive && styles.sidebarNavLinkActive,
                               isSubActive && themeStyles.navLinkActive,
-                              styles.sidebarNavSubLink
+                              styles.sidebarNavSubLink,
+                              themeStyles.sidebarNavSubLink
                             )}
                             aria-current={isSubActive ? 'page' : undefined}
                             title={subItem.label}
@@ -254,9 +250,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                               {subItem.icon}
                             </span>
                             <span className={styles.sidebarNavLabel}>{subItem.label}</span>
-                            {subItem.status && (
-                              <StatusIndicator status={subItem.status} className="ml-1 scale-75 origin-left" />
-                            )}
                           </Link>
                         </li>
                       );
@@ -268,10 +261,6 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
           })}
         </ul>
       </nav>
-      <div className={styles.sidebarNavFooter}>
-        {/* Placeholder for future UserAvatar or ProfileMenu component */}
-
-      </div>
     </aside>
   );
 };

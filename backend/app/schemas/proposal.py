@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Proposal API - bid creation, update, and response models
 from datetime import datetime
 from typing import Optional
 

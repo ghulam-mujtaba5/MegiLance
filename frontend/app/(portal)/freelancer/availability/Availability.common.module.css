@@ -335,6 +335,26 @@
   gap: 1rem;
 }
 
+.confirmText {
+  margin: 0.5rem 0 1.5rem;
+  line-height: 1.6;
+}
+
+.successToast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  background: #27ae60;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.875rem;
+  z-index: 2000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.3s ease;
+}
+
 .modalActions {
   display: flex;
   justify-content: flex-end;

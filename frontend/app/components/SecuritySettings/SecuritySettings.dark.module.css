@@ -70,3 +70,13 @@
   background-color: #713f12;
   color: #fde047;
 }
+
+.errorMessage {
+  background-color: #3b1012;
+  color: #f87171;
+}
+
+.successMessage {
+  background-color: #052e16;
+  color: #4ade80;
+}

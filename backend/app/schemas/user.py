@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for User API - registration, profile update, and response models
 from datetime import datetime
 from typing import Optional, List
 

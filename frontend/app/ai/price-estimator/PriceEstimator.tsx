@@ -384,7 +384,7 @@ const PriceEstimator: React.FC = () => {
                           {step.completed ? (
                             <CheckCircle2 className={cn(commonStyles.loadingStepCheck, themeStyles.loadingStepCheck)} />
                           ) : (
-                            <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid currentColor', opacity: 0.5 }} />
+                            <div className={commonStyles.miniSpinner} />
                           )}
                           <span>{step.label}</span>
                         </div>

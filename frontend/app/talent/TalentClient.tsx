@@ -109,7 +109,7 @@ const TalentDirectoryPage = () => {
         </div>
       </header>
       {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
+        <div className={commonStyles.loadingCenter}>
           <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
         </div>
       ) : (

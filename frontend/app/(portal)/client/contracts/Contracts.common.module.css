@@ -1,5 +1,9 @@
 /* @AI-HINT: Common layout/structural styles for the Client Contracts List page */
 
+.labelBold {
+  font-weight: 500;
+}
+
 .page {
   padding: 1.5rem 2rem 2rem;
   max-width: 1280px;

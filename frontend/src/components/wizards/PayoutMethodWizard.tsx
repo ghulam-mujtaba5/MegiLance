@@ -431,7 +431,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
               onChange={(e) => setMethodData({ ...methodData, stripeAccountId: e.target.value })}
               placeholder="acct_XXXXXXXXXXXX"
             />
-            <small>Don&apos;t have a Stripe account? <a href="https://dashboard.stripe.com/register" target="_blank" rel="noopener noreferrer" style={{ color: '#4573df' }}>Create one here</a></small>
+            <small>Don&apos;t have a Stripe account? <a href="https://dashboard.stripe.com/register" target="_blank" rel="noopener noreferrer" className={themeStyles.stripeLink}>Create one here</a></small>
           </div>
         </>
       )}
@@ -508,7 +508,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
                   const file = e.target.files?.[0] || null;
                   setMethodData({ ...methodData, verificationDocument: file });
                 }}
-                style={{ display: 'none' }}
+                className={commonStyles.hiddenInput}
               />
               <label htmlFor="verificationDoc" className={commonStyles.uploadButton}>
                 <FileUp /> Upload Document
@@ -839,9 +839,9 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
         title="Cancel Confirmation"
         onClose={() => setShowCancelModal(false)}
         footer={
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-            <button onClick={() => setShowCancelModal(false)} style={{ padding: '8px 16px', borderRadius: 6, border: '1px solid #ccc', background: 'transparent', cursor: 'pointer' }}>No, Continue</button>
-            <button onClick={() => { setShowCancelModal(false); saveDraft(); router.back(); }} style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#e81123', color: '#fff', cursor: 'pointer' }}>Yes, Cancel</button>
+          <div className={commonStyles.modalButtonGroup}>
+            <button onClick={() => setShowCancelModal(false)} className={commonStyles.modalBtnSecondary}>No, Continue</button>
+            <button onClick={() => { setShowCancelModal(false); saveDraft(); router.back(); }} className={commonStyles.modalBtnDanger}>Yes, Cancel</button>
           </div>
         }
       >

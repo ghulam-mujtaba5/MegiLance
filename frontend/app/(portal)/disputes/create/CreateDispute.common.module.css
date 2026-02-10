@@ -1,0 +1,12 @@
+/* @AI-HINT: Common layout styles for Create Dispute page */
+
+.loadingWrapper {
+  padding: 2rem;
+  text-align: center;
+}
+
+.pageContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}

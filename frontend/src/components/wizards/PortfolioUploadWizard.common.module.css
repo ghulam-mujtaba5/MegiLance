@@ -433,3 +433,7 @@
     grid-template-columns: 1fr;
   }
 }
+
+.hiddenInput {
+  display: none;
+}

@@ -486,7 +486,7 @@ const EscrowManagement: React.FC = () => {
         size="small"
       >
         <p>Are you sure you want to request a refund?</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+        <div className={commonStyles.modalActions}>
           <Button variant="ghost" onClick={() => { setShowRefundModal(false); setRefundEscrowId(null); }}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (refundEscrowId !== null) handleRefund(refundEscrowId); setShowRefundModal(false); setRefundEscrowId(null); }}>Request Refund</Button>
         </div>

@@ -257,6 +257,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
           placeholder="Brief summary of your issue..."
           maxLength={100}
           className={cn(commonStyles.input, themeStyles.input)}
+          aria-label="Ticket subject"
         />
         <div className={commonStyles.charCount}>{ticketData.subject.length}/100</div>
       </div>
@@ -269,6 +270,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
           placeholder="Please provide as much detail as possible:&#10;- What were you trying to do?&#10;- What happened instead?&#10;- When did this start?&#10;- Steps to reproduce (if applicable)"
           rows={8}
           className={cn(commonStyles.textarea, themeStyles.textarea)}
+          aria-label="Issue description"
         />
         <div className={commonStyles.charCount}>{ticketData.description.length} characters</div>
       </div>
@@ -297,7 +299,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
           accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.txt,.log"
           onChange={(e) => addAttachment(e.target.files)}
           id="ticket-attachments"
-          style={{ display: 'none' }}
+          className={commonStyles.hiddenInput}
         />
         <label htmlFor="ticket-attachments" className={cn(commonStyles.uploadButton, themeStyles.uploadButton)}>
           <FileUp />
@@ -329,6 +331,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
                 onChange={(e) => updateAttachment(attachment.id, e.target.value)}
                 placeholder="Brief description of this file (optional)..."
                 className={cn(commonStyles.input, themeStyles.input)}
+                aria-label="Attachment description"
               />
             </div>
           ))}
@@ -369,6 +372,7 @@ export default function SupportTicketWizard({ userId, userEmail }: SupportTicket
             onChange={(e) => setTicketData({ ...ticketData, contactDetails: e.target.value })}
             placeholder="+1 (555) 123-4567"
             className={cn(commonStyles.input, themeStyles.input)}
+            aria-label="Phone number"
           />
         </div>
       )}

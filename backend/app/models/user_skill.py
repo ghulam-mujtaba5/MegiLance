@@ -1,3 +1,4 @@
+# @AI-HINT: UserSkill association model linking users to skills with endorsement counts
 """User skills model for MegiLance platform"""
 from sqlalchemy import Integer, ForeignKey, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship

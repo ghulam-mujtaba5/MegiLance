@@ -220,3 +220,7 @@
     font-size: 3rem;
   }
 }
+
+.perspective {
+  perspective: 1000px;
+}

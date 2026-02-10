@@ -459,14 +459,14 @@ export default function WalletClient() {
               {activeTab === 'transactions' && (
                 <div className={commonStyles.transactionsContent}>
                   <div className={commonStyles.filterBar}>
-                    <select className={cn(commonStyles.filterSelect, themeStyles.filterSelect)}>
+                    <select className={cn(commonStyles.filterSelect, themeStyles.filterSelect)} aria-label="Filter by transaction type">
                       <option value="all">All Types</option>
                       <option value="earning">Earnings</option>
                       <option value="withdrawal">Withdrawals</option>
                       <option value="deposit">Deposits</option>
                       <option value="payment">Payments</option>
                     </select>
-                    <select className={cn(commonStyles.filterSelect, themeStyles.filterSelect)}>
+                    <select className={cn(commonStyles.filterSelect, themeStyles.filterSelect)} aria-label="Filter by transaction status">
                       <option value="all">All Status</option>
                       <option value="completed">Completed</option>
                       <option value="pending">Pending</option>
@@ -507,10 +507,11 @@ export default function WalletClient() {
                   </p>
                   
                   <div className={commonStyles.formGroup}>
-                    <label className={cn(commonStyles.formLabel, themeStyles.formLabel)}>Amount</label>
+                    <label htmlFor="withdraw-amount" className={cn(commonStyles.formLabel, themeStyles.formLabel)}>Amount</label>
                     <div className={commonStyles.inputWrapper}>
                       <span className={commonStyles.currencyPrefix}>$</span>
                       <input
+                        id="withdraw-amount"
                         type="number"
                         value={withdrawAmount}
                         onChange={(e) => setWithdrawAmount(e.target.value)}
@@ -590,10 +591,11 @@ export default function WalletClient() {
                   </p>
                   
                   <div className={commonStyles.formGroup}>
-                    <label className={cn(commonStyles.formLabel, themeStyles.formLabel)}>Amount</label>
+                    <label htmlFor="deposit-amount" className={cn(commonStyles.formLabel, themeStyles.formLabel)}>Amount</label>
                     <div className={commonStyles.inputWrapper}>
                       <span className={commonStyles.currencyPrefix}>$</span>
                       <input
+                        id="deposit-amount"
                         type="number"
                         value={depositAmount}
                         onChange={(e) => setDepositAmount(e.target.value)}
@@ -673,7 +675,7 @@ export default function WalletClient() {
                         </p>
                       </div>
                       <label className={commonStyles.toggle}>
-                        <input type="checkbox" />
+                        <input type="checkbox" aria-label="Enable automatic withdrawals" />
                         <span className={commonStyles.toggleSlider}></span>
                       </label>
                     </div>

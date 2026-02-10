@@ -1,9 +1,4 @@
-/* @AI-HINT: Premium 2025 Portal Dashboard - Dark theme with glassmorphism gradients */
-
-.themeWrapper { 
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #0f172a 70%, #1e293b 100%);
-  color: var(--text-primary, #e2e8f0); 
-}
+/* @AI-HINT: Portal Dashboard redirect — dark theme */
 
 .redirectSpinner {
   border-color: #334155;
@@ -12,13 +7,4 @@
 
 .redirectText {
   color: #94a3b8;
-}
-
-/* Override page mesh for dark theme - more subtle glows */
-.page::before {
-  background: 
-    radial-gradient(ellipse at 20% 0%, rgba(69, 115, 223, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(155, 89, 182, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 40% 80%, rgba(39, 174, 96, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 90% 90%, rgba(255, 152, 0, 0.06) 0%, transparent 50%);
 }

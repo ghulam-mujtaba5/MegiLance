@@ -731,6 +731,7 @@ const Explore: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={cn(common.searchInput, themed.searchInput)}
+                aria-label="Search pages"
               />
             </div>
             

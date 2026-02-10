@@ -10,6 +10,8 @@ import Badge from '@/app/components/Badge/Badge';
 import Modal from '@/app/components/Modal/Modal';
 import Loader from '@/app/components/Loader/Loader';
 
+import commonStyles from './AdminBlog.common.module.css';
+
 export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,8 +111,8 @@ export default function AdminBlogPage() {
       {/* Delete Confirmation Modal */}
       {deleteTargetId && (
         <Modal isOpen onClose={() => setDeleteTargetId(null)} title="Delete Post">
-          <p style={{ marginBottom: '1.5rem', lineHeight: 1.6 }}>Are you sure you want to delete this post? This action cannot be undone.</p>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+          <p className={commonStyles.confirmText}>Are you sure you want to delete this post? This action cannot be undone.</p>
+          <div className={commonStyles.modalActions}>
             <Button variant="secondary" size="sm" onClick={() => setDeleteTargetId(null)}>Cancel</Button>
             <Button variant="danger" size="sm" onClick={() => handleDelete(deleteTargetId)}>Delete</Button>
           </div>

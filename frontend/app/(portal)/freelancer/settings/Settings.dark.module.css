@@ -1,9 +1,5 @@
 /* @AI-HINT: Dark theme styles for the Settings pages. */
 
-.settingsContainer {
-  background-color: var(--bg-primary-dark);
-}
-
 .header {
   border-bottom: 1px solid var(--border-dark);
 }

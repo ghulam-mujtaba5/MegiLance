@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Milestone API - creation, submission, and approval models
 """Milestone schemas for MegiLance platform"""
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional

@@ -553,7 +553,7 @@ export default function SavedSearchesPage() {
       {/* Delete Confirmation Modal */}
       <Modal isOpen={deleteTarget !== null} title="Delete Saved Search" onClose={() => setDeleteTarget(null)}>
         <p>Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? This action cannot be undone.</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={commonStyles.actionRow}>
           <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (deleteTarget) deleteSearch(deleteTarget); }}>Delete</Button>
         </div>

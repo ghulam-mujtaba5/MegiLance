@@ -1,0 +1,26 @@
+/* @AI-HINT: Multi-Currency page dark theme colors */
+
+.card {
+  border-color: #334155;
+  background-color: #1e293b;
+}
+
+.select {
+  border-color: #334155;
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+.currencyRow {
+  background-color: #0f172a;
+}
+
+.badgeEnabled {
+  background-color: #166534;
+  color: #dcfce7;
+}
+
+.badgeDisabled {
+  background-color: #854d0e;
+  color: #fef9c3;
+}

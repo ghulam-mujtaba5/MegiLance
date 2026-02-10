@@ -1,3 +1,4 @@
+# @AI-HINT: Support ticket model for customer service with priority and assignment tracking
 """
 Support ticket model for customer service
 """

@@ -235,8 +235,9 @@ export default function DataExportPage() {
                   <h3>Export Configuration</h3>
                   
                   <div className={commonStyles.formGroup}>
-                    <label>Export Name</label>
+                    <label htmlFor="export-name">Export Name</label>
                     <Input
+                      id="export-name"
                       value={exportName}
                       onChange={(e) => setExportName(e.target.value)}
                       placeholder="e.g., Monthly User Report"
@@ -247,6 +248,7 @@ export default function DataExportPage() {
                     <div className={commonStyles.formGroup}>
                       <label>Data Type</label>
                       <Select
+                        aria-label="Data type"
                         value={dataType}
                         onChange={(e) => {
                           setDataType(e.target.value as DataType);
@@ -263,6 +265,7 @@ export default function DataExportPage() {
                     <div className={commonStyles.formGroup}>
                       <label>Format</label>
                       <Select
+                        aria-label="Export format"
                         value={format}
                         onChange={(e) => setFormat(e.target.value as any)}
                         options={[
@@ -277,16 +280,18 @@ export default function DataExportPage() {
 
                   <div className={commonStyles.formRow}>
                     <div className={commonStyles.formGroup}>
-                      <label>Date Range (Start)</label>
+                      <label htmlFor="export-date-start">Date Range (Start)</label>
                       <Input
+                        id="export-date-start"
                         type="date"
                         value={dateRange.start}
                         onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
                       />
                     </div>
                     <div className={commonStyles.formGroup}>
-                      <label>Date Range (End)</label>
+                      <label htmlFor="export-date-end">Date Range (End)</label>
                       <Input
+                        id="export-date-end"
                         type="date"
                         value={dateRange.end}
                         onChange={(e) => setDateRange({...dateRange, end: e.target.value})}

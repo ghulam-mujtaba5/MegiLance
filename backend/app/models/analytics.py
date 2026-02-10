@@ -1,3 +1,4 @@
+# @AI-HINT: Analytics event model for tracking platform usage metrics and user behavior
 from sqlalchemy import String, Integer, DateTime, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.base import Base

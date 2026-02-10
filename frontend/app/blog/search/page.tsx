@@ -98,7 +98,7 @@ export default function BlogSearchPage() {
 
           <div className={commonStyles.grid}>
             {loading ? (
-              <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center', padding: '3rem' }}>
+              <div className={commonStyles.fullWidthCenter}>
                 <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
               </div>
             ) : posts.length > 0 ? (

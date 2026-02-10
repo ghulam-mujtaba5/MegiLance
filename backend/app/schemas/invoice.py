@@ -34,7 +34,7 @@ class InvoiceUpdate(BaseModel):
 
 class InvoicePayment(BaseModel):
     """Schema for marking invoice as paid"""
-    payment_id: int = Field(..., description="Payment ID for this invoice")
+    payment_id: Optional[int] = Field(None, description="Payment ID for this invoice. If omitted, a manual payment record is created.")
 
 class InvoiceRead(InvoiceBase):
     """Schema for reading an invoice (response)"""

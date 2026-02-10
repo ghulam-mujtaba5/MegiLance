@@ -197,7 +197,7 @@ const StepDetails: React.FC<StepDetailsProps> = ({ data, updateData, errors }) =
         {/* Availability Section */}
         <div className={common.formGroup}>
           <Label htmlFor="availability">
-            <Clock size={16} style={{ display: 'inline', marginRight: '0.5rem' }} />
+            <Clock size={16} className={common.inlineIcon} />
             Availability
           </Label>
           <Select

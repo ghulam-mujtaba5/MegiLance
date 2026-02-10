@@ -1,3 +1,4 @@
+# @AI-HINT: Scope change request model for contract modification proposals
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base

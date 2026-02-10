@@ -350,7 +350,7 @@ export default function ApiKeysPage() {
                           <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
                             {newKeyData.key}
                           </code>
-                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(newKeyData.key)}>
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(newKeyData.key)} aria-label="Copy API key">
                             📋
                           </Button>
                         </div>
@@ -362,7 +362,7 @@ export default function ApiKeysPage() {
                           <code className={cn(commonStyles.fullKey, themeStyles.fullKey)}>
                             {newKeyData.secret}
                           </code>
-                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(newKeyData.secret)}>
+                          <Button variant="ghost" size="sm" onClick={() => copyToClipboard(newKeyData.secret)} aria-label="Copy secret">
                             📋
                           </Button>
                         </div>
@@ -383,14 +383,16 @@ export default function ApiKeysPage() {
                     <button
                       className={cn(commonStyles.closeButton, themeStyles.closeButton)}
                       onClick={closeCreateModal}
+                      aria-label="Close"
                     >
                       ✕
                     </button>
                   </div>
                   <div className={commonStyles.modalBody}>
                     <div className={commonStyles.formGroup}>
-                      <label>Key Name</label>
+                      <label htmlFor="api-key-name">Key Name</label>
                       <Input
+                        id="api-key-name"
                         value={newKey.name}
                         onChange={(e) => setNewKey({ ...newKey, name: e.target.value })}
                         placeholder="e.g., Production API"
@@ -400,6 +402,7 @@ export default function ApiKeysPage() {
                     <div className={commonStyles.formGroup}>
                       <label>Expiration</label>
                       <Select
+                        aria-label="Key expiration"
                         value={newKey.expires_in_days}
                         onChange={(e) => setNewKey({ ...newKey, expires_in_days: Number(e.target.value) })}
                         options={[

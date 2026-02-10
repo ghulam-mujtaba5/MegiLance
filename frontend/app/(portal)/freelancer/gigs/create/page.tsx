@@ -2,6 +2,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import GigCreate from './GigCreate';
+import styles from './GigCreatePage.common.module.css';
 
 export const metadata: Metadata = {
   title: 'Create a Gig | MegiLance',
@@ -14,29 +15,11 @@ export const metadata: Metadata = {
 
 function GigCreateLoading() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{
-          width: 40,
-          height: 40,
-          borderRadius: '50%',
-          border: '3px solid #e5e7eb',
-          borderTopColor: '#4573df',
-          animation: 'spin 1s linear infinite',
-          margin: '0 auto 16px',
-        }} />
+    <div className={styles.loadingWrapper}>
+      <div className={styles.loadingCenter}>
+        <div className={styles.loadingSpinner} />
         <p>Loading gig creator...</p>
       </div>
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

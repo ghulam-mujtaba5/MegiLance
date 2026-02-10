@@ -19,3 +19,23 @@
 .itemDesc {
   color: #64748b;
 }
+
+.iconRocket {
+  color: #a855f7;
+}
+
+.iconLightbulb {
+  color: #eab308;
+}
+
+.loadingState {
+  color: #6b7280;
+}
+
+.addButton {
+  color: #2563eb;
+}
+
+.addButton:hover {
+  background-color: #eff6ff;
+}

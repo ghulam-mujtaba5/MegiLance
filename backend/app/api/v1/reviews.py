@@ -11,13 +11,12 @@ Handles:
 - Rating aggregation
 """
 import json
-import re
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from datetime import datetime, timezone
 
-from app.db.turso_http import execute_query, parse_rows
 from app.core.security import get_current_user_from_token
+from app.services import reviews_service
 
 router = APIRouter()
 
@@ -125,15 +124,9 @@ async def create_review(
         )
     
     # Get contract
-    result = execute_query(
-        "SELECT id, client_id, freelancer_id, status FROM contracts WHERE id = ?",
-        [contract_id]
-    )
-    if not result or not result.get("rows"):
+    contract = reviews_service.get_contract_by_id(contract_id)
+    if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
-    
-    rows = parse_rows(result)
-    contract = rows[0]
     
     # Verify user is part of the contract
     if user_id not in [contract.get("client_id"), contract.get("freelancer_id")]:
@@ -149,11 +142,7 @@ async def create_review(
         raise HTTPException(status_code=400, detail="Can only review the other party in the contract")
     
     # Check for existing review
-    result = execute_query(
-        "SELECT id FROM reviews WHERE contract_id = ? AND reviewer_id = ? AND reviewee_id = ?",
-        [contract_id, user_id, reviewed_user_id]
-    )
-    if result and result.get("rows"):
+    if reviews_service.has_existing_review(contract_id, user_id, reviewed_user_id):
         raise HTTPException(status_code=400, detail="You have already reviewed this user for this contract")
     
     now = datetime.now(timezone.utc).isoformat()
@@ -166,46 +155,31 @@ async def create_review(
         "deadline": review_data.get("deadline_rating")
     }
     
+    rating = review_data.get("rating", 5.0)
+    is_public = review_data.get("is_public", True)
+    review_text = review_data.get("review_text")
+    
     # Create review
-    result = execute_query(
-        """INSERT INTO reviews (contract_id, reviewer_id, reviewee_id, rating, 
-                                rating_breakdown, comment, is_public, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        [
-            contract_id,
-            user_id,
-            reviewed_user_id,
-            review_data.get("rating", 5.0),
-            json.dumps(rating_breakdown),
-            review_data.get("review_text"),
-            1 if review_data.get("is_public", True) else 0,
-            now,
-            now
-        ]
+    new_id = reviews_service.create_review(
+        contract_id, user_id, reviewed_user_id, rating,
+        rating_breakdown, review_text, is_public, now
     )
     
-    if not result:
+    if not new_id:
         raise HTTPException(status_code=500, detail="Failed to create review")
-    
-    id_result = execute_query("SELECT last_insert_rowid() as id", [])
-    new_id = 0
-    if id_result and id_result.get("rows"):
-        id_rows = parse_rows(id_result)
-        if id_rows:
-            new_id = id_rows[0].get("id", 0)
     
     return {
         "id": new_id,
         "contract_id": contract_id,
         "reviewer_id": user_id,
         "reviewed_user_id": reviewed_user_id,
-        "rating": review_data.get("rating", 5.0),
+        "rating": rating,
         "communication_rating": review_data.get("communication_rating"),
         "quality_rating": review_data.get("quality_rating"),
         "professionalism_rating": review_data.get("professionalism_rating"),
         "deadline_rating": review_data.get("deadline_rating"),
-        "review_text": review_data.get("review_text"),
-        "is_public": review_data.get("is_public", True),
+        "review_text": review_text,
+        "is_public": is_public,
         "created_at": now,
         "updated_at": now
     }
@@ -264,28 +238,7 @@ async def list_reviews(
     where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
     params.extend([limit, skip])
     
-    result = execute_query(
-        f"""SELECT r.id, r.contract_id, r.reviewer_id, r.reviewee_id, r.rating,
-                   r.rating_breakdown,
-                   r.comment, r.is_public, r.created_at, r.updated_at,
-                   p.title as project_title,
-                   u.full_name as reviewed_user_name,
-                   reviewer.full_name as reviewer_name
-            FROM reviews r
-            LEFT JOIN contracts c ON r.contract_id = c.id
-            LEFT JOIN projects p ON c.project_id = p.id
-            LEFT JOIN users u ON r.reviewee_id = u.id
-            LEFT JOIN users reviewer ON r.reviewer_id = reviewer.id
-            WHERE {where_sql}
-            ORDER BY r.created_at DESC
-            LIMIT ? OFFSET ?""",
-        params
-    )
-    
-    if not result:
-        return []
-    
-    rows = parse_rows(result)
+    rows = reviews_service.query_reviews(where_sql, params)
     output = []
     for row in rows:
         # Parse breakdown
@@ -325,46 +278,14 @@ async def get_review_stats(user_id: int):
     Only includes public reviews in stats.
     """
     # Check user exists
-    result = execute_query("SELECT id FROM users WHERE id = ?", [user_id])
-    if not result or not result.get("rows"):
+    if not reviews_service.user_exists(user_id):
         raise HTTPException(status_code=404, detail="User not found")
     
-    # Get review stats (only public reviews)
-    result = execute_query(
-        """SELECT COUNT(*) as total_reviews,
-                  AVG(rating) as average_rating
-           FROM reviews
-           WHERE reviewee_id = ? AND is_public = 1""",
-        [user_id]
-    )
-    
-    stats = {"total_reviews": 0, "average_rating": 0.0}
-    if result and result.get("rows"):
-        rows = parse_rows(result)
-        if rows:
-            stats = rows[0]
-    
-    # Get rating distribution
-    rating_distribution = {}
-    for i in range(1, 6):
-        result = execute_query(
-            """SELECT COUNT(*) as count FROM reviews
-               WHERE reviewee_id = ? AND is_public = 1 AND rating >= ? AND rating < ?""",
-            [user_id, i, i + 1]
-        )
-        count = 0
-        if result and result.get("rows"):
-            count_rows = parse_rows(result)
-            if count_rows:
-                count = count_rows[0].get("count", 0)
-        rating_distribution[f"{i}_star"] = count
+    stats = reviews_service.get_review_aggregate_stats(user_id)
+    rating_distribution = reviews_service.get_rating_distribution(user_id)
     
     total_reviews = stats.get("total_reviews") or 0
     avg_rating = stats.get("average_rating")
-    
-    # Note: Detailed breakdown averages would require parsing JSON in SQL or fetching all rows
-    # For now, we"ll return 0 for detailed stats or implement a more complex query if needed
-    # Since Turso/SQLite JSON support might vary, we"ll keep it simple for now.
     
     return {
         "user_id": user_id,
@@ -391,19 +312,9 @@ async def get_review(
     user_id = current_user.get("user_id")
     role = current_user.get("role", "")
     
-    result = execute_query(
-        """SELECT id, contract_id, reviewer_id, reviewee_id, rating,
-                  rating_breakdown,
-                  comment, is_public, created_at, updated_at
-           FROM reviews WHERE id = ?""",
-        [review_id]
-    )
-    
-    if not result or not result.get("rows"):
+    row = reviews_service.get_review_by_id(review_id)
+    if not row:
         raise HTTPException(status_code=404, detail="Review not found")
-    
-    rows = parse_rows(result)
-    row = rows[0]
     
     # Privacy check
     if not row.get("is_public"):
@@ -447,16 +358,9 @@ async def update_review(
     """
     user_id = current_user.get("user_id")
     
-    result = execute_query(
-        "SELECT id, reviewer_id, reviewee_id, rating_breakdown FROM reviews WHERE id = ?",
-        [review_id]
-    )
-    
-    if not result or not result.get("rows"):
+    review = reviews_service.get_review_for_permission_check(review_id)
+    if not review:
         raise HTTPException(status_code=404, detail="Review not found")
-    
-    rows = parse_rows(result)
-    review = rows[0]
     
     if user_id != review.get("reviewer_id"):
         raise HTTPException(status_code=403, detail="You don't have permission to update this review")
@@ -500,10 +404,7 @@ async def update_review(
         params.append(datetime.now(timezone.utc).isoformat())
         params.append(review_id)
         
-        execute_query(
-            f"UPDATE reviews SET {', '.join(updates)} WHERE id = ?",
-            params
-        )
+        reviews_service.update_review_fields(review_id, ', '.join(updates), params)
     
     # Fetch updated review (reuse get logic)
     # ... (simplified for brevity, just return what we have)
@@ -523,19 +424,12 @@ async def delete_review(
     user_id = current_user.get("user_id")
     role = current_user.get("role", "")
     
-    result = execute_query(
-        "SELECT id, reviewer_id FROM reviews WHERE id = ?",
-        [review_id]
-    )
-    
-    if not result or not result.get("rows"):
+    review = reviews_service.get_review_owner(review_id)
+    if not review:
         raise HTTPException(status_code=404, detail="Review not found")
-    
-    rows = parse_rows(result)
-    review = rows[0]
     
     # Permission check
     if role.lower() != "admin" and user_id != review.get("reviewer_id"):
         raise HTTPException(status_code=403, detail="Only the reviewer or admin can delete this review")
     
-    execute_query("DELETE FROM reviews WHERE id = ?", [review_id])
+    reviews_service.delete_review_record(review_id)

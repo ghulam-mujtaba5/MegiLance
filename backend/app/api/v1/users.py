@@ -243,22 +243,17 @@ def change_password(
     current_user: User = Depends(get_current_user)
 ):
     """Change user password"""
-    from app.core.security import verify_password, get_password_hash
-    from app.db.turso_http import execute_query
+    from app.core.security import verify_password
+    from app.services.users_service import get_user_password_hash, update_user_password
     
     # Get current hashed password
-    result = execute_query(
-        "SELECT hashed_password FROM users WHERE id = ?",
-        [current_user.id]
-    )
+    current_hash = get_user_password_hash(current_user.id)
     
-    if not result or not result.get("rows"):
+    if current_hash is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
-    current_hash = _to_str(result["rows"][0][0])
     
     # Verify current password
     if not verify_password(current_password, current_hash):
@@ -275,11 +270,7 @@ def change_password(
         )
     
     # Hash and update password
-    new_hash = get_password_hash(new_password)
-    execute_query(
-        "UPDATE users SET hashed_password = ? WHERE id = ?",
-        [new_hash, current_user.id]
-    )
+    update_user_password(current_user.id, new_password)
     
     return {"message": "Password changed successfully"}
 

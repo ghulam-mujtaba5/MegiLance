@@ -1,6 +1,4 @@
 // @AI-HINT: Portal route for main Dashboard - redirects to role-specific dashboard
-// This page should only be accessed by authenticated users and will redirect them
-// to their role-specific dashboard based on their user type.
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -15,9 +13,14 @@ import darkStyles from './Dashboard.dark.module.css';
 const PortalDashboardPage = () => {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [status, setStatus] = useState<'checking' | 'redirecting'>('checking');
 
-  const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   useEffect(() => {
     const redirect = async () => {

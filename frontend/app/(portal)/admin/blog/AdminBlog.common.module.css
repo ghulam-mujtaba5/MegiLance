@@ -1,0 +1,12 @@
+/* @AI-HINT: Common layout styles for Admin Blog management page */
+
+.confirmText {
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}

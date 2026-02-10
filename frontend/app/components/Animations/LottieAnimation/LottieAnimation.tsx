@@ -3,6 +3,7 @@
 
 import React, { Suspense, lazy, useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import commonStyles from './LottieAnimation.common.module.css';
 
 // Lazy-load lottie-react for code splitting
 const Lottie = lazy(() => import('lottie-react'));
@@ -60,7 +61,7 @@ const LottieAnimation: React.FC<LottieAnimationProps> = ({
           animationData={animationData}
           loop={keepLastFrame ? false : loop}
           autoplay={autoplay}
-          style={{ width: '100%', height: '100%' }}
+          className={commonStyles.lottieContainer}
           rendererSettings={{
             preserveAspectRatio: 'xMidYMid slice',
           }}

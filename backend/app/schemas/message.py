@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Messages API - send, receive, and conversation models
 """Message schemas for MegiLance platform"""
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Dict, Any

@@ -209,6 +209,7 @@ export default function AuditTrailPage() {
               <div className={commonStyles.filterGroup}>
                 <label>Severity</label>
                 <Select
+                  aria-label="Severity"
                   value={filters.severity}
                   onChange={e => { setFilters({ ...filters, severity: e.target.value }); setPage(1); }}
                   options={[
@@ -222,6 +223,7 @@ export default function AuditTrailPage() {
               <div className={commonStyles.filterGroup}>
                 <label>Resource Type</label>
                 <Select
+                  aria-label="Resource type"
                   value={filters.resource_type}
                   onChange={e => { setFilters({ ...filters, resource_type: e.target.value }); setPage(1); }}
                   options={[
@@ -236,24 +238,27 @@ export default function AuditTrailPage() {
                 />
               </div>
               <div className={commonStyles.filterGroup}>
-                <label>Date From</label>
+                <label htmlFor="audit-date-from">Date From</label>
                 <Input
+                  id="audit-date-from"
                   type="date"
                   value={filters.date_from}
                   onChange={e => { setFilters({ ...filters, date_from: e.target.value }); setPage(1); }}
                 />
               </div>
               <div className={commonStyles.filterGroup}>
-                <label>Date To</label>
+                <label htmlFor="audit-date-to">Date To</label>
                 <Input
+                  id="audit-date-to"
                   type="date"
                   value={filters.date_to}
                   onChange={e => { setFilters({ ...filters, date_to: e.target.value }); setPage(1); }}
                 />
               </div>
               <div className={commonStyles.filterGroup}>
-                <label>Search</label>
+                <label htmlFor="audit-search">Search</label>
                 <Input
+                  id="audit-search"
                   value={filters.search}
                   onChange={e => { setFilters({ ...filters, search: e.target.value }); setPage(1); }}
                   placeholder="Search actions, users..."

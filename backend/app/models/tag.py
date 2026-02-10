@@ -1,3 +1,4 @@
+# @AI-HINT: Tag model for project classification and search filtering
 """
 Tag model for project tagging system
 """

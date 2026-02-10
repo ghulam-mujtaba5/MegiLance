@@ -6,6 +6,9 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import Button from '@/app/components/Button/Button';
+import commonStyles from './MultiCurrency.common.module.css';
+import lightStyles from './MultiCurrency.light.module.css';
+import darkStyles from './MultiCurrency.dark.module.css';
 
 const SUPPORTED_CURRENCIES = [
   { code: 'USD', name: 'US Dollar', symbol: '$', enabled: true },
@@ -32,6 +35,9 @@ export default function MultiCurrencyPage() {
   const [currencies, setCurrencies] = useState(SUPPORTED_CURRENCIES);
   const [baseCurrency, setBaseCurrency] = useState('USD');
 
+  if (!resolvedTheme) return null;
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
+
   const toggleCurrency = (code: string) => {
     setCurrencies(prev =>
       prev.map(c => c.code === code ? { ...c, enabled: !c.enabled } : c)
@@ -40,42 +46,27 @@ export default function MultiCurrencyPage() {
 
   return (
     <PageTransition>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+      <div className={commonStyles.pageContainer}>
         <ScrollReveal>
-          <header style={{ marginBottom: '2rem' }}>
-            <h1 style={{ fontSize: '1.875rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+          <header className={commonStyles.header}>
+            <h1 className={commonStyles.title}>
               Multi-Currency Management
             </h1>
-            <p style={{ opacity: 0.8 }}>
+            <p className={commonStyles.subtitle}>
               Configure supported currencies and exchange rates for the platform
             </p>
           </header>
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <div style={{ 
-            padding: '1.5rem', 
-            borderRadius: '0.75rem', 
-            border: '1px solid', 
-            borderColor: resolvedTheme === 'dark' ? '#334155' : '#e5e7eb',
-            backgroundColor: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff',
-            marginBottom: '2rem'
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>
+          <div className={cn(commonStyles.card, themeStyles.card)}>
+            <h2 className={commonStyles.cardTitle}>
               Base Currency
             </h2>
             <select
               value={baseCurrency}
               onChange={(e) => setBaseCurrency(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                borderRadius: '0.5rem',
-                border: '1px solid',
-                borderColor: resolvedTheme === 'dark' ? '#334155' : '#d1d5db',
-                backgroundColor: resolvedTheme === 'dark' ? '#0f172a' : '#ffffff',
-                color: resolvedTheme === 'dark' ? '#f1f5f9' : '#111827',
-              }}
+              className={cn(commonStyles.select, themeStyles.select)}
             >
               {currencies.map(c => (
                 <option key={c.code} value={c.code}>
@@ -83,54 +74,36 @@ export default function MultiCurrencyPage() {
                 </option>
               ))}
             </select>
-            <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', opacity: 0.7 }}>
+            <p className={commonStyles.selectHint}>
               All amounts will be converted from this base currency
             </p>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.2}>
-          <div style={{ 
-            padding: '1.5rem', 
-            borderRadius: '0.75rem', 
-            border: '1px solid', 
-            borderColor: resolvedTheme === 'dark' ? '#334155' : '#e5e7eb',
-            backgroundColor: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff',
-            marginBottom: '2rem'
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>
+          <div className={cn(commonStyles.card, themeStyles.card)}>
+            <h2 className={commonStyles.cardTitle}>
               Supported Currencies
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div className={commonStyles.currencyList}>
               {currencies.map(currency => (
                 <div
                   key={currency.code}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '1rem',
-                    borderRadius: '0.5rem',
-                    backgroundColor: resolvedTheme === 'dark' ? '#0f172a' : '#f9fafb',
-                  }}
+                  className={cn(commonStyles.currencyRow, themeStyles.currencyRow)}
                 >
                   <div>
-                    <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>
+                    <div className={commonStyles.currencyName}>
                       {currency.symbol} {currency.name} ({currency.code})
                     </div>
-                    <div style={{ fontSize: '0.875rem', opacity: 0.7 }}>
+                    <div className={commonStyles.currencyRate}>
                       1 {baseCurrency} = {(EXCHANGE_RATES[currency.code as keyof typeof EXCHANGE_RATES] / EXCHANGE_RATES[baseCurrency as keyof typeof EXCHANGE_RATES]).toFixed(4)} {currency.code}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      borderRadius: '9999px',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      backgroundColor: currency.enabled ? '#dcfce7' : '#fef9c3',
-                      color: currency.enabled ? '#166534' : '#854d0e',
-                    }}>
+                  <div className={commonStyles.currencyActions}>
+                    <span className={cn(
+                      commonStyles.badge,
+                      currency.enabled ? themeStyles.badgeEnabled : themeStyles.badgeDisabled
+                    )}>
                       {currency.enabled ? 'Enabled' : 'Disabled'}
                     </span>
                     <Button
@@ -148,20 +121,14 @@ export default function MultiCurrencyPage() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.3}>
-          <div style={{ 
-            padding: '1.5rem', 
-            borderRadius: '0.75rem', 
-            border: '1px solid', 
-            borderColor: resolvedTheme === 'dark' ? '#334155' : '#e5e7eb',
-            backgroundColor: resolvedTheme === 'dark' ? '#1e293b' : '#ffffff',
-          }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1rem' }}>
+          <div className={cn(commonStyles.card, themeStyles.card)}>
+            <h2 className={commonStyles.cardTitle}>
               Exchange Rate Settings
             </h2>
-            <p style={{ marginBottom: '1rem', fontSize: '0.875rem', opacity: 0.7 }}>
+            <p className={commonStyles.rateDescription}>
               Exchange rates are updated automatically from market data. Manual overrides can be configured below.
             </p>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div className={commonStyles.rateActions}>
               <Button variant="outline">Configure Rate Provider</Button>
               <Button variant="outline">Manual Rate Override</Button>
               <Button variant="primary">Update Rates Now</Button>

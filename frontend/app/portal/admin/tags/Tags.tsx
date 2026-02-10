@@ -359,7 +359,7 @@ const TagsManagement: React.FC = () => {
         size="small"
       >
         <p>Are you sure you want to delete this tag?</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+        <div className={commonStyles.modalActions}>
           <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteTagId(null); }}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (deleteTagId !== null) handleDelete(deleteTagId); setShowDeleteModal(false); setDeleteTagId(null); }}>Delete</Button>
         </div>

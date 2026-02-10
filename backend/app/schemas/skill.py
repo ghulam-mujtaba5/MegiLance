@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Skill API - skill creation, update, and user-skill association models
 """Skill schemas for MegiLance platform"""
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional

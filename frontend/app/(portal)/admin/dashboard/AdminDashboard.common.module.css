@@ -3,9 +3,6 @@
 .dashboardContainer {
   display: grid;
   gap: 2rem;
-  padding: 2rem;
-  max-width: 1600px;
-  margin: 0 auto;
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -295,7 +292,7 @@
 /* ── Responsive ─────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  .dashboardContainer { padding: 1rem; gap: 1.5rem; }
+  .dashboardContainer { gap: 1.5rem; }
   .headerSection { flex-direction: column; align-items: stretch; }
   .headerActions { justify-content: flex-end; }
   .headerTitle { font-size: 1.375rem; }

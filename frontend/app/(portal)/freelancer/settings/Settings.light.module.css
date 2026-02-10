@@ -1,9 +1,5 @@
 /* @AI-HINT: Light theme styles for the Settings pages. */
 
-.settingsContainer {
-  background-color: var(--bg-primary-light);
-}
-
 .header {
   border-bottom: 1px solid var(--border-light);
 }

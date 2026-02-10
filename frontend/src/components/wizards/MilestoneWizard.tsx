@@ -350,12 +350,14 @@ export default function MilestoneWizard({
               onChange={(e) => updateCriterion(criterion.id, e.target.value)}
               placeholder="Describe a specific, measurable requirement..."
               className={cn(commonStyles.criterionInput, themeStyles.criterionInput)}
+              aria-label={`Acceptance criterion ${index + 1}`}
             />
             {milestoneData.acceptanceCriteria.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeCriterion(criterion.id)}
                 className={commonStyles.removeButton}
+                aria-label="Remove acceptance criterion"
               >
                 ×
               </button>

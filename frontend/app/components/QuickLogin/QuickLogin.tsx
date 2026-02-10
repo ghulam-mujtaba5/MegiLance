@@ -3,11 +3,15 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import Button from '@/app/components/Button/Button';
 import Card from '@/app/components/Card/Card';
 import { authApi } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Shield, User, Briefcase, X, ChevronRight } from 'lucide-react';
+import commonStyles from './QuickLogin.common.module.css';
+import lightStyles from './QuickLogin.light.module.css';
+import darkStyles from './QuickLogin.dark.module.css';
 
 const SHOW_DEMO_LOGIN = process.env.NEXT_PUBLIC_SHOW_DEMO_LOGIN === 'true' || process.env.NODE_ENV === 'development';
 
@@ -32,6 +36,7 @@ const DEV_ACCOUNTS: Record<string, { email: string; password: string }> = SHOW_D
 export default function QuickLogin() {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const { resolvedTheme } = useTheme();
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [toast, setToast] = useState<{message: string; type: 'success' | 'error'} | null>(null);
@@ -47,7 +52,9 @@ export default function QuickLogin() {
     }
   }, []);
 
-  if (!isVisible || !SHOW_DEMO_LOGIN) return null;
+  if (!resolvedTheme || !isVisible || !SHOW_DEMO_LOGIN) return null;
+
+  const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const handleLogin = async (role: 'admin' | 'client' | 'freelancer') => {
     setLoading(role);
@@ -82,48 +89,48 @@ export default function QuickLogin() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex items-end gap-2">
+    <div className={commonStyles.container}>
       {isOpen && (
         <Card 
           title="Dev Quick Login"
-          className="w-64 shadow-2xl border-primary/20 bg-background/95 backdrop-blur animate-in slide-in-from-right-10 relative"
+          className={cn(commonStyles.card, themeStyles.card)}
           variant="glass"
         >
-          <div className="absolute top-2 right-2 z-10">
-             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsOpen(false)}>
-              <X className="h-4 w-4" />
+          <div className={commonStyles.closeButtonWrapper}>
+             <Button variant="ghost" size="icon" className={commonStyles.closeButton} onClick={() => setIsOpen(false)}>
+              <X className={commonStyles.icon} />
             </Button>
           </div>
-          <div className="space-y-2 mt-2">
+          <div className={commonStyles.buttonGroup}>
             <Button 
               variant="outline" 
-              className="w-full justify-start gap-2 border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20"
+              className={cn(commonStyles.roleButton, themeStyles.adminButton)}
               onClick={() => handleLogin('admin')}
               isLoading={loading === 'admin'}
-              iconBefore={<Shield className="h-4 w-4 text-red-500" />}
+              iconBefore={<Shield className={cn(commonStyles.icon, themeStyles.adminIcon)} />}
             >
               Admin
             </Button>
             <Button 
               variant="outline" 
-              className="w-full justify-start gap-2 border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+              className={cn(commonStyles.roleButton, themeStyles.clientButton)}
               onClick={() => handleLogin('client')}
               isLoading={loading === 'client'}
-              iconBefore={<User className="h-4 w-4 text-blue-500" />}
+              iconBefore={<User className={cn(commonStyles.icon, themeStyles.clientIcon)} />}
             >
               Client
             </Button>
             <Button 
               variant="outline" 
-              className="w-full justify-start gap-2 border-green-200 hover:bg-green-50 dark:hover:bg-green-900/20"
+              className={cn(commonStyles.roleButton, themeStyles.freelancerButton)}
               onClick={() => handleLogin('freelancer')}
               isLoading={loading === 'freelancer'}
-              iconBefore={<Briefcase className="h-4 w-4 text-green-500" />}
+              iconBefore={<Briefcase className={cn(commonStyles.icon, themeStyles.freelancerIcon)} />}
             >
               Freelancer
             </Button>
           </div>
-          <div className="mt-3 text-xs text-muted-foreground text-center">
+          <div className={cn(commonStyles.footer, themeStyles.footer)}>
             Quick demo login
           </div>
         </Card>
@@ -131,20 +138,19 @@ export default function QuickLogin() {
       
       <Button 
         className={cn(
-          "rounded-full shadow-lg transition-all",
-          isOpen ? "bg-muted text-muted-foreground" : "bg-primary text-primary-foreground"
+          commonStyles.toggleButton,
+          isOpen ? themeStyles.toggleButtonOpen : themeStyles.toggleButtonClosed
         )}
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
       >
-        {isOpen ? <ChevronRight /> : <Shield className="h-5 w-5" />}
+        {isOpen ? <ChevronRight /> : <Shield className={commonStyles.toggleIcon} />}
       </Button>
       {toast && (
-        <div style={{
-          position: 'fixed', bottom: 24, right: 24, padding: '12px 24px',
-          borderRadius: 8, color: '#fff', zIndex: 9999, fontSize: 14,
-          backgroundColor: toast.type === 'success' ? '#27AE60' : '#e81123',
-        }}>
+        <div className={cn(
+          commonStyles.toast,
+          toast.type === 'success' ? themeStyles.toastSuccess : themeStyles.toastError
+        )}>
           {toast.message}
         </div>
       )}

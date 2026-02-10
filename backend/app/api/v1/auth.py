@@ -18,15 +18,15 @@ from app.core.security import (
     get_current_active_user,
     get_password_hash,
     verify_password,
+    add_token_to_blacklist,
+    oauth2_scheme,
 )
 from app.core.rate_limit import (
     auth_rate_limit,
     password_reset_rate_limit,
     email_rate_limit,
 )
-from app.db.turso_http import execute_query, parse_rows, to_str, parse_date
-from app.db.session import get_db
-from sqlalchemy.orm import Session
+from app.services import auth_service
 from app.models.user import User
 from app.schemas.auth import AuthResponse, LoginRequest, RefreshTokenRequest, Token
 from app.schemas.user import UserCreate, UserRead, UserUpdate
@@ -105,26 +105,6 @@ def sanitize_string(value: str, max_length: int = 255) -> str:
     return value.strip()[:max_length]
 
 
-def _user_from_row(row: list, cols: list) -> dict:
-    """Convert Turso row to user dict"""
-    data = {}
-    for i, col in enumerate(cols):
-        name = col.get("name", "")
-        val = row[i].get("value") if row[i].get("type") != "null" else None
-        data[name] = val
-    
-    # Parse profile_data if present
-    if data.get("profile_data"):
-        try:
-            profile = json.loads(data["profile_data"])
-            if isinstance(profile, dict):
-                data.update(profile)
-        except:
-            pass
-            
-    return data
-
-
 def _safe_str(val):
     """Convert bytes to string if needed"""
     if val is None:
@@ -170,12 +150,7 @@ def register_user(request: Request, payload: UserCreate):
     bio = sanitize_string(payload.bio or "", MAX_BIO_LENGTH)
     
     # Check if email already exists
-    check_result = execute_query(
-        "SELECT id FROM users WHERE email = ?",
-        [payload.email.lower()]  # Normalize email to lowercase
-    )
-    
-    if check_result and check_result.get("rows") and len(check_result["rows"]) > 0:
+    if auth_service.check_email_exists(payload.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered"
@@ -209,35 +184,19 @@ def register_user(request: Request, payload: UserCreate):
     
     # Insert new user
     try:
-        insert_result = execute_query(
-            """INSERT INTO users (
-                email, hashed_password, is_active, is_verified, email_verified,
-                name, user_type, role, bio, skills, hourly_rate, 
-                profile_image_url, location, profile_data, 
-                two_factor_enabled, account_balance,
-                joined_at, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            [
-                payload.email.lower(),  # email
-                hashed_password,  # hashed_password
-                1 if payload.is_active else 0,  # is_active
-                0,  # is_verified
-                0,  # email_verified
-                name,  # name
-                user_type,  # user_type
-                user_type,  # role (same as user_type)
-                bio,  # bio
-                sanitize_string(payload.skills or "", 500),  # skills
-                payload.hourly_rate or 0,  # hourly_rate
-                sanitize_string(payload.profile_image_url or "", 500),  # profile_image_url
-                sanitize_string(payload.location or "", 100),  # location
-                profile_data_json,  # profile_data
-                0,  # two_factor_enabled
-                0.0,  # account_balance
-                now,  # joined_at
-                now,  # created_at
-                now   # updated_at
-            ]
+        insert_result = auth_service.insert_user(
+            email=payload.email,
+            hashed_password=hashed_password,
+            is_active=payload.is_active,
+            name=name,
+            user_type=user_type,
+            bio=bio,
+            skills=sanitize_string(payload.skills or "", 500),
+            hourly_rate=payload.hourly_rate,
+            profile_image_url=sanitize_string(payload.profile_image_url or "", 500),
+            location=sanitize_string(payload.location or "", 100),
+            profile_data_json=profile_data_json,
+            now=now,
         )
         
         # Insert returns {"columns": [], "rows": []} for local SQLite
@@ -258,22 +217,13 @@ def register_user(request: Request, payload: UserCreate):
         )
     
     # Get the created user
-    get_result = execute_query(
-        """SELECT id, email, is_active, name, user_type, bio, skills, 
-           hourly_rate, profile_image_url, location, profile_data, joined_at
-           FROM users WHERE email = ?""",
-        [payload.email]
-    )
+    user_data = auth_service.get_user_by_email(payload.email)
     
-    if not get_result or not get_result.get("rows"):
+    if not user_data:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="User created but failed to retrieve"
         )
-    
-    row = get_result["rows"][0]
-    cols = get_result.get("cols", [])
-    user_data = _user_from_row(row, cols)
     
     return UserRead(
         id=int(user_data.get("id", 0)),
@@ -288,7 +238,7 @@ def register_user(request: Request, payload: UserCreate):
         location=_safe_str(user_data.get("location")),
         title=_safe_str(user_data.get("title")),
         portfolio_url=_safe_str(user_data.get("portfolio_url")),
-        joined_at=parse_date(user_data.get("joined_at"))
+        joined_at=user_data.get("joined_at")
     )
 
 
@@ -463,6 +413,48 @@ def refresh_token(request: Request, body: RefreshTokenRequest = None):
     return response
 
 
+@router.post("/logout")
+def logout(
+    request: Request,
+    token: str = Depends(oauth2_scheme),
+    current_user: User = Depends(get_current_active_user),
+):
+    """Logout user: blacklist access token and clear refresh cookie"""
+    if token:
+        try:
+            payload = decode_token(token)
+            exp = payload.get("exp")
+            if exp:
+                expiry = datetime.fromtimestamp(exp, tz=timezone.utc)
+                add_token_to_blacklist(token, expiry)
+        except Exception:
+            pass  # Token invalid/expired — still clear cookies
+
+    # Also blacklist refresh token from cookie if present
+    refresh_token = request.cookies.get("refresh_token")
+    if refresh_token:
+        try:
+            payload = decode_token(refresh_token)
+            exp = payload.get("exp")
+            if exp:
+                expiry = datetime.fromtimestamp(exp, tz=timezone.utc)
+                add_token_to_blacklist(refresh_token, expiry)
+        except Exception:
+            pass
+
+    settings = get_settings()
+    is_production = settings.environment == "production"
+    response = JSONResponse(content={"message": "Logged out successfully"})
+    response.delete_cookie(
+        key="refresh_token",
+        httponly=True,
+        secure=is_production,
+        samesite="lax",
+        path="/api/auth/refresh",
+    )
+    return response
+
+
 @router.get("/me", response_model=UserRead)
 def read_users_me(current_user: User = Depends(get_current_active_user)):
     """Get current user profile"""
@@ -509,11 +501,7 @@ def update_user_me(
     
     # Check email uniqueness if changing email
     if "email" in update_data:
-        check_result = execute_query(
-            "SELECT id FROM users WHERE email = ? AND id != ?",
-            [update_data["email"], current_user.id]
-        )
-        if check_result and check_result.get("rows"):
+        if not auth_service.check_email_available(update_data["email"], current_user.id):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already in use"
@@ -541,19 +529,8 @@ def update_user_me(
         current_profile.update(profile_updates)
         update_data["profile_data"] = json.dumps(current_profile)
     
-    # Build UPDATE query
-    set_parts = []
-    values = []
-    for key, value in update_data.items():
-        set_parts.append(f"{key} = ?")
-        values.append(value if value is not None else "")
-    
-    values.append(current_user.id)
-    
-    update_result = execute_query(
-        f"UPDATE users SET {', '.join(set_parts)} WHERE id = ?",
-        values
-    )
+    # Update user fields
+    update_result = auth_service.update_user_fields(current_user.id, update_data)
     
     if not update_result:
         raise HTTPException(
@@ -562,22 +539,13 @@ def update_user_me(
         )
     
     # Fetch updated user
-    get_result = execute_query(
-        """SELECT id, email, is_active, name, user_type, bio, skills,
-           hourly_rate, profile_image_url, location, profile_data, joined_at
-           FROM users WHERE id = ?""",
-        [current_user.id]
-    )
+    user_data = auth_service.get_user_by_id(current_user.id)
     
-    if not get_result or not get_result.get("rows"):
+    if not user_data:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve updated user"
         )
-    
-    row = get_result["rows"][0]
-    cols = get_result.get("cols", [])
-    user_data = _user_from_row(row, cols)
     
     return UserRead(
         id=int(user_data.get("id", 0)),
@@ -592,7 +560,7 @@ def update_user_me(
         location=_safe_str(user_data.get("location")),
         title=_safe_str(user_data.get("title")),
         portfolio_url=_safe_str(user_data.get("portfolio_url")),
-        joined_at=parse_date(user_data.get("joined_at"))
+        joined_at=user_data.get("joined_at")
     )
 
 
@@ -772,10 +740,7 @@ def regenerate_backup_codes(current_user: User = Depends(get_current_active_user
     plain_codes, hashed_codes = two_factor_service.generate_backup_codes()
     
     # Update in Turso
-    update_result = execute_query(
-        "UPDATE users SET two_factor_backup_codes = ? WHERE id = ?",
-        [json.dumps(hashed_codes), current_user.id]
-    )
+    update_result = auth_service.update_backup_codes(current_user.id, json.dumps(hashed_codes))
     
     if not update_result:
         raise HTTPException(
@@ -863,16 +828,9 @@ def forgot_password(
     success_message = "If an account with that email exists, a password reset link has been sent."
     
     # Check if user exists
-    result = execute_query(
-        "SELECT id, email, name FROM users WHERE email = ?",
-        [request_body.email]
-    )
+    user_data = auth_service.get_user_for_password_reset(request_body.email)
     
-    if result and result.get("rows"):
-        row = result["rows"][0]
-        cols = result.get("cols", [])
-        user_data = _user_from_row(row, cols)
-        
+    if user_data:
         # Generate reset token
         reset_token, expiry = password_reset_service.create_reset_token_turso(
             int(user_data.get("id", 0))

@@ -48,6 +48,25 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
     flagsList: cn(commonStyles.flagsList, themeStyles.flagsList),
     flagItem: cn(commonStyles.flagItem, themeStyles.flagItem),
     recommendations: cn(commonStyles.recommendations, themeStyles.recommendations),
+    headerIcon: themeStyles.headerIcon,
+    emptyState: commonStyles.emptyState,
+    emptyText: cn(commonStyles.emptyText, themeStyles.emptyText),
+    resultArea: commonStyles.resultArea,
+    scoresGrid: commonStyles.scoresGrid,
+    scoreCard: cn(commonStyles.scoreCard, themeStyles.scoreCard),
+    scoreCardLabel: cn(commonStyles.scoreCardLabel, themeStyles.scoreCardLabel),
+    scoreCardValue: commonStyles.scoreCardValue,
+    scoreCardValueHigh: themeStyles.scoreCardValueHigh,
+    scoreCardValueLow: themeStyles.scoreCardValueLow,
+    scoreCardValueWarning: themeStyles.scoreCardValueWarning,
+    flagsSection: commonStyles.flagsSection,
+    sectionTitle: commonStyles.sectionTitle,
+    sectionTitleWarning: themeStyles.sectionTitleWarning,
+    sectionTitleInfo: themeStyles.sectionTitleInfo,
+    recList: cn(commonStyles.recList, themeStyles.recList),
+    recItem: commonStyles.recItem,
+    recIcon: cn(commonStyles.recIcon, themeStyles.recIcon),
+    reanalyzeWrapper: commonStyles.reanalyzeWrapper,
   };
 
   const handleAnalyze = async () => {
@@ -75,13 +94,13 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <TrendingUp className="text-blue-500" size={20} />
+        <TrendingUp className={styles.headerIcon} size={20} />
         <h3 className={styles.title}>Project Feasibility Check</h3>
       </div>
 
       {!result ? (
-        <div className="text-center py-4">
-          <p className="text-sm text-gray-500 mb-4">
+        <div className={styles.emptyState}>
+          <p className={styles.emptyText}>
             Check if your budget and timeline align with your project scope.
           </p>
           <Button
@@ -95,26 +114,26 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
           </Button>
         </div>
       ) : (
-        <div className="animate-fade-in">
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-              <div className="text-xs text-gray-500">Complexity</div>
-              <div className="font-bold text-lg">{result.complexity_score}/10</div>
+        <div className={styles.resultArea}>
+          <div className={styles.scoresGrid}>
+            <div className={styles.scoreCard}>
+              <div className={styles.scoreCardLabel}>Complexity</div>
+              <div className={styles.scoreCardValue}>{result.complexity_score}/10</div>
             </div>
-            <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-              <div className="text-xs text-gray-500">Budget</div>
+            <div className={styles.scoreCard}>
+              <div className={styles.scoreCardLabel}>Budget</div>
               <div className={cn(
-                "font-bold text-lg",
-                result.budget_realism === 'High' ? "text-green-500" : "text-red-500"
+                styles.scoreCardValue,
+                result.budget_realism === 'High' ? styles.scoreCardValueHigh : styles.scoreCardValueLow
               )}>
                 {result.budget_realism}
               </div>
             </div>
-            <div className="text-center p-2 bg-gray-50 dark:bg-gray-800 rounded">
-              <div className="text-xs text-gray-500">Timeline</div>
+            <div className={styles.scoreCard}>
+              <div className={styles.scoreCardLabel}>Timeline</div>
               <div className={cn(
-                "font-bold text-lg",
-                result.timeline_realism === 'Realistic' ? "text-green-500" : "text-yellow-500"
+                styles.scoreCardValue,
+                result.timeline_realism === 'Realistic' ? styles.scoreCardValueHigh : styles.scoreCardValueWarning
               )}>
                 {result.timeline_realism}
               </div>
@@ -122,8 +141,8 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
           </div>
 
           {result.flags.length > 0 && (
-            <div className="mb-4">
-              <h4 className="text-sm font-bold mb-2 flex items-center gap-2 text-red-500">
+            <div className={styles.flagsSection}>
+              <h4 className={cn(styles.sectionTitle, styles.sectionTitleWarning)}>
                 <AlertTriangle size={16} /> Potential Issues
               </h4>
               <ul className={styles.flagsList}>
@@ -138,13 +157,13 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
 
           {result.recommendations.length > 0 && (
             <div className={styles.recommendations}>
-              <h4 className="text-sm font-bold mb-2 flex items-center gap-2 text-blue-500">
+              <h4 className={cn(styles.sectionTitle, styles.sectionTitleInfo)}>
                 <Lightbulb size={16} /> Recommendations
               </h4>
-              <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+              <ul className={styles.recList}>
                 {result.recommendations.map((rec, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <CheckCircle className="mt-1 text-green-500 flex-shrink-0" size={12} />
+                  <li key={idx} className={styles.recItem}>
+                    <CheckCircle className={styles.recIcon} size={12} />
                     <span>{rec}</span>
                   </li>
                 ))}
@@ -152,7 +171,7 @@ const FeasibilityAnalyzer: React.FC<FeasibilityAnalyzerProps> = ({
             </div>
           )}
           
-          <div className="mt-4 text-center">
+          <div className={styles.reanalyzeWrapper}>
              <Button variant="ghost" size="sm" onClick={handleAnalyze} isLoading={loading}>
                Re-analyze
              </Button>

@@ -337,11 +337,12 @@ const GigCreate: React.FC = () => {
       </p>
 
       <div className={common.formGroup}>
-        <label className={cn(common.label, themed.label)}>
+        <label htmlFor="gig-title" className={cn(common.label, themed.label)}>
           Gig Title
           <span className={common.labelHint}>Be specific and creative</span>
         </label>
         <input
+          id="gig-title"
           type="text"
           value={form.title}
           onChange={e => updateForm({ title: e.target.value })}
@@ -355,8 +356,9 @@ const GigCreate: React.FC = () => {
       </div>
 
       <div className={common.formGroup}>
-        <label className={cn(common.label, themed.label)}>Category</label>
+        <label htmlFor="gig-category" className={cn(common.label, themed.label)}>Category</label>
         <select
+          id="gig-category"
           value={form.category}
           onChange={e => updateForm({ category: e.target.value })}
           className={cn(common.select, themed.select)}
@@ -388,6 +390,7 @@ const GigCreate: React.FC = () => {
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
               onBlur={addTag}
               placeholder="Type a tag and press Enter"
+              aria-label="Add a tag"
               className={cn(common.tagInputField, themed.tagInputField)}
             />
           )}
@@ -419,10 +422,11 @@ const GigCreate: React.FC = () => {
             </div>
 
             <div className={common.packageField}>
-              <label className={cn(common.packageLabel, themed.packageLabel)}>
+              <label htmlFor={`${tier}-package-title`} className={cn(common.packageLabel, themed.packageLabel)}>
                 Package Title
               </label>
               <input
+                id={`${tier}-package-title`}
                 type="text"
                 value={form.packages[tier].title}
                 onChange={e => updatePackage(tier, { title: e.target.value })}
@@ -432,10 +436,11 @@ const GigCreate: React.FC = () => {
             </div>
 
             <div className={common.packageField}>
-              <label className={cn(common.packageLabel, themed.packageLabel)}>
+              <label htmlFor={`${tier}-package-desc`} className={cn(common.packageLabel, themed.packageLabel)}>
                 Description
               </label>
               <textarea
+                id={`${tier}-package-desc`}
                 value={form.packages[tier].description}
                 onChange={e => updatePackage(tier, { description: e.target.value })}
                 placeholder="What's included in this package?"
@@ -444,10 +449,11 @@ const GigCreate: React.FC = () => {
             </div>
 
             <div className={common.packageField}>
-              <label className={cn(common.packageLabel, themed.packageLabel)}>Price</label>
+              <label htmlFor={`${tier}-package-price`} className={cn(common.packageLabel, themed.packageLabel)}>Price</label>
               <div className={common.priceInput}>
                 <span className={cn(common.priceCurrency, themed.priceCurrency)}>$</span>
                 <input
+                  id={`${tier}-package-price`}
                   type="number"
                   value={form.packages[tier].price}
                   onChange={e => updatePackage(tier, { price: Number(e.target.value) })}
@@ -458,10 +464,11 @@ const GigCreate: React.FC = () => {
             </div>
 
             <div className={common.packageField}>
-              <label className={cn(common.packageLabel, themed.packageLabel)}>
+              <label htmlFor={`${tier}-package-delivery`} className={cn(common.packageLabel, themed.packageLabel)}>
                 Delivery (days)
               </label>
               <input
+                id={`${tier}-package-delivery`}
                 type="number"
                 value={form.packages[tier].deliveryDays}
                 onChange={e => updatePackage(tier, { deliveryDays: Number(e.target.value) })}
@@ -471,10 +478,11 @@ const GigCreate: React.FC = () => {
             </div>
 
             <div className={common.packageField}>
-              <label className={cn(common.packageLabel, themed.packageLabel)}>
+              <label htmlFor={`${tier}-package-revisions`} className={cn(common.packageLabel, themed.packageLabel)}>
                 Revisions
               </label>
               <input
+                id={`${tier}-package-revisions`}
                 type="number"
                 value={form.packages[tier].revisions}
                 onChange={e => updatePackage(tier, { revisions: Number(e.target.value) })}
@@ -512,16 +520,16 @@ const GigCreate: React.FC = () => {
       </p>
 
       <div className={common.formGroup}>
-        <label className={cn(common.label, themed.label)}>
+        <label htmlFor="gig-description" className={cn(common.label, themed.label)}>
           Gig Description
           <span className={common.labelHint}>Tell buyers what makes your service unique</span>
         </label>
         <textarea
+          id="gig-description"
           value={form.description}
           onChange={e => updateForm({ description: e.target.value })}
           placeholder="Describe your service in detail. What do you offer? What's your experience? What makes you different?"
-          className={cn(common.input, common.textarea, themed.input)}
-          style={{ minHeight: 200 }}
+          className={cn(common.input, common.textarea, common.textareaLarge, themed.input)}
         />
         <div className={cn(common.characterCount, form.description.length < 100 && common.charWarning)}>
           {form.description.length} characters (min 100)
@@ -543,6 +551,7 @@ const GigCreate: React.FC = () => {
                     value={faq.question}
                     onChange={e => updateFaq(i, { question: e.target.value })}
                     placeholder="Question"
+                    aria-label={`FAQ ${i + 1} question`}
                     className={cn(common.faqInput, common.faqQuestion, themed.faqInput)}
                   />
                   <input
@@ -550,12 +559,14 @@ const GigCreate: React.FC = () => {
                     value={faq.answer}
                     onChange={e => updateFaq(i, { answer: e.target.value })}
                     placeholder="Answer"
+                    aria-label={`FAQ ${i + 1} answer`}
                     className={cn(common.faqInput, themed.faqInput)}
                   />
                 </div>
                 <button
                   className={cn(common.faqRemove, themed.faqRemove)}
                   onClick={() => removeFaq(i)}
+                  aria-label={`Remove FAQ ${i + 1}`}
                 >
                   <Trash2 size={18} />
                 </button>
@@ -599,7 +610,7 @@ const GigCreate: React.FC = () => {
           accept="image/*"
           multiple
           onChange={handleImageUpload}
-          style={{ display: 'none' }}
+          className={common.hiddenInput}
         />
 
         {form.images.length > 0 && (

@@ -1,3 +1,4 @@
+# @AI-HINT: Blog CMS API endpoints - CRUD for blog posts with admin moderation
 from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, Depends
 from app.schemas.blog import BlogPostCreate, BlogPostUpdate, BlogPostResponse

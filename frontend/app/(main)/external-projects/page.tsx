@@ -276,12 +276,14 @@ export default function ExternalProjectsPage() {
                   value={query}
                   onChange={(e) => handleSearch(e.target.value)}
                   className={cn(commonStyles.searchInput, themed.searchInput)}
+                  aria-label="Search external projects"
                 />
               </div>
               <select
                 value={sortBy}
                 onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
                 className={cn(commonStyles.filterSelect, themed.filterSelect)}
+                aria-label="Sort projects by"
               >
                 <option value="posted_at">Newest First</option>
                 <option value="budget_max">Highest Budget</option>

@@ -384,3 +384,7 @@
 .emptyDescription {
   font-size: 0.875rem;
 }
+
+.srOnly {
+  position: absolute;
+}

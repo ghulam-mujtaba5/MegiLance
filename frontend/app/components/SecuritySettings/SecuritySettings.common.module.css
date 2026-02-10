@@ -124,3 +124,15 @@
 .deviceIcon {
   opacity: 0.7;
 }
+
+.errorMessage {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
+
+.successMessage {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}

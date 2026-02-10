@@ -77,6 +77,14 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     actions: cn(commonStyles.actions, themeStyles.actions),
     successMessage: cn(commonStyles.successMessage, themeStyles.successMessage),
     charCount: cn(commonStyles.charCount, themeStyles.charCount),
+    successIcon: cn(commonStyles.successIcon, themeStyles.successIcon),
+    successTitle: commonStyles.successTitle,
+    ratingLabel: commonStyles.ratingLabel,
+    criteriaLabel: commonStyles.criteriaLabel,
+    starActive: themeStyles.starActive,
+    starInactive: themeStyles.starInactive,
+    toast: cn(commonStyles.toast, themeStyles.toast),
+    toastSuccess: cn(commonStyles.toast, themeStyles.toastSuccess),
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -148,15 +156,15 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             <Star
               className={
                 rating <= (hoveredValue || currentRating)
-                  ? 'text-yellow-500'
-                  : 'text-gray-300'
+                  ? styles.starActive
+                  : styles.starInactive
               }
               size={32}
               fill={rating <= (hoveredValue || currentRating) ? '#eab308' : 'none'}
             />
           </button>
         ))}
-        <span className="ml-3 text-lg font-semibold">
+        <span className={styles.ratingLabel}>
           {hoveredValue || currentRating || 0}/5
         </span>
       </div>
@@ -167,8 +175,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     return (
       <div className={styles.container}>
         <div className={styles.successMessage}>
-          <CheckCircle size={64} className="text-green-500 mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Review Submitted!</h2>
+          <CheckCircle size={64} className={styles.successIcon} />
+          <h2 className={styles.successTitle}>Review Submitted!</h2>
           <p>Thank you for your feedback. Your review helps build trust in our community.</p>
         </div>
       </div>
@@ -205,7 +213,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               professionalism: 'Professionalism',
             }).map(([key, label]) => (
               <div key={key} className={styles.criteriaItem}>
-                <label className="font-semibold mb-2">{label}</label>
+                <label className={styles.criteriaLabel}>{label}</label>
                 {renderStars(
                   review.criteria[key as keyof typeof review.criteria],
                   (rating) =>
@@ -272,15 +280,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       </form>
 
       {toast && (
-        <div style={{
-          position: 'fixed', bottom: '2rem', right: '2rem',
-          padding: '1rem 1.75rem', borderRadius: '14px', fontWeight: 600,
-          zIndex: 200, backdropFilter: 'blur(20px)',
-          background: toast.type === 'error' ? 'rgba(254,226,226,0.95)' : 'rgba(220,252,231,0.95)',
-          color: toast.type === 'error' ? '#991b1b' : '#166534',
-          border: `1px solid ${toast.type === 'error' ? 'rgba(232,17,35,0.3)' : 'rgba(39,174,96,0.3)'}`,
-          animation: 'toastIn 0.4s ease'
-        }}>
+        <div className={toast.type === 'success' ? styles.toastSuccess : styles.toast}>
           {toast.message}
         </div>
       )}

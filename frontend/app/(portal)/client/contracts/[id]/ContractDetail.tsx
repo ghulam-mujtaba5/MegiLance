@@ -203,7 +203,7 @@ export default function ContractDetail({ contractId }: ContractDetailProps) {
                   {contract.status?.replace('_', ' ')}
                 </Badge>
                 <span className={cn(commonStyles.overviewSub, themeStyles.overviewSub)}>
-                  <Calendar size={14} style={{ display: 'inline', marginRight: 4 }} />
+                  <Calendar size={14} className={commonStyles.inlineIcon} />
                   Started {new Date(contract.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
@@ -353,7 +353,7 @@ export default function ContractDetail({ contractId }: ContractDetailProps) {
                   </StaggerContainer>
                 ) : (
                   <div className={commonStyles.emptyState}>
-                    <FileText size={24} style={{ opacity: 0.4, marginBottom: 8 }} />
+                    <FileText size={24} className={commonStyles.emptyIcon} />
                     <p>No milestones defined for this contract.</p>
                   </div>
                 )}
@@ -365,7 +365,7 @@ export default function ContractDetail({ contractId }: ContractDetailProps) {
           <div>
             {/* Freelancer Card */}
             <ScrollReveal delay={0.25}>
-              <div className={cn(commonStyles.section, themeStyles.section)} style={{ marginBottom: '1.5rem' }}>
+              <div className={cn(commonStyles.section, themeStyles.section, commonStyles.sectionSpacing)}>
                 <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
                   <User size={18} /> Freelancer
                 </h2>

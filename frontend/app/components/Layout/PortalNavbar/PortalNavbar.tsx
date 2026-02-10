@@ -1,14 +1,14 @@
-// @AI-HINT: Redesigned portal navbar with working notifications, help menu, quick actions, and improved UX.
+// @AI-HINT: Redesigned portal navbar with breadcrumbs, notifications, help menu, quick actions, and modern UX.
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { 
   Bell, Search, HelpCircle, Sun, Moon, LogOut, User, Settings, 
   X, Check, CheckCheck, ExternalLink, MessageSquare, FileText,
   Briefcase, CreditCard, AlertCircle, Clock, ChevronRight,
-  Keyboard, BookOpen, Mail, Shield, Wallet, Menu
+  Keyboard, BookOpen, Mail, Shield, Wallet, Menu, Home
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -210,13 +210,34 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
     { label: 'Documentation', href: '/docs', icon: <FileText size={16} />, description: 'API & developer docs', external: true },
   ];
 
-  const getPageTitle = () => {
-    if (!pathname) return 'Dashboard';
+  // Build breadcrumb segments from the current pathname
+  const breadcrumbs = useMemo(() => {
+    if (!pathname) return [{ label: 'Dashboard', href: '' }];
     const segments = pathname.split('/').filter(Boolean);
-    if (segments.length <= 1) return 'Dashboard';
-    const lastSegment = segments[segments.length - 1];
-    return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
-  };
+    if (segments.length === 0) return [{ label: 'Dashboard', href: '/' }];
+
+    // First segment is the portal area (client/freelancer/admin)
+    const area = segments[0];
+    const crumbs: { label: string; href: string }[] = [];
+
+    // Dashboard root
+    crumbs.push({ label: 'Dashboard', href: `/${area}/dashboard` });
+
+    // Build path crumbs for remaining segments (skip the area itself)
+    for (let i = 1; i < segments.length; i++) {
+      const seg = segments[i];
+      if (seg === 'dashboard') continue; // Already added
+      const label = seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' ');
+      const href = '/' + segments.slice(0, i + 1).join('/');
+      crumbs.push({ label, href });
+    }
+
+    // If we only have Dashboard (i.e. the path was /client or /client/dashboard), return just that
+    if (crumbs.length === 1) return crumbs;
+    return crumbs;
+  }, [pathname]);
+
+  const pageTitle = breadcrumbs[breadcrumbs.length - 1]?.label || 'Dashboard';
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
@@ -236,12 +257,33 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
               aria-label="Toggle navigation menu"
               title="Menu"
             >
-              <Menu size={22} />
+              <Menu size={20} />
             </button>
           )}
-          <h1 className={cn(commonStyles.pageTitle, styles.pageTitle)}>
-            {getPageTitle()}
-          </h1>
+          
+          {/* Breadcrumb navigation */}
+          <nav aria-label="Breadcrumb" className={commonStyles.breadcrumb}>
+            {breadcrumbs.map((crumb, idx) => {
+              const isLast = idx === breadcrumbs.length - 1;
+              return (
+                <React.Fragment key={crumb.href}>
+                  {idx > 0 && (
+                    <ChevronRight size={14} className={cn(commonStyles.breadcrumbSeparator, styles.breadcrumbSeparator)} aria-hidden="true" />
+                  )}
+                  {isLast ? (
+                    <span className={cn(commonStyles.breadcrumbCurrent, styles.breadcrumbCurrent)} aria-current="page">
+                      {crumb.label}
+                    </span>
+                  ) : (
+                    <Link href={crumb.href} className={cn(commonStyles.breadcrumbLink, styles.breadcrumbLink)}>
+                      {idx === 0 && <Home size={14} className={commonStyles.breadcrumbHomeIcon} />}
+                      {crumb.label}
+                    </Link>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </nav>
         </div>
 
         {/* Enhanced Search */}

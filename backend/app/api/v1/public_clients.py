@@ -2,8 +2,8 @@
 from fastapi import APIRouter, Query
 from typing import List, Optional
 from pydantic import BaseModel
-from app.db.session import execute_query
 from app.db.turso_http import to_str, to_int, to_float
+from app.services.public_clients_service import fetch_featured_clients, fetch_client_stats
 
 router = APIRouter(prefix="/public-clients", tags=["public-clients"])
 
@@ -44,31 +44,11 @@ async def get_featured_clients(
     industry: Optional[str] = Query(default=None, description="Filter by industry")
 ):
     """Get featured clients for public showcase. No auth required."""
-    # Query real clients from database
-    query = """
-        SELECT 
-            u.id, 
-            COALESCE(u.name, u.first_name || ' ' || u.last_name) as name,
-            u.location,
-            u.profile_image_url,
-            u.created_at,
-            COUNT(DISTINCT p.id) as project_count,
-            COALESCE(SUM(pay.amount), 0) as total_spent
-        FROM users u
-        LEFT JOIN projects p ON p.client_id = u.id
-        LEFT JOIN payments pay ON pay.from_user_id = u.id AND pay.status = 'completed'
-        WHERE LOWER(u.user_type) = 'client' 
-          AND u.is_active = 1
-        GROUP BY u.id, u.name, u.first_name, u.last_name, u.location, u.profile_image_url, u.created_at
-        ORDER BY project_count DESC, total_spent DESC
-        LIMIT ?
-    """
-    
-    result = execute_query(query, [limit])
+    rows = fetch_featured_clients(limit)
     
     clients = []
-    if result and result.get("rows"):
-        for i, row in enumerate(result["rows"]):
+    if rows:
+        for i, row in enumerate(rows):
             # Assign demo industry for visual variety
             demo_industry = DEMO_INDUSTRIES[i % len(DEMO_INDUSTRIES)]
             
@@ -141,49 +121,14 @@ async def get_featured_clients(
 )
 async def get_client_stats():
     """Get public statistics about clients on the platform. No auth required."""
-    # Get total clients
-    clients_result = execute_query(
-        "SELECT COUNT(*) FROM users WHERE LOWER(user_type) = 'client' AND is_active = 1",
-        []
-    )
-    total_clients = 0
-    if clients_result and clients_result.get("rows"):
-        val = clients_result["rows"][0][0]
-        total_clients = val.get("value", 0) if isinstance(val, dict) else val
-    
-    # Get total projects
-    projects_result = execute_query("SELECT COUNT(*) FROM projects", [])
-    total_projects = 0
-    if projects_result and projects_result.get("rows"):
-        val = projects_result["rows"][0][0]
-        total_projects = val.get("value", 0) if isinstance(val, dict) else val
-    
-    # Get total spent
-    spent_result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE status = 'completed'",
-        []
-    )
-    total_spent = 0
-    if spent_result and spent_result.get("rows"):
-        val = spent_result["rows"][0][0]
-        total_spent = float(val.get("value", 0)) if isinstance(val, dict) else float(val or 0)
-    
-    # Get unique locations
-    locations_result = execute_query(
-        "SELECT COUNT(DISTINCT location) FROM users WHERE location IS NOT NULL AND location != ''",
-        []
-    )
-    countries = 0
-    if locations_result and locations_result.get("rows"):
-        val = locations_result["rows"][0][0]
-        countries = val.get("value", 0) if isinstance(val, dict) else val
+    stats = fetch_client_stats()
     
     # Provide reasonable defaults for demo
     return ClientStatsResponse(
-        total_clients=max(total_clients, 250),
-        total_projects=max(total_projects, 1500),
-        total_spent=max(total_spent, 2500000),
-        countries=max(countries, 45),
+        total_clients=max(stats["total_clients"], 250),
+        total_projects=max(stats["total_projects"], 1500),
+        total_spent=max(stats["total_spent"], 2500000),
+        countries=max(stats["countries"], 45),
         industries=DEMO_INDUSTRIES
     )
 

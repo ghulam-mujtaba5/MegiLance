@@ -1,3 +1,4 @@
+# @AI-HINT: Review model for client-freelancer ratings and feedback on completed contracts
 """Review models for MegiLance platform"""
 from sqlalchemy import String, Integer, Text, Boolean, DateTime, ForeignKey, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship

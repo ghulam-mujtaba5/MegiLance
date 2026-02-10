@@ -67,7 +67,7 @@ const AIPriceEstimator: React.FC<AIPriceEstimatorProps> = ({
       <div className={cn(commonStyles.estimateGrid, themeStyles.estimateGrid)}>
         <div className={commonStyles.estimateItem}>
           <span className={cn(commonStyles.estimateLabel, themeStyles.estimateLabel)}>
-            <DollarSign size={12} style={{ display: 'inline', marginRight: 4 }} />
+            <DollarSign size={12} className={commonStyles.inlineIcon} />
             Hourly Rate
           </span>
           <span className={cn(commonStyles.estimateValue, themeStyles.estimateValue)}>
@@ -76,7 +76,7 @@ const AIPriceEstimator: React.FC<AIPriceEstimatorProps> = ({
         </div>
         <div className={commonStyles.estimateItem}>
           <span className={cn(commonStyles.estimateLabel, themeStyles.estimateLabel)}>
-            <BarChart2 size={12} style={{ display: 'inline', marginRight: 4 }} />
+            <BarChart2 size={12} className={commonStyles.inlineIcon} />
             Total Budget
           </span>
           <span className={cn(commonStyles.estimateValue, themeStyles.estimateValue)}>
@@ -85,7 +85,7 @@ const AIPriceEstimator: React.FC<AIPriceEstimatorProps> = ({
         </div>
         <div className={commonStyles.estimateItem}>
           <span className={cn(commonStyles.estimateLabel, themeStyles.estimateLabel)}>
-            <Clock size={12} style={{ display: 'inline', marginRight: 4 }} />
+            <Clock size={12} className={commonStyles.inlineIcon} />
             Est. Hours
           </span>
           <span className={cn(commonStyles.estimateValue, themeStyles.estimateValue)}>

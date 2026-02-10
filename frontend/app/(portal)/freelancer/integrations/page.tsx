@@ -484,7 +484,7 @@ export default function IntegrationsPage() {
         {/* Disconnect Confirmation Modal */}
         <Modal isOpen={disconnectTarget !== null} title="Disconnect Integration" onClose={() => setDisconnectTarget(null)}>
           <p>Are you sure you want to disconnect <strong>{disconnectTarget?.name}</strong>? This will revoke all permissions.</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <div className={commonStyles.actionRow}>
             <Button variant="secondary" onClick={() => setDisconnectTarget(null)}>Cancel</Button>
             <Button variant="danger" onClick={() => disconnectTarget && disconnectIntegration(disconnectTarget)}>Disconnect</Button>
           </div>

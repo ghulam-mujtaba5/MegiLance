@@ -1,3 +1,4 @@
+# @AI-HINT: Contract model - agreements between clients and freelancers with status tracking
 from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base

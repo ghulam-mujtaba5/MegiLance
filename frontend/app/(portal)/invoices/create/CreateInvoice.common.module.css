@@ -1,0 +1,7 @@
+/* @AI-HINT: Create Invoice page layout */
+
+.pageContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}

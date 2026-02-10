@@ -1,3 +1,4 @@
+# @AI-HINT: User model - core user entity with roles (Client/Freelancer/Admin), profile, and auth fields
 from sqlalchemy import String, Boolean, Integer, Float, DateTime, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base

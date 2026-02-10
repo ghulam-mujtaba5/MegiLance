@@ -156,3 +156,11 @@
 .benefitsButton:hover {
   opacity: 1;
 }
+
+.rankColor {
+  color: var(--rank-color);
+}
+
+.topSpacing {
+  margin-top: 0.5rem;
+}

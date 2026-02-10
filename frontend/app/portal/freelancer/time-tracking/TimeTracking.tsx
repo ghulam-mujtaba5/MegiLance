@@ -433,7 +433,7 @@ const TimeTracking: React.FC = () => {
         size="small"
       >
         <p>Are you sure you want to delete this time entry?</p>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+        <div className={commonStyles.modalActions}>
           <Button variant="ghost" onClick={() => { setShowDeleteModal(false); setDeleteEntryId(null); }}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (deleteEntryId !== null) handleDelete(deleteEntryId); setShowDeleteModal(false); setDeleteEntryId(null); }}>Delete</Button>
         </div>

@@ -657,6 +657,14 @@
   margin-bottom: 0.25rem;
 }
 
+.miniSpinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0.5;
+}
+
 .factorLabel {
   font-size: 0.75rem;
   font-weight: 500;

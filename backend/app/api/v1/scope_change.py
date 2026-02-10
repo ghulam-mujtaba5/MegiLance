@@ -1,3 +1,4 @@
+# @AI-HINT: Scope change request API - contract modification proposals between client and freelancer
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Any

@@ -1,3 +1,4 @@
+# @AI-HINT: Scope change service - business logic for contract modification requests and approvals
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from app.models.scope_change import ScopeChangeRequest

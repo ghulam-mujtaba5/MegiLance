@@ -1,3 +1,4 @@
+# @AI-HINT: Schemas package init - exports all Pydantic request/response models
 """Initialize all schemas"""
 
 from .auth import Token, RefreshTokenRequest, AuthResponse

@@ -98,9 +98,9 @@ const Hero: React.FC = () => {
               className={cn(
                 commonStyles.announcementBadge, 
                 styles.announcementBadge,
-                isVisible && commonStyles.fadeInUp
+                isVisible && commonStyles.fadeInUp,
+                commonStyles.delay1
               )}
-              style={{ animationDelay: '0.1s' }}
             >
               <span className={cn(commonStyles.badgeIcon, styles.badgeIcon)}>
                 <Sparkles size={14} />
@@ -116,9 +116,9 @@ const Hero: React.FC = () => {
               className={cn(
                 commonStyles.mainHeading, 
                 styles.mainHeading,
-                isVisible && commonStyles.fadeInUp
+                isVisible && commonStyles.fadeInUp,
+                commonStyles.delay2
               )}
-              style={{ animationDelay: '0.2s' }}
             >
               <span className={commonStyles.headingLine}>Where Elite Talent</span>
               <span className={cn(commonStyles.headingGradient, styles.headingGradient)}>
@@ -131,9 +131,9 @@ const Hero: React.FC = () => {
               className={cn(
                 commonStyles.subheading, 
                 styles.subheading,
-                isVisible && commonStyles.fadeInUp
+                isVisible && commonStyles.fadeInUp,
+                commonStyles.delay3
               )}
-              style={{ animationDelay: '0.3s' }}
             >
               Experience the future of work with MegiLance. Our AI-powered matching engine connects elite talent 
               with innovative projects instantly, while blockchain integration ensures secure, low-fee payments. 
@@ -144,9 +144,9 @@ const Hero: React.FC = () => {
             <div 
               className={cn(
                 commonStyles.ctaGroup,
-                isVisible && commonStyles.fadeInUp
+                isVisible && commonStyles.fadeInUp,
+                commonStyles.delay4
               )}
-              style={{ animationDelay: '0.4s' }}
             >
               <Link href="/features" className={commonStyles.ctaLink}>
                 <Button 
@@ -219,9 +219,9 @@ const Hero: React.FC = () => {
         <div 
           className={cn(
             commonStyles.statsContainer,
-            isVisible && commonStyles.fadeInUp
+            isVisible && commonStyles.fadeInUp,
+            commonStyles.delay5
           )}
-          style={{ animationDelay: '0.7s' }}
         >
           <div className={cn(commonStyles.statsGrid, styles.statsGrid)}>
             <StatItem 

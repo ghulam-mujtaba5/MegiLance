@@ -168,6 +168,14 @@
   resize: vertical;
 }
 
+.textareaLarge {
+  min-height: 200px;
+}
+
+.hiddenInput {
+  display: none;
+}
+
 .characterCount {
   display: flex;
   justify-content: flex-end;

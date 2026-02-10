@@ -4,7 +4,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
 from typing import Optional
 import logging
-import json
 from datetime import datetime
 
 # Lazy import stripe to avoid typing issues with Python 3.12
@@ -19,7 +18,6 @@ def get_stripe():
 
 from app.core.security import get_current_active_user
 from app.core.rate_limit import api_rate_limit, strict_rate_limit
-from app.db.turso_http import execute_query
 
 logger = logging.getLogger(__name__)
 from app.schemas.stripe_schemas import (
@@ -472,29 +470,18 @@ async def stripe_webhook(
             # Update payment record if exists
             if metadata.get("payment_id"):
                 payment_id = int(metadata["payment_id"])
-                execute_query(
-                    "UPDATE payments SET status = 'completed', updated_at = datetime('now') WHERE id = ?",
-                    [payment_id]
-                )
+                stripe_service.update_payment_status_turso(payment_id, "completed")
                 logger.info(f"[STRIPE WEBHOOK] Payment {payment_id} marked as completed")
                 
                 # Send notification to user
                 if metadata.get("user_id"):
                     user_id = int(metadata["user_id"])
-                    execute_query(
-                        """
-                        INSERT INTO notifications 
-                        (user_id, notification_type, title, content, data, is_read, created_at, priority)
-                        VALUES (?, ?, ?, ?, ?, ?, datetime('now'), 'high')
-                        """,
-                        [
-                            user_id,
-                            'PAYMENT_RECEIVED',
-                            'Payment Successful',
-                            f'Your payment of ${amount:.2f} was successful.',
-                            json.dumps({'payment_id': payment_id, 'amount': amount, 'stripe_id': payment_intent_id}),
-                            0
-                        ]
+                    stripe_service.create_payment_notification_turso(
+                        user_id=user_id,
+                        notification_type='PAYMENT_RECEIVED',
+                        title='Payment Successful',
+                        content=f'Your payment of ${amount:.2f} was successful.',
+                        data={'payment_id': payment_id, 'amount': amount, 'stripe_id': payment_intent_id}
                     )
         
         elif event_type == "payment_intent.payment_failed":
@@ -503,29 +490,18 @@ async def stripe_webhook(
             
             if metadata.get("payment_id"):
                 payment_id = int(metadata["payment_id"])
-                execute_query(
-                    "UPDATE payments SET status = 'failed', updated_at = datetime('now') WHERE id = ?",
-                    [payment_id]
-                )
+                stripe_service.update_payment_status_turso(payment_id, "failed")
                 logger.warning(f"[STRIPE WEBHOOK] Payment {payment_id} marked as failed")
                 
                 # Send notification
                 if metadata.get("user_id"):
                     user_id = int(metadata["user_id"])
-                    execute_query(
-                        """
-                        INSERT INTO notifications 
-                        (user_id, notification_type, title, content, data, is_read, created_at, priority)
-                        VALUES (?, ?, ?, ?, ?, ?, datetime('now'), 'high')
-                        """,
-                        [
-                            user_id,
-                            'PAYMENT_FAILED',
-                            'Payment Failed',
-                            'Your payment failed. Please check your payment method.',
-                            json.dumps({'payment_id': payment_id, 'stripe_id': payment_intent_id}),
-                            0
-                        ]
+                    stripe_service.create_payment_notification_turso(
+                        user_id=user_id,
+                        notification_type='PAYMENT_FAILED',
+                        title='Payment Failed',
+                        content='Your payment failed. Please check your payment method.',
+                        data={'payment_id': payment_id, 'stripe_id': payment_intent_id}
                     )
         
         elif event_type == "charge.refunded":
@@ -534,10 +510,7 @@ async def stripe_webhook(
             
             if metadata.get("refund_id"):
                 db_refund_id = int(metadata["refund_id"])
-                execute_query(
-                    "UPDATE refunds SET status = 'completed', processed_at = datetime('now') WHERE id = ?",
-                    [db_refund_id]
-                )
+                stripe_service.complete_refund_turso(db_refund_id)
                 logger.info(f"[STRIPE WEBHOOK] Refund {db_refund_id} completed")
         
         return WebhookResponse(

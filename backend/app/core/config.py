@@ -1,3 +1,4 @@
+# @AI-HINT: Application settings and environment configuration using Pydantic BaseSettings
 from functools import lru_cache
 from typing import Optional
 

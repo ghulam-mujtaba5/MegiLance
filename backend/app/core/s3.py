@@ -1,3 +1,4 @@
+# @AI-HINT: AWS S3 utility functions for file uploads, presigned URLs, and bucket management
 """
 AWS S3 utility functions for file uploads and management
 """

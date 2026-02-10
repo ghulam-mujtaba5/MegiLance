@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for AI service API - matching, price estimation, fraud detection
 """AI Service Schemas"""
 from typing import List, Optional
 from pydantic import BaseModel, Field

@@ -419,3 +419,7 @@
     justify-self: end;
   }
 }
+
+.hiddenInput {
+  display: none;
+}

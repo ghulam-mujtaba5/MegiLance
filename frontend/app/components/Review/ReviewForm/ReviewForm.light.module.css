@@ -37,3 +37,27 @@
   border-color: #9ae6b4;
   color: #22543d;
 }
+
+.successIcon {
+  color: #22c55e;
+}
+
+.starActive {
+  color: #eab308;
+}
+
+.starInactive {
+  color: #d1d5db;
+}
+
+.toast {
+  background: rgba(254, 226, 226, 0.95);
+  color: #991b1b;
+  border: 1px solid rgba(232, 17, 35, 0.3);
+}
+
+.toastSuccess {
+  background: rgba(220, 252, 231, 0.95);
+  color: #166534;
+  border: 1px solid rgba(39, 174, 96, 0.3);
+}

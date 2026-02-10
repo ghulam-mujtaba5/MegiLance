@@ -1,3 +1,4 @@
+# @AI-HINT: Database initialization - runs Alembic migrations and creates initial tables
 import subprocess
 import sys
 from pathlib import Path

@@ -1,3 +1,4 @@
+# @AI-HINT: Pydantic schemas for Notification API - alert creation and delivery models
 """Notification schemas for MegiLance platform"""
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, Dict, Any

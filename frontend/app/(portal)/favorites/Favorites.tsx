@@ -226,7 +226,7 @@ const Favorites: React.FC = () => {
 
       <Modal isOpen={deleteTarget !== null} title="Remove Favorite" onClose={() => setDeleteTarget(null)}>
         <p>Remove <strong>{deleteTarget?.target_type} #{deleteTarget?.target_id}</strong> from your favorites?</p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div className={commonStyles.actionRow}>
           <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button variant="danger" onClick={() => { if (deleteTarget) handleRemove(deleteTarget); }}>Remove</Button>
         </div>

@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import commonStyles from './VirtualTableBody.common.module.css';
 
 export interface VirtualTableBodyProps<T> {
   // Items to render
@@ -72,7 +73,7 @@ export default function VirtualTableBody<T>(props: VirtualTableBodyProps<T>) {
         ) : (
           <tr>
             <td colSpan={999}>
-              <div role="status" aria-live="polite" style={{ padding: 16, textAlign: 'center', opacity: 0.8 }}>No results</div>
+              <div role="status" aria-live="polite" className={commonStyles.emptyRow}>No results</div>
             </td>
           </tr>
         )}

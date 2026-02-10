@@ -1,4 +1,4 @@
-# @AI-HINT: Advanced video calling and screen sharing API using WebRTC
+# @AI-HINT: Advanced video calling and screen sharing API using WebRTC - delegates to video_communication_service
 """
 Video Communication API
 
@@ -20,9 +20,10 @@ from datetime import datetime, timedelta, timezone
 import json
 import secrets
 
-from app.db.session import get_db, execute_query
+from app.db.session import get_db
 from app.core.security import get_current_active_user
 from app.models.user import User
+from app.services import video_communication_service as vc_service
 
 router = APIRouter(prefix="/video", tags=["video"])
 
@@ -82,28 +83,23 @@ class WebRTCService:
     """WebRTC signaling and media server integration"""
 
     def __init__(self):
-        # STUN servers for NAT traversal
         self.stun_servers = [
             {"urls": "stun:stun.l.google.com:19302"},
             {"urls": "stun:stun1.l.google.com:19302"},
             {"urls": "stun:stun2.l.google.com:19302"},
         ]
-
-        # TURN servers for relay (would be configured with actual credentials)
         self.turn_servers = [
             {
                 "urls": "turn:turn.megilance.com:3478",
                 "username": "megilance",
-                "credential": "secretpassword"  # In production, use time-limited credentials
+                "credential": "secretpassword"
             }
         ]
 
     def get_ice_servers(self) -> List[Dict[str, Any]]:
-        """Get ICE servers configuration for WebRTC"""
         return self.stun_servers + self.turn_servers
 
     def generate_room_id(self) -> str:
-        """Generate unique room ID"""
         return f"room_{secrets.token_urlsafe(16)}"
 
 
@@ -120,75 +116,24 @@ async def create_call(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """
-    Create a new video call
-    
-    - **one_on_one**: Direct call between two users
-    - **group**: Conference call with multiple participants
-    - **screen_share**: Screen sharing session
-    """
-    # Generate unique room ID
+    """Create a new video call"""
     room_id = webrtc_service.generate_room_id()
-
-    # Create call record
     scheduled_at = request.scheduled_at.isoformat() if request.scheduled_at else None
     metadata_json = json.dumps(request.metadata) if request.metadata else None
 
-    execute_query("""
-        INSERT INTO video_calls (
-            host_id, participant_ids, room_id, call_type,
-            status, scheduled_at, metadata, created_at
-        ) VALUES (?, ?, ?, ?, 'scheduled', ?, ?, ?)
-    """, [
-        current_user.id,
-        json.dumps(request.participant_ids),
-        room_id,
-        request.call_type,
-        scheduled_at,
-        metadata_json,
-        datetime.now(timezone.utc).isoformat()
-    ])
+    call_data = vc_service.create_call_record(
+        host_id=current_user.id,
+        participant_ids=request.participant_ids,
+        room_id=room_id,
+        call_type=request.call_type,
+        scheduled_at=scheduled_at,
+        metadata_json=metadata_json
+    )
 
-    # Get created call
-    result = execute_query("""
-        SELECT id, room_id, host_id, participant_ids, call_type,
-               status, scheduled_at, created_at
-        FROM video_calls
-        WHERE room_id = ?
-    """, [room_id])
-
-    if not result or not result.get("rows"):
+    if not call_data:
         raise HTTPException(status_code=500, detail="Failed to create call")
 
-    row = result["rows"][0]
-    call_data = {
-        "call_id": int(row[0].get("value")),
-        "room_id": row[1].get("value"),
-        "host_id": int(row[2].get("value")),
-        "participant_ids": json.loads(row[3].get("value")),
-        "call_type": row[4].get("value"),
-        "status": row[5].get("value"),
-        "join_url": f"https://megilance.com/video/join/{room_id}",
-        "scheduled_at": row[6].get("value"),
-        "started_at": None,
-        "ended_at": None,
-        "recording_url": None,
-        "created_at": row[7].get("value")
-    }
-
-    # Send notifications to participants
-    for participant_id in request.participant_ids:
-        execute_query("""
-            INSERT INTO notifications (
-                user_id, notification_type, title, message,
-                link, is_read, created_at
-            ) VALUES (?, 'video_call_invitation', 'Video Call Invitation',
-                     'You have been invited to a video call', ?, 0, ?)
-        """, [
-            participant_id,
-            f"/video/join/{room_id}",
-            datetime.now(timezone.utc).isoformat()
-        ])
+    vc_service.send_call_notifications(request.participant_ids, room_id)
 
     return CallResponse(**call_data)
 
@@ -199,58 +144,30 @@ async def join_call(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """
-    Join a video call
-    
-    Returns WebRTC configuration including:
-    - ICE servers (STUN/TURN)
-    - Room configuration
-    - Participant information
-    """
-    # Verify call exists and user is authorized
-    result = execute_query("""
-        SELECT id, host_id, participant_ids, call_type, status
-        FROM video_calls
-        WHERE room_id = ?
-    """, [room_id])
-
-    if not result or not result.get("rows"):
+    """Join a video call"""
+    call = vc_service.get_call_by_room_id(room_id)
+    if not call:
         raise HTTPException(status_code=404, detail="Call not found")
 
-    row = result["rows"][0]
-    call_id = int(row[0].get("value"))
-    host_id = int(row[1].get("value"))
-    participant_ids = json.loads(row[2].get("value"))
-    call_type = row[3].get("value")
-    status = row[4].get("value")
-
-    # Check authorization
-    if current_user.id != host_id and current_user.id not in participant_ids:
+    if current_user.id != call["host_id"] and current_user.id not in call["participant_ids"]:
         raise HTTPException(status_code=403, detail="Not authorized to join this call")
 
-    # Update call status to 'ongoing' if first participant
-    if status == "scheduled":
-        execute_query("""
-            UPDATE video_calls
-            SET status = 'ongoing', started_at = ?
-            WHERE id = ?
-        """, [datetime.now(timezone.utc).isoformat(), call_id])
+    if call["status"] == "scheduled":
+        vc_service.update_call_status_to_ongoing(call["call_id"])
 
-    # Get active participant count
-    # In production, would track via WebSocket connections
-    participant_count = len(participant_ids) + 1  # +1 for host
+    participant_count = len(call["participant_ids"]) + 1
 
     return JoinCallResponse(
         room_id=room_id,
         ice_servers=webrtc_service.get_ice_servers(),
         turn_credentials={
             "username": f"user_{current_user.id}",
-            "credential": secrets.token_urlsafe(16)  # Time-limited credential
+            "credential": secrets.token_urlsafe(16)
         },
         participant_count=participant_count,
         call_config={
-            "call_type": call_type,
-            "max_participants": 50 if call_type == "group" else 2,
+            "call_type": call["call_type"],
+            "max_participants": 50 if call["call_type"] == "group" else 2,
             "enable_recording": True,
             "enable_screen_share": True,
             "enable_whiteboard": True,
@@ -267,33 +184,19 @@ async def end_call(
     db: Session = Depends(get_db)
 ):
     """End a video call (host only)"""
-    # Verify caller is host
-    result = execute_query("""
-        SELECT host_id, started_at FROM video_calls WHERE id = ?
-    """, [call_id])
-
-    if not result or not result.get("rows"):
+    call_info = vc_service.get_call_host_and_start(call_id)
+    if not call_info:
         raise HTTPException(status_code=404, detail="Call not found")
 
-    host_id = int(result["rows"][0][0].get("value"))
-    started_at = result["rows"][0][1].get("value")
-
-    if current_user.id != host_id:
+    if current_user.id != call_info["host_id"]:
         raise HTTPException(status_code=403, detail="Only host can end call")
 
-    # Calculate duration
-    if started_at:
-        start_time = datetime.fromisoformat(started_at)
+    duration_seconds = 0
+    if call_info["started_at"]:
+        start_time = datetime.fromisoformat(call_info["started_at"])
         duration_seconds = int((datetime.now(timezone.utc) - start_time).total_seconds())
-    else:
-        duration_seconds = 0
 
-    # Update call status
-    execute_query("""
-        UPDATE video_calls
-        SET status = 'ended', ended_at = ?, duration_seconds = ?
-        WHERE id = ?
-    """, [datetime.now(timezone.utc).isoformat(), duration_seconds, call_id])
+    vc_service.end_call(call_id, duration_seconds)
 
     return {
         "message": "Call ended successfully",
@@ -310,44 +213,8 @@ async def list_calls(
     db: Session = Depends(get_db)
 ):
     """List user's video calls"""
-    # Build query
-    query = """
-        SELECT id, room_id, host_id, participant_ids, call_type,
-               status, scheduled_at, started_at, ended_at,
-               recording_url, created_at
-        FROM video_calls
-        WHERE (host_id = ? OR participant_ids LIKE ?)
-    """
-    params = [current_user.id, f'%{current_user.id}%']
-
-    if status:
-        query += " AND status = ?"
-        params.append(status)
-
-    query += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
-    params.extend([limit, offset])
-
-    result = execute_query(query, params)
-
-    calls = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            calls.append(CallResponse(
-                call_id=int(row[0].get("value")),
-                room_id=row[1].get("value"),
-                host_id=int(row[2].get("value")),
-                participant_ids=json.loads(row[3].get("value")),
-                call_type=row[4].get("value"),
-                status=row[5].get("value"),
-                join_url=f"https://megilance.com/video/join/{row[1].get('value')}",
-                scheduled_at=row[6].get("value"),
-                started_at=row[7].get("value"),
-                ended_at=row[8].get("value"),
-                recording_url=row[9].get("value"),
-                created_at=row[10].get("value")
-            ))
-
-    return calls
+    calls_data = vc_service.list_user_calls(current_user.id, status, limit, offset)
+    return [CallResponse(**c) for c in calls_data]
 
 
 # ============================================================================
@@ -361,30 +228,14 @@ async def start_screen_share(
     db: Session = Depends(get_db)
 ):
     """Start screen sharing in a call"""
-    # Verify user is in call
-    result = execute_query("""
-        SELECT host_id, participant_ids FROM video_calls WHERE id = ?
-    """, [request.call_id])
-
-    if not result or not result.get("rows"):
+    participants = vc_service.get_call_participants(request.call_id)
+    if not participants:
         raise HTTPException(status_code=404, detail="Call not found")
 
-    host_id = int(result["rows"][0][0].get("value"))
-    participant_ids = json.loads(result["rows"][0][1].get("value"))
-
-    if current_user.id != host_id and current_user.id not in participant_ids:
+    if current_user.id != participants["host_id"] and current_user.id not in participants["participant_ids"]:
         raise HTTPException(status_code=403, detail="Not in this call")
 
-    # Log screen share event
-    execute_query("""
-        INSERT INTO analytics_events (
-            user_id, event_name, event_category, event_properties, created_at
-        ) VALUES (?, 'screen_share_started', 'video_call', ?, ?)
-    """, [
-        current_user.id,
-        json.dumps({"call_id": request.call_id, "stream_id": request.stream_id}),
-        datetime.now(timezone.utc).isoformat()
-    ])
+    vc_service.log_screen_share_event(current_user.id, request.call_id, request.stream_id)
 
     return {
         "message": "Screen sharing started",
@@ -403,40 +254,12 @@ async def whiteboard_action(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """
-    Execute whiteboard action
-    
-    Actions:
-    - draw: Free-hand drawing
-    - erase: Erase strokes
-    - text: Add text annotations
-    - shape: Add shapes (rectangle, circle, arrow)
-    - clear: Clear entire board
-    """
-    # Verify user is in call
-    result = execute_query("""
-        SELECT host_id, participant_ids FROM video_calls WHERE id = ?
-    """, [request.call_id])
-
-    if not result or not result.get("rows"):
+    """Execute whiteboard action"""
+    participants = vc_service.get_call_participants(request.call_id)
+    if not participants:
         raise HTTPException(status_code=404, detail="Call not found")
 
-    # Store whiteboard action for replay
-    execute_query("""
-        INSERT INTO collaboration_sessions (
-            project_id, session_type, participants, session_data,
-            is_active, created_at
-        ) VALUES (?, 'whiteboard', ?, ?, 1, ?)
-    """, [
-        request.call_id,  # Using call_id as project_id for simplicity
-        json.dumps([current_user.id]),
-        json.dumps({
-            "action_type": request.action_type,
-            "data": request.data,
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        }),
-        datetime.now(timezone.utc).isoformat()
-    ])
+    vc_service.store_whiteboard_action(request.call_id, current_user.id, request.action_type, request.data)
 
     return {
         "message": "Whiteboard action recorded",
@@ -465,7 +288,6 @@ class ConnectionManager:
             self.active_connections[room_id].remove(websocket)
 
     async def broadcast(self, room_id: str, message: dict, exclude: Optional[WebSocket] = None):
-        """Broadcast message to all participants in room"""
         if room_id in self.active_connections:
             for connection in self.active_connections[room_id]:
                 if connection != exclude:
@@ -477,27 +299,15 @@ manager = ConnectionManager()
 
 @router.websocket("/ws/{room_id}")
 async def websocket_signaling(websocket: WebSocket, room_id: str):
-    """
-    WebSocket endpoint for WebRTC signaling
-    
-    Handles:
-    - SDP offer/answer exchange
-    - ICE candidate exchange
-    - Participant join/leave notifications
-    - Screen share signals
-    - Whiteboard updates
-    """
+    """WebSocket endpoint for WebRTC signaling"""
     await manager.connect(room_id, websocket)
 
     try:
         while True:
-            # Receive message
             data = await websocket.receive_json()
-
             message_type = data.get("type")
 
             if message_type == "offer":
-                # Forward SDP offer to other participants
                 await manager.broadcast(room_id, {
                     "type": "offer",
                     "sdp": data.get("sdp"),
@@ -505,7 +315,6 @@ async def websocket_signaling(websocket: WebSocket, room_id: str):
                 }, exclude=websocket)
 
             elif message_type == "answer":
-                # Forward SDP answer
                 await manager.broadcast(room_id, {
                     "type": "answer",
                     "sdp": data.get("sdp"),
@@ -513,7 +322,6 @@ async def websocket_signaling(websocket: WebSocket, room_id: str):
                 }, exclude=websocket)
 
             elif message_type == "ice_candidate":
-                # Forward ICE candidate
                 await manager.broadcast(room_id, {
                     "type": "ice_candidate",
                     "candidate": data.get("candidate"),
@@ -521,7 +329,6 @@ async def websocket_signaling(websocket: WebSocket, room_id: str):
                 }, exclude=websocket)
 
             elif message_type == "join":
-                # Notify others of new participant
                 await manager.broadcast(room_id, {
                     "type": "participant_joined",
                     "user_id": data.get("user_id"),
@@ -529,7 +336,6 @@ async def websocket_signaling(websocket: WebSocket, room_id: str):
                 }, exclude=websocket)
 
             elif message_type == "whiteboard":
-                # Broadcast whiteboard updates
                 await manager.broadcast(room_id, {
                     "type": "whiteboard_update",
                     "action": data.get("action"),
@@ -537,7 +343,6 @@ async def websocket_signaling(websocket: WebSocket, room_id: str):
                 }, exclude=websocket)
 
             elif message_type == "screen_share":
-                # Notify about screen sharing
                 await manager.broadcast(room_id, {
                     "type": "screen_share_started",
                     "user_id": data.get("user_id"),
@@ -546,7 +351,6 @@ async def websocket_signaling(websocket: WebSocket, room_id: str):
 
     except WebSocketDisconnect:
         manager.disconnect(room_id, websocket)
-        # Notify others of participant leaving
         await manager.broadcast(room_id, {
             "type": "participant_left",
             "timestamp": datetime.now(timezone.utc).isoformat()
@@ -564,20 +368,13 @@ async def start_recording(
     db: Session = Depends(get_db)
 ):
     """Start call recording (host only)"""
-    # Verify caller is host
-    result = execute_query("""
-        SELECT host_id FROM video_calls WHERE id = ?
-    """, [call_id])
-
-    if not result or not result.get("rows"):
+    host_id = vc_service.get_call_host(call_id)
+    if host_id is None:
         raise HTTPException(status_code=404, detail="Call not found")
-
-    host_id = int(result["rows"][0][0].get("value"))
 
     if current_user.id != host_id:
         raise HTTPException(status_code=403, detail="Only host can start recording")
 
-    # In production, would integrate with media server for recording
     recording_id = f"rec_{secrets.token_urlsafe(16)}"
 
     return {
@@ -594,26 +391,15 @@ async def stop_recording(
     db: Session = Depends(get_db)
 ):
     """Stop call recording and get download URL"""
-    # Verify caller is host
-    result = execute_query("""
-        SELECT host_id FROM video_calls WHERE id = ?
-    """, [call_id])
-
-    if not result or not result.get("rows"):
+    host_id = vc_service.get_call_host(call_id)
+    if host_id is None:
         raise HTTPException(status_code=404, detail="Call not found")
-
-    host_id = int(result["rows"][0][0].get("value"))
 
     if current_user.id != host_id:
         raise HTTPException(status_code=403, detail="Only host can stop recording")
 
-    # Generate recording URL (stub - would be actual media server URL)
     recording_url = f"https://recordings.megilance.com/{call_id}/recording.mp4"
-
-    # Update call record
-    execute_query("""
-        UPDATE video_calls SET recording_url = ? WHERE id = ?
-    """, [recording_url, call_id])
+    vc_service.save_recording_url(call_id, recording_url)
 
     return {
         "message": "Recording stopped",
@@ -635,28 +421,12 @@ async def get_user_availability(
     db: Session = Depends(get_db)
 ):
     """Get user's availability for scheduling calls"""
-    # Get user's scheduled calls in date range
-    result = execute_query("""
-        SELECT scheduled_at, duration_seconds FROM video_calls
-        WHERE (host_id = ? OR participant_ids LIKE ?)
-        AND scheduled_at BETWEEN ? AND ?
-        AND status IN ('scheduled', 'ongoing')
-    """, [user_id, f'%{user_id}%', start_date, end_date])
-
-    busy_slots = []
-    if result and result.get("rows"):
-        for row in result["rows"]:
-            scheduled_at = row[0].get("value")
-            duration = row[1].get("value", 3600)  # Default 1 hour
-            busy_slots.append({
-                "start": scheduled_at,
-                "end": (datetime.fromisoformat(scheduled_at) + timedelta(seconds=duration)).isoformat()
-            })
+    busy_slots = vc_service.get_user_availability_slots(user_id, start_date, end_date)
 
     return {
         "user_id": user_id,
         "busy_slots": busy_slots,
-        "timezone": "UTC"  # Would get from user preferences
+        "timezone": "UTC"
     }
 
 
@@ -666,12 +436,11 @@ async def get_user_availability(
 
 @router.get("/analytics/calls")
 async def get_call_analytics(
-    period: str = "week",  # 'day', 'week', 'month', 'year'
+    period: str = "week",
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get call usage analytics"""
-    # Calculate date range
     if period == "day":
         start_date = datetime.now(timezone.utc) - timedelta(days=1)
     elif period == "week":
@@ -681,30 +450,7 @@ async def get_call_analytics(
     else:
         start_date = datetime.now(timezone.utc) - timedelta(days=365)
 
-    # Get statistics
-    result = execute_query("""
-        SELECT 
-            COUNT(*) as total_calls,
-            SUM(duration_seconds) as total_duration,
-            AVG(duration_seconds) as avg_duration
-        FROM video_calls
-        WHERE (host_id = ? OR participant_ids LIKE ?)
-        AND created_at >= ?
-    """, [current_user.id, f'%{current_user.id}%', start_date.isoformat()])
-
-    stats = {
-        "total_calls": 0,
-        "total_duration_minutes": 0,
-        "avg_duration_minutes": 0
-    }
-
-    if result and result.get("rows"):
-        row = result["rows"][0]
-        stats = {
-            "total_calls": int(row[0].get("value", 0)),
-            "total_duration_minutes": int(row[1].get("value", 0)) // 60,
-            "avg_duration_minutes": int(row[2].get("value", 0)) // 60
-        }
+    stats = vc_service.get_call_analytics(current_user.id, start_date.isoformat())
 
     return {
         "period": period,

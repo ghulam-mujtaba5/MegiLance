@@ -262,6 +262,7 @@ export default function MessagingWizard({
               value={messageData.searchQuery}
               onChange={(e) => setMessageData({ ...messageData, searchQuery: e.target.value })}
               className={cn(commonStyles.searchInput, themeStyles.searchInput)}
+              aria-label="Search for recipients"
             />
           </div>
 
@@ -450,7 +451,7 @@ export default function MessagingWizard({
               e.target.value = '';
             }
           }}
-          style={{ display: 'none' }}
+          className={commonStyles.hiddenInput}
         />
         
         <label

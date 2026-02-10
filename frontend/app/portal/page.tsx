@@ -3,10 +3,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import { getAuthToken } from '@/lib/api';
+import commonStyles from './Portal.common.module.css';
+import lightStyles from './Portal.light.module.css';
+import darkStyles from './Portal.dark.module.css';
 
 export default function PortalPage() {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -59,26 +65,11 @@ export default function PortalPage() {
 
   // Show loading while redirecting
   if (checking) {
+    const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh',
-        background: 'var(--bg-primary, #f8fafc)',
-        flexDirection: 'column',
-        gap: '1rem'
-      }}>
-        <div style={{
-          width: '40px',
-          height: '40px',
-          border: '3px solid #e2e8f0',
-          borderTopColor: '#4573df',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }} />
-        <p style={{ color: '#64748b' }}>Redirecting to your dashboard...</p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div className={cn(commonStyles.loadingWrapper, themeStyles.loadingWrapper)}>
+        <div className={cn(commonStyles.loadingSpinner, themeStyles.loadingSpinner)} />
+        <p className={cn(commonStyles.loadingText, themeStyles.loadingText)}>Redirecting to your dashboard...</p>
       </div>
     );
   }

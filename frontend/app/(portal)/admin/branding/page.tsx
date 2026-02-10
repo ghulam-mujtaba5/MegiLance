@@ -231,30 +231,34 @@ export default function BrandingPage() {
             {activeTab === 'general' && (
               <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
                 <div className={commonStyles.formGroup}>
-                  <label>Company Name</label>
+                  <label htmlFor="branding-company-name">Company Name</label>
                   <Input
+                    id="branding-company-name"
                     value={settings.company_name}
                     onChange={e => updateField('company_name', e.target.value)}
                   />
                 </div>
                 <div className={commonStyles.formGroup}>
-                  <label>Tagline</label>
+                  <label htmlFor="branding-tagline">Tagline</label>
                   <Input
+                    id="branding-tagline"
                     value={settings.tagline}
                     onChange={e => updateField('tagline', e.target.value)}
                   />
                 </div>
                 <div className={commonStyles.formGroup}>
-                  <label>Support Email</label>
+                  <label htmlFor="branding-support-email">Support Email</label>
                   <Input
+                    id="branding-support-email"
                     type="email"
                     value={settings.support_email}
                     onChange={e => updateField('support_email', e.target.value)}
                   />
                 </div>
                 <div className={commonStyles.formGroup}>
-                  <label>Footer Text</label>
+                  <label htmlFor="branding-footer-text">Footer Text</label>
                   <Input
+                    id="branding-footer-text"
                     value={settings.footer_text}
                     onChange={e => updateField('footer_text', e.target.value)}
                   />
@@ -266,14 +270,16 @@ export default function BrandingPage() {
               <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
                 <div className={commonStyles.colorGrid}>
                   <div className={commonStyles.colorGroup}>
-                    <label>Primary Color</label>
+                    <label htmlFor="branding-primary-color">Primary Color</label>
                     <div className={commonStyles.colorInput}>
                       <input
+                        id="branding-primary-color"
                         type="color"
                         value={settings.primary_color}
                         onChange={e => updateField('primary_color', e.target.value)}
                       />
                       <Input
+                        aria-label="Primary color hex value"
                         value={settings.primary_color}
                         onChange={e => updateField('primary_color', e.target.value)}
                       />
@@ -281,14 +287,16 @@ export default function BrandingPage() {
                     <span className={commonStyles.colorHint}>Buttons, links, active states</span>
                   </div>
                   <div className={commonStyles.colorGroup}>
-                    <label>Secondary Color</label>
+                    <label htmlFor="branding-secondary-color">Secondary Color</label>
                     <div className={commonStyles.colorInput}>
                       <input
+                        id="branding-secondary-color"
                         type="color"
                         value={settings.secondary_color}
                         onChange={e => updateField('secondary_color', e.target.value)}
                       />
                       <Input
+                        aria-label="Secondary color hex value"
                         value={settings.secondary_color}
                         onChange={e => updateField('secondary_color', e.target.value)}
                       />
@@ -296,14 +304,16 @@ export default function BrandingPage() {
                     <span className={commonStyles.colorHint}>Success states, positive actions</span>
                   </div>
                   <div className={commonStyles.colorGroup}>
-                    <label>Accent Color</label>
+                    <label htmlFor="branding-accent-color">Accent Color</label>
                     <div className={commonStyles.colorInput}>
                       <input
+                        id="branding-accent-color"
                         type="color"
                         value={settings.accent_color}
                         onChange={e => updateField('accent_color', e.target.value)}
                       />
                       <Input
+                        aria-label="Accent color hex value"
                         value={settings.accent_color}
                         onChange={e => updateField('accent_color', e.target.value)}
                       />
@@ -317,8 +327,9 @@ export default function BrandingPage() {
             {activeTab === 'logos' && (
               <div className={cn(commonStyles.settingsCard, themeStyles.settingsCard)}>
                 <div className={commonStyles.formGroup}>
-                  <label>Logo (Light Mode)</label>
+                  <label htmlFor="branding-logo-url">Logo (Light Mode)</label>
                   <Input
+                    id="branding-logo-url"
                     type="url"
                     value={settings.logo_url}
                     onChange={e => updateField('logo_url', e.target.value)}
@@ -331,8 +342,9 @@ export default function BrandingPage() {
                   )}
                 </div>
                 <div className={commonStyles.formGroup}>
-                  <label>Logo (Dark Mode)</label>
+                  <label htmlFor="branding-logo-dark-url">Logo (Dark Mode)</label>
                   <Input
+                    id="branding-logo-dark-url"
                     type="url"
                     value={settings.logo_dark_url}
                     onChange={e => updateField('logo_dark_url', e.target.value)}
@@ -345,8 +357,9 @@ export default function BrandingPage() {
                   )}
                 </div>
                 <div className={commonStyles.formGroup}>
-                  <label>Favicon</label>
+                  <label htmlFor="branding-favicon-url">Favicon</label>
                   <Input
+                    id="branding-favicon-url"
                     type="url"
                     value={settings.favicon_url}
                     onChange={e => updateField('favicon_url', e.target.value)}
@@ -361,6 +374,7 @@ export default function BrandingPage() {
                 <div className={commonStyles.formGroup}>
                   <label>Font Family</label>
                   <Select
+                    aria-label="Font family"
                     value={settings.font_family}
                     onChange={e => updateField('font_family', e.target.value)}
                     options={FONT_OPTIONS.map(font => ({ value: font, label: font }))}
@@ -383,15 +397,17 @@ export default function BrandingPage() {
                 <h3>Legal Pages</h3>
                 <div className={commonStyles.formRow}>
                   <div className={commonStyles.formGroup}>
-                    <label>Terms of Service URL</label>
+                    <label htmlFor="branding-terms-url">Terms of Service URL</label>
                     <Input
+                      id="branding-terms-url"
                       value={settings.terms_url}
                       onChange={e => updateField('terms_url', e.target.value)}
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
-                    <label>Privacy Policy URL</label>
+                    <label htmlFor="branding-privacy-url">Privacy Policy URL</label>
                     <Input
+                      id="branding-privacy-url"
                       value={settings.privacy_url}
                       onChange={e => updateField('privacy_url', e.target.value)}
                     />
@@ -401,8 +417,9 @@ export default function BrandingPage() {
                 <h3>Social Links</h3>
                 <div className={commonStyles.formRow}>
                   <div className={commonStyles.formGroup}>
-                    <label>🐦 Twitter</label>
+                    <label htmlFor="branding-twitter">🐦 Twitter</label>
                     <Input
+                      id="branding-twitter"
                       type="url"
                       value={settings.social_links.twitter || ''}
                       onChange={e => updateSocialLink('twitter', e.target.value)}
@@ -410,8 +427,9 @@ export default function BrandingPage() {
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
-                    <label>💼 LinkedIn</label>
+                    <label htmlFor="branding-linkedin">💼 LinkedIn</label>
                     <Input
+                      id="branding-linkedin"
                       type="url"
                       value={settings.social_links.linkedin || ''}
                       onChange={e => updateSocialLink('linkedin', e.target.value)}
@@ -421,8 +439,9 @@ export default function BrandingPage() {
                 </div>
                 <div className={commonStyles.formRow}>
                   <div className={commonStyles.formGroup}>
-                    <label>📘 Facebook</label>
+                    <label htmlFor="branding-facebook">📘 Facebook</label>
                     <Input
+                      id="branding-facebook"
                       type="url"
                       value={settings.social_links.facebook || ''}
                       onChange={e => updateSocialLink('facebook', e.target.value)}
@@ -430,8 +449,9 @@ export default function BrandingPage() {
                     />
                   </div>
                   <div className={commonStyles.formGroup}>
-                    <label>📷 Instagram</label>
+                    <label htmlFor="branding-instagram">📷 Instagram</label>
                     <Input
+                      id="branding-instagram"
                       type="url"
                       value={settings.social_links.instagram || ''}
                       onChange={e => updateSocialLink('instagram', e.target.value)}
@@ -450,6 +470,7 @@ export default function BrandingPage() {
                     Add custom CSS to override default styles. Use with caution.
                   </p>
                   <Textarea
+                    aria-label="Custom CSS"
                     value={settings.custom_css}
                     onChange={e => updateField('custom_css', e.target.value)}
                     rows={12}

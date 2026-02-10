@@ -260,7 +260,7 @@ const JobAlertsPage: React.FC = () => {
         {/* Delete Confirmation Modal */}
         <Modal isOpen={deleteTarget !== null} title="Delete Alert" onClose={() => setDeleteTarget(null)}>
           <p>Are you sure you want to delete the alert for <strong>&quot;{deleteTarget?.keywords}&quot;</strong>?</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+          <div className={styles.actionRow}>
             <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
             <Button variant="danger" onClick={() => deleteTarget && handleDelete(deleteTarget)}>Delete</Button>
           </div>
