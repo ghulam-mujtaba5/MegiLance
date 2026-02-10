@@ -57,7 +57,7 @@ const ForgotPassword: React.FC = () => {
     setLoading(true);
     try {
       // Call the password reset API
-      const response = await fetch('/backend/api/auth/forgot-password', {
+      const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim().toLowerCase() }),

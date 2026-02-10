@@ -95,12 +95,18 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Prevent browser caching of authenticated portal pages
+  if (isProtectedPath) {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    response.headers.set('Pragma', 'no-cache');
+  }
+
   // Prevent authenticated users from accessing auth pages
-  const authPaths = ['/login', '/signup', '/forgot-password'];
+  const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
   const isAuthPath = authPaths.some(path => pathname === path);
   
   if (isAuthPath && authToken) {
-    return NextResponse.redirect(new URL('/client/dashboard', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   // === SECURITY: Block suspicious paths ===

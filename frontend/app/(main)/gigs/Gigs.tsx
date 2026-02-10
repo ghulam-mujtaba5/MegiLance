@@ -139,7 +139,7 @@ const Gigs: React.FC = () => {
         if (filters.minRating > 0) params.set('min_rating', filters.minRating.toString());
         params.set('sort', sortBy);
 
-        const response = await fetch(`/backend/api/gigs?${params.toString()}`);
+        const response = await fetch(`/api/gigs?${params.toString()}`);
         if (response.ok) {
           const data = await response.json();
           setGigs(data.gigs || data || []);

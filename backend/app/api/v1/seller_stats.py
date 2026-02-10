@@ -274,7 +274,7 @@ def get_user_stats(user_id: int):
     
     # Verify user is a freelancer
     user_result = turso.execute(
-        "SELECT user_type, full_name, avatar_url FROM users WHERE id = ?",
+        "SELECT user_type, name, profile_image_url FROM users WHERE id = ?",
         [user_id]
     )
     
@@ -470,7 +470,7 @@ def get_leaderboard(
     
     sql = """
     SELECT s.user_id, s.level, s.jss_score, s.completed_orders, s.average_rating,
-           s.total_earnings, u.full_name, u.avatar_url
+           s.total_earnings, u.name, u.profile_image_url
     FROM seller_stats s
     LEFT JOIN users u ON s.user_id = u.id
     WHERE s.completed_orders > 0

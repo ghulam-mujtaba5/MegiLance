@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useFreelancerData } from '@/hooks/useFreelancer';
+import { useAuth } from '@/hooks/useAuth';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
@@ -23,7 +24,6 @@ import {
   Package,
   MessageSquare,
   User,
-  Settings,
   BarChart3
 } from 'lucide-react';
 
@@ -31,51 +31,11 @@ import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
 import darkStyles from './Dashboard.dark.module.css';
 
-// Mock seller stats — used as fallback when API unavailable
-const getMockSellerStats = (): SellerStatsData => ({
-  userId: 1,
-  level: {
-    level: 'silver',
-    jssScore: 92,
-    levelProgress: {
-      nextLevel: 'Gold Seller',
-      requirements: {
-        completedOrders: { current: 45, required: 50, percent: 90 },
-        earnings: { current: 4500, required: 5000, percent: 90 },
-        rating: { current: 4.8, required: 4.9, percent: 98 },
-        onTimeDelivery: { current: 95, required: 98, percent: 97 },
-      },
-    },
-    benefits: {
-      commissionRate: 15,
-      featuredGigs: 2,
-      prioritySupport: true,
-      badges: ['trusted', 'fast_delivery'],
-      description: 'Silver sellers enjoy reduced fees and featured placement.',
-    },
-  },
-  totalOrders: 52,
-  completedOrders: 45,
-  cancelledOrders: 3,
-  averageRating: 4.8,
-  totalReviews: 38,
-  completionRate: 86.5,
-  onTimeDeliveryRate: 95,
-  responseRate: 98,
-  avgResponseTimeHours: 1.5,
-  totalEarnings: 4500,
-  uniqueClients: 35,
-  repeatClients: 12,
-  repeatClientRate: 34.3,
-  ordersChange: 15,
-  earningsChange: 22,
-  ratingChange: 0.1,
-});
-
 const Dashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { analytics, recommendedJobs, proposals, loading } = useFreelancerData();
+  const { user } = useAuth();
   const [sellerStats, setSellerStats] = useState<SellerStatsData | null>(null);
 
   useEffect(() => {
@@ -83,17 +43,20 @@ const Dashboard: React.FC = () => {
     
     const fetchSellerStats = async () => {
       try {
-        const response = await fetch('/backend/api/seller-stats/me', {
+        const token = sessionStorage.getItem('access_token');
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const response = await fetch('/api/seller-stats/me', {
           credentials: 'include',
+          headers,
         });
         if (response.ok) {
           const data = await response.json();
           setSellerStats(data);
-        } else {
-          setSellerStats(getMockSellerStats());
         }
       } catch {
-        setSellerStats(getMockSellerStats());
+        // Seller stats are optional - don't block dashboard
       }
     };
     
@@ -132,7 +95,7 @@ const Dashboard: React.FC = () => {
       {/* Header Section */}
       <div className={commonStyles.headerSection}>
         <div className={cn(commonStyles.welcomeText, themeStyles.welcomeText)}>
-          <h1>Welcome back, Freelancer</h1>
+          <h1>Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</h1>
           <p>You have new job matches waiting for you.</p>
         </div>
         <div className={commonStyles.headerActions}>

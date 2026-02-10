@@ -319,7 +319,7 @@ def get_current_active_user(current_user: Union[User, UserProxy] = Depends(get_c
 
 def require_admin(current_user: Union[User, UserProxy] = Depends(get_current_active_user)) -> Union[User, UserProxy]:
     """Require admin role"""
-    if current_user.role not in ["admin", "Admin"]:
+    if not current_user.role or current_user.role.lower() != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
@@ -329,7 +329,7 @@ def require_admin(current_user: Union[User, UserProxy] = Depends(get_current_act
 
 def check_admin_role(user: Union[User, UserProxy]) -> None:
     """Check if user has admin role, raise 403 if not"""
-    if user.role not in ["admin", "Admin"]:
+    if not user.role or user.role.lower() != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
@@ -348,19 +348,37 @@ def require_role(required_role: str):
     return role_checker
 
 
-def get_user_by_email(db: Session, email: str) -> Optional[User]:
-    """Get user by email"""
+def get_user_by_email(db: Session, email: str) -> Optional[UserProxy]:
+    """Get user by email via Turso HTTP API"""
     try:
-        return db.query(User).filter(User.email == email).first()
+        result = execute_query(
+            "SELECT id, email, hashed_password, is_active, is_verified, name, user_type, role, "
+            "bio, skills, hourly_rate, profile_image_url, location, profile_data, "
+            "two_factor_enabled, joined_at FROM users WHERE email = ?",
+            [email.lower().strip()]
+        )
+        rows = parse_rows(result)
+        if rows:
+            return UserProxy(rows[0])
+        return None
     except Exception as e:
         logger.error(f"Error getting user by email: {e}")
         return None
 
 
-def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
-    """Get user by ID"""
+def get_user_by_id(db: Session, user_id: int) -> Optional[UserProxy]:
+    """Get user by ID via Turso HTTP API"""
     try:
-        return db.query(User).filter(User.id == user_id).first()
+        result = execute_query(
+            "SELECT id, email, hashed_password, is_active, is_verified, name, user_type, role, "
+            "bio, skills, hourly_rate, profile_image_url, location, profile_data, "
+            "two_factor_enabled, joined_at FROM users WHERE id = ?",
+            [user_id]
+        )
+        rows = parse_rows(result)
+        if rows:
+            return UserProxy(rows[0])
+        return None
     except Exception as e:
         logger.error(f"Error getting user by ID: {e}")
         return None

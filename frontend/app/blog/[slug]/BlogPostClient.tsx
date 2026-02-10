@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import DOMPurify from 'dompurify';
 
 import { blogApi, BlogPost } from '@/lib/api/blog';
 import { PageTransition, ScrollReveal } from '@/components/Animations';
@@ -103,7 +104,7 @@ const BlogPostClient: React.FC = () => {
               <section
                 aria-label="Post content"
                 className={cn(commonStyles.content, themeStyles.content)}
-                dangerouslySetInnerHTML={{ __html: post.content || '' }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content || '') }}
               />
             </article>
           </ScrollReveal>

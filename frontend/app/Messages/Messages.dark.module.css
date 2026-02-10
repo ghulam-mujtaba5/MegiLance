@@ -1,0 +1,73 @@
+/* @AI-HINT: Dark theme colors for Messages component */
+
+.title {
+  color: #ffffff;
+}
+
+.headerIcon {
+  color: #ffffff;
+}
+
+.searchInput {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #ffffff;
+}
+
+.searchInput::placeholder {
+  color: #6b7280;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+}
+
+.searchIcon {
+  color: #6b7280;
+}
+
+.conversationList {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.conversationButton {
+  border-color: #334155;
+}
+
+.conversationButton:hover {
+  background-color: #334155;
+}
+
+.emptyIcon {
+  color: #4b5563;
+}
+
+.emptyTitle {
+  color: #9ca3af;
+}
+
+.emptySubtitle {
+  color: #6b7280;
+}
+
+.avatar {
+  background-color: #1e3a5f;
+  color: #ffffff;
+}
+
+.contactName {
+  color: #ffffff;
+}
+
+.timestamp {
+  color: #9ca3af;
+}
+
+.lastMessage {
+  color: #9ca3af;
+}
+
+.spinner {
+  color: #4573df;
+}

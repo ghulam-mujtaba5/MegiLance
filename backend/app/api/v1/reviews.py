@@ -291,10 +291,10 @@ async def get_review_stats(user_id: int):
         "user_id": user_id,
         "total_reviews": total_reviews,
         "average_rating": round(float(avg_rating), 2) if avg_rating else 0.0,
-        "communication_rating": 0, # Placeholder
-        "quality_rating": 0, # Placeholder
-        "professionalism_rating": 0, # Placeholder
-        "deadline_rating": 0, # Placeholder
+        "communication_rating": stats.get("communication_avg", 0.0),
+        "quality_rating": stats.get("quality_avg", 0.0),
+        "professionalism_rating": stats.get("professionalism_avg", 0.0),
+        "deadline_rating": stats.get("deadline_avg", 0.0),
         "rating_distribution": rating_distribution
     }
 

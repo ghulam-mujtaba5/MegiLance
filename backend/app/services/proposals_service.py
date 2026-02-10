@@ -301,6 +301,12 @@ def create_proposal(freelancer_id: int, proposal_data: dict) -> Optional[dict]:
     return None
 
 
+_ALLOWED_PROPOSAL_COLUMNS = frozenset({
+    "cover_letter", "bid_amount", "estimated_hours", "hourly_rate",
+    "availability", "status", "attachments", "delivery_time",
+})
+
+
 def update_proposal(proposal_id: int, update_data: dict) -> Optional[dict]:
     """Update proposal fields. Returns updated proposal dict or None."""
     if not update_data:
@@ -309,6 +315,8 @@ def update_proposal(proposal_id: int, update_data: dict) -> Optional[dict]:
     set_parts = []
     values: list = []
     for key, value in update_data.items():
+        if key not in _ALLOWED_PROPOSAL_COLUMNS:
+            raise ValueError(f"Invalid column name: {key}")
         set_parts.append(f"{key} = ?")
         values.append(value if value is not None else "")
 

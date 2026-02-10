@@ -94,7 +94,7 @@ export function useDashboardData() {
           status: p.status === 'in_progress' ? 'In Progress' : 
                   p.status === 'completed' ? 'Completed' : 
                   p.status === 'review' ? 'Review' : 'In Progress',
-          progress: p.progress || Math.floor(Math.random() * 100),
+          progress: p.progress || 0,
           deadline: p.deadline || p.updated_at || new Date().toISOString(),
           budget: p.budget_max ? `$${p.budget_max.toLocaleString()}` : undefined
         }));

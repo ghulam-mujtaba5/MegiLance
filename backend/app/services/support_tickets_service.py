@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from app.db.turso_http import execute_query, to_str, parse_date
+from app.db.turso_http import execute_query, to_str, parse_date, parse_rows
 
 
 def _row_to_ticket(row: list) -> dict:
@@ -38,7 +38,9 @@ def create_ticket(user_id, subject: str, description: str, category: str,
     if not result:
         return None
 
-    ticket_id = result.get("last_insert_rowid")
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    rows = parse_rows(id_result) if id_result else []
+    ticket_id = int(rows[0]["id"]) if rows else None
     return get_ticket_by_id(ticket_id)
 
 

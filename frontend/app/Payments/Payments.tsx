@@ -1,5 +1,5 @@
 // @AI-HINT: Payments page - displays real payment history and wallet balance from API
-// Production-ready: No mock data, connects to /backend/api/wallet and /backend/api/payments
+// Production-ready: No mock data, connects to /api/wallet and /api/payments
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -25,7 +25,7 @@ interface WalletBalance {
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
   const token = typeof window !== 'undefined' ? getAuthToken() : null;
   try {
-    const res = await fetch(`/backend/api${endpoint}`, {
+    const res = await fetch(`/api${endpoint}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!res.ok) return null;

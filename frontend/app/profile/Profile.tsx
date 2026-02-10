@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import UserAvatar from '../components/UserAvatar/UserAvatar';
 import ProjectCard, { ProjectCardProps } from '../components/ProjectCard/ProjectCard';
@@ -36,6 +37,7 @@ interface ApiProject {
 
 const Profile: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<ApiUser | null>(null);
   const [projects, setProjects] = useState<ProjectCardProps[]>([]);
@@ -113,7 +115,7 @@ const Profile: React.FC = () => {
           <p>{error}</p>
           <button 
             className={cn(commonStyles.retryButton, themeStyles.retryButton)}
-            onClick={() => window.location.href = '/login'}
+            onClick={() => router.push('/login')}
           >
             Go to Login
           </button>

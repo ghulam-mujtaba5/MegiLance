@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Button from '@/app/components/Button/Button';
@@ -29,6 +30,7 @@ interface SavedJob {
 
 export default function SavedJobsPage() {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export default function SavedJobsPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/backend/api/saved-jobs', {
+      const response = await fetch('/api/saved-jobs', {
         credentials: 'include',
       });
       if (response.ok) {
@@ -63,7 +65,7 @@ export default function SavedJobsPage() {
   const handleRemove = async (jobId: string) => {
     setRemovingId(jobId);
     try {
-      await fetch(`/backend/api/saved-jobs/${jobId}`, {
+      await fetch(`/api/saved-jobs/${jobId}`, {
         method: 'DELETE',
         credentials: 'include',
       });
@@ -124,7 +126,7 @@ export default function SavedJobsPage() {
               <Bookmark size={48} strokeWidth={1.5} opacity={0.5} />
               <h3>No Saved Jobs</h3>
               <p>Browse projects and save interesting ones for later</p>
-              <Button variant="primary" onClick={() => window.location.href = '/freelancer/jobs'}>
+              <Button variant="primary" onClick={() => router.push('/freelancer/jobs')}>
                 Browse Jobs
               </Button>
             </div>
@@ -182,7 +184,7 @@ export default function SavedJobsPage() {
                       <Button
                         variant="primary"
                         size="sm"
-                        onClick={() => window.location.href = `/freelancer/jobs/${job.id}`}
+                        onClick={() => router.push(`/freelancer/jobs/${job.id}`)}
                       >
                         <ExternalLink size={14} /> View & Apply
                       </Button>

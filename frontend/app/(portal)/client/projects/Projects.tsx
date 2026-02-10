@@ -28,9 +28,9 @@ const transformProjectData = (projects: any[]): ProjectCardProps[] => {
     id: p.id,
     title: p.title || 'Untitled Project',
     status: p.status || 'Pending',
-    progress: p.progress ?? Math.floor(Math.random() * 101),
+    progress: p.progress ?? 0,
     budget: typeof p.budget === 'number' ? p.budget : parseFloat(String(p.budget).replace(/[$,]/g, '')) || 0,
-    paid: p.paid ?? Math.floor(Math.random() * (parseFloat(String(p.budget).replace(/[$,]/g, '')) || 0)),
+    paid: p.paid ?? 0,
     freelancers: p.freelancers || [],
     updatedAt: p.updatedAt || new Date().toLocaleDateString(),
   }));
@@ -111,7 +111,18 @@ const Projects: React.FC = () => {
               <p className={common.subtitle}>Manage all your ongoing and completed projects.</p>
             </div>
             <div className={common.actions}>
-              <Button variant="secondary" iconBefore={<Download size={16} />}>Export</Button>
+              <Button variant="secondary" iconBefore={<Download size={16} />} onClick={() => {
+                const csv = ['Title,Status,Budget,Progress'].concat(
+                  projects.map(p => `"${p.title}",${p.status},${p.budget},${p.progress}%`)
+                ).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'projects.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+              }}>Export</Button>
               <Button iconBefore={<PlusCircle size={16} />} onClick={() => router.push('/portal/client/projects/create')}>New Project</Button>
             </div>
           </header>

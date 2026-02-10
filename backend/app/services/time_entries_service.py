@@ -9,7 +9,7 @@ import logging
 from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
 
-from app.db.turso_http import execute_query, to_str, parse_date
+from app.db.turso_http import execute_query, to_str, parse_date, parse_rows
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +134,9 @@ def create_time_entry(user_id: int, contract_id: int, description: str,
     if not result:
         return None
 
-    entry_id = result.get("last_insert_rowid")
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    rows = parse_rows(id_result) if id_result else []
+    entry_id = int(rows[0]["id"]) if rows else None
     return fetch_time_entry(entry_id)
 
 

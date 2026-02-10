@@ -1,7 +1,7 @@
 // @AI-HINT: Handles OAuth2 callback from social providers. Exchanges code for tokens.
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { CheckCircle, XCircle } from 'lucide-react';
@@ -13,7 +13,19 @@ import commonStyles from './AuthCallback.common.module.css';
 import lightStyles from './AuthCallback.light.module.css';
 import darkStyles from './AuthCallback.dark.module.css';
 
-export default function AuthCallbackPage() {
+export default function AuthCallbackPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <div>Authenticating...</div>
+      </div>
+    }>
+      <AuthCallbackPage />
+    </Suspense>
+  );
+}
+
+function AuthCallbackPage() {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
   const searchParams = useSearchParams();

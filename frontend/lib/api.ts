@@ -20,8 +20,8 @@ export function setAuthToken(token: string | null) {
         // Use sessionStorage for access tokens (more secure)
         sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
         // Also set cookie for middleware authentication
-        // Cookie expires in 7 days to match refresh token lifetime
-        const maxAge = 7 * 24 * 60 * 60;
+        // Cookie expires in 35 minutes to match access token lifetime (30 min + buffer)
+        const maxAge = 35 * 60;
         const isProduction = window.location.protocol === 'https:';
         const secureFlag = isProduction ? '; Secure' : '';
         document.cookie = `auth_token=${token}; path=/; SameSite=Lax; Max-Age=${maxAge}${secureFlag}`;
@@ -102,6 +102,62 @@ export class APIError extends Error {
 // Request timeout (60 seconds)
 const REQUEST_TIMEOUT = 60000;
 
+// ============================================================
+// RESILIENCE LAYER: Retry with exponential backoff + jitter
+// ============================================================
+
+interface RetryConfig {
+  /** Max retry attempts (default: 3) */
+  maxRetries: number;
+  /** Base delay in ms (default: 500) */
+  baseDelay: number;
+  /** Max delay cap in ms (default: 10000) */
+  maxDelay: number;
+  /** HTTP methods that are safe to retry (idempotent) */
+  retryableMethods: Set<string>;
+  /** HTTP status codes that warrant a retry */
+  retryableStatuses: Set<number>;
+}
+
+const RETRY_CONFIG: RetryConfig = {
+  maxRetries: 3,
+  baseDelay: 500,
+  maxDelay: 10000,
+  retryableMethods: new Set(['GET', 'HEAD', 'OPTIONS', 'PUT', 'DELETE']),
+  retryableStatuses: new Set([408, 429, 500, 502, 503, 504]),
+};
+
+/** Calculate delay with exponential backoff + jitter to prevent thundering herd */
+function getRetryDelay(attempt: number, baseDelay: number, maxDelay: number): number {
+  const exponentialDelay = baseDelay * Math.pow(2, attempt);
+  const jitter = exponentialDelay * 0.2 * Math.random(); // 20% jitter
+  return Math.min(exponentialDelay + jitter, maxDelay);
+}
+
+/** Determine if a request should be retried based on method, status, and error */
+function shouldRetry(method: string, status: number, attempt: number): boolean {
+  if (attempt >= RETRY_CONFIG.maxRetries) return false;
+  // Only retry idempotent methods (POST mutations should NOT be retried automatically)
+  if (!RETRY_CONFIG.retryableMethods.has(method.toUpperCase())) return false;
+  return RETRY_CONFIG.retryableStatuses.has(status);
+}
+
+/** Sleep for a given duration */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ============================================================
+// Request deduplication for identical concurrent GET requests
+// ============================================================
+
+const inflightRequests = new Map<string, Promise<unknown>>();
+
+function getDedupeKey(endpoint: string, method: string): string | null {
+  if (method.toUpperCase() !== 'GET') return null;
+  return `GET:${endpoint}`;
+}
+
 // Track if we're currently refreshing tokens to prevent race conditions
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
@@ -145,136 +201,188 @@ async function attemptTokenRefresh(): Promise<string | null> {
   }
 }
 
-// Generic fetch wrapper with auth, timeout, auto-refresh on 401, and rate limit handling
+// Generic fetch wrapper with auth, timeout, auto-refresh on 401, retry, and rate limit handling
 async function apiFetch<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = getAuthToken();
-  const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string> || {}),
-  };
+  const method = (options.method || 'GET').toUpperCase();
 
-  if (!(options.body instanceof FormData)) {
-    headers['Content-Type'] = 'application/json';
+  // Deduplicate identical concurrent GET requests
+  const dedupeKey = getDedupeKey(endpoint, method);
+  if (dedupeKey) {
+    const inflight = inflightRequests.get(dedupeKey);
+    if (inflight) return inflight as Promise<T>;
   }
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  const doFetch = async (): Promise<T> => {
+    let lastError: APIError | null = null;
 
-  // Create AbortController for timeout
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+    for (let attempt = 0; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
+      // Wait before retrying (skip delay on first attempt)
+      if (attempt > 0) {
+        const delay = getRetryDelay(attempt - 1, RETRY_CONFIG.baseDelay, RETRY_CONFIG.maxDelay);
+        await sleep(delay);
+      }
 
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: headers as HeadersInit,
-      signal: controller.signal,
-      // Include credentials for CORS requests (cookies, auth headers)
-      credentials: 'include',
-    });
+      const token = getAuthToken();
+      const headers: Record<string, string> = {
+        ...(options.headers as Record<string, string> || {}),
+      };
 
-    clearTimeout(timeoutId);
+      if (!(options.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+      }
 
-    // Handle rate limiting (429)
-    if (response.status === 429) {
-      const retryAfter = response.headers.get('Retry-After');
-      const waitSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
-      throw new APIError(
-        `Too many requests. Please try again in ${waitSeconds} seconds.`,
-        429,
-        'RATE_LIMITED',
-        { retryAfter: waitSeconds }
-      );
-    }
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-    // Handle 401 - attempt token refresh
-    if (response.status === 401 && token && !endpoint.includes('/auth/refresh') && !endpoint.includes('/auth/login')) {
-      if (!isRefreshing) {
-        isRefreshing = true;
-        const newToken = await attemptTokenRefresh();
-        isRefreshing = false;
+      // Create AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-        if (newToken) {
-          onTokenRefreshed(newToken);
-          // Retry the original request with the new token
-          headers['Authorization'] = `Bearer ${newToken}`;
-          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
-            ...options,
-            headers: headers as HeadersInit,
-            credentials: 'include',
-          });
-
-          if (!retryResponse.ok) {
-            const error = await retryResponse.json().catch(() => ({ detail: 'Request failed after token refresh' }));
-            throw new APIError(error.detail || `HTTP ${retryResponse.status}`, retryResponse.status, error.error_type, error);
-          }
-          if (retryResponse.status === 204) return undefined as T;
-          return retryResponse.json();
-        } else {
-          // Refresh failed - redirect to login
-          if (typeof window !== 'undefined') {
-            const currentPath = window.location.pathname;
-            window.location.href = `/login?returnTo=${encodeURIComponent(currentPath)}&expired=true`;
-          }
-          throw new APIError('Session expired. Please log in again.', 401);
-        }
-      } else {
-        // Another request is already refreshing - wait for it
-        return new Promise<T>((resolve, reject) => {
-          addRefreshSubscriber((newToken: string) => {
-            headers['Authorization'] = `Bearer ${newToken}`;
-            fetch(`${API_BASE_URL}${endpoint}`, {
-              ...options,
-              headers: headers as HeadersInit,
-              credentials: 'include',
-            })
-              .then(res => {
-                if (res.status === 204) return undefined as T;
-                if (!res.ok) throw new APIError('Request failed', res.status);
-                return res.json();
-              })
-              .then(resolve)
-              .catch(reject);
-          });
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          ...options,
+          headers: headers as HeadersInit,
+          signal: controller.signal,
+          credentials: 'include',
         });
+
+        clearTimeout(timeoutId);
+
+        // Handle rate limiting (429) — use Retry-After header for delay
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After');
+          const waitSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
+          lastError = new APIError(
+            `Too many requests. Please try again in ${waitSeconds} seconds.`,
+            429,
+            'RATE_LIMITED',
+            { retryAfter: waitSeconds }
+          );
+          if (attempt < RETRY_CONFIG.maxRetries) {
+            await sleep(waitSeconds * 1000);
+            continue;
+          }
+          throw lastError;
+        }
+
+        // Handle 401 - attempt token refresh (not retryable via loop)
+        if (response.status === 401 && token && !endpoint.includes('/auth/refresh') && !endpoint.includes('/auth/login')) {
+          if (!isRefreshing) {
+            isRefreshing = true;
+            const newToken = await attemptTokenRefresh();
+            isRefreshing = false;
+
+            if (newToken) {
+              onTokenRefreshed(newToken);
+              headers['Authorization'] = `Bearer ${newToken}`;
+              const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
+                ...options,
+                headers: headers as HeadersInit,
+                credentials: 'include',
+              });
+
+              if (!retryResponse.ok) {
+                const error = await retryResponse.json().catch(() => ({ detail: 'Request failed after token refresh' }));
+                throw new APIError(error.detail || `HTTP ${retryResponse.status}`, retryResponse.status, error.error_type, error);
+              }
+              if (retryResponse.status === 204) return undefined as T;
+              return retryResponse.json();
+            } else {
+              if (typeof window !== 'undefined') {
+                const currentPath = window.location.pathname;
+                window.location.href = `/login?returnTo=${encodeURIComponent(currentPath)}&expired=true`;
+              }
+              throw new APIError('Session expired. Please log in again.', 401);
+            }
+          } else {
+            return new Promise<T>((resolve, reject) => {
+              addRefreshSubscriber((newToken: string) => {
+                headers['Authorization'] = `Bearer ${newToken}`;
+                fetch(`${API_BASE_URL}${endpoint}`, {
+                  ...options,
+                  headers: headers as HeadersInit,
+                  credentials: 'include',
+                })
+                  .then(res => {
+                    if (res.status === 204) return undefined as T;
+                    if (!res.ok) throw new APIError('Request failed', res.status);
+                    return res.json();
+                  })
+                  .then(resolve)
+                  .catch(reject);
+              });
+            });
+          }
+        }
+
+        // Non-OK responses — retry if server error, throw immediately for client errors
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+          lastError = new APIError(
+            error.detail || `HTTP ${response.status}`,
+            response.status,
+            error.error_type,
+            error
+          );
+          if (shouldRetry(method, response.status, attempt)) {
+            continue;
+          }
+          throw lastError;
+        }
+
+        if (response.status === 204) return undefined as T;
+        return response.json();
+
+      } catch (error) {
+        clearTimeout(timeoutId);
+
+        if (error instanceof APIError) {
+          lastError = error;
+          // Only retry on retryable status codes
+          if (shouldRetry(method, error.status, attempt)) {
+            continue;
+          }
+          throw error;
+        }
+
+        if (error instanceof Error && error.name === 'AbortError') {
+          lastError = new APIError('Request timeout', 408);
+          if (shouldRetry(method, 408, attempt)) {
+            continue;
+          }
+          throw lastError;
+        }
+
+        lastError = new APIError(
+          error instanceof Error ? error.message : 'Network error',
+          0
+        );
+        // Network errors are retryable for safe methods
+        if (shouldRetry(method, 0, attempt)) {
+          continue;
+        }
+        throw lastError;
       }
     }
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
-      throw new APIError(
-        error.detail || `HTTP ${response.status}`,
-        response.status,
-        error.error_type,
-        error
-      );
-    }
+    // All retries exhausted
+    throw lastError || new APIError('Request failed after retries', 0);
+  };
 
-    // Handle 204 No Content
-    if (response.status === 204) {
-      return undefined as T;
-    }
-
-    return response.json();
-  } catch (error) {
-    clearTimeout(timeoutId);
-    
-    if (error instanceof APIError) {
-      throw error;
-    }
-    
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new APIError('Request timeout', 408);
-    }
-    
-    throw new APIError(
-      error instanceof Error ? error.message : 'Network error',
-      0
-    );
+  // Execute with deduplication for GET requests
+  if (dedupeKey) {
+    const promise = doFetch().finally(() => {
+      inflightRequests.delete(dedupeKey);
+    });
+    inflightRequests.set(dedupeKey, promise);
+    return promise;
   }
+
+  return doFetch();
 }
 
 // ===========================
@@ -309,6 +417,8 @@ interface LoginResponse {
   access_token: string;
   refresh_token: string;
   user: AuthUser;
+  requires_2fa?: boolean;
+  temp_token?: string;
 }
 
 interface RefreshResponse {
@@ -353,13 +463,10 @@ export const authApi = {
   },
 
   refreshToken: async (): Promise<RefreshResponse> => {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-      throw new APIError('No refresh token available', 401);
-    }
+    // Refresh token is sent as httpOnly cookie via credentials: 'include'
     const data = await apiFetch<RefreshResponse>('/auth/refresh', {
       method: 'POST',
-      body: JSON.stringify({ refresh_token: refreshToken }),
+      body: JSON.stringify({}),
     });
     setAuthToken(data.access_token);
     return data;
@@ -395,6 +502,18 @@ export const authApi = {
   verifyEmail: (token: string) => apiFetch(`/auth/verify-email?token=${token}`),
 
   disable2FA: () => apiFetch('/auth/2fa/disable', { method: 'POST' }),
+
+  forgotPassword: (email: string): Promise<{ message: string }> =>
+    apiFetch<{ message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+
+  resetPassword: (token: string, newPassword: string): Promise<{ message: string }> =>
+    apiFetch<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, new_password: newPassword }),
+    }),
 };
 
 // ===========================
@@ -1329,11 +1448,8 @@ export const clientApi = {
   getPayments: () => apiFetch<any[]>('/portal/client/payments'),
   getFreelancers: async () => {
     try {
-      console.log('[API] Fetching AI recommendations...');
       const response = await apiFetch<{ recommendations: any[] }>('/matching/recommendations?limit=5');
-      console.log('[API] AI recommendations response:', response);
       if (!response?.recommendations) {
-        console.warn('[API] No recommendations field in response');
         return [];
       }
       return response.recommendations.map((r: any) => ({
@@ -1348,9 +1464,7 @@ export const clientApi = {
         location: r.location,
         matchScore: r.match_score // Add this for UI to show match %
       }));
-    } catch (error) {
-      console.error('[API] Failed to fetch AI recommendations:', error);
-      // Return empty array on failure - no mock fallback for launch
+    } catch {
       return [];
     }
   },
@@ -1366,8 +1480,7 @@ export const clientApi = {
         comment: r.comment || '',
         date: r.created_at || new Date().toISOString()
       })) : [];
-    } catch (error) {
-      console.error('Failed to fetch reviews:', error);
+    } catch {
       return [];
     }
   },

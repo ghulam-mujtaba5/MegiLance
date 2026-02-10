@@ -115,7 +115,18 @@ const Payments: React.FC = () => {
               <p className={common.subtitle}>Review your transaction history and manage payments.</p>
             </div>
             <div className={common.actions}>
-              <Button variant="secondary" iconBefore={<Download size={16} />}>Export CSV</Button>
+              <Button variant="secondary" iconBefore={<Download size={16} />} onClick={() => {
+                const csv = ['Date,Project,Freelancer,Amount,Status'].concat(
+                  payments.map(p => `"${p.date}","${p.project}","${p.freelancerName}",${p.amount},${p.status}`)
+                ).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'payments.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+              }}>Export CSV</Button>
             </div>
           </header>
         </ScrollReveal>

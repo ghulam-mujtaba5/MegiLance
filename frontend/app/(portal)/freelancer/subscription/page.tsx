@@ -167,7 +167,7 @@ export default function SubscriptionPage() {
   const handleUpgrade = async (planId: string) => {
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-      const res = await fetch('/backend/api/subscriptions/upgrade', {
+      const res = await fetch('/api/subscriptions/upgrade', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -193,7 +193,7 @@ export default function SubscriptionPage() {
     setShowCancelConfirm(false);
     try {
       const token = localStorage.getItem('token') || localStorage.getItem('access_token');
-      const res = await fetch('/backend/api/subscriptions/cancel', {
+      const res = await fetch('/api/subscriptions/cancel', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

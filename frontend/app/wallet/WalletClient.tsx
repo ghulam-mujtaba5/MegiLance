@@ -53,7 +53,7 @@ type TabType = 'overview' | 'transactions' | 'withdraw' | 'deposit' | 'settings'
 // API helper for wallet endpoints
 async function walletApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const token = typeof window !== 'undefined' ? getAuthToken() : null;
-  const res = await fetch(`/backend/api/wallet${endpoint}`, {
+  const res = await fetch(`/api/wallet${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',

@@ -73,7 +73,7 @@ export default function NotesPage() {
   const fetchNotes = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/backend/api/notes-tags/notes?limit=50', {
+      const res = await fetch('/api/notes-tags/notes?limit=50', {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       
@@ -99,7 +99,7 @@ export default function NotesPage() {
       }
       
       // Fetch tags
-      const tagsRes = await fetch('/backend/api/notes-tags/tags', {
+      const tagsRes = await fetch('/api/notes-tags/tags', {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       
@@ -126,7 +126,7 @@ export default function NotesPage() {
     const token = localStorage.getItem('token');
     try {
       if (isCreating) {
-        const res = await fetch('/backend/api/notes-tags/notes', {
+        const res = await fetch('/api/notes-tags/notes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ export default function NotesPage() {
           await fetchNotes(); // Refresh from server
         }
       } else if (isEditing) {
-        const res = await fetch(`/backend/api/notes-tags/notes/${isEditing}`, {
+        const res = await fetch(`/api/notes-tags/notes/${isEditing}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -181,7 +181,7 @@ export default function NotesPage() {
   const handleDeleteNote = async (noteId: string) => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`/backend/api/notes-tags/notes/${noteId}`, {
+      const res = await fetch(`/api/notes-tags/notes/${noteId}`, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -199,7 +199,7 @@ export default function NotesPage() {
     if (!note) return;
     
     try {
-      const res = await fetch(`/backend/api/notes-tags/notes/${noteId}`, {
+      const res = await fetch(`/api/notes-tags/notes/${noteId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ export default function NotesPage() {
     const tagColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
     
     try {
-      const res = await fetch('/backend/api/notes-tags/tags', {
+      const res = await fetch('/api/notes-tags/tags', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -263,7 +263,7 @@ export default function NotesPage() {
     const tagToDelete = tags.find(t => t.id === tagId);
     
     try {
-      const res = await fetch(`/backend/api/notes-tags/tags/${tagId}`, {
+      const res = await fetch(`/api/notes-tags/tags/${tagId}`, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });

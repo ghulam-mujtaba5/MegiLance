@@ -40,7 +40,7 @@ const PasswordSettingsPage = () => {
     setIsSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('/backend/api/auth/change-password', {
+      const res = await fetch('/api/auth/change-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

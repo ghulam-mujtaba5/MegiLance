@@ -491,6 +491,43 @@ def create_proposal(project_id: int, freelancer_id: int, cover_letter: str,
     return 0
 
 
+def get_freelancer_proposals_list(freelancer_id: int, limit: int, skip: int) -> dict:
+    """Get freelancer's submitted proposals with project titles."""
+    count_result = execute_query(
+        "SELECT COUNT(*) FROM proposals WHERE freelancer_id = ?",
+        [freelancer_id]
+    )
+    total = 0
+    if count_result and count_result.get("rows"):
+        total = int(_get_val(count_result["rows"][0], 0) or 0)
+
+    result = execute_query(
+        """SELECT pr.id, pr.project_id, pr.status, pr.hourly_rate, pr.estimated_hours,
+           pr.created_at, p.title as project_title
+           FROM proposals pr
+           LEFT JOIN projects p ON pr.project_id = p.id
+           WHERE pr.freelancer_id = ?
+           ORDER BY pr.created_at DESC
+           LIMIT ? OFFSET ?""",
+        [freelancer_id, limit, skip]
+    )
+
+    proposals = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            proposals.append({
+                "id": int(_get_val(row, 0) or 0),
+                "project_id": int(_get_val(row, 1) or 0),
+                "status": _safe_str(_get_val(row, 2)),
+                "hourly_rate": float(_get_val(row, 3) or 0),
+                "estimated_hours": float(_get_val(row, 4) or 0),
+                "created_at": parse_date(_get_val(row, 5)),
+                "project_title": _safe_str(_get_val(row, 6)) or "Untitled Project",
+            })
+
+    return {"total": total, "proposals": proposals}
+
+
 def get_freelancer_portfolio_items(freelancer_id: int) -> List[dict]:
     """Get freelancer's portfolio items."""
     result = execute_query(

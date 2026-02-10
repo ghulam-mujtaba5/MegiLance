@@ -275,7 +275,7 @@ def insert_question(user_id: int, title: str, content: str, tags_json: str, cate
     """, [user_id, title, content, tags_json, category, now, now])
 
     result = execute_query("""
-        SELECT q.id, q.user_id, u.full_name, q.title, q.content, q.tags, q.category,
+        SELECT q.id, q.user_id, u.name, q.title, q.content, q.tags, q.category,
                q.status, q.view_count, q.upvotes, q.downvotes, q.answer_count,
                q.accepted_answer_id, q.created_at, q.updated_at
         FROM community_questions q
@@ -299,7 +299,7 @@ def fetch_questions(
 ) -> list:
     """Fetch a filtered and sorted list of questions."""
     sql = """
-        SELECT q.id, q.user_id, u.full_name, q.title, q.content, q.tags, q.category,
+        SELECT q.id, q.user_id, u.name, q.title, q.content, q.tags, q.category,
                q.status, q.view_count, q.upvotes, q.downvotes, q.answer_count,
                q.accepted_answer_id, q.created_at, q.updated_at
         FROM community_questions q
@@ -344,7 +344,7 @@ def get_question_detail(question_id: int) -> Optional[dict]:
     execute_query("UPDATE community_questions SET view_count = view_count + 1 WHERE id = ?", [question_id])
 
     result = execute_query("""
-        SELECT q.id, q.user_id, u.full_name, q.title, q.content, q.tags, q.category,
+        SELECT q.id, q.user_id, u.name, q.title, q.content, q.tags, q.category,
                q.status, q.view_count, q.upvotes, q.downvotes, q.answer_count,
                q.accepted_answer_id, q.created_at, q.updated_at
         FROM community_questions q
@@ -358,7 +358,7 @@ def get_question_detail(question_id: int) -> Optional[dict]:
     question = _row_to_question(result["rows"][0])
 
     answers_result = execute_query("""
-        SELECT a.id, a.user_id, u.full_name, a.content, a.upvotes, a.downvotes,
+        SELECT a.id, a.user_id, u.name, a.content, a.upvotes, a.downvotes,
                a.is_accepted, a.created_at, a.updated_at
         FROM community_answers a
         LEFT JOIN users u ON a.user_id = u.id
@@ -506,7 +506,7 @@ def fetch_playbooks(
 ) -> list:
     """Fetch a filtered list of playbooks."""
     sql = """
-        SELECT p.id, p.author_id, u.full_name, p.title, p.description, p.category,
+        SELECT p.id, p.author_id, u.name, p.title, p.description, p.category,
                p.tags, p.difficulty_level, p.view_count, p.like_count, p.bookmark_count,
                p.published_at, p.created_at
         FROM community_playbooks p
@@ -544,7 +544,7 @@ def get_playbook_detail(playbook_id: int) -> Optional[dict]:
     execute_query("UPDATE community_playbooks SET view_count = view_count + 1 WHERE id = ?", [playbook_id])
 
     result = execute_query("""
-        SELECT p.id, p.author_id, u.full_name, p.title, p.description, p.content, p.category,
+        SELECT p.id, p.author_id, u.name, p.title, p.description, p.content, p.category,
                p.tags, p.difficulty_level, p.status, p.view_count, p.like_count, p.bookmark_count,
                p.published_at, p.created_at, p.updated_at
         FROM community_playbooks p
@@ -637,7 +637,7 @@ def fetch_office_hours(
     now = datetime.now(timezone.utc).isoformat()
 
     sql = """
-        SELECT oh.id, oh.host_id, u.full_name, oh.title, oh.description, oh.scheduled_at,
+        SELECT oh.id, oh.host_id, u.name, oh.title, oh.description, oh.scheduled_at,
                oh.duration_minutes, oh.max_attendees, oh.category, oh.status, oh.is_public,
                oh.attendee_count, oh.created_at
         FROM community_office_hours oh
@@ -677,7 +677,7 @@ def fetch_office_hours(
 def get_office_hours_detail(oh_id: int) -> Optional[dict]:
     """Get full detail of an office hours session."""
     result = execute_query("""
-        SELECT oh.id, oh.host_id, u.full_name, oh.title, oh.description, oh.scheduled_at,
+        SELECT oh.id, oh.host_id, u.name, oh.title, oh.description, oh.scheduled_at,
                oh.duration_minutes, oh.max_attendees, oh.category, oh.status, oh.is_public,
                oh.recording_url, oh.attendee_count, oh.created_at, oh.updated_at
         FROM community_office_hours oh

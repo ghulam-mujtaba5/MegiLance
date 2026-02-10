@@ -100,7 +100,7 @@ const Passwordless: React.FC = () => {
         return;
       }
       
-      const res = await fetch('/backend/api/auth/magic-link', {
+      const res = await fetch('/api/auth/magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, role: selectedRole }),
@@ -125,7 +125,7 @@ const Passwordless: React.FC = () => {
     
     setLoading(true);
     try {
-      const res = await fetch('/backend/api/auth/magic-link', {
+      const res = await fetch('/api/auth/magic-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, role: selectedRole }),

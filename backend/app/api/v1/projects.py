@@ -99,7 +99,7 @@ def _row_to_project(row: list, columns: list = None) -> dict:
 def list_projects(
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=100, description="Max records to return"),
-    status: Optional[str] = Query(None, description="Filter by project status"),
+    project_status: Optional[str] = Query(None, alias="status", description="Filter by project status"),
     category: Optional[str] = Query(None, max_length=50, description="Filter by category"),
     search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH, description="Search in title and description")
 ):
@@ -114,15 +114,15 @@ def list_projects(
                  FROM projects WHERE 1=1"""
         params = []
         
-        if status:
+        if project_status:
             # Validate status
-            if status.lower() not in ALLOWED_STATUSES:
+            if project_status.lower() not in ALLOWED_STATUSES:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Invalid status. Allowed: {', '.join(ALLOWED_STATUSES)}"
                 )
             sql += " AND status = ?"
-            params.append(status.lower())
+            params.append(project_status.lower())
         else:
             # By default only show open projects for public list
             sql += " AND status = 'open'"
@@ -137,7 +137,8 @@ def list_projects(
                 sql += " AND (title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')"
                 params.extend([f"%{safe_search}%", f"%{safe_search}%"])
         
-        sql += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
+        sql += \" ORDER BY created_at DESC LIMIT ? OFFSET ?\"
+        params.extend([limit, skip])
         
         result = turso.execute(sql, params)
         projects = [_row_to_project(row) for row in result.get("rows", [])]

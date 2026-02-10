@@ -1,7 +1,7 @@
 // @AI-HINT: File Versions Page - View and manage file version history
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useTheme } from 'next-themes';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -35,7 +35,15 @@ interface FileInfo {
   createdAt: string;
 }
 
-export default function FileVersionsPage() {
+export default function FileVersionsPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading version history...</div>}>
+      <FileVersionsPage />
+    </Suspense>
+  );
+}
+
+function FileVersionsPage() {
   const { resolvedTheme } = useTheme();
   const searchParams = useSearchParams();
   const router = useRouter();

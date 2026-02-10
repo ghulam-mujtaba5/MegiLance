@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import { loadHireDraft, saveHireDraft, clearHireDraft } from '@/app/mocks/hires';
+import { saveHireDraft, clearHireDraft } from '@/app/mocks/hires';
 import api from '@/lib/api';
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';
@@ -96,7 +96,7 @@ const Hire: React.FC = () => {
       // Extract numeric ID if prefixed
       const fId = parseInt(freelancerId.toString().replace('freelancer_', ''));
       
-      const res = await (api.contracts as any).createDirect({
+      const res: any = await api.contracts.createDirect({
         freelancer_id: isNaN(fId) ? 0 : fId,
         title,
         description,
@@ -108,7 +108,6 @@ const Hire: React.FC = () => {
       setLiveMessage(`Success: Contract created (id: ${res.id})`);
       resetForm();
     } catch (e: any) {
-      console.error(e);
       setLiveMessage(`Error: ${e.message || 'Failed to create contract'}`);
     } finally {
       setSubmitting(false);

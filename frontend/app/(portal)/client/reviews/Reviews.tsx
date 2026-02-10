@@ -60,15 +60,16 @@ const Reviews: React.FC = () => {
     async function loadEligible() {
       try {
         const me: any = await api.auth.me();
-        // Fetch my reviews to know what I've already reviewed
-        const myReviews: any = await (api.reviews as any).list?.({ reviewer_id: me.id }) || [];
-        const contracts: any = await (api.contracts as any).list?.({ status: 'completed' }) || [];
+        const myReviews: any = await api.reviews.list({ reviewer_id: me.id }) || [];
+        const contracts: any = await api.contracts.list({ status: 'completed' }) || [];
         
-        const reviewedContractIds = new Set(myReviews.map((r: any) => String(r.contract_id)));
+        const reviewedContractIds = new Set(
+          (Array.isArray(myReviews) ? myReviews : []).map((r: any) => String(r.contract_id))
+        );
         
-        const eligible = contracts.filter((c: any) => 
+        const eligible = (Array.isArray(contracts) ? contracts : []).filter((c: any) => 
           !reviewedContractIds.has(String(c.id)) && 
-          (c.client_id === me.id) // Ensure I am the client
+          (c.client_id === me.id)
         );
         setEligibleContracts(eligible);
       } catch (e) {
@@ -76,7 +77,7 @@ const Reviews: React.FC = () => {
       }
     }
     loadEligible();
-  }, [reviews]); // Re-run when reviews list updates
+  }, [reviews]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -132,7 +133,7 @@ const Reviews: React.FC = () => {
       const contract = eligibleContracts.find(c => String(c.id) === selectedContractId);
       if (!contract) throw new Error("Contract not found");
 
-      await (api.reviews as any).create?.({
+      await api.reviews.create({
         contract_id: contract.id,
         reviewed_user_id: contract.freelancer_id,
         rating: newRating,
@@ -143,8 +144,18 @@ const Reviews: React.FC = () => {
       setNewText('');
       setNewRating(0);
       setSelectedContractId('');
-      // Force reload to refresh lists
-      window.location.reload();
+      // Re-fetch eligible contracts to reflect the new review
+      const me: any = await api.auth.me();
+      const updatedReviews: any = await api.reviews.list({ reviewer_id: me.id }) || [];
+      const contracts: any = await api.contracts.list({ status: 'completed' }) || [];
+      const reviewedIds = new Set(
+        (Array.isArray(updatedReviews) ? updatedReviews : []).map((r: any) => String(r.contract_id))
+      );
+      setEligibleContracts(
+        (Array.isArray(contracts) ? contracts : []).filter((c: any) =>
+          !reviewedIds.has(String(c.id)) && c.client_id === me.id
+        )
+      );
     } catch (e) {
       console.error(e);
       setSubmitError('Failed to submit review. Please try again.');
@@ -299,7 +310,7 @@ const Reviews: React.FC = () => {
                 <ScrollReveal>
           <section className={common.editor} aria-labelledby="leave-review-title">
 
-          <h2 id="new-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Leave a Review</h2>
+          <h2 id="leave-review-title" className={cn(common.sectionTitle, themed.sectionTitle)}>Leave a Review</h2>
           {submitError && <div className={common.submitError}>{submitError}</div>}
           <div className={common.editorForm}>
             

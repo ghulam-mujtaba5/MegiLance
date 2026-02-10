@@ -1,11 +1,13 @@
-// @AI-HINT: Project creation wizard - guides clients through posting a project. Enhanced with premium animations and 3D elements.
+// @AI-HINT: Project creation wizard - guides clients through posting a project. Enhanced with Zod validation, animated transitions, and premium animations.
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { z } from 'zod';
 import { 
   FileText, Banknote, Users, CheckCircle,
   ArrowRight, ArrowLeft, Clock,
@@ -27,6 +29,52 @@ import FeasibilityAnalyzer from '../FeasibilityAnalyzer/FeasibilityAnalyzer';
 import commonStyles from './ProjectWizard.common.module.css';
 import lightStyles from './ProjectWizard.light.module.css';
 import darkStyles from './ProjectWizard.dark.module.css';
+
+// === Zod Validation Schemas ===
+
+const step1Schema = z.object({
+  title: z.string().min(10, 'Title must be at least 10 characters').max(200, 'Title must be under 200 characters'),
+  description: z.string().min(100, 'Description must be at least 100 characters').max(5000, 'Description must be under 5000 characters'),
+  category: z.string().min(1, 'Please select a category'),
+});
+
+const step2Schema = z.object({
+  budgetMin: z.string().refine((val) => parseFloat(val) > 0, 'Budget minimum must be greater than 0'),
+  budgetMax: z.string().refine((val) => parseFloat(val) > 0, 'Budget maximum must be greater than 0'),
+  duration: z.string().min(1, 'Please select project duration'),
+}).refine((data) => parseFloat(data.budgetMin) <= parseFloat(data.budgetMax), {
+  message: 'Maximum must be greater than minimum',
+  path: ['budgetMax'],
+});
+
+const step3Schema = z.object({
+  skills: z.array(z.string()).min(2, 'Add at least 2 required skills'),
+  experienceLevel: z.string().min(1, 'Select required experience level'),
+});
+
+const stepSchemas = [step1Schema, step2Schema, step3Schema, null]; // null = review step (no validation)
+
+// === Slide animation variants ===
+const slideVariants = {
+  enter: (dir: number) => ({
+    x: dir > 0 ? 80 : -80,
+    opacity: 0,
+    scale: 0.97,
+    filter: 'blur(4px)',
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+  },
+  exit: (dir: number) => ({
+    x: dir > 0 ? -80 : 80,
+    opacity: 0,
+    scale: 0.97,
+    filter: 'blur(4px)',
+  }),
+};
 
 interface ProjectData {
   title: string;
@@ -63,8 +111,12 @@ const ProjectWizard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [shakeError, setShakeError] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
   
   const [projectData, setProjectData] = useState<ProjectData>({
     title: '',
@@ -144,10 +196,23 @@ const ProjectWizard: React.FC = () => {
     }));
   };
 
+  // Clear a specific field error on edit
+  const clearFieldError = useCallback((field: string) => {
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  }, []);
+
   const handleNext = () => {
     if (validateStep()) {
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
       if (currentStep < steps.length) {
+        setDirection(1);
+        setErrors({});
         setCurrentStep(currentStep + 1);
+        contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } else {
         handleSubmit();
       }
@@ -156,53 +221,59 @@ const ProjectWizard: React.FC = () => {
 
   const handleBack = () => {
     if (currentStep > 1) {
+      setDirection(-1);
+      setErrors({});
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const validateStep = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    
-    switch (currentStep) {
-      case 1: // Project Details
-        if (!projectData.title || projectData.title.length < 10) {
-          newErrors.title = 'Title must be at least 10 characters';
-        }
-        if (!projectData.description || projectData.description.length < 100) {
-          newErrors.description = 'Description must be at least 100 characters';
-        }
-        if (!projectData.category) {
-          newErrors.category = 'Please select a category';
-        }
-        break;
-      
-      case 2: // Budget & Timeline
-        if (!projectData.budgetMin || parseFloat(projectData.budgetMin) <= 0) {
-          newErrors.budgetMin = 'Budget minimum must be greater than 0';
-        }
-        if (!projectData.budgetMax || parseFloat(projectData.budgetMax) <= 0) {
-          newErrors.budgetMax = 'Budget maximum must be greater than 0';
-        }
-        if (parseFloat(projectData.budgetMin) > parseFloat(projectData.budgetMax)) {
-          newErrors.budgetMax = 'Maximum must be greater than minimum';
-        }
-        if (!projectData.duration) {
-          newErrors.duration = 'Please select project duration';
-        }
-        break;
-      
-      case 3: // Skills
-        if (projectData.skills.length === 0) {
-          newErrors.skills = 'Add at least 2 required skills';
-        }
-        if (!projectData.experienceLevel) {
-          newErrors.experienceLevel = 'Select required experience level';
-        }
-        break;
+  const handleStepClick = (stepId: number) => {
+    if (stepId === currentStep) return;
+    if (stepId < currentStep || completedSteps.has(stepId)) {
+      setDirection(stepId > currentStep ? 1 : -1);
+      setErrors({});
+      setCurrentStep(stepId);
     }
-    
+  };
+
+  const validateStep = (): boolean => {
+    const schema = stepSchemas[currentStep - 1];
+    if (!schema) return true; // Review step
+
+    // Extract the fields this step needs
+    const dataSlice: Record<string, unknown> = {};
+    if (currentStep === 1) {
+      dataSlice.title = projectData.title;
+      dataSlice.description = projectData.description;
+      dataSlice.category = projectData.category;
+    } else if (currentStep === 2) {
+      dataSlice.budgetMin = projectData.budgetMin;
+      dataSlice.budgetMax = projectData.budgetMax;
+      dataSlice.duration = projectData.duration;
+    } else if (currentStep === 3) {
+      dataSlice.skills = projectData.skills;
+      dataSlice.experienceLevel = projectData.experienceLevel;
+    }
+
+    const result = schema.safeParse(dataSlice);
+    if (result.success) {
+      setErrors({});
+      return true;
+    }
+
+    const newErrors: Record<string, string> = {};
+    for (const issue of result.error.issues) {
+      const key = issue.path.join('.');
+      if (!newErrors[key]) {
+        newErrors[key] = issue.message;
+      }
+    }
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    // Trigger shake animation
+    setShakeError(true);
+    setTimeout(() => setShakeError(false), 600);
+    return false;
   };
 
   const handleSubmit = async () => {
@@ -263,30 +334,79 @@ const ProjectWizard: React.FC = () => {
 
           {/* Steps Indicator */}
           <div className={styles.stepsIndicator}>
-            {steps.map((step) => (
-              <div
-                key={step.id}
-                className={cn(
-                  styles.step,
-                  currentStep === step.id && styles.stepActive,
-                  currentStep > step.id && styles.stepCompleted
-                )}
-              >
-                <div className={styles.stepIcon}>
-                  {currentStep > step.id ? (
-                    <CheckCircle size={24} />
-                  ) : (
-                    <step.icon size={24} />
+            {steps.map((step) => {
+              const isActive = currentStep === step.id;
+              const isCompleted = completedSteps.has(step.id);
+              const canClick = step.id < currentStep || isCompleted;
+              return (
+                <button
+                  key={step.id}
+                  type="button"
+                  className={cn(
+                    styles.step,
+                    isActive && styles.stepActive,
+                    isCompleted && styles.stepCompleted
                   )}
-                </div>
-                <div className={styles.stepTitle}>{step.title}</div>
-              </div>
-            ))}
+                  onClick={() => canClick && handleStepClick(step.id)}
+                  style={{ cursor: canClick ? 'pointer' : 'default' }}
+                  aria-label={`Step ${step.id}: ${step.title}${isCompleted ? ' (completed)' : ''}`}
+                  aria-current={isActive ? 'step' : undefined}
+                >
+                  <motion.div
+                    className={styles.stepIcon}
+                    layout
+                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  >
+                    <AnimatePresence mode="wait">
+                      {isCompleted ? (
+                        <motion.div
+                          key="check"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          exit={{ scale: 0 }}
+                          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        >
+                          <CheckCircle size={24} />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="icon"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                        >
+                          <step.icon size={24} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                  <div className={styles.stepTitle}>{step.title}</div>
+                </button>
+              );
+            })}
           </div>
         </ScrollReveal>
 
         {/* Step Content */}
-        <StaggerContainer className={styles.content} key={currentStep}>
+        <div
+          ref={contentRef}
+          className={cn(styles.content, shakeError && commonStyles.shakeError)}
+        >
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'spring', stiffness: 280, damping: 28 },
+                opacity: { duration: 0.2 },
+                scale: { duration: 0.2 },
+                filter: { duration: 0.25 },
+              }}
+            >
           {currentStep === 1 && (
             <div className={styles.formGrid}>
               <StaggerItem className={styles.fullWidth}>
@@ -295,7 +415,10 @@ const ProjectWizard: React.FC = () => {
                   label="Project Title"
                   placeholder="e.g., Build a responsive e-commerce website"
                   value={projectData.title}
-                  onChange={(e) => setProjectData({ ...projectData, title: e.target.value })}
+                  onChange={(e) => {
+                    setProjectData({ ...projectData, title: e.target.value });
+                    clearFieldError('title');
+                  }}
                   error={errors.title}
                   helpText={`${projectData.title.length} characters (minimum 10)`}
                 />
@@ -306,10 +429,13 @@ const ProjectWizard: React.FC = () => {
                   label="Project Description"
                   placeholder="Describe your project in detail. What needs to be done? What are your requirements? What is the expected outcome?"
                   value={projectData.description}
-                  onChange={(e) => setProjectData({ ...projectData, description: e.target.value })}
+                  onChange={(e) => {
+                    setProjectData({ ...projectData, description: e.target.value });
+                    clearFieldError('description');
+                  }}
                   error={errors.description}
                   rows={8}
-                  helpText={`${projectData.description.length}/1000 characters (minimum 100)`}
+                  helpText={`${projectData.description.length}/5000 characters (minimum 100)`}
                 />
               </StaggerItem>
               <StaggerItem className={styles.fullWidth}>
@@ -317,8 +443,12 @@ const ProjectWizard: React.FC = () => {
                   id="category"
                   label="Project Category"
                   value={projectData.category}
-                  onChange={(e) => setProjectData({ ...projectData, category: e.target.value })}
+                  onChange={(e) => {
+                    setProjectData({ ...projectData, category: e.target.value });
+                    clearFieldError('category');
+                  }}
                   options={categories}
+                  error={errors.category}
                 />
               </StaggerItem>
               <StaggerItem className={styles.fullWidth}>
@@ -372,7 +502,10 @@ const ProjectWizard: React.FC = () => {
                   label={`Minimum ${projectData.budgetType === 'hourly' ? 'Hourly Rate' : 'Budget'} (PKR)`}
                   placeholder="10000"
                   value={projectData.budgetMin}
-                  onChange={(e) => setProjectData({ ...projectData, budgetMin: e.target.value })}
+                  onChange={(e) => {
+                    setProjectData({ ...projectData, budgetMin: e.target.value });
+                    clearFieldError('budgetMin');
+                  }}
                   error={errors.budgetMin}
                 />
               </StaggerItem>
@@ -383,13 +516,22 @@ const ProjectWizard: React.FC = () => {
                   label={`Maximum ${projectData.budgetType === 'hourly' ? 'Hourly Rate' : 'Budget'} (PKR)`}
                   placeholder="50000"
                   value={projectData.budgetMax}
-                  onChange={(e) => setProjectData({ ...projectData, budgetMax: e.target.value })}
+                  onChange={(e) => {
+                    setProjectData({ ...projectData, budgetMax: e.target.value });
+                    clearFieldError('budgetMax');
+                  }}
                   error={errors.budgetMax}
                 />
               </StaggerItem>
               <StaggerItem className={styles.fullWidth}>
+                <Select
+                  name="duration"
+                  label="Project Duration"
                   value={projectData.duration}
-                  onChange={(e) => setProjectData({ ...projectData, duration: e.target.value })}
+                  onChange={(e) => {
+                    setProjectData({ ...projectData, duration: e.target.value });
+                    clearFieldError('duration');
+                  }}
                   options={[
                     { value: '', label: 'Select duration' },
                     { value: 'less-than-week', label: 'Less than 1 week' },
@@ -421,7 +563,10 @@ const ProjectWizard: React.FC = () => {
                   label="Required Skills (Add at least 2)"
                   placeholder="e.g., React, Node.js, MongoDB"
                   tags={projectData.skills}
-                  onTagsChange={(skills) => setProjectData({ ...projectData, skills })}
+                  onTagsChange={(skills) => {
+                    setProjectData({ ...projectData, skills });
+                    clearFieldError('skills');
+                  }}
                   error={errors.skills}
                 />
               </StaggerItem>
@@ -430,7 +575,10 @@ const ProjectWizard: React.FC = () => {
                   id="experienceLevel"
                   label="Experience Level Required"
                   value={projectData.experienceLevel}
-                  onChange={(e) => setProjectData({ ...projectData, experienceLevel: e.target.value })}
+                  onChange={(e) => {
+                    setProjectData({ ...projectData, experienceLevel: e.target.value });
+                    clearFieldError('experienceLevel');
+                  }}
                   options={[
                     { value: '', label: 'Select level' },
                     { value: 'ENTRY', label: 'Entry Level - New freelancers welcome' },
@@ -490,9 +638,18 @@ const ProjectWizard: React.FC = () => {
           )}
 
           {errors.general && (
-            <StaggerItem className={styles.errorMessage}>{errors.general}</StaggerItem>
+            <motion.div
+              className={styles.errorMessage}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+            >
+              {errors.general}
+            </motion.div>
           )}
-        </StaggerContainer>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         {/* Actions */}
         <div className={styles.actions}>

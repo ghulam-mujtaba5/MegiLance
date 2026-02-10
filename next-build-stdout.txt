@@ -1,0 +1,7 @@
+   ▲ Next.js 16.0.3 (Turbopack)
+   - Environments: .env.local, .env.production
+   - Experiments (use with caution):
+     · optimizePackageImports
+     · serverActions
+
+   Creating an optimized production build ...

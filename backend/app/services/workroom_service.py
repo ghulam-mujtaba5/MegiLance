@@ -189,7 +189,7 @@ def get_board_tasks(contract_id: int) -> dict:
     """Get all tasks for a contract organized by column."""
     result = execute_query("""
         SELECT t.id, t.title, t.description, t.column_name, t.priority, t.assignee_id,
-               u.full_name, t.due_date, t.labels, t.order_index, t.is_completed,
+               u.name, t.due_date, t.labels, t.order_index, t.is_completed,
                t.completed_at, t.created_at, t.updated_at
         FROM workroom_tasks t
         LEFT JOIN users u ON t.assignee_id = u.id
@@ -318,7 +318,7 @@ def list_contract_files(contract_id: int) -> List[dict]:
     """List all files in a contract workroom."""
     result = execute_query("""
         SELECT f.id, f.filename, f.original_name, f.file_size, f.mime_type, f.description,
-               f.version, f.download_count, f.uploaded_by, u.full_name, f.created_at
+               f.version, f.download_count, f.uploaded_by, u.name, f.created_at
         FROM workroom_files f
         LEFT JOIN users u ON f.uploaded_by = u.id
         WHERE f.contract_id = ? AND f.parent_file_id IS NULL
@@ -402,7 +402,7 @@ def delete_file_record(file_id: int):
 def list_contract_discussions(contract_id: int, limit: int, skip: int) -> List[dict]:
     """List discussions in a contract workroom."""
     result = execute_query("""
-        SELECT d.id, d.user_id, u.full_name, d.title, d.content, d.is_pinned,
+        SELECT d.id, d.user_id, u.name, d.title, d.content, d.is_pinned,
                d.reply_count, d.last_reply_at, d.created_at, d.updated_at
         FROM workroom_discussions d
         LEFT JOIN users u ON d.user_id = u.id
@@ -441,7 +441,7 @@ def create_discussion_record(contract_id: int, user_id: int, title: str,
 def get_discussion_detail(discussion_id: int) -> Optional[dict]:
     """Get discussion with contract_id for access check."""
     result = execute_query("""
-        SELECT d.id, d.contract_id, d.user_id, u.full_name, d.title, d.content,
+        SELECT d.id, d.contract_id, d.user_id, u.name, d.title, d.content,
                d.is_pinned, d.reply_count, d.last_reply_at, d.created_at, d.updated_at
         FROM workroom_discussions d
         LEFT JOIN users u ON d.user_id = u.id
@@ -470,7 +470,7 @@ def get_discussion_detail(discussion_id: int) -> Optional[dict]:
 def get_discussion_replies(discussion_id: int) -> List[dict]:
     """Get all replies for a discussion."""
     result = execute_query("""
-        SELECT r.id, r.user_id, u.full_name, r.parent_id, r.content, r.created_at, r.updated_at
+        SELECT r.id, r.user_id, u.name, r.parent_id, r.content, r.created_at, r.updated_at
         FROM workroom_discussion_replies r
         LEFT JOIN users u ON r.user_id = u.id
         WHERE r.discussion_id = ?
@@ -519,7 +519,7 @@ def create_reply_record(discussion_id: int, user_id: int, parent_id: Optional[in
 def get_activity_feed(contract_id: int, limit: int, skip: int) -> List[dict]:
     """Get activity feed for a workroom."""
     result = execute_query("""
-        SELECT a.id, a.user_id, u.full_name, a.activity_type, a.entity_type, a.entity_id,
+        SELECT a.id, a.user_id, u.name, a.activity_type, a.entity_type, a.entity_id,
                a.description, a.metadata, a.created_at
         FROM workroom_activity a
         LEFT JOIN users u ON a.user_id = u.id

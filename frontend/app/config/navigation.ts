@@ -81,7 +81,7 @@ export const dashboardNavItems: NavItem[] = [];
 export const freelancerNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/freelancer/dashboard', icon: 'LayoutDashboard', section: 'Overview' },
   { label: 'Messages', href: '/freelancer/messages', icon: 'MessageSquare' },
-  { label: 'Notifications', href: '/notifications', icon: 'Bell' },
+  { label: 'Notifications', href: '/freelancer/notifications', icon: 'Bell' },
   { label: 'My Jobs', href: '/freelancer/my-jobs', icon: 'Briefcase', section: 'Work' },
   { label: 'Proposals', href: '/freelancer/proposals', icon: 'FileText' },
   { label: 'Projects', href: '/freelancer/projects', icon: 'FolderGit2' },
@@ -112,7 +112,7 @@ export const freelancerNavItems: NavItem[] = [
 export const clientNavItems: NavItem[] = [
   { label: 'Dashboard', href: '/client/dashboard', icon: 'LayoutDashboard', section: 'Overview' },
   { label: 'Messages', href: '/client/messages', icon: 'MessageSquare' },
-  { label: 'Notifications', href: '/notifications', icon: 'Bell' },
+  { label: 'Notifications', href: '/client/notifications', icon: 'Bell' },
   { label: 'Post Job', href: '/client/post-job', icon: 'TrendingUp', section: 'Hiring' },
   { label: 'Hire', href: '/client/hire', icon: 'Users' },
   { label: 'Talent Search', href: '/client/search', icon: 'Search' },
@@ -181,10 +181,11 @@ export const profileMenuItems: ProfileMenuItem[] = [
   { label: 'Settings', href: '/settings', icon: 'FaCogs' },
   { label: 'Notifications', href: '/notifications', icon: 'FaBell' },
   { label: 'Logout', onClick: () => {
-    // Handle logout logic
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('authToken');
-      window.location.href = '/';
+      // Use the same clearAuthData as the rest of the app
+      const { clearAuthData } = require('@/lib/api');
+      clearAuthData();
+      window.location.href = '/login';
     }
   }, icon: 'FaSignOutAlt' },
 ];
@@ -207,7 +208,7 @@ export const quickAccessLinks = {
     { label: 'User Management', href: '/admin/users' },
     { label: 'System Health', href: '/admin/ai-monitoring' },
     { label: 'Support Queue', href: '/admin/support' },
-    { label: 'Audit Logs', href: '/audit-logs' },
+    { label: 'Audit Logs', href: '/admin/audit' },
   ],
 };
 

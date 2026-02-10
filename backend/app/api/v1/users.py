@@ -147,7 +147,7 @@ def list_users():
         result = turso.execute(
             """SELECT id, email, name, role, is_active, user_type, joined_at, created_at,
                       bio, skills, hourly_rate, profile_image_url, location, profile_data 
-               FROM users"""
+               FROM users LIMIT 200"""
         )
         
         users = [_row_to_user_dict(row) for row in result.get("rows", [])]
@@ -159,6 +159,12 @@ def list_users():
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database temporarily unavailable"
         )
+
+
+@router.get("/me", response_model=UserRead)
+def get_current_user_profile(current_user: User = Depends(get_current_user)):
+    """Get the currently authenticated user's profile"""
+    return current_user
 
 
 @router.get("/{user_id}", response_model=UserRead)
@@ -228,12 +234,6 @@ def create_user(payload: UserCreate):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database temporarily unavailable"
         )
-
-
-@router.get("/me", response_model=UserRead)
-def get_current_user_profile(current_user: User = Depends(get_current_user)):
-    """Get the currently authenticated user's profile"""
-    return current_user
 
 
 @router.post("/me/change-password")
@@ -341,9 +341,9 @@ def complete_user_profile(
             if title:
                 extra_data['title'] = title
         if profile_data.timezone:
-            timezone = _validate_string(profile_data.timezone, "Timezone", 100)
-            if timezone:
-                extra_data['timezone'] = timezone
+            tz_value = _validate_string(profile_data.timezone, "Timezone", 100)
+            if tz_value:
+                extra_data['timezone'] = tz_value
         if profile_data.experienceLevel:
             valid_levels = {"entry", "intermediate", "expert", "junior", "mid", "senior"}
             if profile_data.experienceLevel.lower() not in valid_levels:
@@ -433,6 +433,8 @@ def complete_user_profile(
         )
         return _row_to_user_dict(row)
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error("complete_user_profile failed: %s", e, exc_info=True)
         raise HTTPException(

@@ -11,7 +11,7 @@ Handles all execute_query calls for:
 import logging
 from typing import Optional, List, Dict, Any
 
-from app.db.turso_http import execute_query, parse_date
+from app.db.turso_http import execute_query, parse_date, parse_rows
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +189,11 @@ def insert_project(title: str, description: str, client_id: int, rate: float,
     )
     if not result:
         return None
-    return result.get("last_insert_rowid")
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    if id_result and id_result.get("rows"):
+        rows = parse_rows(id_result)
+        return int(rows[0]["id"]) if rows else None
+    return None
 
 
 def insert_proposal(project_id: int, freelancer_id: int, rate: float,
@@ -208,8 +212,8 @@ def insert_proposal(project_id: int, freelancer_id: int, rate: float,
     return bool(result)
 
 
-def insert_contract(params: List) -> bool:
-    """Insert a contract record."""
+def insert_contract(params: List) -> Optional[int]:
+    """Insert a contract record. Returns the new contract ID or None on failure."""
     result = execute_query(
         """INSERT INTO contracts (project_id, freelancer_id, client_id, amount, 
            contract_type, currency, hourly_rate, retainer_amount, retainer_frequency,
@@ -217,7 +221,15 @@ def insert_contract(params: List) -> bool:
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
         params
     )
-    return bool(result)
+    if not result:
+        return None
+    # Retrieve the auto-generated ID
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    if id_result and id_result.get("rows"):
+        rows = parse_rows(id_result)
+        if rows:
+            return int(rows[0].get("id", 0)) or None
+    return None
 
 
 def insert_contract_full(params: List) -> bool:
@@ -250,8 +262,22 @@ def fetch_contract_for_update(contract_id: str) -> Optional[dict]:
     }
 
 
+_ALLOWED_CONTRACT_SET_PARTS = frozenset({
+    "title", "description", "status", "rate", "rate_type",
+    "start_date", "end_date", "terms", "updated_at",
+})
+
+
 def update_contract_fields(contract_id: str, set_parts: List[str], values: List) -> None:
-    """Update contract fields."""
+    """Update contract fields.
+
+    ``set_parts`` must contain only ``column = ?`` entries whose column is
+    in the allowlist.
+    """
+    for part in set_parts:
+        col = part.split("=", 1)[0].strip()
+        if col not in _ALLOWED_CONTRACT_SET_PARTS:
+            raise ValueError(f"Invalid column in SET clause: {col}")
     execute_query(
         f"UPDATE contracts SET {', '.join(set_parts)} WHERE id = ?",
         values

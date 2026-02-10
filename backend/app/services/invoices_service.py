@@ -3,7 +3,7 @@ import json
 from datetime import datetime, date, timezone
 from typing import Optional, List
 
-from app.db.turso_http import execute_query, to_str, parse_date
+from app.db.turso_http import execute_query, to_str, parse_date, parse_rows
 
 
 def _row_to_invoice(row) -> dict:
@@ -202,7 +202,11 @@ def create_manual_payment(user_id: int, amount: float, invoice_id: int) -> Optio
         INSERT INTO payments (user_id, amount, currency, status, payment_method, description, created_at, updated_at)
         VALUES (?, ?, 'USD', 'completed', 'manual', ?, datetime('now'), datetime('now'))
     """, [user_id, amount, f"Manual payment for invoice #{invoice_id}"])
-    return result.get("last_insert_rowid") if result else None
+    if not result:
+        return None
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    rows = parse_rows(id_result) if id_result else []
+    return int(rows[0]["id"]) if rows else None
 
 
 def mark_invoice_paid(invoice_id: int, payment_id: Optional[int]):

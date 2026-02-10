@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import List
 import logging
 
-from app.db.turso_http import execute_query, to_str, parse_date
+from app.db.turso_http import execute_query, to_str, parse_date, parse_rows
 
 logger = logging.getLogger("megilance")
 
@@ -116,7 +116,7 @@ def _get_project_freelancers(project_id) -> List[dict]:
     if not project_id:
         return []
     freelancer_result = execute_query(
-        """SELECT DISTINCT u.id, u.full_name, u.profile_image
+        """SELECT DISTINCT u.id, u.name, u.profile_image_url
            FROM users u
            JOIN proposals p ON p.freelancer_id = u.id
            WHERE p.project_id = ? AND p.status = 'accepted'""",
@@ -335,7 +335,9 @@ def create_job(client_id, job_data: dict) -> dict:
     if not result:
         raise RuntimeError("Failed to create job")
 
-    project_id = result.get("last_insert_rowid")
+    id_result = execute_query("SELECT last_insert_rowid() as id", [])
+    rows = parse_rows(id_result) if id_result else []
+    project_id = int(rows[0]["id"]) if rows else None
 
     return {
         "id": f"job_{project_id}",

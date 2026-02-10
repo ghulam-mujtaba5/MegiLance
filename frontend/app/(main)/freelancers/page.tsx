@@ -1,5 +1,5 @@
 // @AI-HINT: Public Freelancers list page with CollectionPage + BreadcrumbList for Google Rich Results.
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import PublicFreelancers from './PublicFreelancers';
 import { buildMeta, buildCollectionPageJsonLd, buildBreadcrumbJsonLd, jsonLdScriptProps } from '@/lib/seo';
@@ -22,7 +22,9 @@ export default function Page() {
       <script {...jsonLdScriptProps(
         buildBreadcrumbJsonLd([{ name: 'Freelancers', path: '/freelancers' }])
       )} />
-      <PublicFreelancers />
+      <Suspense fallback={<div>Loading freelancers...</div>}>
+        <PublicFreelancers />
+      </Suspense>
     </>
   );
 }

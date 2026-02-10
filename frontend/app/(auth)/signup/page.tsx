@@ -1,6 +1,7 @@
 // @AI-HINT: This is the Next.js route file for the Signup page under the (auth) route group.
 'use client';
 
+import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 
@@ -10,5 +11,9 @@ const Signup = dynamic(() => import('./Signup'), {
 });
 
 export default function SignupPage() {
-  return <Signup />;
+  return (
+    <Suspense fallback={<Skeleton className="w-full h-96" />}>
+      <Signup />
+    </Suspense>
+  );
 }

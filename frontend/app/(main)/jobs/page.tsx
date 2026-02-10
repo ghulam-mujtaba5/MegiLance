@@ -1,5 +1,5 @@
 // @AI-HINT: Public Jobs list page with CollectionPage + BreadcrumbList for Google Rich Results.
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import PublicJobs from './PublicJobs';
 import { buildMeta, buildCollectionPageJsonLd, buildBreadcrumbJsonLd, jsonLdScriptProps } from '@/lib/seo';
@@ -22,7 +22,9 @@ export default function Page() {
       <script {...jsonLdScriptProps(
         buildBreadcrumbJsonLd([{ name: 'Jobs', path: '/jobs' }])
       )} />
-      <PublicJobs />
+      <Suspense fallback={<div>Loading jobs...</div>}>
+        <PublicJobs />
+      </Suspense>
     </>
   );
 }

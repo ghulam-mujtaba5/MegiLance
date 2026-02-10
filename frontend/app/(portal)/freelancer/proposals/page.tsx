@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { usePersistedState } from '@/app/lib/hooks/usePersistedState';
@@ -71,6 +72,7 @@ const mapAPIStatus = (status: string, isDraft: boolean): Proposal['status'] => {
 
 const ProposalsPage: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const styles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const toaster = useToaster();
 
@@ -222,11 +224,11 @@ const ProposalsPage: React.FC = () => {
   };
 
   const handleView = (id: string) => {
-    window.location.href = `/portal/freelancer/proposals/${id}`;
+    router.push(`/freelancer/proposals/${id}`);
   };
   
   const handleEdit = (id: string) => {
-    window.location.href = `/portal/freelancer/proposals/${id}/edit`;
+    router.push(`/freelancer/proposals/${id}/edit`);
   };
 
   if (!resolvedTheme) return null;
@@ -303,7 +305,7 @@ const ProposalsPage: React.FC = () => {
                       : "Your search or filter criteria did not match any proposals."}
                   </p>
                   {proposals.length === 0 ? (
-                    <Button variant="primary" onClick={() => window.location.href = '/jobs'}>Browse Jobs</Button>
+                    <Button variant="primary" onClick={() => router.push('/jobs')}>Browse Jobs</Button>
                   ) : (
                     <Button variant="secondary" onClick={() => { setQ(''); setStatusFilters([]); }}>Clear All Filters</Button>
                   )}

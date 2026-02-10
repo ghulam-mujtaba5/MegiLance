@@ -200,7 +200,6 @@ def create_direct_contract(
             raise HTTPException(status_code=500, detail="Failed to create proposal")
             
         # 3. Create Contract
-        contract_id = str(uuid.uuid4())
         
         # Determine contract type and fields
         contract_type = "fixed"
@@ -217,7 +216,7 @@ def create_direct_contract(
             retainer_amount = hire_data.rate
             retainer_frequency = rt
         
-        insert_ok = contracts_service.insert_contract([
+        contract_id = contracts_service.insert_contract([
                 project_id,
                 hire_data.freelancer_id,
                 current_user.id,
@@ -237,7 +236,7 @@ def create_direct_contract(
                 now
             ])
         
-        if not insert_ok:
+        if not contract_id:
             raise HTTPException(status_code=500, detail="Failed to create contract")
         
         logger.info(f"Direct contract {contract_id} created by client {current_user.id} for freelancer {hire_data.freelancer_id}")

@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { 
   Bell, Search, HelpCircle, Sun, Moon, LogOut, User, Settings, 
-  X, Check, CheckCheck, ExternalLink, MessageSquare, FileText,
+  X, Check, CheckCheck, MessageSquare, FileText,
   Briefcase, CreditCard, AlertCircle, Clock, ChevronRight,
   Keyboard, BookOpen, Mail, Shield, Wallet, Menu, Home
 } from 'lucide-react';
@@ -39,7 +39,7 @@ async function fetchNotifications(): Promise<Notification[]> {
   const token = getAuthToken();
   if (!token) return [];
   try {
-    const res = await fetch('/backend/api/notifications?limit=10', {
+    const res = await fetch('/api/notifications?limit=10', {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) return [];
@@ -206,8 +206,8 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
   const helpMenuItems = [
     { label: 'Help Center', href: '/help', icon: <BookOpen size={16} />, description: 'Browse help articles' },
     { label: 'Keyboard Shortcuts', icon: <Keyboard size={16} />, description: 'Ctrl+K to search', onClick: () => {} },
-    { label: 'Contact Support', href: '/portal/support', icon: <Mail size={16} />, description: 'Get help from our team' },
-    { label: 'Documentation', href: '/docs', icon: <FileText size={16} />, description: 'API & developer docs', external: true },
+    { label: 'Contact Support', href: `/${userType}/support`, icon: <Mail size={16} />, description: 'Get help from our team' },
+    { label: 'Help Articles', href: '/help', icon: <FileText size={16} />, description: 'Browse guides & FAQs' },
   ];
 
   // Build breadcrumb segments from the current pathname
@@ -315,9 +315,11 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
             <div className={cn(commonStyles.searchDropdown, styles.searchDropdown)}>
               <div className={commonStyles.searchSection}>
                 <span className={commonStyles.searchSectionTitle}>Quick Actions</span>
-                <Link href={`/${userType}/post-job`} className={commonStyles.searchItem}>
-                  <Briefcase size={14} /> Post a new job
-                </Link>
+                {userType === 'client' && (
+                  <Link href="/client/post-job" className={commonStyles.searchItem}>
+                    <Briefcase size={14} /> Post a new job
+                  </Link>
+                )}
                 <Link href={`/${userType}/messages`} className={commonStyles.searchItem}>
                   <MessageSquare size={14} /> View messages
                 </Link>
@@ -370,15 +372,12 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
                         href={item.href} 
                         className={commonStyles.helpItem}
                         onClick={() => setShowHelpMenu(false)}
-                        target={item.external ? '_blank' : undefined}
-                        rel={item.external ? 'noopener noreferrer' : undefined}
                       >
                         <span className={commonStyles.helpItemIcon}>{item.icon}</span>
                         <div className={commonStyles.helpItemContent}>
                           <span className={commonStyles.helpItemLabel}>{item.label}</span>
                           <span className={commonStyles.helpItemDesc}>{item.description}</span>
                         </div>
-                        {item.external && <ExternalLink size={12} className={commonStyles.externalIcon} />}
                       </Link>
                     ) : (
                       <button 
@@ -474,7 +473,7 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
                 </div>
                 
                 <Link 
-                  href="/notifications" 
+                  href={`/${userType}/notifications`} 
                   className={commonStyles.viewAllLink}
                   onClick={() => setShowNotifications(false)}
                 >

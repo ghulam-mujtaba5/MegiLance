@@ -9,7 +9,7 @@ import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { errorAlertAnimation, emptyBoxAnimation } from '@/app/components/Animations/LottieAnimation';
-import { contractsApi, proposalsApi } from '@/lib/api';
+import { contractsApi } from '@/lib/api';
 import { 
   Briefcase, 
   Clock, 

@@ -189,8 +189,8 @@ async def list_reviews(
                    r.rating_breakdown,
                    r.comment, r.is_public, r.created_at, r.updated_at,
                    p.title as project_title,
-                   u.full_name as reviewed_user_name,
-                   reviewer.full_name as reviewer_name
+                   u.name as reviewed_user_name,
+                   reviewer.name as reviewer_name
             FROM reviews r
             LEFT JOIN contracts c ON r.contract_id = c.id
             LEFT JOIN projects p ON c.project_id = p.id

@@ -3,7 +3,7 @@
 Handles milestone CRUD, submissions, approvals, and payment integration.
 """
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 
 from app.core.security import get_current_active_user
 from app.models import User
@@ -227,7 +227,7 @@ async def approve_milestone(
 @router.post("/milestones/{milestone_id}/reject", response_model=MilestoneSchema)
 async def reject_milestone(
     milestone_id: int,
-    rejection_notes: str,
+    rejection_notes: str = Body(..., embed=True),
     current_user: User = Depends(get_current_active_user)
 ):
     """Reject a milestone submission (client action). Returns milestone to PENDING status."""

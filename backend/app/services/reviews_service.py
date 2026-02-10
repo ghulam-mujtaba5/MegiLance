@@ -80,8 +80,8 @@ def query_reviews(where_sql: str, params: List) -> List[Dict[str, Any]]:
                    r.rating_breakdown,
                    r.comment, r.is_public, r.created_at, r.updated_at,
                    p.title as project_title,
-                   u.full_name as reviewed_user_name,
-                   reviewer.full_name as reviewer_name
+                   u.name as reviewed_user_name,
+                   reviewer.name as reviewer_name
             FROM reviews r
             LEFT JOIN contracts c ON r.contract_id = c.id
             LEFT JOIN projects p ON c.project_id = p.id
@@ -104,7 +104,7 @@ def user_exists(user_id: int) -> bool:
 
 
 def get_review_aggregate_stats(user_id: int) -> Dict[str, Any]:
-    """Get aggregate review stats (count, average) for a user (public reviews only)."""
+    """Get aggregate review stats (count, average, sub-rating averages) for a user (public reviews only)."""
     result = execute_query(
         """SELECT COUNT(*) as total_reviews,
                   AVG(rating) as average_rating
@@ -117,6 +117,37 @@ def get_review_aggregate_stats(user_id: int) -> Dict[str, Any]:
         rows = parse_rows(result)
         if rows:
             stats = rows[0]
+
+    # Compute sub-rating averages from rating_breakdown JSON
+    breakdown_result = execute_query(
+        """SELECT rating_breakdown FROM reviews
+           WHERE reviewee_id = ? AND is_public = 1 AND rating_breakdown IS NOT NULL""",
+        [user_id]
+    )
+    sub_totals = {"communication": 0.0, "quality": 0.0, "professionalism": 0.0, "deadline": 0.0}
+    sub_counts = {"communication": 0, "quality": 0, "professionalism": 0, "deadline": 0}
+    if breakdown_result and breakdown_result.get("rows"):
+        bd_rows = parse_rows(breakdown_result)
+        import json
+        for row in bd_rows:
+            raw = row.get("rating_breakdown")
+            if not raw:
+                continue
+            try:
+                bd = json.loads(raw) if isinstance(raw, str) else raw
+            except (json.JSONDecodeError, TypeError):
+                continue
+            for key in sub_totals:
+                val = bd.get(key)
+                if val is not None:
+                    sub_totals[key] += float(val)
+                    sub_counts[key] += 1
+
+    stats["communication_avg"] = round(sub_totals["communication"] / sub_counts["communication"], 2) if sub_counts["communication"] else 0.0
+    stats["quality_avg"] = round(sub_totals["quality"] / sub_counts["quality"], 2) if sub_counts["quality"] else 0.0
+    stats["professionalism_avg"] = round(sub_totals["professionalism"] / sub_counts["professionalism"], 2) if sub_counts["professionalism"] else 0.0
+    stats["deadline_avg"] = round(sub_totals["deadline"] / sub_counts["deadline"], 2) if sub_counts["deadline"] else 0.0
+
     return stats
 
 

@@ -89,8 +89,9 @@ async def get_general_recommendations(
         from app.db.turso_http import TursoHTTP
         turso = TursoHTTP.get_instance()
         result = turso.execute(
-            "SELECT id, email, name, bio, profile_image_url, hourly_rate, location "
+            "SELECT id, email, name, bio, profile_image_url, hourly_rate, location, rating "
             "FROM users WHERE LOWER(user_type) = 'freelancer' AND is_active = 1 "
+            "ORDER BY rating DESC NULLS LAST "
             "LIMIT ?",
             [limit]
         )
@@ -98,6 +99,11 @@ async def get_general_recommendations(
         recommendations = []
         if result and result.get('rows'):
             for row in result['rows']:
+                user_rating = float(row[7]) if row[7] is not None else 0.0
+                # Derive match score from actual rating data
+                rating_factor = min(user_rating / 5.0, 1.0) if user_rating > 0 else 0.5
+                match_score = round(0.6 + (rating_factor * 0.4), 2)  # Range: 0.6-1.0
+                
                 recommendations.append({
                     "freelancer_id": row[0],
                     "freelancer_name": row[2] or row[1].split('@')[0] if row[1] else 'Freelancer',
@@ -106,15 +112,15 @@ async def get_general_recommendations(
                     "profile_image_url": row[4],
                     "hourly_rate": row[5],
                     "location": row[6],
-                    "match_score": 0.85,
+                    "match_score": match_score,
                     "match_factors": {
-                        "skill_match": 0.8,
-                        "success_rate": 0.9,
-                        "avg_rating": 0.85,
-                        "budget_match": 0.75,
-                        "experience_match": 0.8,
+                        "skill_match": 0.7,
+                        "success_rate": rating_factor,
+                        "avg_rating": rating_factor,
+                        "budget_match": 0.7,
+                        "experience_match": 0.7,
                         "availability": 1.0,
-                        "response_rate": 0.9
+                        "response_rate": 0.8
                     }
                 })
         return recommendations
@@ -162,6 +168,10 @@ async def get_general_recommendations(
         
         recommendations = []
         for f in top_freelancers:
+            user_rating = float(f.rating) if f.rating else 0.0
+            rating_factor = min(user_rating / 5.0, 1.0) if user_rating > 0 else 0.5
+            match_score = round(0.6 + (rating_factor * 0.4), 2)
+            
             recommendations.append({
                 "freelancer_id": f.id,
                 "freelancer_name": f.name,
@@ -170,10 +180,10 @@ async def get_general_recommendations(
                 "hourly_rate": f.hourly_rate,
                 "location": f.location,
                 "profile_image_url": f.profile_image_url,
-                "match_score": 0.95 if f.rating and f.rating > 4.5 else 0.85,
+                "match_score": match_score,
                 "match_factors": {
-                    "avg_rating": (f.rating or 0) / 5.0,
-                    "success_rate": 0.9
+                    "avg_rating": rating_factor,
+                    "success_rate": rating_factor
                 }
             })
             

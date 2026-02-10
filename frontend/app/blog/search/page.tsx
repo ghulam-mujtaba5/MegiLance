@@ -1,5 +1,5 @@
 // @AI-HINT: Blog search page - fetches real posts from API
-// Production-ready: No mock data, connects to /backend/api/blog
+// Production-ready: No mock data, connects to /api/blog
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
@@ -26,7 +26,7 @@ interface BlogPost {
 // Fetch blog posts from API
 async function fetchBlogPosts(): Promise<BlogPost[]> {
   try {
-    const res = await fetch('/backend/api/blog?limit=50');
+    const res = await fetch('/api/blog?limit=50');
     if (!res.ok) return [];
     const data = await res.json();
     return (data.posts || data || []).map((p: any) => ({

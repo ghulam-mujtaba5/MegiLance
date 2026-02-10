@@ -42,7 +42,7 @@ export function clearHireDraft() {
 export async function submitHire(input: CreateHireInput): Promise<CreateHireResult> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') || localStorage.getItem('token') : null;
   
-  const response = await fetch('/backend/api/contracts/direct', {
+  const response = await fetch('/api/contracts/direct', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

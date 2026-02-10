@@ -248,6 +248,16 @@ async def submit_freelancer_proposal(
     }
 
 
+@router.get("/freelancer/proposals")
+async def get_freelancer_proposals(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    freelancer: User = Depends(get_freelancer_user)
+):
+    """Get freelancer's submitted proposals"""
+    return portal_service.get_freelancer_proposals_list(freelancer.id, limit, skip)
+
+
 @router.get("/freelancer/portfolio")
 async def get_freelancer_portfolio(freelancer: User = Depends(get_freelancer_user)):
     """Get freelancer's portfolio items"""

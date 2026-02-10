@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
@@ -32,6 +33,7 @@ interface VerificationTier {
 
 export default function VerificationPage() {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [verifications, setVerifications] = useState<VerificationItem[]>([]);
@@ -145,7 +147,7 @@ export default function VerificationPage() {
       setShowUploadModal(true);
     } else if (verification.type === 'skills') {
       // Redirect to skills assessment
-      window.location.href = '/freelancer/assessments';
+      router.push('/freelancer/assessments');
     }
   };
 
@@ -161,7 +163,7 @@ export default function VerificationPage() {
       formData.append('document', selectedFile);
       formData.append('document_type', selectedVerification.type === 'identity' ? 'national_id' : 'address_proof');
       
-      const res = await fetch('/backend/api/verification/upload-document', {
+      const res = await fetch('/api/verification/upload-document', {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: formData,

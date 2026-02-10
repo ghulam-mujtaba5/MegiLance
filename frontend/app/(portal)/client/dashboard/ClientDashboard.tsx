@@ -8,6 +8,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useClientData } from '@/hooks/useClient';
 import { useRecommendations } from '@/hooks/useRecommendations';
+import { useAuth } from '@/hooks/useAuth';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
@@ -21,10 +22,7 @@ import {
   ArrowRight,
   Search,
   FileText,
-  Users,
-  CreditCard,
-  Star,
-  TrendingUp
+  CreditCard
 } from 'lucide-react';
 
 import StatCard from './components/StatCard';
@@ -40,6 +38,7 @@ const ClientDashboard: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const { projects, payments, loading, error } = useClientData();
   const { recommendations: freelancers, loading: recLoading, error: recError } = useRecommendations(5);
+  const { user } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -95,7 +94,7 @@ const ClientDashboard: React.FC = () => {
       {/* Header Section */}
       <div className={commonStyles.headerSection}>
         <div className={cn(commonStyles.welcomeText, themeStyles.welcomeText)}>
-          <h1>Welcome back</h1>
+          <h1>Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</h1>
           <p>Here&apos;s what&apos;s happening with your projects today.</p>
         </div>
         <div className={commonStyles.headerActions}>
@@ -138,6 +137,12 @@ const ClientDashboard: React.FC = () => {
           icon={MessageSquare} 
         />
       </div>
+
+      {error && (
+        <div className={commonStyles.errorBanner} role="alert">
+          <p>Failed to load dashboard data. Please try refreshing the page.</p>
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className={commonStyles.quickActionsSection}>

@@ -93,7 +93,7 @@ const Health: React.FC = () => {
       let response: Response | null = null;
       
       try {
-        response = await fetch('/backend/api/health/?detailed=true');
+        response = await fetch('/api/health/?detailed=true');
       } catch {
         // If proxy fails, try direct backend
         response = await fetch('http://localhost:8000/api/health/?detailed=true');

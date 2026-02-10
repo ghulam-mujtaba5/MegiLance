@@ -164,8 +164,7 @@ export function useAuth(): UseAuthReturn {
 
       if (isMounted.current) setUser(normalized);
       localStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
-      localStorage.setItem(AUTH.TOKEN_KEY, response.access_token);
-      localStorage.setItem(AUTH.REFRESH_TOKEN_KEY, response.refresh_token);
+      setAuthToken(response.access_token);
 
       // Set cookie for middleware (secure)
       setAuthCookie(response.access_token);

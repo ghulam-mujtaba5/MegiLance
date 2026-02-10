@@ -102,9 +102,9 @@ const Clients: React.FC = () => {
       try {
         // Fetch clients, stats, and industries in parallel
         const [clientsRes, statsRes, industriesRes] = await Promise.all([
-          fetch('/backend/api/v1/public-clients/featured'),
-          fetch('/backend/api/v1/public-clients/stats'),
-          fetch('/backend/api/v1/public-clients/industries'),
+          fetch('/api/v1/public-clients/featured'),
+          fetch('/api/v1/public-clients/stats'),
+          fetch('/api/v1/public-clients/industries'),
         ]);
 
         if (clientsRes.ok) {

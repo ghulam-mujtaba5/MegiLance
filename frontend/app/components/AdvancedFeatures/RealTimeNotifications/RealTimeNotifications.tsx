@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { getAuthToken } from '@/lib/api';
 import { 
@@ -48,6 +49,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
   autoMarkAsRead = true,
 }) => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -155,7 +157,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     // Send API request to mark as read
     try {
       const token = getAuthToken();
-      await fetch(`/backend/api/notifications/${notificationId}/read`, {
+      await fetch(`/api/notifications/${notificationId}/read`, {
         method: 'PUT',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -169,7 +171,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     // Send API request to mark all as read
     try {
       const token = getAuthToken();
-      await fetch('/backend/api/notifications/mark-all-read', {
+      await fetch('/api/notifications/mark-all-read', {
         method: 'PUT',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -185,7 +187,11 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
       }
       onNotificationClick?.(notification);
       if (notification.actionUrl) {
-        window.location.href = notification.actionUrl;
+        if (notification.actionUrl.startsWith('/')) {
+          router.push(notification.actionUrl);
+        } else {
+          window.location.href = notification.actionUrl;
+        }
       }
     },
     [autoMarkAsRead, handleMarkAsRead, onNotificationClick]
@@ -197,7 +203,7 @@ const RealTimeNotifications: React.FC<RealTimeNotificationsProps> = ({
     // Send API request to delete notification
     try {
       const token = getAuthToken();
-      await fetch(`/backend/api/notifications/${notificationId}`, {
+      await fetch(`/api/notifications/${notificationId}`, {
         method: 'DELETE',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });

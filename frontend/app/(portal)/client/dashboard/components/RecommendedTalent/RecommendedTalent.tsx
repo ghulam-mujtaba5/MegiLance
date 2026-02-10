@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import Card from '@/app/components/Card/Card';
@@ -19,6 +20,7 @@ import dark from './RecommendedTalent.dark.module.css';
 
 const RecommendedTalent: React.FC = () => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const themed = resolvedTheme === 'dark' ? dark : light;
   const [talents, setTalents] = useState<FreelancerMatchData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -84,7 +86,7 @@ const RecommendedTalent: React.FC = () => {
                 freelancer={talent} 
                 compact={true}
                 showActions={true}
-                onViewProfile={(id) => window.location.href = `/freelancers/${id}`}
+                onViewProfile={(id) => router.push(`/freelancers/${id}`)}
               />
             </div>
           ))

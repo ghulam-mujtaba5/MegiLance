@@ -17,9 +17,9 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { 
-  Search, FileText, DollarSign, Clock, CheckCircle, 
-  AlertTriangle, Plus, Download, Calendar, Users,
-  ArrowRight, Briefcase, XCircle
+  Search, FileText, DollarSign, CheckCircle, 
+  Plus, Download, Calendar,
+  ArrowRight, Briefcase
 } from 'lucide-react';
 import commonStyles from './Contracts.common.module.css';
 import lightStyles from './Contracts.light.module.css';
@@ -84,6 +84,7 @@ export default function ClientContractsPage() {
   
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [sortKey, setSortKey] = useState('newest');
@@ -96,8 +97,10 @@ export default function ClientContractsPage() {
         const response = await contractsApi.list() as { contracts: Contract[] };
         const data = Array.isArray(response) ? response : (response.contracts || []);
         setContracts(data);
+        setError(null);
       } catch (error) {
         console.error('Failed to load contracts', error);
+        setError('Failed to load contracts. Please try again.');
       } finally {
         setLoading(false);
       }
@@ -317,7 +320,12 @@ export default function ClientContractsPage() {
         </ScrollReveal>
 
         {/* Contract Cards */}
-        {loading ? (
+        {error ? (
+          <div className={commonStyles.emptyState || ''}>
+            <p>{error}</p>
+            <button onClick={() => window.location.reload()}>Try again</button>
+          </div>
+        ) : loading ? (
           <div className={commonStyles.grid}>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className={cn(commonStyles.skeletonCard, themeStyles.skeletonCard)} />

@@ -85,7 +85,7 @@ def create_gig(
     basic_features_json = json.dumps(gig_data.basic_package.features) if gig_data.basic_package.features else None
     standard_features_json = json.dumps(gig_data.standard_package.features) if gig_data.standard_package and gig_data.standard_package.features else None
     premium_features_json = json.dumps(gig_data.premium_package.features) if gig_data.premium_package and gig_data.premium_package.features else None
-    extras_json = json.dumps([e.dict() for e in gig_data.extras]) if gig_data.extras else None
+    extras_json = json.dumps([e.model_dump() for e in gig_data.extras]) if gig_data.extras else None
     requirements_json = json.dumps(gig_data.requirements) if gig_data.requirements else None
     images_json = json.dumps(gig_data.images) if gig_data.images else None
     
@@ -168,7 +168,7 @@ def list_gigs(
     SELECT g.id, g.title, g.slug, g.short_description, g.thumbnail_url,
            g.basic_price, g.rating_average, g.rating_count, g.orders_completed,
            g.seller_id, g.category_id, g.status, g.is_featured,
-           u.full_name as seller_name, u.avatar_url as seller_avatar
+           u.name as seller_name, u.profile_image_url as seller_avatar
     FROM gigs g
     LEFT JOIN users u ON g.seller_id = u.id
     WHERE 1=1

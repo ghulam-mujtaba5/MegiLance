@@ -2,18 +2,10 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import {
-  Loader2,
-  Search,
-  Filter,
-  MoreVertical,
-  Download,
-  ExternalLink,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  FileText
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/app/components/Button';
 import { Badge } from '@/app/components/Badge';
@@ -75,6 +67,7 @@ const getStatusBadgeVariant = (status: string): 'success' | 'warning' | 'danger'
 
 const ContractsPage = () => {
   const { resolvedTheme } = useTheme();
+  const router = useRouter();
   const styles = useMemo(() => {
     const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
     return { ...commonStyles, ...themeStyles };
@@ -195,10 +188,11 @@ const ContractsPage = () => {
 
   // Row actions
   const viewContract = (c: ContractData) => {
-    toaster.notify({ title: 'Open contract', description: `Opening ${c.projectTitle}`, variant: 'info' });
+    router.push(`/freelancer/contracts/${c.id}`);
   };
   const downloadContract = (c: ContractData) => {
-    toaster.notify({ title: 'Download', description: `Downloading ${c.projectTitle} PDF…`, variant: 'success' });
+    toaster.notify({ title: 'Download', description: `Preparing ${c.projectTitle} PDF…`, variant: 'info' });
+    window.open(`/api/contracts/${c.id}/pdf`, '_blank');
   };
   const openExtend = (id: string) => { setActionType('extend'); setActionTargetId(id); setActionOpen(true); };
   const openDispute = (id: string) => { setActionType('dispute'); setActionTargetId(id); setActionOpen(true); };
@@ -212,7 +206,7 @@ const ContractsPage = () => {
     try {
       if (actionType === 'extend') {
         // Create scope change request for extension
-        const res = await fetch('/backend/api/scope-changes', {
+        const res = await fetch('/api/scope-changes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -234,7 +228,7 @@ const ContractsPage = () => {
         }
       } else if (actionType === 'dispute') {
         // Create dispute
-        const res = await fetch('/backend/api/disputes', {
+        const res = await fetch('/api/disputes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -267,13 +261,13 @@ const ContractsPage = () => {
   const onCancelAction = () => { setActionOpen(false); setActionType(null); setActionTargetId(null); };
 
   const onExportCSV = () => {
-    const header = ['Project', 'Client', 'Value (USDC)', 'Status', 'Contract'];
+    const header = ['Project', 'Client', 'Value', 'Status', 'Contract'];
     const rows = sorted.map(c => [c.projectTitle, c.clientName, String(c.value), c.status, c.contractAddress]);
     exportCSV(header, rows, 'contracts');
   };
 
   const onExport = (format: 'csv' | 'xlsx' | 'pdf') => {
-    const header = ['Project', 'Client', 'Value (USDC)', 'Status', 'Contract'];
+    const header = ['Project', 'Client', 'Value', 'Status', 'Contract'];
     const cols: (typeof allColumns[number])[] = ['projectTitle', 'clientName', 'value', 'status', 'contract'];
     const rows = sorted.map(c => [c.projectTitle, c.clientName, String(c.value), c.status, c.contractAddress]);
     const visibleIndices = cols
@@ -285,7 +279,7 @@ const ContractsPage = () => {
   const onExportSelected = () => {
     const selectedSet = new Set(selected);
     const selectedRows = filtered.filter(c => selectedSet.has(c.id));
-    const header = ['Project', 'Client', 'Value (USDC)', 'Status', 'Contract'];
+    const header = ['Project', 'Client', 'Value', 'Status', 'Contract'];
     const rows = selectedRows.map(c => [c.projectTitle, c.clientName, String(c.value), c.status, c.contractAddress]);
     exportCSV(header, rows, 'contracts-selected');
   };
@@ -293,7 +287,7 @@ const ContractsPage = () => {
   const onExportSelectedFormat = (format: 'csv' | 'xlsx' | 'pdf') => {
     const selectedSet = new Set(selected);
     const selectedRows = filtered.filter(c => selectedSet.has(c.id));
-    const header = ['Project', 'Client', 'Value (USDC)', 'Status', 'Contract'];
+    const header = ['Project', 'Client', 'Value', 'Status', 'Contract'];
     const cols: (typeof allColumns[number])[] = ['projectTitle', 'clientName', 'value', 'status', 'contract'];
     const rows = selectedRows.map(c => [c.projectTitle, c.clientName, String(c.value), c.status, c.contractAddress]);
     const visibleIndices = cols
@@ -388,7 +382,7 @@ const ContractsPage = () => {
                 columns={[
                   { key: 'projectTitle', label: 'Project' },
                   { key: 'clientName', label: 'Client' },
-                  { key: 'value', label: 'Value (USDC)' },
+                  { key: 'value', label: 'Value' },
                   { key: 'status', label: 'Status' },
                   { key: 'contract', label: 'Contract' },
                   { key: 'actions', label: 'Actions' },
@@ -522,7 +516,7 @@ const ContractsPage = () => {
                         {show('clientName') && <td>{contract.clientName}</td>
                         }
                         {show('value') && (
-                          <td><span className={styles.value}>{contract.value} USDC</span></td>
+                          <td><span className={styles.value}>${contract.value}</span></td>
                         )}
                         {show('status') && (
                           <td><Badge variant={getStatusBadgeVariant(contract.status)}>{contract.status}</Badge></td>
@@ -530,12 +524,10 @@ const ContractsPage = () => {
                         {show('contract') && (
                           <td>
                             <a
-                              href={`https://etherscan.io/address/${contract.contractAddress}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                              href={`/freelancer/contracts/${contract.id}`}
                               className={styles.link}
                             >
-                              View on Etherscan
+                              View Details
                             </a>
                           </td>
                         )}

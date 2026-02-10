@@ -341,7 +341,7 @@ def accept_proposal(
             detail="Proposal is not in submitted status"
         )
     
-    result = proposals_service.accept_proposal(proposal_id, current_user.id, details)
+    result = proposals_service.accept_proposal(proposal_id, details, current_user.id)
     if not result:
         raise HTTPException(status_code=500, detail="Failed to retrieve updated proposal")
     return result

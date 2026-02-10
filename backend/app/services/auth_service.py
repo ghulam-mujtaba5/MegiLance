@@ -106,13 +106,29 @@ def check_email_available(email: str, exclude_user_id: int) -> bool:
     return not (result and result.get("rows"))
 
 
+_ALLOWED_USER_COLUMNS = frozenset({
+    "email", "hashed_password", "is_active", "is_verified", "email_verified",
+    "name", "user_type", "role", "bio", "skills", "hourly_rate",
+    "profile_image_url", "location", "profile_data",
+    "two_factor_enabled", "two_factor_secret", "two_factor_backup_codes",
+    "account_balance", "phone", "company", "website", "updated_at",
+})
+
+
 def update_user_fields(user_id: int, update_data: Dict[str, Any]) -> Any:
-    """Update user fields from a dict of column name to value."""
+    """Update user fields from a dict of column name to value.
+
+    Column names are validated against an allowlist to prevent SQL injection.
+    """
     set_parts = []
     values = []
     for key, value in update_data.items():
+        if key not in _ALLOWED_USER_COLUMNS:
+            raise ValueError(f"Invalid column name: {key}")
         set_parts.append(f"{key} = ?")
         values.append(value if value is not None else "")
+    if not set_parts:
+        return None
     values.append(user_id)
     return execute_query(
         f"UPDATE users SET {', '.join(set_parts)} WHERE id = ?",

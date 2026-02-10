@@ -429,7 +429,7 @@ class AdvancedAIService:
 
         # Get user profile
         result = execute_query("""
-            SELECT name, bio, location, profile_image, created_at
+            SELECT name, bio, location, profile_image_url, created_at
             FROM users WHERE id = ?
         """, [user_id])
 
@@ -459,7 +459,7 @@ class AdvancedAIService:
                 score += 15.0
 
         # Check for missing profile image
-        if not row[2].get("value"):
+        if not row[3].get("value"):
             patterns.append("no_profile_image")
             score += 5.0
 
@@ -807,7 +807,7 @@ def get_project_for_proposal(project_id: int) -> Optional[Dict[str, Any]]:
 def get_user_profile_for_proposal(user_id) -> Dict[str, Any]:
     """Get user profile for proposal generation (Turso HTTP)."""
     result = turso_query("""
-        SELECT full_name, skills, hourly_rate, bio, completed_projects
+        SELECT name, skills, hourly_rate, bio, NULL as completed_projects
         FROM users WHERE id = ?
     """, [user_id])
 

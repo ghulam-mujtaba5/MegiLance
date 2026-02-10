@@ -13,7 +13,6 @@ import {
   Eye,
   Edit2,
   Trash2,
-  MoreVertical,
   Package,
   DollarSign,
   Star,
@@ -27,7 +26,6 @@ import {
 import common from './GigsList.common.module.css';
 import light from './GigsList.light.module.css';
 import dark from './GigsList.dark.module.css';
-import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
 import Modal from '@/app/components/Modal/Modal';
 
@@ -63,7 +61,7 @@ const GigsList: React.FC = () => {
     // Fetch gigs from API
     const fetchGigs = async () => {
       try {
-        const response = await fetch('/backend/api/gigs/my-gigs', {
+        const response = await fetch('/api/gigs/seller/my-gigs', {
           credentials: 'include',
         });
         if (response.ok) {
@@ -130,21 +128,26 @@ const GigsList: React.FC = () => {
 
   const handleToggleStatus = async (gigId: string, currentStatus: Gig['status']) => {
     const newStatus = currentStatus === 'active' ? 'paused' : 'active';
-    try {
-      await fetch(`/backend/api/gigs/${gigId}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ status: newStatus }),
-      });
-    } catch {
-      // Optimistic update even on error
-    }
+    const endpoint = newStatus === 'paused' ? 'pause' : 'publish';
+    // Optimistic update
     setGigs(prev =>
       prev.map(g =>
         g.id === gigId ? { ...g, status: newStatus } : g
       )
     );
+    try {
+      await fetch(`/api/gigs/${gigId}/${endpoint}`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch {
+      // Revert on error
+      setGigs(prev =>
+        prev.map(g =>
+          g.id === gigId ? { ...g, status: currentStatus } : g
+        )
+      );
+    }
   };
 
   const handleDelete = (gigId: string) => {
@@ -154,7 +157,7 @@ const GigsList: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await fetch(`/backend/api/gigs/${deleteTarget}`, {
+      await fetch(`/api/gigs/${deleteTarget}`, {
         method: 'DELETE',
         credentials: 'include',
       });
@@ -433,39 +436,43 @@ const GigsList: React.FC = () => {
             </div>
 
             {/* Pagination */}
-            {filteredGigs.length > 10 && (
-              <div className={common.pagination}>
-                <button
-                  className={cn(common.paginationButton, themed.paginationButton)}
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(p => p - 1)}
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <div className={common.paginationPages}>
-                  {[1, 2, 3].map(page => (
-                    <button
-                      key={page}
-                      className={cn(
-                        common.pageButton,
-                        themed.pageButton,
-                        currentPage === page && themed.pageButtonActive
-                      )}
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      {page}
-                    </button>
-                  ))}
+            {filteredGigs.length > 10 && (() => {
+              const itemsPerPage = 10;
+              const totalPages = Math.ceil(filteredGigs.length / itemsPerPage);
+              return (
+                <div className={common.pagination}>
+                  <button
+                    className={cn(common.paginationButton, themed.paginationButton)}
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => p - 1)}
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <div className={common.paginationPages}>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                      <button
+                        key={page}
+                        className={cn(
+                          common.pageButton,
+                          themed.pageButton,
+                          currentPage === page && themed.pageButtonActive
+                        )}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    className={cn(common.paginationButton, themed.paginationButton)}
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => p + 1)}
+                  >
+                    <ChevronRight size={18} />
+                  </button>
                 </div>
-                <button
-                  className={cn(common.paginationButton, themed.paginationButton)}
-                  disabled={currentPage === 3}
-                  onClick={() => setCurrentPage(p => p + 1)}
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            )}
+              );
+            })()}
           </>
         )}
         

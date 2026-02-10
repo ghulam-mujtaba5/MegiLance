@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import DOMPurify from 'dompurify';
 import { cn } from '@/lib/utils';
 import { knowledgeBaseApi as _knowledgeBaseApi } from '@/lib/api';
 const knowledgeBaseApi: any = _knowledgeBaseApi;
@@ -288,7 +289,7 @@ If you encounter any issues:
 
             <div 
               className={cn(commonStyles.articleContent, themeStyles.articleContent)}
-              dangerouslySetInnerHTML={{ __html: selectedArticle.content.replace(/\n/g, '<br/>') }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedArticle.content.replace(/\n/g, '<br/>')) }}
             />
 
             <footer className={cn(commonStyles.articleFooter, themeStyles.articleFooter)}>

@@ -105,10 +105,31 @@ app = FastAPI(
 # Rate limiting
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+# In-memory idempotency cache (for POST/PUT mutations)
+_idempotency_cache: dict[str, tuple[int, dict, float]] = {}  # key -> (status, body, timestamp)
+_IDEMPOTENCY_TTL = 3600  # 1 hour
+_IDEMPOTENCY_MAX_SIZE = 10000  # Prevent unbounded memory growth
+
 class RequestIDMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         request_id = request.headers.get("X-Request-Id") or str(uuid.uuid4())
         start = time.time()
+
+        # Idempotency key support for mutating requests
+        idempotency_key = request.headers.get("X-Idempotency-Key")
+        if idempotency_key and request.method in ("POST", "PUT", "PATCH"):
+            cache_key = f"{request.method}:{request.url.path}:{idempotency_key}"
+            cached = _idempotency_cache.get(cache_key)
+            if cached:
+                status, body, cached_at = cached
+                if time.time() - cached_at < _IDEMPOTENCY_TTL:
+                    response = JSONResponse(status_code=status, content=body)
+                    response.headers["X-Request-Id"] = request_id
+                    response.headers["X-Idempotent-Replayed"] = "true"
+                    return response
+                else:
+                    del _idempotency_cache[cache_key]
+
         response = None
         try:
             response = await call_next(request)
@@ -119,6 +140,19 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
             extra.info(f"request.complete duration_ms={duration_ms} status={response.status_code if response else 'error'}")
             if response is not None:
                 response.headers["X-Request-Id"] = request_id
+                response.headers["X-Response-Time"] = f"{duration_ms}ms"
+
+            # Evict expired idempotency entries periodically (every ~100 requests)
+            if len(_idempotency_cache) > 100:
+                now = time.time()
+                expired = [k for k, v in _idempotency_cache.items() if now - v[2] > _IDEMPOTENCY_TTL]
+                for k in expired:
+                    del _idempotency_cache[k]
+                # Hard cap: if still over max size, remove oldest entries
+                if len(_idempotency_cache) > _IDEMPOTENCY_MAX_SIZE:
+                    sorted_keys = sorted(_idempotency_cache, key=lambda k: _idempotency_cache[k][2])
+                    for k in sorted_keys[:len(_idempotency_cache) - _IDEMPOTENCY_MAX_SIZE]:
+                        del _idempotency_cache[k]
 
 app.add_middleware(RequestIDMiddleware)
 
@@ -137,8 +171,8 @@ app.add_middleware(
     allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],  # Restrict headers
-    expose_headers=["X-Request-Id", "X-Total-Count"],
+    allow_headers=["Content-Type", "Authorization", "X-Idempotency-Key", "X-Request-Id"],  # Restrict headers
+    expose_headers=["X-Request-Id", "X-Total-Count", "X-Response-Time", "X-Idempotent-Replayed"],
     max_age=3600,
 )
 
@@ -164,36 +198,67 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
+    request_id = request.headers.get("X-Request-Id", "")
     return JSONResponse(
         status_code=exc.status_code,
-        content={"detail": exc.detail}
+        content={
+            "detail": exc.detail,
+            "error_type": "HTTPException",
+            "status_code": exc.status_code,
+            "request_id": request_id,
+        }
     )
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc):
+    """Return human-readable validation errors with field paths."""
+    request_id = request.headers.get("X-Request-Id", "")
+    errors = []
+    for err in exc.errors():
+        field = " → ".join(str(loc) for loc in err.get("loc", []) if loc != "body")
+        errors.append({
+            "field": field or "unknown",
+            "message": err.get("msg", "Validation error"),
+            "type": err.get("type", "value_error"),
+        })
+
     return JSONResponse(
         status_code=422,
-        content={"detail": exc.errors()}
+        content={
+            "detail": f"{len(errors)} validation error(s)",
+            "error_type": "ValidationError",
+            "errors": errors,
+            "request_id": request_id,
+        }
     )
 
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request, exc):
     import traceback
+    request_id = request.headers.get("X-Request-Id", "")
     error_details = traceback.format_exc()
-    logger.error(f"unhandled_exception type={type(exc).__name__} message={str(exc)} traceback={error_details.replace(chr(10), ' | ')}")
+    logger.error(f"unhandled_exception type={type(exc).__name__} message={str(exc)} request_id={request_id} traceback={error_details.replace(chr(10), ' | ')}")
     
     # SECURITY: Never expose internal error details in production
     if settings.environment == "production":
         return JSONResponse(
             status_code=500,
-            content={"detail": "An internal server error occurred. Please try again later."}
+            content={
+                "detail": "An internal server error occurred. Please try again later.",
+                "error_type": "InternalError",
+                "request_id": request_id,
+            }
         )
     
     return JSONResponse(
         status_code=500,
-        content={"detail": str(exc), "error_type": type(exc).__name__}
+        content={
+            "detail": str(exc),
+            "error_type": type(exc).__name__,
+            "request_id": request_id,
+        }
     )
 
 

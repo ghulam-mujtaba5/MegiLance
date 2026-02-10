@@ -1,0 +1,85 @@
+/* @AI-HINT: Dark theme styles for the MultiStepForm component */
+
+.progressBarTrack {
+  background: #1f2937;
+}
+
+.progressBarFill {
+  background: linear-gradient(90deg, #4573df, #8b5cf6);
+}
+
+.stepCircle {
+  background: #1f2937;
+  color: #6b7280;
+  border-color: #374151;
+}
+
+.stepCircleActive {
+  background: #4573df;
+  color: #ffffff;
+  border-color: #4573df;
+  box-shadow: 0 0 0 4px rgba(69, 115, 223, 0.25);
+}
+
+.stepCircleCompleted {
+  background: #27AE60;
+  color: #ffffff;
+  border-color: #27AE60;
+}
+
+.stepLabel {
+  color: #6b7280;
+}
+
+.stepLabelActive {
+  color: #93b4ff;
+  font-weight: 600;
+}
+
+.stepLabelCompleted {
+  color: #4ade80;
+}
+
+.stepConnector {
+  background: #374151;
+}
+
+.stepConnectorFill {
+  background: #27AE60;
+}
+
+.actions {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stepCounter {
+  color: #9ca3af;
+}
+
+.validationSummary {
+  background: rgba(127, 29, 29, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.validationIcon {
+  color: #ef4444;
+}
+
+.successOverlay {
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(12px);
+}
+
+.successIcon {
+  background: rgba(39, 174, 96, 0.15);
+  color: #4ade80;
+}
+
+.successTitle {
+  color: #f9fafb;
+}
+
+.successMessage {
+  color: #9ca3af;
+}

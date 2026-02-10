@@ -38,8 +38,8 @@ def get_project_with_skills(project_id: int) -> Optional[dict]:
 def get_active_freelancers(limit: int) -> List[dict]:
     """Get active freelancers for matching."""
     result = execute_query(
-        """SELECT u.id, u.full_name, u.email, u.skills, u.hourly_rate, u.rating,
-                  u.profile_image, u.bio, u.completed_projects
+        """SELECT u.id, u.name, u.email, u.skills, u.hourly_rate, NULL as rating,
+                  u.profile_image_url, u.bio, NULL as completed_projects
            FROM users u
            WHERE u.user_type = 'Freelancer' AND u.is_active = 1
            LIMIT ?""",
@@ -115,8 +115,8 @@ def get_skills_avg_hourly_rate(skills_pattern: str) -> float:
 def get_freelancer_for_rate_estimation(freelancer_id: int) -> Optional[dict]:
     """Get freelancer details for rate estimation. Returns None if not found."""
     result = execute_query(
-        """SELECT id, full_name, skills, hourly_rate, rating, completed_projects,
-                  years_experience
+        """SELECT id, name, skills, hourly_rate, NULL as rating, NULL as completed_projects,
+                  NULL as years_experience
            FROM users
            WHERE id = ? AND user_type = 'Freelancer'""",
         [freelancer_id]
@@ -140,7 +140,7 @@ def get_freelancer_for_rate_estimation(freelancer_id: int) -> Optional[dict]:
 def get_user_for_fraud_check(user_id: int) -> Optional[dict]:
     """Get user data for fraud analysis. Returns None if not found."""
     result = execute_query(
-        """SELECT id, email, full_name, created_at, is_active, is_verified,
+        """SELECT id, email, name, created_at, is_active, is_verified,
                   user_type, bio
            FROM users WHERE id = ?""",
         [user_id]
@@ -217,8 +217,8 @@ def get_proposal_for_fraud_check(proposal_id: int) -> Optional[dict]:
 def get_user_profile_for_suggestions(user_id: int) -> Optional[dict]:
     """Get user profile data for optimization suggestions. Returns None if not found."""
     result = execute_query(
-        """SELECT id, full_name, bio, skills, hourly_rate, portfolio_url,
-                  profile_image, completed_projects, rating, years_experience
+        """SELECT id, name, bio, skills, hourly_rate, NULL as portfolio_url,
+                  profile_image_url, NULL as completed_projects, NULL as rating, NULL as years_experience
            FROM users WHERE id = ?""",
         [user_id]
     )

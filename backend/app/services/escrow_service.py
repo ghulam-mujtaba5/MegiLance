@@ -229,11 +229,19 @@ def get_escrow_ownership(escrow_id: int) -> Optional[dict]:
     }
 
 
+_ALLOWED_ESCROW_COLUMNS = frozenset({
+    "status", "amount", "released_amount", "description", "notes",
+    "expires_at", "released_at", "refunded_at",
+})
+
+
 def update_escrow_fields(escrow_id: int, update_dict: dict):
     """Apply partial update to an escrow record."""
     update_fields = []
     params = []
     for field, value in update_dict.items():
+        if field not in _ALLOWED_ESCROW_COLUMNS:
+            raise ValueError(f"Invalid column name: {field}")
         if field == "expires_at" and value:
             update_fields.append(f"{field} = ?")
             params.append(value.isoformat())

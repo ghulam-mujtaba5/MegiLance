@@ -13,11 +13,11 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
   const pathname = usePathname();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const lastVerified = React.useRef<number>(0);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Use centralized token retrieval from api.ts
         const token = getAuthToken();
         
         if (!token) {
@@ -27,13 +27,18 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
           return;
         }
 
+        // Skip re-validation if verified within the last 5 minutes
+        const now = Date.now();
+        if (isAuthenticated && lastVerified.current && now - lastVerified.current < 5 * 60 * 1000) {
+          return;
+        }
+
         // Validate token with backend
         const res = await fetch('/api/auth/me', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (!res.ok) {
-          // Token invalid or expired - clear all auth data and redirect
           setIsAuthenticated(false);
           clearAuthData();
           const currentPath = pathname || '/client/dashboard';
@@ -53,6 +58,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
           return;
         }
 
+        lastVerified.current = now;
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Auth check failed:', error);
@@ -62,7 +68,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
     };
 
     checkAuth();
-  }, [pathname, router]);
+  }, [pathname, router, isAuthenticated]);
 
   // Show loading while checking authentication
   if (isAuthenticated === null) {

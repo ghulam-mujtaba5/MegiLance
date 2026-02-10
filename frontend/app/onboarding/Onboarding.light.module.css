@@ -11,10 +11,22 @@
   color: #6b7280;
 }
 
+.stepHeaderIcon {
+  color: #4573df;
+}
+
+.progressBarFill {
+  background: linear-gradient(90deg, #4573df 0%, #6b93f2 100%);
+}
+
+.stepCounter {
+  color: #6b7280;
+}
+
 .progressDot {
   background-color: #d1d5db;
 }
 
 .progressDotActive {
-  background-color: #4f46e5;
+  background-color: #4573df;
 }

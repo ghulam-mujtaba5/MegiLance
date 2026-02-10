@@ -1,5 +1,5 @@
 // @AI-HINT: Public talent directory page - fetches real freelancer data from API.
-// Production-ready: No mock data, connects to /backend/api/freelancers
+// Production-ready: No mock data, connects to /api/freelancers
 'use client';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
@@ -26,7 +26,7 @@ interface TalentProfile {
 async function fetchFreelancers(): Promise<TalentProfile[]> {
   const token = typeof window !== 'undefined' ? getAuthToken() : null;
   try {
-    const res = await fetch('/backend/api/freelancers?limit=20', {
+    const res = await fetch('/api/freelancers?limit=20', {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!res.ok) return [];

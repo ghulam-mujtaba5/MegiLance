@@ -303,7 +303,7 @@ const GigCreate: React.FC = () => {
         status: form.publishNow ? 'active' : 'draft',
       };
 
-      const response = await fetch('/backend/api/gigs', {
+      const response = await fetch('/api/gigs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

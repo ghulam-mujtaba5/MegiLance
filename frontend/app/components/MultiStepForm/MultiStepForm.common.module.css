@@ -1,0 +1,245 @@
+/* @AI-HINT: Common layout/structure styles for the MultiStepForm component */
+
+.wizard {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* === Progress Header === */
+.progressHeader {
+  margin-bottom: 2rem;
+}
+
+.progressBarTrack {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.progressBarFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === Steps Indicator === */
+.stepsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  flex: 1;
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.stepItem:hover {
+  opacity: 0.85;
+}
+
+.stepItemDisabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.stepItemDisabled:hover {
+  opacity: 0.5;
+}
+
+.stepCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 2px solid transparent;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.stepCircleActive {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px rgba(69, 115, 223, 0.2);
+}
+
+.stepCircleCompleted {
+  transform: scale(1);
+}
+
+.stepLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  max-width: 90px;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+/* Connector line between steps */
+.stepConnector {
+  position: absolute;
+  top: 20px;
+  left: calc(50% + 24px);
+  right: calc(-50% + 24px);
+  height: 2px;
+  z-index: 1;
+}
+
+.stepConnectorFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === Step Content === */
+.stepContent {
+  position: relative;
+  min-height: 300px;
+  overflow: hidden;
+}
+
+.stepPanel {
+  width: 100%;
+}
+
+/* === Form Actions === */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  gap: 1rem;
+}
+
+.actionsLeft {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.actionsRight {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.stepCounter {
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* === Validation Summary === */
+.validationSummary {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.validationIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* === Success Overlay === */
+.successOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  border-radius: 1rem;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.successIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.successMessage {
+  font-size: 0.95rem;
+  opacity: 0.7;
+  max-width: 400px;
+}
+
+/* === Shake Animation for Validation Errors === */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.shakeError {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* === Mobile Responsiveness === */
+@media (max-width: 640px) {
+  .stepsRow {
+    gap: 0.25rem;
+  }
+
+  .stepCircle {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+
+  .stepLabel {
+    font-size: 0.65rem;
+    max-width: 60px;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .actionsRight {
+    width: 100%;
+  }
+
+  .actionsRight > * {
+    flex: 1;
+  }
+}

@@ -202,11 +202,9 @@ const Login: React.FC = () => {
       const data = await api.auth.login(formData.email, formData.password);
       
       // Check if 2FA is required
-      // Note: The backend response structure for 2FA requirement needs to be consistent
-      // Assuming the API returns a specific structure or status for 2FA
-      if ((data as any).requires_2fa) {
+      if (data.requires_2fa) {
         setNeeds2FA(true);
-        setTempAccessToken((data as any).temp_token || '');
+        setTempAccessToken(data.temp_token || '');
       } else {
         // Tokens already stored by api.auth.login → setAuthToken/setRefreshToken
         // Store user data for quick access
@@ -215,7 +213,7 @@ const Login: React.FC = () => {
         }
         
         // Redirect based on user's actual role from API, not the selected tab
-        const userRole = ((data.user as any)?.user_type || data.user?.role || selectedRole).toLowerCase() as UserRole;
+        const userRole = (data.user?.user_type || data.user?.role || selectedRole).toLowerCase() as UserRole;
         const actualRole = userRole === 'admin' ? 'admin' : userRole === 'freelancer' ? 'freelancer' : 'client';
         try { window.localStorage.setItem('portal_area', actualRole); } catch {}
         router.push(roleConfig[actualRole].redirectPath);

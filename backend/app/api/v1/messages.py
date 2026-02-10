@@ -136,7 +136,7 @@ def create_conversation(
 def get_conversations(
     skip: int = Query(0, ge=0, le=10000),
     limit: int = Query(20, ge=1, le=100),
-    status: Optional[str] = Query(None, pattern=r'^(active|closed|blocked)$'),
+    conv_status: Optional[str] = Query(None, alias="status", pattern=r'^(active|closed|blocked)$'),
     archived: Optional[bool] = Query(None),
     current_user = Depends(get_current_user)
 ):
@@ -146,13 +146,13 @@ def get_conversations(
     if not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not authenticated")
 
-    if status and status.lower() not in VALID_CONVERSATION_STATUSES:
+    if conv_status and conv_status.lower() not in VALID_CONVERSATION_STATUSES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid status. Must be one of: {', '.join(VALID_CONVERSATION_STATUSES)}"
         )
 
-    return messages_service.list_conversations_for_user(user_id, status, archived, limit, skip)
+    return messages_service.list_conversations_for_user(user_id, conv_status, archived, limit, skip)
 
 
 @router.get("/conversations/{conversation_id}", response_model=dict)

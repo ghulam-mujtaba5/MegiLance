@@ -25,11 +25,8 @@ export function useRecommendations(limit: number = 5) {
       const maxRetries = 3;
       try {
         setLoading(true);
-        console.log(`[useRecommendations] Fetching recommendations (attempt ${retryCount + 1}/${maxRetries + 1})...`);
         
-        // Get auth token from storage
         const token = getAuthToken();
-        console.log('[useRecommendations] Token available:', !!token, token ? `(length: ${token.length})` : '(empty)');
         
         const headers: Record<string, string> = {
           'Content-Type': 'application/json',
@@ -44,12 +41,7 @@ export function useRecommendations(limit: number = 5) {
           headers,
         });
         
-        console.log('[useRecommendations] Response status:', response.status);
-        
-        // Retry on 401 if we haven't exhausted retries (token might not be loaded yet)
         if (response.status === 401 && retryCount < maxRetries) {
-          console.log(`[useRecommendations] Got 401, retrying in 1000ms (attempt ${retryCount + 1}/${maxRetries})...`);
-          // Retry after a short delay
           await new Promise(resolve => setTimeout(resolve, 1000));
           return attemptFetch(retryCount + 1);
         }
@@ -59,7 +51,6 @@ export function useRecommendations(limit: number = 5) {
         }
         
         const data = await response.json();
-        console.log('[useRecommendations] Data received:', data);
         
         if (data.recommendations && Array.isArray(data.recommendations)) {
           const mapped = data.recommendations.map((r: any) => ({
@@ -74,14 +65,11 @@ export function useRecommendations(limit: number = 5) {
           }));
           setRecommendations(mapped);
           setError(null);
-          console.log('[useRecommendations] Successfully mapped', mapped.length, 'recommendations');
         } else {
-          console.warn('[useRecommendations] No recommendations in response');
           setRecommendations([]);
           setError(null);
         }
       } catch (err: any) {
-        console.error('[useRecommendations] Fetch error:', err.message);
         setError(err.message || 'Failed to fetch recommendations');
         setRecommendations([]);
       } finally {

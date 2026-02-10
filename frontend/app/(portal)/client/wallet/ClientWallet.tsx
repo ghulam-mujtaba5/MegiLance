@@ -10,7 +10,7 @@ import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
 import Button from '@/app/components/Button/Button';
 import Select from '@/app/components/Select/Select';
 import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
-import { DollarSign, TrendingUp, CheckCircle, Download, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { DollarSign, CheckCircle, Download, ArrowUpRight } from 'lucide-react';
 import common from './ClientWallet.common.module.css';
 import light from './ClientWallet.light.module.css';
 import dark from './ClientWallet.dark.module.css';

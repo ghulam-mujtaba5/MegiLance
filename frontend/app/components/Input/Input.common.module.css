@@ -102,9 +102,16 @@
   outline: none;
   border-color: var(--input-border-focus);
   background-color: var(--input-bg-focus, var(--input-bg));
-  /* Fallback ring */
+  /* Animated focus ring */
   box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25);
   transform: translateY(-2px);
+  animation: focusPulse 1.5s ease-in-out 1;
+}
+
+@keyframes focusPulse {
+  0% { box-shadow: 0 0 0 0 rgba(69, 115, 223, 0.4); }
+  50% { box-shadow: 0 0 0 5px rgba(69, 115, 223, 0.15); }
+  100% { box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.25); }
 }
 
 /* High contrast focus indicator for forced colors mode */

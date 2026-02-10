@@ -75,24 +75,29 @@ def validate_email(email: str) -> bool:
 def validate_password_strength(password: str) -> tuple[bool, str]:
     """
     Validate password meets security requirements.
+    Reads policy from Settings to stay consistent with config.
     Returns (is_valid, error_message).
     """
     settings = get_settings()
-    min_length = getattr(settings, 'password_min_length', 8)
+    min_length = settings.password_min_length
+    max_length = settings.password_max_length
     
     if len(password) < min_length:
         return False, f"Password must be at least {min_length} characters long"
     
-    if not re.search(r'[A-Z]', password):
+    if len(password) > max_length:
+        return False, f"Password must be at most {max_length} characters long"
+    
+    if settings.password_require_uppercase and not re.search(r'[A-Z]', password):
         return False, "Password must contain at least one uppercase letter"
     
-    if not re.search(r'[a-z]', password):
+    if settings.password_require_lowercase and not re.search(r'[a-z]', password):
         return False, "Password must contain at least one lowercase letter"
     
-    if not re.search(r'\d', password):
+    if settings.password_require_digit and not re.search(r'\d', password):
         return False, "Password must contain at least one number"
     
-    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+    if settings.password_require_special and not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
         return False, "Password must contain at least one special character"
     
     return True, ""

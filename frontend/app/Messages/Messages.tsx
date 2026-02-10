@@ -1,11 +1,16 @@
 // @AI-HINT: Messages page - displays real conversation list from API
-// Production-ready: No mock data, connects to /backend/api/messages
+// Production-ready: No mock data, connects to /api/messages
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTheme } from 'next-themes';
-import { MessageSquare, Search, User, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { MessageSquare, Search, Loader2 } from 'lucide-react';
 import { getAuthToken } from '@/lib/api';
+
+import commonStyles from './Messages.common.module.css';
+import lightStyles from './Messages.light.module.css';
+import darkStyles from './Messages.dark.module.css';
 
 interface Conversation {
   id: number;
@@ -21,7 +26,7 @@ interface Conversation {
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
   const token = typeof window !== 'undefined' ? getAuthToken() : null;
   try {
-    const res = await fetch(`/backend/api/messages${endpoint}`, {
+    const res = await fetch(`/api/messages${endpoint}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!res.ok) return null;
@@ -64,6 +69,8 @@ const Messages: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
+
   const loadConversations = useCallback(async () => {
     setLoading(true);
     try {
@@ -80,8 +87,8 @@ const Messages: React.FC = () => {
         }));
         setConversations(mapped);
       }
-    } catch (err) {
-      console.error('[Messages] Failed to load conversations:', err);
+    } catch {
+      // Silently handle - conversations will show as empty
     } finally {
       setLoading(false);
     }
@@ -101,89 +108,77 @@ const Messages: React.FC = () => {
   );
 
   return (
-    <div>
-      <div>
-        <div className="flex items-center gap-3 mb-6">
-          <MessageSquare size={28} className={resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'} />
-          <h1 className={`text-2xl md:text-3xl font-bold ${resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Messages
-          </h1>
-        </div>
+    <div className={commonStyles.container}>
+      <div className={commonStyles.header}>
+        <MessageSquare className={cn(commonStyles.headerIcon, themeStyles.headerIcon)} />
+        <h1 className={cn(commonStyles.title, themeStyles.title)}>Messages</h1>
+      </div>
 
-        {/* Search */}
-        <div className={`relative mb-6`}>
-          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search conversations..."
-            aria-label="Search conversations"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full pl-11 pr-4 py-3 rounded-xl border ${
-              resolvedTheme === 'dark'
-                ? 'bg-slate-800 border-slate-700 text-white placeholder:text-gray-500'
-                : 'bg-white border-gray-200 text-gray-900 placeholder:text-gray-400'
-            }`}
-          />
-        </div>
+      {/* Search */}
+      <div className={commonStyles.searchWrapper}>
+        <Search className={cn(commonStyles.searchIcon, themeStyles.searchIcon)} />
+        <input
+          type="text"
+          placeholder="Search conversations..."
+          aria-label="Search conversations"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={cn(commonStyles.searchInput, themeStyles.searchInput)}
+        />
+      </div>
 
-        {/* Conversations */}
-        <div className={`rounded-xl overflow-hidden ${resolvedTheme === 'dark' ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'}`}>
-          {loading ? (
-            <div className="p-8 flex justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-primary-500" />
-            </div>
-          ) : filteredConversations.length === 0 ? (
-            <div className="p-8 text-center">
-              <MessageSquare className={`w-12 h-12 mx-auto mb-3 ${resolvedTheme === 'dark' ? 'text-gray-600' : 'text-gray-300'}`} />
-              <p className={`font-medium ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                {searchQuery ? 'No conversations match your search' : 'No conversations yet'}
-              </p>
-              <p className={`text-sm mt-1 ${resolvedTheme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Start a conversation by messaging a freelancer or client
-              </p>
-            </div>
-          ) : (
-            filteredConversations.map((conv, idx) => (
-              <button
-                key={conv.id}
-                className={`w-full p-4 flex items-center gap-4 text-left transition-colors ${
-                  idx !== filteredConversations.length - 1 ? 'border-b border-gray-200 dark:border-slate-700' : ''
-                } ${resolvedTheme === 'dark' ? 'hover:bg-slate-700' : 'hover:bg-gray-50'}`}
-              >
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold ${
-                  resolvedTheme === 'dark' ? 'bg-primary-600 text-white' : 'bg-primary-100 text-primary-600'
-                }`}>
-                  {conv.avatar ? (
-                    <img src={conv.avatar} alt={conv.contact_name} className="w-full h-full rounded-full object-cover" />
-                  ) : (
-                    getInitials(conv.contact_name)
+      {/* Conversations */}
+      <div className={cn(commonStyles.conversationList, themeStyles.conversationList)}>
+        {loading ? (
+          <div className={commonStyles.loadingState}>
+            <Loader2 className={cn(commonStyles.spinner, themeStyles.spinner)} />
+          </div>
+        ) : filteredConversations.length === 0 ? (
+          <div className={commonStyles.emptyState}>
+            <MessageSquare className={cn(commonStyles.emptyIcon, themeStyles.emptyIcon)} />
+            <p className={cn(commonStyles.emptyTitle, themeStyles.emptyTitle)}>
+              {searchQuery ? 'No conversations match your search' : 'No conversations yet'}
+            </p>
+            <p className={cn(commonStyles.emptySubtitle, themeStyles.emptySubtitle)}>
+              Start a conversation by messaging a freelancer or client
+            </p>
+          </div>
+        ) : (
+          filteredConversations.map((conv) => (
+            <button
+              key={conv.id}
+              className={cn(commonStyles.conversationButton, themeStyles.conversationButton)}
+            >
+              <div className={cn(commonStyles.avatar, themeStyles.avatar)}>
+                {conv.avatar ? (
+                  <img src={conv.avatar} alt={conv.contact_name} className={commonStyles.avatarImage} />
+                ) : (
+                  getInitials(conv.contact_name)
+                )}
+              </div>
+              <div className={commonStyles.conversationContent}>
+                <div className={commonStyles.conversationTop}>
+                  <p className={cn(commonStyles.contactName, themeStyles.contactName)}>
+                    {conv.contact_name}
+                  </p>
+                  <span className={cn(commonStyles.timestamp, themeStyles.timestamp)}>
+                    {formatTimeAgo(conv.last_message_at)}
+                  </span>
+                </div>
+                <div className={commonStyles.conversationBottom}>
+                  <p className={cn(commonStyles.lastMessage, themeStyles.lastMessage)}>
+                    {conv.last_message}
+                  </p>
+                  {conv.unread_count > 0 && (
+                    <span className={commonStyles.unreadBadge}>
+                      {conv.unread_count}
+                    </span>
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className={`font-semibold truncate ${resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {conv.contact_name}
-                    </p>
-                    <span className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {formatTimeAgo(conv.last_message_at)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p className={`text-sm truncate ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {conv.last_message}
-                    </p>
-                    {conv.unread_count > 0 && (
-                      <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-primary-600 text-white rounded-full">
-                        {conv.unread_count}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </button>
-            ))
-          )}
-        </div>
+              </div>
+            </button>
+          ))
+        )}
       </div>
     </div>
   );

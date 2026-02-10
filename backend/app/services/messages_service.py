@@ -40,7 +40,7 @@ def check_user_exists_active(user_id: int) -> Optional[dict]:
 def get_user_public_info(user_id: int) -> Optional[dict]:
     """Get user's public info (name, avatar). Returns dict or None."""
     result = execute_query(
-        "SELECT full_name, profile_image_url FROM users WHERE id = ?",
+        "SELECT name, profile_image_url FROM users WHERE id = ?",
         [user_id]
     )
     if result and result.get("rows"):
@@ -170,7 +170,7 @@ def list_conversations_for_user(user_id: int, status_filter: Optional[str],
 
         user_info = get_user_public_info(other_user_id)
         if user_info:
-            conv["contact_name"] = user_info.get("full_name", "Unknown")
+            conv["contact_name"] = user_info.get("name", "Unknown")
             conv["avatar"] = user_info.get("profile_image_url")
 
         last_msg = _get_last_message_preview(conv["id"])
