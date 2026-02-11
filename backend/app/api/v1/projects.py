@@ -13,6 +13,7 @@ from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.core.security import get_current_active_user
 from app.db.turso_http import get_turso_http
 from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
+from app.api.v1.utils import moderate_content
 import logging
 
 logger = logging.getLogger("megilance")
@@ -95,7 +96,6 @@ def _row_to_project(row: list, columns: list = None) -> dict:
 
 
 @router.get("", response_model=List[ProjectRead])
-@router.get("/", response_model=List[ProjectRead])
 def list_projects(
     skip: int = Query(0, ge=0, description="Number of records to skip"),
     limit: int = Query(100, ge=1, le=100, description="Max records to return"),
@@ -137,11 +137,12 @@ def list_projects(
                 sql += " AND (title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')"
                 params.extend([f"%{safe_search}%", f"%{safe_search}%"])
         
-        sql += \" ORDER BY created_at DESC LIMIT ? OFFSET ?\"
+        sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
         params.extend([limit, skip])
         
         result = turso.execute(sql, params)
-        projects = [_row_to_project(row) for row in result.get("rows", [])]
+        columns = result.get("columns", [])
+        projects = [_row_to_project(row, columns) for row in result.get("rows", [])]
         return projects
         
     except HTTPException:
@@ -180,7 +181,8 @@ def get_my_projects(
                      WHERE c.freelancer_id = ? ORDER BY c.created_at DESC"""
             result = turso.execute(sql, [current_user.id])
             
-        projects = [_row_to_project(row) for row in result.get("rows", [])]
+        columns = result.get("columns", [])
+        projects = [_row_to_project(row, columns) for row in result.get("rows", [])]
         return projects
         
     except Exception as e:
@@ -222,7 +224,6 @@ def get_project(
 
 
 @router.post("", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
-@router.post("/", response_model=ProjectRead, status_code=status.HTTP_201_CREATED)
 def create_project(
     project: ProjectCreate,
     current_user: User = Depends(get_current_active_user)
@@ -246,6 +247,12 @@ def create_project(
     # Validate input
     validate_project_input(project)
     
+    # Content moderation
+    for field_name, value in [("title", project.title), ("description", project.description)]:
+        ok, reason = moderate_content(value)
+        if not ok:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Project {field_name} rejected: {reason}")
+    
     try:
         turso = get_turso_http()
         now = datetime.now(timezone.utc).isoformat()
@@ -263,13 +270,13 @@ def create_project(
              project.status or "open", now, now]
         )
         
-        # Get the created project
+        # Get the created project by matching all unique fields
         row = turso.fetch_one(
             """SELECT id, title, description, category, budget_type, 
                       budget_min, budget_max, experience_level, estimated_duration,
                       skills, client_id, status, created_at, updated_at 
-               FROM projects WHERE client_id = ? ORDER BY id DESC LIMIT 1""",
-            [current_user.id]
+               FROM projects WHERE client_id = ? AND title = ? AND created_at = ? ORDER BY id DESC LIMIT 1""",
+            [current_user.id, project.title, now]
         )
         
         if not row:
@@ -301,7 +308,7 @@ def update_project(
         existing = turso.fetch_one("SELECT client_id FROM projects WHERE id = ?", [project_id])
         if not existing:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-        if existing[0] != current_user.id and current_user.role != "Admin":
+        if existing[0] != current_user.id and current_user.role != "admin":
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
         
         # Build update query
@@ -350,7 +357,7 @@ def delete_project(
     project_id: int,
     current_user: User = Depends(get_current_active_user)
 ):
-    """Delete project from Turso"""
+    """Soft-delete project (sets status to 'cancelled')"""
     try:
         turso = get_turso_http()
         
@@ -358,10 +365,14 @@ def delete_project(
         existing = turso.fetch_one("SELECT client_id FROM projects WHERE id = ?", [project_id])
         if not existing:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-        if existing[0] != current_user.id and current_user.role != "Admin":
+        if existing[0] != current_user.id and current_user.role != "admin":
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
         
-        turso.execute("DELETE FROM projects WHERE id = ?", [project_id])
+        now = datetime.now(timezone.utc).isoformat()
+        turso.execute(
+            "UPDATE projects SET status = 'cancelled', updated_at = ? WHERE id = ?",
+            [now, project_id]
+        )
         return None
         
     except HTTPException:

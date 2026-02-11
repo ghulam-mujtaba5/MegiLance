@@ -94,6 +94,7 @@ gunicorn -k uvicorn.workers.UvicornWorker main:app --workers 4 --bind 0.0.0.0:80
 - `GET /api/health/ready` — Readiness check
 - `GET /api/docs` — Swagger UI documentation
 - `GET /api/redoc` — ReDoc documentation
+- `GET /api/openapi.json` — OpenAPI 3.x spec (JSON, importable into Postman/Insomnia)
 - `GET /api/health/metrics` — Metrics/telemetry (if enabled)
 
 ### Authentication (`/api/auth`)

@@ -7,7 +7,16 @@ Turso remote database ONLY - no local fallback.
 
 import requests
 from typing import Optional, List, Dict, Any
+from functools import lru_cache
+import time
+import threading
 from app.core.config import get_settings
+
+# Simple TTL cache for read queries
+_query_cache: Dict[str, tuple] = {}  # key -> (result, timestamp)
+_QUERY_CACHE_TTL = 30  # 30 seconds
+_QUERY_CACHE_MAX = 500
+_cache_lock = threading.Lock()
 
 
 class TursoHTTP:
@@ -17,11 +26,15 @@ class TursoHTTP:
     _url: str = None
     _token: str = None
     _initialized: bool = False
+    _session: requests.Session = None
     
     @classmethod
     def reset_instance(cls):
         """Reset singleton instance - used when settings change"""
+        if cls._session:
+            cls._session.close()
         cls._instance = None
+        cls._session = None
         cls._initialized = False
     
     @classmethod
@@ -49,34 +62,68 @@ class TursoHTTP:
             if not cls._url.endswith("/"):
                 cls._url += "/"
             cls._token = settings.turso_auth_token
+            
+            # Persistent HTTP session for connection reuse (avoids TCP+TLS handshake per request)
+            cls._session = requests.Session()
+            cls._session.headers.update({
+                "Authorization": f"Bearer {cls._token}",
+                "Content-Type": "application/json",
+            })
+            
             print(f"[TURSO] HTTP client initialized: {cls._url[:50]}...")
                 
         return cls._instance
     
     def execute(self, sql: str, params: List[Any] = None) -> Dict[str, Any]:
         """
-        Execute a SQL query against Turso remote database
+        Execute a SQL query against Turso remote database.
+        SELECT queries are cached for _QUERY_CACHE_TTL seconds.
         """
         if params is None:
             params = []
         
-        return self._execute_remote(sql, params)
+        # Cache SELECT queries
+        sql_upper = sql.strip().upper()
+        is_read = sql_upper.startswith("SELECT") or sql_upper.startswith("WITH")
+        
+        if is_read:
+            cache_key = f"{sql}:{params}"
+            with _cache_lock:
+                cached = _query_cache.get(cache_key)
+                if cached:
+                    result, ts = cached
+                    if time.time() - ts < _QUERY_CACHE_TTL:
+                        return result
+                    else:
+                        del _query_cache[cache_key]
+        
+        result = self._execute_remote(sql, params)
+        
+        if is_read:
+            with _cache_lock:
+                # Evict if over max
+                if len(_query_cache) >= _QUERY_CACHE_MAX:
+                    oldest_key = min(_query_cache, key=lambda k: _query_cache[k][1])
+                    del _query_cache[oldest_key]
+                _query_cache[cache_key] = (result, time.time())
+        else:
+            # Write query — invalidate all cached reads
+            with _cache_lock:
+                _query_cache.clear()
+        
+        return result
 
     def _execute_remote(self, sql: str, params: List[Any]) -> Dict[str, Any]:
         """Execute query against Turso HTTP API"""
-        response = requests.post(
+        response = self._session.post(
             self._url,
-            headers={
-                "Authorization": f"Bearer {self._token}",
-                "Content-Type": "application/json"
-            },
             json={
                 "statements": [{
                     "q": sql,
                     "params": params
                 }]
             },
-            timeout=10
+            timeout=30
         )
         
         if response.status_code != 200:
@@ -94,12 +141,8 @@ class TursoHTTP:
     
     def execute_many(self, statements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Execute multiple statements against Turso remote database"""
-        response = requests.post(
+        response = self._session.post(
             self._url,
-            headers={
-                "Authorization": f"Bearer {self._token}",
-                "Content-Type": "application/json"
-            },
             json={"statements": statements},
             timeout=30
         )

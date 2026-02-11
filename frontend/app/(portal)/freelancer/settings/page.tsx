@@ -355,7 +355,7 @@ const AccountSettingsPage = () => {
                   <div className={commonStyles.accountRow}>
                     <Globe className={commonStyles.accountIcon} />
                     <span>Google</span>
-                    <Button variant="danger" size="small">Disconnect</Button>
+                    <Button variant="danger" size="sm">Disconnect</Button>
                   </div>
                 </div>
               </div>

@@ -17,11 +17,14 @@ const Settings: React.FC = () => {
 
   if (!mounted) return null;
 
+  const portalArea = typeof window !== 'undefined' ? (localStorage.getItem('portal_area') || 'client') : 'client';
+  const basePath = portalArea === 'admin' ? '/admin' : portalArea === 'freelancer' ? '/freelancer' : '/client';
+
   const settingsSections = [
-    { icon: <User size={20} />, title: 'Profile Settings', desc: 'Manage your personal information', path: '/client/profile' },
-    { icon: <Shield size={20} />, title: 'Security', desc: 'Password and authentication settings', path: '/client/dashboard' },
-    { icon: <Bell size={20} />, title: 'Notifications', desc: 'Email and push notification preferences', path: '/client/dashboard' },
-    { icon: <Palette size={20} />, title: 'Appearance', desc: 'Theme and display settings', path: '/client/dashboard' },
+    { icon: <User size={20} />, title: 'Profile Settings', desc: 'Manage your personal information', path: `${basePath}/profile` },
+    { icon: <Shield size={20} />, title: 'Security', desc: 'Password and authentication settings', path: '/settings/security/2fa' },
+    { icon: <Bell size={20} />, title: 'Notifications', desc: 'Email and push notification preferences', path: '/settings/notifications' },
+    { icon: <Palette size={20} />, title: 'Appearance', desc: 'Theme and display settings', path: `${basePath}/settings` },
   ];
 
   return (

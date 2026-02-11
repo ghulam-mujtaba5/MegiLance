@@ -7,8 +7,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class PaymentBase(BaseModel):
     contract_id: Optional[int] = Field(default=None, description="Related contract identifier")
-    amount: float
-    currency: str = "USDC"
+    amount: float = Field(gt=0, description="Payment amount")
+    currency: str = "USD"
     status: Optional[str] = "pending"
     transaction_hash: Optional[str] = None
     description: Optional[str] = None
@@ -17,8 +17,8 @@ class PaymentBase(BaseModel):
 class PaymentCreate(BaseModel):
     contract_id: Optional[int] = Field(default=None, description="Optional contract reference")
     to_user_id: Optional[int] = Field(default=None, description="Recipient user ID when no contract is provided")
-    amount: float
-    currency: str = "USDC"
+    amount: float = Field(gt=0, description="Payment amount")
+    currency: str = "USD"
     description: Optional[str] = None
 
 

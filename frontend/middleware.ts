@@ -73,13 +73,22 @@ export function middleware(request: NextRequest) {
   // Protected portal routes that require authentication
   const protectedPaths = [
     '/client/',
+    '/client',
     '/freelancer/',
+    '/freelancer',
     '/admin/',
+    '/admin',
     '/dashboard',
     '/settings',
     '/messages',
     '/wallet',
     '/onboarding',
+    '/contracts',
+    '/proposals',
+    '/invoices',
+    '/escrow',
+    '/reviews',
+    '/video-calls',
   ];
 
   const isProtectedPath = protectedPaths.some(path => 

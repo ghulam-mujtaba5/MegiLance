@@ -13,6 +13,7 @@ import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { searchingAnimation, emptyBoxAnimation } from '@/app/components/Animations/LottieAnimation';
 import StatCard from '@/app/components/StatCard/StatCard';
 import SellerStats, { SellerStatsData } from '@/app/components/SellerStats/SellerStats';
+import EarningsChart from './components/EarningsChart/EarningsChart';
 import JobCard from './components/JobCard';
 import { 
   Briefcase, 
@@ -31,19 +32,73 @@ import commonStyles from './Dashboard.common.module.css';
 import lightStyles from './Dashboard.light.module.css';
 import darkStyles from './Dashboard.dark.module.css';
 
+const LEVEL_DESCRIPTIONS: Record<string, string> = {
+  new_seller: 'Welcome! Complete orders and build your reputation to level up.',
+  bronze: 'Rising seller with a proven track record.',
+  silver: 'Experienced seller delivering great results.',
+  gold: 'Top-rated seller with an outstanding reputation.',
+  platinum: 'Elite seller — among the very best on the platform.',
+};
+
+const BASE_COMMISSION = 20;
+
+/** Map flat backend /seller-stats/me response → SellerStatsData expected by <SellerStats>. */
+function transformSellerStats(raw: Record<string, unknown>): SellerStatsData {
+  const level = (raw.level as string) || 'new_seller';
+  const benefits = (raw.benefits ?? {}) as Record<string, unknown>;
+  const levelProgress = raw.level_progress as Record<string, unknown> | null;
+
+  return {
+    userId: raw.user_id as number,
+    level: {
+      level: level as SellerStatsData['level']['level'],
+      jssScore: (raw.jss_score as number) ?? 0,
+      benefits: {
+        commissionRate: BASE_COMMISSION - ((benefits.reduced_fees as number) ?? 0),
+        featuredGigs: (benefits.featured_gigs as number) ?? 0,
+        prioritySupport: (benefits.priority_support as boolean) ?? false,
+        badges: (raw.badges as string[]) ?? (benefits.badges as string[]) ?? [],
+        description: LEVEL_DESCRIPTIONS[level] ?? LEVEL_DESCRIPTIONS.new_seller,
+      },
+      ...(levelProgress
+        ? {
+            levelProgress: {
+              nextLevel: levelProgress.next_level as string,
+              requirements: levelProgress.requirements as Record<string, { current: number; required: number; percent: number }>,
+            },
+          }
+        : {}),
+    },
+    totalOrders: (raw.total_orders as number) ?? 0,
+    completedOrders: (raw.completed_orders as number) ?? 0,
+    cancelledOrders: (raw.cancelled_orders as number) ?? 0,
+    averageRating: (raw.average_rating as number) ?? 0,
+    totalReviews: (raw.total_reviews as number) ?? 0,
+    completionRate: (raw.completion_rate as number) ?? 100,
+    onTimeDeliveryRate: (raw.on_time_delivery_rate as number) ?? 100,
+    responseRate: (raw.response_rate as number) ?? 100,
+    avgResponseTimeHours: (raw.avg_response_time_hours as number) ?? 0,
+    totalEarnings: (raw.total_earnings as number) ?? 0,
+    uniqueClients: (raw.unique_clients as number) ?? 0,
+    repeatClients: (raw.repeat_clients as number) ?? 0,
+    repeatClientRate: (raw.repeat_client_rate as number) ?? 0,
+  };
+}
+
 const Dashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { analytics, recommendedJobs, proposals, loading } = useFreelancerData();
   const { user } = useAuth();
   const [sellerStats, setSellerStats] = useState<SellerStatsData | null>(null);
+  const [earningsData, setEarningsData] = useState<{ month: string; amount: number }[]>([]);
 
   useEffect(() => {
     setMounted(true);
     
     const fetchSellerStats = async () => {
       try {
-        const token = sessionStorage.getItem('access_token');
+        const token = sessionStorage.getItem('auth_token');
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
         if (token) headers['Authorization'] = `Bearer ${token}`;
         
@@ -53,14 +108,34 @@ const Dashboard: React.FC = () => {
         });
         if (response.ok) {
           const data = await response.json();
-          setSellerStats(data);
+          setSellerStats(transformSellerStats(data));
         }
       } catch {
         // Seller stats are optional - don't block dashboard
       }
     };
+
+    const fetchEarnings = async () => {
+      try {
+        const token = sessionStorage.getItem('auth_token');
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const response = await fetch('/api/portal/freelancer/earnings/monthly?months=6', {
+          credentials: 'include',
+          headers,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setEarningsData(data.earnings || []);
+        }
+      } catch {
+        // Earnings chart is optional
+      }
+    };
     
     fetchSellerStats();
+    fetchEarnings();
   }, []);
 
   const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
@@ -142,6 +217,14 @@ const Dashboard: React.FC = () => {
           icon={Eye} 
         />
       </div>
+
+      {/* Earnings Chart */}
+      {earningsData.length > 0 && (
+        <div className={commonStyles.sectionContainer}>
+          <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Monthly Earnings</h2>
+          <EarningsChart data={earningsData} />
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className={commonStyles.quickActionsSection}>

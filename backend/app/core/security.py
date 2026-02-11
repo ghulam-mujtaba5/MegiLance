@@ -9,16 +9,20 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Set, Any, Union
 import logging
+import time
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.db.session import get_db
 from app.db.turso_http import execute_query, parse_rows
+
+# In-memory user cache to avoid repeated Turso HTTP lookups per request
+_user_cache: dict = {}  # email -> {"ts": float, "data": dict}
+_USER_CACHE_TTL = 300  # 5 minutes
+_USER_CACHE_MAX_SIZE = 1000  # Max cached users to prevent memory exhaustion
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -50,9 +54,12 @@ class UserProxy:
         self.hashed_password = row.get('hashed_password')
         self.is_active = bool(row.get('is_active', 0))
         self.is_verified = bool(row.get('is_verified', 0))
+        self.email_verified = bool(row.get('email_verified', 0))
         self.name = row.get('name')
-        self.user_type = row.get('user_type') or row.get('role', 'client')
-        self.role = row.get('role') or row.get('user_type', 'client')  # Ensure role is always set
+        self.first_name = row.get('first_name')
+        self.last_name = row.get('last_name')
+        self.user_type = (row.get('user_type') or row.get('role', 'client')).lower()
+        self.role = (row.get('role') or row.get('user_type', 'client')).lower()
         self.bio = row.get('bio')
         self.skills = row.get('skills')
         self.hourly_rate = row.get('hourly_rate', 0)
@@ -61,9 +68,16 @@ class UserProxy:
         self.profile_data = row.get('profile_data')
         self.two_factor_enabled = bool(row.get('two_factor_enabled', 0))
         self.joined_at = row.get('joined_at')
+        self.created_at = row.get('created_at')
+        self.account_balance = row.get('account_balance', 0.0)
+        self.seller_level = row.get('seller_level')
+        self.availability_status = row.get('availability_status')
+
+    def __getitem__(self, key):
+        return getattr(self, key)
 
 
-def authenticate_user(db: Session, email: str, password: str) -> Optional[Any]:
+def authenticate_user(email: str, password: str) -> Optional[Any]:
     """Authenticate user - check credentials and return user if valid
     
     Uses Turso HTTP API directly to ensure consistency with registration.
@@ -188,7 +202,7 @@ def is_token_blacklisted(token: str) -> bool:
     return _check(token)
 
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Union[User, UserProxy]:
+def get_current_user(token: str = Depends(oauth2_scheme)) -> Union[User, UserProxy]:
     """Get current authenticated user from JWT token.
     
     Returns a UserProxy (lightweight dict wrapper) from Turso queries,
@@ -211,6 +225,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         )
 
     try:
+        # decode_token validates expiry via python-jose automatically
         payload = decode_token(token)
         
         # Validate token type
@@ -218,15 +233,6 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         if token_type != "access":
             logger.warning(f"Invalid token type: {token_type}")
             raise credentials_exception
-        
-        # Validate expiry
-        exp_timestamp = payload.get("exp")
-        if exp_timestamp and datetime.fromtimestamp(exp_timestamp, tz=timezone.utc) < datetime.now(timezone.utc):
-            logger.warning("Token has expired")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token has expired"
-            )
         
         email: Optional[str] = payload.get("sub")
         if not email:
@@ -238,7 +244,12 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
 
     try:
-        # Fetch user from Turso database using HTTP API (not SQLAlchemy which falls back to local SQLite)
+        # Check in-memory user cache first
+        cached = _user_cache.get(email)
+        if cached and time.time() - cached["ts"] < _USER_CACHE_TTL:
+            return UserProxy(cached["data"])
+
+        # Fetch user from Turso database using HTTP API
         result = execute_query(
             """SELECT id, email, name, hashed_password, role, user_type, is_active, is_verified, 
                       bio, skills, hourly_rate, profile_image_url, location, profile_data,
@@ -252,7 +263,11 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             raise credentials_exception
         
         row = rows[0]
-        # Return UserProxy that mimics User model
+        # Evict oldest entries if cache exceeds max size
+        if len(_user_cache) >= _USER_CACHE_MAX_SIZE:
+            oldest_key = min(_user_cache, key=lambda k: _user_cache[k]["ts"])
+            del _user_cache[oldest_key]
+        _user_cache[email] = {"ts": time.time(), "data": row}
         return UserProxy(row)
         
     except HTTPException:
@@ -348,7 +363,7 @@ def require_role(required_role: str):
     return role_checker
 
 
-def get_user_by_email(db: Session, email: str) -> Optional[UserProxy]:
+def get_user_by_email(email: str) -> Optional[UserProxy]:
     """Get user by email via Turso HTTP API"""
     try:
         result = execute_query(
@@ -366,7 +381,7 @@ def get_user_by_email(db: Session, email: str) -> Optional[UserProxy]:
         return None
 
 
-def get_user_by_id(db: Session, user_id: int) -> Optional[UserProxy]:
+def get_user_by_id(user_id: int) -> Optional[UserProxy]:
     """Get user by ID via Turso HTTP API"""
     try:
         result = execute_query(

@@ -82,7 +82,7 @@ const Payments: React.FC = () => {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen p-6 md:p-8" style={{ background: resolvedTheme === 'dark' ? '#0f172a' : '#f8fafc' }}>
+    <div className="min-h-screen p-6 md:p-8" style={{ background: 'var(--bg-primary, #f8fafc)' }}>
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <Wallet size={28} className={resolvedTheme === 'dark' ? 'text-white' : 'text-gray-900'} />

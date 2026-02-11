@@ -99,7 +99,7 @@ async def get_user_consents(
 ):
     """Get user's consent status."""
     service = get_compliance_service(db)
-    consents = await service.get_user_consents(current_user["id"])
+    consents = await service.get_user_consents(current_user.id)
     return consents
 
 
@@ -112,7 +112,7 @@ async def update_consent(
     """Update user consent."""
     service = get_compliance_service(db)
     result = await service.update_consent(
-        current_user["id"],
+        current_user.id,
         request.consent_type,
         request.granted
     )
@@ -129,7 +129,7 @@ async def create_data_request(
     """Create a data subject request (GDPR rights)."""
     service = get_compliance_service(db)
     data_request = await service.create_data_request(
-        current_user["id"],
+        current_user.id,
         request.request_type,
         request.details
     )
@@ -144,7 +144,7 @@ async def list_data_requests(
 ):
     """List user's data requests."""
     service = get_compliance_service(db)
-    requests = await service.list_data_requests(user_id=current_user["id"])
+    requests = await service.list_data_requests(user_id=current_user.id)
     return {"requests": requests}
 
 
@@ -156,7 +156,7 @@ async def get_data_request(
 ):
     """Get data request by ID."""
     service = get_compliance_service(db)
-    data_request = await service.get_data_request(current_user["id"], request_id)
+    data_request = await service.get_data_request(current_user.id, request_id)
     return {"request": data_request}
 
 
@@ -169,7 +169,7 @@ async def export_user_data(
 ):
     """Export all user data for portability."""
     service = get_compliance_service(db)
-    export = await service.export_user_data(current_user["id"], format)
+    export = await service.export_user_data(current_user.id, format)
     return {"export": export}
 
 
@@ -182,7 +182,7 @@ async def request_data_deletion(
 ):
     """Request account and data deletion."""
     service = get_compliance_service(db)
-    deletion = await service.request_data_deletion(current_user["id"], request.reason)
+    deletion = await service.request_data_deletion(current_user.id, request.reason)
     return {"deletion": deletion}
 
 
@@ -196,7 +196,7 @@ async def confirm_data_deletion(
     """Confirm data deletion request."""
     service = get_compliance_service(db)
     result = await service.confirm_data_deletion(
-        current_user["id"],
+        current_user.id,
         deletion_id,
         request.confirmation_code
     )
@@ -211,7 +211,7 @@ async def cancel_data_deletion(
 ):
     """Cancel data deletion request."""
     service = get_compliance_service(db)
-    result = await service.cancel_data_deletion(current_user["id"], deletion_id)
+    result = await service.cancel_data_deletion(current_user.id, deletion_id)
     return result
 
 
@@ -235,7 +235,7 @@ async def get_cookie_preferences(
 ):
     """Get user's cookie preferences."""
     service = get_compliance_service(db)
-    preferences = await service.get_cookie_preferences(current_user["id"])
+    preferences = await service.get_cookie_preferences(current_user.id)
     return {"preferences": preferences}
 
 
@@ -248,7 +248,7 @@ async def update_cookie_preferences(
     """Update cookie preferences."""
     service = get_compliance_service(db)
     result = await service.update_cookie_preferences(
-        current_user["id"],
+        current_user.id,
         request.dict()
     )
     return result

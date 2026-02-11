@@ -26,6 +26,7 @@ from app.models.user import User
 from app.schemas.proposal import ProposalCreate, ProposalRead, ProposalUpdate
 from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
 from app.services import proposals_service
+from app.api.v1.utils import moderate_content
 
 router = APIRouter()
 
@@ -100,11 +101,8 @@ def _validate_proposal_input(proposal) -> None:
 
 def _safe_str(val):
     """Convert bytes to string if needed"""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
+    from app.api.v1.utils import safe_str
+    return safe_str(val)
 
 
 @router.get("/drafts", response_model=List[ProposalRead])
@@ -136,10 +134,15 @@ def create_draft_proposal(
     if not proposals_service.project_exists(proposal.project_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     
+    # Auto-calculate bid_amount from hours * rate if not provided
+    draft_bid = proposal.bid_amount
+    if not draft_bid and proposal.estimated_hours and proposal.hourly_rate:
+        draft_bid = proposal.estimated_hours * proposal.hourly_rate
+
     result = proposals_service.create_draft_proposal(current_user.id, {
         "project_id": proposal.project_id,
         "cover_letter": proposal.cover_letter or "",
-        "bid_amount": proposal.bid_amount or 0,
+        "bid_amount": draft_bid or 0,
         "estimated_hours": proposal.estimated_hours or 0,
         "hourly_rate": proposal.hourly_rate or 0,
         "availability": proposal.availability or "",
@@ -151,7 +154,7 @@ def create_draft_proposal(
     return result
 
 
-@router.get("/", response_model=List[ProposalRead])
+@router.get("", response_model=List[ProposalRead])
 def list_proposals(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -195,7 +198,7 @@ def get_proposal(
     return proposal
 
 
-@router.post("/", response_model=ProposalRead, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=ProposalRead, status_code=status.HTTP_201_CREATED)
 def create_proposal(
     proposal: ProposalCreate,
     current_user: User = Depends(get_current_active_user)
@@ -210,6 +213,11 @@ def create_proposal(
     
     # Validate input
     _validate_proposal_input(proposal)
+    
+    # Content moderation
+    ok, reason = moderate_content(proposal.cover_letter)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cover letter rejected: {reason}")
     
     # Validate cover letter is not empty for submission
     if not proposal.cover_letter or len(proposal.cover_letter.strip()) < 50:
@@ -244,10 +252,15 @@ def create_proposal(
             detail="You have already submitted a proposal for this project"
         )
     
+    # Auto-calculate bid_amount from hours * rate if not provided
+    bid_amount = proposal.bid_amount
+    if not bid_amount and proposal.estimated_hours and proposal.hourly_rate:
+        bid_amount = proposal.estimated_hours * proposal.hourly_rate
+
     result = proposals_service.create_proposal(current_user.id, {
         "project_id": proposal.project_id,
         "cover_letter": proposal.cover_letter or "",
-        "bid_amount": proposal.bid_amount,
+        "bid_amount": bid_amount,
         "estimated_hours": proposal.estimated_hours or 0,
         "hourly_rate": proposal.hourly_rate or 0,
         "availability": proposal.availability or "",

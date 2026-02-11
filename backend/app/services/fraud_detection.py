@@ -126,7 +126,7 @@ class FraudDetectionService:
                 flags.append('Very short or missing description')
             
             # Check client history
-            client_risk = await self._analyze_user(project.client_id)
+            client_risk = await self.analyze_user(project.client_id)
             if client_risk['risk_level'] in ['high', 'critical']:
                 risk_score += 25
                 flags.append('Client has high fraud risk')
@@ -172,7 +172,7 @@ class FraudDetectionService:
                 flags.append('Very short or missing cover letter')
             
             # Check freelancer history
-            freelancer_risk = await self._analyze_user(proposal.freelancer_id)
+            freelancer_risk = await self.analyze_user(proposal.freelancer_id)
             if freelancer_risk['risk_level'] in ['high', 'critical']:
                 risk_score += 25
                 flags.append('Freelancer has high fraud risk')

@@ -112,11 +112,8 @@ def sanitize_string(value: str, max_length: int = 255) -> str:
 
 def _safe_str(val):
     """Convert bytes to string if needed"""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
+    from app.api.v1.utils import safe_str
+    return safe_str(val)
 
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
@@ -259,8 +256,8 @@ def login_user(request: Request, credentials: LoginRequest):
     """
     logger.info("Login attempt for email=%s", credentials.email)
 
-    # authenticate_user uses Turso HTTP API directly, so pass None for db
-    user = authenticate_user(None, credentials.email, credentials.password)
+    # authenticate_user uses Turso HTTP API directly
+    user = authenticate_user(credentials.email, credentials.password)
     logger.info("Login result for email=%s: %s", credentials.email, "SUCCESS" if user else "FAILED")
     
     if not user:

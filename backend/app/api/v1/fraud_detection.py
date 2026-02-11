@@ -231,7 +231,7 @@ async def get_fraud_reports(
 ):
     """Get fraud reports (admin only)."""
     # Check if user is admin
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(
             status_code=403,
             detail="Only administrators can view fraud reports"

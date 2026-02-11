@@ -1,8 +1,5 @@
-import asyncio
 import logging
-from datetime import datetime
-from app.db.mongodb import connect_to_mongo, close_mongo_connection, get_database
-from app.services.blog_service import BlogService
+from app.services.blog_service import BlogService, ensure_blog_table
 from app.schemas.blog import BlogPostCreate
 
 # Configure logging
@@ -180,33 +177,25 @@ BLOG_POSTS = [
     }
 ]
 
-async def seed_blog():
+def seed_blog():
     try:
-        await connect_to_mongo()
-        logger.info("Connected to MongoDB.")
-        
-        collection = await BlogService.get_collection()
-        
-        # Clear existing posts to avoid duplicates (optional, but good for seeding)
-        # await collection.delete_many({}) 
-        # logger.info("Cleared existing posts.")
+        ensure_blog_table()
+        logger.info("Blog table ensured.")
 
         for post_data in BLOG_POSTS:
-            existing = await BlogService.get_post_by_slug(post_data["slug"])
+            existing = BlogService.get_post_by_slug(post_data["slug"])
             if existing:
                 logger.info(f"Post '{post_data['title']}' already exists. Skipping.")
                 continue
                 
             post = BlogPostCreate(**post_data)
-            await BlogService.create_post(post)
+            BlogService.create_post(post)
             logger.info(f"Created post: {post.title}")
             
         logger.info("Blog seeding completed successfully!")
         
     except Exception as e:
         logger.error(f"An error occurred during seeding: {e}")
-    finally:
-        await close_mongo_connection()
 
 if __name__ == "__main__":
-    asyncio.run(seed_blog())
+    seed_blog()

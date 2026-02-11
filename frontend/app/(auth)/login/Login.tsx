@@ -2,7 +2,7 @@
 // @AI-HINT: Premium SaaS Login component for MegiLance. Redesigned for investor-grade UI/UX quality, matching standards of Vercel, Linear, and Toptal. Features a modern two-panel layout, role-based dynamic content, and pixel-perfect implementation of the official brand playbook.
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { User, Briefcase, ShieldCheck, Eye, EyeOff, Laptop, ListChecks, UserCog } from 'lucide-react';
 import Tabs from '@/app/components/Tabs/Tabs';
@@ -13,8 +13,6 @@ import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
-import DevQuickLogin from '@/app/components/Auth/DevQuickLogin/DevQuickLogin';
-import { FloatingCube, FloatingSphere, ParticlesSystem, AnimatedOrb } from '@/app/components/3D';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import commonStyles from './Login.common.module.css';
@@ -62,6 +60,9 @@ const Login: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
+  const getRedirect = (role: UserRole) => returnTo || roleConfig[role].redirectPath;
   const [selectedRole, setSelectedRole] = useState<UserRole>('freelancer');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -178,7 +179,7 @@ const Login: React.FC = () => {
           localStorage.setItem('user', JSON.stringify(data.user));
         }
         try { window.localStorage.setItem('portal_area', role); } catch {}
-        router.push(roleConfig[role].redirectPath);
+        router.push(getRedirect(role));
       }
     } catch (error: any) {
       setErrors({ email: '', password: '', general: error.message || 'Auto-login failed. Please try again.' });
@@ -192,7 +193,7 @@ const Login: React.FC = () => {
     if (isPreviewMode()) {
       // Preview mode: bypass validation and go straight to the role destination
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
-      router.push(roleConfig[selectedRole].redirectPath);
+      router.push(getRedirect(selectedRole));
       return;
     }
     if (!validate()) return;
@@ -216,7 +217,7 @@ const Login: React.FC = () => {
         const userRole = (data.user?.user_type || data.user?.role || selectedRole).toLowerCase() as UserRole;
         const actualRole = userRole === 'admin' ? 'admin' : userRole === 'freelancer' ? 'freelancer' : 'client';
         try { window.localStorage.setItem('portal_area', actualRole); } catch {}
-        router.push(roleConfig[actualRole].redirectPath);
+        router.push(getRedirect(actualRole));
       }
     } catch (error: any) {
       setErrors({ email: '', password: '', general: error.message || 'Login failed. Please check your credentials.' });
@@ -251,7 +252,7 @@ const Login: React.FC = () => {
       }
 
       try { window.localStorage.setItem('portal_area', selectedRole); } catch {}
-      router.push(roleConfig[selectedRole].redirectPath);
+      router.push(getRedirect(selectedRole));
     } catch (error: any) {
       setErrors({ email: '', password: '', general: error.message || 'Verification failed. Please try again.' });
     } finally {
@@ -344,12 +345,7 @@ const Login: React.FC = () => {
             <span className={styles.dividerText}>OR</span>
           </StaggerItem>
 
-          <StaggerItem>
-            <DevQuickLogin 
-              onCredentialSelect={handleDevQuickLogin}
-              onAutoLogin={handleDevAutoLogin}
-            />
-          </StaggerItem>
+          {/* DevQuickLogin commented out - Turbopack stale cache fix */}
 
           <StaggerItem>
             {needs2FA ? (

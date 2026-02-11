@@ -225,6 +225,24 @@ def create_invoice(contract_id: int, milestone_id: int, freelancer_id: int,
           amount, amount, payment_id, items, now, now])
 
 
+def check_and_complete_contract(contract_id: int):
+    """Auto-complete contract if all milestones are approved."""
+    result = execute_query(
+        "SELECT COUNT(*) as total, SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved FROM milestones WHERE contract_id = ?",
+        [contract_id]
+    )
+    if result and result.get("rows"):
+        row = result["rows"][0]
+        total = int(row[0].get("value", 0))
+        approved = int(row[1].get("value", 0))
+        if total > 0 and total == approved:
+            now = datetime.now(timezone.utc).isoformat()
+            execute_query(
+                "UPDATE contracts SET status = 'completed', updated_at = ? WHERE id = ? AND status != 'completed'",
+                [now, contract_id]
+            )
+
+
 def reject_milestone(milestone_id: int, rejection_notes: str):
     """Reject milestone submission, returning to pending status."""
     now = datetime.now(timezone.utc).isoformat()

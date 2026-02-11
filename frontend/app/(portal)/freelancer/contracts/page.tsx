@@ -363,7 +363,7 @@ const ContractsPage = () => {
                   return (
                     <Button
                       key={s}
-                      size="small"
+                      size="sm"
                       variant={active ? 'primary' : 'outline'}
                       aria-pressed={active}
                       title={`${active ? 'Remove' : 'Add'} filter: ${s}`}
@@ -372,7 +372,7 @@ const ContractsPage = () => {
                   );
                 })}
                 {statusFilters.length>0 && (
-                  <Button size="small" variant="outline" onClick={() => setStatusFilters([])} aria-label="Clear status filters" title="Clear status filters">Clear</Button>
+                  <Button size="sm" variant="outline" onClick={() => setStatusFilters([])} aria-label="Clear status filters" title="Clear status filters">Clear</Button>
                 )}
                 <span className={styles.srOnly} aria-live="polite">
                   {statusFilters.length === 0 ? 'No status filters active' : `Active filters: ${statusFilters.join(', ')}`}
@@ -535,13 +535,13 @@ const ContractsPage = () => {
                           <td>
                             <div className={styles.rowActions} role="group" aria-label={`Actions for ${contract.projectTitle}`}>
                               <Link href={`/freelancer/contracts/${contract.id}`}>
-                                <Button size="small" variant="outline" aria-label={`View ${contract.projectTitle}`} title={`View ${contract.projectTitle}`}>View</Button>
+                                <Button size="sm" variant="outline" aria-label={`View ${contract.projectTitle}`} title={`View ${contract.projectTitle}`}>View</Button>
                               </Link>
-                              <Button size="small" variant="secondary" onClick={() => downloadContract(contract)} aria-label={`Download ${contract.projectTitle}`} title={`Download ${contract.projectTitle}`}>Download</Button>
+                              <Button size="sm" variant="secondary" onClick={() => downloadContract(contract)} aria-label={`Download ${contract.projectTitle}`} title={`Download ${contract.projectTitle}`}>Download</Button>
                               {contract.status === 'Active' && (
                                 <>
-                                  <Button size="small" variant="primary" onClick={() => openExtend(contract.id)} aria-label={`Extend ${contract.projectTitle}`} title={`Extend ${contract.projectTitle}`}>Extend</Button>
-                                  <Button size="small" variant="danger" onClick={() => openDispute(contract.id)} aria-label={`Dispute ${contract.projectTitle}`} title={`Dispute ${contract.projectTitle}`}>Dispute</Button>
+                                  <Button size="sm" variant="primary" onClick={() => openExtend(contract.id)} aria-label={`Extend ${contract.projectTitle}`} title={`Extend ${contract.projectTitle}`}>Extend</Button>
+                                  <Button size="sm" variant="danger" onClick={() => openDispute(contract.id)} aria-label={`Dispute ${contract.projectTitle}`} title={`Dispute ${contract.projectTitle}`}>Dispute</Button>
                                 </>
                               )}
                             </div>

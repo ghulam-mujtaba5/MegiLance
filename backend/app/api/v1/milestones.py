@@ -6,6 +6,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 
 from app.core.security import get_current_active_user
+from app.core.config import get_settings
 from app.models import User
 from app.schemas.milestone import (
     Milestone as MilestoneSchema,
@@ -19,7 +20,7 @@ from app.services import milestones_service
 router = APIRouter()
 
 
-@router.post("/milestones", response_model=MilestoneSchema, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=MilestoneSchema, status_code=status.HTTP_201_CREATED)
 async def create_milestone(
     milestone_data: MilestoneCreate,
     current_user: User = Depends(get_current_active_user)
@@ -57,7 +58,7 @@ async def create_milestone(
     return milestone
 
 
-@router.get("/milestones", response_model=List[MilestoneSchema])
+@router.get("", response_model=List[MilestoneSchema])
 async def list_milestones(
     contract_id: int = Query(..., description="Contract ID (required)"),
     status_filter: Optional[str] = Query(None, alias="status", description="Filter by status"),
@@ -76,7 +77,7 @@ async def list_milestones(
     return milestones_service.list_milestones(contract_id, status_filter, skip, limit)
 
 
-@router.get("/milestones/{milestone_id}", response_model=MilestoneSchema)
+@router.get("/{milestone_id}", response_model=MilestoneSchema)
 async def get_milestone(
     milestone_id: int,
     current_user: User = Depends(get_current_active_user)
@@ -94,7 +95,7 @@ async def get_milestone(
     return milestone
 
 
-@router.patch("/milestones/{milestone_id}", response_model=MilestoneSchema)
+@router.patch("/{milestone_id}", response_model=MilestoneSchema)
 async def update_milestone(
     milestone_id: int,
     milestone_data: MilestoneUpdate,
@@ -125,7 +126,7 @@ async def update_milestone(
     return await get_milestone(milestone_id, current_user)
 
 
-@router.post("/milestones/{milestone_id}/submit", response_model=MilestoneSchema)
+@router.post("/{milestone_id}/submit", response_model=MilestoneSchema)
 async def submit_milestone(
     milestone_id: int,
     submission_data: MilestoneSubmit,
@@ -167,7 +168,7 @@ async def submit_milestone(
     return await get_milestone(milestone_id, current_user)
 
 
-@router.post("/milestones/{milestone_id}/approve", response_model=MilestoneSchema)
+@router.post("/{milestone_id}/approve", response_model=MilestoneSchema)
 async def approve_milestone(
     milestone_id: int,
     approval_data: MilestoneApprove,
@@ -196,9 +197,9 @@ async def approve_milestone(
     if current_status != "submitted":
         raise HTTPException(status_code=400, detail=f"Milestone is {current_status}, must be submitted to approve")
 
-    platform_fee_percentage = 0.10
-    platform_fee = amount * platform_fee_percentage
-    freelancer_amount = amount - platform_fee
+    platform_fee_percentage = get_settings().STRIPE_PLATFORM_FEE_PERCENT / 100.0
+    platform_fee = round(amount * platform_fee_percentage, 2)
+    freelancer_amount = round(amount - platform_fee, 2)
 
     milestones_service.approve_milestone(milestone_id, approval_data.approval_notes)
 
@@ -221,10 +222,13 @@ async def approve_milestone(
         action_url=f"/payments/{payment_id}" if payment_id else f"/milestones/{milestone_id}"
     )
 
+    # Auto-complete contract if all milestones are approved (#204)
+    milestones_service.check_and_complete_contract(contract_id)
+
     return await get_milestone(milestone_id, current_user)
 
 
-@router.post("/milestones/{milestone_id}/reject", response_model=MilestoneSchema)
+@router.post("/{milestone_id}/reject", response_model=MilestoneSchema)
 async def reject_milestone(
     milestone_id: int,
     rejection_notes: str = Body(..., embed=True),
@@ -266,7 +270,7 @@ async def reject_milestone(
     return await get_milestone(milestone_id, current_user)
 
 
-@router.delete("/milestones/{milestone_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{milestone_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_milestone(
     milestone_id: int,
     current_user: User = Depends(get_current_active_user)

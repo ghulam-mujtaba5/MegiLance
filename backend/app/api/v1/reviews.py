@@ -90,7 +90,7 @@ def get_current_user(token_data = Depends(get_current_user_from_token)):
     return token_data
 
 
-@router.post("/reviews", response_model=dict, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_review(
     review_data: dict,
     current_user = Depends(get_current_user)
@@ -185,7 +185,7 @@ async def create_review(
     }
 
 
-@router.get("/reviews", response_model=List[dict])
+@router.get("", response_model=List[dict])
 async def list_reviews(
     user_id: Optional[int] = Query(None, description="Filter by reviewed user"),
     reviewer_id: Optional[int] = Query(None, description="Filter by reviewer"),
@@ -270,7 +270,7 @@ async def list_reviews(
     return output
 
 
-@router.get("/reviews/stats/{user_id}", response_model=dict)
+@router.get("/stats/{user_id}", response_model=dict)
 async def get_review_stats(user_id: int):
     """
     Get aggregated review statistics for a user.
@@ -299,7 +299,7 @@ async def get_review_stats(user_id: int):
     }
 
 
-@router.get("/reviews/{review_id}", response_model=dict)
+@router.get("/{review_id}", response_model=dict)
 async def get_review(
     review_id: int,
     current_user = Depends(get_current_user)
@@ -345,7 +345,7 @@ async def get_review(
     }
 
 
-@router.patch("/reviews/{review_id}", response_model=dict)
+@router.patch("/{review_id}", response_model=dict)
 async def update_review(
     review_id: int,
     review_data: dict,
@@ -411,7 +411,7 @@ async def update_review(
     return await get_review(review_id, current_user)
 
 
-@router.delete("/reviews/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{review_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_review(
     review_id: int,
     current_user = Depends(get_current_user)

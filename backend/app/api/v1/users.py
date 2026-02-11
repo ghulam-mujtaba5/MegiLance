@@ -14,6 +14,7 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate, ProfileCompleteUpdate
 from app.core.security import get_password_hash, get_current_user
 from app.db.turso_http import get_turso_http
+from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
 import logging
 
 logger = logging.getLogger("megilance")
@@ -94,31 +95,43 @@ def _to_str(value) -> Optional[str]:
     return str(value) if value is not None else None
 
 
-def _row_to_user_dict(row: list) -> dict:
-    """Convert database row to user dict"""
+def _row_to_user_dict(row: list, columns: list = None) -> dict:
+    """Convert database row to user dict using column names for resilience"""
+    # Default column order from our SELECT queries
+    if columns is None:
+        columns = ["id", "email", "name", "role", "is_active", "user_type",
+                    "joined_at", "created_at", "bio", "skills", "hourly_rate",
+                    "profile_image_url", "location", "profile_data"]
+    
+    # Build a dict from column names and row values
+    raw = {}
+    for i, col in enumerate(columns):
+        raw[col] = row[i] if i < len(row) else None
+
     user_dict = {
-        "id": row[0],
-        "email": _to_str(row[1]),
-        "name": _to_str(row[2]),
-        "role": _to_str(row[3]),
-        "is_active": bool(row[4]) if row[4] is not None else True,
-        "user_type": _to_str(row[5]),
-        "joined_at": _parse_date(row[6]),
-        "created_at": _parse_date(row[7]),
-        "bio": _to_str(row[8]) if len(row) > 8 else None,
-        "skills": _to_str(row[9]) if len(row) > 9 else None,
-        "hourly_rate": row[10] if len(row) > 10 else None,
-        "profile_image_url": _to_str(row[11]) if len(row) > 11 else None,
-        "location": _to_str(row[12]) if len(row) > 12 else None,
+        "id": raw.get("id"),
+        "email": _to_str(raw.get("email")),
+        "name": _to_str(raw.get("name")),
+        "role": _to_str(raw.get("role")),
+        "is_active": bool(raw["is_active"]) if raw.get("is_active") is not None else True,
+        "user_type": _to_str(raw.get("user_type")),
+        "joined_at": _parse_date(raw.get("joined_at")),
+        "created_at": _parse_date(raw.get("created_at")),
+        "bio": _to_str(raw.get("bio")),
+        "skills": _to_str(raw.get("skills")),
+        "hourly_rate": raw.get("hourly_rate"),
+        "profile_image_url": _to_str(raw.get("profile_image_url")),
+        "location": _to_str(raw.get("location")),
     }
     
     # Parse profile_data if present
-    if len(row) > 13 and row[13]:
+    profile_data_raw = raw.get("profile_data")
+    if profile_data_raw:
         try:
-            profile_data = json.loads(_to_str(row[13]))
+            profile_data = json.loads(_to_str(profile_data_raw))
             if isinstance(profile_data, dict):
                 user_dict.update(profile_data)
-        except:
+        except (json.JSONDecodeError, TypeError):
             pass
             
     # Parse skills if it looks like a list string
@@ -133,24 +146,30 @@ def _row_to_user_dict(row: list) -> dict:
             # If it's a single string, make it a list
             elif isinstance(user_dict["skills"], str):
                 user_dict["skills"] = [user_dict["skills"]]
-        except:
+        except (json.JSONDecodeError, AttributeError):
             pass
             
     return user_dict
 
 
 @router.get("/", response_model=List[UserRead])
-def list_users():
-    """List all users from Turso database"""
+def list_users(
+    skip: int = Query(0, ge=0, description="Number of records to skip"),
+    limit: int = Query(50, ge=1, le=100, description="Max records to return"),
+    current_user: User = Depends(get_current_user)
+):
+    """List users from Turso database (authenticated, paginated)"""
     try:
         turso = get_turso_http()
         result = turso.execute(
             """SELECT id, email, name, role, is_active, user_type, joined_at, created_at,
                       bio, skills, hourly_rate, profile_image_url, location, profile_data 
-               FROM users LIMIT 200"""
+               FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?""",
+            [limit, skip]
         )
         
-        users = [_row_to_user_dict(row) for row in result.get("rows", [])]
+        columns = result.get("columns", [])
+        users = [_row_to_user_dict(row, columns) for row in result.get("rows", [])]
         return users
         
     except Exception as e:
@@ -172,17 +191,18 @@ def get_user(user_id: int):
     """Get user by ID from Turso database"""
     try:
         turso = get_turso_http()
-        row = turso.fetch_one(
+        result = turso.execute(
             """SELECT id, email, name, role, is_active, user_type, joined_at, created_at,
                       bio, skills, hourly_rate, profile_image_url, location, profile_data 
                FROM users WHERE id = ?""",
             [user_id]
         )
         
-        if not row:
+        rows = result.get("rows", [])
+        if not rows:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         
-        return _row_to_user_dict(row)
+        return _row_to_user_dict(rows[0], result.get("columns", []))
         
     except HTTPException:
         raise
@@ -236,10 +256,16 @@ def create_user(payload: UserCreate):
         )
 
 
+from pydantic import BaseModel, Field
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(..., min_length=1)
+    new_password: str = Field(..., min_length=8, max_length=128)
+
+
 @router.post("/me/change-password")
 def change_password(
-    current_password: str,
-    new_password: str,
+    payload: ChangePasswordRequest,
     current_user: User = Depends(get_current_user)
 ):
     """Change user password"""
@@ -256,21 +282,21 @@ def change_password(
         )
     
     # Verify current password
-    if not verify_password(current_password, current_hash):
+    if not verify_password(payload.current_password, current_hash):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Current password is incorrect"
         )
     
     # Validate new password strength
-    if len(new_password) < 8:
+    if len(payload.new_password) < 8:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="New password must be at least 8 characters long"
         )
     
     # Hash and update password
-    update_user_password(current_user.id, new_password)
+    update_user_password(current_user.id, payload.new_password)
     
     return {"message": "Password changed successfully"}
 
@@ -573,4 +599,50 @@ def update_notification_preferences(
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database temporarily unavailable"
+        )
+
+
+@router.get("/me/profile-completeness")
+def get_profile_completeness(current_user: User = Depends(get_current_user)):
+    """Get profile completeness percentage and missing fields"""
+    try:
+        # Define completeness criteria
+        fields = {
+            "name": bool(current_user.name or (current_user.first_name and current_user.last_name)),
+            "bio": bool(current_user.bio and len(current_user.bio) > 20),
+            "location": bool(current_user.location),
+            "profile_picture": bool(current_user.profile_picture_url),
+            "title": bool(current_user.title),
+        }
+        
+        # Freelancer-specific fields
+        if str(current_user.user_type).lower() == "freelancer":
+            fields["skills"] = bool(current_user.skills and len(current_user.skills) > 2)
+            fields["hourly_rate"] = bool(current_user.hourly_rate and current_user.hourly_rate > 0)
+            fields["portfolio"] = bool(current_user.portfolio_url)
+        
+        # Client-specific fields
+        elif str(current_user.user_type).lower() == "client":
+            fields["company_name"] = bool(current_user.company_name)
+        
+        completed = sum(1 for v in fields.values() if v)
+        total = len(fields)
+        percentage = round((completed / total) * 100) if total > 0 else 0
+        
+        missing = [k.replace("_", " ").title() for k, v in fields.items() if not v]
+        
+        return {
+            "percentage": percentage,
+            "completed": completed,
+            "total": total,
+            "is_complete": is_profile_complete(current_user),
+            "missing_fields": missing,
+            "fields": fields
+        }
+        
+    except Exception as e:
+        logger.error("get_profile_completeness failed: %s", e, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Failed to calculate profile completeness"
         )

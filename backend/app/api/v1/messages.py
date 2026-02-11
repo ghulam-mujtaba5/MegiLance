@@ -8,6 +8,7 @@ import logging
 
 from app.core.security import get_current_user_from_token
 from app.services import messages_service
+from app.api.v1.utils import SCRIPT_PATTERN, moderate_content
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -17,9 +18,6 @@ MAX_MESSAGE_LENGTH = 10000
 MAX_CONTENT_LENGTH = 50000
 VALID_MESSAGE_TYPES = {"text", "file", "image", "system"}
 VALID_CONVERSATION_STATUSES = {"active", "closed", "blocked"}
-
-# Regex for HTML/script injection detection
-SCRIPT_PATTERN = re.compile(r'(javascript:|on\w+=|<script)', re.IGNORECASE)
 
 
 def get_current_user(token_data = Depends(get_current_user_from_token)):
@@ -257,6 +255,10 @@ def send_message(
 
     if not content:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Message content cannot be empty")
+    
+    ok, reason = moderate_content(content)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Message rejected: {reason}")
 
     if not conversation_id:
         if not receiver_id:

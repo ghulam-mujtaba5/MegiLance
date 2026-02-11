@@ -1,12 +1,17 @@
 # @AI-HINT: Portal service layer - all database operations for client and freelancer portal endpoints
 import json
 import logging
+import time
 from datetime import datetime, timezone
 from typing import Optional, List
 
-from app.db.turso_http import execute_query, to_str, parse_date
+from app.db.turso_http import execute_query, to_str, parse_date, get_turso_http
 
 logger = logging.getLogger(__name__)
+
+# Simple TTL cache for dashboard stats (avoids repeated slow Turso queries)
+_stats_cache: dict = {}
+STATS_CACHE_TTL = 120  # seconds
 
 
 def _get_val(row: list, idx: int):
@@ -17,6 +22,28 @@ def _get_val(row: list, idx: int):
     if cell.get("type") == "null":
         return None
     return cell.get("value")
+
+
+def _batch_scalar_queries(queries: list[dict]) -> list:
+    """Execute multiple scalar queries in a single HTTP request to Turso.
+    Each query dict has 'q' and 'params' keys.
+    Returns a list of scalar values (first column of first row) for each query.
+    """
+    try:
+        client = get_turso_http()
+        results = client.execute_many(queries)
+        values = []
+        for result in results:
+            rows = result.get("rows", [])
+            if rows and len(rows[0]) > 0:
+                val = rows[0][0]
+                values.append(val)
+            else:
+                values.append(None)
+        return values
+    except Exception as e:
+        logger.error(f"Batch query error: {e}")
+        return [None] * len(queries)
 
 
 def _safe_str(val):
@@ -31,63 +58,33 @@ def _safe_str(val):
 # ==================== Client Dashboard ====================
 
 def get_client_stats(client_id: int) -> dict:
-    """Get all client dashboard statistics."""
-    total_projects = 0
-    active_projects = 0
-    completed_projects = 0
-    total_spent = 0.0
-    active_freelancers = 0
-    pending_proposals = 0
+    """Get all client dashboard statistics in a single batched HTTP request."""
+    cache_key = f"client_stats_{client_id}"
+    cached = _stats_cache.get(cache_key)
+    if cached and time.time() - cached["ts"] < STATS_CACHE_TTL:
+        return cached["data"]
 
-    result = execute_query("SELECT COUNT(*) FROM projects WHERE client_id = ?", [client_id])
-    if result and result.get("rows"):
-        total_projects = int(_get_val(result["rows"][0], 0) or 0)
+    queries = [
+        {"q": "SELECT COUNT(*) FROM projects WHERE client_id = ?", "params": [client_id]},
+        {"q": "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status IN ('open', 'in_progress')", "params": [client_id]},
+        {"q": "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status = 'completed'", "params": [client_id]},
+        {"q": "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE from_user_id = ? AND status = 'completed'", "params": [client_id]},
+        {"q": "SELECT COUNT(DISTINCT freelancer_id) FROM contracts WHERE client_id = ? AND status IN ('active', 'in_progress')", "params": [client_id]},
+        {"q": "SELECT COUNT(*) FROM proposals pr JOIN projects p ON pr.project_id = p.id WHERE p.client_id = ? AND pr.status = 'submitted'", "params": [client_id]},
+    ]
 
-    result = execute_query(
-        "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status IN ('open', 'in_progress')",
-        [client_id]
-    )
-    if result and result.get("rows"):
-        active_projects = int(_get_val(result["rows"][0], 0) or 0)
+    values = _batch_scalar_queries(queries)
 
-    result = execute_query(
-        "SELECT COUNT(*) FROM projects WHERE client_id = ? AND status = 'completed'",
-        [client_id]
-    )
-    if result and result.get("rows"):
-        completed_projects = int(_get_val(result["rows"][0], 0) or 0)
-
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE from_user_id = ? AND status = 'completed'",
-        [client_id]
-    )
-    if result and result.get("rows"):
-        total_spent = float(_get_val(result["rows"][0], 0) or 0)
-
-    result = execute_query(
-        "SELECT COUNT(DISTINCT freelancer_id) FROM contracts WHERE client_id = ? AND status IN ('active', 'in_progress')",
-        [client_id]
-    )
-    if result and result.get("rows"):
-        active_freelancers = int(_get_val(result["rows"][0], 0) or 0)
-
-    result = execute_query(
-        """SELECT COUNT(*) FROM proposals pr
-           JOIN projects p ON pr.project_id = p.id
-           WHERE p.client_id = ? AND pr.status = 'submitted'""",
-        [client_id]
-    )
-    if result and result.get("rows"):
-        pending_proposals = int(_get_val(result["rows"][0], 0) or 0)
-
-    return {
-        "total_projects": total_projects,
-        "active_projects": active_projects,
-        "completed_projects": completed_projects,
-        "total_spent": total_spent,
-        "active_freelancers": active_freelancers,
-        "pending_proposals": pending_proposals
+    result = {
+        "total_projects": int(values[0] or 0),
+        "active_projects": int(values[1] or 0),
+        "completed_projects": int(values[2] or 0),
+        "total_spent": float(values[3] or 0),
+        "active_freelancers": int(values[4] or 0),
+        "pending_proposals": int(values[5] or 0),
     }
+    _stats_cache[cache_key] = {"ts": time.time(), "data": result}
+    return result
 
 
 def get_client_projects_list(client_id: int, status_filter: Optional[str],
@@ -268,87 +265,52 @@ def get_monthly_payment_data(user_id: int, direction: str, months: int) -> dict:
 
 
 def get_wallet_payments(user_id: int, direction: str) -> dict:
-    """Get pending and completed payment sums for wallet display."""
+    """Get pending and completed payment sums for wallet display - batched."""
     col = "from_user_id" if direction == "from" else "to_user_id"
 
-    pending = 0.0
-    completed = 0.0
+    queries = [
+        {"q": f"SELECT COALESCE(SUM(amount), 0) FROM payments WHERE {col} = ? AND status = 'pending'", "params": [user_id]},
+        {"q": f"SELECT COALESCE(SUM(amount), 0) FROM payments WHERE {col} = ? AND status = 'completed'", "params": [user_id]},
+    ]
 
-    result = execute_query(
-        f"SELECT COALESCE(SUM(amount), 0) FROM payments WHERE {col} = ? AND status = 'pending'",
-        [user_id]
-    )
-    if result and result.get("rows"):
-        pending = float(_get_val(result["rows"][0], 0) or 0)
+    values = _batch_scalar_queries(queries)
 
-    result = execute_query(
-        f"SELECT COALESCE(SUM(amount), 0) FROM payments WHERE {col} = ? AND status = 'completed'",
-        [user_id]
-    )
-    if result and result.get("rows"):
-        completed = float(_get_val(result["rows"][0], 0) or 0)
-
-    return {"pending": pending, "completed": completed}
+    return {
+        "pending": float(values[0] or 0),
+        "completed": float(values[1] or 0),
+    }
 
 
 # ==================== Freelancer Dashboard ====================
 
 def get_freelancer_stats(freelancer_id: int) -> dict:
-    """Get all freelancer dashboard statistics."""
-    total_earnings = 0.0
-    active_projects = 0
-    completed_projects = 0
-    pending_proposals = 0
-    total_proposals = 0
-    avg_rating = None
+    """Get all freelancer dashboard statistics in a single batched HTTP request."""
+    cache_key = f"freelancer_stats_{freelancer_id}"
+    cached = _stats_cache.get(cache_key)
+    if cached and time.time() - cached["ts"] < STATS_CACHE_TTL:
+        return cached["data"]
 
-    result = execute_query(
-        "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'completed'",
-        [freelancer_id]
-    )
-    if result and result.get("rows"):
-        total_earnings = float(_get_val(result["rows"][0], 0) or 0)
+    queries = [
+        {"q": "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'completed'", "params": [freelancer_id]},
+        {"q": "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status IN ('active', 'in_progress')", "params": [freelancer_id]},
+        {"q": "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status = 'completed'", "params": [freelancer_id]},
+        {"q": "SELECT COUNT(*) FROM proposals WHERE freelancer_id = ? AND status = 'submitted'", "params": [freelancer_id]},
+        {"q": "SELECT COUNT(*) FROM proposals WHERE freelancer_id = ?", "params": [freelancer_id]},
+        {"q": "SELECT AVG(rating) FROM reviews WHERE reviewee_id = ?", "params": [freelancer_id]},
+    ]
 
-    result = execute_query(
-        "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status IN ('active', 'in_progress')",
-        [freelancer_id]
-    )
-    if result and result.get("rows"):
-        active_projects = int(_get_val(result["rows"][0], 0) or 0)
+    values = _batch_scalar_queries(queries)
 
-    result = execute_query(
-        "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status = 'completed'",
-        [freelancer_id]
-    )
-    if result and result.get("rows"):
-        completed_projects = int(_get_val(result["rows"][0], 0) or 0)
-
-    result = execute_query(
-        "SELECT COUNT(*) FROM proposals WHERE freelancer_id = ? AND status = 'submitted'",
-        [freelancer_id]
-    )
-    if result and result.get("rows"):
-        pending_proposals = int(_get_val(result["rows"][0], 0) or 0)
-
-    result = execute_query(
-        "SELECT COUNT(*) FROM proposals WHERE freelancer_id = ?",
-        [freelancer_id]
-    )
-    if result and result.get("rows"):
-        total_proposals = int(_get_val(result["rows"][0], 0) or 0)
+    total_earnings = float(values[0] or 0)
+    active_projects = int(values[1] or 0)
+    completed_projects = int(values[2] or 0)
+    pending_proposals = int(values[3] or 0)
+    total_proposals = int(values[4] or 0)
+    avg_rating = round(float(values[5]), 2) if values[5] is not None else None
 
     success_rate = (completed_projects / total_proposals * 100) if total_proposals > 0 else 0.0
 
-    result = execute_query(
-        "SELECT AVG(rating) FROM reviews WHERE reviewee_id = ?",
-        [freelancer_id]
-    )
-    if result and result.get("rows"):
-        rating_val = _get_val(result["rows"][0], 0)
-        if rating_val:
-            avg_rating = round(float(rating_val), 2)
-
-    return {
+    result = {
         "total_earnings": total_earnings,
         "active_projects": active_projects,
         "completed_projects": completed_projects,
@@ -356,6 +318,8 @@ def get_freelancer_stats(freelancer_id: int) -> dict:
         "success_rate": round(success_rate, 2),
         "average_rating": avg_rating
     }
+    _stats_cache[cache_key] = {"ts": time.time(), "data": result}
+    return result
 
 
 def get_available_jobs(category: Optional[str], limit: int, skip: int) -> dict:

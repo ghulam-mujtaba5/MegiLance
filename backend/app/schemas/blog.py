@@ -1,7 +1,7 @@
 # @AI-HINT: Pydantic schemas for Blog CMS API - create, update, and response models
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel
 
 class BlogPostBase(BaseModel):
     title: str
@@ -33,15 +33,11 @@ class BlogPostUpdate(BaseModel):
     reading_time: Optional[int] = None
 
 class BlogPostInDB(BlogPostBase):
-    id: str = Field(alias="_id")
+    id: int
     created_at: datetime
     updated_at: datetime
-
-    model_config = ConfigDict(populate_by_name=True)
 
 class BlogPostResponse(BlogPostBase):
-    id: str
+    id: int
     created_at: datetime
     updated_at: datetime
-
-    model_config = ConfigDict(populate_by_name=True)

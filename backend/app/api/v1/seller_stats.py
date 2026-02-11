@@ -155,7 +155,7 @@ def get_my_stats(
     current_user: User = Depends(get_current_active_user)
 ):
     """Get current user's seller statistics."""
-    if current_user.user_type != "freelancer":
+    if current_user.user_type.lower() != "freelancer":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only freelancers have seller stats"
@@ -331,7 +331,7 @@ def recalculate_stats(
     current_user: User = Depends(get_current_active_user)
 ):
     """Recalculate seller stats from order history."""
-    if current_user.user_type != "freelancer":
+    if current_user.user_type.lower() != "freelancer":
         raise HTTPException(status_code=403, detail="Only freelancers have seller stats")
     
     turso = get_turso_http()

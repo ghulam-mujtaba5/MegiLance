@@ -5,6 +5,7 @@ Handles dispute creation, listing, admin assignment, and resolution.
 from typing import List, Optional
 import json
 from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
+from pydantic import BaseModel
 
 from app.core.security import get_current_active_user
 from app.core.storage import save_file
@@ -20,7 +21,7 @@ from app.services import disputes_service
 router = APIRouter()
 
 
-@router.post("/disputes", response_model=DisputeSchema, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=DisputeSchema, status_code=status.HTTP_201_CREATED)
 async def create_dispute(
     dispute_data: DisputeCreate,
     current_user: User = Depends(get_current_active_user)
@@ -71,7 +72,7 @@ async def create_dispute(
     return dispute
 
 
-@router.get("/disputes", response_model=DisputeList)
+@router.get("", response_model=DisputeList)
 async def list_disputes(
     contract_id: Optional[int] = Query(None, description="Filter by contract"),
     status_filter: Optional[str] = Query(None, alias="status", description="Filter by status"),
@@ -94,7 +95,7 @@ async def list_disputes(
     return DisputeList(total=data["total"], disputes=data["disputes"])
 
 
-@router.get("/disputes/{dispute_id}", response_model=DisputeSchema)
+@router.get("/{dispute_id}", response_model=DisputeSchema)
 async def get_dispute(
     dispute_id: int,
     current_user: User = Depends(get_current_active_user)
@@ -118,7 +119,7 @@ async def get_dispute(
     return dispute
 
 
-@router.patch("/disputes/{dispute_id}", response_model=DisputeSchema)
+@router.patch("/{dispute_id}", response_model=DisputeSchema)
 async def update_dispute(
     dispute_id: int,
     dispute_data: DisputeUpdate,
@@ -175,10 +176,17 @@ async def update_dispute(
     return await get_dispute(dispute_id, current_user)
 
 
-@router.post("/disputes/{dispute_id}/assign", response_model=DisputeSchema)
+class AssignDisputeRequest(BaseModel):
+    admin_id: int
+
+class ResolveDisputeRequest(BaseModel):
+    resolution: str
+    contract_status: Optional[str] = None
+
+@router.post("/{dispute_id}/assign", response_model=DisputeSchema)
 async def assign_dispute(
     dispute_id: int,
-    admin_id: int,
+    body: AssignDisputeRequest,
     current_user: User = Depends(get_current_active_user)
 ):
     """Assign a dispute to an admin. Admin-only endpoint."""
@@ -193,16 +201,16 @@ async def assign_dispute(
     if not disputes_service.dispute_exists(dispute_id):
         raise HTTPException(status_code=404, detail="Dispute not found")
 
-    admin_type = disputes_service.get_user_type(admin_id)
+    admin_type = disputes_service.get_user_type(body.admin_id)
     if admin_type is None:
         raise HTTPException(status_code=404, detail="Admin user not found")
     if admin_type.lower() != "admin":
         raise HTTPException(status_code=400, detail="Can only assign to admin users")
 
-    disputes_service.assign_dispute(dispute_id, admin_id)
+    disputes_service.assign_dispute(dispute_id, body.admin_id)
 
     disputes_service.send_notification(
-        user_id=admin_id,
+        user_id=body.admin_id,
         notification_type="admin_action",
         title="Dispute Assigned to You",
         content=f"You have been assigned dispute #{dispute_id}",
@@ -214,11 +222,10 @@ async def assign_dispute(
     return await get_dispute(dispute_id, current_user)
 
 
-@router.post("/disputes/{dispute_id}/resolve", response_model=DisputeSchema)
+@router.post("/{dispute_id}/resolve", response_model=DisputeSchema)
 async def resolve_dispute(
     dispute_id: int,
-    resolution: str,
-    contract_status: Optional[str] = Query(None, description="New status for the contract (e.g., active, terminated, completed)"),
+    body: ResolveDisputeRequest,
     current_user: User = Depends(get_current_active_user)
 ):
     """Resolve a dispute. Admin-only endpoint."""
@@ -236,13 +243,13 @@ async def resolve_dispute(
 
     contract_id = dispute_core["contract_id"]
 
-    disputes_service.resolve_dispute(dispute_id, resolution)
+    disputes_service.resolve_dispute(dispute_id, body.resolution)
 
-    if contract_status:
+    if body.contract_status:
         valid_statuses = ["pending", "active", "completed", "cancelled", "disputed", "terminated", "refunded"]
-        if contract_status not in valid_statuses:
+        if body.contract_status not in valid_statuses:
             raise HTTPException(status_code=400, detail=f"Invalid contract status. Must be one of: {', '.join(valid_statuses)}")
-        disputes_service.update_contract_status(contract_id, contract_status)
+        disputes_service.update_contract_status(contract_id, body.contract_status)
 
     contract = disputes_service.get_contract_client_freelancer(contract_id)
     if contract:
@@ -252,7 +259,7 @@ async def resolve_dispute(
                 notification_type="dispute",
                 title="Dispute Resolved",
                 content=f"Dispute #{dispute_id} has been resolved",
-                data={"dispute_id": dispute_id, "resolution": resolution},
+                data={"dispute_id": dispute_id, "resolution": body.resolution},
                 priority="high",
                 action_url=f"/disputes/{dispute_id}"
             )
@@ -260,7 +267,7 @@ async def resolve_dispute(
     return await get_dispute(dispute_id, current_user)
 
 
-@router.post("/disputes/{dispute_id}/evidence", response_model=DisputeSchema)
+@router.post("/{dispute_id}/evidence", response_model=DisputeSchema)
 async def upload_evidence(
     dispute_id: int,
     file: UploadFile = File(...),

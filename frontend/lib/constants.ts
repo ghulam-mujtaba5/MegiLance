@@ -9,7 +9,7 @@ export const AUTH = {
   REFRESH_TOKEN_KEY: 'refresh_token',
   USER_KEY: 'user',
   THEME_KEY: 'megilance-theme',
-  COOKIE_MAX_AGE: 60 * 60 * 24 * 7, // 7 days in seconds
+  COOKIE_MAX_AGE: 35 * 60, // 35 minutes in seconds (matches access token lifetime)
   TOKEN_REFRESH_INTERVAL: 25 * 60 * 1000, // 25 minutes in ms
 } as const;
 

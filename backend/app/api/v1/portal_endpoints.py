@@ -46,11 +46,8 @@ class CreateProjectRequest(BaseModel):
 
 def _safe_str(val):
     """Convert bytes to string if needed"""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
+    from app.api.v1.utils import safe_str
+    return safe_str(val)
 
 
 # ============ Helper Functions ============
@@ -354,23 +351,28 @@ async def list_freelancers(
     """List all freelancers - public endpoint"""
     return portal_service.list_all_freelancers(limit, skip)
 
+class WithdrawRequest(BaseModel):
+    amount: float
+
 @router.post("/freelancer/withdraw")
 async def withdraw_funds(
-    amount: float = Query(..., gt=0),
+    body: WithdrawRequest,
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Withdraw funds from wallet"""
+    if body.amount <= 0:
+        raise HTTPException(status_code=400, detail="Amount must be greater than 0")
     current_balance = float(freelancer.account_balance or 0.0)
-    if amount > current_balance:
+    if body.amount > current_balance:
         raise HTTPException(status_code=400, detail="Insufficient funds")
 
     now = datetime.now(timezone.utc).isoformat()
 
-    success = portal_service.create_withdrawal(freelancer.id, amount, now)
+    success = portal_service.create_withdrawal(freelancer.id, body.amount, now)
     if not success:
         raise HTTPException(status_code=500, detail="Failed to process withdrawal")
 
-    new_balance = current_balance - amount
+    new_balance = current_balance - body.amount
     portal_service.update_user_balance(freelancer.id, new_balance)
 
     return {"message": "Withdrawal requested successfully", "new_balance": new_balance}

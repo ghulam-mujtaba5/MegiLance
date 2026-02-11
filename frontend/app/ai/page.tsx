@@ -78,7 +78,7 @@ const aiFeatures = [
     href: '/ai/chatbot',
     status: 'Beta',
     color: 'pink',
-    stats: 'Coming soon'
+    stats: 'In Beta'
   }
 ];
 

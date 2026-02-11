@@ -1,7 +1,7 @@
 # MegiLance AI Agent Instructions
 
 > AI-powered freelancing platform: Next.js 16 + React 19 + FastAPI + Turso (libSQL)
-
+not waste time on build use teh lci maxium like turso cli and other cli etc 
 ## Agent Work Standards (HIGH PRIORITY)
 
 ### Efficiency & Resource Management

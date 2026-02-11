@@ -171,7 +171,7 @@ async def admin_get_all_flags(
     current_user=Depends(get_current_active_user)
 ):
     """Get all feature flags (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
@@ -204,7 +204,7 @@ async def admin_get_flag(
     current_user=Depends(get_current_active_user)
 ):
     """Get a specific flag details (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
@@ -235,7 +235,7 @@ async def admin_create_flag(
     current_user=Depends(get_current_active_user)
 ):
     """Create a new feature flag (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
@@ -278,7 +278,7 @@ async def admin_update_flag(
     current_user=Depends(get_current_active_user)
 ):
     """Update a feature flag (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
@@ -327,7 +327,7 @@ async def admin_delete_flag(
     current_user=Depends(get_current_active_user)
 ):
     """Delete a feature flag (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
@@ -349,7 +349,7 @@ async def admin_update_rollout(
     current_user=Depends(get_current_active_user)
 ):
     """Quick update of rollout percentage (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
@@ -376,7 +376,7 @@ async def admin_get_flag_analytics(
     current_user=Depends(get_current_active_user)
 ):
     """Get analytics for a specific flag (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
@@ -406,7 +406,7 @@ async def admin_get_analytics_summary(
     current_user=Depends(get_current_active_user)
 ):
     """Get analytics summary for all flags (admin only)."""
-    if current_user.role != "admin" and current_user.role != "Admin":
+    if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()

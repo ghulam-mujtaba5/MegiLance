@@ -1,0 +1,10 @@
+/* AI-HINT: Dark theme for cookie consent banner */
+
+.banner {
+  background: rgba(20, 20, 35, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.3);
+}
+
+.text { color: #ddd; }
+.link { color: #6b93f0; }

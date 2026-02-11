@@ -12,6 +12,7 @@ from app.core.security import get_current_active_user
 from app.services import contracts_service
 from app.models.user import User
 from app.schemas.contract import ContractCreate, ContractRead, ContractUpdate
+from app.api.v1.utils import sanitize_text, SCRIPT_PATTERN, HTML_PATTERN
 from pydantic import BaseModel, Field, field_validator
 
 router = APIRouter()
@@ -26,22 +27,6 @@ MIN_RATE = 0.01
 MAX_RATE = 1000000  # $1M max rate
 VALID_RATE_TYPES = {"hourly", "fixed", "monthly", "weekly"}
 VALID_CONTRACT_STATUSES = {"pending", "active", "completed", "cancelled", "disputed"}
-
-# Regex for HTML/script injection detection
-HTML_PATTERN = re.compile(r'<[^>]+>', re.IGNORECASE)
-SCRIPT_PATTERN = re.compile(r'(javascript:|on\w+=|<script)', re.IGNORECASE)
-
-
-def sanitize_text(text: Optional[str], max_length: int = 1000) -> Optional[str]:
-    """Sanitize text input to prevent XSS and limit length"""
-    if text is None:
-        return None
-    text = text.strip()
-    if len(text) > max_length:
-        text = text[:max_length]
-    # Remove potential script injections
-    text = SCRIPT_PATTERN.sub('', text)
-    return text
 
 
 def validate_rate(rate: float, rate_type: str) -> None:

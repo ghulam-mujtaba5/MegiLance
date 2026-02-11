@@ -15,7 +15,7 @@ def get_current_user(token_data = Depends(get_current_user_from_token)):
     return token_data
 
 
-@router.post("/", response_model=dict)
+@router.post("", response_model=dict)
 def create_notification(
     notification: dict,
     current_user = Depends(get_current_user)
@@ -61,7 +61,7 @@ def create_notification(
     }
 
 
-@router.get("/", response_model=dict)
+@router.get("", response_model=dict)
 def get_notifications(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),

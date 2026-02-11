@@ -51,7 +51,7 @@ const UpdateNotification: React.FC = () => {
     <div className={commonStyles.updateNotification}>
       <div className={commonStyles.content}>
         <p className={commonStyles.text}>A new version is available!</p>
-        <Button variant="secondary" size="small" onClick={handleUpdate}>Refresh</Button>
+        <Button variant="secondary" size="sm" onClick={handleUpdate}>Refresh</Button>
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ router = APIRouter()
 
 # Validation constants
 ALLOWED_PAYMENT_STATUSES = {"pending", "processing", "completed", "failed", "refunded", "cancelled"}
-ALLOWED_CURRENCIES = {"USDC", "USDT", "ETH", "BTC", "USD"}
+ALLOWED_CURRENCIES = {"USD", "USDT", "ETH", "BTC"}
 ALLOWED_PAYMENT_TYPES = {"milestone", "full", "hourly", "escrow", "refund", "bonus"}
 ALLOWED_DIRECTIONS = {"incoming", "outgoing"}
 MAX_AMOUNT = Decimal("1000000")  # 1 million max per transaction
@@ -50,29 +50,32 @@ def validate_amount(amount: float) -> Decimal:
         )
 
 
-def _row_to_payment(row: list) -> dict:
-    """Convert database row to payment dict"""
-    columns = ["id", "contract_id", "from_user_id", "to_user_id", "amount", 
-               "currency", "status", "payment_type", "tx_hash", "escrow_address",
-               "description", "created_at", "updated_at", "completed_at"]
+def _row_to_payment(row: list, columns: list = None) -> dict:
+    """Convert database row to payment dict using column names"""
+    if columns is None:
+        columns = ["id", "contract_id", "from_user_id", "to_user_id", "amount", 
+                   "currency", "status", "payment_type", "tx_hash", "escrow_address",
+                   "description", "created_at", "updated_at", "completed_at"]
+    
+    # Build dict from column names
+    raw = {}
+    for i, col in enumerate(columns):
+        raw[col] = row[i] if i < len(row) else None
     
     payment = {}
-    for i, col in enumerate(columns):
-        if i < len(row):
-            val = row[i]
-            if col == "amount" and val is not None:
-                payment[col] = float(val)
-            elif col == "tx_hash":
-                payment["transaction_hash"] = val # Map for Pydantic model
-                payment[col] = val
-            else:
-                payment[col] = val
+    for col in columns:
+        val = raw.get(col)
+        if col == "amount" and val is not None:
+            payment[col] = round(float(val), 2)
+        elif col == "tx_hash":
+            payment["transaction_hash"] = val
+            payment[col] = val
         else:
-            payment[col] = None
+            payment[col] = val
             
     # Ensure required fields for Pydantic model
     if "currency" not in payment or payment["currency"] is None:
-        payment["currency"] = "USDC"
+        payment["currency"] = "USD"
         
     return payment
 
@@ -106,13 +109,13 @@ def list_payments(
         # Schema has: blockchain_tx_hash, processed_at
         # Missing: currency, escrow_address
         sql = """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                        'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                        'USD' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
                         description, created_at, updated_at, processed_at as completed_at 
                  FROM payments WHERE 1=1"""
         params = []
         
         # Restrict payments to user unless admin
-        if current_user.role != "Admin" and current_user.user_type != "Admin":
+        if current_user.role != "admin" and current_user.user_type != "admin":
             if direction == "incoming":
                 sql += " AND to_user_id = ?"
                 params.append(current_user.id)
@@ -130,10 +133,12 @@ def list_payments(
             sql += " AND status = ?"
             params.append(payment_status.lower())
         
-        sql += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
+        sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        params.extend([limit, skip])
         
         result = turso.execute(sql, params)
-        payments = [_row_to_payment(row) for row in result.get("rows", [])]
+        columns = result.get("columns", [])
+        payments = [_row_to_payment(row, columns) for row in result.get("rows", [])]
         return payments
         
     except HTTPException:
@@ -156,7 +161,7 @@ def get_payment(
         turso = get_turso_http()
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      'USD' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
                       description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE id = ?""",
             [payment_id]
@@ -165,10 +170,21 @@ def get_payment(
         if not row:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
         
-        payment = _row_to_payment(row)
+        result = turso.execute(
+            """SELECT id, contract_id, from_user_id, to_user_id, amount, 
+                      'USD' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      description, created_at, updated_at, processed_at as completed_at 
+               FROM payments WHERE id = ?""",
+            [payment_id]
+        )
+        rows = result.get("rows", [])
+        if not rows:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
+        
+        payment = _row_to_payment(rows[0], result.get("columns", []))
         
         # Check access
-        if current_user.role != "Admin":
+        if current_user.role != "admin":
             if payment["from_user_id"] != current_user.id and payment["to_user_id"] != current_user.id:
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
         
@@ -190,7 +206,7 @@ def validate_payment_input(payment: PaymentCreate) -> None:
     validate_amount(payment.amount)
     
     # Validate currency
-    currency = (payment.currency or "USDC").upper()
+    currency = (payment.currency or "USD").upper()
     if currency not in ALLOWED_CURRENCIES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -249,9 +265,16 @@ def create_payment(
             )
         
         now = datetime.now(timezone.utc).isoformat()
-        # currency = (payment.currency or "USDC").upper() # Not stored in DB
+        # currency = (payment.currency or "USD").upper() # Not stored in DB
         payment_type = (payment.payment_type or "milestone").lower()
         description = (payment.description or "")[:1000]  # Truncate to limit
+        
+        # Calculate platform fee from settings
+        from app.core.config import get_settings
+        settings = get_settings()
+        fee_percent = settings.STRIPE_PLATFORM_FEE_PERCENT / 100.0
+        platform_fee = round(float(payment.amount) * fee_percent, 2)
+        freelancer_amount = round(float(payment.amount) - platform_fee, 2)
         
         # Insert with required fields
         turso.execute(
@@ -262,14 +285,14 @@ def create_payment(
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [payment.contract_id, current_user.id, payment.to_user_id, payment.amount,
              payment_type, "crypto", "pending", description, 
-             0.0, payment.amount, # platform_fee, freelancer_amount
+             platform_fee, freelancer_amount,
              now, now]
         )
         
         # Get created payment
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      'USD' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
                       description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE from_user_id = ? ORDER BY id DESC LIMIT 1""",
             [current_user.id]
@@ -304,7 +327,7 @@ def update_payment(
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
         
         # Check authorization
-        if current_user.role != "Admin" and existing[0] != current_user.id:
+        if current_user.role != "admin" and existing[0] != current_user.id:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
         
         # Prevent modification of completed/refunded payments
@@ -365,7 +388,7 @@ def update_payment(
         # Return updated payment
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      'USD' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
                       description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE id = ?""",
             [payment_id]
@@ -388,16 +411,28 @@ def complete_payment(
     tx_hash: Optional[str] = None,
     current_user: User = Depends(get_current_active_user)
 ):
-    """Mark a payment as completed."""
+    """Mark a payment as completed (admin only — prevents self-completion fraud)."""
     try:
         turso = get_turso_http()
         
-        existing = turso.fetch_one("SELECT from_user_id, status FROM payments WHERE id = ?", [payment_id])
+        existing = turso.fetch_one("SELECT from_user_id, to_user_id, status FROM payments WHERE id = ?", [payment_id])
         if not existing:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Payment not found")
         
-        if current_user.role != "Admin" and existing[0] != current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        # Only admin can mark payments complete to prevent fraud
+        if current_user.role != "admin" and current_user.user_type != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only administrators can mark payments as completed"
+            )
+        
+        # Validate current status allows completion
+        current_status = existing[2] if len(existing) > 2 else None
+        if current_status not in ("pending", "processing"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot complete a payment with status '{current_status}'"
+            )
         
         now = datetime.now(timezone.utc).isoformat()
         turso.execute(
@@ -407,7 +442,7 @@ def complete_payment(
         
         row = turso.fetch_one(
             """SELECT id, contract_id, from_user_id, to_user_id, amount, 
-                      'USDC' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
+                      'USD' as currency, status, payment_type, blockchain_tx_hash as tx_hash, NULL as escrow_address,
                       description, created_at, updated_at, processed_at as completed_at 
                FROM payments WHERE id = ?""",
             [payment_id]
@@ -447,9 +482,9 @@ def get_payment_stats(
         )
         
         return {
-            "total_received": float(incoming[0]) if incoming else 0,
-            "total_sent": float(outgoing[0]) if outgoing else 0,
-            "pending_amount": float(pending[0]) if pending else 0
+            "total_received": round(float(incoming[0]), 2) if incoming else 0,
+            "total_sent": round(float(outgoing[0]), 2) if outgoing else 0,
+            "pending_amount": round(float(pending[0]), 2) if pending else 0
         }
         
     except Exception as e:

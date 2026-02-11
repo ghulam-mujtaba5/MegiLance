@@ -25,7 +25,15 @@
   border-color: var(--border-dark);
 }
 
+.table tbody tr:hover {
+  background-color: var(--bg-secondary-dark);
+}
+
 .projectTitle {
+  color: var(--text-primary-dark);
+}
+
+.value {
   color: var(--text-primary-dark);
 }
 
@@ -35,4 +43,24 @@
 
 .link:hover {
   color: var(--primary-dark-hover);
+}
+
+.sortBtn {
+  color: var(--text-tertiary-dark);
+}
+
+.sortBtn:hover {
+  color: var(--text-primary-dark);
+}
+
+.emptyState {
+  color: var(--text-secondary-dark);
+}
+
+.loadingState {
+  color: var(--text-secondary-dark);
+}
+
+.errorState {
+  color: var(--text-secondary-dark);
 }

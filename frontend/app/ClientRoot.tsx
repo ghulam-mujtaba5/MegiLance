@@ -9,28 +9,33 @@ import QuickLogin from '@/app/components/QuickLogin/QuickLogin';
 import StructuredData from '@/app/shared/StructuredData';
 import { AnalyticsProvider } from '@/app/shared/analytics/AnalyticsProvider';
 import WebVitalsReporter from './components/Analytics/WebVitalsReporter';
+import CookieConsent from './components/CookieConsent/CookieConsent';
+import ErrorBoundary from '@/app/components/ErrorBoundary/ErrorBoundary';
 
 const ClientRoot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem={true}
-      disableTransitionOnChange={true}
-      enableColorScheme={true}
-      storageKey="megilance-theme"
-    >
-      <AnalyticsProvider>
-        <ToasterProvider>
-          <AppChrome>
-            {children}
-          </AppChrome>
-          <QuickLogin />
-          <StructuredData />
-          <WebVitalsReporter />
-        </ToasterProvider>
-      </AnalyticsProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem={true}
+        disableTransitionOnChange={true}
+        enableColorScheme={true}
+        storageKey="megilance-theme"
+      >
+        <AnalyticsProvider>
+          <ToasterProvider>
+            <AppChrome>
+              {children}
+            </AppChrome>
+            <QuickLogin />
+            <StructuredData />
+            <WebVitalsReporter />
+            <CookieConsent />
+          </ToasterProvider>
+        </AnalyticsProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 

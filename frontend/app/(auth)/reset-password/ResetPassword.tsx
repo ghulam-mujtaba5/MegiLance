@@ -12,6 +12,7 @@ import { Shield } from 'lucide-react';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import PasswordStrengthMeter from '@/app/components/AdvancedFeatures/PasswordStrengthMeter/PasswordStrengthMeter';
 
 import commonStyles from './ResetPassword.common.module.css';
 import lightStyles from './ResetPassword.light.module.css';
@@ -142,6 +143,7 @@ const ResetPassword: React.FC = () => {
                     error={errors.password}
                     disabled={loading}
                   />
+                  {formData.password && <PasswordStrengthMeter password={formData.password} showRequirements={true} />}
                 </StaggerItem>
                 <StaggerItem>
                   <Input

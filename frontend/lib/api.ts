@@ -1332,14 +1332,9 @@ export const portalApi = {
       bid_amount: number;
       delivery_time: number;
     }) => {
-      const params = new URLSearchParams({
-        project_id: data.project_id.toString(),
-        cover_letter: data.cover_letter,
-        bid_amount: data.bid_amount.toString(),
-        delivery_time: data.delivery_time.toString()
-      });
-      return apiFetch(`/portal/freelancer/proposals?${params}`, {
+      return apiFetch(`/portal/freelancer/proposals`, {
         method: 'POST',
+        body: JSON.stringify(data),
       });
     },
     getPortfolio: () => apiFetch('/portal/freelancer/portfolio'),
@@ -1350,7 +1345,7 @@ export const portalApi = {
     getPayments: (skip = 0, limit = 50) => 
       apiFetch(`/portal/freelancer/payments?skip=${skip}&limit=${limit}`),
     withdraw: (amount: number) => 
-      apiFetch(`/portal/freelancer/withdraw?amount=${amount}`, { method: 'POST' }),
+      apiFetch(`/portal/freelancer/withdraw`, { method: 'POST', body: JSON.stringify({ amount }) }),
   }
 };
 
@@ -1387,6 +1382,9 @@ export const usersApi = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  getProfileCompleteness: () =>
+    apiFetch('/users/me/profile-completeness'),
 };
 
 // ===========================
@@ -1464,7 +1462,8 @@ export const clientApi = {
         location: r.location,
         matchScore: r.match_score // Add this for UI to show match %
       }));
-    } catch {
+    } catch (error) {
+      console.error('Failed to fetch freelancer recommendations:', error);
       return [];
     }
   },
@@ -1480,7 +1479,8 @@ export const clientApi = {
         comment: r.comment || '',
         date: r.created_at || new Date().toISOString()
       })) : [];
-    } catch {
+    } catch (error) {
+      console.error('Failed to fetch reviews:', error);
       return [];
     }
   },
@@ -1577,18 +1577,18 @@ export const disputesApi = {
     }),
 
   assign: (disputeId: number, adminId: number) =>
-    apiFetch(`/disputes/${disputeId}/assign?admin_id=${adminId}`, {
+    apiFetch(`/disputes/${disputeId}/assign`, {
       method: 'POST',
+      body: JSON.stringify({ admin_id: adminId }),
     }),
 
   resolve: (disputeId: number, resolution: string, contractStatus?: string) => {
-    const params = new URLSearchParams();
-    params.append('resolution', resolution);
-    if (contractStatus) {
-      params.append('contract_status', contractStatus);
-    }
-    return apiFetch(`/disputes/${disputeId}/resolve?${params}`, {
+    return apiFetch(`/disputes/${disputeId}/resolve`, {
       method: 'POST',
+      body: JSON.stringify({
+        resolution,
+        ...(contractStatus && { contract_status: contractStatus }),
+      }),
     });
   },
 
@@ -2376,8 +2376,8 @@ export const gamificationApi = {
     // Try to fetch from backend, but return mock data if not available
     try {
       return await apiFetch('/gamification/my-rank');
-    } catch {
-      // Return mock rank data when endpoint doesn't exist
+    } catch (error) {
+      console.error('Gamification rank endpoint not available:', error);
       return { rank: 'Silver', percentile: 50, points: 1250, level: 3 };
     }
   },

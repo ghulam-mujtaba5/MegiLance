@@ -206,10 +206,10 @@ const FlaggedFraudList: React.FC = () => {
               <span className={commonStyles.date}>Flagged: {item.dateFlagged}</span>
               {item.status === 'Pending Review' ? (
                 <div className={commonStyles.actions}>
-                  <Button variant="success" size="small" onClick={() => handleAction(item.id, 'Resolved')}>
+                  <Button variant="success" size="sm" onClick={() => handleAction(item.id, 'Resolved')}>
                     <ShieldCheck size={14} /> Resolve
                   </Button>
-                  <Button variant="secondary" size="small" onClick={() => handleAction(item.id, 'Dismissed')}>
+                  <Button variant="secondary" size="sm" onClick={() => handleAction(item.id, 'Dismissed')}>
                     <ShieldOff size={14} /> Dismiss
                   </Button>
                 </div>

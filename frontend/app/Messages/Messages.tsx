@@ -26,7 +26,7 @@ interface Conversation {
 async function fetchApi<T>(endpoint: string): Promise<T | null> {
   const token = typeof window !== 'undefined' ? getAuthToken() : null;
   try {
-    const res = await fetch(`/api/messages${endpoint}`, {
+    const res = await fetch(`/api${endpoint}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!res.ok) return null;

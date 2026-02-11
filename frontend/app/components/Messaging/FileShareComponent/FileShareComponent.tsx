@@ -62,8 +62,8 @@ const FileShareComponent: React.FC = () => {
         <div className={cn(commonStyles.preview, themeStyles.preview)}>
           <span className={cn(commonStyles.fileName, themeStyles.fileName)}>{selectedFile.name}</span>
           <div className={commonStyles.actions}>
-            <Button variant="primary" size="small" onClick={handleSendFile}>Send</Button>
-            <Button variant="secondary" size="small" onClick={() => setSelectedFile(null)}>Cancel</Button>
+            <Button variant="primary" size="sm" onClick={handleSendFile}>Send</Button>
+            <Button variant="secondary" size="sm" onClick={() => setSelectedFile(null)}>Cancel</Button>
           </div>
         </div>
       )}

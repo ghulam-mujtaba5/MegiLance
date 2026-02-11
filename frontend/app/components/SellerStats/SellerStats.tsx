@@ -106,6 +106,29 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
 
   const themed = resolvedTheme === 'dark' ? dark : light;
 
+  // Defensive: ensure level is always a full SellerLevel object
+  const rawLevel = stats.level;
+  const defaultBenefits = {
+    commissionRate: 20,
+    featuredGigs: 0,
+    prioritySupport: false,
+    badges: [] as string[],
+    description: 'Welcome! Complete orders to level up.',
+  };
+  const level: SellerLevel =
+    typeof rawLevel === 'object' && rawLevel !== null
+      ? {
+          level: rawLevel.level ?? 'new_seller',
+          jssScore: rawLevel.jssScore ?? 0,
+          benefits: { ...defaultBenefits, ...rawLevel.benefits },
+          levelProgress: rawLevel.levelProgress,
+        }
+      : {
+          level: (typeof rawLevel === 'string' ? rawLevel : 'new_seller') as SellerLevel['level'],
+          jssScore: 0,
+          benefits: defaultBenefits,
+        };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -142,22 +165,22 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
           className={cn(
             common.levelBadge,
             themed.levelBadge,
-            themed[levelCssClasses[stats.level.level]]
+            themed[levelCssClasses[level.level]]
           )}
         >
           <Award size={48} color="#fff" />
         </div>
         <div className={common.levelInfo}>
           <h2 className={cn(common.levelTitle, themed.levelTitle)}>
-            {levelDisplayNames[stats.level.level]}
+            {levelDisplayNames[level.level]}
           </h2>
           <p className={cn(common.levelDescription, themed.levelDescription)}>
-            {stats.level.benefits.description}
+            {level.benefits?.description ?? 'Complete orders to level up.'}
           </p>
           <div className={cn(common.jssScore, themed.jssScore)}>
             <span>Job Success Score:</span>
             <span className={cn(common.jssValue, themed.jssValue)}>
-              {stats.level.jssScore}%
+              {level.jssScore}%
             </span>
           </div>
         </div>
@@ -247,7 +270,7 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
       </div>
 
       {/* Level Progress Section */}
-      {stats.level.levelProgress && (
+      {level.levelProgress && (
         <div className={cn(common.progressSection, themed.progressSection)}>
           <div className={common.progressHeader}>
             <h3 className={cn(common.progressTitle, themed.progressTitle)}>
@@ -255,12 +278,12 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
             </h3>
             <span className={cn(common.progressNextLevel, themed.progressNextLevel)}>
               <Zap size={16} />
-              Next: {levelDisplayNames[stats.level.levelProgress.nextLevel]}
+              Next: {levelDisplayNames[level.levelProgress.nextLevel]}
             </span>
           </div>
 
           <div className={common.progressGrid}>
-            {Object.entries(stats.level.levelProgress.requirements).map(
+            {Object.entries(level.levelProgress.requirements).map(
               ([key, value]) => (
                 <div key={key} className={common.progressItem}>
                   <div className={common.progressItemHeader}>
@@ -313,7 +336,7 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
                 Commission Rate
               </span>
               <span className={cn(common.benefitValue, themed.benefitValue)}>
-                {stats.level.benefits.commissionRate}% platform fee
+                {level.benefits?.commissionRate ?? 20}% platform fee
               </span>
             </div>
           </div>
@@ -327,7 +350,7 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
                 Featured Gigs
               </span>
               <span className={cn(common.benefitValue, themed.benefitValue)}>
-                Up to {stats.level.benefits.featuredGigs} featured placements
+                Up to {level.benefits?.featuredGigs ?? 0} featured placements
               </span>
             </div>
           </div>
@@ -341,7 +364,7 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
                 Priority Support
               </span>
               <span className={cn(common.benefitValue, themed.benefitValue)}>
-                {stats.level.benefits.prioritySupport
+                {level.benefits?.prioritySupport
                   ? 'Enabled - 24/7 dedicated support'
                   : 'Not available at this level'}
               </span>
@@ -351,13 +374,13 @@ const SellerStats: React.FC<SellerStatsProps> = ({ stats, className }) => {
       </div>
 
       {/* Badges Section */}
-      {stats.level.benefits.badges.length > 0 && (
+      {(level.benefits?.badges?.length ?? 0) > 0 && (
         <div className={cn(common.badgesSection, themed.badgesSection)}>
           <h3 className={cn(common.badgesTitle, themed.badgesTitle)}>
             Your Badges
           </h3>
           <div className={common.badgesGrid}>
-            {stats.level.benefits.badges.map((badge) => (
+            {(level.benefits?.badges ?? []).map((badge) => (
               <div
                 key={badge}
                 className={cn(

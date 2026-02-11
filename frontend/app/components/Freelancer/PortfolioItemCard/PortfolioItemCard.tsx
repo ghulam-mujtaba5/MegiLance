@@ -48,8 +48,8 @@ const PortfolioItemCard: React.FC<PortfolioItemCardProps> = ({ id, title, descri
           </a>
         ) : <div />} 
         <div className={styles.actions}>
-          <Button variant="secondary" size="small" onClick={() => onEdit(id)} aria-label={`Edit ${title}`} title={`Edit ${title}`}>Edit</Button>
-          <Button variant="danger" size="small" onClick={() => onDelete(id)} aria-label={`Delete ${title}`} title={`Delete ${title}`}>Delete</Button>
+          <Button variant="secondary" size="sm" onClick={() => onEdit(id)} aria-label={`Edit ${title}`} title={`Edit ${title}`}>Edit</Button>
+          <Button variant="danger" size="sm" onClick={() => onDelete(id)} aria-label={`Delete ${title}`} title={`Delete ${title}`}>Delete</Button>
         </div>
       </div>
     </div>

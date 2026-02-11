@@ -16,6 +16,7 @@ import Checkbox from '@/app/components/Checkbox/Checkbox';
 import Tabs from '@/app/components/Tabs/Tabs';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
 import ClientOnly from '@/app/components/ClientOnly';
+import PasswordStrengthMeter from '@/app/components/AdvancedFeatures/PasswordStrengthMeter/PasswordStrengthMeter';
 
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -302,6 +303,7 @@ const Signup: React.FC = () => {
                   </button>
                 }
               />
+              {formData.password && <PasswordStrengthMeter password={formData.password} showRequirements={true} />}
               <Input 
                 name="confirmPassword" 
                 type={showConfirmPassword ? 'text' : 'password'}

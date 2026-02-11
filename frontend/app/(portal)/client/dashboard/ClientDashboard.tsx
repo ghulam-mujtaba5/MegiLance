@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { useClientData } from '@/hooks/useClient';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { useAuth } from '@/hooks/useAuth';
+import { apiClient } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
@@ -36,12 +37,19 @@ import darkStyles from './ClientDashboard.dark.module.css';
 const ClientDashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { projects, payments, loading, error } = useClientData();
   const { recommendations: freelancers, loading: recLoading, error: recError } = useRecommendations(5);
   const { user } = useAuth();
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    apiClient.get('/api/messages/unread/count')
+      .then(data => setUnreadCount(data?.unread_count ?? 0))
+      .catch(() => {});
   }, []);
 
   const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
@@ -67,9 +75,9 @@ const ClientDashboard: React.FC = () => {
       totalSpent: `$${totalSpent.toLocaleString()}`,
       activeProjects,
       pendingProposals,
-      unreadMessages: 0
+      unreadMessages: unreadCount
     };
-  }, [displayProjects, payments]);
+  }, [displayProjects, payments, unreadCount]);
 
   // Quick actions for the grid
   const quickActions = [

@@ -76,6 +76,10 @@ public/**/*.cache.*
 build_log.txt
 build_output.txt
 backend.log
+build-*.txt
+next-build-*.txt
+tsc-*.txt
+build-out*.txt
 
 # Sensitive tokens
 *_token.txt

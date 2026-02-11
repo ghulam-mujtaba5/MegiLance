@@ -127,8 +127,10 @@ def _mock_turso(monkeypatch):
 # ---------------------------------------------------------------------------
 
 def test_list_users():
-    """GET /api/users/ returns list of users."""
+    """GET /api/users/ returns list of users (requires auth)."""
+    app.dependency_overrides[get_current_user] = lambda: _auth_user
     resp = client.get("/api/users/")
+    app.dependency_overrides.pop(get_current_user, None)
     assert resp.status_code == 200
     data = resp.json()
     assert isinstance(data, list)

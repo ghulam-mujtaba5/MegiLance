@@ -35,10 +35,28 @@ interface UseAuthReturn {
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
+interface UserApiResponse {
+  id: number | string;
+  email: string;
+  name?: string;
+  full_name?: string;
+  user_type?: string;
+  role?: string;
+  bio?: string;
+  skills?: string;
+  hourly_rate?: number;
+  profile_image_url?: string;
+  avatar_url?: string;
+  location?: string;
+  title?: string;
+  is_verified?: boolean;
+  joined_at?: string;
+}
+
 /**
  * Normalize user data from various API response shapes
  */
-function normalizeUser(userData: any): User {
+function normalizeUser(userData: UserApiResponse): User {
   return {
     id: Number(userData.id),
     email: userData.email,
@@ -131,9 +149,10 @@ export function useAuth(): UseAuthReturn {
       } catch (err) {
         console.error('Failed to load user:', err);
         if (err instanceof APIError && err.status === 401) {
-          // Token expired, clear auth data
+          // Token expired, clear all auth data including localStorage 
           clearAuthData();
           clearAuthCookie();
+          localStorage.removeItem(AUTH.USER_KEY);
           if (isMounted.current) setUser(null);
         }
         if (isMounted.current) {
@@ -168,6 +187,20 @@ export function useAuth(): UseAuthReturn {
 
       // Set cookie for middleware (secure)
       setAuthCookie(response.access_token);
+
+      // Set up token refresh interval (refresh every 25 minutes, token expires in 30)
+      if (refreshIntervalRef.current) clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = setInterval(async () => {
+        try {
+          const refreshed = await api.auth.refreshToken();
+          if (refreshed?.access_token) {
+            setAuthToken(refreshed.access_token);
+            setAuthCookie(refreshed.access_token);
+          }
+        } catch {
+          // Reactive refresh on 401 will handle this
+        }
+      }, 25 * 60 * 1000);
 
       // Redirect based on role
       const redirectPath = normalized.user_type === 'admin' 

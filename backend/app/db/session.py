@@ -158,13 +158,13 @@ def get_turso_client():
         return None
 
 
-def execute_query(query: str, params: dict = None):
+def execute_query(query: str, params: list = None):
     """Execute a raw SQL query using Turso"""
     try:
         # Try Turso HTTP client first
         turso_client = get_turso_client()
         if turso_client:
-            result = turso_client.execute(query, params or {})
+            result = turso_client.execute(query, params or [])
             return result
     except Exception as e:
         logger.warning(f"Turso HTTP query failed: {e}, falling back to engine")

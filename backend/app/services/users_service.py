@@ -22,9 +22,15 @@ def get_user_password_hash(user_id: int) -> Optional[str]:
 
 
 def update_user_password(user_id: int, new_password: str) -> None:
-    """Hash and store a new password for the given user."""
+    """Hash and store a new password for the given user.
+    Also invalidates the user cache so old sessions must re-authenticate."""
     new_hash = get_password_hash(new_password)
     execute_query(
-        "UPDATE users SET hashed_password = ? WHERE id = ?",
+        "UPDATE users SET hashed_password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
         [new_hash, user_id]
     )
+    # Invalidate user cache to force re-authentication on next request
+    from app.core.security import _user_cache
+    keys_to_remove = [k for k, v in _user_cache.items() if v.get("data", {}).get("id") == user_id]
+    for key in keys_to_remove:
+        del _user_cache[key]

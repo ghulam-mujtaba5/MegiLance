@@ -17,7 +17,7 @@ class FraudAlertUpdate(BaseModel):
     resolution_notes: Optional[str] = None
 
 
-@router.get("/fraud-alerts")
+@router.get("")
 async def list_fraud_alerts(
     user: User = Depends(get_current_user),
     skip: int = Query(0, ge=0),
@@ -36,7 +36,7 @@ async def list_fraud_alerts(
     }
 
 
-@router.patch("/fraud-alerts/{alert_id}")
+@router.patch("/{alert_id}")
 async def update_fraud_alert(
     alert_id: str,
     update: FraudAlertUpdate,

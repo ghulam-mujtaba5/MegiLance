@@ -160,12 +160,15 @@ export default function DataExportPage() {
         
         if (progress >= 100) {
           clearInterval(interval);
+          // Estimate file size based on selected fields count and data type
+          const fieldCount = selectedFields.length || fieldOptions[dataType].length;
+          const estimatedSize = fieldCount * 8200 + Math.floor(Math.random() * 50000);
           setExportJobs(prev => prev.map(j => j.id === newJob.id ? { 
             ...j, 
             status: 'completed', 
             completed_at: new Date().toISOString(),
             download_url: '#',
-            file_size: 1024 * 1024 // 1MB dummy
+            file_size: estimatedSize
           } : j));
         }
       }, 500);

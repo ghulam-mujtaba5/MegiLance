@@ -25,7 +25,15 @@
   border-color: var(--border-light);
 }
 
+.table tbody tr:hover {
+  background-color: var(--bg-secondary-light);
+}
+
 .projectTitle {
+  color: var(--text-primary-light);
+}
+
+.value {
   color: var(--text-primary-light);
 }
 
@@ -35,4 +43,24 @@
 
 .link:hover {
   color: var(--primary-light-hover);
+}
+
+.sortBtn {
+  color: var(--text-tertiary-light);
+}
+
+.sortBtn:hover {
+  color: var(--text-primary-light);
+}
+
+.emptyState {
+  color: var(--text-secondary-light);
+}
+
+.loadingState {
+  color: var(--text-secondary-light);
+}
+
+.errorState {
+  color: var(--text-secondary-light);
 }

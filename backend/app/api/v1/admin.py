@@ -74,11 +74,8 @@ def sanitize_search(search: Optional[str]) -> Optional[str]:
 
 def _safe_str(val):
     """Convert bytes to string if needed"""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
+    from app.api.v1.utils import safe_str
+    return safe_str(val)
 
 
 # ============ Schemas ============

@@ -262,10 +262,10 @@ const FlaggedReviews: React.FC = () => {
                 </span>
                 {review.status === 'Pending' ? (
                   <div className={commonStyles.actions}>
-                    <Button variant="success" size="small" onClick={() => handleAction(review.id, 'Kept')}>
+                    <Button variant="success" size="sm" onClick={() => handleAction(review.id, 'Kept')}>
                       <ThumbsUp size={14} /> Keep Review
                     </Button>
-                    <Button variant="danger" size="small" onClick={() => handleAction(review.id, 'Removed')}>
+                    <Button variant="danger" size="sm" onClick={() => handleAction(review.id, 'Removed')}>
                       <ThumbsDown size={14} /> Remove Review
                     </Button>
                   </div>

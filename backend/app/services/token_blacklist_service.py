@@ -12,8 +12,10 @@ logger = logging.getLogger(__name__)
 
 # In-memory cache to avoid DB lookups for recently checked tokens
 # This is a performance optimization, not the source of truth
-_blacklist_cache: dict[str, float] = {}  # token -> expiry_timestamp
+_blacklist_cache: dict[str, float] = {}  # token_hash -> expiry_timestamp
+_clean_cache: dict[str, float] = {}  # token_hash -> time_checked (negative cache)
 _CACHE_MAX_SIZE = 1000
+_CLEAN_CACHE_TTL = 300  # 5 min: non-blacklisted tokens cached this long
 
 
 def _ensure_table_exists() -> None:
@@ -67,6 +69,7 @@ def add_token_to_blacklist(token: str, expires_at: datetime, reason: str = "logo
         
         # Update cache
         _blacklist_cache[token_hash] = expires_at.timestamp()
+        _clean_cache.pop(token_hash, None)  # Remove from negative cache
         _trim_cache()
         
         logger.info(f"Token blacklisted (reason={reason}), expires at {expires_str}")
@@ -81,16 +84,21 @@ def is_token_blacklisted(token: str) -> bool:
     Check if a token has been revoked.
     Uses in-memory cache first, falls back to DB lookup.
     """
+    import time as _time
     token_hash = _hash_token(token)
     
-    # Check memory cache first
+    # Check memory cache first (positive cache - token IS blacklisted)
     if token_hash in _blacklist_cache:
         expiry = _blacklist_cache[token_hash]
         if datetime.now(timezone.utc).timestamp() > expiry:
-            # Token has expired naturally — remove from cache
             del _blacklist_cache[token_hash]
             return False
         return True
+    
+    # Check negative cache (token was recently verified as NOT blacklisted)
+    clean_ts = _clean_cache.get(token_hash)
+    if clean_ts and _time.time() - clean_ts < _CLEAN_CACHE_TTL:
+        return False
     
     # Check database
     try:
@@ -105,17 +113,16 @@ def is_token_blacklisted(token: str) -> bool:
             try:
                 expires_at = datetime.fromisoformat(expires_str.replace("Z", "+00:00"))
                 if datetime.now(timezone.utc) > expires_at:
-                    # Expired — clean up
                     _cleanup_single(token_hash)
                     return False
-                # Cache for future lookups
                 _blacklist_cache[token_hash] = expires_at.timestamp()
                 _trim_cache()
                 return True
             except (ValueError, TypeError):
-                # Can't parse expiry — treat as blacklisted to be safe
                 return True
         
+        # Not blacklisted - cache this fact
+        _clean_cache[token_hash] = _time.time()
         return False
     except Exception as e:
         logger.error(f"Failed to check token blacklist: {e}")

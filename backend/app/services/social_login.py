@@ -518,25 +518,28 @@ class SocialLoginService:
         self,
         user_id: int
     ) -> List[Dict[str, Any]]:
-        """Get user's linked social accounts."""
-        return [
-            {
-                "id": "link-1",
-                "provider": SocialProvider.GOOGLE.value,
-                "provider_user_id": "google_123456789",
-                "email": "user@gmail.com",
-                "name": "John Doe",
-                "linked_at": "2024-01-01T00:00:00"
-            },
-            {
-                "id": "link-2",
-                "provider": SocialProvider.GITHUB.value,
-                "provider_user_id": "12345678",
-                "email": "johndoe@github.com",
-                "name": "johndoe",
-                "linked_at": "2024-01-05T00:00:00"
-            }
-        ]
+        """Get user's linked social accounts from database."""
+        try:
+            result = execute_query(
+                """SELECT id, provider, provider_user_id, email, name, linked_at
+                   FROM social_accounts WHERE user_id = ? ORDER BY linked_at DESC""",
+                [user_id],
+            )
+            rows = parse_rows(result)
+            return [
+                {
+                    "id": str(row.get("id", "")),
+                    "provider": row.get("provider", ""),
+                    "provider_user_id": row.get("provider_user_id", ""),
+                    "email": row.get("email", ""),
+                    "name": row.get("name", ""),
+                    "linked_at": row.get("linked_at", ""),
+                }
+                for row in rows
+            ]
+        except Exception:
+            # Table may not exist yet — return empty list
+            return []
     
     async def unlink_account(
         self,

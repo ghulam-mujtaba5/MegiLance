@@ -70,6 +70,32 @@ async def lifespan(app: FastAPI):
             logger.info("startup.token_blacklist_initialized")
         except Exception as e:
             logger.warning(f"startup.token_blacklist_init_warning: {e}")
+
+        # Ensure database indexes exist for common query patterns
+        try:
+            from app.db.turso_http import execute_query
+            indexes = [
+                "CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)",
+                "CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)",
+                "CREATE INDEX IF NOT EXISTS idx_projects_client_id ON projects(client_id)",
+                "CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status)",
+                "CREATE INDEX IF NOT EXISTS idx_proposals_project_id ON proposals(project_id)",
+                "CREATE INDEX IF NOT EXISTS idx_proposals_freelancer_id ON proposals(freelancer_id)",
+                "CREATE INDEX IF NOT EXISTS idx_contracts_client_id ON contracts(client_id)",
+                "CREATE INDEX IF NOT EXISTS idx_contracts_freelancer_id ON contracts(freelancer_id)",
+                "CREATE INDEX IF NOT EXISTS idx_contracts_status ON contracts(status)",
+                "CREATE INDEX IF NOT EXISTS idx_milestones_contract_id ON milestones(contract_id)",
+                "CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id)",
+                "CREATE INDEX IF NOT EXISTS idx_messages_receiver_id ON messages(receiver_id)",
+            ]
+            for idx_sql in indexes:
+                try:
+                    execute_query(idx_sql)
+                except Exception:
+                    pass  # Table may not exist yet
+            logger.info("startup.indexes_ensured")
+        except Exception as e:
+            logger.warning(f"startup.indexes_warning: {e}")
     except Exception as e:
         logger.error(f"startup.database_failed error={e}")
     yield
@@ -97,8 +123,6 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
-    # Disable automatic redirect for trailing slashes to prevent 308 redirects
-    # that can cause issues with POST requests
     redirect_slashes=False
 )
 
@@ -136,14 +160,15 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
             return response
         finally:
             duration_ms = int((time.time() - start) * 1000)
+            client_ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or request.client.host if request.client else "unknown"
             extra = logging.LoggerAdapter(logger, {"request_id": request_id, "path": request.url.path})
-            extra.info(f"request.complete duration_ms={duration_ms} status={response.status_code if response else 'error'}")
+            extra.info(f"request.complete method={request.method} duration_ms={duration_ms} status={response.status_code if response else 'error'} client_ip={client_ip}")
             if response is not None:
                 response.headers["X-Request-Id"] = request_id
                 response.headers["X-Response-Time"] = f"{duration_ms}ms"
 
-            # Evict expired idempotency entries periodically (every ~100 requests)
-            if len(_idempotency_cache) > 100:
+            # Evict expired idempotency entries periodically
+            if _idempotency_cache:
                 now = time.time()
                 expired = [k for k, v in _idempotency_cache.items() if now - v[2] > _IDEMPOTENCY_TTL]
                 for k in expired:
@@ -304,17 +329,50 @@ def health_ready():
 
 
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from pathlib import Path
 import os
+import mimetypes
 
 # ... existing imports ...
 
 app.include_router(api_router, prefix="/api")
 
-# Mount uploads directory
+# Upload directory setup
 uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
 if not os.path.exists(uploads_dir):
     os.makedirs(uploads_dir)
-app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+
+_UPLOADS_BASE = Path(uploads_dir).resolve()
+_INLINE_MIME_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+
+
+@app.get("/uploads/{file_path:path}")
+async def serve_upload(file_path: str):
+    """Serve uploaded files with proper Content-Disposition and security headers."""
+    resolved = (_UPLOADS_BASE / file_path).resolve()
+    # Prevent path traversal
+    if not str(resolved).startswith(str(_UPLOADS_BASE)) or not resolved.is_file():
+        raise HTTPException(status_code=404, detail="File not found")
+
+    content_type, _ = mimetypes.guess_type(str(resolved))
+    content_type = content_type or "application/octet-stream"
+
+    # Images render inline; everything else forces download
+    if content_type in _INLINE_MIME_TYPES:
+        disposition = "inline"
+    else:
+        disposition = "attachment"
+
+    return FileResponse(
+        path=str(resolved),
+        media_type=content_type,
+        headers={
+            "Content-Disposition": f'{disposition}; filename="{resolved.name}"',
+            "X-Content-Type-Options": "nosniff",
+            "Cache-Control": "private, max-age=3600",
+        },
+    )
 
 if __name__ == "__main__":
     import uvicorn
