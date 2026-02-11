@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useClientData } from '@/hooks/useClient';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { useAuth } from '@/hooks/useAuth';
-import { apiClient } from '@/lib/api';
+import { messagesApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
@@ -47,8 +47,8 @@ const ClientDashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    apiClient.get('/api/messages/unread/count')
-      .then(data => setUnreadCount(data?.unread_count ?? 0))
+    messagesApi.getUnreadCount()
+      .then((data: any) => setUnreadCount(data?.unread_count ?? 0))
       .catch(() => {});
   }, []);
 

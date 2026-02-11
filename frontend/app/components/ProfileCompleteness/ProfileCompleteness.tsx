@@ -30,7 +30,7 @@ export default function ProfileCompleteness({ className, showDetails = true }: P
     const fetchCompleteness = async () => {
       try {
         const response = await api.users.getProfileCompleteness();
-        setData(response);
+        setData(response as ProfileCompletenessData);
       } catch (err) {
         console.error('Failed to fetch profile completeness:', err);
         setError('Unable to load profile status');

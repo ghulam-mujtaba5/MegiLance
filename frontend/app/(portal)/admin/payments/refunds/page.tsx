@@ -47,7 +47,7 @@ const AdminPaymentsRefundsPage = () => {
   const fetchRefunds = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await refundsApi.list({ status: statusFilter || undefined, page, page_size: 20 });
+      const data: any = await refundsApi.list(statusFilter || undefined, page, 20);
       setRefunds(data.refunds || []);
       setTotal(data.total || 0);
     } catch {
@@ -67,7 +67,7 @@ const AdminPaymentsRefundsPage = () => {
     setActionLoading(id);
     try {
       if (action === 'approve') await refundsApi.approve(id, {});
-      else if (action === 'reject') await refundsApi.reject(id, { rejection_reason: 'Rejected by admin' });
+      else if (action === 'reject') await refundsApi.reject(id, 'Rejected by admin');
       else await refundsApi.get(id); // process endpoint not in frontend API, fallback
       notify({ title: 'Success', description: `Refund ${action}d.`, variant: 'success', duration: 3000 });
       fetchRefunds();

@@ -47,7 +47,7 @@ const AdminPaymentsInvoicesPage = () => {
   const fetchInvoices = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await invoicesApi.list({ status: statusFilter || undefined, page, page_size: 20 });
+      const data: any = await invoicesApi.list({ status: statusFilter || undefined, page, page_size: 20 });
       setInvoices(data.invoices || []);
       setTotal(data.total || 0);
     } catch {
