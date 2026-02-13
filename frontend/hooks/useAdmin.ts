@@ -3,6 +3,42 @@ import api from '@/lib/api';
 
 // @AI-HINT: Hook to fetch admin portal datasets (users, projects, payments, support tickets, AI monitoring, dashboard KPIs, stats, recent activity).
 
+interface AdminUserResponse {
+  id: number | string;
+  name?: string;
+  email?: string;
+  user_type?: string;
+  is_active?: boolean;
+  joined_at?: string;
+}
+
+interface AdminProjectResponse {
+  id: number | string;
+  title?: string;
+  client_id?: number;
+  status?: string;
+  budget_min?: number;
+  budget_max?: number;
+  updated_at?: string;
+}
+
+interface AdminPaymentResponse {
+  id: number | string;
+  created_at?: string;
+  description?: string;
+  payment_type?: string;
+  amount?: number;
+  status?: string;
+}
+
+interface AdminTicketResponse {
+  id: number | string;
+  subject?: string;
+  status?: string;
+  created_at?: string;
+  priority?: string;
+}
+
 export type AdminUser = { id: string; name: string; email: string; role: 'Admin' | 'Client' | 'Freelancer'; status: 'Active' | 'Suspended'; joined: string };
 export type AdminProject = { id: string; title: string; client: string; status: string; budget?: string; updatedAt?: string };
 export type AdminPayment = { id: string; date: string; description: string; amount: string; status: string };
@@ -85,18 +121,18 @@ export function useAdminData() {
         if (!mounted) return;
         
         // Map users
-        const mappedUsers: AdminUser[] = (usersJson.users || []).map((u: any) => ({
+        const mappedUsers: AdminUser[] = (usersJson.users || []).map((u: AdminUserResponse) => ({
           id: String(u.id),
           name: u.name || 'Unknown',
           email: u.email || '',
-          role: u.user_type || 'User',
-          status: u.is_active ? 'Active' : 'Suspended',
+          role: (u.user_type || 'Client') as AdminUser['role'],
+          status: u.is_active ? 'Active' as const : 'Suspended' as const,
           joined: u.joined_at || new Date().toISOString()
         }));
         setUsers(mappedUsers);
 
         // Map projects
-        const mappedProjects: AdminProject[] = (projJson.projects || []).map((p: any) => ({
+        const mappedProjects: AdminProject[] = (projJson.projects || []).map((p: AdminProjectResponse) => ({
           id: String(p.id),
           title: p.title || 'Untitled',
           client: `Client #${p.client_id}`, // We might need to fetch client name separately or join in backend
@@ -107,22 +143,22 @@ export function useAdminData() {
         setProjects(mappedProjects);
 
         // Map payments
-        const mappedPayments: AdminPayment[] = (payJson.payments || []).map((p: any) => ({
+        const mappedPayments: AdminPayment[] = (payJson.payments || []).map((p: AdminPaymentResponse) => ({
           id: String(p.id),
-          date: p.created_at,
-          description: p.description || p.payment_type,
+          date: p.created_at || new Date().toISOString(),
+          description: (p.description || p.payment_type) ?? '',
           amount: `$${p.amount}`,
-          status: p.status
+          status: p.status || 'pending'
         }));
         setPayments(mappedPayments);
 
         // Map tickets
-        const mappedTickets: AdminSupportTicket[] = (supJson.tickets || []).map((t: any) => ({
+        const mappedTickets: AdminSupportTicket[] = (supJson.tickets || []).map((t: AdminTicketResponse) => ({
           id: String(t.id),
-          subject: t.subject,
-          status: t.status,
-          createdAt: t.created_at,
-          priority: t.priority
+          subject: t.subject || 'No subject',
+          status: t.status || 'open',
+          createdAt: t.created_at || new Date().toISOString(),
+          priority: t.priority || 'normal'
         }));
         setTickets(mappedTickets);
 

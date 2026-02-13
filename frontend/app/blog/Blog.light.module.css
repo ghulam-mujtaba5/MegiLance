@@ -1,9 +1,49 @@
-/* AI-HINT: Light theme styles for the Blog page. */
-
-.title {
-  color: var(--text-light-primary);
+/* @AI-HINT: Light theme — hero, filters, trending, newsletter */
+.hero {
+  background: linear-gradient(135deg, rgba(69,115,223,0.06) 0%, rgba(255,152,0,0.04) 100%);
+  border: 1px solid rgba(0,0,0,0.05);
 }
+.heroBadge {
+  background: rgba(69,115,223,0.1);
+  color: #4573df;
+}
+.heroTitle { color: var(--text-light-primary, #1a1a2e); }
+.heroSubtitle { color: var(--text-light-secondary, #555); }
 
-.subtitle {
-  color: var(--text-light-secondary);
+/* Search */
+.searchBar {
+  background: var(--surface-light, #fff);
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.searchInput { color: var(--text-light-primary, #1a1a2e); }
+.searchInput::placeholder { color: rgba(0,0,0,0.35); }
+
+/* Filters */
+.filterChip {
+  background: rgba(0,0,0,0.03);
+  color: var(--text-light-secondary, #555);
+}
+.filterChip:hover { background: rgba(69,115,223,0.08); color: #4573df; }
+.filterActive { background: #4573df !important; color: #fff !important; }
+
+/* Trending */
+.trendingCard {
+  background: var(--surface-light, #fff);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.trendingCard:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+.trendingNum { color: #4573df; }
+.seeAll { color: #4573df; }
+
+/* Newsletter */
+.newsletter {
+  background: linear-gradient(135deg, rgba(69,115,223,0.05), rgba(255,152,0,0.03));
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.newsletterInput {
+  background: var(--surface-light, #fff);
+  border-color: rgba(0,0,0,0.08);
+  color: var(--text-light-primary, #1a1a2e);
 }

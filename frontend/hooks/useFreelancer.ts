@@ -3,6 +3,53 @@ import api from '@/lib/api';
 
 // @AI-HINT: Hook to fetch freelancer portal datasets (projects, jobs, wallet, analytics).
 
+interface ProjectResponse {
+  id: number | string;
+  title?: string;
+  client_name?: string;
+  total_amount?: number;
+  start_date?: string;
+  status?: string;
+}
+
+interface JobResponse {
+  id: number | string;
+  title?: string;
+  client_name?: string;
+  description?: string;
+  budget_max?: number;
+  created_at?: string;
+  skills?: string[];
+}
+
+interface RecommendationResponse {
+  project_id: number | string;
+  project_title?: string;
+  project_description?: string;
+  budget_max?: number;
+  budget_min?: number;
+  created_at?: string;
+  match_score?: number;
+}
+
+interface ProposalResponse {
+  id: number | string;
+  project_title?: string;
+  status?: string;
+  created_at?: string;
+  hourly_rate?: number;
+  estimated_hours?: number;
+}
+
+interface TransactionResponse {
+  id: number | string;
+  amount?: number;
+  created_at?: string;
+  description?: string;
+  payment_type?: string;
+  status?: string;
+}
+
 export type FreelancerProject = { 
   id: string; 
   title: string; 
@@ -84,7 +131,7 @@ export function useFreelancerData() {
       setError(null);
       try {
         // Use the API client methods
-        const fetchWithFallback = async (promise: Promise<any>, fallback: any = []) => {
+        const fetchWithFallback = async <T>(promise: Promise<T>, fallback: T): Promise<T> => {
           try {
             return await promise;
           } catch {
@@ -92,7 +139,7 @@ export function useFreelancerData() {
           }
         };
         
-        const [projectsJson, jobsJson, walletJson, paymentsJson, statsJson, earningsJson, rankJson, recommendedJson, proposalsJson] = await Promise.all([
+        const [projectsJson, jobsJson, walletJson, paymentsJson, statsJson, earningsJson, rankJson, recommendedJson, proposalsJson]: any[] = await Promise.all([
           fetchWithFallback(api.portal.freelancer.getProjects(), { projects: [] }),
           fetchWithFallback(api.portal.freelancer.getJobs(), { jobs: [] }),
           fetchWithFallback(api.portal.freelancer.getWallet(), { balance: 0 }),
@@ -108,7 +155,7 @@ export function useFreelancerData() {
         if (!mounted) return;
 
         // Map Projects
-        const mappedProjects: FreelancerProject[] = (projectsJson.projects || []).map((p: any) => ({
+        const mappedProjects: FreelancerProject[] = (projectsJson.projects || []).map((p: ProjectResponse) => ({
           id: String(p.id),
           title: p.title || 'Untitled Project',
           clientName: p.client_name || 'Unknown Client',
@@ -121,7 +168,7 @@ export function useFreelancerData() {
         setProjects(mappedProjects);
 
         // Map Jobs
-        const mappedJobs: FreelancerJob[] = (jobsJson.jobs || []).map((j: any) => ({
+        const mappedJobs: FreelancerJob[] = (jobsJson.jobs || []).map((j: JobResponse) => ({
           id: String(j.id),
           title: j.title,
           clientName: j.client_name || 'Unknown Client',
@@ -139,7 +186,7 @@ export function useFreelancerData() {
         
         if (aiRecommendations.length > 0) {
           // Use AI-matched recommendations
-          mappedRecommendedJobs = aiRecommendations.map((r: any) => ({
+          mappedRecommendedJobs = aiRecommendations.map((r: RecommendationResponse) => ({
             id: String(r.project_id),
             title: r.project_title,
             clientName: 'AI Matched', 
@@ -161,7 +208,7 @@ export function useFreelancerData() {
         setRecommendedJobs(mappedRecommendedJobs);
 
         // Map Proposals
-        const mappedProposals: FreelancerProposal[] = (proposalsJson.proposals || []).map((p: any) => ({
+        const mappedProposals: FreelancerProposal[] = (proposalsJson.proposals || []).map((p: ProposalResponse) => ({
           id: String(p.id),
           projectTitle: p.project_title || 'Untitled Project', // Backend might need to return project title
           status: p.status === 'submitted' ? 'Submitted' : 
@@ -169,12 +216,12 @@ export function useFreelancerData() {
                   p.status === 'accepted' ? 'Accepted' : 
                   p.status === 'rejected' ? 'Rejected' : 'Withdrawn',
           sentDate: p.created_at,
-          bidAmount: `$${p.hourly_rate * p.estimated_hours}` // Approximate total
+          bidAmount: `$${(p.hourly_rate || 0) * (p.estimated_hours || 0)}` // Approximate total
         }));
         setProposals(mappedProposals);
 
         // Map Transactions
-        const mappedTransactions: FreelancerTransaction[] = (paymentsJson.payments || []).map((t: any) => ({
+        const mappedTransactions: FreelancerTransaction[] = (paymentsJson.payments || []).map((t: TransactionResponse) => ({
           id: String(t.id),
           amount: `$${t.amount}`,
           date: t.created_at,
@@ -200,9 +247,9 @@ export function useFreelancerData() {
         // Map Monthly Earnings
         setMonthlyEarnings(earningsJson.earnings || []);
 
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!mounted) return;
-        setError(e?.message ?? 'Failed to load freelancer data');
+        setError(e instanceof Error ? e.message : 'Failed to load freelancer data');
       } finally {
         if (mounted) setLoading(false);
       }

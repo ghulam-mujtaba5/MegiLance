@@ -1,20 +1,49 @@
+/* @AI-HINT: Dark theme — elevated surface, glow hover, crisp type */
 .container {
-  background-color: var(--surface-dark-secondary);
-  border: 1px solid var(--border-dark);
+  background: var(--surface-dark-secondary, #1c1c2e);
+  border: 1px solid var(--border-dark, rgba(255,255,255,0.06));
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .blogPostCardLink:hover .container {
-  border-color: var(--primary-translucent);
+  border-color: var(--primary-translucent, rgba(69,115,223,0.4));
+  box-shadow: 0 8px 30px rgba(69,115,223,0.12), 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.imageOverlay {
+  background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.45) 100%);
+}
+
+.arrowIcon {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
 }
 
 .title {
-  color: var(--text-dark-primary);
+  color: var(--text-dark-primary, #f0f0f5);
+}
+
+.blogPostCardLink:hover .title {
+  color: var(--primary-light, #6b93e8);
 }
 
 .excerpt {
-  color: var(--text-dark-secondary);
+  color: var(--text-dark-secondary, #a0a0b5);
 }
 
-.meta {
-  color: var(--text-dark-tertiary);
+.footer {
+  border-top-color: rgba(255,255,255,0.06);
+}
+
+.authorRow {
+  color: var(--text-dark-primary, #f0f0f5);
+}
+
+.avatar {
+  background: rgba(69,115,223,0.15);
+  color: var(--primary-light, #6b93e8);
+}
+
+.viewCount {
+  color: var(--text-dark-tertiary, #6b6b80);
 }

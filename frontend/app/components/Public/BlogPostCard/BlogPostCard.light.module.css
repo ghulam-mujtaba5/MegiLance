@@ -1,20 +1,49 @@
+/* @AI-HINT: Light theme — soft whites, subtle borders, warm hover */
 .container {
-  background-color: var(--surface-light);
-  border: 1px solid var(--border-light);
+  background: var(--surface-light, #fff);
+  border: 1px solid var(--border-light, rgba(0,0,0,0.06));
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
 }
 
 .blogPostCardLink:hover .container {
-  border-color: var(--primary-translucent);
+  border-color: var(--primary-translucent, rgba(69,115,223,0.3));
+  box-shadow: 0 8px 30px rgba(69,115,223,0.1), 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.imageOverlay {
+  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.15) 100%);
+}
+
+.arrowIcon {
+  background: rgba(255,255,255,0.85);
+  color: var(--text-light-primary, #1a1a2e);
 }
 
 .title {
-  color: var(--text-light-primary);
+  color: var(--text-light-primary, #1a1a2e);
+}
+
+.blogPostCardLink:hover .title {
+  color: var(--primary, #4573df);
 }
 
 .excerpt {
-  color: var(--text-light-secondary);
+  color: var(--text-light-secondary, #555);
 }
 
-.meta {
-  color: var(--text-light-tertiary);
+.footer {
+  border-top-color: rgba(0,0,0,0.05);
+}
+
+.authorRow {
+  color: var(--text-light-primary, #1a1a2e);
+}
+
+.avatar {
+  background: var(--primary-translucent, rgba(69,115,223,0.1));
+  color: var(--primary, #4573df);
+}
+
+.viewCount {
+  color: var(--text-light-tertiary, #888);
 }

@@ -16,7 +16,7 @@ export type ClientProject = {
   client?: string;
   progress?: number;
   paid?: number;
-  freelancers?: any[];
+  freelancers?: { id: string; name: string }[];
   proposals_count?: number;
 };
 
@@ -73,7 +73,7 @@ export function useClientData() {
     setError(null);
     
     try {
-      const fetchWithFallback = async (promise: Promise<any>, fallback: any = []) => {
+      const fetchWithFallback = async <T>(promise: Promise<T>, fallback: T): Promise<T> => {
         try {
           return await promise;
         } catch (err) {
@@ -88,8 +88,8 @@ export function useClientData() {
       const reviewsPromise = api.client?.getReviews?.() ?? Promise.resolve([]);
       
       const [projectsRes, paymentsRes, freelancersData, reviewsData] = await Promise.all([
-        fetchWithFallback(api.client.getProjects(), { projects: [] }),
-        fetchWithFallback(api.client.getPayments(), { payments: [] }),
+        fetchWithFallback<unknown>(api.client.getProjects(), { projects: [] }),
+        fetchWithFallback<unknown>(api.client.getPayments(), { payments: [] }),
         fetchWithFallback(freelancersPromise, []),
         fetchWithFallback(reviewsPromise, []),
       ]);
@@ -98,13 +98,15 @@ export function useClientData() {
       if (!mountedRef.current) return;
       
       // Extract arrays from response objects (API returns {total, projects} or {total, payments} structure)
-      const projectsData = Array.isArray(projectsRes) ? projectsRes : (projectsRes?.projects || []);
-      const paymentsData = Array.isArray(paymentsRes) ? paymentsRes : (paymentsRes?.payments || []);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const projectsData: any[] = Array.isArray(projectsRes) ? projectsRes : ((projectsRes as any)?.projects || []);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const paymentsData: any[] = Array.isArray(paymentsRes) ? paymentsRes : ((paymentsRes as any)?.payments || []);
         
       // Map projects - handle API response format (budget_min/budget_max instead of budget)
       const mappedProjects: ClientProject[] = (projectsData || []).map((p: any) => {
         // Calculate budget display - use budget_max or budget_min if budget isn't available
-        const budgetAmount = p.budget || p.budget_max || p.budget_min || 0;
+        const budgetAmount = (p.budget || p.budget_max || p.budget_min || 0) as string | number;
         const budgetStr = typeof budgetAmount === 'number' 
           ? `$${budgetAmount.toLocaleString()}` 
           : budgetAmount;
@@ -129,7 +131,7 @@ export function useClientData() {
         id: p.id,
         date: p.date,
         description: p.description,
-        amount: p.amount?.startsWith?.('$') ? p.amount : `$${parseFloat(p.amount || '0').toLocaleString()}`,
+        amount: typeof p.amount === 'string' && p.amount.startsWith('$') ? p.amount : `$${parseFloat(String(p.amount || '0')).toLocaleString()}`,
         status: p.status,
         type: p.type,
         project: p.project,
@@ -143,10 +145,10 @@ export function useClientData() {
         id: f.id,
         name: f.name,
         title: f.title,
-        rating: f.rating,
-        hourlyRate: f.hourlyRate,
-        skills: f.skills,
-        completedProjects: f.completedProjects,
+        rating: f.rating as number,
+        hourlyRate: f.hourlyRate as string,
+        skills: f.skills as string[],
+        completedProjects: f.completedProjects as number,
         avatarUrl: f.avatarUrl,
         location: f.location,
         availability: f.availability
@@ -158,18 +160,18 @@ export function useClientData() {
         id: r.id,
         projectTitle: r.projectTitle,
         freelancerName: r.freelancerName,
-        rating: r.rating,
-        comment: r.comment,
-        date: r.date,
+        rating: r.rating as number,
+        comment: r.comment as string,
+        date: r.date as string,
         avatarUrl: r.avatarUrl
       }));
       setReviews(mappedReviews);
 
-    } catch (e: any) {
+    } catch (e: unknown) {
       // Don't update state if unmounted or if it's an abort error
       if (!mountedRef.current) return;
-      if (e?.name === 'AbortError') return;
-      setError(e?.message ?? 'Failed to load client data');
+      if (e instanceof Error && e.name === 'AbortError') return;
+      setError(e instanceof Error ? e.message : 'Failed to load client data');
     } finally {
       loadingRef.current = false;
       if (mountedRef.current) setLoading(false);

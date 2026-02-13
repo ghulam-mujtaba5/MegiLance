@@ -1,29 +1,54 @@
-/* AI-HINT: Light theme styles for the individual blog post page. */
+/* @AI-HINT: Light theme — hero overlay, meta bar, share, author bio, content prose, related, tags */
+.title { color: var(--text-light-primary, #1a1a2e); }
+.meta { color: var(--text-light-secondary, #555); }
 
-.title {
-  color: var(--text-light-primary);
+.heroOverlay {
+  background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.55) 100%);
+}
+.backLink { color: var(--primary, #4573df); }
+
+/* Meta bar */
+.metaBar {
+  background: var(--surface-light, #fff);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.metaAvatar {
+  background: rgba(69,115,223,0.1);
+  color: var(--primary, #4573df);
 }
 
-.meta {
-  color: var(--text-light-secondary);
+/* Share */
+.shareBtn {
+  background: rgba(0,0,0,0.04);
+  color: var(--text-light-secondary, #555);
+}
+.shareBtn:hover { background: rgba(69,115,223,0.1); color: #4573df; }
+
+/* Content */
+.content { color: var(--text-light-primary, #1a1a2e); }
+.content h2, .content h3, .content h4 { color: var(--text-light-primary, #1a1a2e); }
+.content p { color: var(--text-light-secondary, #444); }
+.content a { color: var(--primary, #4573df); }
+.content a:hover { color: var(--primary-dark, #3558b0); }
+.content blockquote { background: rgba(69,115,223,0.04); color: var(--text-light-secondary, #444); }
+.content pre { background: #f6f8fa; color: #24292e; }
+.content code { background: rgba(0,0,0,0.04); }
+.content th { color: var(--text-light-tertiary, #888); }
+
+/* Tags */
+.tagsFooter { border-top-color: rgba(0,0,0,0.06); border-bottom-color: rgba(0,0,0,0.06); color: var(--text-light-secondary, #555); }
+.footerTag { background: rgba(69,115,223,0.08); color: #4573df; }
+
+/* Author bio */
+.authorBio {
+  background: var(--surface-light, #fff);
+  border: 1px solid rgba(0,0,0,0.06);
 }
 
-.content {
-  color: var(--text-light-primary);
+/* Related */
+.relatedCard {
+  background: var(--surface-light, #fff);
+  border: 1px solid rgba(0,0,0,0.06);
 }
-
-.content h2, .content h3, .content h4 {
-  color: var(--text-light-primary);
-}
-
-.content p {
-  color: var(--text-light-secondary);
-}
-
-.content a {
-  color: var(--primary);
-}
-
-.content a:hover {
-  color: var(--primary-dark);
-}
+.relatedCard:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.07); }
