@@ -1,16 +1,19 @@
 {
-  "name": "MegiLance",
+  "id": "/",
+  "name": "MegiLance - AI-Powered Freelance Marketplace",
   "short_name": "MegiLance",
-  "description": "AI-powered freelancing platform connecting top talent with clients worldwide. Secure blockchain payments, smart matching, and seamless collaboration.",
-  "start_url": "/",
+  "description": "AI-powered freelancing platform connecting top talent with clients worldwide. Hire developers, designers, and experts. Secure blockchain payments, smart AI matching, milestone-based contracts, and seamless collaboration tools.",
+  "start_url": "/?source=pwa",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#ffffff",
   "theme_color": "#4573df",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["business", "productivity", "finance"],
+  "categories": ["business", "productivity", "finance", "social"],
+  "iarc_rating_id": "",
   "icons": [
     {
       "src": "/icons/icon-192x192.svg",
@@ -37,30 +40,71 @@
       "purpose": "maskable"
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "MegiLance Homepage - AI-Powered Freelance Marketplace"
+    },
+    {
+      "src": "/screenshots/desktop-dashboard.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Client Dashboard - Manage Projects and Freelancers"
+    },
+    {
+      "src": "/screenshots/mobile-home.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "MegiLance Mobile - Freelance on the Go"
+    },
+    {
+      "src": "/screenshots/mobile-browse.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Browse Freelancers - Find Top Talent"
+    }
+  ],
   "shortcuts": [
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "View your dashboard",
-      "url": "/client/dashboard"
+      "url": "/client/dashboard",
+      "icons": [{ "src": "/icons/shortcut-dashboard.svg", "sizes": "96x96" }]
     },
     {
       "name": "Browse Projects",
       "short_name": "Projects",
-      "description": "Find new projects",
-      "url": "/jobs"
+      "description": "Find new projects to work on",
+      "url": "/jobs",
+      "icons": [{ "src": "/icons/shortcut-projects.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Hire Freelancers",
+      "short_name": "Hire",
+      "description": "Find and hire top freelancers",
+      "url": "/hire",
+      "icons": [{ "src": "/icons/shortcut-hire.svg", "sizes": "96x96" }]
     },
     {
       "name": "Messages",
       "short_name": "Messages",
-      "description": "View your messages",
-      "url": "/messages"
+      "description": "View your messages and conversations",
+      "url": "/messages",
+      "icons": [{ "src": "/icons/shortcut-messages.svg", "sizes": "96x96" }]
     },
     {
       "name": "My Wallet",
       "short_name": "Wallet",
       "description": "Manage your earnings and payments",
-      "url": "/wallet"
+      "url": "/wallet",
+      "icons": [{ "src": "/icons/shortcut-wallet.svg", "sizes": "96x96" }]
     }
   ],
   "share_target": {
@@ -77,5 +121,10 @@
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
-  "prefer_related_applications": false
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 480
+  },
+  "prefer_related_applications": false,
+  "related_applications": []
 }

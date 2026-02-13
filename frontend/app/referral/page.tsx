@@ -1,20 +1,26 @@
 import type { Metadata } from 'next';
 import ReferralClient from './ReferralClient';
-import { BASE_URL } from '@/lib/seo';
+import { buildMeta, buildBreadcrumbJsonLd, jsonLdScriptProps } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Referral Program | MegiLance',
-  description: 'Invite friends to MegiLance and earn crypto rewards. Join our referral program today.',
-  openGraph: {
-    title: 'MegiLance Referral Program',
-    description: 'Earn rewards by inviting friends to MegiLance.',
-    url: `${BASE_URL}/referral`,
-  },
-  alternates: {
-    canonical: `${BASE_URL}/referral`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMeta({
+    title: 'Referral Program - Earn Rewards by Inviting Friends',
+    description: 'Join MegiLance\'s referral program and earn crypto rewards for every friend who signs up and completes a project. Unlimited referrals, instant payouts, and exclusive bonuses for top referrers.',
+    path: '/referral',
+    keywords: [
+      'MegiLance referral program', 'freelance referral rewards', 'earn crypto referrals',
+      'invite friends freelancing', 'referral bonus freelance platform',
+    ],
+  });
+}
 
 export default function Page() {
-  return <ReferralClient />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(
+        buildBreadcrumbJsonLd([{ name: 'Referral Program', path: '/referral' }])
+      )} />
+      <ReferralClient />
+    </>
+  );
 }

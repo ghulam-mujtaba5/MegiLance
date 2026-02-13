@@ -1,20 +1,27 @@
 import type { Metadata } from 'next';
 import InstallClient from './InstallClient';
-import { BASE_URL } from '@/lib/seo';
+import { buildMeta, buildBreadcrumbJsonLd, buildSoftwareAppJsonLd, jsonLdScriptProps } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Install MegiLance App | PWA',
-  description: 'Install the MegiLance app on your device for a seamless freelancing experience. Available on iOS, Android, and Desktop.',
-  openGraph: {
-    title: 'Install MegiLance App',
-    description: 'Get the MegiLance app for faster access and real-time notifications.',
-    url: `${BASE_URL}/install`,
-  },
-  alternates: {
-    canonical: `${BASE_URL}/install`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMeta({
+    title: 'Install MegiLance App - PWA for iOS, Android & Desktop',
+    description: 'Install the MegiLance Progressive Web App on any device. Get instant push notifications, offline access, faster loading, and a native app experience. Available on iOS, Android, Windows, Mac, and Linux.',
+    path: '/install',
+    keywords: [
+      'MegiLance app', 'install MegiLance', 'freelance app download', 'MegiLance PWA',
+      'freelance mobile app', 'MegiLance desktop app', 'progressive web app freelancing',
+    ],
+  });
+}
 
 export default function Page() {
-  return <InstallClient />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(buildSoftwareAppJsonLd())} />
+      <script {...jsonLdScriptProps(
+        buildBreadcrumbJsonLd([{ name: 'Install App', path: '/install' }])
+      )} />
+      <InstallClient />
+    </>
+  );
 }

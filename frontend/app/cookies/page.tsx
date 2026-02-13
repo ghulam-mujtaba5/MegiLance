@@ -1,20 +1,25 @@
 import type { Metadata } from 'next';
 import CookiesClient from './CookiesClient';
-import { BASE_URL } from '@/lib/seo';
+import { buildMeta, buildBreadcrumbJsonLd, jsonLdScriptProps } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Cookie Policy | MegiLance',
-  description: 'Learn about how MegiLance uses cookies to improve your experience.',
-  openGraph: {
-    title: 'MegiLance Cookie Policy',
-    description: 'Transparency about our use of cookies and tracking technologies.',
-    url: `${BASE_URL}/cookies`,
-  },
-  alternates: {
-    canonical: `${BASE_URL}/cookies`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMeta({
+    title: 'Cookie Policy - Transparency About Our Cookie Usage',
+    description: 'Learn how MegiLance uses cookies and tracking technologies to improve your experience. We use essential cookies for security, analytics cookies for improvement, and optional marketing cookies. Full GDPR compliance.',
+    path: '/cookies',
+    keywords: [
+      'MegiLance cookie policy', 'cookie usage freelance platform', 'tracking cookies',
+    ],
+  });
+}
 
 export default function Page() {
-  return <CookiesClient />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(
+        buildBreadcrumbJsonLd([{ name: 'Cookie Policy', path: '/cookies' }])
+      )} />
+      <CookiesClient />
+    </>
+  );
 }

@@ -1,15 +1,44 @@
 // @AI-HINT: Robots.txt configuration for SEO and crawler control.
-// Optimized for Google Search Console with specific bot rules.
+// Optimized for Google, Bing, and all major search engine bots with
+// granular per-bot rules for maximum indexing coverage.
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.site';
 
   return {
     rules: [
+      // ── Default rules for all crawlers ──
       {
         userAgent: '*',
-        allow: '/',
+        allow: [
+          '/',
+          '/jobs',
+          '/hire',
+          '/talent',
+          '/freelancers',
+          '/gigs',
+          '/blog',
+          '/about',
+          '/how-it-works',
+          '/pricing',
+          '/faq',
+          '/contact',
+          '/support',
+          '/security',
+          '/testimonials',
+          '/clients',
+          '/teams',
+          '/enterprise',
+          '/referral',
+          '/community',
+          '/careers',
+          '/press',
+          '/install',
+          '/ai',
+          '/profile',
+          '/status',
+        ],
         disallow: [
           '/api/',
           '/admin/',
@@ -25,8 +54,17 @@ export default function robots(): MetadataRoute.Robots {
           '/test/',
           '/test-login/',
           '/auth-dashboard/',
+          '/wallet/',
+          '/logout/',
+          '/analytics/',
+          '/user-management/',
+          '/complete-profile/',
+          '/create-project/',
+          '/dashboard/',
+          '/*.json$',
         ],
       },
+      // ── Google - maximize crawling ──
       {
         userAgent: 'Googlebot',
         allow: [
@@ -36,6 +74,23 @@ export default function robots(): MetadataRoute.Robots {
           '/blog/',
           '/freelancers/',
           '/gigs/',
+          '/talent/',
+          '/about/',
+          '/how-it-works/',
+          '/pricing/',
+          '/faq/',
+          '/contact/',
+          '/support/',
+          '/security/',
+          '/testimonials/',
+          '/clients/',
+          '/teams/',
+          '/enterprise/',
+          '/community/',
+          '/careers/',
+          '/press/',
+          '/ai/',
+          '/profile/',
         ],
         disallow: [
           '/api/',
@@ -44,20 +99,78 @@ export default function robots(): MetadataRoute.Robots {
           '/_next/',
           '/settings/',
           '/messages/',
+          '/wallet/',
+          '/onboarding/',
+          '/dashboard/',
         ],
       },
+      // ── Google Images - allow all public images ──
       {
         userAgent: 'Googlebot-Image',
         allow: [
           '/icons/',
           '/images/',
           '/_next/image',
+          '/_next/static/media/',
+          '/uploads/portfolio/',
+          '/uploads/avatars/',
         ],
       },
+      // ── Bing ──
       {
         userAgent: 'Bingbot',
+        allow: [
+          '/',
+          '/jobs/',
+          '/hire/',
+          '/blog/',
+          '/freelancers/',
+          '/talent/',
+          '/gigs/',
+          '/about/',
+          '/how-it-works/',
+          '/faq/',
+          '/pricing/',
+        ],
+        disallow: ['/api/', '/admin/', '/portal/', '/_next/', '/settings/', '/messages/'],
+      },
+      // ── DuckDuckBot ──
+      {
+        userAgent: 'DuckDuckBot',
         allow: '/',
         disallow: ['/api/', '/admin/', '/portal/', '/_next/'],
+      },
+      // ── Yandex ──
+      {
+        userAgent: 'YandexBot',
+        allow: '/',
+        disallow: ['/api/', '/admin/', '/portal/', '/_next/'],
+      },
+      // ── Social media bots for rich previews ──
+      {
+        userAgent: 'facebookexternalhit',
+        allow: '/',
+      },
+      {
+        userAgent: 'Twitterbot',
+        allow: '/',
+      },
+      {
+        userAgent: 'LinkedInBot',
+        allow: '/',
+      },
+      // ── Block AI scrapers from training data ──
+      {
+        userAgent: 'GPTBot',
+        disallow: '/',
+      },
+      {
+        userAgent: 'CCBot',
+        disallow: '/',
+      },
+      {
+        userAgent: 'anthropic-ai',
+        disallow: '/',
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

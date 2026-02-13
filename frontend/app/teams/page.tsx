@@ -1,20 +1,27 @@
 import type { Metadata } from 'next';
 import TeamsClient from './TeamsClient';
-import { BASE_URL } from '@/lib/seo';
+import { buildMeta, buildBreadcrumbJsonLd, jsonLdScriptProps } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'For Teams - MegiLance | Scale Your Workforce',
-  description: 'Build and manage remote teams with ease. Enterprise-grade tools for collaboration and payments.',
-  openGraph: {
-    title: 'MegiLance for Teams',
-    description: 'Scale your business with on-demand remote teams.',
-    url: `${BASE_URL}/teams`,
-  },
-  alternates: {
-    canonical: `${BASE_URL}/teams`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMeta({
+    title: 'For Teams & Enterprises - Scale Your Workforce with Remote Talent',
+    description: 'Build and manage distributed teams with MegiLance. Enterprise-grade collaboration tools, unified billing, team member management, bulk hiring, and dedicated account managers. Scale from 5 to 500+ contractors seamlessly.',
+    path: '/teams',
+    keywords: [
+      'hire remote teams', 'enterprise freelancing', 'scale remote workforce',
+      'team management freelance', 'bulk hire freelancers', 'distributed teams',
+      'enterprise hiring platform', 'managed freelance teams', 'remote team building',
+    ],
+  });
+}
 
 export default function Page() {
-  return <TeamsClient />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(
+        buildBreadcrumbJsonLd([{ name: 'For Teams', path: '/teams' }])
+      )} />
+      <TeamsClient />
+    </>
+  );
 }

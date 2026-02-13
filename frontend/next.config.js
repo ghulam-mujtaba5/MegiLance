@@ -62,7 +62,7 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone', // Required for Docker deployment
+  output: process.env.NODE_ENV === 'production' ? 'standalone' : undefined, // Only for Docker/production
   
   // Security: Remove X-Powered-By header
   poweredByHeader: false,
@@ -156,21 +156,59 @@ const nextConfig = {
     ],
   },
   
-  // Security headers
+  // Consistent trailing slashes for SEO (avoids duplicate URL issues)
+  trailingSlash: false,
+  
+  // SEO + Performance headers
   // NOTE: Core security headers (X-Frame-Options, X-Content-Type-Options, HSTS, etc.)
-  // are set in middleware.ts to avoid duplication. Only non-security headers here.
+  // are set in middleware.ts to avoid duplication.
   async headers() {
     return [
       {
         source: '/api/:path*',
         headers: [
           { key: 'Cache-Control', value: 'no-store, max-age=0' },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
         ],
       },
       {
         source: '/_next/static/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        // Long cache for static images (Core Web Vitals improvement)
+        source: '/icons/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/screenshots/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=2592000' },
+        ],
+      },
+      {
+        // Sitemap and robots should be fresh but cacheable
+        source: '/sitemap.xml',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200' },
+        ],
+      },
+      {
+        source: '/robots.txt',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400' },
+        ],
+      },
+      {
+        // Preconnect to external resources for faster loading
+        source: '/:path*',
+        headers: [
+          { key: 'Link', value: '<https://fonts.googleapis.com>; rel=preconnect, <https://fonts.gstatic.com>; rel=preconnect; crossorigin' },
+          { key: 'X-DNS-Prefetch-Control', value: 'on' },
         ],
       },
     ];
@@ -193,6 +231,12 @@ const nextConfig = {
         source: '/:path*',
         has: [{ type: 'host', value: 'www.megilance.com' }],
         destination: 'https://megilance.com/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.megilance.site' }],
+        destination: 'https://megilance.site/:path*',
         permanent: true,
       },
     ];

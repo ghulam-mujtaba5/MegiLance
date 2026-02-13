@@ -1,20 +1,27 @@
 import type { Metadata } from 'next';
 import SupportClient from './SupportClient';
-import { BASE_URL } from '@/lib/seo';
+import { buildMeta, buildBreadcrumbJsonLd, buildContactPageJsonLd, jsonLdScriptProps, getKeywordsForPage } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Support Center - MegiLance | Help & Documentation',
-  description: 'Find answers to your questions, browse guides, and contact our support team.',
-  openGraph: {
-    title: 'MegiLance Help Center',
-    description: 'Get help with your account, payments, and projects.',
-    url: `${BASE_URL}/support`,
-  },
-  alternates: {
-    canonical: `${BASE_URL}/support`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMeta({
+    title: 'Support Center - Help, Guides & Documentation',
+    description: 'Get help with your MegiLance account. Browse comprehensive guides, FAQs, tutorials, and documentation. Contact our support team for project disputes, payment issues, and account management.',
+    path: '/support',
+    keywords: [
+      'MegiLance support', 'freelance help center', 'MegiLance help', 'freelance guides',
+      'freelance platform support', 'payment help freelance', 'dispute resolution freelance',
+    ],
+  });
+}
 
 export default function Page() {
-  return <SupportClient />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(buildContactPageJsonLd())} />
+      <script {...jsonLdScriptProps(
+        buildBreadcrumbJsonLd([{ name: 'Support', path: '/support' }])
+      )} />
+      <SupportClient />
+    </>
+  );
 }

@@ -1,20 +1,28 @@
 import type { Metadata } from 'next';
 import TestimonialsClient from './TestimonialsClient';
-import { BASE_URL } from '@/lib/seo';
+import { buildMeta, buildBreadcrumbJsonLd, buildAggregateRatingJsonLd, jsonLdScriptProps } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Testimonials - MegiLance | Success Stories',
-  description: 'See what clients and freelancers are saying about MegiLance. Real stories of success and growth.',
-  openGraph: {
-    title: 'MegiLance Success Stories',
-    description: 'Read how businesses and freelancers are thriving on MegiLance.',
-    url: `${BASE_URL}/testimonials`,
-  },
-  alternates: {
-    canonical: `${BASE_URL}/testimonials`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMeta({
+    title: 'Success Stories & Testimonials - Real Results from Real Users',
+    description: 'Read authentic success stories from MegiLance clients and freelancers. See how businesses scaled with top talent and freelancers grew their careers. 4.8★ average rating across 2,500+ reviews.',
+    path: '/testimonials',
+    keywords: [
+      'MegiLance reviews', 'freelance platform reviews', 'MegiLance testimonials',
+      'freelancer success stories', 'client reviews freelancing', 'MegiLance ratings',
+      'best freelance platform reviews', 'freelance marketplace reviews',
+    ],
+  });
+}
 
 export default function Page() {
-  return <TestimonialsClient />;
+  return (
+    <>
+      <script {...jsonLdScriptProps(buildAggregateRatingJsonLd(4.8, 2500))} />
+      <script {...jsonLdScriptProps(
+        buildBreadcrumbJsonLd([{ name: 'Testimonials', path: '/testimonials' }])
+      )} />
+      <TestimonialsClient />
+    </>
+  );
 }

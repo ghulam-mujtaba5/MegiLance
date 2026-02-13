@@ -1,6 +1,7 @@
 /* @AI-HINT: Centralized SEO helpers for public pages. Use in generateMetadata() for consistency.
  * Includes structured data builders for Google Rich Results: BreadcrumbList, FAQPage,
  * Organization, WebSite (with Sitelinks SearchBox), SoftwareApplication, etc.
+ * Also contains comprehensive keyword taxonomy for maximum search engine coverage.
  */
 import type { Metadata } from 'next';
 
@@ -14,6 +15,7 @@ export type MetaInput = {
   robots?: string;
   noindex?: boolean;
   keywords?: string[];
+  type?: 'website' | 'article' | 'profile';
 };
 
 export type BreadcrumbItem = {
@@ -29,14 +31,92 @@ export type FAQItem = {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 export const SITE_NAME = 'MegiLance';
-export const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.com';
-export const SITE_DESCRIPTION = 'AI-powered freelancing platform connecting top talent with global opportunities. Secure blockchain payments, smart matching, and seamless collaboration.';
+export const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.site';
+export const SITE_DESCRIPTION = 'MegiLance is the AI-powered freelance marketplace connecting businesses with world-class freelancers. Hire top developers, designers, writers & more with secure blockchain payments, smart AI matching, and zero fees for freelancers.';
+export const SITE_TAGLINE = 'The Future of Freelancing';
 export const SITE_LOGO = `${BASE_URL}/icon-512.png`;
 export const SOCIAL_LINKS = [
   'https://www.linkedin.com/company/megilance',
   'https://twitter.com/megilance',
   'https://github.com/megilance',
+  'https://www.facebook.com/megilance',
+  'https://www.instagram.com/megilance',
+  'https://www.youtube.com/@megilance',
 ];
+
+// ─── SEO Keyword Taxonomy ─────────────────────────────────────────────────────
+// Comprehensive keywords grouped by intent for maximum SERP coverage
+
+export const SEO_KEYWORDS = {
+  // Brand keywords
+  brand: [
+    'MegiLance', 'megilance', 'megilance.com', 'MegiLance freelance', 'MegiLance platform',
+    'MegiLance marketplace', 'MegiLance app', 'MegiLance AI freelancing',
+  ],
+  // High-intent transactional keywords
+  transactional: [
+    'hire freelancers', 'hire developers online', 'hire remote developers',
+    'hire web developer', 'hire graphic designer', 'hire content writer',
+    'hire UI UX designer', 'hire mobile app developer', 'hire data scientist',
+    'hire AI developer', 'hire blockchain developer', 'hire DevOps engineer',
+    'find freelance work', 'get freelance jobs', 'freelance jobs online',
+    'post a project', 'post freelance job', 'outsource development',
+  ],
+  // Informational keywords
+  informational: [
+    'best freelance platform', 'best freelance marketplace', 'top freelance websites',
+    'freelance marketplace comparison', 'upwork alternative', 'fiverr alternative',
+    'freelancer alternative', 'toptal alternative', 'best platform for freelancers',
+    'freelancing platform for developers', 'AI powered freelancing',
+    'blockchain payments freelancing', 'zero fee freelancing platform',
+  ],
+  // Industry/niche keywords
+  industry: [
+    'freelance web development', 'freelance mobile development', 'freelance AI development',
+    'freelance graphic design', 'freelance content writing', 'freelance digital marketing',
+    'freelance SEO services', 'freelance video editing', 'freelance data science',
+    'freelance machine learning', 'freelance blockchain', 'freelance cloud computing',
+    'freelance cybersecurity', 'freelance WordPress development', 'freelance Shopify development',
+  ],
+  // Technology keywords
+  technology: [
+    'React developer freelance', 'Python developer freelance', 'Node.js developer freelance',
+    'JavaScript developer freelance', 'TypeScript developer freelance', 'Flutter developer freelance',
+    'Angular developer freelance', 'Vue.js developer freelance', 'AWS architect freelance',
+    'full stack developer freelance', 'backend developer freelance', 'frontend developer freelance',
+  ],
+  // Long-tail keywords
+  longTail: [
+    'how to hire freelancers online', 'best platform to find freelancers',
+    'secure freelance payments', 'AI matching freelance platform', 'escrow payments freelancing',
+    'remote talent hiring platform', 'freelance marketplace with blockchain',
+    'hire verified freelancers', 'freelance platform low fees', 'instant freelancer matching',
+    'best freelancing website 2025', 'top freelance platforms 2025',
+    'freelance project management tool', 'freelance collaboration platform',
+  ],
+  // Location keywords
+  location: [
+    'hire freelancers worldwide', 'global freelance marketplace', 'international freelancers',
+    'remote work platform', 'distributed teams hiring', 'cross-border freelance payments',
+    'hire freelancers from Pakistan', 'hire freelancers from India',
+    'hire freelancers from Philippines', 'hire freelancers from Eastern Europe',
+  ],
+  // Feature keywords
+  features: [
+    'AI freelancer matching', 'smart contract payments', 'blockchain escrow system',
+    'real-time collaboration tools', 'video calling freelance', 'milestone payments',
+    'freelancer verification system', 'skill assessment platform', 'portfolio showcase',
+    'time tracking freelance', 'invoice generation freelance',
+  ],
+};
+
+/** Flatten keyword groups into a single array */
+export function getKeywordsForPage(groups: (keyof typeof SEO_KEYWORDS)[], extra?: string[]): string[] {
+  const keywords: string[] = groups.flatMap(g => [...SEO_KEYWORDS[g]]);
+  if (extra) keywords.push(...extra);
+  // Deduplicate
+  return [...new Set(keywords)];
+}
 
 // ─── URL Helpers ──────────────────────────────────────────────────────────────
 
@@ -56,7 +136,19 @@ export function buildMeta(input: MetaInput): Metadata {
     ? input.title
     : `${input.title} | ${SITE_NAME}`;
 
-  const robots = input.noindex ? 'noindex, nofollow' : (input.robots || 'index, follow');
+  const robotsDirective = input.noindex
+    ? { index: false, follow: false }
+    : {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1 as const,
+          'max-image-preview': 'large' as const,
+          'max-snippet': -1 as const,
+        },
+      };
 
   // Only set explicit OG images when a custom image is provided.
   // Otherwise, the file-convention opengraph-image.tsx auto-generates them.
@@ -68,6 +160,7 @@ export function buildMeta(input: MetaInput): Metadata {
     ...(input.keywords ? { keywords: input.keywords } : {}),
     alternates: {
       canonical: url,
+      languages: { 'en-US': url },
     },
     openGraph: {
       title,
@@ -76,7 +169,7 @@ export function buildMeta(input: MetaInput): Metadata {
       siteName: SITE_NAME,
       locale: 'en_US',
       ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: title as string }] } : {}),
-      type: 'website',
+      type: input.type || 'website',
     },
     twitter: {
       card: 'summary_large_image',
@@ -86,12 +179,12 @@ export function buildMeta(input: MetaInput): Metadata {
       description: input.description,
       ...(ogImage ? { images: [ogImage] } : {}),
     },
-    robots,
+    robots: robotsDirective,
   } satisfies Metadata;
 }
 
-export function buildArticleMeta(input: MetaInput & { publishedTime?: string; modifiedTime?: string; author?: string }) {
-  const meta = buildMeta(input);
+export function buildArticleMeta(input: MetaInput & { publishedTime?: string; modifiedTime?: string; author?: string; tags?: string[] }) {
+  const meta = buildMeta({ ...input, type: 'article' });
   return {
     ...meta,
     openGraph: {
@@ -100,6 +193,22 @@ export function buildArticleMeta(input: MetaInput & { publishedTime?: string; mo
       ...(input.publishedTime ? { publishedTime: input.publishedTime } : {}),
       ...(input.modifiedTime ? { modifiedTime: input.modifiedTime } : {}),
       ...(input.author ? { authors: [input.author] } : {}),
+      ...(input.tags ? { tags: input.tags } : {}),
+    },
+  } as Metadata;
+}
+
+/** ProfilePage meta for freelancer/user profile pages */
+export function buildProfileMeta(input: MetaInput & { firstName?: string; lastName?: string; username?: string }) {
+  const meta = buildMeta({ ...input, type: 'profile' });
+  return {
+    ...meta,
+    openGraph: {
+      ...meta.openGraph,
+      type: 'profile',
+      ...(input.firstName ? { firstName: input.firstName } : {}),
+      ...(input.lastName ? { lastName: input.lastName } : {}),
+      ...(input.username ? { username: input.username } : {}),
     },
   } as Metadata;
 }
@@ -147,6 +256,7 @@ export function buildWebSiteJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_NAME,
+    alternateName: ['MegiLance Freelance Marketplace', 'MegiLance AI Platform'],
     url: BASE_URL,
     description: SITE_DESCRIPTION,
     potentialAction: [
@@ -158,8 +268,22 @@ export function buildWebSiteJsonLd() {
         },
         'query-input': 'required name=search_term_string',
       },
+      {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${BASE_URL}/hire?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
     ],
     inLanguage: 'en-US',
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: BASE_URL,
+      logo: SITE_LOGO,
+    },
   };
 }
 
@@ -169,6 +293,7 @@ export function buildOrganizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: SITE_NAME,
+    legalName: 'MegiLance Technologies',
     url: BASE_URL,
     logo: {
       '@type': 'ImageObject',
@@ -176,17 +301,44 @@ export function buildOrganizationJsonLd() {
       width: 512,
       height: 512,
     },
+    image: SITE_LOGO,
     description: SITE_DESCRIPTION,
     foundingDate: '2024',
+    slogan: SITE_TAGLINE,
     sameAs: SOCIAL_LINKS,
     contactPoint: [
       {
         '@type': 'ContactPoint',
         contactType: 'customer support',
         email: 'support@megilance.com',
+        url: `${BASE_URL}/support`,
+        availableLanguage: ['English'],
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'sales',
+        email: 'business@megilance.com',
+        url: `${BASE_URL}/enterprise`,
         availableLanguage: ['English'],
       },
     ],
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'US',
+    },
+    areaServed: {
+      '@type': 'GeoShape',
+      name: 'Worldwide',
+    },
+    knowsAbout: [
+      'Freelancing', 'Remote Work', 'AI Matching', 'Blockchain Payments',
+      'Web Development', 'Mobile Development', 'UI/UX Design', 'Data Science',
+    ],
+    numberOfEmployees: {
+      '@type': 'QuantitativeValue',
+      minValue: 10,
+      maxValue: 50,
+    },
   };
 }
 
@@ -310,12 +462,14 @@ export function buildSiteNavigationJsonLd() {
   const navItems = [
     { name: 'Find Work', url: '/jobs' },
     { name: 'Hire Talent', url: '/hire' },
+    { name: 'Browse Freelancers', url: '/talent' },
     { name: 'How It Works', url: '/how-it-works' },
     { name: 'Pricing', url: '/pricing' },
     { name: 'About', url: '/about' },
     { name: 'Blog', url: '/blog' },
-    { name: 'Contact', url: '/contact' },
     { name: 'FAQ', url: '/faq' },
+    { name: 'Contact', url: '/contact' },
+    { name: 'Support', url: '/support' },
   ];
 
   return {
@@ -327,6 +481,184 @@ export function buildSiteNavigationJsonLd() {
       name: item.name,
       url: toAbsoluteUrl(item.url),
     })),
+  };
+}
+
+/** HowTo – For how-it-works / tutorial pages (Google Rich Results) */
+export function buildHowToJsonLd(
+  name: string,
+  description: string,
+  steps: Array<{ name: string; text: string; url?: string }>
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name,
+    description,
+    totalTime: 'PT10M',
+    step: steps.map((step, i) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: step.name,
+      text: step.text,
+      ...(step.url ? { url: toAbsoluteUrl(step.url) } : {}),
+    })),
+  };
+}
+
+/** Review/Testimonial – Aggregate rating for social proof */
+export function buildAggregateRatingJsonLd(
+  ratingValue: number,
+  ratingCount: number,
+  bestRating = 5,
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: `${SITE_NAME} Freelance Marketplace`,
+    description: SITE_DESCRIPTION,
+    brand: { '@type': 'Brand', name: SITE_NAME },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: ratingValue.toString(),
+      bestRating: bestRating.toString(),
+      worstRating: '1',
+      ratingCount: ratingCount.toString(),
+    },
+  };
+}
+
+/** JobPosting – For individual job listing pages */
+export function buildJobPostingJsonLd(job: {
+  title: string;
+  description: string;
+  datePosted: string;
+  validThrough?: string;
+  employmentType?: string;
+  salary?: { min: number; max: number; currency: string };
+  path: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description,
+    datePosted: job.datePosted,
+    ...(job.validThrough ? { validThrough: job.validThrough } : {}),
+    employmentType: job.employmentType || 'CONTRACTOR',
+    jobLocationType: 'TELECOMMUTE',
+    applicantLocationRequirements: {
+      '@type': 'Country',
+      name: 'Worldwide',
+    },
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      sameAs: BASE_URL,
+      logo: SITE_LOGO,
+    },
+    ...(job.salary ? {
+      baseSalary: {
+        '@type': 'MonetaryAmount',
+        currency: job.salary.currency,
+        value: {
+          '@type': 'QuantitativeValue',
+          minValue: job.salary.min,
+          maxValue: job.salary.max,
+          unitText: 'HOUR',
+        },
+      },
+    } : {}),
+    url: toAbsoluteUrl(job.path),
+  };
+}
+
+/** Person – For freelancer profile pages */
+export function buildPersonJsonLd(person: {
+  name: string;
+  jobTitle: string;
+  description: string;
+  image?: string;
+  path: string;
+  skills?: string[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: person.name,
+    jobTitle: person.jobTitle,
+    description: person.description,
+    ...(person.image ? { image: toAbsoluteUrl(person.image) } : {}),
+    url: toAbsoluteUrl(person.path),
+    ...(person.skills ? { knowsAbout: person.skills } : {}),
+    memberOf: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: BASE_URL,
+    },
+  };
+}
+
+/** VideoObject – For video content pages */
+export function buildVideoJsonLd(video: {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  duration?: string;
+  contentUrl?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: video.name,
+    description: video.description,
+    thumbnailUrl: toAbsoluteUrl(video.thumbnailUrl),
+    uploadDate: video.uploadDate,
+    ...(video.duration ? { duration: video.duration } : {}),
+    ...(video.contentUrl ? { contentUrl: video.contentUrl } : {}),
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      logo: { '@type': 'ImageObject', url: SITE_LOGO },
+    },
+  };
+}
+
+/** Offer catalog / pricing page schema */
+export function buildOfferCatalogJsonLd() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'OfferCatalog',
+    name: `${SITE_NAME} Pricing Plans`,
+    description: 'Affordable freelance marketplace pricing. Starting from 1% commission.',
+    url: toAbsoluteUrl('/pricing'),
+    itemListElement: [
+      {
+        '@type': 'Offer',
+        name: 'Basic Plan',
+        description: 'For individuals getting started. 5% per transaction.',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Standard Plan',
+        description: 'For growing businesses. 3% per transaction.',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Premium Plan',
+        description: 'For enterprises. Only 1% per transaction.',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+      },
+    ],
   };
 }
 
