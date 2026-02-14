@@ -19,7 +19,7 @@ from app.core.security import get_current_active_user, require_admin
 from app.models.user import User
 from app.services.moderation import (
     ContentModerationService,
-    ContentType,
+    ModerationContentType,
     ViolationType,
     ReportStatus
 )
@@ -62,11 +62,11 @@ async def check_content(
     service = ContentModerationService(db)
     
     try:
-        content_type = ContentType(request.content_type)
+        content_type = ModerationContentType(request.content_type)
     except ValueError:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid content type. Use: {[t.value for t in ContentType]}"
+            detail=f"Invalid content type. Use: {[t.value for t in ModerationContentType]}"
         )
     
     result = await service.moderate_text(
@@ -89,7 +89,7 @@ async def report_content(
     service = ContentModerationService(db)
     
     try:
-        content_type = ContentType(request.content_type)
+        content_type = ModerationContentType(request.content_type)
     except ValueError:
         raise HTTPException(
             status_code=400,
@@ -198,7 +198,7 @@ async def get_content_types(
     return {
         "content_types": [
             {"value": c.value, "label": c.value.replace("_", " ").title()}
-            for c in ContentType
+            for c in ModerationContentType
         ]
     }
 

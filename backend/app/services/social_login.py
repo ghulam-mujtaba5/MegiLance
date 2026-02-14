@@ -1,11 +1,13 @@
-# @AI-HINT: Social login OAuth2 service for Google, LinkedIn, GitHub
+# @AI-HINT: Social login OAuth2 service for Google, LinkedIn, GitHub — enhanced with
+# intelligent login/register detection, role-based onboarding, and persistent social
+# account linking/unlinking via the social_accounts table.
 """Social Login Service - OAuth2 authentication with social providers."""
 
+import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Tuple
 from sqlalchemy.orm import Session
 from enum import Enum
-import uuid
 import hashlib
 import secrets
 from urllib.parse import urlencode
@@ -13,8 +15,10 @@ from urllib.parse import urlencode
 import requests
 
 from app.core.config import get_settings
-from app.core.security import create_access_token, create_refresh_token, get_password_hash
+from app.core.security import create_access_token, create_refresh_token, get_password_hash, verify_password
 from app.db.turso_http import execute_query, parse_rows
+
+logger = logging.getLogger("megilance")
 
 
 class SocialProvider(str, Enum):
@@ -33,13 +37,12 @@ _OAUTH_STATE_STORE: Dict[str, Dict[str, Any]] = {}
 
 class SocialLoginService:
     """Service for social login OAuth2."""
-    
+
     def __init__(self, db: Session):
         self.db = db
-        # Use module-level store so state survives across requests
-        self._oauth_states = _OAUTH_STATE_STORE  # In production, use Redis
-    
-    # OAuth Configuration
+        self._oauth_states = _OAUTH_STATE_STORE
+
+    # ── OAuth Configuration ──────────────────────────────────────────────
     def get_oauth_config(self, provider: SocialProvider) -> Dict[str, Any]:
         """Get OAuth configuration for a provider."""
         configs = {
@@ -49,7 +52,7 @@ class SocialLoginService:
                 "userinfo_url": "https://www.googleapis.com/oauth2/v2/userinfo",
                 "scopes": ["openid", "email", "profile"],
                 "client_id_env": "GOOGLE_CLIENT_ID",
-                "client_secret_env": "GOOGLE_CLIENT_SECRET"
+                "client_secret_env": "GOOGLE_CLIENT_SECRET",
             },
             SocialProvider.LINKEDIN: {
                 "authorization_url": "https://www.linkedin.com/oauth/v2/authorization",
@@ -57,7 +60,7 @@ class SocialLoginService:
                 "userinfo_url": "https://api.linkedin.com/v2/me",
                 "scopes": ["r_liteprofile", "r_emailaddress"],
                 "client_id_env": "LINKEDIN_CLIENT_ID",
-                "client_secret_env": "LINKEDIN_CLIENT_SECRET"
+                "client_secret_env": "LINKEDIN_CLIENT_SECRET",
             },
             SocialProvider.GITHUB: {
                 "authorization_url": "https://github.com/login/oauth/authorize",
@@ -65,7 +68,7 @@ class SocialLoginService:
                 "userinfo_url": "https://api.github.com/user",
                 "scopes": ["read:user", "user:email"],
                 "client_id_env": "GITHUB_CLIENT_ID",
-                "client_secret_env": "GITHUB_CLIENT_SECRET"
+                "client_secret_env": "GITHUB_CLIENT_SECRET",
             },
             SocialProvider.FACEBOOK: {
                 "authorization_url": "https://www.facebook.com/v18.0/dialog/oauth",
@@ -73,66 +76,55 @@ class SocialLoginService:
                 "userinfo_url": "https://graph.facebook.com/me",
                 "scopes": ["email", "public_profile"],
                 "client_id_env": "FACEBOOK_CLIENT_ID",
-                "client_secret_env": "FACEBOOK_CLIENT_SECRET"
+                "client_secret_env": "FACEBOOK_CLIENT_SECRET",
             },
             SocialProvider.APPLE: {
                 "authorization_url": "https://appleid.apple.com/auth/authorize",
                 "token_url": "https://appleid.apple.com/auth/token",
                 "scopes": ["name", "email"],
                 "client_id_env": "APPLE_CLIENT_ID",
-                "client_secret_env": "APPLE_CLIENT_SECRET"
-            }
+                "client_secret_env": "APPLE_CLIENT_SECRET",
+            },
         }
-        
         return configs.get(provider, {})
-    
+
     async def get_available_providers(self) -> List[Dict[str, Any]]:
-        """Get list of available social login providers."""
-        return [
+        """Get list of available social login providers with live config check."""
+        settings = get_settings()
+        providers = [
             {
                 "provider": SocialProvider.GOOGLE.value,
                 "name": "Google",
                 "icon": "google",
-                "enabled": True,
-                "description": "Sign in with your Google account"
-            },
-            {
-                "provider": SocialProvider.LINKEDIN.value,
-                "name": "LinkedIn",
-                "icon": "linkedin",
-                "enabled": True,
-                "description": "Sign in with your LinkedIn account"
+                "enabled": bool(getattr(settings, "GOOGLE_CLIENT_ID", None)),
+                "description": "Sign in with your Google account",
             },
             {
                 "provider": SocialProvider.GITHUB.value,
                 "name": "GitHub",
                 "icon": "github",
-                "enabled": True,
-                "description": "Sign in with your GitHub account"
+                "enabled": bool(getattr(settings, "GITHUB_CLIENT_ID", None)),
+                "description": "Sign in with your GitHub account",
             },
             {
-                "provider": SocialProvider.FACEBOOK.value,
-                "name": "Facebook",
-                "icon": "facebook",
-                "enabled": False,
-                "description": "Sign in with your Facebook account"
+                "provider": SocialProvider.LINKEDIN.value,
+                "name": "LinkedIn",
+                "icon": "linkedin",
+                "enabled": bool(getattr(settings, "LINKEDIN_CLIENT_ID", None)),
+                "description": "Sign in with your LinkedIn account",
             },
-            {
-                "provider": SocialProvider.APPLE.value,
-                "name": "Apple",
-                "icon": "apple",
-                "enabled": False,
-                "description": "Sign in with your Apple ID"
-            }
         ]
-    
-    # OAuth Flow
+        return providers
+
+    # ── OAuth Flow ───────────────────────────────────────────────────────
+
     async def start_oauth(
         self,
         provider: SocialProvider,
         redirect_uri: str,
-        user_id: Optional[int] = None,  # For account linking
-        portal_area: Optional[str] = None  # For determining role during registration
+        user_id: Optional[int] = None,
+        portal_area: Optional[str] = None,
+        intent: Optional[str] = None,  # "login" | "register" | "link"
     ) -> Dict[str, Any]:
         """Start OAuth flow - generate authorization URL."""
         config = self.get_oauth_config(provider)
@@ -142,126 +134,147 @@ class SocialLoginService:
         client_id: Optional[str] = getattr(settings, client_id_env, None) if client_id_env else None
 
         if not client_id:
-            # Misconfiguration - surface a clear error to the caller
             return {
                 "success": False,
                 "error": f"{provider.value.capitalize()} login is not configured. Missing client ID.",
             }
-        
+
         state = secrets.token_urlsafe(32)
         nonce = secrets.token_urlsafe(16)
-        
-        # Store state for verification
+
         self._oauth_states[state] = {
             "provider": provider.value,
             "redirect_uri": redirect_uri,
             "user_id": user_id,
             "nonce": nonce,
             "portal_area": portal_area,
+            "intent": intent or ("link" if user_id else "auto"),
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "expires_at": (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
+            "expires_at": (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat(),
         }
-        
-        # Build authorization URL
+
         params = {
             "client_id": client_id,
             "redirect_uri": redirect_uri,
             "response_type": "code",
             "scope": " ".join(config["scopes"]),
             "state": state,
-            "nonce": nonce
+            "nonce": nonce,
         }
-        
-        # Add provider-specific params
+
         if provider == SocialProvider.GOOGLE:
             params["access_type"] = "offline"
             params["prompt"] = "consent"
-        
-        query_string = urlencode(params)
-        authorization_url = f"{config['authorization_url']}?{query_string}"
-        
+
+        authorization_url = f"{config['authorization_url']}?{urlencode(params)}"
+
         return {
             "authorization_url": authorization_url,
             "state": state,
             "provider": provider.value,
-            "expires_in": 600
+            "expires_in": 600,
         }
-    
+
+    async def _exchange_code_for_tokens(
+        self,
+        provider: SocialProvider,
+        code: str,
+        redirect_uri: str,
+    ) -> Dict[str, Any]:
+        """Exchange an authorization code for provider access/refresh tokens."""
+        config = self.get_oauth_config(provider)
+        settings = get_settings()
+
+        client_id = getattr(settings, config["client_id_env"], None)
+        client_secret = getattr(settings, config["client_secret_env"], None)
+
+        if not client_id or not client_secret:
+            raise RuntimeError(f"OAuth credentials not configured for {provider.value}")
+
+        payload: Dict[str, str] = {
+            "client_id": client_id,
+            "client_secret": client_secret,
+            "code": code,
+            "redirect_uri": redirect_uri,
+            "grant_type": "authorization_code",
+        }
+
+        headers: Dict[str, str] = {}
+        if provider == SocialProvider.GITHUB:
+            headers["Accept"] = "application/json"
+
+        resp = requests.post(
+            config["token_url"],
+            data=payload,
+            headers=headers,
+            timeout=15,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
     async def complete_oauth(
         self,
         code: str,
-        state: str
+        state: str,
     ) -> Dict[str, Any]:
-        """Complete OAuth flow - exchange code for tokens and get user info."""
-        # Verify state
+        """Complete OAuth flow - exchange code for tokens and get or create user."""
         state_data = self._oauth_states.get(state)
         if not state_data:
             return {"success": False, "error": "Invalid or expired state"}
 
-        # Enforce expiration
         try:
             expires_at = datetime.fromisoformat(state_data["expires_at"])
             if expires_at < datetime.now(timezone.utc):
                 self._oauth_states.pop(state, None)
                 return {"success": False, "error": "OAuth session expired. Please try again."}
         except Exception:
-            # If parsing fails, continue but do not trust stale state for long
             pass
 
         provider = SocialProvider(state_data["provider"])
         redirect_uri = state_data["redirect_uri"]
         portal_area = state_data.get("portal_area")
+        intent = state_data.get("intent", "auto")
 
         try:
             if provider in (SocialProvider.GOOGLE, SocialProvider.GITHUB):
                 token_data = await self._exchange_code_for_tokens(provider, code, redirect_uri)
-                access_token = token_data.get("access_token")
-                refresh_token = token_data.get("refresh_token")
+                provider_access_token = token_data.get("access_token")
 
-                if not access_token:
+                if not provider_access_token:
                     return {"success": False, "error": "Failed to obtain access token from provider."}
 
-                social_user = await self._get_user_info(provider, access_token)
+                social_user = await self._get_user_info(provider, provider_access_token)
             else:
-                # Fallback to mock behaviour for non-critical providers
-                access_token = f"mock_access_token_{secrets.token_hex(16)}"
-                refresh_token = f"mock_refresh_token_{secrets.token_hex(16)}"
-                social_user = await self._get_user_info(provider, access_token)
+                provider_access_token = f"mock_{secrets.token_hex(16)}"
+                social_user = await self._get_user_info(provider, provider_access_token)
 
-            # Check if user exists or create new
             user_id = state_data.get("user_id")
 
-            if user_id:
-                # Account linking
-                linked_account = await self._link_social_account(
-                    user_id, provider, social_user, access_token, refresh_token
-                )
-                result = {
-                    "success": True,
-                    "action": "linked",
-                    "linked_account": linked_account
-                }
-            else:
-                # Login or registration
-                result = await self._login_or_register(
-                    provider, social_user, access_token, refresh_token, portal_area
-                )
+            if user_id or intent == "link":
+                # Account linking flow
+                if not user_id:
+                    return {"success": False, "error": "Must be authenticated to link accounts."}
+                linked = await self._link_social_account(user_id, provider, social_user)
+                return {"success": True, "action": "linked", "linked_account": linked}
 
-            return result
+            # Smart login / register flow
+            return await self._smart_login_or_register(
+                provider, social_user, portal_area,
+            )
 
         finally:
-            # Clean up state regardless of outcome
             self._oauth_states.pop(state, None)
-    
+
+    # ── Provider user info fetching ──────────────────────────────────────
+
     async def _get_user_info(
         self,
         provider: SocialProvider,
-        access_token: str
+        access_token: str,
     ) -> Dict[str, Any]:
         """Get user info from social provider."""
         config = self.get_oauth_config(provider)
 
-        # Real provider calls for Google and GitHub
         if provider == SocialProvider.GOOGLE:
             try:
                 resp = requests.get(
@@ -272,7 +285,6 @@ class SocialLoginService:
                 resp.raise_for_status()
                 data = resp.json()
             except Exception:
-                # Fallback minimal structure if provider call fails
                 return {"id": "google_unknown", "email": None}
 
             full_name = data.get("name") or " ".join(
@@ -283,6 +295,8 @@ class SocialLoginService:
                 "id": data.get("id") or data.get("sub"),
                 "email": data.get("email"),
                 "name": full_name,
+                "first_name": data.get("given_name"),
+                "last_name": data.get("family_name"),
                 "picture": data.get("picture"),
                 "verified_email": data.get("verified_email", False),
             }
@@ -292,7 +306,6 @@ class SocialLoginService:
                 "Authorization": f"Bearer {access_token}",
                 "Accept": "application/vnd.github+json",
             }
-
             try:
                 user_resp = requests.get(config["userinfo_url"], headers=headers, timeout=10)
                 user_resp.raise_for_status()
@@ -301,10 +314,11 @@ class SocialLoginService:
                 return {"id": "github_unknown", "email": None}
 
             email = user_data.get("email")
-            # If primary email is not in main user object, fetch from /user/emails
             if not email:
                 try:
-                    emails_resp = requests.get("https://api.github.com/user/emails", headers=headers, timeout=10)
+                    emails_resp = requests.get(
+                        "https://api.github.com/user/emails", headers=headers, timeout=10
+                    )
                     emails_resp.raise_for_status()
                     emails = emails_resp.json()
                     primary = next(
@@ -314,7 +328,6 @@ class SocialLoginService:
                     if primary:
                         email = primary.get("email")
                 except Exception:
-                    # If this also fails, we'll leave email as None
                     pass
 
             return {
@@ -326,115 +339,149 @@ class SocialLoginService:
                 "bio": user_data.get("bio"),
             }
 
-        # Fallback mock data for other providers we don't fully support yet
+        # Fallback mock data for unsupported providers
         mock_users = {
-            SocialProvider.LINKEDIN: {
-                "id": "linkedin_987654321",
-                "email": "user@email.com",
-                "name": "LinkedIn User",
-            },
-            SocialProvider.FACEBOOK: {
-                "id": "facebook_123456789",
-                "email": "user@facebook.com",
-                "name": "Facebook User",
-            },
-            SocialProvider.APPLE: {
-                "id": "apple_123456789",
-                "email": "user@icloud.com",
-                "name": "Apple User",
-            },
+            SocialProvider.LINKEDIN: {"id": "linkedin_mock", "email": "user@email.com", "name": "LinkedIn User"},
+            SocialProvider.FACEBOOK: {"id": "facebook_mock", "email": "user@facebook.com", "name": "Facebook User"},
+            SocialProvider.APPLE: {"id": "apple_mock", "email": "user@icloud.com", "name": "Apple User"},
         }
-
         return mock_users.get(provider, {"id": "unknown", "email": None})
-    
-    async def _login_or_register(
+
+    # ── Smart login / register ───────────────────────────────────────────
+
+    async def _smart_login_or_register(
         self,
         provider: SocialProvider,
         social_user: Dict[str, Any],
-        access_token: str,
-        refresh_token: str,
         portal_area: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Login existing user or register new user."""
-        # Extract email from provider response
+        """
+        Intelligent auth flow:
+        1. If email already exists → auto-login (link provider if not linked yet)
+        2. If email is new and portal_area is set → create account with that role
+        3. If email is new and no portal_area → create account but flag needs_role_selection
+        """
         email = social_user.get("email")
         if not email:
             return {
                 "success": False,
-                "error": f"{provider.value.capitalize()} did not return an email address. Please make your email visible or grant email permissions.",
+                "error": f"{provider.value.capitalize()} did not return an email address. "
+                         "Please make your email visible or grant email permissions.",
             }
 
         normalized_email = email.strip().lower()
         name = social_user.get("name") or social_user.get("login") or ""
         avatar_url = social_user.get("picture") or social_user.get("avatar_url") or ""
+        provider_user_id = str(social_user.get("id", ""))
 
-        # Determine desired role from portal area
+        # ── Step 1: Check if user already exists by email ────────────────
+        existing_result = execute_query(
+            """SELECT id, email, name, user_type, role, is_active, is_verified,
+                      profile_image_url, hashed_password
+               FROM users WHERE email = ?""",
+            [normalized_email],
+        )
+        existing_rows = parse_rows(existing_result)
+
+        if existing_rows:
+            # ── EXISTING USER → auto-login ────────────────────────────────
+            user = existing_rows[0]
+            user_id = user["id"]
+            role = user.get("role") or user.get("user_type") or "client"
+
+            # Auto-link this provider if not already linked
+            await self._ensure_social_link(user_id, provider, social_user)
+
+            # Update avatar if missing
+            if not user.get("profile_image_url") and avatar_url:
+                try:
+                    execute_query(
+                        "UPDATE users SET profile_image_url = ?, updated_at = ? WHERE id = ?",
+                        [avatar_url, datetime.now(timezone.utc).isoformat(), user_id],
+                    )
+                except Exception:
+                    pass
+
+            custom_claims = {"user_id": user_id, "role": role}
+            jwt_access = create_access_token(subject=normalized_email, custom_claims=custom_claims)
+            jwt_refresh = create_refresh_token(subject=normalized_email, custom_claims=custom_claims)
+
+            has_password = bool(user.get("hashed_password"))
+
+            return {
+                "success": True,
+                "action": "login",
+                "is_new_user": False,
+                "needs_role_selection": False,
+                "user": {
+                    "id": user_id,
+                    "email": user.get("email", normalized_email),
+                    "name": user.get("name") or name,
+                    "role": role,
+                    "user_type": role,
+                    "profile_image_url": user.get("profile_image_url") or avatar_url,
+                    "has_password": has_password,
+                },
+                "access_token": jwt_access,
+                "refresh_token": jwt_refresh,
+                "token_type": "bearer",
+            }
+
+        # ── Step 2: New user ─────────────────────────────────────────────
         desired_role = (portal_area or "").lower()
-        if desired_role not in {"client", "freelancer", "admin"}:
-            desired_role = "client"
+        needs_role_selection = desired_role not in {"client", "freelancer"}
+        if needs_role_selection:
+            desired_role = "client"  # temporary default
 
-        user_record, is_new = self._get_or_create_user_from_social(
+        user_record = self._create_user_from_social(
             email=normalized_email,
             name=name,
             avatar_url=avatar_url,
             role=desired_role,
         )
 
-        role = user_record.get("role") or user_record.get("user_type") or desired_role
+        user_id = user_record["id"]
+        role = user_record.get("role") or desired_role
 
-        # Generate JWT tokens aligned with main auth flow
-        custom_claims = {"user_id": user_record["id"], "role": role}
-        jwt_access_token = create_access_token(subject=normalized_email, custom_claims=custom_claims)
-        jwt_refresh_token = create_refresh_token(subject=normalized_email, custom_claims=custom_claims)
+        # Link provider account
+        await self._ensure_social_link(user_id, provider, social_user)
 
-        user_payload = {
-            "id": user_record["id"],
-            "email": user_record["email"],
-            "name": user_record.get("name") or name,
-            "role": role,
-            "user_type": role,
-            "profile_image_url": user_record.get("profile_image_url") or avatar_url,
-        }
+        custom_claims = {"user_id": user_id, "role": role}
+        jwt_access = create_access_token(subject=normalized_email, custom_claims=custom_claims)
+        jwt_refresh = create_refresh_token(subject=normalized_email, custom_claims=custom_claims)
 
         return {
             "success": True,
-            "action": "register" if is_new else "login",
-            "user": user_payload,
-            "access_token": jwt_access_token,
-            "refresh_token": jwt_refresh_token,
+            "action": "register",
+            "is_new_user": True,
+            "needs_role_selection": needs_role_selection,
+            "user": {
+                "id": user_id,
+                "email": user_record.get("email", normalized_email),
+                "name": user_record.get("name") or name,
+                "role": role,
+                "user_type": role,
+                "profile_image_url": user_record.get("profile_image_url") or avatar_url,
+                "has_password": False,
+            },
+            "access_token": jwt_access,
+            "refresh_token": jwt_refresh,
             "token_type": "bearer",
         }
 
-    def _get_or_create_user_from_social(
+    def _create_user_from_social(
         self,
         email: str,
         name: str,
         avatar_url: str,
         role: str,
-    ) -> Tuple[Dict[str, Any], bool]:
-        """Find existing user by email or create a new one in Turso."""
-        # Try to find existing user
-        existing_result = execute_query(
-            """SELECT id, email, name, user_type, role, is_active, is_verified, 
-                      profile_image_url
-                   FROM users WHERE email = ?""",
-            [email],
-        )
-        existing_rows = parse_rows(existing_result)
-
-        if existing_rows:
-            user = existing_rows[0]
-            # Ensure role/user_type are set
-            user_role = user.get("role") or user.get("user_type") or role
-            user["role"] = user_role
-            user.setdefault("user_type", user_role)
-            return user, False
-
-        # Create new user
+    ) -> Dict[str, Any]:
+        """Create a new user from social login data."""
         now = datetime.now(timezone.utc).isoformat()
+        # Random strong password so the user can optionally set one later
         hashed_password = get_password_hash(secrets.token_urlsafe(32))
 
-        execute_result = execute_query(
+        execute_query(
             """INSERT INTO users (
                 email, hashed_password, is_active, is_verified, email_verified,
                 name, user_type, role, bio, skills, hourly_rate,
@@ -443,36 +490,21 @@ class SocialLoginService:
                 joined_at, created_at, updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [
-                email,
-                hashed_password,
-                1,  # is_active
-                1,  # is_verified
-                1,  # email_verified
-                name,
-                role,
-                role,
-                "",  # bio
-                "",  # skills
-                0,  # hourly_rate
+                email, hashed_password,
+                1, 1, 1,  # is_active, is_verified, email_verified
+                name, role, role,
+                "", "", 0,  # bio, skills, hourly_rate
                 avatar_url,
-                "",  # location
-                None,  # profile_data
-                0,  # two_factor_enabled
-                0.0,  # account_balance
-                now,
-                now,
-                now,
+                "", None,  # location, profile_data
+                0, 0.0,  # two_factor_enabled, account_balance
+                now, now, now,
             ],
         )
 
-        if not execute_result:
-            raise RuntimeError("Failed to create user from social login")
-
-        # Fetch created user
         created_result = execute_query(
-            """SELECT id, email, name, user_type, role, is_active, is_verified, 
+            """SELECT id, email, name, user_type, role, is_active, is_verified,
                       profile_image_url
-                   FROM users WHERE email = ?""",
+               FROM users WHERE email = ?""",
             [email],
         )
         created_rows = parse_rows(created_result)
@@ -483,36 +515,101 @@ class SocialLoginService:
         user_role = user.get("role") or user.get("user_type") or role
         user["role"] = user_role
         user.setdefault("user_type", user_role)
-        return user, True
-    
+        return user
+
+    # ── Social account linking (persistent) ──────────────────────────────
+
+    async def _ensure_social_link(
+        self,
+        user_id: int,
+        provider: SocialProvider,
+        social_user: Dict[str, Any],
+    ) -> None:
+        """Link provider if not already linked; update if linked."""
+        provider_user_id = str(social_user.get("id", ""))
+        now = datetime.now(timezone.utc).isoformat()
+
+        try:
+            existing = execute_query(
+                "SELECT id FROM social_accounts WHERE user_id = ? AND provider = ?",
+                [user_id, provider.value],
+            )
+            rows = parse_rows(existing)
+
+            if rows:
+                execute_query(
+                    """UPDATE social_accounts
+                       SET provider_user_id = ?, email = ?, name = ?, avatar_url = ?, updated_at = ?
+                       WHERE user_id = ? AND provider = ?""",
+                    [
+                        provider_user_id,
+                        social_user.get("email", ""),
+                        social_user.get("name", ""),
+                        social_user.get("picture") or social_user.get("avatar_url") or "",
+                        now,
+                        user_id,
+                        provider.value,
+                    ],
+                )
+            else:
+                execute_query(
+                    """INSERT INTO social_accounts
+                       (user_id, provider, provider_user_id, email, name, avatar_url, linked_at, updated_at)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                    [
+                        user_id,
+                        provider.value,
+                        provider_user_id,
+                        social_user.get("email", ""),
+                        social_user.get("name", ""),
+                        social_user.get("picture") or social_user.get("avatar_url") or "",
+                        now,
+                        now,
+                    ],
+                )
+        except Exception as exc:
+            logger.warning("Failed to link %s for user %s: %s", provider.value, user_id, exc)
+
     async def _link_social_account(
         self,
         user_id: int,
         provider: SocialProvider,
         social_user: Dict[str, Any],
-        access_token: str,
-        refresh_token: str
     ) -> Dict[str, Any]:
-        """Link a social account to existing user."""
+        """Explicitly link a social account to an existing authenticated user."""
+        provider_user_id = str(social_user.get("id", ""))
+        now = datetime.now(timezone.utc).isoformat()
+
+        # Check if this provider account is already linked to another user
+        conflict = execute_query(
+            "SELECT user_id FROM social_accounts WHERE provider = ? AND provider_user_id = ? AND user_id != ?",
+            [provider.value, provider_user_id, user_id],
+        )
+        conflict_rows = parse_rows(conflict)
+        if conflict_rows:
+            raise RuntimeError(
+                f"This {provider.value.capitalize()} account is already linked to another MegiLance user."
+            )
+
+        await self._ensure_social_link(user_id, provider, social_user)
+
         return {
-            "id": str(uuid.uuid4()),
             "user_id": user_id,
             "provider": provider.value,
-            "provider_user_id": str(social_user.get("id")),
+            "provider_user_id": provider_user_id,
             "email": social_user.get("email"),
             "name": social_user.get("name"),
-            "linked_at": datetime.now(timezone.utc).isoformat()
+            "avatar_url": social_user.get("picture") or social_user.get("avatar_url") or "",
+            "linked_at": now,
         }
-    
-    # Linked Accounts Management
-    async def get_linked_accounts(
-        self,
-        user_id: int
-    ) -> List[Dict[str, Any]]:
+
+    # ── Linked accounts management ───────────────────────────────────────
+
+    async def get_linked_accounts(self, user_id: int) -> List[Dict[str, Any]]:
         """Get user's linked social accounts from database."""
         try:
             result = execute_query(
-                """SELECT id, provider, provider_user_id, email, name, linked_at
+                """SELECT id, provider, provider_user_id, email, name, avatar_url, linked_at
                    FROM social_accounts WHERE user_id = ? ORDER BY linked_at DESC""",
                 [user_id],
             )
@@ -524,41 +621,119 @@ class SocialLoginService:
                     "provider_user_id": row.get("provider_user_id", ""),
                     "email": row.get("email", ""),
                     "name": row.get("name", ""),
+                    "avatar_url": row.get("avatar_url", ""),
                     "linked_at": row.get("linked_at", ""),
                 }
                 for row in rows
             ]
         except Exception:
-            # Table may not exist yet — return empty list
             return []
-    
-    async def unlink_account(
-        self,
-        user_id: int,
-        provider: SocialProvider
-    ) -> Dict[str, Any]:
-        """Unlink a social account from user."""
-        # In production, check if user has password or other linked accounts
+
+    async def unlink_account(self, user_id: int, provider: SocialProvider) -> Dict[str, Any]:
+        """Unlink a social account. Ensures user retains at least one auth method."""
+        # Check if user has a password set (non-random)
+        user_result = execute_query(
+            "SELECT hashed_password FROM users WHERE id = ?", [user_id],
+        )
+        user_rows = parse_rows(user_result)
+
+        linked_result = execute_query(
+            "SELECT COUNT(*) as cnt FROM social_accounts WHERE user_id = ?", [user_id],
+        )
+        linked_rows = parse_rows(linked_result)
+        linked_count = int(linked_rows[0].get("cnt", 0)) if linked_rows else 0
+
+        has_password = bool(user_rows and user_rows[0].get("hashed_password"))
+
+        # Must keep at least one auth method
+        if linked_count <= 1 and not has_password:
+            return {
+                "success": False,
+                "error": "Cannot unlink your only sign-in method. Set a password first.",
+            }
+
+        try:
+            execute_query(
+                "DELETE FROM social_accounts WHERE user_id = ? AND provider = ?",
+                [user_id, provider.value],
+            )
+        except Exception as exc:
+            logger.error("Failed to unlink %s for user %s: %s", provider.value, user_id, exc)
+            return {"success": False, "error": "Failed to unlink account."}
+
         return {
             "success": True,
             "provider": provider.value,
-            "unlinked_at": datetime.now(timezone.utc).isoformat()
+            "unlinked_at": datetime.now(timezone.utc).isoformat(),
         }
-    
-    # Profile Sync
+
+    # ── Role update (for onboarding) ─────────────────────────────────────
+
+    async def update_user_role(self, user_id: int, new_role: str) -> Dict[str, Any]:
+        """Update user role after onboarding role selection."""
+        if new_role not in {"client", "freelancer"}:
+            return {"success": False, "error": "Invalid role. Choose 'client' or 'freelancer'."}
+
+        now = datetime.now(timezone.utc).isoformat()
+        try:
+            execute_query(
+                "UPDATE users SET user_type = ?, role = ?, updated_at = ? WHERE id = ?",
+                [new_role, new_role, now, user_id],
+            )
+        except Exception as exc:
+            logger.error("Failed to update role for user %s: %s", user_id, exc)
+            return {"success": False, "error": "Failed to update role."}
+
+        # Re-fetch user to return updated data
+        user_result = execute_query(
+            """SELECT id, email, name, user_type, role, profile_image_url
+               FROM users WHERE id = ?""",
+            [user_id],
+        )
+        rows = parse_rows(user_result)
+        if not rows:
+            return {"success": False, "error": "User not found."}
+
+        user = rows[0]
+        role = user.get("role") or new_role
+
+        # Issue fresh tokens with updated role
+        custom_claims = {"user_id": user_id, "role": role}
+        jwt_access = create_access_token(
+            subject=user.get("email", ""), custom_claims=custom_claims,
+        )
+        jwt_refresh = create_refresh_token(
+            subject=user.get("email", ""), custom_claims=custom_claims,
+        )
+
+        return {
+            "success": True,
+            "user": {
+                "id": user_id,
+                "email": user.get("email", ""),
+                "name": user.get("name", ""),
+                "role": role,
+                "user_type": role,
+                "profile_image_url": user.get("profile_image_url", ""),
+            },
+            "access_token": jwt_access,
+            "refresh_token": jwt_refresh,
+        }
+
+    # ── Profile sync ─────────────────────────────────────────────────────
+
     async def sync_profile_from_social(
         self,
         user_id: int,
         provider: SocialProvider,
-        fields: List[str] = None  # name, email, avatar, bio
+        fields: List[str] = None,
     ) -> Dict[str, Any]:
-        """Sync profile data from social account."""
+        """Sync profile data from a linked social account."""
         fields = fields or ["name", "avatar"]
-        
         return {
             "success": True,
             "synced_fields": fields,
-            "synced_at": datetime.now(timezone.utc).isoformat()
+            "synced_at": datetime.now(timezone.utc).isoformat(),
         }
 
 

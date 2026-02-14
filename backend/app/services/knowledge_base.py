@@ -223,7 +223,7 @@ class KnowledgeBaseService:
     async def get_articles(
         self,
         category: Optional[ArticleCategory] = None,
-        content_type: Optional[ContentType] = None,
+        content_type: Optional[KnowledgeContentType] = None,
         search_query: Optional[str] = None,
         limit: int = 20
     ) -> List[Dict[str, Any]]:

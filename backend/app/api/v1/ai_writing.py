@@ -19,7 +19,7 @@ from app.db.session import get_db
 from app.core.security import get_current_active_user
 from app.services.ai_writing import (
     get_ai_writing_service,
-    ContentType,
+    WritingContentType,
     ToneStyle
 )
 
@@ -66,7 +66,7 @@ class GenerateUpsellRequest(BaseModel):
 
 class ImproveContentRequest(BaseModel):
     content: str
-    content_type: ContentType
+    content_type: WritingContentType
     improvements: Optional[List[str]] = None
 
 
@@ -342,7 +342,7 @@ async def check_grammar(
 # Template Endpoints
 @router.get("/templates")
 async def get_writing_templates(
-    content_type: Optional[ContentType] = None,
+    content_type: Optional[WritingContentType] = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_active_user)
 ):

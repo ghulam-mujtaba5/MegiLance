@@ -1,4 +1,6 @@
 // @AI-HINT: Handles OAuth2 callback from social providers. Exchanges code for tokens.
+// Supports smart auth: auto-login for existing users, role-selection redirect for new
+// users without a role, and account-linking redirect.
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
@@ -67,6 +69,7 @@ function AuthCallbackPage() {
 
         if (response.success) {
           if (response.action === 'login' || response.action === 'register') {
+            // Store tokens
             setAuthToken(response.access_token);
             setRefreshToken(response.refresh_token);
 
@@ -74,31 +77,48 @@ function AuthCallbackPage() {
               localStorage.setItem('user', JSON.stringify(response.user));
             }
 
-            setStatus('success');
-            setMessage('Authentication successful! Redirecting...');
-            showToast(
-              `Successfully ${response.action === 'register' ? 'registered' : 'logged in'}!`,
-              'success',
-            );
+            // ── New user who needs to pick a role → onboarding ──────────
+            if (response.is_new_user && response.needs_role_selection) {
+              setStatus('success');
+              setMessage('Account created! Let\u2019s set up your role...');
+              showToast('Welcome to MegiLance!', 'success');
+              setTimeout(() => router.push('/onboarding/role'), 800);
+              return;
+            }
 
+            // ── Determine redirect path ─────────────────────────────────
+            const role = response.user?.role || response.user?.user_type || '';
             const storedRole = localStorage.getItem('portal_area');
             let redirectPath = '/client/dashboard';
 
-            if (response.user?.role) {
-              redirectPath =
-                response.user.role === 'freelancer' ? '/freelancer/dashboard' : '/client/dashboard';
-            } else if (storedRole) {
-              redirectPath =
-                storedRole === 'freelancer' ? '/freelancer/dashboard' : '/client/dashboard';
+            if (role === 'admin') {
+              redirectPath = '/admin/dashboard';
+            } else if (role === 'freelancer') {
+              redirectPath = '/freelancer/dashboard';
+            } else if (storedRole === 'freelancer') {
+              redirectPath = '/freelancer/dashboard';
+            } else if (storedRole === 'admin') {
+              redirectPath = '/admin/dashboard';
             }
 
             localStorage.removeItem('portal_area');
-            setTimeout(() => router.push(redirectPath), 1000);
+
+            setStatus('success');
+            const actionLabel = response.action === 'register' ? 'registered' : 'logged in';
+            setMessage(`Successfully ${actionLabel}! Redirecting...`);
+            showToast(`Successfully ${actionLabel}!`, 'success');
+
+            // New users go to onboarding, returning users go to dashboard
+            if (response.is_new_user) {
+              setTimeout(() => router.push('/onboarding/role'), 800);
+            } else {
+              setTimeout(() => router.push(redirectPath), 800);
+            }
           } else if (response.action === 'linked') {
             setStatus('success');
             setMessage('Account linked successfully!');
             showToast('Account linked successfully!', 'success');
-            setTimeout(() => router.push('/settings/security'), 2000);
+            setTimeout(() => router.push('/settings/security'), 1500);
           }
         } else {
           throw new Error(response.error || 'Authentication failed');

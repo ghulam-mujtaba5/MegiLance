@@ -17,7 +17,7 @@ from app.models.user import User
 from app.services.knowledge_base import (
     get_knowledge_base_service,
     ArticleCategory,
-    ContentType
+    KnowledgeContentType
 )
 
 router = APIRouter(prefix="/knowledge-base", tags=["knowledge-base"])
@@ -39,7 +39,7 @@ class CreateArticleRequest(BaseModel):
     title: str
     slug: str
     category: ArticleCategory
-    content_type: ContentType
+    content_type: KnowledgeContentType
     content: str
     excerpt: Optional[str] = None
     tags: List[str] = []
@@ -78,7 +78,7 @@ async def get_faq(
 @router.get("/articles")
 async def get_articles(
     category: Optional[ArticleCategory] = None,
-    content_type: Optional[ContentType] = None,
+    content_type: Optional[KnowledgeContentType] = None,
     search: Optional[str] = Query(None, alias="q"),
     limit: int = Query(20, le=50),
     db: Session = Depends(get_db)

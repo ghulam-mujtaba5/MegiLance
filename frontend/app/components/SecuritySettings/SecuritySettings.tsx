@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { Shield, Key, Smartphone, History, Laptop, Globe, CheckCircle, AlertTriangle } from 'lucide-react';
 import { PageTransition, ScrollReveal, StaggerContainer, StaggerItem } from '@/app/components/Animations';
 import Button from '@/app/components/Button/Button';
+import LinkedAccounts from '@/app/components/LinkedAccounts/LinkedAccounts';
 
 import common from './SecuritySettings.common.module.css';
 import light from './SecuritySettings.light.module.css';
@@ -123,6 +124,11 @@ const SecuritySettings: React.FC = () => {
                 Update Password
               </Button>
             </form>
+          </StaggerItem>
+
+          {/* Linked Social Accounts */}
+          <StaggerItem>
+            <LinkedAccounts />
           </StaggerItem>
 
           {/* 2FA Section */}

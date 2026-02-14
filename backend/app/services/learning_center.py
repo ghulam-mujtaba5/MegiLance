@@ -74,7 +74,7 @@ class LearningCenterService:
     async def search_content(
         self,
         query: Optional[str] = None,
-        content_type: Optional[ContentType] = None,
+        content_type: Optional[LearningContentType] = None,
         category: Optional[LearningCategory] = None,
         difficulty: Optional[DifficultyLevel] = None,
         limit: int = 20,

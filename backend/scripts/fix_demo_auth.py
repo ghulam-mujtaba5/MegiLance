@@ -20,17 +20,17 @@ def fix_demo_passwords():
     print("🔐 MegiLance Demo Auth Fixer")
     print("=" * 50)
     
-    # Demo users with their passwords
+    # Demo users with their passwords (must match frontend DevQuickLogin credentials)
     demo_users = [
-        ("admin@megilance.com", "admin123", "Admin"),
-        ("client1@example.com", "password123", "Client"),
-        ("client2@example.com", "password123", "Client"),
-        ("client3@example.com", "password123", "Client"),
-        ("freelancer1@example.com", "password123", "Freelancer"),
-        ("freelancer2@example.com", "password123", "Freelancer"),
-        ("freelancer3@example.com", "password123", "Freelancer"),
-        ("freelancer4@example.com", "password123", "Freelancer"),
-        ("freelancer5@example.com", "password123", "Freelancer"),
+        ("admin@megilance.com", "Admin@123", "Admin"),
+        ("client1@example.com", "Client@123", "Client"),
+        ("client2@example.com", "Client@123", "Client"),
+        ("client3@example.com", "Client@123", "Client"),
+        ("freelancer1@example.com", "Freelancer@123", "Freelancer"),
+        ("freelancer2@example.com", "Freelancer@123", "Freelancer"),
+        ("freelancer3@example.com", "Freelancer@123", "Freelancer"),
+        ("freelancer4@example.com", "Freelancer@123", "Freelancer"),
+        ("freelancer5@example.com", "Freelancer@123", "Freelancer"),
     ]
     
     success_count = 0
@@ -58,9 +58,9 @@ def fix_demo_passwords():
     print()
     print("📝 Demo Login Credentials:")
     print("-" * 50)
-    print("Admin:      admin@megilance.com / admin123")
-    print("Client:     client1@example.com / password123")
-    print("Freelancer: freelancer1@example.com / password123")
+    print("Admin:      admin@megilance.com / Admin@123")
+    print("Client:     client1@example.com / Client@123")
+    print("Freelancer: freelancer1@example.com / Freelancer@123")
     print()
     
     return success_count == len(demo_users)

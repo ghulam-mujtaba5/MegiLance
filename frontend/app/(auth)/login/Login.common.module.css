@@ -135,8 +135,7 @@
   min-height: 100vh; /* fallback */
   font-family: 'Inter', sans-serif;
   align-items: stretch;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
 }
 
@@ -235,8 +234,7 @@
   min-height: 100%;
   grid-area: form;
   position: relative;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .formPanel::before {

@@ -1,0 +1,41 @@
+/* @AI-HINT: Light theme colors for LinkedAccounts component */
+.section {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.sectionTitle {
+  color: #111827;
+}
+
+.accountRow {
+  background: #f9fafb;
+}
+
+.providerName {
+  color: #111827;
+}
+
+.accountEmail {
+  color: #6b7280;
+}
+
+.emptyState {
+  color: #9ca3af;
+}
+
+.statusMessage {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.statusMessageError {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.spinner {
+  color: #4573df;
+}

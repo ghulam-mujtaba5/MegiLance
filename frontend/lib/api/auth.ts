@@ -141,34 +141,51 @@ export const authApi = {
 
 export const socialAuthApi = {
   getProviders: () => apiFetch('/social-auth/providers'),
-  
-  start: (provider: string, redirectUri: string, portalArea?: string) => 
+
+  start: (provider: string, redirectUri: string, portalArea?: string, intent?: string) =>
     apiFetch('/social-auth/start', {
       method: 'POST',
-      body: JSON.stringify({ 
-        provider, 
+      body: JSON.stringify({
+        provider,
         redirect_uri: redirectUri,
         ...(portalArea ? { portal_area: portalArea } : {}),
+        ...(intent ? { intent } : {}),
       }),
     }),
-    
+
   complete: (code: string, state: string) =>
     apiFetch('/social-auth/complete', {
       method: 'POST',
       body: JSON.stringify({ code, state }),
     }),
-    
-  getLinkedAccounts: () => apiFetch('/social-auth/linked-accounts'),
-  
-  unlinkAccount: (provider: string) => 
+
+  selectRole: (role: string) =>
+    apiFetch('/social-auth/select-role', {
+      method: 'POST',
+      body: JSON.stringify({ role }),
+    }),
+
+  getLinkedAccounts: () => apiFetch<{ accounts: LinkedAccount[] }>('/social-auth/linked-accounts'),
+
+  unlinkAccount: (provider: string) =>
     apiFetch(`/social-auth/linked-accounts/${provider}`, { method: 'DELETE' }),
-    
+
   syncProfile: (provider: string, fields?: string[]) =>
     apiFetch('/social-auth/sync-profile', {
       method: 'POST',
       body: JSON.stringify({ provider, fields }),
     }),
 };
+
+export interface LinkedAccount {
+  id: string;
+  provider: string;
+  provider_user_id: string;
+  email: string;
+  name: string;
+  avatar_url?: string;
+  linked_at: string;
+}
 
 export const twoFactorApi = {
   getStatus: () => apiFetch('/auth/2fa/status'),

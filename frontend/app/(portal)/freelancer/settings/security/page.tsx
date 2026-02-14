@@ -11,6 +11,7 @@ import Loader from '@/app/components/Loader/Loader';
 import commonStyles from './Security.common.module.css';
 import lightStyles from './Security.light.module.css';
 import darkStyles from './Security.dark.module.css';
+import LinkedAccounts from '@/app/components/LinkedAccounts/LinkedAccounts';
 
 interface TwoFactorStatus {
   enabled: boolean;
@@ -195,6 +196,9 @@ export default function SecuritySettingsPage() {
           🔔 Login Alerts
         </button>
       </div>
+
+      {/* Linked Social Accounts */}
+      <LinkedAccounts />
 
       {/* 2FA Tab */}
       {activeTab === '2fa' && (

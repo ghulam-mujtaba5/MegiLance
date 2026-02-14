@@ -20,7 +20,7 @@ from app.db.session import get_db
 from app.core.security import get_current_active_user
 from app.services.learning_center import (
     get_learning_service,
-    ContentType,
+    LearningContentType,
     LearningCategory,
     DifficultyLevel
 )
@@ -58,7 +58,7 @@ async def get_featured_content(
 @router.get("/search")
 async def search_content(
     query: Optional[str] = None,
-    content_type: Optional[ContentType] = None,
+    content_type: Optional[LearningContentType] = None,
     category: Optional[LearningCategory] = None,
     difficulty: Optional[DifficultyLevel] = None,
     limit: int = 20,
