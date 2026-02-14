@@ -4,6 +4,11 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import Loading from '@/app/components/Loading/Loading';
+import { PageTransition } from '@/app/components/Animations/PageTransition';
+import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { Trophy, Star, Clock, Users, DollarSign, TrendingUp } from 'lucide-react';
 import commonStyles from './Rank.common.module.css';
 import lightStyles from './Rank.light.module.css';
 import darkStyles from './Rank.dark.module.css';
@@ -98,142 +103,149 @@ export default function RankPage() {
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   if (loading || !rankData) {
-    return (
-      <div className={cn(commonStyles.container, themeStyles.container)}>
-        <div className={cn(commonStyles.loadingState, themeStyles.loadingState)}>
-          Loading rank data...
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
-    <div className={cn(commonStyles.container, themeStyles.container)}>
-      <div className={commonStyles.header}>
-        <h1 className={cn(commonStyles.title, themeStyles.title)}>Your Rank & Progress</h1>
-        <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-          Level up by completing projects and earning great reviews
-        </p>
-      </div>
-
-      {/* Rank Card */}
-      <div className={cn(commonStyles.rankCard, themeStyles.rankCard)}>
-        <div className={commonStyles.rankBadge} style={{ background: getRankColor(rankData.rank_level) }}>
-          <span className={commonStyles.rankLevel}>{rankData.rank_level}</span>
-        </div>
-        <div className={commonStyles.rankInfo}>
-          <h2 className={cn(commonStyles.rankName, themeStyles.rankName)} style={{ color: getRankColor(rankData.rank_level) }}>
-            {rankData.current_rank}
-          </h2>
-          <p className={cn(commonStyles.rankPoints, themeStyles.rankPoints)}>
-            {rankData.total_points.toLocaleString()} XP
-          </p>
-        </div>
-        <div className={commonStyles.progressSection}>
-          <div className={commonStyles.progressHeader}>
-            <span className={cn(commonStyles.progressLabel, themeStyles.progressLabel)}>
-              Progress to {rankData.next_rank}
-            </span>
-            <span className={cn(commonStyles.progressValue, themeStyles.progressValue)}>
-              {rankData.points_to_next} XP to go
-            </span>
+    <PageTransition>
+      <div className={cn(commonStyles.container, themeStyles.container)}>
+        <ScrollReveal>
+          <div className={commonStyles.header}>
+            <h1 className={cn(commonStyles.title, themeStyles.title)}>Your Rank & Progress</h1>
+            <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
+              Level up by completing projects and earning great reviews
+            </p>
           </div>
-          <div className={commonStyles.progressBar}>
-            <div 
-              className={commonStyles.progressFill}
-              style={{ 
-                width: `${rankData.progress_percent}%`,
-                background: getRankColor(rankData.rank_level + 1)
-              }}
-            />
-          </div>
-        </div>
-      </div>
+        </ScrollReveal>
 
-      {/* Rank Tiers */}
-      <div className={cn(commonStyles.section, themeStyles.section)}>
-        <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Rank Tiers</h3>
-        <div className={commonStyles.tiersGrid}>
-          {RANKS.map((rank, index) => (
-            <div 
-              key={rank.name}
-              className={cn(
-                commonStyles.tierCard,
-                themeStyles.tierCard,
-                rankData.rank_level >= rank.level && commonStyles.tierUnlocked,
-                rankData.rank_level >= rank.level && themeStyles.tierUnlocked,
-                rankData.rank_level === rank.level && commonStyles.tierCurrent,
-                rankData.rank_level === rank.level && themeStyles.tierCurrent
-              )}
-            >
-              <div className={commonStyles.tierBadge} style={{ background: rank.color }}>
-                {rank.level}
-              </div>
-              <div className={commonStyles.tierInfo}>
-                <span className={cn(commonStyles.tierName, themeStyles.tierName)}>{rank.name}</span>
-                <span className={cn(commonStyles.tierPoints, themeStyles.tierPoints)}>
-                  {rank.points.toLocaleString()} XP
+        {/* Rank Card */}
+        <ScrollReveal delay={0.1}>
+          <div className={cn(commonStyles.rankCard, themeStyles.rankCard)}>
+            <div className={commonStyles.rankBadge} style={{ background: getRankColor(rankData.rank_level) }}>
+              <span className={commonStyles.rankLevel}>{rankData.rank_level}</span>
+            </div>
+            <div className={commonStyles.rankInfo}>
+              <h2 className={cn(commonStyles.rankName, themeStyles.rankName)} style={{ color: getRankColor(rankData.rank_level) }}>
+                {rankData.current_rank}
+              </h2>
+              <p className={cn(commonStyles.rankPoints, themeStyles.rankPoints)}>
+                {rankData.total_points.toLocaleString()} XP
+              </p>
+            </div>
+            <div className={commonStyles.progressSection}>
+              <div className={commonStyles.progressHeader}>
+                <span className={cn(commonStyles.progressLabel, themeStyles.progressLabel)}>
+                  Progress to {rankData.next_rank}
+                </span>
+                <span className={cn(commonStyles.progressValue, themeStyles.progressValue)}>
+                  {rankData.points_to_next} XP to go
                 </span>
               </div>
-              {rankData.rank_level >= rank.level && (
-                <svg className={commonStyles.checkIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={rank.color} strokeWidth="3">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className={cn(commonStyles.section, themeStyles.section)}>
-        <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Your Stats</h3>
-        <div className={commonStyles.statsGrid}>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{rankData.stats.completed_projects}</span>
-            <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Projects Completed</span>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{rankData.stats.on_time_delivery}%</span>
-            <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>On-Time Delivery</span>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{rankData.stats.client_satisfaction}%</span>
-            <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Client Satisfaction</span>
-          </div>
-          <div className={cn(commonStyles.statCard, themeStyles.statCard)}>
-            <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{rankData.stats.repeat_clients}</span>
-            <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>Repeat Clients</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Badges */}
-      <div className={cn(commonStyles.section, themeStyles.section)}>
-        <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Earned Badges</h3>
-        <div className={commonStyles.badgesGrid}>
-          {rankData.badges.map(badge => (
-            <div 
-              key={badge.id}
-              className={cn(
-                commonStyles.badgeCard,
-                themeStyles.badgeCard,
-                commonStyles[`badge_${badge.rarity}`],
-                themeStyles[`badge_${badge.rarity}`]
-              )}
-            >
-              <span className={commonStyles.badgeIcon}>{badge.icon}</span>
-              <div className={commonStyles.badgeInfo}>
-                <span className={cn(commonStyles.badgeName, themeStyles.badgeName)}>{badge.name}</span>
-                <span className={cn(commonStyles.badgeDesc, themeStyles.badgeDesc)}>{badge.description}</span>
+              <div className={cn(commonStyles.progressBar, themeStyles.progressBar)}>
+                <div 
+                  className={commonStyles.progressFill}
+                  style={{ 
+                    width: `${rankData.progress_percent}%`,
+                    background: getRankColor(rankData.rank_level + 1)
+                  }}
+                />
               </div>
-              <span className={cn(commonStyles.badgeRarity, themeStyles.badgeRarity, commonStyles[`rarity_${badge.rarity}`])}>
-                {badge.rarity}
-              </span>
             </div>
-          ))}
-        </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Stats */}
+        <ScrollReveal delay={0.15}>
+          <div className={cn(commonStyles.section, themeStyles.section)}>
+            <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
+              <TrendingUp size={18} /> Your Stats
+            </h3>
+            <div className={commonStyles.statsGrid}>
+              {[
+                { value: rankData.stats.completed_projects, label: 'Projects Completed', icon: <Trophy size={20} /> },
+                { value: `${rankData.stats.on_time_delivery}%`, label: 'On-Time Delivery', icon: <Clock size={20} /> },
+                { value: `${rankData.stats.client_satisfaction}%`, label: 'Client Satisfaction', icon: <Star size={20} /> },
+                { value: rankData.stats.repeat_clients, label: 'Repeat Clients', icon: <Users size={20} /> },
+              ].map((stat, i) => (
+                <div key={i} className={cn(commonStyles.statCard, themeStyles.statCard)}>
+                  <div className={cn(commonStyles.statIconWrapper, themeStyles.statIconWrapper)}>
+                    {stat.icon}
+                  </div>
+                  <span className={cn(commonStyles.statValue, themeStyles.statValue)}>{stat.value}</span>
+                  <span className={cn(commonStyles.statLabel, themeStyles.statLabel)}>{stat.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Rank Tiers */}
+        <ScrollReveal delay={0.2}>
+          <div className={cn(commonStyles.section, themeStyles.section)}>
+            <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Rank Tiers</h3>
+            <div className={commonStyles.tiersGrid}>
+              {RANKS.map((rank) => (
+                <div 
+                  key={rank.name}
+                  className={cn(
+                    commonStyles.tierCard,
+                    themeStyles.tierCard,
+                    rankData.rank_level >= rank.level && commonStyles.tierUnlocked,
+                    rankData.rank_level >= rank.level && themeStyles.tierUnlocked,
+                    rankData.rank_level === rank.level && commonStyles.tierCurrent,
+                    rankData.rank_level === rank.level && themeStyles.tierCurrent
+                  )}
+                >
+                  <div className={commonStyles.tierBadge} style={{ background: rank.color }}>
+                    {rank.level}
+                  </div>
+                  <div className={commonStyles.tierInfo}>
+                    <span className={cn(commonStyles.tierName, themeStyles.tierName)}>{rank.name}</span>
+                    <span className={cn(commonStyles.tierPoints, themeStyles.tierPoints)}>
+                      {rank.points.toLocaleString()} XP
+                    </span>
+                  </div>
+                  {rankData.rank_level >= rank.level && (
+                    <svg className={commonStyles.checkIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={rank.color} strokeWidth="3">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Badges */}
+        <ScrollReveal delay={0.25}>
+          <div className={cn(commonStyles.section, themeStyles.section)}>
+            <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Earned Badges</h3>
+            <StaggerContainer className={commonStyles.badgesGrid}>
+              {rankData.badges.map(badge => (
+                <StaggerItem key={badge.id}>
+                  <div 
+                    className={cn(
+                      commonStyles.badgeCard,
+                      themeStyles.badgeCard,
+                      commonStyles[`badge_${badge.rarity}`],
+                      themeStyles[`badge_${badge.rarity}`]
+                    )}
+                  >
+                    <span className={commonStyles.badgeIcon}>{badge.icon}</span>
+                    <div className={commonStyles.badgeInfo}>
+                      <span className={cn(commonStyles.badgeName, themeStyles.badgeName)}>{badge.name}</span>
+                      <span className={cn(commonStyles.badgeDesc, themeStyles.badgeDesc)}>{badge.description}</span>
+                    </div>
+                    <span className={cn(commonStyles.badgeRarity, themeStyles.badgeRarity, commonStyles[`rarity_${badge.rarity}`])}>
+                      {badge.rarity}
+                    </span>
+                  </div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </div>
+        </ScrollReveal>
       </div>
-    </div>
+    </PageTransition>
   );
 }

@@ -1,34 +1,32 @@
-.container {
-  background-color: #f8f9fa;
-  color: #333;
-}
+/* @AI-HINT: Light theme for Admin Disputes */
 
-.title {
-  color: #1a1a1a;
-}
+.container { background: transparent; }
+.title { color: #1a1a1a; }
+.subtitle { color: #6b7280; }
 
-.tableContainer {
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-}
+/* Stats */
+.statCard { background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.statCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.statValue { color: #1a1a1a; }
+.statLabel { color: #6b7280; }
 
-.table th {
-  background-color: #f1f3f5;
-  color: #555;
-  border-bottom: 1px solid #e0e0e0;
-}
+/* Toolbar */
+.toolbar { background: #fff; border: 1px solid #e5e7eb; }
+.searchInput { background: #f3f4f6; color: #1a1a1a; }
+.searchIcon { color: #9ca3af; }
+.filterTab { background: transparent; color: #6b7280; }
+.filterTab:hover { background: #f3f4f6; color: #374151; }
+.filterTabActive { background: #4573df !important; color: #fff !important; }
 
-.table td {
-  color: #333;
-  border-bottom: 1px solid #f0f0f0;
-}
+/* Dispute Cards */
+.disputeCard { background: #fff; border: 1px solid #e5e7eb; }
+.disputeCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.disputeId { color: #4573df; }
+.disputeName { color: #1a1a1a; }
+.disputeDesc { color: #6b7280; }
+.metaItem { color: #9ca3af; }
 
-.table tr:hover {
-  background-color: #f8f9fa;
-}
-
-.loadingState,
-.errorState,
-.emptyState {
-  color: #666;
-}
+/* Detail */
+.detailLabel { color: #6b7280; }
+.detailValue { color: #1a1a1a; }
+.detailText { color: #374151; }

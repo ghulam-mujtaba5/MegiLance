@@ -1,8 +1,22 @@
 /* @AI-HINT: Dark theme for Admin Categories */
-.container { background: #0f1419; }
+.container { background: #0f1117; }
 .title { color: #f1f5f9; }
 .subtitle { color: #94a3b8; }
-.categoriesList { background: #1a1f2e; border: 1px solid #2d3748; }
-.categoryRow:hover { background: #252d3d; }
+.statCard { background: #1a1d2e; border: 1px solid #2a2d3e; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.statCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.statValue { color: #f1f5f9; }
+.statLabel { color: #94a3b8; }
+.searchWrapper { background: #1a1d2e; border: 1px solid #2a2d3e; }
+.searchInput { background: #1a1d2e; color: #f1f5f9; }
+.searchInput::placeholder { color: #64748b; }
+.searchIcon { color: #64748b; }
+.categoriesList { background: #1a1d2e; border: 1px solid #2a2d3e; }
+.categoryRow:hover { background: #252836; }
+.expandBtn:hover { background: #2a2d3e; }
+.expandBtn { color: #94a3b8; }
+.folderIcon { color: #f59e0b; }
 .categoryName { color: #f1f5f9; }
-.emptyState { background: #1a1f2e; border: 1px solid #2d3748; }
+.projectCount { color: #64748b; }
+.label { color: #e2e8f0; }
+.textarea { background: #252836; color: #f1f5f9; border-color: #2a2d3e; }
+.textarea:focus { border-color: #4573df; }

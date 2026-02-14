@@ -1,52 +1,33 @@
-/* Light Theme */
-.container {
-  background: #fff;
-}
+/* @AI-HINT: Light theme for Admin Refunds */
 
-.title {
-  color: #1a1a1a;
-}
+.container { background: transparent; }
+.title { color: #1a1a1a; }
+.subtitle { color: #6b7280; }
 
-.subtitle {
-  color: #6b7280;
-}
+/* Stats */
+.statCard { background: #fff; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.statCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.statValue { color: #1a1a1a; }
+.statLabel { color: #6b7280; }
 
-.filterBtn {
-  background: #f3f4f6;
-  color: #374151;
-}
+/* Toolbar */
+.toolbar { background: #fff; border: 1px solid #e5e7eb; }
+.searchInput { background: #f3f4f6; color: #1a1a1a; }
+.searchIcon { color: #9ca3af; }
+.filterTab { background: transparent; color: #6b7280; }
+.filterTab:hover { background: #f3f4f6; color: #374151; }
+.filterTabActive { background: #4573df !important; color: #fff !important; }
 
-.filterBtn:hover {
-  background: #e5e7eb;
-}
+/* Refund Cards */
+.refundCard { background: #fff; border: 1px solid #e5e7eb; }
+.refundCard:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.userAvatar { background: #eef2ff; color: #4573df; }
+.userName { color: #1a1a1a; }
+.refundDate { color: #9ca3af; }
+.amountValue { color: #1a1a1a; }
+.refundReason { color: #6b7280; }
+.contractRef { background: #f3f4f6; color: #6b7280; }
 
-.filterBtnActive {
-  background: #4573df !important;
-  color: #fff !important;
-}
-
-.tableWrapper {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-}
-
-.table th {
-  background: #f9fafb;
-  color: #6b7280;
-}
-
-.table td {
-  color: #374151;
-}
-
-.table tr:hover {
-  background: #f9fafb;
-}
-
-.amount {
-  color: #1a1a1a;
-}
-
-.reason {
-  color: #6b7280;
-}
+/* Detail Modal */
+.detailLabel { color: #6b7280; }
+.detailValue { color: #1a1a1a; }

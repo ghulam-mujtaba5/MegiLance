@@ -40,6 +40,10 @@ export { aiApi, aiWritingApi, fraudDetectionApi } from './ai';
 // Content & misc
 export { knowledgeBaseApi, legalDocsApi, fileVersionsApi, videoCallsApi, notesTagsApi, activityFeedApi, uploadsApi, externalProjectsApi, userFeedbackApi } from './content';
 
+// Workroom & data export
+export { workroomApi } from './workroom';
+export { dataExportApi } from './dataExport';
+
 // --- Backward-compatible default export ---
 import { authApi, socialAuthApi, twoFactorApi } from './auth';
 import { projectsApi, contractsApi, proposalsApi, milestonesApi } from './projects';
@@ -53,6 +57,8 @@ import { referralApi, careerApi, availabilityApi, rateCardsApi, proposalTemplate
 import { webhooksApi, apiKeysApi, teamsApi, workflowApi, brandingApi, emailTemplatesApi, integrationsApi } from './integrations';
 import { aiApi, aiWritingApi, fraudDetectionApi } from './ai';
 import { knowledgeBaseApi, legalDocsApi, fileVersionsApi, videoCallsApi, notesTagsApi, activityFeedApi, uploadsApi, externalProjectsApi, userFeedbackApi } from './content';
+import { workroomApi } from './workroom';
+import { dataExportApi } from './dataExport';
 
 export default {
   auth: authApi,
@@ -124,4 +130,6 @@ export default {
   activityFeed: activityFeedApi,
   realtime: realtimeApi,
   publicProfile: publicProfileApi,
+  workroom: workroomApi,
+  dataExport: dataExportApi,
 };

@@ -73,6 +73,15 @@
   border: 1px solid #2d2d2d;
 }
 
+.statCard:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.statIconWrapper {
+  background: rgba(69, 115, 223, 0.15);
+  color: #6b8de6;
+}
+
 .statValue {
   color: #f9fafb;
 }

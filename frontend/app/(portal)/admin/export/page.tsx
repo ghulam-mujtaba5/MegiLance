@@ -1,9 +1,10 @@
 // @AI-HINT: Admin data analytics export page for generating and downloading reports
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { dataExportApi } from '@/lib/api';
 import Button from '../../../components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import Select from '@/app/components/Select/Select';
@@ -55,6 +56,7 @@ export default function DataExportPage() {
   const [exportName, setExportName] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -71,61 +73,53 @@ export default function DataExportPage() {
 
   useEffect(() => {
     setMounted(true);
-    loadExportData();
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, []);
 
-  const loadExportData = async () => {
+  const loadExportData = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch real export data from API
-      const apiModule = await import('@/lib/api') as any;
-      const exportApi = apiModule.exportApi || {};
-
       const [jobsRes, templatesRes] = await Promise.all([
-        exportApi.getJobs?.().catch(() => null),
-        exportApi.getTemplates?.().catch(() => null),
+        dataExportApi.listExports().catch(() => []),
+        dataExportApi.getTemplates().catch(() => []),
       ]);
 
-      // Transform API data or use defaults
-      const jobsArray = Array.isArray(jobsRes) ? jobsRes : jobsRes?.jobs || jobsRes?.items || [];
-      if (jobsArray.length > 0) {
-        setExportJobs(jobsArray.map((j: any) => ({
-          id: j.id?.toString(),
-          name: j.name,
-          type: j.type,
-          status: j.status,
-          format: j.format,
-          file_size: j.file_size,
-          download_url: j.download_url,
-          created_at: j.created_at,
-          completed_at: j.completed_at,
-          expires_at: j.expires_at,
-          progress: j.progress
-        })));
-      } else {
-        // Demo export jobs
-        setExportJobs([
-          { id: '1', name: 'Monthly Users Report', type: 'users', status: 'completed', format: 'csv', file_size: 245000, download_url: '/exports/users_monthly.csv', created_at: new Date(Date.now() - 3600000).toISOString(), completed_at: new Date(Date.now() - 3500000).toISOString(), expires_at: new Date(Date.now() + 604800000).toISOString() },
-          { id: '2', name: 'Q4 Transactions', type: 'transactions', status: 'processing', format: 'xlsx', created_at: new Date(Date.now() - 600000).toISOString(), progress: 65 },
-        ]);
-      }
+      const jobsArray = Array.isArray(jobsRes) ? jobsRes : (jobsRes as any)?.items || [];
+      setExportJobs(jobsArray.map((j: any) => ({
+        id: j.id?.toString(),
+        name: j.name,
+        type: j.data_type || j.type,
+        status: j.status,
+        format: j.format,
+        file_size: j.file_size,
+        download_url: j.file_url || j.download_url,
+        created_at: j.created_at,
+        completed_at: j.completed_at,
+        expires_at: j.expires_at,
+        progress: j.progress,
+        filters: j.filters,
+      })));
 
-      const templatesArray = Array.isArray(templatesRes) ? templatesRes : templatesRes?.templates || [];
-      if (templatesArray.length > 0) {
-        setTemplates(templatesArray);
-      } else {
-        setTemplates([
-          { id: '1', name: 'Full User Backup', description: 'All user data fields', type: 'users', fields: fieldOptions.users, is_default: true },
-          { id: '2', name: 'Financial Summary', description: 'Transaction totals and fees', type: 'transactions', fields: ['id', 'amount', 'fee', 'status', 'created_at'], is_default: false }
-        ]);
-      }
-
+      const templatesArray = Array.isArray(templatesRes) ? templatesRes : (templatesRes as any)?.templates || [];
+      setTemplates(templatesArray.map((t: any) => ({
+        id: t.id?.toString(),
+        name: t.name,
+        description: t.description,
+        type: t.data_type || t.type,
+        fields: t.columns || t.fields || [],
+        is_default: t.is_default ?? false,
+      })));
     } catch (error) {
       console.error('Failed to load export data', error);
+      showToast('Failed to load export data', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (mounted) loadExportData();
+  }, [mounted, loadExportData]);
 
   const handleCreateExport = async () => {
     if (!exportName) {
@@ -135,46 +129,58 @@ export default function DataExportPage() {
     
     setIsExporting(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      const res = await dataExportApi.createExport({
+        name: exportName,
+        data_type: dataType,
+        format: format,
+        filters: {
+          date_start: dateRange.start || undefined,
+          date_end: dateRange.end || undefined,
+          include_archived: includeArchived,
+        },
+        columns: selectedFields.length > 0 ? selectedFields : undefined,
+      }) as any;
+
       const newJob: ExportJob = {
-        id: Date.now().toString(),
+        id: res.id?.toString() || Date.now().toString(),
         name: exportName,
         type: dataType,
-        status: 'processing',
+        status: res.status || 'processing',
         format: format,
-        created_at: new Date().toISOString(),
-        progress: 0
+        created_at: res.created_at || new Date().toISOString(),
+        progress: res.progress || 0,
       };
-      
-      setExportJobs([newJob, ...exportJobs]);
+
+      setExportJobs(prev => [newJob, ...prev]);
       setActiveTab('history');
       setExportName('');
-      
-      // Simulate progress
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 10;
-        setExportJobs(prev => prev.map(j => j.id === newJob.id ? { ...j, progress } : j));
-        
-        if (progress >= 100) {
-          clearInterval(interval);
-          // Estimate file size based on selected fields count and data type
-          const fieldCount = selectedFields.length || fieldOptions[dataType].length;
-          const estimatedSize = fieldCount * 8200 + Math.floor(Math.random() * 50000);
-          setExportJobs(prev => prev.map(j => j.id === newJob.id ? { 
-            ...j, 
-            status: 'completed', 
-            completed_at: new Date().toISOString(),
-            download_url: '#',
-            file_size: estimatedSize
-          } : j));
-        }
-      }, 500);
-      
+      showToast('Export started successfully!');
+
+      // Poll for completion if processing
+      if (newJob.status === 'processing') {
+        const pollId = setInterval(async () => {
+          try {
+            const updated = await dataExportApi.getExport(newJob.id) as any;
+            setExportJobs(prev => prev.map(j => j.id === newJob.id ? {
+              ...j,
+              status: updated.status,
+              progress: updated.progress,
+              file_size: updated.file_size,
+              download_url: updated.file_url || updated.download_url,
+              completed_at: updated.completed_at,
+            } : j));
+            if (updated.status === 'completed' || updated.status === 'failed') {
+              clearInterval(pollId);
+            }
+          } catch {
+            clearInterval(pollId);
+          }
+        }, 3000);
+        pollRef.current = pollId;
+      }
     } catch (err) {
       console.error('Export failed', err);
+      showToast('Export failed. Please try again.', 'error');
     } finally {
       setIsExporting(false);
     }

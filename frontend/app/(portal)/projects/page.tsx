@@ -1,17 +1,27 @@
 // @AI-HINT: Universal portal route for Projects page - shows all projects
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { projectsApi } from '@/lib/api';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
-import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
+import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import Button from '@/app/components/Button/Button';
-import { Briefcase, Search, Filter, ChevronRight } from 'lucide-react';
+import { Badge } from '@/app/components/Badge';
+import Loading from '@/app/components/Loading/Loading';
+import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { Briefcase, Search, Filter, ChevronRight, Calendar, DollarSign, Users, Clock } from 'lucide-react';
 import commonStyles from './Projects.common.module.css';
 import lightStyles from './Projects.light.module.css';
 import darkStyles from './Projects.dark.module.css';
+
+const getStatusVariant = (status: string): 'success' | 'warning' | 'danger' | 'primary' | 'secondary' => {
+  const map: Record<string, 'success' | 'warning' | 'danger' | 'primary' | 'secondary'> = {
+    open: 'success', active: 'primary', in_progress: 'warning', completed: 'secondary', closed: 'danger'
+  };
+  return map[status?.toLowerCase()] || 'primary';
+};
 
 export default function PortalProjectsPage() {
   const { resolvedTheme } = useTheme();
@@ -19,6 +29,7 @@ export default function PortalProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     setMounted(true);
@@ -36,6 +47,19 @@ export default function PortalProjectsPage() {
       setLoading(false);
     }
   };
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter(p => {
+      if (statusFilter !== 'all' && (p.status || 'open').toLowerCase() !== statusFilter) return false;
+      if (searchQuery && !p.title?.toLowerCase().includes(searchQuery.toLowerCase()) && !p.description?.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    });
+  }, [projects, searchQuery, statusFilter]);
+
+  const statusCounts = useMemo(() => ({
+    open: projects.filter(p => (p.status || 'open').toLowerCase() === 'open').length,
+    active: projects.filter(p => ['active', 'in_progress'].includes((p.status || '').toLowerCase())).length,
+  }), [projects]);
 
   if (!mounted) return null;
 
@@ -65,56 +89,88 @@ export default function PortalProjectsPage() {
                 className={cn(commonStyles.searchInput, themed.searchInput)}
               />
             </div>
-            <Button variant="outline" size="md">
-              <Filter className="w-4 h-4 mr-2" />
-              Filter
-            </Button>
+            <div className={commonStyles.filterTabs}>
+              {[
+                { key: 'all', label: 'All' },
+                { key: 'open', label: 'Open', count: statusCounts.open },
+                { key: 'active', label: 'Active', count: statusCounts.active },
+              ].map(f => (
+                <button
+                  key={f.key}
+                  className={cn(commonStyles.filterTab, themed.filterTab, statusFilter === f.key && commonStyles.filterTabActive, statusFilter === f.key && themed.filterTabActive)}
+                  onClick={() => setStatusFilter(f.key)}
+                >
+                  {f.label}
+                  {f.count !== undefined && f.count > 0 && (
+                    <span className={commonStyles.filterCount}>{f.count}</span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </ScrollReveal>
 
-        {loading ? (
-          <div className={commonStyles.loadingWrapper}>
-            <div className={cn(commonStyles.spinner, themed.spinner)} />
-          </div>
-        ) : projects.length > 0 ? (
+        {loading ? <Loading /> : filteredProjects.length > 0 ? (
           <StaggerContainer className={commonStyles.grid}>
-            {projects
-              .filter(p => !searchQuery || p.title?.toLowerCase().includes(searchQuery.toLowerCase()))
-              .map((project, idx) => (
-                <ScrollReveal key={project.id || idx}>
-                  <div className={cn(commonStyles.projectCard, themed.projectCard)}>
-                    <div className={commonStyles.cardTop}>
-                      <div className={cn(commonStyles.iconWrapper, themed.iconWrapper)}>
-                        <Briefcase className={cn(commonStyles.projectIcon, themed.projectIcon)} />
-                      </div>
-                      <span className={cn(commonStyles.statusBadge, themed.statusBadge)}>
-                        {project.status || 'Open'}
-                      </span>
+            {filteredProjects.map((project, idx) => (
+              <StaggerItem key={project.id || idx}>
+                <div className={cn(commonStyles.projectCard, themed.projectCard)}>
+                  <div className={commonStyles.cardTop}>
+                    <div className={cn(commonStyles.iconWrapper, themed.iconWrapper)}>
+                      <Briefcase className={cn(commonStyles.projectIcon, themed.projectIcon)} />
                     </div>
-                    <h3 className={commonStyles.cardTitle}>{project.title || 'Untitled Project'}</h3>
-                    <p className={cn(commonStyles.cardDescription, themed.cardDescription)}>
-                      {project.description || 'No description available.'}
-                    </p>
-                    <div className={commonStyles.cardFooter}>
-                      <span className={cn(commonStyles.budget, themed.budget)}>
-                        ${project.budget || '0'} budget
-                      </span>
-                      <ChevronRight className={cn(commonStyles.chevron, themed.chevron)} />
-                    </div>
+                    <Badge variant={getStatusVariant(project.status || 'open')}>
+                      {(project.status || 'Open').replace('_', ' ')}
+                    </Badge>
                   </div>
-                </ScrollReveal>
-              ))}
+                  <h3 className={commonStyles.cardTitle}>{project.title || 'Untitled Project'}</h3>
+                  <p className={cn(commonStyles.cardDescription, themed.cardDescription)}>
+                    {project.description || 'No description available.'}
+                  </p>
+                  
+                  {/* Skills Tags */}
+                  {project.required_skills && project.required_skills.length > 0 && (
+                    <div className={commonStyles.skillTags}>
+                      {project.required_skills.slice(0, 3).map((skill: string, i: number) => (
+                        <span key={i} className={cn(commonStyles.skillTag, themed.skillTag)}>{skill}</span>
+                      ))}
+                      {project.required_skills.length > 3 && (
+                        <span className={cn(commonStyles.skillTag, themed.skillTag)}>+{project.required_skills.length - 3}</span>
+                      )}
+                    </div>
+                  )}
+
+                  <div className={commonStyles.cardFooter}>
+                    <div className={commonStyles.cardMeta}>
+                      <span className={cn(commonStyles.metaItem, themed.metaItem)}>
+                        <DollarSign size={14} />
+                        ${project.budget?.toLocaleString() || '0'}
+                      </span>
+                      {project.deadline && (
+                        <span className={cn(commonStyles.metaItem, themed.metaItem)}>
+                          <Calendar size={14} />
+                          {new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </span>
+                      )}
+                      {project.proposals_count !== undefined && (
+                        <span className={cn(commonStyles.metaItem, themed.metaItem)}>
+                          <Users size={14} />
+                          {project.proposals_count} proposals
+                        </span>
+                      )}
+                    </div>
+                    <ChevronRight className={cn(commonStyles.chevron, themed.chevron)} />
+                  </div>
+                </div>
+              </StaggerItem>
+            ))}
           </StaggerContainer>
         ) : (
-          <ScrollReveal>
-            <div className={cn(commonStyles.emptyState, themed.emptyState)}>
-              <Briefcase className={cn(commonStyles.emptyIcon, themed.emptyIcon)} />
-              <h3 className={commonStyles.emptyTitle}>No projects found</h3>
-              <p className={cn(commonStyles.emptyText, themed.emptyText)}>
-                Check back later for new opportunities
-              </p>
-            </div>
-          </ScrollReveal>
+          <EmptyState
+            icon={<Briefcase size={48} />}
+            title="No projects found"
+            description={searchQuery ? 'Try adjusting your search or filter' : 'Check back later for new opportunities'}
+          />
         )}
       </div>
     </PageTransition>

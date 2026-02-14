@@ -1,10 +1,11 @@
 // @AI-HINT: Saved job searches page - manage saved search filters for quick job discovery
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { searchesApi } from '@/lib/api';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -48,6 +49,7 @@ export default function SavedSearchesPage() {
   const [editingSearch, setEditingSearch] = useState<SavedSearch | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedSearch | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type });
@@ -68,137 +70,126 @@ export default function SavedSearchesPage() {
 
   useEffect(() => {
     setMounted(true);
-    fetchSavedSearches();
+    return () => { abortRef.current?.abort(); };
   }, []);
 
-  const fetchSavedSearches = async () => {
-    await new Promise(resolve => setTimeout(resolve, 600));
-    
-    setSearches([
-      {
-        id: '1',
-        name: 'React Development Jobs',
-        query: 'React developer',
+  const fetchSavedSearches = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await searchesApi.getSaved('jobs') as any;
+      const items = res?.saved_searches || res?.searches || (Array.isArray(res) ? res : []);
+      
+      setSearches(items.map((s: any) => ({
+        id: s.id?.toString() || '',
+        name: s.name || 'Untitled Search',
+        query: s.criteria?.query || s.criteria?.keywords || s.query || '',
         filters: {
-          category: 'Web Development',
-          minBudget: 50,
-          maxBudget: 150,
-          skills: ['React', 'TypeScript', 'Node.js'],
-          experienceLevel: 'intermediate',
-          projectType: 'fixed'
+          category: s.criteria?.category || s.category,
+          minBudget: s.criteria?.min_budget || s.criteria?.budget_min,
+          maxBudget: s.criteria?.max_budget || s.criteria?.budget_max,
+          skills: s.criteria?.skills || [],
+          experienceLevel: s.criteria?.experience_level,
+          projectType: s.criteria?.project_type,
+          location: s.criteria?.location,
         },
-        alertEnabled: true,
-        alertFrequency: 'instant',
-        matchCount: 47,
-        newMatches: 5,
-        lastRun: '2024-01-20T10:30:00Z',
-        createdAt: '2024-01-01T00:00:00Z'
-      },
-      {
-        id: '2',
-        name: 'UI/UX Design Projects',
-        query: 'UI UX designer',
-        filters: {
-          category: 'Design',
-          minBudget: 1000,
-          skills: ['Figma', 'Adobe XD', 'User Research'],
-          projectType: 'fixed'
-        },
-        alertEnabled: true,
-        alertFrequency: 'daily',
-        matchCount: 23,
-        newMatches: 2,
-        lastRun: '2024-01-20T08:00:00Z',
-        createdAt: '2024-01-05T00:00:00Z'
-      },
-      {
-        id: '3',
-        name: 'Full-Stack Remote Work',
-        query: 'full stack remote',
-        filters: {
-          category: 'Web Development',
-          skills: ['Python', 'Django', 'PostgreSQL', 'React'],
-          experienceLevel: 'expert',
-          location: 'Remote'
-        },
-        alertEnabled: false,
-        alertFrequency: 'weekly',
-        matchCount: 15,
-        newMatches: 0,
-        lastRun: '2024-01-19T00:00:00Z',
-        createdAt: '2024-01-10T00:00:00Z'
-      },
-      {
-        id: '4',
-        name: 'Mobile App Development',
-        query: 'mobile app developer',
-        filters: {
-          category: 'Mobile Development',
-          minBudget: 5000,
-          skills: ['React Native', 'iOS', 'Android'],
-          projectType: 'fixed'
-        },
-        alertEnabled: true,
-        alertFrequency: 'daily',
-        matchCount: 31,
-        newMatches: 8,
-        lastRun: '2024-01-20T08:00:00Z',
-        createdAt: '2024-01-08T00:00:00Z'
+        alertEnabled: s.is_alert ?? s.alert_enabled ?? false,
+        alertFrequency: s.alert_frequency || 'daily',
+        matchCount: s.match_count || s.results_count || 0,
+        newMatches: s.new_matches || 0,
+        lastRun: s.last_executed || s.last_run || s.updated_at || s.created_at,
+        createdAt: s.created_at,
+      })));
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        console.error('Failed to load saved searches:', err);
+        showToast('Failed to load saved searches', 'error');
+        setSearches([]);
       }
-    ]);
-    
-    setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mounted) fetchSavedSearches();
+  }, [mounted, fetchSavedSearches]);
+
+  const handleCreateSearch = async () => {
+    try {
+      const payload = {
+        name: newSearch.name,
+        category: 'jobs',
+        criteria: {
+          query: newSearch.query,
+          category: newSearch.category || undefined,
+          min_budget: newSearch.minBudget ? parseInt(newSearch.minBudget) : undefined,
+          max_budget: newSearch.maxBudget ? parseInt(newSearch.maxBudget) : undefined,
+          skills: newSearch.skills ? newSearch.skills.split(',').map(s => s.trim()).filter(Boolean) : undefined,
+          experience_level: newSearch.experienceLevel || undefined,
+          project_type: newSearch.projectType || undefined,
+        },
+        is_alert: newSearch.alertEnabled,
+        alert_frequency: newSearch.alertFrequency,
+      };
+
+      if (editingSearch) {
+        await searchesApi.update(editingSearch.id, payload as any);
+        showToast('Search updated successfully!');
+      } else {
+        await searchesApi.save(payload as any);
+        showToast('Saved search created!');
+      }
+
+      setShowCreateModal(false);
+      setEditingSearch(null);
+      setNewSearch({
+        name: '',
+        query: '',
+        category: '',
+        minBudget: '',
+        maxBudget: '',
+        skills: '',
+        experienceLevel: '',
+        projectType: '',
+        alertEnabled: true,
+        alertFrequency: 'daily'
+      });
+      fetchSavedSearches();
+    } catch {
+      showToast('Failed to save search. Please try again.', 'error');
+    }
   };
 
-  const handleCreateSearch = () => {
-    const search: SavedSearch = {
-      id: Date.now().toString(),
-      name: newSearch.name,
-      query: newSearch.query,
-      filters: {
-        category: newSearch.category || undefined,
-        minBudget: newSearch.minBudget ? parseInt(newSearch.minBudget) : undefined,
-        maxBudget: newSearch.maxBudget ? parseInt(newSearch.maxBudget) : undefined,
-        skills: newSearch.skills ? newSearch.skills.split(',').map(s => s.trim()) : undefined,
-        experienceLevel: newSearch.experienceLevel || undefined,
-        projectType: newSearch.projectType || undefined
-      },
-      alertEnabled: newSearch.alertEnabled,
-      alertFrequency: newSearch.alertFrequency,
-      matchCount: 0,
-      newMatches: 0,
-      lastRun: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
-    
-    setSearches([search, ...searches]);
-    setShowCreateModal(false);
-    setNewSearch({
-      name: '',
-      query: '',
-      category: '',
-      minBudget: '',
-      maxBudget: '',
-      skills: '',
-      experienceLevel: '',
-      projectType: '',
-      alertEnabled: true,
-      alertFrequency: 'daily'
-    });
-    showToast(editingSearch ? 'Search updated successfully!' : 'Saved search created!');
-    setEditingSearch(null);
-  };
-
-  const toggleAlert = (id: string) => {
+  const toggleAlert = async (id: string) => {
+    const search = searches.find(s => s.id === id);
+    if (!search) return;
+    const newEnabled = !search.alertEnabled;
+    // Optimistic update
     setSearches(searches.map(s => 
-      s.id === id ? { ...s, alertEnabled: !s.alertEnabled } : s
+      s.id === id ? { ...s, alertEnabled: newEnabled } : s
     ));
+    try {
+      await searchesApi.toggleAlert(id, newEnabled, search.alertFrequency);
+    } catch {
+      // Rollback
+      setSearches(searches.map(s => 
+        s.id === id ? { ...s, alertEnabled: !newEnabled } : s
+      ));
+      showToast('Failed to update alert', 'error');
+    }
   };
 
-  const deleteSearch = (search: SavedSearch) => {
+  const deleteSearch = async (search: SavedSearch) => {
     setDeleteTarget(null);
+    const prevSearches = [...searches];
     setSearches(searches.filter(s => s.id !== search.id));
-    showToast('Saved search deleted.');
+    try {
+      await searchesApi.delete(search.id);
+      showToast('Saved search deleted.');
+    } catch {
+      setSearches(prevSearches);
+      showToast('Failed to delete search', 'error');
+    }
   };
 
   const runSearch = (search: SavedSearch) => {

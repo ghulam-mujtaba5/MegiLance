@@ -135,16 +135,39 @@ export const favoritesApi = {
 };
 
 export const searchesApi = {
-  getSaved: () => apiFetch('/searches/saved'),
+  getSaved: (category?: string, alertsOnly = false) => {
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (alertsOnly) params.set('alerts_only', 'true');
+    const qs = params.toString();
+    return apiFetch(`/saved-searches${qs ? `?${qs}` : ''}`);
+  },
+
+  get: (id: ResourceId) => apiFetch(`/saved-searches/${id}`),
 
   save: (data: SavedSearchData) =>
-    apiFetch('/searches/save', {
+    apiFetch('/saved-searches', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
+  update: (id: ResourceId, data: Partial<SavedSearchData>) =>
+    apiFetch(`/saved-searches/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
   delete: (id: ResourceId) =>
-    apiFetch(`/searches/${id}`, { method: 'DELETE' }),
+    apiFetch(`/saved-searches/${id}`, { method: 'DELETE' }),
+
+  execute: (id: ResourceId) =>
+    apiFetch(`/saved-searches/${id}/execute`, { method: 'POST' }),
+
+  toggleAlert: (id: ResourceId, enable: boolean, frequency = 'daily') =>
+    apiFetch(`/saved-searches/${id}/alert`, {
+      method: 'POST',
+      body: JSON.stringify({ enable, frequency }),
+    }),
 };
 
 export const searchAnalyticsApi = {

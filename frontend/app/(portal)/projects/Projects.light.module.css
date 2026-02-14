@@ -31,8 +31,25 @@
   border-color: #4573df;
 }
 
-.spinner {
-  border-bottom-color: #4573df;
+/* Filter Tabs */
+.filterTab {
+  color: #6b7280;
+}
+
+.filterTab:hover {
+  color: #111827;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.filterTabActive {
+  background-color: #ffffff;
+  color: #4573df;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.filterCount {
+  background-color: #e5e7eb;
+  color: #374151;
 }
 
 .projectCard {
@@ -52,31 +69,19 @@
   color: #2563eb;
 }
 
-.statusBadge {
-  background-color: #dcfce7;
-  color: #15803d;
-}
-
 .cardDescription {
   color: #6b7280;
 }
 
-.budget {
-  color: #2563eb;
+.skillTag {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.metaItem {
+  color: #6b7280;
 }
 
 .chevron {
   color: #9ca3af;
-}
-
-.emptyState {
-  background-color: #ffffff;
-}
-
-.emptyIcon {
-  color: #d1d5db;
-}
-
-.emptyText {
-  color: #6b7280;
 }

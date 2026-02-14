@@ -1,1 +1,316 @@
-/* Common */ .container { padding: 2rem; max-width: 1200px; margin: 0 auto; } .header { margin-bottom: 2rem; } .title { font-size: 1.75rem; font-weight: 700; margin: 0 0 0.25rem 0; } .subtitle { font-size: 0.95rem; margin: 0; } .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; } .filterBtn { padding: 0.5rem 1rem; border-radius: 20px; border: none; cursor: pointer; font-size: 0.9rem; } .filterBtnActive { } .tableWrapper { border-radius: 12px; overflow: hidden; } .table { width: 100%; border-collapse: collapse; } .table th, .table td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.1); } .table th { font-weight: 600; font-size: 0.85rem; text-transform: uppercase; } .amount { display: flex; align-items: center; gap: 2px; font-weight: 600; } .reason { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .statusBadge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; text-transform: capitalize; } .statuswarning { background: rgba(242, 201, 76, 0.15); color: #c9a000; } .statussuccess { background: rgba(39, 174, 96, 0.1); color: #27AE60; } .statusdanger { background: rgba(232, 17, 35, 0.1); color: #e81123; } .statusprimary { background: rgba(69, 115, 223, 0.1); color: #4573df; } .actions { display: flex; gap: 0.25rem; }
+/* @AI-HINT: Common layout for Admin Refunds page */
+
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+}
+
+.statIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statIconTotal { background: rgba(69, 115, 223, 0.12); color: #4573df; }
+.statIconPending { background: rgba(242, 201, 76, 0.15); color: #e6a800; }
+.statIconApproved { background: rgba(39, 174, 96, 0.12); color: #27AE60; }
+.statIconAmount { background: rgba(155, 89, 182, 0.12); color: #9b59b6; }
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.6rem 0.75rem 0.6rem 2.5rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+}
+
+.filterTabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.filterTab {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.filterTabActive {}
+
+.filterCount {
+  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(69, 115, 223, 0.15);
+  color: #4573df;
+  font-weight: 600;
+}
+
+/* Refund Cards */
+.refundsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.refundCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.refundCard:hover {
+  transform: translateY(-1px);
+}
+
+.refundMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.refundTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.refundUser {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.userName {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.refundDate {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.refundAmount {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.amountValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.refundReason {
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.contractRef {
+  display: inline-block;
+  font-size: 0.78rem;
+  margin-top: 0.5rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.refundActions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Detail Modal */
+.detailGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.detailValue {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.detailActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* Confirm Modal */
+.confirmContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  gap: 1rem;
+}
+
+.confirmIconApprove {
+  color: #27AE60;
+}
+
+.confirmIconReject {
+  color: #e81123;
+}
+
+.confirmText {
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}

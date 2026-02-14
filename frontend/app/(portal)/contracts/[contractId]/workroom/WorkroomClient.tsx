@@ -1,9 +1,10 @@
 // @AI-HINT: Workroom client component - Kanban board, Files, Discussions for project collaboration
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { workroomApi } from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import commonStyles from './Workroom.common.module.css';
 import lightStyles from './Workroom.light.module.css';
@@ -53,41 +54,102 @@ export default function WorkroomClient({ contractId }: WorkroomClientProps) {
   const [files, setFiles] = useState<WorkroomFile[]>([]);
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    return () => { abortRef.current?.abort(); };
   }, []);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError(null);
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
     try {
-      // Mock data - in production, fetch from /api/workroom/{contractId}/*
-      setTasks([
-        { id: 1, title: 'Design homepage mockup', description: 'Create Figma designs for the homepage', status: 'done', priority: 'high', assignee_name: 'Elena R.', due_date: '2025-01-10', created_at: '2025-01-05T10:00:00Z' },
-        { id: 2, title: 'Implement user authentication', description: 'Set up JWT auth with login/signup', status: 'in_progress', priority: 'high', assignee_name: 'Marcus J.', due_date: '2025-01-15', created_at: '2025-01-06T09:00:00Z' },
-        { id: 3, title: 'Database schema design', description: 'Design PostgreSQL schema for core entities', status: 'review', priority: 'medium', assignee_name: 'Sarah C.', due_date: '2025-01-12', created_at: '2025-01-06T11:00:00Z' },
-        { id: 4, title: 'API documentation', description: 'Write OpenAPI specs for all endpoints', status: 'todo', priority: 'medium', assignee_name: null, due_date: '2025-01-20', created_at: '2025-01-07T08:00:00Z' },
-        { id: 5, title: 'Unit tests for auth module', description: 'Write comprehensive tests', status: 'todo', priority: 'low', assignee_name: null, due_date: null, created_at: '2025-01-08T14:00:00Z' },
+      const [boardRes, filesRes, discussionsRes] = await Promise.all([
+        workroomApi.getBoard(contractId).catch(() => null),
+        workroomApi.getFiles(contractId).catch(() => null),
+        workroomApi.getDiscussions(contractId).catch(() => null),
       ]);
 
-      setFiles([
-        { id: 1, filename: 'project_requirements.pdf', file_size: 2456000, file_type: 'application/pdf', uploaded_by_name: 'Client', created_at: '2025-01-05T09:00:00Z' },
-        { id: 2, filename: 'homepage_mockup_v2.fig', file_size: 8500000, file_type: 'application/figma', uploaded_by_name: 'Elena R.', created_at: '2025-01-08T15:30:00Z' },
-        { id: 3, filename: 'api_endpoints.xlsx', file_size: 125000, file_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', uploaded_by_name: 'Marcus J.', created_at: '2025-01-09T11:00:00Z' },
-      ]);
+      // Transform board data — API returns { columns: { todo: [...], in_progress: [...], ... } } or flat task list
+      const boardData = boardRes as any;
+      if (boardData) {
+        const allTasks: Task[] = [];
+        if (boardData.columns) {
+          for (const [status, columnTasks] of Object.entries(boardData.columns)) {
+            if (Array.isArray(columnTasks)) {
+              for (const t of columnTasks as any[]) {
+                allTasks.push({
+                  id: t.id,
+                  title: t.title,
+                  description: t.description || '',
+                  status: (t.column_name || t.column || status) as TaskStatus,
+                  priority: t.priority || 'medium',
+                  assignee_name: t.assignee_name || null,
+                  due_date: t.due_date || null,
+                  created_at: t.created_at,
+                });
+              }
+            }
+          }
+        } else if (Array.isArray(boardData)) {
+          for (const t of boardData) {
+            allTasks.push({
+              id: t.id,
+              title: t.title,
+              description: t.description || '',
+              status: (t.column_name || t.column || 'todo') as TaskStatus,
+              priority: t.priority || 'medium',
+              assignee_name: t.assignee_name || null,
+              due_date: t.due_date || null,
+              created_at: t.created_at,
+            });
+          }
+        }
+        setTasks(allTasks);
+      } else {
+        setTasks([]);
+      }
 
-      setDiscussions([
-        { id: 1, title: 'Clarification on payment gateway integration', content: 'Do we need to support multiple payment providers or just Stripe?', author_name: 'Marcus J.', reply_count: 5, created_at: '2025-01-06T14:00:00Z', is_resolved: true },
-        { id: 2, title: 'Timeline adjustment request', content: 'The auth module is taking longer than expected due to 2FA requirements...', author_name: 'Sarah C.', reply_count: 3, created_at: '2025-01-08T10:00:00Z', is_resolved: false },
-      ]);
-    } catch {
-      console.error('Failed to fetch workroom data');
+      // Transform files
+      const fileData = filesRes as any;
+      const fileList = fileData?.files || (Array.isArray(fileData) ? fileData : []);
+      setFiles(fileList.map((f: any) => ({
+        id: f.id,
+        filename: f.original_name || f.filename,
+        file_size: f.file_size || 0,
+        file_type: f.content_type || f.file_type || '',
+        uploaded_by_name: f.uploaded_by_name || f.uploader_name || 'Unknown',
+        created_at: f.created_at,
+      })));
+
+      // Transform discussions
+      const discData = discussionsRes as any;
+      const discList = discData?.discussions || (Array.isArray(discData) ? discData : []);
+      setDiscussions(discList.map((d: any) => ({
+        id: d.id,
+        title: d.title,
+        content: d.content,
+        author_name: d.author_name || 'Unknown',
+        reply_count: d.reply_count || 0,
+        created_at: d.created_at,
+        is_resolved: d.is_resolved || false,
+      })));
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        setError('Failed to load workroom data. Please try again.');
+        console.error('Workroom fetch error:', err);
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [contractId]);
 
   useEffect(() => {
     if (mounted) {
@@ -105,10 +167,14 @@ export default function WorkroomClient({ contractId }: WorkroomClientProps) {
 
   const handleDrop = (newStatus: TaskStatus) => {
     if (draggedTask && draggedTask.status !== newStatus) {
+      const oldTasks = [...tasks];
       setTasks(prev => prev.map(t => 
         t.id === draggedTask.id ? { ...t, status: newStatus } : t
       ));
-      // In production, call API to update task status
+      const targetIndex = tasks.filter(t => t.status === newStatus).length;
+      workroomApi.moveTask(draggedTask.id, newStatus, targetIndex).catch(() => {
+        setTasks(oldTasks); // Rollback on failure
+      });
     }
     setDraggedTask(null);
   };
@@ -122,6 +188,17 @@ export default function WorkroomClient({ contractId }: WorkroomClientProps) {
   }
 
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
+
+  if (error) {
+    return (
+      <main className={cn(commonStyles.page, themeStyles.page)}>
+        <div className={commonStyles.loadingContainer}>
+          <p style={{ marginBottom: '1rem', color: 'var(--color-error, #e81123)' }}>{error}</p>
+          <Button variant="primary" onClick={fetchData}>Retry</Button>
+        </div>
+      </main>
+    );
+  }
 
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
