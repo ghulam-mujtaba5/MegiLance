@@ -16,7 +16,7 @@ const faqData = [
   {
     value: 'item-1',
     question: 'What is MegiLance?',
-    answer: 'MegiLance is a next-generation freelance platform that leverages AI for intelligent matching and blockchain for secure, transparent payments. We focus on providing an investor-grade user experience for both clients and freelancers. Our platform combines cutting-edge technology with user-friendly design to create the most efficient marketplace for global talent.',
+    answer: 'MegiLance is a next-generation freelance platform that leverages AI for intelligent matching and blockchain for secure, transparent payments. We focus on providing an production-ready user experience for both clients and freelancers. Our platform combines cutting-edge technology with user-friendly design to create the most efficient marketplace for global talent.',
   },
   {
     value: 'item-2',

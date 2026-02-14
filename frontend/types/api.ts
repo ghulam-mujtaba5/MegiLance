@@ -14,6 +14,37 @@ export interface User {
   location?: string;
   joined_at: string;
   is_active: boolean;
+  // Extended profile fields
+  profile_slug?: string;
+  headline?: string;
+  tagline?: string;
+  experience_level?: 'entry' | 'intermediate' | 'expert';
+  years_of_experience?: number;
+  education?: string; // JSON string
+  certifications?: string; // JSON string
+  work_history?: string; // JSON string
+  achievements?: string; // JSON string
+  languages?: string;
+  timezone?: string;
+  availability_status?: 'available' | 'busy' | 'unavailable' | 'on_vacation';
+  phone_number?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  website_url?: string;
+  twitter_url?: string;
+  dribbble_url?: string;
+  behance_url?: string;
+  stackoverflow_url?: string;
+  video_intro_url?: string;
+  resume_url?: string;
+  availability_hours?: number;
+  preferred_project_size?: 'small' | 'medium' | 'large' | 'enterprise';
+  industry_focus?: string;
+  tools_and_technologies?: string;
+  testimonials_enabled?: boolean;
+  contact_preferences?: string;
+  profile_views?: number;
+  profile_visibility?: 'public' | 'private' | 'connections_only';
 }
 
 export interface TimeEntry {
@@ -294,6 +325,13 @@ export interface SearchResult {
   location?: string;
   skills?: string[];
   url?: string;
+  headline?: string;
+  experience_level?: string;
+  availability_status?: string;
+  profile_slug?: string;
+  hourly_rate?: number;
+  profile_image_url?: string;
+  languages?: string;
 }
 
 export interface SearchResults {
@@ -411,6 +449,11 @@ export interface FreelancerFilters {
   hourly_rate_min?: number;
   hourly_rate_max?: number;
   location?: string;
+  experience_level?: 'entry' | 'intermediate' | 'expert';
+  availability_status?: 'available' | 'busy' | 'unavailable' | 'on_vacation';
+  languages?: string;
+  timezone?: string;
+  preferred_project_size?: 'small' | 'medium' | 'large' | 'enterprise';
   page?: number;
   page_size?: number;
 }
@@ -430,4 +473,151 @@ export interface InvoiceFilters {
   to_date?: string;
   page?: number;
   page_size?: number;
+}
+
+// API method input types (replaces `any` in api.ts)
+export interface ContractCreateData {
+  project_id?: number;
+  freelancer_id?: number;
+  terms?: string;
+  budget?: number;
+  start_date?: string;
+  end_date?: string;
+  [key: string]: unknown;
+}
+
+export interface MilestoneCreateData {
+  project_id: number | string;
+  title: string;
+  description?: string;
+  amount: number;
+  due_date?: string;
+  [key: string]: unknown;
+}
+
+export interface MilestoneUpdateData {
+  title?: string;
+  description?: string;
+  amount?: number;
+  due_date?: string;
+  status?: string;
+}
+
+export interface ConversationCreateData {
+  participant_ids: number[];
+  subject?: string;
+  project_id?: number;
+}
+
+export interface PaymentFundData {
+  amount: number;
+  payment_method?: string;
+  currency?: string;
+}
+
+export interface PaymentWithdrawData {
+  amount: number;
+  payout_method_id?: string;
+}
+
+export interface PaymentIntentData {
+  amount: number;
+  contract_id?: number;
+  description?: string;
+}
+
+export interface OnboardingData {
+  user_type: string;
+  skills?: string[];
+  bio?: string;
+  [key: string]: unknown;
+}
+
+export interface NotificationPreferencesData {
+  preferences: Record<string, Record<string, boolean>>;
+  digest: {
+    frequency: string;
+    quietHoursStart: string;
+    quietHoursEnd: string;
+  };
+}
+
+export interface PortfolioItemCreateData {
+  title: string;
+  description: string;
+  url?: string;
+  image_url?: string;
+  tags?: string[];
+}
+
+export interface PayoutMethodCreateData {
+  method_type: string;
+  details: Record<string, string>;
+  user_id?: string;
+}
+
+export interface DisputeCreateData {
+  contract_id: number;
+  reason: string;
+  description: string;
+}
+
+export interface DisputeUpdateData {
+  status?: string;
+  resolution?: string;
+}
+
+export interface SavedSearchData {
+  query: string;
+  filters?: Record<string, string>;
+  name?: string;
+}
+
+export interface JobAlert {
+  id: number;
+  user_id: number;
+  name: string;
+  query?: string;
+  filters?: Record<string, string>;
+  frequency: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SkillAssessmentSubmission {
+  skill_id: string;
+  answers?: { question_id: string; answer: string }[];
+  [key: string]: unknown;
+}
+
+export interface WeeklyPatternSlot {
+  day: number;
+  start_time: string;
+  end_time: string;
+  available: boolean;
+}
+
+export interface AvailabilityBlockUpdate {
+  start_datetime?: string;
+  end_datetime?: string;
+  status?: string;
+  title?: string;
+}
+
+export interface AvailabilityBookingUpdate {
+  status?: string;
+  start_datetime?: string;
+  end_datetime?: string;
+}
+
+export interface ProposalTemplateMilestone {
+  title: string;
+  description: string;
+  amount: number;
+}
+
+export interface WorkflowAction {
+  type: string;
+  config: Record<string, unknown>;
 }

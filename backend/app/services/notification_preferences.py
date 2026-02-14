@@ -1,13 +1,5 @@
 # @AI-HINT: Notification preferences service for granular notification control
-"""
-Notification Preferences Service - User notification settings management.
-
-Features:
-- Channel preferences (email, push, in-app)
-- Category-based preferences
-- Digest settings
-- Quiet hours
-"""
+"""Notification Preferences Service - User notification settings management."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
@@ -22,6 +14,7 @@ class NotificationChannel(str, Enum):
     IN_APP = "in_app"
     SMS = "sms"
     SLACK = "slack"
+    WEBHOOK = "webhook"
 
 
 class NotificationCategory(str, Enum):

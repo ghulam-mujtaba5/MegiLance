@@ -191,6 +191,11 @@
 }
 
 /* ===== AVATAR ===== */
+.avatarWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .avatar {
   width: 38px;
   height: 38px;
@@ -199,6 +204,18 @@
   object-fit: cover;
   border-width: 2px;
   border-style: solid;
+}
+
+.onlineDot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #27AE60;
+  border: 2px solid currentColor;
+  z-index: 1;
 }
 
 /* ===== USER DETAILS ===== */

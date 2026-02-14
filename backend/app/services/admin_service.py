@@ -4,27 +4,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 
 from app.db.turso_http import execute_query, parse_date
+from app.services.db_utils import get_val as _get_val, safe_str as _safe_str
 
 logger = logging.getLogger(__name__)
-
-
-def _get_val(row: list, idx: int):
-    """Extract value from Turso row."""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if cell.get("type") == "null":
-        return None
-    return cell.get("value")
-
-
-def _safe_str(val):
-    """Convert bytes to string if needed."""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
 
 
 # ==================== System Stats ====================
@@ -223,7 +205,9 @@ def get_financial_metrics() -> dict:
     if result and result.get("rows"):
         pending = float(_get_val(result["rows"][0], 0) or 0)
 
-    platform_fees = total_revenue * 0.125
+    from app.core.config import settings
+    platform_fee_rate = settings.STRIPE_PLATFORM_FEE_PERCENT / 100.0
+    platform_fees = total_revenue * platform_fee_rate
 
     return {
         "total_revenue": total_revenue,
@@ -421,7 +405,7 @@ def list_users(user_type: Optional[str], search: Optional[str],
 
     params.extend([limit, skip])
     result = execute_query(
-        f"""SELECT id, email, name, user_type, is_active, joined_at, location, hourly_rate
+        f"""SELECT id, email, name, user_type, is_active, joined_at, location, hourly_rate, headline, availability_status
             FROM users {where_sql}
             ORDER BY joined_at DESC
             LIMIT ? OFFSET ?""",
@@ -440,7 +424,9 @@ def list_users(user_type: Optional[str], search: Optional[str],
                 "is_active": bool(_get_val(row, 4)),
                 "joined_at": parse_date(_get_val(row, 5)),
                 "location": _safe_str(_get_val(row, 6)),
-                "hourly_rate": float(_get_val(row, 7) or 0) if user_type_val == 'Freelancer' else None
+                "hourly_rate": float(_get_val(row, 7) or 0) if user_type_val == 'Freelancer' else None,
+                "headline": _safe_str(_get_val(row, 8)),
+                "availability_status": _safe_str(_get_val(row, 9)),
             })
 
     return {"total": total, "users": users}

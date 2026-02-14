@@ -1,18 +1,5 @@
-# @AI-HINT: AI-powered chatbot and support ticket automation
-"""
-AI Chatbot Service - Intelligent conversational support system.
-
-Features:
-- Natural language understanding
-- Intent classification
-- Context-aware responses
-- FAQ matching
-- Support ticket creation
-- Live agent handoff
-- Conversation history
-- Sentiment analysis
-- Multi-language support
-"""
+# @AI-HINT: AI chatbot with intent classification and support ticket creation
+"""Conversational support system with FAQ matching and live agent handoff."""
 
 import logging
 import secrets
@@ -198,10 +185,13 @@ class AIChatbotService:
         }
     }
     
+    # TODO: migrate in-memory stores to database for persistence and scalability
+    _MAX_CONVERSATIONS = 5000
+    _MAX_MESSAGES_PER_CONVERSATION = 200
+    _MAX_TICKETS = 2000
+
     def __init__(self, db: Session):
         self.db = db
-        
-        # In-memory stores
         self._conversations: Dict[str, Dict] = {}
         self._user_conversations: Dict[int, List[str]] = defaultdict(list)
         self._message_history: Dict[str, List[Dict]] = defaultdict(list)
@@ -228,6 +218,9 @@ class AIChatbotService:
             "last_activity": datetime.now(timezone.utc).isoformat()
         }
         
+        # Evict closed conversations if at capacity
+        if len(self._conversations) >= self._MAX_CONVERSATIONS:
+            self._evict_closed_conversations()
         self._conversations[conversation_id] = conversation
         if user_id:
             self._user_conversations[user_id].append(conversation_id)
@@ -295,6 +288,11 @@ class AIChatbotService:
             "intent_matched": intent.value,
             "timestamp": datetime.now(timezone.utc).isoformat()
         })
+        
+        # Cap message history per conversation
+        history = self._message_history[conversation_id]
+        if len(history) > self._MAX_MESSAGES_PER_CONVERSATION:
+            self._message_history[conversation_id] = history[-self._MAX_MESSAGES_PER_CONVERSATION:]
         
         return {
             "conversation_id": conversation_id,
@@ -395,6 +393,9 @@ class AIChatbotService:
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
+        if len(self._tickets) >= self._MAX_TICKETS:
+            oldest_key = next(iter(self._tickets))
+            del self._tickets[oldest_key]
         self._tickets[ticket_id] = ticket
         
         # Update conversation
@@ -426,11 +427,33 @@ class AIChatbotService:
         conversation["closed_at"] = datetime.now(timezone.utc).isoformat()
         conversation["resolution"] = resolution
         
+        # Clean up message history for closed conversation
+        self._message_history.pop(conversation_id, None)
+        
         return {
             "status": "closed",
-            "message": "Thank you for chatting with us! Have a great day! 👋"
+            "message": "Thank you for chatting with us! Have a great day!"
         }
     
+    def _evict_closed_conversations(self) -> None:
+        """Remove closed conversations to free memory."""
+        closed_ids = [
+            cid for cid, conv in self._conversations.items()
+            if conv.get("state") == ConversationState.CLOSED.value
+        ]
+        for cid in closed_ids:
+            del self._conversations[cid]
+            self._message_history.pop(cid, None)
+        # If still over limit, remove oldest by started_at
+        if len(self._conversations) >= self._MAX_CONVERSATIONS:
+            sorted_ids = sorted(
+                self._conversations,
+                key=lambda c: self._conversations[c].get("started_at", "")
+            )
+            for cid in sorted_ids[:len(self._conversations) - self._MAX_CONVERSATIONS + 1]:
+                del self._conversations[cid]
+                self._message_history.pop(cid, None)
+
     def _classify_intent(self, message: str) -> ChatIntent:
         """Classify the intent of a message."""
         message_lower = message.lower()

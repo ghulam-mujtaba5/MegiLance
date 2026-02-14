@@ -2,13 +2,42 @@ import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 
 // @AI-HINT: Hook to fetch dashboard data for metrics, recent projects, and activity feed.
-// Uses real API endpoints - no fallback data for production.
+// Fetches activity feed from /activity-feed API and unread messages from /messages/unread/count.
+
+interface DashboardStatsResponse {
+  active_projects?: number;
+  total_earnings?: number;
+  pending_proposals?: number;
+  completed_projects?: number;
+}
+
+interface DashboardProjectResponse {
+  id?: number;
+  title?: string;
+  client_name?: string;
+  client_id?: number;
+  status?: string;
+  progress?: number;
+  deadline?: string;
+  updated_at?: string;
+  budget_max?: number;
+}
+
+interface ActivityFeedItem {
+  id: number;
+  activity_type?: string;
+  type?: string;
+  description?: string;
+  message?: string;
+  amount?: number;
+  created_at?: string;
+}
 
 export type DashboardMetric = {
   id: number;
   label: string;
   value: string;
-  icon: string; // e.g., FaBriefcase
+  icon: string;
   change?: string;
   changeType?: 'increase' | 'decrease';
 };
@@ -18,8 +47,8 @@ export type DashboardProject = {
   title: string;
   client: string;
   status: 'In Progress' | 'Review' | 'Completed' | 'Overdue';
-  progress: number; // 0-100
-  deadline: string; // ISO-like
+  progress: number;
+  deadline: string;
   budget?: string;
 };
 
@@ -27,7 +56,7 @@ export type DashboardActivity = {
   id: number;
   message: string;
   time: string;
-  icon: string; // e.g., FaDollarSign
+  icon: string;
   amount?: string;
 };
 
@@ -35,7 +64,37 @@ export type DashboardData = {
   metrics: DashboardMetric[];
   recentProjects: DashboardProject[];
   activityFeed: DashboardActivity[];
+  unreadMessages: number;
 };
+
+function getActivityIcon(type: string): string {
+  switch (type) {
+    case 'payment': case 'payment_received': return 'FaDollarSign';
+    case 'project': case 'project_created': return 'FaBriefcase';
+    case 'proposal': case 'proposal_submitted': return 'FaFileAlt';
+    case 'contract': case 'contract_created': return 'FaHandshake';
+    case 'review': case 'review_received': return 'FaStar';
+    case 'milestone': case 'milestone_completed': return 'FaCheckCircle';
+    case 'message': return 'FaEnvelope';
+    default: return 'FaBell';
+  }
+}
+
+function formatTimeAgo(dateStr: string): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
 
 export function useDashboardData() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -49,21 +108,22 @@ export function useDashboardData() {
       setLoading(true);
       setError(null);
       try {
-        // Fetch real data from portal APIs
-        const [statsRes, projectsRes] = await Promise.all([
+        const [statsRes, projectsRes, activityRes, unreadRes] = await Promise.all([
           api.portal.freelancer.getDashboardStats().catch(() => ({})),
-          api.portal.freelancer.getProjects().catch(() => ({ projects: [] }))
+          api.portal.freelancer.getProjects().catch(() => ({ projects: [] })),
+          api.activityFeed.list({ page: 1, page_size: 10 }).catch(() => ({ activities: [] })),
+          api.messages.getUnreadCount().catch(() => ({ unread_count: 0 })),
         ]);
 
-        const stats = statsRes as any;
-        const projects = (projectsRes as any).projects || [];
+        const stats = statsRes as DashboardStatsResponse;
+        const projects: DashboardProjectResponse[] = ((projectsRes as { projects?: DashboardProjectResponse[] }).projects) || [];
 
         // Transform stats to metrics format
         const metrics: DashboardMetric[] = [
           { 
             id: 1, 
             label: "Active Projects", 
-            value: String(stats.active_projects || projects.filter((p: any) => p.status === 'in_progress').length || 0), 
+            value: String(stats.active_projects || projects.filter((p) => p.status === 'in_progress').length || 0), 
             icon: "FaBriefcase" 
           },
           { 
@@ -81,13 +141,13 @@ export function useDashboardData() {
           { 
             id: 4, 
             label: "Completed", 
-            value: String(stats.completed_projects || projects.filter((p: any) => p.status === 'completed').length || 0), 
+            value: String(stats.completed_projects || projects.filter((p) => p.status === 'completed').length || 0), 
             icon: "FaUsers" 
           }
         ];
 
         // Transform projects
-        const recentProjects: DashboardProject[] = projects.slice(0, 4).map((p: any, idx: number) => ({
+        const recentProjects: DashboardProject[] = projects.slice(0, 4).map((p, idx) => ({
           id: p.id || idx + 1,
           title: p.title || 'Untitled Project',
           client: p.client_name || `Client #${p.client_id}`,
@@ -99,17 +159,26 @@ export function useDashboardData() {
           budget: p.budget_max ? `$${p.budget_max.toLocaleString()}` : undefined
         }));
 
-        // Activity feed would come from a separate endpoint if available
-        const activityFeed: DashboardActivity[] = [];
+        // Transform activity feed from API
+        const rawActivities: ActivityFeedItem[] = (activityRes as any)?.activities || (activityRes as any)?.items || [];
+        const activityFeed: DashboardActivity[] = rawActivities.map((item, idx) => ({
+          id: item.id || idx + 1,
+          message: item.description || item.message || 'Activity recorded',
+          time: formatTimeAgo(item.created_at || ''),
+          icon: getActivityIcon(item.activity_type || item.type || ''),
+          amount: item.amount ? `$${item.amount.toLocaleString()}` : undefined,
+        }));
+
+        const unreadMessages = (unreadRes as any)?.unread_count ?? (unreadRes as any)?.count ?? 0;
 
         if (isMounted) {
-          setData({ metrics, recentProjects, activityFeed });
+          setData({ metrics, recentProjects, activityFeed, unreadMessages });
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('[useDashboardData] API error:', err);
         if (isMounted) {
-          setError(err.message || 'Failed to load dashboard data');
-          setData({ metrics: [], recentProjects: [], activityFeed: [] });
+          setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+          setData({ metrics: [], recentProjects: [], activityFeed: [], unreadMessages: 0 });
         }
       } finally {
         if (isMounted) setLoading(false);

@@ -7,6 +7,7 @@ Includes: balances, transaction history, payouts, deposits, and analytics
 from typing import List, Optional
 from datetime import datetime, timedelta, timezone
 from enum import Enum
+import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -14,6 +15,7 @@ from pydantic import BaseModel, Field
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.services import wallet_service
+from app.services.db_utils import paginate_params
 
 router = APIRouter()
 
@@ -94,8 +96,8 @@ async def get_wallet_balance(
 
 @router.get("/transactions", response_model=List[WalletTransaction])
 async def get_transaction_history(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     type: Optional[str] = Query(None, description="Filter by transaction type"),
     status: Optional[str] = Query(None, description="Filter by status"),
     from_date: Optional[str] = Query(None, description="Start date (ISO format)"),
@@ -103,10 +105,11 @@ async def get_transaction_history(
     current_user: User = Depends(get_current_active_user)
 ):
     """Get wallet transaction history with filters"""
+    offset, limit = paginate_params(page, page_size)
     wallet_service.ensure_wallet_tables()
     rows = wallet_service.get_transaction_history(
         user_id=current_user.id,
-        skip=skip, limit=limit,
+        skip=offset, limit=limit,
         tx_type=type, tx_status=status,
         from_date=from_date, to_date=to_date
     )
@@ -136,7 +139,12 @@ async def request_withdrawal(
 
     reference_id = f"WD-{current_user.id}-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
-    wallet_service.deduct_for_withdrawal(current_user.id, request.amount)
+    # Atomic deduction: WHERE available >= amount prevents concurrent over-withdrawal
+    if not wallet_service.deduct_for_withdrawal(current_user.id, request.amount):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Insufficient available balance (concurrent withdrawal detected)"
+        )
     wallet_service.create_transaction(
         user_id=current_user.id,
         tx_type="withdrawal",
@@ -145,7 +153,7 @@ async def request_withdrawal(
         tx_status="processing",
         description=f"Withdrawal to {request.method}",
         reference_id=reference_id,
-        metadata=f'{{"method": "{request.method}", "destination": "{request.destination}"}}'
+        metadata=json.dumps({"method": request.method, "destination": request.destination})
     )
 
     estimated_days = {"bank_transfer": 3, "paypal": 1, "crypto": 0, "wise": 1}
@@ -180,32 +188,15 @@ async def initiate_deposit(
         tx_status="pending",
         description=f"Deposit via {request.method}",
         reference_id=reference_id,
-        metadata=f'{{"method": "{request.method}"}}'
+        metadata=json.dumps({"method": request.method})
     )
 
-    payment_details = {}
-    if request.method == "card":
-        payment_details = {
-            "type": "stripe_checkout",
-            "checkout_url": f"https://checkout.stripe.com/pay/{reference_id}",
-            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()
-        }
-    elif request.method == "crypto":
-        payment_details = {
-            "type": "crypto_address",
-            "address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bE1e",
-            "network": "Ethereum",
-            "amount_crypto": request.amount / 2500,
-            "expires_at": (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
-        }
-    else:
-        payment_details = {
-            "type": "bank_transfer",
-            "bank_name": "MegiLance Trust Bank",
-            "account_number": "****4521",
-            "routing_number": "021000021",
-            "reference": reference_id
-        }
+    payment_details = {
+        "type": request.method,
+        "status": "not_implemented",
+        "message": "Payment processing is not yet configured. Please contact support.",
+        "reference": reference_id
+    }
 
     return {
         "message": "Deposit initiated",
@@ -298,6 +289,4 @@ async def disable_payout_schedule(
     """Disable automatic payouts"""
     wallet_service.ensure_wallet_tables()
     wallet_service.disable_payout_schedule(current_user.id)
-    return {"message": "Automatic payouts disabled"}
-    
     return {"message": "Automatic payouts disabled"}

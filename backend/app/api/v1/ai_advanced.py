@@ -87,14 +87,15 @@ async def match_freelancers_to_project(
         return [FreelancerMatch(**match) for match in matches]
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to match freelancers")
 
 
 @router.post("/semantic-skill-match")
 async def semantic_skill_matching(
     required_skills: List[str] = Query(..., min_items=1),
     user_skills: List[str] = Query(..., min_items=1),
+    current_user: User = Depends(get_current_user),
     ai_service: AdvancedAIService = Depends(get_advanced_ai_service)
 ):
     """
@@ -107,8 +108,8 @@ async def semantic_skill_matching(
             user_skills=user_skills
         )
         return result
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Skill matching failed")
 
 
 # Fraud Detection
@@ -129,8 +130,8 @@ async def detect_fraud(
             context=request.context
         )
         return FraudAssessment(**assessment)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Fraud detection failed")
 
 
 # Quality Assessment
@@ -157,8 +158,8 @@ async def assess_quality(
         return QualityAssessment(**assessment)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Quality assessment failed")
 
 
 # Price Optimization
@@ -183,8 +184,8 @@ async def optimize_pricing(
             required_skills=required_skills
         )
         return pricing
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Price optimization failed")
 
 
 # Success Prediction
@@ -205,8 +206,8 @@ async def predict_project_success(
         return SuccessPrediction(**prediction)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Success prediction failed")
 
 
 # Churn Prediction
@@ -234,14 +235,15 @@ async def predict_user_churn(
         return prediction
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Churn prediction failed")
 
 
 # Portfolio Analysis
 @router.post("/analyze-portfolio/{user_id}")
 async def analyze_portfolio(
     user_id: str,
+    current_user: User = Depends(get_current_user),
     ai_service: AdvancedAIService = Depends(get_advanced_ai_service)
 ):
     """
@@ -255,8 +257,8 @@ async def analyze_portfolio(
         return analysis
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Portfolio analysis failed")
 
 
 # AI Model Stats
@@ -280,8 +282,8 @@ async def get_ai_model_stats(
         return stats
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to get model stats")
 
 
 # ==================== CLIENT AI COPILOT ====================

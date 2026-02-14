@@ -4,8 +4,6 @@ import re
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from typing import List, Optional, Literal
 
-from app.schemas.project import ProjectRead
-from app.schemas.user import UserRead
 from app.services import search_service
 
 router = APIRouter(prefix="/search", tags=["search"])
@@ -71,7 +69,7 @@ def validate_search_params(q: Optional[str], limit: int, offset: int) -> None:
         )
 
 
-@router.get("/projects", response_model=List[ProjectRead])
+@router.get("/projects")
 async def search_projects(
     q: Optional[str] = Query(None, description="Search query (title, description)"),
     skills: Optional[str] = Query(None, description="Comma-separated skill names"),
@@ -80,15 +78,14 @@ async def search_projects(
     budget_max: Optional[float] = Query(None, ge=0, description="Maximum budget"),
     budget_type: Optional[Literal["fixed", "hourly"]] = Query(None, description="Budget type"),
     experience_level: Optional[Literal["entry", "intermediate", "expert"]] = Query(None),
-    status: Optional[str] = Query("open", description="Project status"),
+    project_status: Optional[str] = Query("open", alias="status", description="Project status"),
+    sort: Optional[Literal["newest", "oldest", "budget_high", "budget_low", "most_proposals"]] = Query("newest"),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0)
 ):
     """
-    Advanced project search
-    - Search by keywords in title/description
-    - Filter by skills, category, budget range, experience level
-    - Public endpoint
+    Advanced project search with sorting, faceted counts, and pagination metadata.
+    Returns {items, total_count, facets:{categories, experience_levels}}.
     """
     validate_search_params(q, limit, offset)
     
@@ -99,108 +96,161 @@ async def search_projects(
     if q:
         safe_q = sanitize_search_query(q)
         if safe_q:
-            conditions.append("(title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')")
+            conditions.append("(p.title LIKE ? ESCAPE '\\' OR p.description LIKE ? ESCAPE '\\')")
             search_term = f"%{safe_q}%"
             params.extend([search_term, search_term])
     
-    # Filter by status (validate against allowed values)
-    valid_statuses = {"open", "in_progress", "completed", "cancelled", "draft"}
-    if status:
-        if status.lower() not in valid_statuses:
+    # Filter by status
+    valid_statuses = {"open", "in_progress", "completed", "cancelled", "draft", "paused"}
+    if project_status:
+        if project_status.lower() not in valid_statuses:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Invalid status. Allowed: {', '.join(valid_statuses)}"
             )
-        conditions.append("status = ?")
-        params.append(status.lower())
+        conditions.append("p.status = ?")
+        params.append(project_status.lower())
     
     # Filter by category
     if category:
         safe_category = sanitize_search_query(category)
         if safe_category:
-            conditions.append("category LIKE ? ESCAPE '\\'")
+            conditions.append("p.category LIKE ? ESCAPE '\\'")
             params.append(f"%{safe_category}%")
     
     # Filter by budget range
     if budget_min is not None:
-        conditions.append("budget_min >= ?")
+        conditions.append("p.budget_min >= ?")
         params.append(budget_min)
     if budget_max is not None:
-        conditions.append("budget_max <= ?")
+        conditions.append("p.budget_max <= ?")
         params.append(budget_max)
     
     # Filter by budget type
     if budget_type:
-        conditions.append("budget_type = ?")
+        conditions.append("p.budget_type = ?")
         params.append(budget_type)
     
     # Filter by experience level
     if experience_level:
-        conditions.append("experience_level = ?")
+        conditions.append("p.experience_level = ?")
         params.append(experience_level)
     
-    # Filter by skills (search in skills text field)
+    # Filter by skills
     if skills:
-        skill_list = [s.strip().lower() for s in skills.split(',')]
+        skill_list = sanitize_skill_list(skills)
         for skill in skill_list:
-            conditions.append("LOWER(skills) LIKE ?")
+            conditions.append("LOWER(p.skills) LIKE ? ESCAPE '\\'")
             params.append(f"%{skill}%")
     
     where_clause = " AND ".join(conditions) if conditions else "1=1"
     params.extend([limit, offset])
     
-    return search_service.search_projects_db(where_clause, params)
+    return search_service.search_projects_advanced(where_clause, params, sort or "newest")
 
 
-@router.get("/freelancers", response_model=List[UserRead])
+@router.get("/freelancers")
 async def search_freelancers(
-    q: Optional[str] = Query(None, description="Search query (name, bio)"),
+    q: Optional[str] = Query(None, description="Search query (name, bio, headline)"),
     skills: Optional[str] = Query(None, description="Comma-separated skill names"),
     min_rate: Optional[float] = Query(None, ge=0, description="Minimum hourly rate"),
     max_rate: Optional[float] = Query(None, ge=0, description="Maximum hourly rate"),
+    min_rating: Optional[float] = Query(None, ge=0, le=5, description="Minimum average rating"),
     location: Optional[str] = Query(None, description="Location filter"),
+    experience_level: Optional[Literal["entry", "intermediate", "expert"]] = Query(None, description="Experience level"),
+    availability_status: Optional[Literal["available", "busy", "unavailable", "on_vacation"]] = Query(None, description="Availability status"),
+    languages: Optional[str] = Query(None, description="Language filter"),
+    timezone: Optional[str] = Query(None, description="Timezone filter"),
+    preferred_project_size: Optional[Literal["small", "medium", "large", "enterprise"]] = Query(None, description="Preferred project size"),
+    sort: Optional[Literal["newest", "rate_high", "rate_low", "rating_high", "most_reviews", "most_viewed"]] = Query("newest"),
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0)
 ):
     """
-    Advanced freelancer search
-    - Search by keywords in name/bio
-    - Filter by skills, hourly rate, location
-    - Public endpoint
+    Advanced freelancer search with rating data, sorting, and facets.
+    Returns {items (with avg_rating, review_count, completed_projects), total_count, facets:{locations}}.
     """
-    conditions = ["LOWER(user_type) = 'freelancer'", "is_active = 1"]
+    conditions = ["LOWER(u.user_type) = 'freelancer'", "u.is_active = 1"]
     params = []
     
-    # Text search
-    if q:
-        conditions.append("(name LIKE ? OR first_name LIKE ? OR last_name LIKE ? OR bio LIKE ?)")
-        search_term = f"%{q}%"
-        params.extend([search_term, search_term, search_term, search_term])
+    validate_search_params(q, limit, offset)
+
+    # Exclude private profiles
+    conditions.append("(u.profile_visibility IS NULL OR u.profile_visibility != 'private')")
     
-    # Filter by hourly rate range
+    # Text search - include headline and tagline
+    if q:
+        safe_q = sanitize_search_query(q)
+        if safe_q:
+            conditions.append("(u.name LIKE ? ESCAPE '\\' OR u.first_name LIKE ? ESCAPE '\\' OR u.last_name LIKE ? ESCAPE '\\' OR u.bio LIKE ? ESCAPE '\\' OR u.headline LIKE ? ESCAPE '\\' OR u.tagline LIKE ? ESCAPE '\\')")
+            search_term = f"%{safe_q}%"
+            params.extend([search_term, search_term, search_term, search_term, search_term, search_term])
+    
+    # Hourly rate range
     if min_rate is not None:
-        conditions.append("hourly_rate >= ?")
+        conditions.append("u.hourly_rate >= ?")
         params.append(min_rate)
     if max_rate is not None:
-        conditions.append("hourly_rate <= ?")
+        conditions.append("u.hourly_rate <= ?")
         params.append(max_rate)
     
-    # Filter by location
+    # Location
     if location:
-        conditions.append("location LIKE ?")
-        params.append(f"%{location}%")
+        safe_location = sanitize_search_query(location)
+        if safe_location:
+            conditions.append("u.location LIKE ? ESCAPE '\\'")
+            params.append(f"%{safe_location}%")
     
-    # Filter by skills
+    # Skills
     if skills:
-        skill_list = [s.strip().lower() for s in skills.split(',')]
+        skill_list = sanitize_skill_list(skills)
         for skill in skill_list:
-            conditions.append("LOWER(skills) LIKE ?")
+            conditions.append("LOWER(u.skills) LIKE ? ESCAPE '\\'")
             params.append(f"%{skill}%")
+
+    # Experience level
+    if experience_level:
+        conditions.append("u.experience_level = ?")
+        params.append(experience_level)
+
+    # Availability status
+    if availability_status:
+        conditions.append("u.availability_status = ?")
+        params.append(availability_status)
+
+    # Languages
+    if languages:
+        safe_lang = sanitize_search_query(languages)
+        if safe_lang:
+            conditions.append("LOWER(u.languages) LIKE ? ESCAPE '\\'")
+            params.append(f"%{safe_lang.lower()}%")
+
+    # Timezone
+    if timezone:
+        safe_tz = sanitize_search_query(timezone)
+        if safe_tz:
+            conditions.append("u.timezone LIKE ? ESCAPE '\\'")
+            params.append(f"%{safe_tz}%")
+
+    # Preferred project size
+    if preferred_project_size:
+        conditions.append("u.preferred_project_size = ?")
+        params.append(preferred_project_size)
     
     where_clause = " AND ".join(conditions)
     params.extend([limit, offset])
     
-    return search_service.search_freelancers_db(where_clause, params)
+    result = search_service.search_freelancers_advanced(where_clause, params, sort or "newest")
+    
+    # Post-filter by minimum rating (done in Python since rating comes from JOIN)
+    if min_rating is not None:
+        result["items"] = [
+            f for f in result["items"]
+            if (f.get("avg_rating") or 0) >= min_rating
+        ]
+        result["total_count"] = len(result["items"])
+    
+    return result
 
 
 @router.get("/global")
@@ -213,7 +263,10 @@ async def global_search(
     - Returns mixed results from all searchable entities
     - Public endpoint
     """
-    search_term = f"%{q}%"
+    safe_q = sanitize_search_query(q)
+    if not safe_q:
+        return {"query": q, "results": {"projects": [], "freelancers": [], "skills": [], "tags": []}, "total_results": 0}
+    search_term = f"%{safe_q}%"
     
     projects = search_service.global_search_projects(search_term, limit)
     freelancers = search_service.global_search_freelancers(search_term, limit)
@@ -243,7 +296,10 @@ async def search_autocomplete(
     - Returns quick suggestions as user types
     - Can filter by entity type
     """
-    search_term = f"{q}%"
+    safe_q = sanitize_search_query(q)
+    if not safe_q:
+        return {"query": q, "suggestions": []}
+    search_term = f"{safe_q}%"
     suggestions = []
     
     if type is None or type == "project":

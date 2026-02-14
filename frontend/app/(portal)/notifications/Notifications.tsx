@@ -11,7 +11,7 @@ import { StaggerContainer } from '@/app/components/Animations/StaggerContainer';
 import { celebrationAnimation } from '@/app/components/Animations/LottieAnimation';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import { Loader2 } from 'lucide-react';
-import api from '@/lib/api';
+import { notificationsApi } from '@/lib/api';
 import common from './Notifications.common.module.css';
 import light from './Notifications.light.module.css';
 import dark from './Notifications.dark.module.css';
@@ -43,10 +43,11 @@ const Notifications: React.FC = () => {
     const fetchNotifications = async () => {
       try {
         setLoading(true);
-        const data = await (api.notifications as any).list?.();
+        const data = await notificationsApi.list();
         
-        // Transform API data to NotificationItem format
-        const notifications: NotificationItem[] = (Array.isArray(data) ? data : []).map((n: any, idx: number) => {
+        // Transform API data to NotificationItem format — handle paginated or direct array responses
+        const rawItems = Array.isArray(data) ? data : (data as any)?.notifications || (data as any)?.items || [];
+        const notifications: NotificationItem[] = rawItems.map((n: any, idx: number) => {
           // Map notification type to category
           let category: NotificationItem['category'] = 'System';
           const type = (n.type || '').toLowerCase();
@@ -103,7 +104,7 @@ const Notifications: React.FC = () => {
 
   const markAllRead = async () => {
     try {
-      await (api.notifications as any).markAllAsRead?.();
+      await notificationsApi.markAllAsRead();
     } catch (e) {
       // Continue with local update even if API fails
     }
@@ -126,7 +127,7 @@ const Notifications: React.FC = () => {
 
   const markRead = async (id: string) => {
     try {
-      await (api.notifications as any).markAsRead?.(parseInt(id));
+      await notificationsApi.markAsRead(parseInt(id));
     } catch (e) {
       // Continue with local update
     }
@@ -138,7 +139,7 @@ const Notifications: React.FC = () => {
 
   const archive = async (id: string) => {
     try {
-      await (api.notifications as any).delete?.(parseInt(id));
+      await notificationsApi.delete(parseInt(id));
     } catch (e) {
       // Continue with local update
     }

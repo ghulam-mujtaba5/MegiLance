@@ -8,9 +8,11 @@ from typing import List, Optional
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
+from app.core.config import get_settings
 from app.models.user import User
 from app.services import admin_service
+from app.services.db_utils import paginate_params
 from pydantic import BaseModel, Field, validator
 
 router = APIRouter()
@@ -156,18 +158,9 @@ class FraudAlert(BaseModel):
 
 
 # ============ Dependency: Admin Only ============
-
-async def get_admin_user(current_user: User = Depends(get_current_active_user)):
-    """Verify that current user is an admin"""
-    user_type = _safe_str(current_user.user_type)
-    if user_type not in ['Admin', 'admin']:
-        logger.warning(f"Non-admin user {current_user.id} attempted to access admin endpoint")
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
-    logger.info(f"Admin user {current_user.id} accessing admin endpoint")
-    return current_user
+# Uses centralized require_admin from security.py
+# Legacy get_admin_user kept as alias for backward compatibility
+get_admin_user = require_admin
 
 
 # ============ Dashboard Endpoints ============
@@ -235,14 +228,15 @@ async def get_recent_activity(
 async def list_all_users(
     user_type: Optional[str] = Query(None, description="Filter by user type: Client, Freelancer, Admin"),
     search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH, description="Search by name or email"),
-    skip: int = Query(0, ge=0, le=MAX_SKIP, description="Number of records to skip"),
-    limit: int = Query(50, ge=1, le=MAX_LIMIT, description="Maximum number of records to return"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=MAX_LIMIT),
     admin: User = Depends(get_admin_user)
 ):
     """List all users with filtering options."""
+    offset, limit = paginate_params(page, page_size)
     validated_user_type = validate_user_type(user_type)
     sanitized_search = sanitize_search(search)
-    return admin_service.list_users(validated_user_type, sanitized_search, limit, skip)
+    return admin_service.list_users(validated_user_type, sanitized_search, limit, offset)
 
 
 @router.post("/admin/users/{user_id}/toggle-status")
@@ -293,36 +287,38 @@ async def toggle_user_status(
 async def get_admin_users(
     role: Optional[str] = Query(None, description="Filter by role: Client, Freelancer, Admin"),
     search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH),
-    skip: int = Query(0, ge=0, le=MAX_SKIP),
-    limit: int = Query(50, ge=1, le=MAX_LIMIT),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=MAX_LIMIT),
     admin: User = Depends(get_admin_user)
 ):
     """List all users - Admin endpoint"""
-    return await list_all_users(user_type=role, search=search, skip=skip, limit=limit, admin=admin)
+    return await list_all_users(user_type=role, search=search, page=page, page_size=page_size, admin=admin)
 
 
 @router.get("/admin/projects")
 async def get_admin_projects(
     status: Optional[str] = Query(None, description="Filter by status: open, in_progress, completed, cancelled"),
-    skip: int = Query(0, ge=0, le=MAX_SKIP),
-    limit: int = Query(50, ge=1, le=MAX_LIMIT),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=MAX_LIMIT),
     admin: User = Depends(get_admin_user)
 ):
     """Get all projects with admin access"""
+    offset, limit = paginate_params(page, page_size)
     validated_status = validate_project_status(status)
-    return admin_service.get_admin_projects(validated_status, limit, skip)
+    return admin_service.get_admin_projects(validated_status, limit, offset)
 
 
 @router.get("/admin/payments")
 async def get_admin_payments(
     status: Optional[str] = Query(None, description="Filter by status: pending, completed, failed, refunded"),
-    skip: int = Query(0, ge=0, le=MAX_SKIP),
-    limit: int = Query(50, ge=1, le=MAX_LIMIT),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=MAX_LIMIT),
     admin: User = Depends(get_admin_user)
 ):
     """Get all payments with admin access"""
+    offset, limit = paginate_params(page, page_size)
     validated_status = validate_payment_status(status)
-    return admin_service.get_admin_payments(validated_status, limit, skip)
+    return admin_service.get_admin_payments(validated_status, limit, offset)
 
 
 @router.get("/admin/analytics/overview")
@@ -334,8 +330,8 @@ async def get_analytics_overview(admin: User = Depends(get_admin_user)):
 @router.get("/admin/support/tickets")
 async def get_support_tickets(
     status: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     admin: User = Depends(get_admin_user)
 ):
     """Get support tickets"""
@@ -368,7 +364,7 @@ async def get_platform_settings(admin: User = Depends(get_admin_user)):
             "maintenance_mode": False
         },
         "fees": {
-            "platform_fee_percentage": 12.5,
+            "platform_fee_percentage": get_settings().STRIPE_PLATFORM_FEE_PERCENT,
             "payment_processing_fee": 2.9
         },
         "features": {

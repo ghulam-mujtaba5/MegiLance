@@ -1,16 +1,15 @@
 // @AI-HINT: Add funds page - route for adding money to MegiLance wallet
-import { Metadata } from 'next';
+'use client';
+
+import { useAuth } from '@/hooks/useAuth';
 import PaymentWizard from '@/src/components/wizards/PaymentWizard';
 import commonStyles from './AddFunds.common.module.css';
 
-export const metadata: Metadata = {
-  title: 'Add Funds - MegiLance',
-  description: 'Add funds to your MegiLance wallet for projects and payments'
-};
-
 export default function AddFundsPage() {
-  // In a real app, get user ID from session/auth
-  const userId = 'current-user-id'; // Replace with actual auth
+  const { user } = useAuth();
+  const userId = user?.id ? String(user.id) : '';
+
+  if (!userId) return null;
 
   return (
     <div className={commonStyles.pageContainer}>

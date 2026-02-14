@@ -29,6 +29,30 @@ const SKILLS = {
   'angular-developer': { name: 'Angular Developer', category: 'Frontend', avgRate: 70 },
   'vue-developer': { name: 'Vue.js Developer', category: 'Frontend', avgRate: 70 },
   'aws-architect': { name: 'AWS Solutions Architect', category: 'Cloud', avgRate: 120 },
+  'java-developer': { name: 'Java Developer', category: 'Backend', avgRate: 80 },
+  'go-developer': { name: 'Go Developer', category: 'Backend', avgRate: 90 },
+  'rust-developer': { name: 'Rust Developer', category: 'Systems', avgRate: 95 },
+  'typescript-developer': { name: 'TypeScript Developer', category: 'Frontend', avgRate: 75 },
+  'ios-developer': { name: 'iOS Developer', category: 'Mobile', avgRate: 90 },
+  'android-developer': { name: 'Android Developer', category: 'Mobile', avgRate: 85 },
+  'cybersecurity-expert': { name: 'Cybersecurity Expert', category: 'Security', avgRate: 110 },
+  'cloud-architect': { name: 'Cloud Architect', category: 'Cloud', avgRate: 125 },
+  'php-developer': { name: 'PHP Developer', category: 'Backend', avgRate: 55 },
+  'ruby-developer': { name: 'Ruby Developer', category: 'Backend', avgRate: 75 },
+  'swift-developer': { name: 'Swift Developer', category: 'Mobile', avgRate: 90 },
+  'kotlin-developer': { name: 'Kotlin Developer', category: 'Mobile', avgRate: 85 },
+  'data-engineer': { name: 'Data Engineer', category: 'Data', avgRate: 95 },
+  'qa-engineer': { name: 'QA Engineer', category: 'Testing', avgRate: 60 },
+  'technical-writer': { name: 'Technical Writer', category: 'Writing', avgRate: 50 },
+  'product-manager': { name: 'Product Manager', category: 'Management', avgRate: 95 },
+  'project-manager': { name: 'Project Manager', category: 'Management', avgRate: 80 },
+  'business-analyst': { name: 'Business Analyst', category: 'Management', avgRate: 75 },
+  'social-media-manager': { name: 'Social Media Manager', category: 'Marketing', avgRate: 45 },
+  'email-marketer': { name: 'Email Marketer', category: 'Marketing', avgRate: 50 },
+  'copywriter': { name: 'Copywriter', category: 'Writing', avgRate: 55 },
+  'illustrator': { name: 'Illustrator', category: 'Design', avgRate: 55 },
+  'motion-designer': { name: 'Motion Designer', category: 'Design', avgRate: 65 },
+  '3d-artist': { name: '3D Artist', category: 'Design', avgRate: 70 },
 };
 
 const INDUSTRIES = {
@@ -50,6 +74,12 @@ const INDUSTRIES = {
   'crypto': { name: 'Cryptocurrency', icon: '₿', growth: 'volatile' },
   'ai': { name: 'AI & Machine Learning', icon: '🤖', growth: 'explosive' },
   'sustainability': { name: 'Sustainability', icon: '🌱', growth: 'high' },
+  'insurance': { name: 'Insurance', icon: '🛡️', growth: 'stable' },
+  'legal': { name: 'Legal', icon: '⚖️', growth: 'stable' },
+  'agriculture': { name: 'Agriculture', icon: '🌾', growth: 'medium' },
+  'energy': { name: 'Energy', icon: '⚡', growth: 'high' },
+  'fashion': { name: 'Fashion', icon: '👗', growth: 'medium' },
+  'food-delivery': { name: 'Food & Delivery', icon: '🍔', growth: 'high' },
 };
 
 interface PageProps {

@@ -1,14 +1,5 @@
 # @AI-HINT: Social login OAuth2 service for Google, LinkedIn, GitHub
-"""
-Social Login Service - OAuth2 authentication with social providers.
-
-Features:
-- Google OAuth2 login
-- LinkedIn OAuth2 login
-- GitHub OAuth2 login
-- Account linking
-- Profile sync from social accounts
-"""
+"""Social Login Service - OAuth2 authentication with social providers."""
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any, Tuple

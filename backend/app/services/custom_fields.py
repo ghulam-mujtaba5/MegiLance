@@ -1,14 +1,5 @@
 # @AI-HINT: Custom fields service - dynamic field definitions for entities
-"""
-Custom Fields Service - Dynamic Metadata System
-
-Features:
-- Define custom fields for any entity type
-- Multiple field types (text, number, date, select, etc.)
-- Validation rules
-- Field groups/sections
-- Import/export field definitions
-"""
+"""Custom Fields Service - Dynamic Metadata System."""
 
 import uuid
 import re

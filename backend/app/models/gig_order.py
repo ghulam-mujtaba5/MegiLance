@@ -1,11 +1,12 @@
 # @AI-HINT: Gig Order model for tracking purchases of gig packages with revision tracking and delivery management
 """Gig Order model for service marketplace orders."""
 
-from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Boolean
+from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Boolean, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional, TYPE_CHECKING
+from decimal import Decimal
 import enum
 
 if TYPE_CHECKING:
@@ -50,12 +51,12 @@ class GigOrder(Base):
     package_description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     
     # Pricing
-    base_price: Mapped[float] = mapped_column(Float)
-    extras_price: Mapped[float] = mapped_column(Float, default=0.0)
-    total_price: Mapped[float] = mapped_column(Float)
-    service_fee: Mapped[float] = mapped_column(Float, default=0.0)  # Platform fee
-    seller_earnings: Mapped[float] = mapped_column(Float)  # After platform fee
-    tip_amount: Mapped[float] = mapped_column(Float, default=0.0)
+    base_price: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    extras_price: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
+    total_price: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    service_fee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))  # Platform fee
+    seller_earnings: Mapped[Decimal] = mapped_column(Numeric(12, 2))  # After platform fee
+    tip_amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
     
     # Extras/Add-ons selected
     selected_extras: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array

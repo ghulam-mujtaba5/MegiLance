@@ -1,7 +1,7 @@
 
 # MegiLance Frontend
 
-This is the frontend for MegiLance, a next-generation freelance platform powered by AI and blockchain. It is built with Next.js, TypeScript, and follows a strict component-based architecture.
+This is the frontend for MegiLance, a freelance platform powered by AI matching and secure payments. Built with Next.js, TypeScript, and a strict component-based architecture.
 
 ---
 
@@ -73,7 +73,7 @@ When creating or refactoring a component, follow this pattern to ensure it is fu
     </div>
     ```
 
-This pattern has been applied to all major components, creating a pixel-perfect, investor-grade UI that is consistent across the entire application.
+This pattern has been applied to all major components, creating a consistent UI across the application.
 
 ---
 

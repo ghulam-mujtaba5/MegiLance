@@ -103,7 +103,8 @@ async def update_notification_settings(
 
 @router.get("/categories")
 async def get_notification_categories(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)
 ):
     """Get all available notification categories."""
     service = get_notification_preferences_service(db)
@@ -112,7 +113,9 @@ async def get_notification_categories(
 
 
 @router.get("/channels")
-async def get_notification_channels():
+async def get_notification_channels(
+    current_user = Depends(get_current_active_user)
+):
     """Get all available notification channels."""
     channels = [
         {"channel": c.value, "name": c.name.replace("_", " ").title()}

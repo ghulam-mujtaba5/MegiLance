@@ -1,14 +1,5 @@
 # @AI-HINT: API key management service - developer API key generation and management
-"""
-API Keys Service - Developer API Key Management
-
-Features:
-- Generate API keys with scopes
-- Key rotation and revocation
-- Usage tracking and rate limiting
-- Key expiration management
-- IP whitelisting
-"""
+"""API Keys Service - Developer API Key Management."""
 
 import uuid
 import hashlib

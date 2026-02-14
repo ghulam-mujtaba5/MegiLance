@@ -694,7 +694,7 @@ SEO_BLOG_POSTS = [
 
 <h2>Design</h2>
 <ol start="6">
-<li><strong>Midjourney</strong> — Stunning AI image generation</li>
+<li><strong>Midjourney</strong> — Enhanced AI image generation</li>
 <li><strong>Figma AI</strong> — Auto-layout, content suggestions, and design systems</li>
 <li><strong>Canva Magic Studio</strong> — Quick social media and marketing designs</li>
 <li><strong>Remove.bg</strong> — Instant background removal</li>

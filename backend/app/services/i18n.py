@@ -1,15 +1,5 @@
 # @AI-HINT: Multi-language support with translation management
-"""
-Internationalization Service - Multi-language support system.
-
-Features:
-- Multiple language support
-- Translation management
-- Locale detection
-- Date/time/currency formatting
-- Right-to-left support
-- Machine translation integration
-"""
+"""Internationalization Service - Multi-language support system."""
 
 import logging
 import re

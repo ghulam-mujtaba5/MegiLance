@@ -1,9 +1,10 @@
 # @AI-HINT: Contract model - agreements between clients and freelancers with status tracking
-from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Enum
+from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Enum, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime, timezone
 from typing import List, Optional, TYPE_CHECKING
+from decimal import Decimal
 import enum
 
 if TYPE_CHECKING:
@@ -45,19 +46,19 @@ class Contract(Base):
     
     # Financials
     contract_type: Mapped[str] = mapped_column(String(20), default=ContractType.FIXED.value, index=True)
-    amount: Mapped[float] = mapped_column(Float, nullable=False)  # Total contract amount / Budget cap
+    amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)  # Canonical: total contract value
     currency: Mapped[str] = mapped_column(String(10), default="USD")
-    hourly_rate: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
-    retainer_amount: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    hourly_rate: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 2), nullable=True)
+    retainer_amount: Mapped[Optional[Decimal]] = mapped_column(Numeric(12, 2), nullable=True)
     retainer_frequency: Mapped[Optional[str]] = mapped_column(String(20), nullable=True) # weekly, monthly
     
-    contract_amount: Mapped[float] = mapped_column(Float)  # USDC value (Legacy/Crypto specific)
-    platform_fee: Mapped[float] = mapped_column(Float, default=0.0)
+    contract_amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))  # Legacy alias for amount — kept in sync, prefer `amount`
+    platform_fee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
     status: Mapped[str] = mapped_column(String(20), default=ContractStatus.PENDING.value, index=True)
     start_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     end_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=True)
-    milestones: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of milestones
+    milestones: Mapped[str] = mapped_column(Text, nullable=True)  # Legacy JSON blob — structured data now in milestone_items relationship
     terms: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of terms
     blockchain_hash: Mapped[str] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))

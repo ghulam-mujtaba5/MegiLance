@@ -1,4 +1,4 @@
-// @AI-HINT: This is a premium, investor-grade Review Sentiment Dashboard. It features advanced data visualization, interactive filters, and a detailed breakdown of recent reviews. The component is fully theme-aware and uses a sophisticated layout to present complex data in an intuitive way.
+// @AI-HINT: This is a premium, production-ready Review Sentiment Dashboard. It features advanced data visualization, interactive filters, and a detailed breakdown of recent reviews. The component is fully theme-aware and uses a sophisticated layout to present complex data in an intuitive way.
 
 'use client';
 

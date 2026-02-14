@@ -263,9 +263,16 @@ def update_time_entry(entry_id: int, update_dict: dict) -> Optional[dict]:
         if key in update_dict and update_dict[key]:
             update_dict[key] = update_dict[key].isoformat() if hasattr(update_dict[key], 'isoformat') else update_dict[key]
 
+    _ALLOWED_TIME_ENTRY_COLUMNS = frozenset({
+        "description", "start_time", "end_time", "duration_minutes",
+        "amount", "is_billable", "task_description", "updated_at",
+    })
+
     set_parts = []
     params: list = []
     for field, value in update_dict.items():
+        if field not in _ALLOWED_TIME_ENTRY_COLUMNS:
+            continue
         set_parts.append(f"{field} = ?")
         params.append(value)
 

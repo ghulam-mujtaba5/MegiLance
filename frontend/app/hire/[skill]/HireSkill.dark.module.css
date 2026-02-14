@@ -1,0 +1,88 @@
+/* @AI-HINT: Hire skill directory page - dark theme colors */
+
+.page {
+  background-color: #111827;
+}
+
+.hero {
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+}
+
+.breadcrumbLink {
+  color: #9ca3af;
+}
+
+.breadcrumbLink:hover {
+  color: #60a5fa;
+}
+
+.breadcrumbCurrent {
+  color: #f9fafb;
+  font-weight: 500;
+}
+
+.heroTitle {
+  color: #f9fafb;
+}
+
+.heroHighlight {
+  color: #60a5fa;
+}
+
+.heroSubtitle {
+  color: #d1d5db;
+}
+
+.statItem {
+  color: #f9fafb;
+}
+
+.statLabel {
+  color: #9ca3af;
+}
+
+.section {
+  background-color: #111827;
+}
+
+.sectionTitle {
+  color: #f9fafb;
+}
+
+.industryCard {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.industryName {
+  color: #f9fafb;
+}
+
+.industryGrowth {
+  color: #4ade80;
+}
+
+.relatedCard {
+  background-color: #1f2937;
+}
+
+.relatedName {
+  color: #f9fafb;
+}
+
+.relatedRate {
+  color: #4ade80;
+  font-size: 0.875rem;
+}
+
+.ctaSection {
+  background-color: #1f2937;
+}
+
+.ctaTitle {
+  color: #f9fafb;
+}
+
+.ctaSubtitle {
+  color: #d1d5db;
+}

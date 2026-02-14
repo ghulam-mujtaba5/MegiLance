@@ -1,4 +1,4 @@
-// @AI-HINT: This is a theme-aware, accessible Slider component built on top of the Radix UI Slider primitive. It's designed for premium, investor-grade applications, featuring per-component CSS modules for styling and robust type definitions for props.
+// @AI-HINT: This is a theme-aware, accessible Slider component built on top of the Radix UI Slider primitive. It's designed for premium, production-ready applications, featuring per-component CSS modules for styling and robust type definitions for props.
 'use client';
 
 import * as React from 'react';

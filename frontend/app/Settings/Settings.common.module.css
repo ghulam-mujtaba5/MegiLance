@@ -1,0 +1,226 @@
+/* @AI-HINT: Common/layout styles for the enterprise Settings hub page */
+
+.page {
+  padding: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.headerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  font-family: var(--font-heading, 'Poppins', sans-serif);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  margin: 0.125rem 0 0;
+}
+
+/* Search */
+.searchBox {
+  position: relative;
+  width: 260px;
+  flex-shrink: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  border: 1px solid transparent;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: var(--font-body, 'Inter', sans-serif);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary, #4573df);
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+/* Categories */
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.categoryLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding-left: 0.25rem;
+  margin: 0;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+/* Cards */
+.card {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.125rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: all 0.2s ease;
+  font-family: var(--font-body, 'Inter', sans-serif);
+}
+
+.card:hover {
+  transform: translateY(-1px);
+}
+
+.card:active {
+  transform: translateY(0);
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.cardContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardTitle {
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.cardBadge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cardDesc {
+  font-size: 0.75rem;
+  margin: 0.125rem 0 0;
+  line-height: 1.4;
+}
+
+.cardArrow {
+  flex-shrink: 0;
+  opacity: 0;
+  transition: all 0.2s ease;
+  transform: translateX(-4px);
+}
+
+.card:hover .cardArrow {
+  opacity: 0.6;
+  transform: translateX(0);
+}
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 4rem 2rem;
+  text-align: center;
+  opacity: 0.45;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page {
+    padding: 1.25rem;
+    gap: 1.5rem;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+
+  .searchBox {
+    width: 100%;
+  }
+
+  .categoryGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .cardArrow,
+  .searchInput {
+    transition: none !important;
+    transform: none !important;
+  }
+}

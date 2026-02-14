@@ -36,13 +36,15 @@ const Freelancers: React.FC = () => {
       id: String(f.id ?? idx),
       name: f.name ?? 'Unknown',
       avatarUrl: f.avatarUrl ?? '',
-      title: f.title ?? f.role ?? 'Freelancer',
+      title: f.headline ?? f.title ?? f.role ?? 'Freelancer',
       hourlyRate: typeof f.rate === 'number' ? f.rate : parseFloat(String(f.rate || '0').replace(/[^0-9.]/g, '')),
       location: f.location ?? 'Remote',
       skills: Array.isArray(f.skills) ? f.skills : [],
       rating: f.rating ?? 4.5,
-      availability: (f.availability as any) ?? 'available',
-      matchScore: f.matchScore ?? Math.floor(Math.random() * 30) + 70, // Mock match score if missing
+      availability: (f.availability_status as any) ?? (f.availability as any) ?? 'available',
+      experienceLevel: f.experience_level ?? '',
+      languages: f.languages ?? '',
+      matchScore: f.matchScore ?? Math.floor(Math.random() * 30) + 70,
       isVerified: f.isVerified ?? false,
       confidenceLevel: 85 + Math.floor(Math.random() * 10),
       matchReasons: ['Skills match project requirements', 'High client satisfaction', 'Available immediately']
@@ -136,6 +138,7 @@ const Freelancers: React.FC = () => {
                 { value: 'name', label: 'Sort by Name' },
                 { value: 'rate', label: 'Sort by Rate' },
                 { value: 'rating', label: 'Sort by Rating' },
+                { value: 'availability', label: 'Sort by Availability' },
               ]}
               aria-label="Sort by field"
             />
@@ -152,8 +155,8 @@ const Freelancers: React.FC = () => {
             <Button
               variant="secondary"
               onClick={() => {
-                const header = ['ID','Name','Title','Rate','Location','Availability','Skills', 'Rating'];
-                const data = sorted.map(f => [f.id, f.name, f.title, f.hourlyRate, f.location, f.availability, f.skills.join(' | '), f.rating.toFixed(1)]);
+                const header = ['ID','Name','Title','Rate','Location','Availability','Skills', 'Rating', 'Experience Level', 'Languages'];
+                const data = sorted.map(f => [f.id, f.name, f.title, f.hourlyRate, f.location, f.availability, f.skills.join(' | '), f.rating.toFixed(1), f.experienceLevel, f.languages]);
                 const csv = [header, ...data]
                   .map(r => r.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
                   .join('\n');

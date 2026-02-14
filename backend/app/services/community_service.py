@@ -1,11 +1,5 @@
 # @AI-HINT: Community Hub service layer - all database operations for Q&A, Playbooks, Office Hours
-"""
-Service layer for the Community Hub.
-Handles all database interactions for community features:
-- Q&A questions and answers
-- Playbooks (guides/tutorials)
-- Office Hours (scheduled sessions)
-"""
+"""Service layer for the Community Hub."""
 
 from datetime import datetime, timezone
 from typing import Optional, List
@@ -13,22 +7,9 @@ import json
 import logging
 
 from app.db.turso_http import execute_query
+from app.services.db_utils import get_val as _get_val
 
 logger = logging.getLogger(__name__)
-
-
-# ==================== Helper Functions ====================
-
-def _get_val(row: list, idx: int):
-    """Extract value from database row."""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if isinstance(cell, dict):
-        if cell.get("type") == "null":
-            return None
-        return cell.get("value")
-    return cell
 
 
 def _row_to_question(row: list, truncate_content: bool = False) -> dict:

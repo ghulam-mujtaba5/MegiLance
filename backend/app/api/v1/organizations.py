@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field, EmailStr
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import sanitize_text
 from app.models.user import User
 from app.services.organizations import (
     get_organization_service,
@@ -73,10 +74,10 @@ async def create_organization(
     
     org = await service.create_organization(
         owner_id=current_user["id"],
-        name=request.name,
+        name=sanitize_text(request.name, 100),
         org_type=request.org_type,
-        description=request.description,
-        website=request.website
+        description=sanitize_text(request.description, 1000) if request.description else None,
+        website=sanitize_text(request.website, 500) if request.website else None
     )
     
     return {"organization": org, "message": "Organization created successfully"}
@@ -96,7 +97,9 @@ async def get_my_organizations(
 
 
 @router.get("/roles")
-async def get_available_roles():
+async def get_available_roles(
+    current_user = Depends(get_current_active_user)
+):
     """Get available organization roles and their permissions."""
     roles = []
     for role in OrganizationRole:
@@ -238,7 +241,7 @@ async def invite_member(
         invited_by=current_user["id"],
         email=request.email,
         role=request.role,
-        message=request.message
+        message=sanitize_text(request.message, 500) if request.message else None
     )
     
     if not invite:

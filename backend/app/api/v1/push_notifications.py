@@ -13,10 +13,11 @@ Features:
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
+from app.services.db_utils import sanitize_text
 from app.services.push_notifications import (
     get_push_notification_service, 
     DevicePlatform, 
@@ -39,8 +40,8 @@ class UpdateTokenRequest(BaseModel):
 
 
 class SendNotificationRequest(BaseModel):
-    title: str
-    body: str
+    title: str = Field(..., max_length=200)
+    body: str = Field(..., max_length=2000)
     data: Optional[Dict[str, Any]] = None
     image_url: Optional[str] = None
     priority: NotificationPriority = NotificationPriority.HIGH
@@ -173,8 +174,8 @@ async def send_notification(
     
     notification = await service.send_notification(
         user_id=current_user["id"],
-        title=request.title,
-        body=request.body,
+        title=sanitize_text(request.title, 200),
+        body=sanitize_text(request.body, 2000),
         data=request.data,
         image_url=request.image_url,
         priority=request.priority,
@@ -189,9 +190,9 @@ async def send_notification(
 async def send_to_device(
     request: SendToDeviceRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(require_admin)
 ):
-    """Send push notification to a specific device."""
+    """Send push notification to a specific device (admin only)."""
     service = get_push_notification_service(db)
     
     result = await service.send_to_device(
@@ -209,10 +210,9 @@ async def send_to_device(
 async def send_batch_notifications(
     request: SendBatchRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(require_admin)
 ):
     """Send push notification to multiple users (admin only)."""
-    # In production, check admin role
     
     service = get_push_notification_service(db)
     
@@ -349,9 +349,9 @@ async def unsubscribe_from_topic(
 async def send_to_topic(
     request: SendToTopicRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(require_admin)
 ):
-    """Send notification to all devices subscribed to a topic."""
+    """Send notification to all devices subscribed to a topic (admin only)."""
     service = get_push_notification_service(db)
     
     result = await service.send_to_topic(

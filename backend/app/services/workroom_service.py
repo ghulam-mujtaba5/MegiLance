@@ -6,22 +6,9 @@ from datetime import datetime, timezone
 from typing import Optional, List, Tuple
 
 from app.db.turso_http import execute_query
+from app.services.db_utils import get_val as _get_val
 
 logger = logging.getLogger(__name__)
-
-
-# ==================== Row Helpers ====================
-
-def _get_val(row: list, idx: int):
-    """Extract value from database row."""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if isinstance(cell, dict):
-        if cell.get("type") == "null":
-            return None
-        return cell.get("value")
-    return cell
 
 
 # ==================== Table Initialization ====================

@@ -1,3 +1,4 @@
+// @AI-HINT: Animated 3D globe background component for hero sections using dynamic import
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -8,13 +9,33 @@ import commonStyles from './GlobeBackground.common.module.css';
 // Dynamically import Globe to avoid SSR issues with Three.js
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
 
+/** Returns true when the globe should NOT render (reduced-motion or low-end device). */
+function shouldSkipGlobe(): boolean {
+  if (typeof window === 'undefined') return false;
+  // Respect prefers-reduced-motion
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return true;
+  // Skip on low-end devices (≤2 logical cores or ≤4 GB RAM)
+  const nav = navigator as Navigator & { deviceMemory?: number };
+  if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return true;
+  if (nav.deviceMemory !== undefined && nav.deviceMemory <= 4) return true;
+  return false;
+}
+
 const GlobeBackground = () => {
   const globeEl = useRef<any>(null);
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    if (shouldSkipGlobe()) return;
+    // Defer globe initialization until the main thread is idle to avoid hurting LCP
+    const id = 'requestIdleCallback' in window
+      ? (window as any).requestIdleCallback(() => setReady(true), { timeout: 3000 })
+      : setTimeout(() => setReady(true), 1500);
+    return () => {
+      if ('cancelIdleCallback' in window) (window as any).cancelIdleCallback(id);
+      else clearTimeout(id);
+    };
   }, []);
 
   useEffect(() => {
@@ -23,9 +44,9 @@ const GlobeBackground = () => {
       globeEl.current.controls().autoRotateSpeed = 0.5;
       globeEl.current.controls().enableZoom = false;
     }
-  }, [mounted]);
+  }, [ready]);
 
-  if (!mounted) return null;
+  if (!ready) return null;
 
   // Theme-based colors
   const isDark = resolvedTheme === 'dark';

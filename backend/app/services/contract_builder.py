@@ -1,16 +1,5 @@
 # @AI-HINT: Visual contract builder with clause library
-"""
-Contract Builder Service - Visual contract creation with templates and clauses.
-
-Features:
-- Contract template library
-- Clause library with categories
-- Visual drag-and-drop builder
-- Variable substitution
-- Version control
-- E-signature integration
-- Contract comparison
-"""
+"""Contract Builder Service - Visual contract creation with templates and clauses."""
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any

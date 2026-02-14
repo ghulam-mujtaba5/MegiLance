@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
+from datetime import datetime, timezone
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
@@ -59,7 +60,8 @@ class AttachToContractRequest(BaseModel):
 @router.get("/templates")
 async def get_templates(
     category: Optional[str] = Query(None, description="Filter by category"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)
 ):
     """Get available legal document templates."""
     service = get_legal_document_service(db)
@@ -69,7 +71,8 @@ async def get_templates(
 
 @router.get("/templates/categories")
 async def get_template_categories(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)
 ):
     """Get list of template categories."""
     service = get_legal_document_service(db)
@@ -80,7 +83,8 @@ async def get_template_categories(
 @router.get("/templates/{doc_type}")
 async def get_template(
     doc_type: DocumentType,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)
 ):
     """Get a specific template."""
     service = get_legal_document_service(db)
@@ -117,7 +121,8 @@ async def generate_document(
 @router.post("/preview")
 async def preview_document(
     request: PreviewDocumentRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_active_user)
 ):
     """Preview a document without saving."""
     service = get_legal_document_service(db)
@@ -389,6 +394,3 @@ async def create_quick_nda(
         "document": doc_result["document"],
         "signature_request": sig_result["signature_request"]
     }
-
-
-from datetime import datetime, timezone

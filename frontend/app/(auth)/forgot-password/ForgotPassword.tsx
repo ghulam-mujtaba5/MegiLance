@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
@@ -56,19 +57,12 @@ const ForgotPassword: React.FC = () => {
     
     setLoading(true);
     try {
-      // Call the password reset API
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
-      });
-      
-      // Always show success to prevent email enumeration
-      setSubmitted(true);
-    } catch (err) {
-      // Still show success to prevent email enumeration attacks
-      setSubmitted(true);
+      await api.auth.forgotPassword(email.trim().toLowerCase());
+    } catch {
+      // Ignore errors to prevent email enumeration
     } finally {
+      // Always show success to prevent email enumeration attacks
+      setSubmitted(true);
       setLoading(false);
     }
   };

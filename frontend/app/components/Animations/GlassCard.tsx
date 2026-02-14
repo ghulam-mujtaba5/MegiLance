@@ -1,3 +1,4 @@
+// @AI-HINT: Glassmorphism card animation component with frosted-glass effect and motion transitions
 'use client';
 
 import React from 'react';

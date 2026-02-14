@@ -15,3 +15,7 @@
 .skeletonCard {
   background-color: var(--surface-alt);
 }
+
+.resultsCount {
+  color: var(--text-secondary);
+}

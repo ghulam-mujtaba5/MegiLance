@@ -15,7 +15,7 @@ from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.models.user import User
 from app.services.email_templates import (
     get_email_templates_service,
@@ -57,16 +57,9 @@ class PreviewTemplateRequest(BaseModel):
 async def list_templates(
     include_inactive: bool = False,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
-    """List all email templates."""
-    # Admin only
-    if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
-    
+    """List all email templates (admin only)."""
     service = get_email_templates_service(db)
     templates = await service.list_templates(include_inactive)
     
@@ -76,7 +69,7 @@ async def list_templates(
 @router.get("/types")
 async def list_template_types(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """List all available template types."""
     types = [
@@ -90,14 +83,9 @@ async def list_template_types(
 async def get_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
-    """Get a specific template."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
+    """Get a specific template (admin only)."""
     
     service = get_email_templates_service(db)
     template = await service.get_template_by_id(template_id)
@@ -115,15 +103,9 @@ async def get_template(
 async def create_template(
     request: CreateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
-    """Create a custom email template."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
-    
+    """Create a custom email template (admin only)."""
     service = get_email_templates_service(db)
     
     template = await service.create_template(
@@ -133,7 +115,7 @@ async def create_template(
         html_body=request.html_body,
         text_body=request.text_body,
         variables=request.variables,
-        created_by=current_user["id"]
+        created_by=current_user.id
     )
     
     return {"template": template, "message": "Template created successfully"}
@@ -144,14 +126,9 @@ async def update_template(
     template_id: str,
     request: UpdateTemplateRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
-    """Update an email template."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
+    """Update an email template (admin only)."""
     
     service = get_email_templates_service(db)
     
@@ -171,14 +148,9 @@ async def update_template(
 async def delete_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
-    """Delete a custom template (system templates cannot be deleted)."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
+    """Delete a custom template (admin only, system templates protected)."""
     
     service = get_email_templates_service(db)
     
@@ -198,14 +170,9 @@ async def preview_template(
     template_id: str,
     request: PreviewTemplateRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
-    """Preview a template with sample data."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
+    """Preview a template with sample data (admin only)."""
     
     service = get_email_templates_service(db)
     
@@ -227,20 +194,14 @@ async def preview_template(
 async def duplicate_template(
     template_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
-    """Duplicate a template."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
-        )
-    
+    """Duplicate a template (admin only)."""
     service = get_email_templates_service(db)
     
     template = await service.duplicate_template(
         template_id=template_id,
-        created_by=current_user["id"]
+        created_by=current_user.id
     )
     
     if not template:
@@ -257,7 +218,7 @@ async def render_template(
     template_type: EmailTemplateType,
     request: RenderTemplateRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """Render a template with provided variables."""
     service = get_email_templates_service(db)

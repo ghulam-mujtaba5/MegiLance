@@ -1,4 +1,4 @@
-/* AI-HINT: Premium skeleton loader component. Per-component CSS (common/light/dark). Use to indicate loading areas beyond global loader. */
+// @AI-HINT: Premium skeleton loader component with per-component CSS modules for loading placeholders
 'use client';
 
 import React from 'react';

@@ -1,15 +1,5 @@
 # @AI-HINT: Marketplace search and discovery service
-"""
-Marketplace Service - Advanced search and discovery features.
-
-Features:
-- Smart search
-- Advanced filtering
-- Category browsing
-- Trending & featured
-- Personalized recommendations
-- Search suggestions
-"""
+"""Marketplace Service - Advanced search and discovery features."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

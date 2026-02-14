@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import paginate_params
 
 router = APIRouter(prefix="/review-responses")
 
@@ -41,12 +42,13 @@ class ReviewWithResponse(BaseModel):
 
 @router.get("/pending", response_model=List[ReviewWithResponse])
 async def get_pending_reviews(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get reviews awaiting response"""
+    offset, limit = paginate_params(page, page_size)
     return [
         ReviewWithResponse(
             review_id=f"review-{i}",
@@ -63,12 +65,13 @@ async def get_pending_reviews(
 
 @router.get("/responded", response_model=List[ReviewWithResponse])
 async def get_responded_reviews(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get reviews with responses"""
+    offset, limit = paginate_params(page, page_size)
     return [
         ReviewWithResponse(
             review_id=f"review-{i}",

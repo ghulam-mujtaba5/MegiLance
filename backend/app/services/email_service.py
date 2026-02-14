@@ -9,11 +9,13 @@ from email.mime.base import MIMEBase
 from email import encoders
 import smtplib
 import os
+import logging
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from app.core.config import get_settings
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 class EmailService:
     """
@@ -85,8 +87,8 @@ class EmailService:
             # Send email
             if self.smtp_server == "smtp.gmail.com" and not self.smtp_username:
                 # Mock email sending if not configured
-                print(f"[MOCK EMAIL] To: {to_email}, Subject: {subject}")
-                print(f"[MOCK EMAIL] Content: {text_content or html_content[:100]}...")
+                logger.info("[MOCK EMAIL] To: %s, Subject: %s", to_email, subject)
+                logger.debug("[MOCK EMAIL] Content: %s...", (text_content or html_content[:100]))
                 return True
 
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
@@ -98,7 +100,7 @@ class EmailService:
             return True
             
         except Exception as e:
-            print(f"Error sending email: {str(e)}")
+            logger.error("Failed to send email: %s", e)
             return False
     
     def render_template(self, template_name: str, context: Dict[str, Any]) -> str:

@@ -4,7 +4,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List, Dict, Any
 
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.core.rate_limit import api_rate_limit
 from app.core.websocket import websocket_manager
 from pydantic import BaseModel
@@ -91,11 +91,10 @@ def check_user_online(
 async def send_test_notification(
     request: SendNotificationRequest,
     current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin),
 ):
     """
-    Send a test notification to a user (for testing WebSocket)
-    
-    Admin/testing endpoint to verify WebSocket functionality.
+    Send a test notification to a user (admin only).
     """
     notification = {
         "id": "test",

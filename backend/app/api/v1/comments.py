@@ -19,6 +19,7 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from ...core.security import get_current_active_user
 from ...services.comments import comments_service
+from ...services.db_utils import sanitize_text
 import logging
 
 logger = logging.getLogger("megilance")
@@ -68,7 +69,7 @@ async def create_comment(
             user_id=str(current_user.get("id")),
             resource_type=request.resource_type,
             resource_id=request.resource_id,
-            content=request.content,
+            content=sanitize_text(request.content, 10000),
             parent_comment_id=request.parent_comment_id,
             attachments=request.attachments
         )
@@ -160,7 +161,7 @@ async def update_comment(
             db=db,
             user_id=str(current_user.get("id")),
             comment_id=comment_id,
-            content=request.content
+            content=sanitize_text(request.content, 10000)
         )
         return result
     except ValueError as e:

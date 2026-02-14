@@ -59,6 +59,18 @@
   flex-wrap: wrap;
 }
 
+.filtersRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.resultsCount {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));

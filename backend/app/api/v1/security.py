@@ -136,8 +136,8 @@ async def list_mfa_methods(
             db=db
         )
         return methods
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to list MFA methods")
 
 
 # Risk-Based Authentication
@@ -161,8 +161,8 @@ async def assess_login_risk(
             db=db
         )
         return RiskAssessmentResponse(**assessment)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Risk assessment failed")
 
 
 # Session Management
@@ -179,8 +179,8 @@ async def list_sessions(
             db=db
         )
         return [SessionResponse(**session) for session in sessions]
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to list sessions")
 
 
 @router.delete("/sessions/{session_id}", status_code=status.HTTP_200_OK)
@@ -197,8 +197,8 @@ async def terminate_session(
             db=db
         )
         return {"message": "Session terminated successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to terminate session")
 
 
 # Security Events
@@ -217,5 +217,5 @@ async def get_security_events(
             db=db
         )
         return {"events": events, "total": len(events)}
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to get security events")

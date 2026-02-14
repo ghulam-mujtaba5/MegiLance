@@ -15,7 +15,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.models.user import User
 from app.services.moderation import (
     ContentModerationService,
@@ -210,11 +210,9 @@ async def admin_list_reports(
     user_id: Optional[int] = None,
     limit: int = 50,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """List all reports (admin only)."""
-    if not hasattr(current_user, 'role') or current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     service = ContentModerationService(db)
     
@@ -238,11 +236,9 @@ async def admin_list_reports(
 async def admin_get_report(
     report_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Get report details (admin only)."""
-    if not hasattr(current_user, 'role') or current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     service = ContentModerationService(db)
     
@@ -259,11 +255,9 @@ async def admin_resolve_report(
     report_id: str,
     request: ResolveReportRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Resolve a report (admin only)."""
-    if not hasattr(current_user, 'role') or current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     service = ContentModerationService(db)
     
@@ -283,11 +277,9 @@ async def admin_resolve_report(
 @router.get("/admin/stats")
 async def admin_get_stats(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Get moderation statistics (admin only)."""
-    if not hasattr(current_user, 'role') or current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     service = ContentModerationService(db)
     
@@ -301,11 +293,9 @@ async def admin_block_user(
     user_id: int,
     days: int = 7,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Block a user (admin only)."""
-    if not hasattr(current_user, 'role') or current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     from datetime import timedelta, timezone
     
@@ -324,11 +314,9 @@ async def admin_block_user(
 async def admin_unblock_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Unblock a user (admin only)."""
-    if not hasattr(current_user, 'role') or current_user.role != 'admin':
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     from datetime import datetime
     

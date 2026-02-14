@@ -1,4 +1,4 @@
-// @AI-HINT: The Sidebar provides primary navigation for the dashboard. It's a key component for achieving a premium, investor-grade UI, offering consistent branding, user context, and clear navigation pathways with modern enhancements.
+// @AI-HINT: The Sidebar provides primary navigation for the dashboard. It's a key component for achieving a premium, production-ready UI, offering consistent branding, user context, and clear navigation pathways with modern enhancements.
 
 'use client';
 

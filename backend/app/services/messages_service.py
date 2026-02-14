@@ -5,11 +5,11 @@ from datetime import datetime, timezone
 from typing import Optional, List
 
 from app.db.turso_http import execute_query, parse_rows
+from app.services.db_utils import SCRIPT_PATTERN, sanitize_text
 
 logger = logging.getLogger(__name__)
 
 MAX_MESSAGE_LENGTH = 10000
-SCRIPT_PATTERN = re.compile(r'(javascript:|on\w+=|<script)', re.IGNORECASE)
 
 
 def sanitize_content(content: Optional[str], max_length: int = MAX_MESSAGE_LENGTH) -> Optional[str]:
@@ -19,7 +19,7 @@ def sanitize_content(content: Optional[str], max_length: int = MAX_MESSAGE_LENGT
     content = content.strip()
     if len(content) > max_length:
         content = content[:max_length]
-    content = SCRIPT_PATTERN.sub('', content)
+    content = sanitize_text(content)
     return content
 
 
@@ -365,3 +365,44 @@ def _count_unread_in_conversation(conversation_id: int, user_id: int) -> int:
         if rows:
             return rows[0].get("count", 0)
     return 0
+
+
+def search_messages(user_id: int, query: str, conversation_id: Optional[int],
+                    limit: int, skip: int) -> List[dict]:
+    """
+    Search messages by content across user's conversations.
+    Sanitizes search term and only returns messages the user can access.
+    """
+    import re
+    # Sanitize query for LIKE
+    safe_q = query[:200]
+    safe_q = safe_q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    safe_q = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', safe_q)
+
+    params: list = []
+    where = "m.is_deleted = 0 AND (m.sender_id = ? OR m.receiver_id = ?)"
+    params.extend([user_id, user_id])
+
+    if conversation_id:
+        where += " AND m.conversation_id = ?"
+        params.append(conversation_id)
+
+    where += " AND m.content LIKE ? ESCAPE '\\'"
+    params.append(f"%{safe_q}%")
+
+    params.extend([limit, skip])
+
+    result = execute_query(
+        f"""SELECT m.id, m.conversation_id, m.sender_id, m.receiver_id,
+                   m.content, m.message_type, m.is_read, m.sent_at,
+                   u.name as sender_name
+            FROM messages m
+            LEFT JOIN users u ON m.sender_id = u.id
+            WHERE {where}
+            ORDER BY m.sent_at DESC
+            LIMIT ? OFFSET ?""",
+        params
+    )
+    if not result:
+        return []
+    return parse_rows(result)

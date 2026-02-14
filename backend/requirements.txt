@@ -33,7 +33,7 @@ python-socketio==5.14.3
 python-magic==0.4.27
 
 # Cloud storage (S3, DigitalOcean Spaces, Cloudflare R2)
-boto3>=1.28.0
+boto3==1.42.4
 
 # Testing
 pytest-asyncio==0.25.1
@@ -44,7 +44,7 @@ pytest-cov==6.0.0
 # Note: Requires Rust toolchain to compile on Windows
 # Install Rust from: https://rustup.rs/
 # Or use Docker for deployment (includes pre-built packages)
-sqlalchemy-libsql>=0.2.0
+sqlalchemy-libsql==0.2.2
 requests==2.31.0
 
 # MongoDB - Optional (for blog/advanced features only)

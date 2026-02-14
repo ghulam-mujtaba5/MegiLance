@@ -1,17 +1,5 @@
-# @AI-HINT: Production-grade skill assessment engine with auto-grading, code execution, and certification badges
-"""
-Skill Assessment Engine
-=======================
-Billion-dollar feature: Professional skill verification like Toptal/Upwork
-- Multiple question types (MCQ, coding, free-form)
-- Sandboxed code execution with test cases
-- Auto-grading with partial credit
-- Time-limited assessments
-- Proctoring features (focus tracking)
-- Skill badges and certifications
-- Difficulty levels (basic, intermediate, expert)
-- Industry-standard benchmarks
-"""
+# @AI-HINT: Skill assessment engine with auto-grading and certification
+"""Skill verification service: MCQ/coding assessments, auto-grading, and badges."""
 
 import logging
 import hashlib
@@ -19,6 +7,7 @@ import json
 import subprocess
 import tempfile
 import os
+from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 from datetime import datetime, timedelta, timezone
 from enum import Enum
@@ -55,144 +44,17 @@ class BadgeType(str, Enum):
 
 
 # ============================================================================
-# QUESTION BANK (Would be in database in production)
+# QUESTION BANK — loaded from data/question_bank.json
+# TODO: migrate to database for dynamic question management
 # ============================================================================
 
-QUESTION_BANK: Dict[str, List[Dict[str, Any]]] = {
-    "python": [
-        {
-            "id": "py_001",
-            "type": QuestionType.MCQ.value,
-            "difficulty": DifficultyLevel.BASIC.value,
-            "question": "What is the output of `print(type([]))`?",
-            "options": ["<class 'list'>", "<class 'array'>", "<class 'tuple'>", "<class 'set'>"],
-            "correct": 0,
-            "points": 1,
-            "time_seconds": 30
-        },
-        {
-            "id": "py_002",
-            "type": QuestionType.MCQ.value,
-            "difficulty": DifficultyLevel.BASIC.value,
-            "question": "Which keyword is used to define a function in Python?",
-            "options": ["function", "def", "func", "define"],
-            "correct": 1,
-            "points": 1,
-            "time_seconds": 20
-        },
-        {
-            "id": "py_003",
-            "type": QuestionType.MCQ.value,
-            "difficulty": DifficultyLevel.INTERMEDIATE.value,
-            "question": "What does `*args` allow in a function?",
-            "options": [
-                "Passing keyword arguments",
-                "Passing variable number of arguments",
-                "Unpacking a list",
-                "Creating a generator"
-            ],
-            "correct": 1,
-            "points": 2,
-            "time_seconds": 45
-        },
-        {
-            "id": "py_004",
-            "type": QuestionType.CODE.value,
-            "difficulty": DifficultyLevel.INTERMEDIATE.value,
-            "question": "Write a function `fibonacci(n)` that returns the nth Fibonacci number.",
-            "starter_code": "def fibonacci(n):\n    # Your code here\n    pass",
-            "test_cases": [
-                {"input": [0], "expected": 0},
-                {"input": [1], "expected": 1},
-                {"input": [10], "expected": 55},
-                {"input": [20], "expected": 6765}
-            ],
-            "points": 5,
-            "time_seconds": 300
-        },
-        {
-            "id": "py_005",
-            "type": QuestionType.CODE.value,
-            "difficulty": DifficultyLevel.EXPERT.value,
-            "question": "Implement a `LRUCache` class with `get(key)` and `put(key, value)` methods. Capacity is passed to __init__.",
-            "starter_code": "class LRUCache:\n    def __init__(self, capacity: int):\n        pass\n    \n    def get(self, key: int) -> int:\n        pass\n    \n    def put(self, key: int, value: int) -> None:\n        pass",
-            "test_cases": [
-                {
-                    "input": ["LRUCache(2)", "put(1,1)", "put(2,2)", "get(1)", "put(3,3)", "get(2)"],
-                    "expected": [None, None, None, 1, None, -1]
-                }
-            ],
-            "points": 10,
-            "time_seconds": 900
-        }
-    ],
-    "javascript": [
-        {
-            "id": "js_001",
-            "type": QuestionType.MCQ.value,
-            "difficulty": DifficultyLevel.BASIC.value,
-            "question": "Which method adds an element to the end of an array?",
-            "options": ["push()", "pop()", "shift()", "unshift()"],
-            "correct": 0,
-            "points": 1,
-            "time_seconds": 30
-        },
-        {
-            "id": "js_002",
-            "type": QuestionType.MCQ.value,
-            "difficulty": DifficultyLevel.INTERMEDIATE.value,
-            "question": "What is a closure in JavaScript?",
-            "options": [
-                "A function that closes another function",
-                "A function that has access to its outer scope variables",
-                "A way to close a browser window",
-                "A method to end a loop"
-            ],
-            "correct": 1,
-            "points": 2,
-            "time_seconds": 45
-        },
-        {
-            "id": "js_003",
-            "type": QuestionType.CODE.value,
-            "difficulty": DifficultyLevel.INTERMEDIATE.value,
-            "question": "Write a function `debounce(fn, delay)` that returns a debounced version of fn.",
-            "starter_code": "function debounce(fn, delay) {\n  // Your code here\n}",
-            "test_cases": [
-                {"description": "Should delay function call", "manual": True}
-            ],
-            "points": 5,
-            "time_seconds": 300
-        }
-    ],
-    "react": [
-        {
-            "id": "react_001",
-            "type": QuestionType.MCQ.value,
-            "difficulty": DifficultyLevel.BASIC.value,
-            "question": "What hook is used for side effects in React?",
-            "options": ["useState", "useEffect", "useContext", "useReducer"],
-            "correct": 1,
-            "points": 1,
-            "time_seconds": 30
-        },
-        {
-            "id": "react_002",
-            "type": QuestionType.MCQ.value,
-            "difficulty": DifficultyLevel.INTERMEDIATE.value,
-            "question": "When does useEffect with an empty dependency array run?",
-            "options": [
-                "On every render",
-                "Only on mount and unmount",
-                "Never",
-                "Only when state changes"
-            ],
-            "correct": 1,
-            "points": 2,
-            "time_seconds": 45
-        }
-    ]
-}
+_DATA_DIR = Path(__file__).parent / "data"
+
+def _load_question_bank() -> Dict[str, List[Dict[str, Any]]]:
+    with open(_DATA_DIR / "question_bank.json", encoding="utf-8") as f:
+        return json.load(f)
+
+QUESTION_BANK: Dict[str, List[Dict[str, Any]]] = _load_question_bank()
 
 
 # ============================================================================
@@ -210,100 +72,29 @@ class CodeExecutor:
     
     @staticmethod
     def execute_python(code: str, test_cases: List[Dict]) -> Dict[str, Any]:
-        """Execute Python code against test cases"""
-        results = []
-        all_passed = True
+        """
+        Execute Python code against test cases.
         
+        SECURITY: Actual code execution is disabled — running arbitrary user code
+        via subprocess without a proper sandbox (Docker/gVisor/Firecracker) is an
+        arbitrary-code-execution vulnerability. All submissions are flagged for
+        manual review instead.
+        """
+        results = []
         for i, test in enumerate(test_cases):
-            if test.get("manual"):
-                results.append({
-                    "test_id": i,
-                    "passed": None,
-                    "manual_review": True
-                })
-                continue
-            
-            try:
-                # Create temp file with code + test runner
-                test_code = f"""
-{code}
-
-# Test case
-import json
-try:
-    result = {test['input'][0] if isinstance(test['input'], list) else test['input']}
-    print(json.dumps({{"result": result}}))
-except Exception as e:
-    print(json.dumps({{"error": str(e)}}))
-"""
-                
-                with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-                    f.write(test_code)
-                    temp_path = f.name
-                
-                try:
-                    # Execute with timeout
-                    process = subprocess.run(
-                        ['python', temp_path],
-                        capture_output=True,
-                        text=True,
-                        timeout=CodeExecutor.TIMEOUT_SECONDS
-                    )
-                    
-                    output = process.stdout.strip()
-                    if output:
-                        result_data = json.loads(output)
-                        if "error" in result_data:
-                            results.append({
-                                "test_id": i,
-                                "passed": False,
-                                "error": result_data["error"]
-                            })
-                            all_passed = False
-                        else:
-                            actual = result_data.get("result")
-                            expected = test["expected"]
-                            passed = actual == expected
-                            
-                            results.append({
-                                "test_id": i,
-                                "passed": passed,
-                                "expected": expected,
-                                "actual": actual
-                            })
-                            if not passed:
-                                all_passed = False
-                    else:
-                        results.append({
-                            "test_id": i,
-                            "passed": False,
-                            "error": process.stderr or "No output"
-                        })
-                        all_passed = False
-                        
-                finally:
-                    os.unlink(temp_path)
-                    
-            except subprocess.TimeoutExpired:
-                results.append({
-                    "test_id": i,
-                    "passed": False,
-                    "error": "Execution timeout"
-                })
-                all_passed = False
-            except Exception as e:
-                results.append({
-                    "test_id": i,
-                    "passed": False,
-                    "error": str(e)
-                })
-                all_passed = False
+            results.append({
+                "test_id": i,
+                "passed": None,
+                "manual_review": True
+            })
         
         return {
-            "all_passed": all_passed,
+            "all_passed": False,
             "results": results,
-            "passed_count": sum(1 for r in results if r.get("passed") is True),
-            "total_count": len(results)
+            "total_tests": len(test_cases),
+            "passed_count": 0,
+            "manual_review_required": True,
+            "note": "Code execution requires sandboxed environment. Submitted for manual review."
         }
     
     @staticmethod

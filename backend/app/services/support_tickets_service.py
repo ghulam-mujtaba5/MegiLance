@@ -106,11 +106,19 @@ def list_tickets(user_id, is_admin: bool, assigned_to_me: bool,
     return {"tickets": tickets, "total": total, "page": page, "page_size": page_size}
 
 
+_ALLOWED_TICKET_COLUMNS = frozenset({
+    "subject", "description", "status", "priority", "category",
+    "assigned_to", "resolution", "updated_at",
+})
+
+
 def update_ticket_fields(ticket_id, update_dict: dict) -> Optional[dict]:
     """Update specified fields on a ticket and return the updated ticket."""
     set_parts = []
     params = []
     for field, value in update_dict.items():
+        if field not in _ALLOWED_TICKET_COLUMNS:
+            continue
         set_parts.append(f"{field} = ?")
         params.append(value)
 

@@ -1,8 +1,9 @@
 # @AI-HINT: User model - core user entity with roles (Client/Freelancer/Admin), profile, and auth fields
-from sqlalchemy import String, Boolean, Integer, Float, DateTime, Text, ForeignKey
+from sqlalchemy import String, Boolean, Integer, Float, DateTime, Text, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import List, Optional
 import enum
 
@@ -18,14 +19,14 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
-    first_name: Mapped[str] = mapped_column(String(100), nullable=True)
-    last_name: Mapped[str] = mapped_column(String(100), nullable=True)
+    first_name: Mapped[str] = mapped_column(String(100), nullable=True)  # Optional granular name — see also: name field
+    last_name: Mapped[str] = mapped_column(String(100), nullable=True)  # Optional granular name — see also: name field
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     email_verification_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    name: Mapped[str] = mapped_column(String(255), nullable=True)
-    role: Mapped[str] = mapped_column(String(50), nullable=False, default="client")  # Role for authorization
+    name: Mapped[str] = mapped_column(String(255), nullable=True)  # Display name — may duplicate first_name+last_name; kept for frontend compat
+    role: Mapped[str] = mapped_column(String(50), nullable=False, default="client")  # Canonical auth field — use get_user_role() for access
     
     # Two-Factor Authentication fields
     two_factor_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -36,7 +37,7 @@ class User(Base):
     password_reset_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     password_reset_expires: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     last_password_changed: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    user_type: Mapped[str] = mapped_column(String(20), nullable=True, index=True)  # Freelancer, Client
+    user_type: Mapped[str] = mapped_column(String(20), nullable=True, index=True)  # Legacy display field — auth uses 'role'; synced via schema validator
     bio: Mapped[str] = mapped_column(Text, nullable=True)
     skills: Mapped[str] = mapped_column(Text, nullable=True)  # JSON string of skills
     hourly_rate: Mapped[float] = mapped_column(Float, nullable=True)
@@ -44,8 +45,8 @@ class User(Base):
     location: Mapped[str] = mapped_column(String(100), nullable=True)
     profile_data: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Stored as JSON string for portability
     notification_preferences: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON string for notification settings
-    account_balance: Mapped[float] = mapped_column(Float, default=0.0)
-    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
+    account_balance: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
+    # created_by: removed — self-referencing FK never populated or used by any endpoint
     joined_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
@@ -57,6 +58,34 @@ class User(Base):
     timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     availability_status: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # available, busy, away
     last_active_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    
+    # Enhanced profile fields
+    profile_slug: Mapped[Optional[str]] = mapped_column(String(100), unique=True, nullable=True, index=True)  # Shareable URL slug
+    headline: Mapped[Optional[str]] = mapped_column(String(300), nullable=True)  # Extended professional headline
+    experience_level: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # entry, intermediate, expert
+    years_of_experience: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    education: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of education entries
+    certifications: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of certifications
+    work_history: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of work experience
+    linkedin_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    github_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    website_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    twitter_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    dribbble_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    behance_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    stackoverflow_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    phone_number: Mapped[Optional[str]] = mapped_column(String(30), nullable=True)
+    video_intro_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # Video intro/pitch URL
+    resume_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)  # Resume/CV file URL
+    availability_hours: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # full_time, part_time, contract
+    preferred_project_size: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # small, medium, large, enterprise
+    industry_focus: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of industries
+    tools_and_technologies: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of tools
+    achievements: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON array of achievements/awards
+    testimonials_enabled: Mapped[Optional[bool]] = mapped_column(Boolean, default=True, nullable=True)
+    contact_preferences: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # JSON for contact method preferences
+    profile_views: Mapped[Optional[int]] = mapped_column(Integer, default=0, nullable=True)
+    profile_visibility: Mapped[Optional[str]] = mapped_column(String(20), default='public', nullable=True)  # public, private, unlisted
     
     # Relationships
     user_skills: Mapped[List["UserSkill"]] = relationship("UserSkill", foreign_keys="UserSkill.user_id", back_populates="user")

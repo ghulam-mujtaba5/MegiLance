@@ -1,17 +1,5 @@
 # @AI-HINT: Team collaboration tools for agency/team freelancing
-"""
-Team Collaboration Service - Multi-user team and agency management.
-
-Features:
-- Team creation and management
-- Role-based permissions
-- Shared workspaces
-- Team billing and earnings split
-- Invitation system
-- Team analytics
-- Activity feed
-- Shared resources/files
-"""
+"""Team Collaboration Service - Multi-user team and agency management."""
 
 import logging
 import secrets

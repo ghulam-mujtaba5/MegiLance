@@ -19,6 +19,7 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from ...core.security import get_current_active_user
 from ...services.saved_searches import saved_searches_service
+from ...services.db_utils import sanitize_text
 
 
 router = APIRouter()
@@ -86,10 +87,10 @@ async def save_search(
         result = await saved_searches_service.save_search(
             db=db,
             user_id=str(current_user.get("id")),
-            name=request.name,
+            name=sanitize_text(request.name, 100),
             category=request.category,
             criteria=request.criteria,
-            description=request.description,
+            description=sanitize_text(request.description, 500) if request.description else None,
             is_alert=request.is_alert,
             alert_frequency=request.alert_frequency
         )

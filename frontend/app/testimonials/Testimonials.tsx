@@ -25,7 +25,7 @@ const testimonials = [
     role: 'Head of Product, AtlasAI',
     category: 'Enterprise',
     quote:
-      'MegiLance delivered investor-grade velocity with uncompromising quality. Our AI rollout landed ahead of schedule.',
+      'MegiLance delivered production-ready velocity with uncompromising quality. Our AI rollout landed ahead of schedule.',
     avatar: '/images/testimonials/nora.jpg',
   },
   {

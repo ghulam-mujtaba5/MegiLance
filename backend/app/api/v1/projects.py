@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from app.models.user import User
 from app.schemas.project import ProjectCreate, ProjectRead, ProjectUpdate
 from app.core.security import get_current_active_user
+from app.services.db_utils import get_user_role, sanitize_text, paginate_params
 from app.db.turso_http import get_turso_http
 from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
 from app.api.v1.utils import moderate_content
@@ -24,7 +25,9 @@ router = APIRouter()
 MAX_TITLE_LENGTH = 200
 MAX_DESCRIPTION_LENGTH = 10000
 MAX_SEARCH_LENGTH = 100
-ALLOWED_STATUSES = {"open", "in_progress", "completed", "cancelled", "on_hold"}
+ALLOWED_STATUSES = {"open", "in_progress", "completed", "cancelled", "on_hold", "paused"}
+ALLOWED_SORT_OPTIONS = {"newest", "oldest", "budget_high", "budget_low", "most_proposals"}
+ALLOWED_EXPERIENCE_LEVELS = {"entry", "intermediate", "expert"}
 
 
 def sanitize_search_term(term: str) -> str:
@@ -97,52 +100,97 @@ def _row_to_project(row: list, columns: list = None) -> dict:
 
 @router.get("", response_model=List[ProjectRead])
 def list_projects(
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(100, ge=1, le=100, description="Max records to return"),
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Results per page"),
     project_status: Optional[str] = Query(None, alias="status", description="Filter by project status"),
     category: Optional[str] = Query(None, max_length=50, description="Filter by category"),
-    search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH, description="Search in title and description")
-):
-    """List projects from Turso database (Public)"""
+    search: Optional[str] = Query(None, max_length=MAX_SEARCH_LENGTH, description="Search in title and description"),
+    sort: Optional[str] = Query("newest", description="Sort order: newest, oldest, budget_high, budget_low, most_proposals"),
+    experience_level: Optional[str] = Query(None, description="Filter by experience level: entry, intermediate, expert"),
+    budget_min: Optional[float] = Query(None, ge=0, description="Minimum budget filter"),
+    budget_max: Optional[float] = Query(None, ge=0, description="Maximum budget filter"),
+) -> list[dict]:
+    """List projects from Turso database (Public) with advanced filtering and sorting"""
+    offset, limit = paginate_params(page, page_size)
     try:
         turso = get_turso_http()
         
-        # Build query with optional filters
-        sql = """SELECT id, title, description, category, budget_type, 
-                        budget_min, budget_max, experience_level, estimated_duration,
-                        skills, client_id, status, created_at, updated_at 
-                 FROM projects WHERE 1=1"""
+        # Validate sort option
+        if sort and sort not in ALLOWED_SORT_OPTIONS:
+            sort = "newest"
+        
+        # Build base query - include proposal count via subquery
+        sql = """SELECT p.id, p.title, p.description, p.category, p.budget_type, 
+                        p.budget_min, p.budget_max, p.experience_level, p.estimated_duration,
+                        p.skills, p.client_id, p.status, p.created_at, p.updated_at,
+                        COALESCE(pc.proposal_count, 0) as proposal_count
+                 FROM projects p
+                 LEFT JOIN (
+                     SELECT project_id, COUNT(*) as proposal_count
+                     FROM proposals WHERE is_draft = 0
+                     GROUP BY project_id
+                 ) pc ON p.id = pc.project_id
+                 WHERE 1=1"""
         params = []
         
         if project_status:
-            # Validate status
             if project_status.lower() not in ALLOWED_STATUSES:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Invalid status. Allowed: {', '.join(ALLOWED_STATUSES)}"
                 )
-            sql += " AND status = ?"
+            sql += " AND p.status = ?"
             params.append(project_status.lower())
         else:
-            # By default only show open projects for public list
-            sql += " AND status = 'open'"
+            sql += " AND p.status = 'open'"
             
         if category:
-            sql += " AND category = ?"
+            sql += " AND p.category = ?"
             params.append(category)
+        
+        if experience_level:
+            if experience_level.lower() not in ALLOWED_EXPERIENCE_LEVELS:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid experience level. Allowed: {', '.join(ALLOWED_EXPERIENCE_LEVELS)}"
+                )
+            sql += " AND p.experience_level = ?"
+            params.append(experience_level.lower())
+        
+        if budget_min is not None:
+            sql += " AND p.budget_max >= ?"
+            params.append(budget_min)
+        
+        if budget_max is not None:
+            sql += " AND p.budget_min <= ?"
+            params.append(budget_max)
+        
         if search:
-            # Sanitize search term
             safe_search = sanitize_search_term(search)
             if safe_search:
-                sql += " AND (title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\')"
+                sql += " AND (p.title LIKE ? ESCAPE '\\' OR p.description LIKE ? ESCAPE '\\')"
                 params.extend([f"%{safe_search}%", f"%{safe_search}%"])
         
-        sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
-        params.extend([limit, skip])
+        # Sorting
+        sort_map = {
+            "newest": "p.created_at DESC",
+            "oldest": "p.created_at ASC",
+            "budget_high": "p.budget_max DESC NULLS LAST",
+            "budget_low": "p.budget_min ASC NULLS LAST",
+            "most_proposals": "proposal_count DESC",
+        }
+        sql += f" ORDER BY {sort_map.get(sort, 'p.created_at DESC')}"
+        
+        sql += " LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
         
         result = turso.execute(sql, params)
         columns = result.get("columns", [])
-        projects = [_row_to_project(row, columns) for row in result.get("rows", [])]
+        projects = []
+        for row in result.get("rows", []):
+            proj = _row_to_project(row, columns[:14])  # First 14 columns are project fields
+            proj["proposal_count"] = int(row[14]) if len(row) > 14 and row[14] is not None else 0
+            projects.append(proj)
         return projects
         
     except HTTPException:
@@ -158,7 +206,7 @@ def list_projects(
 @router.get("/my-projects", response_model=List[ProjectRead])
 def get_my_projects(
     current_user: User = Depends(get_current_active_user)
-):
+) -> list[dict]:
     """Get projects for the current user (client's posted projects or freelancer's active projects)"""
     try:
         turso = get_turso_http()
@@ -196,7 +244,7 @@ def get_my_projects(
 @router.get("/{project_id}", response_model=ProjectRead)
 def get_project(
     project_id: int
-):
+) -> dict:
     """Get single project from Turso (Public)"""
     try:
         turso = get_turso_http()
@@ -227,7 +275,7 @@ def get_project(
 def create_project(
     project: ProjectCreate,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Create new project in Turso"""
     # Only clients can create projects
     if not current_user.user_type or current_user.user_type.lower() != "client":
@@ -258,25 +306,41 @@ def create_project(
         now = datetime.now(timezone.utc).isoformat()
         skills_str = ",".join(project.skills) if project.skills else ""
         
-        # Insert project
-        turso.execute(
-            """INSERT INTO projects (title, description, category, budget_type, 
+        # Insert project and get ID atomically
+        results = turso.execute_many([
+            {
+                "q": """INSERT INTO projects (title, description, category, budget_type, 
                                      budget_min, budget_max, experience_level, estimated_duration,
                                      skills, client_id, status, created_at, updated_at)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-            [project.title, project.description, project.category, project.budget_type,
-             project.budget_min, project.budget_max, project.experience_level, 
-             project.estimated_duration, skills_str, current_user.id,
-             project.status or "open", now, now]
-        )
+                "params": [sanitize_text(project.title, MAX_TITLE_LENGTH), sanitize_text(project.description, MAX_DESCRIPTION_LENGTH), project.category, project.budget_type,
+                 project.budget_min, project.budget_max, project.experience_level, 
+                 project.estimated_duration, skills_str, current_user.id,
+                 project.status or "open", now, now]
+            },
+            {
+                "q": "SELECT last_insert_rowid() as id",
+                "params": []
+            }
+        ])
         
-        # Get the created project by matching all unique fields
+        # Get the new project ID from the batch result
+        new_id = None
+        if len(results) >= 2:
+            id_rows = results[1].get("rows", [])
+            if id_rows:
+                new_id = id_rows[0][0]
+        
+        if not new_id:
+            raise HTTPException(status_code=500, detail="Project created but ID not retrieved")
+        
+        # Fetch the created project by its known ID
         row = turso.fetch_one(
             """SELECT id, title, description, category, budget_type, 
                       budget_min, budget_max, experience_level, estimated_duration,
                       skills, client_id, status, created_at, updated_at 
-               FROM projects WHERE client_id = ? AND title = ? AND created_at = ? ORDER BY id DESC LIMIT 1""",
-            [current_user.id, project.title, now]
+               FROM projects WHERE id = ?""",
+            [new_id]
         )
         
         if not row:
@@ -299,7 +363,7 @@ def update_project(
     project_id: int,
     project_update: ProjectUpdate,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Update project in Turso"""
     try:
         turso = get_turso_http()
@@ -308,7 +372,7 @@ def update_project(
         existing = turso.fetch_one("SELECT client_id FROM projects WHERE id = ?", [project_id])
         if not existing:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-        if existing[0] != current_user.id and current_user.role != "admin":
+        if existing[0] != current_user.id and get_user_role(current_user) != "admin":
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
         
         # Build update query
@@ -316,9 +380,24 @@ def update_project(
         params = []
         
         update_data = project_update.dict(exclude_unset=True)
+        ALLOWED_PROJECT_COLUMNS = frozenset({
+            'title', 'description', 'category', 'budget_type', 'budget_min',
+            'budget_max', 'experience_level', 'estimated_duration', 'skills',
+            'status', 'visibility',
+        })
+        
+        text_fields = {'title', 'description'}
         for key, value in update_data.items():
+            if key not in ALLOWED_PROJECT_COLUMNS:
+                continue
             if key == "skills" and value is not None:
                 value = ",".join(value) if value else ""
+            elif key in text_fields and value:
+                max_len = MAX_TITLE_LENGTH if key == 'title' else MAX_DESCRIPTION_LENGTH
+                value = sanitize_text(value, max_len)
+            elif key == "status" and value:
+                if value not in ALLOWED_STATUSES:
+                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid status. Allowed: {', '.join(ALLOWED_STATUSES)}")
             updates.append(f"{key} = ?")
             params.append(value)
         
@@ -356,7 +435,7 @@ def update_project(
 def delete_project(
     project_id: int,
     current_user: User = Depends(get_current_active_user)
-):
+) -> None:
     """Soft-delete project (sets status to 'cancelled')"""
     try:
         turso = get_turso_http()
@@ -365,7 +444,7 @@ def delete_project(
         existing = turso.fetch_one("SELECT client_id FROM projects WHERE id = ?", [project_id])
         if not existing:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
-        if existing[0] != current_user.id and current_user.role != "admin":
+        if existing[0] != current_user.id and get_user_role(current_user) != "admin":
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
         
         now = datetime.now(timezone.utc).isoformat()
@@ -383,3 +462,147 @@ def delete_project(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database temporarily unavailable"
         )
+
+
+@router.post("/{project_id}/pause", response_model=ProjectRead)
+def pause_project(
+    project_id: int,
+    current_user: User = Depends(get_current_active_user)
+) -> dict:
+    """Pause a project - temporarily stops accepting proposals"""
+    try:
+        turso = get_turso_http()
+
+        existing = turso.fetch_one(
+            "SELECT client_id, status FROM projects WHERE id = ?", [project_id]
+        )
+        if not existing:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+        if existing[0] != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        if existing[1] != "open":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only open projects can be paused"
+            )
+
+        now = datetime.now(timezone.utc).isoformat()
+        turso.execute(
+            "UPDATE projects SET status = 'paused', updated_at = ? WHERE id = ?",
+            [now, project_id]
+        )
+
+        row = turso.fetch_one(
+            """SELECT id, title, description, category, budget_type,
+                      budget_min, budget_max, experience_level, estimated_duration,
+                      skills, client_id, status, created_at, updated_at
+               FROM projects WHERE id = ?""",
+            [project_id]
+        )
+        return _row_to_project(row)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("pause_project failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database temporarily unavailable")
+
+
+@router.post("/{project_id}/resume", response_model=ProjectRead)
+def resume_project(
+    project_id: int,
+    current_user: User = Depends(get_current_active_user)
+) -> dict:
+    """Resume a paused project"""
+    try:
+        turso = get_turso_http()
+
+        existing = turso.fetch_one(
+            "SELECT client_id, status FROM projects WHERE id = ?", [project_id]
+        )
+        if not existing:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+        if existing[0] != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        if existing[1] != "paused":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only paused projects can be resumed"
+            )
+
+        now = datetime.now(timezone.utc).isoformat()
+        turso.execute(
+            "UPDATE projects SET status = 'open', updated_at = ? WHERE id = ?",
+            [now, project_id]
+        )
+
+        row = turso.fetch_one(
+            """SELECT id, title, description, category, budget_type,
+                      budget_min, budget_max, experience_level, estimated_duration,
+                      skills, client_id, status, created_at, updated_at
+               FROM projects WHERE id = ?""",
+            [project_id]
+        )
+        return _row_to_project(row)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("resume_project failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database temporarily unavailable")
+
+
+@router.get("/{project_id}/stats")
+def get_project_stats(
+    project_id: int,
+    current_user: User = Depends(get_current_active_user)
+) -> dict:
+    """Get detailed stats for a project (proposal counts, avg bid, etc.)"""
+    try:
+        turso = get_turso_http()
+
+        # Verify ownership
+        existing = turso.fetch_one(
+            "SELECT client_id FROM projects WHERE id = ?", [project_id]
+        )
+        if not existing:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+        if existing[0] != current_user.id and get_user_role(current_user) != "admin":
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+        # Proposal stats
+        prop_stats = turso.fetch_one(
+            """SELECT COUNT(*) as total,
+                      COALESCE(AVG(bid_amount), 0) as avg_bid,
+                      COALESCE(MIN(bid_amount), 0) as min_bid,
+                      COALESCE(MAX(bid_amount), 0) as max_bid
+               FROM proposals
+               WHERE project_id = ? AND is_draft = 0""",
+            [project_id]
+        )
+
+        # Status breakdown
+        status_result = turso.execute(
+            """SELECT status, COUNT(*) FROM proposals
+               WHERE project_id = ? AND is_draft = 0
+               GROUP BY status""",
+            [project_id]
+        )
+        status_breakdown = {}
+        for row in status_result.get("rows", []):
+            status_breakdown[row[0] or "unknown"] = int(row[1] or 0)
+
+        return {
+            "project_id": project_id,
+            "total_proposals": int(prop_stats[0]) if prop_stats else 0,
+            "average_bid": round(float(prop_stats[1]), 2) if prop_stats else 0,
+            "min_bid": round(float(prop_stats[2]), 2) if prop_stats else 0,
+            "max_bid": round(float(prop_stats[3]), 2) if prop_stats else 0,
+            "proposal_status_breakdown": status_breakdown,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("get_project_stats failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database temporarily unavailable")

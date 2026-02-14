@@ -1,16 +1,5 @@
 # @AI-HINT: Advanced security service for multi-factor authentication, biometrics, and threat detection
-"""
-Advanced Security Service
-
-Features:
-- Multi-factor authentication (SMS, Email, Authenticator, Hardware Keys)
-- Biometric authentication (WebAuthn/FIDO2)
-- Risk-based authentication
-- Session management with device tracking
-- IP whitelisting
-- Zero-trust security model
-- Real-time threat detection
-"""
+"""Advanced Security Service."""
 
 from typing import Optional, Dict, List, Any
 from datetime import datetime, timedelta, timezone
@@ -545,9 +534,8 @@ class AdvancedSecurityService:
     # ========================================================================
 
     def _generate_verification_code(self, length: int = 6) -> str:
-        """Generate random verification code"""
-        import random
-        return ''.join(random.choices('0123456789', k=length))
+        """Generate cryptographically secure verification code"""
+        return ''.join(secrets.choice('0123456789') for _ in range(length))
 
     def _generate_backup_codes(self, user_id: int, count: int = 10) -> List[str]:
         """Generate backup codes for MFA"""

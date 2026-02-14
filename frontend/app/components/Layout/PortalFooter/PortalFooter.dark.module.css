@@ -1,12 +1,26 @@
-/* @AI-HINT: Dark theme styles for the PortalFooter. */
+/* @AI-HINT: Dark theme styles for enterprise PortalFooter */
 
 .footer {
   border-top: 1px solid var(--border-dark, #1e2530);
   background-color: transparent;
 }
 
+.statusText {
+  color: var(--text-tertiary-dark, #64748b);
+}
+
 .copyright {
   color: var(--text-tertiary-dark, #6b7280);
+}
+
+.versionBadge {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-tertiary-dark, #64748b);
+}
+
+.shortcutHint {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-tertiary-dark, #64748b);
 }
 
 .link {

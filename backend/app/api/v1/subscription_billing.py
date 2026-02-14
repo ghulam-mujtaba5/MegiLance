@@ -13,7 +13,8 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
+from app.services.db_utils import sanitize_text
 from app.services.subscription_billing import (
     get_subscription_billing_service,
     PlanTier,
@@ -174,7 +175,7 @@ async def cancel_subscription(
     service = get_subscription_billing_service(db)
     result = await service.cancel_subscription(
         current_user["id"],
-        request.reason,
+        sanitize_text(request.reason, 1000) if request.reason else None,
         request.immediate
     )
     
@@ -286,12 +287,9 @@ async def admin_get_all_subscriptions(
     tier_filter: Optional[PlanTier] = None,
     limit: int = Query(50, le=200),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(require_admin)
 ):
     """Admin: Get all subscriptions with filters."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
     # Placeholder for admin subscription listing
     return {
         "subscriptions": [],
@@ -307,11 +305,9 @@ async def admin_get_all_subscriptions(
 async def admin_get_revenue_stats(
     period_days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(require_admin)
 ):
     """Admin: Get revenue statistics."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     return {
         "period_days": period_days,
@@ -336,11 +332,9 @@ async def admin_update_subscription(
     user_id: int,
     tier: PlanTier,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(require_admin)
 ):
     """Admin: Manually update a user's subscription."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     service = get_subscription_billing_service(db)
     result = await service.create_subscription(

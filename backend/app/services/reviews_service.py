@@ -1,12 +1,5 @@
 # @AI-HINT: Service layer for review CRUD operations - all DB access via Turso HTTP
-"""
-Reviews Service - Data access layer for review and rating management.
-
-Handles all execute_query calls for:
-- Review creation, retrieval, update, deletion
-- Review stats and rating distribution
-- Contract/user existence checks for reviews
-"""
+"""Reviews Service - Data access layer for review and rating management."""
 
 import json
 from datetime import datetime, timezone
@@ -73,8 +66,8 @@ def create_review(
     return new_id
 
 
-def query_reviews(where_sql: str, params: List) -> List[Dict[str, Any]]:
-    """Query reviews with joins, filtering, and pagination."""
+def query_reviews(where_sql: str, params: List, order_by: str = "r.created_at DESC") -> List[Dict[str, Any]]:
+    """Query reviews with joins, filtering, sorting, and pagination."""
     result = execute_query(
         f"""SELECT r.id, r.contract_id, r.reviewer_id, r.reviewee_id, r.rating,
                    r.rating_breakdown,
@@ -88,7 +81,7 @@ def query_reviews(where_sql: str, params: List) -> List[Dict[str, Any]]:
             LEFT JOIN users u ON r.reviewee_id = u.id
             LEFT JOIN users reviewer ON r.reviewer_id = reviewer.id
             WHERE {where_sql}
-            ORDER BY r.created_at DESC
+            ORDER BY {order_by}
             LIMIT ? OFFSET ?""",
         params
     )

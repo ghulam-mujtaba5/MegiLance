@@ -6,6 +6,7 @@ import Sidebar from '../Sidebar/Sidebar';
 import PortalNavbar from '../Layout/PortalNavbar/PortalNavbar';
 import PortalFooter from '../Layout/PortalFooter/PortalFooter';
 import { ChatbotAgent } from '@/app/components/AI';
+import CommandPalette from '@/app/components/CommandPalette/CommandPalette';
 
 import ErrorBoundary from '@/app/components/ErrorBoundary/ErrorBoundary';
 
@@ -65,6 +66,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [user, setUser] = useState<UserData>(DEFAULT_USER);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const { resolvedTheme } = useTheme();
   const pathname = usePathname();
 
@@ -101,6 +103,18 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname]);
+
+  // Ctrl+K / Cmd+K command palette shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Remember the current portal area for cross-route redirects from public pages
   useEffect(() => {
@@ -197,6 +211,13 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </ErrorBoundary>
         </div>
       </div>
+
+      {/* Command Palette — Ctrl+K */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        userRole={area}
+      />
     </>
   );
 };

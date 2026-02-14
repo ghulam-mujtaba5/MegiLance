@@ -1,4 +1,4 @@
-// @AI-HINT: This is the AI Price Estimator utility page. Premium billion-dollar design with animated results and detailed breakdown.
+// @AI-HINT: This is the AI Price Estimator utility page. Premium production-ready design with animated results and detailed breakdown.
 'use client';
 
 import React, { useState, useCallback } from 'react';

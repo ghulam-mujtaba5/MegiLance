@@ -120,7 +120,7 @@ export default function ExternalProjectsPage() {
         page,
         page_size: pageSize,
       });
-      setProjects(data.projects || []);
+      setProjects((data.projects || []) as unknown as ExternalProject[]);
       setTotal(data.total || 0);
       setSources(data.sources || []);
       setLastScraped(data.last_scraped);

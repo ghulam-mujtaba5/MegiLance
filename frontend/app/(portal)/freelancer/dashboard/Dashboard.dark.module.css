@@ -38,3 +38,18 @@
   background-color: #334155;
   color: #cbd5e1;
 }
+
+/* ── Quick Action Description ───────── */
+.quickActionDesc { color: #64748b; }
+
+/* ── Metrics Row ────────────────────── */
+.metricCard {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.metricStatValue { color: #f1f5f9; }
+.metricStatLabel { color: #94a3b8; }
+
+/* ── Timeline Section ───────────────── */
+.timelineSection { border-color: #334155; }

@@ -1,4 +1,5 @@
 // @AI-HINT: WebSocket custom hook - manages Socket.IO connection and events
+// Supports: messaging, typing indicators, user presence, notifications, read receipts
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -12,17 +13,48 @@ interface UseWebSocketOptions {
   autoConnect?: boolean;
 }
 
-interface WebSocketMessage {
-  type: string;
-  data: any;
+// Typed event payloads from backend
+export interface WsNewMessage {
+  id: number;
+  conversation_id: number;
+  sender_id: number;
+  sender_name: string;
+  content: string;
   timestamp: string;
+}
+
+export interface WsTypingIndicator {
+  conversation_id: number;
+  user_id: number;
+  user_name: string;
+  is_typing: boolean;
+}
+
+export interface WsUserStatus {
+  user_id: number;
+  status: 'online' | 'offline';
+}
+
+export interface WsNotification {
+  id: number;
+  type: string;
+  title: string;
+  message: string;
+  action_url?: string;
+  created_at: string;
+}
+
+export interface WsReadReceipt {
+  message_id: number;
+  conversation_id: number;
+  read_by: number;
+  read_at: string;
 }
 
 export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   const { url = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8000', autoConnect = true } = options;
   const [socket, setSocket] = useState<Socket | null>(null);
   const [connected, setConnected] = useState(false);
-  const [messages, setMessages] = useState<WebSocketMessage[]>([]);
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -30,7 +62,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
     const token = getAuthToken();
     if (!token) {
-      console.warn('No access token found for WebSocket connection');
       return;
     }
 
@@ -51,17 +82,14 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
 
     // Connection handlers
     newSocket.on('connect', () => {
-      console.log('WebSocket connected');
       setConnected(true);
     });
 
     newSocket.on('disconnect', () => {
-      console.log('WebSocket disconnected');
       setConnected(false);
     });
 
-    newSocket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error);
+    newSocket.on('connect_error', () => {
       setConnected(false);
     });
 
@@ -75,8 +103,6 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   const send = useCallback((event: string, data: any) => {
     if (socketRef.current?.connected) {
       socketRef.current.emit(event, data);
-    } else {
-      console.warn('WebSocket not connected');
     }
   }, []);
 
@@ -108,6 +134,10 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
     });
   }, [send]);
 
+  const sendReadReceipt = useCallback((messageId: number, conversationId: number) => {
+    send('read_receipt', { message_id: messageId, conversation_id: conversationId });
+  }, [send]);
+
   const disconnect = useCallback(() => {
     socketRef.current?.close();
     setConnected(false);
@@ -120,13 +150,13 @@ export const useWebSocket = (options: UseWebSocketOptions = {}) => {
   return {
     socket,
     connected,
-    messages,
     send,
     on,
     off,
     joinRoom,
     leaveRoom,
     sendMessage,
+    sendReadReceipt,
     disconnect,
     reconnect,
   };

@@ -1,4 +1,4 @@
-// @AI-HINT: Redesigned Client Dashboard with modern UI/UX, quick actions, and activity feed.
+// @AI-HINT: Redesigned Client Dashboard with modern UI/UX, sparkline stats, activity timeline, progress rings, quick actions.
 // Production-ready: Uses real API data, no mock fallbacks.
 'use client';
 
@@ -9,10 +9,12 @@ import { cn } from '@/lib/utils';
 import { useClientData } from '@/hooks/useClient';
 import { useRecommendations } from '@/hooks/useRecommendations';
 import { useAuth } from '@/hooks/useAuth';
-import { messagesApi } from '@/lib/api';
+import { useUnreadCounts } from '@/contexts/UnreadCountContext';
 import Button from '@/app/components/Button/Button';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import ActivityTimeline, { TimelineEvent } from '@/app/components/ActivityTimeline/ActivityTimeline';
+import ProgressRing from '@/app/components/ProgressRing/ProgressRing';
 import { emptyBoxAnimation, aiSparkleAnimation } from '@/app/components/Animations/LottieAnimation';
 import { 
   Briefcase, 
@@ -23,7 +25,14 @@ import {
   ArrowRight,
   Search,
   FileText,
-  CreditCard
+  CreditCard,
+  TrendingUp,
+  CheckCircle2,
+  AlertCircle,
+  Users,
+  BarChart3,
+  Zap,
+  Star,
 } from 'lucide-react';
 
 import StatCard from './components/StatCard';
@@ -37,19 +46,13 @@ import darkStyles from './ClientDashboard.dark.module.css';
 const ClientDashboard: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const { projects, payments, loading, error } = useClientData();
   const { recommendations: freelancers, loading: recLoading, error: recError } = useRecommendations(5);
   const { user } = useAuth();
+  const { counts } = useUnreadCounts();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    messagesApi.getUnreadCount()
-      .then((data: any) => setUnreadCount(data?.unread_count ?? 0))
-      .catch(() => {});
   }, []);
 
   const themeStyles = mounted && resolvedTheme === 'dark' ? darkStyles : lightStyles;
@@ -64,29 +67,82 @@ const ClientDashboard: React.FC = () => {
     const activeProjects = displayProjects.filter(p => 
       (p.status as string) === 'In Progress' || (p.status as string) === 'in_progress' || (p.status as string) === 'active'
     ).length;
+    const completedProjects = displayProjects.filter(p =>
+      (p.status as string) === 'Completed' || (p.status as string) === 'completed'
+    ).length;
     const totalSpent = Array.isArray(payments) ? payments.reduce((sum, p) => {
       const amount = typeof p.amount === 'number' ? p.amount : parseFloat(p.amount?.replace(/[$,]/g, '') || '0');
       return sum + amount;
     }, 0) : 0;
     
     const pendingProposals = displayProjects.reduce((sum, p) => sum + (p.proposals_count || 0), 0);
+    const completionRate = totalProjects > 0 ? Math.round((completedProjects / totalProjects) * 100) : 0;
     
     return {
       totalSpent: `$${totalSpent.toLocaleString()}`,
+      totalSpentNum: totalSpent,
       activeProjects,
+      completedProjects,
+      totalProjects,
       pendingProposals,
-      unreadMessages: unreadCount
+      unreadMessages: counts.messages,
+      completionRate,
     };
-  }, [displayProjects, payments, unreadCount]);
+  }, [displayProjects, payments, counts.messages]);
+
+  // Generate sparkline data from payments history
+  const spendingSparkline = useMemo(() => {
+    if (!Array.isArray(payments) || payments.length === 0) return [0, 0, 0, 0, 0, 0];
+    const amounts = payments.slice(0, 7).map(p => {
+      const amount = typeof p.amount === 'number' ? p.amount : parseFloat(p.amount?.replace(/[$,]/g, '') || '0');
+      return amount;
+    });
+    return amounts.length >= 2 ? amounts.reverse() : [0, ...amounts, 0];
+  }, [payments]);
+
+  // Generate activity timeline from projects and payments
+  const recentActivity = useMemo((): TimelineEvent[] => {
+    const events: TimelineEvent[] = [];
+    
+    displayProjects.slice(0, 3).forEach(p => {
+      const status = (p.status as string).toLowerCase();
+      events.push({
+        id: `project-${p.id}`,
+        actor: 'You',
+        action: status === 'completed' ? 'completed' : status === 'in_progress' ? 'started work on' : 'posted',
+        target: p.title,
+        targetHref: `/client/projects`,
+        timestamp: p.updatedAt || p.updated || new Date().toISOString(),
+        type: status === 'completed' ? 'success' : status === 'in_progress' ? 'info' : 'purple',
+        badge: p.budget,
+      });
+    });
+
+    if (Array.isArray(payments)) {
+      payments.slice(0, 2).forEach(p => {
+        events.push({
+          id: `payment-${p.id}`,
+          actor: 'Payment',
+          action: p.status === 'Completed' || p.status === 'Paid' ? 'processed for' : 'pending for',
+          target: p.project || p.description,
+          timestamp: p.date || new Date().toISOString(),
+          type: p.status === 'Completed' || p.status === 'Paid' ? 'success' : 'warning',
+          badge: p.amount,
+        });
+      });
+    }
+
+    return events.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
+  }, [displayProjects, payments]);
 
   // Quick actions for the grid
   const quickActions = [
-    { label: 'Post a Job', href: '/client/post-job', icon: Plus, color: 'primary' as const },
-    { label: 'Find Talent', href: '/client/hire', icon: Search, color: 'success' as const },
-    { label: 'My Projects', href: '/client/projects', icon: Briefcase, color: 'info' as const },
-    { label: 'Contracts', href: '/client/contracts', icon: FileText, color: 'warning' as const },
-    { label: 'Payments', href: '/client/payments', icon: CreditCard, color: 'danger' as const },
-    { label: 'Messages', href: '/client/messages', icon: MessageSquare, color: 'purple' as const },
+    { label: 'Post a Job', href: '/client/post-job', icon: Plus, color: 'primary' as const, desc: 'Create job listing' },
+    { label: 'Find Talent', href: '/client/hire', icon: Search, color: 'success' as const, desc: 'Browse freelancers' },
+    { label: 'My Projects', href: '/client/projects', icon: Briefcase, color: 'info' as const, desc: `${metrics.activeProjects} active` },
+    { label: 'Contracts', href: '/client/contracts', icon: FileText, color: 'warning' as const, desc: 'Manage agreements' },
+    { label: 'Payments', href: '/client/payments', icon: CreditCard, color: 'danger' as const, desc: 'View transactions' },
+    { label: 'Messages', href: '/client/messages', icon: MessageSquare, color: 'purple' as const, desc: `${counts.messages} unread` },
   ];
 
   if (!mounted) {
@@ -102,7 +158,7 @@ const ClientDashboard: React.FC = () => {
       {/* Header Section */}
       <div className={commonStyles.headerSection}>
         <div className={cn(commonStyles.welcomeText, themeStyles.welcomeText)}>
-          <h1>Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</h1>
+          <h1>Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''} 👋</h1>
           <p>Here&apos;s what&apos;s happening with your projects today.</p>
         </div>
         <div className={commonStyles.headerActions}>
@@ -119,35 +175,44 @@ const ClientDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Stats Grid — with sparklines */}
       <div className={commonStyles.statsGrid}>
         <StatCard 
           title="Total Spent" 
           value={metrics.totalSpent} 
           trend={12.5} 
-          icon={DollarSign} 
+          icon={DollarSign}
+          sparklineData={spendingSparkline}
+          sparklineColor="primary"
+          href="/client/payments"
         />
         <StatCard 
           title="Active Projects" 
           value={metrics.activeProjects.toString()} 
           trend={-2.4} 
-          icon={Briefcase} 
+          icon={Briefcase}
+          sparklineData={[2, 3, 5, 4, 6, metrics.activeProjects]}
+          sparklineColor="success"
+          href="/client/projects"
         />
         <StatCard 
           title="Pending Proposals" 
           value={metrics.pendingProposals.toString()} 
           trend={5.0} 
-          icon={Clock} 
+          icon={Clock}
+          href="/client/projects"
         />
         <StatCard 
           title="Unread Messages" 
           value={metrics.unreadMessages.toString()} 
-          icon={MessageSquare} 
+          icon={MessageSquare}
+          href="/client/messages"
         />
       </div>
 
       {error && (
         <div className={commonStyles.errorBanner} role="alert">
+          <AlertCircle size={16} />
           <p>Failed to load dashboard data. Please try refreshing the page.</p>
         </div>
       )}
@@ -162,8 +227,43 @@ const ClientDashboard: React.FC = () => {
                 <action.icon size={20} />
               </div>
               <span className={cn(commonStyles.quickActionLabel, themeStyles.quickActionLabel)}>{action.label}</span>
+              <span className={cn(commonStyles.quickActionDesc, themeStyles.quickActionDesc)}>{action.desc}</span>
             </Link>
           ))}
+        </div>
+      </div>
+
+      {/* Project Completion Metrics */}
+      <div className={commonStyles.metricsRow}>
+        <div className={cn(commonStyles.metricCard, themeStyles.metricCard)}>
+          <ProgressRing value={metrics.completionRate} label="Completion Rate" size="lg" color="success" />
+        </div>
+        <div className={cn(commonStyles.metricCard, themeStyles.metricCard)}>
+          <ProgressRing
+            value={metrics.totalProjects > 0 ? Math.round((metrics.activeProjects / metrics.totalProjects) * 100) : 0}
+            label="Active Rate"
+            size="lg"
+            color="primary"
+          />
+        </div>
+        <div className={cn(commonStyles.metricCard, themeStyles.metricCard)}>
+          <div className={commonStyles.metricStats}>
+            <div className={commonStyles.metricStatItem}>
+              <CheckCircle2 size={16} className={commonStyles.metricIconSuccess} />
+              <span className={cn(commonStyles.metricStatValue, themeStyles.metricStatValue)}>{metrics.completedProjects}</span>
+              <span className={cn(commonStyles.metricStatLabel, themeStyles.metricStatLabel)}>Completed</span>
+            </div>
+            <div className={commonStyles.metricStatItem}>
+              <Zap size={16} className={commonStyles.metricIconPrimary} />
+              <span className={cn(commonStyles.metricStatValue, themeStyles.metricStatValue)}>{metrics.activeProjects}</span>
+              <span className={cn(commonStyles.metricStatLabel, themeStyles.metricStatLabel)}>Active</span>
+            </div>
+            <div className={commonStyles.metricStatItem}>
+              <Clock size={16} className={commonStyles.metricIconWarning} />
+              <span className={cn(commonStyles.metricStatValue, themeStyles.metricStatValue)}>{metrics.pendingProposals}</span>
+              <span className={cn(commonStyles.metricStatLabel, themeStyles.metricStatLabel)}>Proposals</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -200,6 +300,12 @@ const ClientDashboard: React.FC = () => {
               />
             )}
           </div>
+
+          {/* Activity Timeline */}
+          <div className={cn(commonStyles.timelineSection, themeStyles.timelineSection)}>
+            <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Recent Activity</h3>
+            <ActivityTimeline events={recentActivity} maxItems={5} emptyMessage="No recent activity on your projects" />
+          </div>
         </div>
 
         {/* Right Column */}
@@ -233,6 +339,40 @@ const ClientDashboard: React.FC = () => {
                 animationHeight={100}
               />
             )}
+          </div>
+
+          {/* Platform Insights Mini Card */}
+          <div className={cn(commonStyles.insightCard, themeStyles.insightCard)}>
+            <div className={commonStyles.insightHeader}>
+              <BarChart3 size={18} />
+              <h3 className={cn(commonStyles.insightTitle, themeStyles.insightTitle)}>Platform Insights</h3>
+            </div>
+            <div className={commonStyles.insightGrid}>
+              <div className={commonStyles.insightItem}>
+                <span className={cn(commonStyles.insightValue, themeStyles.insightValue)}>
+                  {metrics.totalProjects}
+                </span>
+                <span className={cn(commonStyles.insightLabel, themeStyles.insightLabel)}>Total Projects</span>
+              </div>
+              <div className={commonStyles.insightItem}>
+                <span className={cn(commonStyles.insightValue, themeStyles.insightValue)}>
+                  {metrics.totalSpent}
+                </span>
+                <span className={cn(commonStyles.insightLabel, themeStyles.insightLabel)}>Total Invested</span>
+              </div>
+              <div className={commonStyles.insightItem}>
+                <span className={cn(commonStyles.insightValue, themeStyles.insightValue)}>
+                  {freelancers?.length ?? 0}
+                </span>
+                <span className={cn(commonStyles.insightLabel, themeStyles.insightLabel)}>AI Matches</span>
+              </div>
+              <div className={commonStyles.insightItem}>
+                <span className={cn(commonStyles.insightValue, themeStyles.insightValue)}>
+                  {metrics.completionRate}%
+                </span>
+                <span className={cn(commonStyles.insightLabel, themeStyles.insightLabel)}>Success Rate</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

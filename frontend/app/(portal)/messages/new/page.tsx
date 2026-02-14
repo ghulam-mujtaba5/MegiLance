@@ -1,17 +1,17 @@
 // @AI-HINT: Route page for new message wizard
-import { Metadata } from 'next';
+'use client';
+
+import { useAuth } from '@/hooks/useAuth';
 import MessagingWizard from '@/src/components/wizards/MessagingWizard';
 import commonStyles from './NewMessage.common.module.css';
 
-export const metadata: Metadata = {
-  title: 'New Message - MegiLance',
-  description: 'Send a new message'
-};
-
 export default function NewMessagePage() {
-  // Get user info from session (replace with actual auth)
-  const userId = 'current-user-id';
-  const userType = 'client'; // or 'freelancer'
+  const { user } = useAuth();
+
+  const userId = user?.id ? String(user.id) : '';
+  const userType = (user?.user_type === 'freelancer' ? 'freelancer' : 'client') as 'client' | 'freelancer';
+
+  if (!userId) return null;
 
   return (
     <div className={commonStyles.pageContainer}>

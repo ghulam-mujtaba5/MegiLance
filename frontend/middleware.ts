@@ -38,13 +38,13 @@ export function middleware(request: NextRequest) {
 
   // === CONTENT SECURITY POLICY (CSP) ===
   if (process.env.NODE_ENV === 'production') {
-    // NOTE: 'unsafe-inline' is required by Next.js for inline scripts/styles.
-    // For maximum security, implement nonce-based CSP (see Next.js docs).
-    // 'unsafe-eval' has been removed - it's not needed in production builds.
+    // Nonce-based CSP following Next.js best practices
+    // See: https://nextjs.org/docs/app/guides/content-security-policy
+    const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
     const cspDirectives = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com`,
+      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",
       "connect-src 'self' https://api.stripe.com https://www.google-analytics.com wss: https:",
@@ -58,6 +58,8 @@ export function middleware(request: NextRequest) {
       "media-src 'self'",
     ];
     response.headers.set('Content-Security-Policy', cspDirectives.join('; '));
+    // Pass nonce to server components via request header
+    response.headers.set('x-nonce', nonce);
   }
 
   // === HSTS (Strict Transport Security) ===
@@ -102,6 +104,22 @@ export function middleware(request: NextRequest) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('returnTo', pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // Server-side dashboard redirect: decode JWT role to skip client-side spinner
+  if (pathname === '/dashboard' && authToken) {
+    try {
+      const base64Url = authToken.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(base64));
+      const role = (payload.user_type || payload.role || 'client').toLowerCase();
+      const target = role === 'admin' ? '/admin/dashboard'
+        : role === 'freelancer' ? '/freelancer/dashboard'
+        : '/client/dashboard';
+      return NextResponse.redirect(new URL(target, request.url));
+    } catch {
+      // Invalid JWT — fall through to client-side handling
+    }
   }
 
   // Prevent browser caching of authenticated portal pages

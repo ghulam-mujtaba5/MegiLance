@@ -11,6 +11,7 @@ import { AnalyticsProvider } from '@/app/shared/analytics/AnalyticsProvider';
 import WebVitalsReporter from './components/Analytics/WebVitalsReporter';
 import CookieConsent from './components/CookieConsent/CookieConsent';
 import ErrorBoundary from '@/app/components/ErrorBoundary/ErrorBoundary';
+import { WebSocketProvider } from '@/lib/websocket';
 
 const ClientRoot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -24,15 +25,17 @@ const ClientRoot: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         storageKey="megilance-theme"
       >
         <AnalyticsProvider>
-          <ToasterProvider>
-            <AppChrome>
-              {children}
-            </AppChrome>
-            <QuickLogin />
-            <StructuredData />
-            <WebVitalsReporter />
-            <CookieConsent />
-          </ToasterProvider>
+          <WebSocketProvider>
+            <ToasterProvider>
+              <AppChrome>
+                {children}
+              </AppChrome>
+              <QuickLogin />
+              <StructuredData />
+              <WebVitalsReporter />
+              <CookieConsent />
+            </ToasterProvider>
+          </WebSocketProvider>
         </AnalyticsProvider>
       </ThemeProvider>
     </ErrorBoundary>

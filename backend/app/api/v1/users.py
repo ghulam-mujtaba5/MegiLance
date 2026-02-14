@@ -4,7 +4,7 @@ No local SQLite fallback - all queries go directly to Turso
 Enhanced with input validation and security measures
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from typing import List, Optional
 from datetime import datetime, timezone
 import json
@@ -12,8 +12,9 @@ import re
 
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate, ProfileCompleteUpdate
-from app.core.security import get_password_hash, get_current_user
+from app.core.security import get_password_hash, get_current_user, require_admin
 from app.db.turso_http import get_turso_http
+from app.services.db_utils import paginate_params
 from app.services.profile_validation import is_profile_complete, get_missing_profile_fields
 import logging
 
@@ -78,10 +79,10 @@ def _parse_date(value) -> datetime:
     if isinstance(value, str):
         try:
             return datetime.fromisoformat(value.replace('Z', '+00:00'))
-        except:
+        except (ValueError, TypeError):
             try:
                 return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-            except:
+            except (ValueError, TypeError):
                 return datetime.now(timezone.utc)
     return datetime.now(timezone.utc)
 
@@ -154,22 +155,32 @@ def _row_to_user_dict(row: list, columns: list = None) -> dict:
 
 @router.get("/", response_model=List[UserRead])
 def list_users(
-    skip: int = Query(0, ge=0, description="Number of records to skip"),
-    limit: int = Query(50, ge=1, le=100, description="Max records to return"),
+    page: int = Query(1, ge=1, description="Page number (1-based)"),
+    page_size: int = Query(50, ge=1, le=100, description="Items per page"),
     current_user: User = Depends(get_current_user)
-):
+) -> list[dict]:
     """List users from Turso database (authenticated, paginated)"""
+    offset, limit = paginate_params(page, page_size)
     try:
         turso = get_turso_http()
         result = turso.execute(
             """SELECT id, email, name, role, is_active, user_type, joined_at, created_at,
                       bio, skills, hourly_rate, profile_image_url, location, profile_data 
                FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?""",
-            [limit, skip]
+            [limit, offset]
         )
         
         columns = result.get("columns", [])
         users = [_row_to_user_dict(row, columns) for row in result.get("rows", [])]
+        
+        # Mask emails for non-admin users
+        if current_user.get("role") != "admin":
+            for user in users:
+                email = user.get("email", "")
+                if email and "@" in email:
+                    local, domain = email.split("@", 1)
+                    user["email"] = f"{local[0]}***@{domain}" if local else f"***@{domain}"
+        
         return users
         
     except Exception as e:
@@ -181,14 +192,34 @@ def list_users(
 
 
 @router.get("/me", response_model=UserRead)
-def get_current_user_profile(current_user: User = Depends(get_current_user)):
+def get_current_user_profile(current_user: User = Depends(get_current_user)) -> dict:
     """Get the currently authenticated user's profile"""
-    return current_user
+    try:
+        turso = get_turso_http()
+        result = turso.execute(
+            """SELECT id, email, name, role, is_active, user_type, joined_at, created_at,
+                      bio, skills, hourly_rate, profile_image_url, location, profile_data
+               FROM users WHERE id = ?""",
+            [current_user.id]
+        )
+        rows = result.get("rows", [])
+        if not rows:
+            raise HTTPException(status_code=404, detail="User not found")
+        columns = result.get("columns", [])
+        return _row_to_user_dict(rows[0], columns)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("get_current_user_profile failed: %s", e, exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database temporarily unavailable"
+        )
 
 
 @router.get("/{user_id}", response_model=UserRead)
-def get_user(user_id: int):
-    """Get user by ID from Turso database"""
+def get_user(user_id: int) -> dict:
+    """Get user by ID from Turso database (public profile - email masked)"""
     try:
         turso = get_turso_http()
         result = turso.execute(
@@ -202,7 +233,14 @@ def get_user(user_id: int):
         if not rows:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         
-        return _row_to_user_dict(rows[0], result.get("columns", []))
+        user_dict = _row_to_user_dict(rows[0], result.get("columns", []))
+        # Mask email for public profile view
+        email = user_dict.get("email", "")
+        if email and "@" in email:
+            local, domain = email.split("@", 1)
+            user_dict["email"] = f"{local[0]}***@{domain}" if local else f"***@{domain}"
+        
+        return user_dict
         
     except HTTPException:
         raise
@@ -215,7 +253,7 @@ def get_user(user_id: int):
 
 
 @router.post("/", response_model=UserRead, status_code=status.HTTP_201_CREATED)
-def create_user(payload: UserCreate):
+def create_user(payload: UserCreate, current_user: User = Depends(require_admin)) -> dict:
     """Create new user in Turso database"""
     try:
         turso = get_turso_http()
@@ -265,11 +303,12 @@ class ChangePasswordRequest(BaseModel):
 
 @router.post("/me/change-password")
 def change_password(
+    request: Request,
     payload: ChangePasswordRequest,
     current_user: User = Depends(get_current_user)
-):
+) -> dict:
     """Change user password"""
-    from app.core.security import verify_password
+    from app.core.security import verify_password, add_token_to_blacklist
     from app.services.users_service import get_user_password_hash, update_user_password
     
     # Get current hashed password
@@ -298,14 +337,23 @@ def change_password(
     # Hash and update password
     update_user_password(current_user.id, payload.new_password)
     
-    return {"message": "Password changed successfully"}
+    # Invalidate current session token so old tokens can't be reused
+    auth_header = request.headers.get("authorization", "")
+    if auth_header.startswith("Bearer "):
+        old_token = auth_header[7:]
+        try:
+            add_token_to_blacklist(old_token)
+        except Exception:
+            pass  # Best-effort blacklisting
+    
+    return {"message": "Password changed successfully. Please log in again."}
 
 
 @router.put("/me/complete-profile", response_model=UserRead)
 def complete_user_profile(
     profile_data: ProfileCompleteUpdate,
     current_user: User = Depends(get_current_user)
-):
+) -> dict:
     """Complete user profile after initial signup"""
     try:
         turso = get_turso_http()
@@ -470,7 +518,7 @@ def complete_user_profile(
 
 
 @router.get("/me/notification-preferences")
-def get_notification_preferences(current_user: User = Depends(get_current_user)):
+def get_notification_preferences(current_user: User = Depends(get_current_user)) -> dict:
     """Get the current user's notification preferences"""
     try:
         turso = get_turso_http()
@@ -514,7 +562,7 @@ def get_notification_preferences(current_user: User = Depends(get_current_user))
 def update_notification_preferences(
     preferences: dict,
     current_user: User = Depends(get_current_user)
-):
+) -> dict:
     """Update the current user's notification preferences"""
     try:
         # Validate preferences structure
@@ -603,34 +651,42 @@ def update_notification_preferences(
 
 
 @router.get("/me/profile-completeness")
-def get_profile_completeness(current_user: User = Depends(get_current_user)):
+def get_profile_completeness(current_user: User = Depends(get_current_user)) -> dict:
     """Get profile completeness percentage and missing fields"""
     try:
-        # Define completeness criteria
+        from app.services.profile_validation import (
+            get_profile_completeness as calc_completeness,
+            get_missing_profile_fields,
+            is_profile_complete,
+        )
+
+        percentage = calc_completeness(current_user)
+        missing = get_missing_profile_fields(current_user)
+
+        # Build detailed field status for UI
         fields = {
             "name": bool(current_user.name or (current_user.first_name and current_user.last_name)),
             "bio": bool(current_user.bio and len(current_user.bio) > 20),
             "location": bool(current_user.location),
             "profile_picture": bool(current_user.profile_picture_url),
-            "title": bool(current_user.title),
         }
-        
-        # Freelancer-specific fields
+
         if str(current_user.user_type).lower() == "freelancer":
             fields["skills"] = bool(current_user.skills and len(current_user.skills) > 2)
             fields["hourly_rate"] = bool(current_user.hourly_rate and current_user.hourly_rate > 0)
-            fields["portfolio"] = bool(current_user.portfolio_url)
-        
-        # Client-specific fields
+            fields["headline"] = bool(getattr(current_user, "headline", None))
+            fields["experience_level"] = bool(getattr(current_user, "experience_level", None))
+            fields["languages"] = bool(getattr(current_user, "languages", None))
+            fields["timezone"] = bool(getattr(current_user, "timezone", None))
+            fields["linkedin_url"] = bool(getattr(current_user, "linkedin_url", None))
+            fields["github_url"] = bool(getattr(current_user, "github_url", None))
+            fields["website_url"] = bool(getattr(current_user, "website_url", None))
         elif str(current_user.user_type).lower() == "client":
             fields["company_name"] = bool(current_user.company_name)
-        
+
         completed = sum(1 for v in fields.values() if v)
         total = len(fields)
-        percentage = round((completed / total) * 100) if total > 0 else 0
-        
-        missing = [k.replace("_", " ").title() for k, v in fields.items() if not v]
-        
+
         return {
             "percentage": percentage,
             "completed": completed,

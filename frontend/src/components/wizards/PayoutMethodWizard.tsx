@@ -769,7 +769,7 @@ export default function PayoutMethodWizard({ userId, onComplete }: PayoutMethodW
       const result = await api.payoutMethods.create({
         ...methodData,
         user_id: userId
-      });
+      } as any);
 
       // Clear draft
       localStorage.removeItem('payout_method_draft');

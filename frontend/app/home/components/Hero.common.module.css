@@ -1,4 +1,4 @@
-/* @AI-HINT: Premium Hero component styles - Billion-dollar quality landing section with glassmorphism, animated gradients, and sophisticated micro-interactions */
+/* @AI-HINT: Premium Hero component styles - Production-ready quality landing section with glassmorphism, animated gradients, and sophisticated micro-interactions */
 
 /* ============================================= */
 /*   BASE ANIMATIONS                            */
@@ -62,20 +62,20 @@
   50% { box-shadow: 0 0 40px rgba(79, 172, 254, 0.5), 0 0 80px rgba(118, 75, 162, 0.3); }
 }
 
-/* BILLIONAIRE LEVEL - Aurora Rotation */
+/* PREMIUM - Aurora Rotation */
 @keyframes auroraRotate {
   from { transform: rotate(0deg) scale(1.5); }
   to { transform: rotate(360deg) scale(1.5); }
 }
 
-/* BILLIONAIRE LEVEL - Liquid Metal Shimmer */
+/* PREMIUM - Liquid Metal Shimmer */
 @keyframes liquidMetalShimmer {
   0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
   50% { background-position: 100% 50%; filter: hue-rotate(15deg); }
   100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
 }
 
-/* BILLIONAIRE LEVEL - Premium Glow Pulse */
+/* PREMIUM - Premium Glow Pulse */
 @keyframes premiumGlowPulse {
   0%, 100% { 
     filter: drop-shadow(0 0 30px rgba(79, 172, 254, 0.4));
@@ -87,14 +87,14 @@
   }
 }
 
-/* BILLIONAIRE LEVEL - Text Gradient Animation */
+/* PREMIUM - Text Gradient Animation */
 @keyframes textGradientShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* BILLIONAIRE LEVEL - Floating Depth */
+/* PREMIUM - Floating Depth */
 @keyframes floatDepth {
   0%, 100% { 
     transform: translateY(0) translateZ(0) rotateX(0deg); 
@@ -127,7 +127,7 @@
   z-index: 2;
   pointer-events: none;
   animation: float3D 8s ease-in-out infinite;
-  /* BILLIONAIRE LEVEL - GPU Optimization */
+  /* PREMIUM - GPU Optimization */
   will-change: transform;
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -206,7 +206,7 @@
 }
 
 /* ============================================= */
-/*   HERO CONTAINER - BILLIONAIRE LEVEL         */
+/*   HERO CONTAINER - PREMIUM         */
 /* ============================================= */
 .heroContainer {
   position: relative;
@@ -216,12 +216,12 @@
   justify-content: center;
   overflow: hidden;
   padding: 7rem 1.5rem 5rem;
-  /* BILLIONAIRE LEVEL - 3D Context */
+  /* PREMIUM - 3D Context */
   perspective: 2000px;
   transform-style: preserve-3d;
 }
 
-/* BILLIONAIRE LEVEL - Aurora Overlay */
+/* PREMIUM - Aurora Overlay */
 .heroContainer::before {
   content: '';
   position: absolute;
@@ -266,7 +266,7 @@
 }
 
 /* ============================================= */
-/*   FLOATING ORBS - BILLIONAIRE LEVEL          */
+/*   FLOATING ORBS - PREMIUM          */
 /* ============================================= */
 .floatingOrbs {
   position: absolute;
@@ -274,7 +274,7 @@
   z-index: 1;
   pointer-events: none;
   transition: transform 0.3s ease-out;
-  /* BILLIONAIRE LEVEL - 3D Transform */
+  /* PREMIUM - 3D Transform */
   transform-style: preserve-3d;
 }
 
@@ -283,7 +283,7 @@
   border-radius: 50%;
   filter: blur(60px);
   animation: pulse 8s ease-in-out infinite;
-  /* BILLIONAIRE LEVEL - Improved Performance */
+  /* PREMIUM - Improved Performance */
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
@@ -341,7 +341,7 @@
   width: 100%;
   max-width: 1280px; /* Increased max-width for split layout */
   margin: 0 auto;
-  /* BILLIONAIRE LEVEL - 3D Context */
+  /* PREMIUM - 3D Context */
   transform-style: preserve-3d;
 }
 
@@ -407,7 +407,7 @@
 }
 
 /* ============================================= */
-/*   ANNOUNCEMENT BADGE - BILLIONAIRE LEVEL     */
+/*   ANNOUNCEMENT BADGE - PREMIUM     */
 /* ============================================= */
 .announcementBadge {
   display: inline-flex;
@@ -421,7 +421,7 @@
   margin-bottom: 2rem;
   text-decoration: none;
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  /* BILLIONAIRE LEVEL - 3D Transform */
+  /* PREMIUM - 3D Transform */
   transform: perspective(500px) translateZ(0);
   will-change: transform;
 }
@@ -458,7 +458,7 @@
 }
 
 /* ============================================= */
-/*   MAIN HEADING - BILLIONAIRE LEVEL           */
+/*   MAIN HEADING - PREMIUM           */
 /* ============================================= */
 .mainHeading {
   font-family: var(--font-family-heading);
@@ -470,14 +470,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  /* BILLIONAIRE LEVEL - 3D Depth */
+  /* PREMIUM - 3D Depth */
   transform: perspective(1000px) translateZ(0);
   transform-style: preserve-3d;
 }
 
 .headingLine {
   display: block;
-  /* BILLIONAIRE LEVEL - Subtle 3D Shadow */
+  /* PREMIUM - Subtle 3D Shadow */
   text-shadow: 
     0 1px 0 rgba(0, 0, 0, 0.1),
     0 2px 0 rgba(0, 0, 0, 0.05),
@@ -490,7 +490,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  /* BILLIONAIRE LEVEL - Animated Gradient */
+  /* PREMIUM - Animated Gradient */
   animation: textGradientShift 8s ease infinite;
 }
 
@@ -513,7 +513,7 @@
 }
 
 /* ============================================= */
-/*   CTA BUTTONS - BILLIONAIRE LEVEL            */
+/*   CTA BUTTONS - PREMIUM            */
 /* ============================================= */
 .ctaGroup {
   display: flex;
@@ -522,7 +522,7 @@
   margin-bottom: 3rem;
   width: 100%;
   max-width: 500px;
-  /* BILLIONAIRE LEVEL - 3D Context */
+  /* PREMIUM - 3D Context */
   transform-style: preserve-3d;
 }
 
@@ -549,7 +549,7 @@
 .secondaryCta {
   width: 100%;
   justify-content: center;
-  /* BILLIONAIRE LEVEL - 3D Button Transform */
+  /* PREMIUM - 3D Button Transform */
   transform: perspective(500px) translateZ(0);
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -599,7 +599,7 @@
 .avatarStack {
   display: flex;
   margin-right: 0.5rem;
-  /* BILLIONAIRE LEVEL - 3D Stack Effect */
+  /* PREMIUM - 3D Stack Effect */
   transform-style: preserve-3d;
   perspective: 500px;
 }
@@ -615,7 +615,7 @@
   font-weight: 600;
   margin-left: -8px;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  /* BILLIONAIRE LEVEL - 3D Transform */
+  /* PREMIUM - 3D Transform */
   transform: perspective(500px) translateZ(0);
 }
 
@@ -646,7 +646,7 @@
 .proofStars svg {
   width: 14px;
   height: 14px;
-  /* BILLIONAIRE LEVEL - Gold Star Glow */
+  /* PREMIUM - Gold Star Glow */
   filter: drop-shadow(0 0 3px rgba(251, 191, 36, 0.5));
 }
 
@@ -669,7 +669,7 @@
   font-weight: 600;
   font-family: var(--font-family-body);
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  /* BILLIONAIRE LEVEL - 3D Transform */
+  /* PREMIUM - 3D Transform */
   transform-style: preserve-3d;
   animation: float3D 6s ease-in-out infinite;
   z-index: 5;
@@ -699,13 +699,13 @@
 }
 
 /* ============================================= */
-/*   STATS CONTAINER - BILLIONAIRE LEVEL        */
+/*   STATS CONTAINER - PREMIUM        */
 /* ============================================= */
 .statsContainer {
   width: 100%;
   max-width: 1200px;
   margin-top: 2rem;
-  /* BILLIONAIRE LEVEL - 3D Container */
+  /* PREMIUM - 3D Container */
   transform: perspective(1000px) translateZ(0);
   transform-style: preserve-3d;
 }
@@ -716,7 +716,7 @@
   gap: 1rem;
   padding: 1.5rem;
   border-radius: 20px;
-  /* BILLIONAIRE LEVEL - Glassmorphism Enhancement */
+  /* PREMIUM - Glassmorphism Enhancement */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
@@ -730,7 +730,7 @@
 }
 
 /* ============================================= */
-/*   TRUST BADGES - BILLIONAIRE LEVEL           */
+/*   TRUST BADGES - PREMIUM           */
 /* ============================================= */
 .trustBadges {
   display: flex;
@@ -738,7 +738,7 @@
   justify-content: center;
   gap: 1rem;
   margin-top: 1rem;
-  /* BILLIONAIRE LEVEL - 3D Context */
+  /* PREMIUM - 3D Context */
   transform-style: preserve-3d;
   perspective: 800px;
 }
@@ -759,7 +759,7 @@
   font-weight: 500;
   font-family: var(--font-family-body);
   transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  /* BILLIONAIRE LEVEL - 3D Transform */
+  /* PREMIUM - 3D Transform */
   transform: perspective(500px) translateZ(0);
 }
 

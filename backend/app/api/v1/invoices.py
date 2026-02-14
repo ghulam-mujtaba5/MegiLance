@@ -10,6 +10,7 @@ from app.schemas.invoice import (
     InvoicePayment, InvoiceList
 )
 from app.services import invoices_service
+from app.services.db_utils import get_user_role
 
 router = APIRouter(prefix="/invoices", tags=["invoices"])
 
@@ -55,10 +56,7 @@ async def list_invoices(
     current_user: User = Depends(get_current_user)
 ):
     """List invoices with filters. Freelancers see invoices they created, clients see invoices sent to them."""
-    user_role = getattr(current_user, 'role', None) or getattr(current_user, 'user_type', 'client')
-    if hasattr(user_role, 'value'):
-        user_role = user_role.value
-    user_role = str(user_role).lower()
+    user_role = get_user_role(current_user)
 
     data = invoices_service.list_invoices(
         user_id=current_user.id,

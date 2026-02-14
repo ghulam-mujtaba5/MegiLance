@@ -37,7 +37,6 @@ class FreelancerRecommendation(BaseModel):
     """Freelancer recommendation for a project"""
     freelancer_id: int
     freelancer_name: str
-    freelancer_email: str
     freelancer_bio: Optional[str]
     hourly_rate: Optional[float]
     location: Optional[str]
@@ -107,7 +106,6 @@ async def get_general_recommendations(
                 recommendations.append({
                     "freelancer_id": row[0],
                     "freelancer_name": row[2] or row[1].split('@')[0] if row[1] else 'Freelancer',
-                    "freelancer_email": row[1],
                     "freelancer_bio": row[3],
                     "profile_image_url": row[4],
                     "hourly_rate": row[5],
@@ -175,7 +173,6 @@ async def get_general_recommendations(
             recommendations.append({
                 "freelancer_id": f.id,
                 "freelancer_name": f.name,
-                "freelancer_email": f.email,
                 "freelancer_bio": f.bio,
                 "hourly_rate": f.hourly_rate,
                 "location": f.location,

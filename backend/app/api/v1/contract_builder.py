@@ -17,6 +17,7 @@ from pydantic import BaseModel
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import sanitize_text
 from app.services.contract_builder import (
     get_contract_builder_service,
     ClauseCategory,
@@ -152,7 +153,7 @@ async def create_contract_draft(
     
     contract = await service.create_contract_draft(
         user_id=current_user["id"],
-        name=request.name,
+        name=sanitize_text(request.name, 200),
         template_id=request.template_id,
         contract_type=request.contract_type
     )
@@ -173,8 +174,8 @@ async def add_section(
     section = await service.add_section(
         contract_id=contract_id,
         user_id=current_user["id"],
-        title=request.title,
-        content=request.content,
+        title=sanitize_text(request.title, 300),
+        content=sanitize_text(request.content, 50000),
         order=request.order
     )
     
@@ -381,9 +382,9 @@ async def create_custom_clause(
     
     clause = await service.create_custom_clause(
         user_id=current_user["id"],
-        name=request.name,
+        name=sanitize_text(request.name, 200),
         category=request.category,
-        content=request.content,
+        content=sanitize_text(request.content, 50000),
         variables=request.variables
     )
     

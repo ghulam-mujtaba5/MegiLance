@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from ...core.security import get_current_active_user
 from ...services.custom_fields import custom_fields_service
+from ...services.db_utils import sanitize_text
 
 
 router = APIRouter()
@@ -121,8 +122,8 @@ async def create_field_definition(
             entity_type=request.entity_type,
             name=request.name,
             field_type=request.field_type,
-            label=request.label,
-            description=request.description,
+            label=sanitize_text(request.label, 100),
+            description=sanitize_text(request.description, 500) if request.description else None,
             required=request.required,
             default_value=request.default_value,
             validation=request.validation,

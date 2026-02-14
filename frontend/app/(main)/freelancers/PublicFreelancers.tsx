@@ -55,6 +55,20 @@ const SORT_OPTIONS = [
   { id: 'rate_low', label: 'Rate: Low to High' },
   { id: 'rate_high', label: 'Rate: High to Low' },
   { id: 'newest', label: 'Newest' },
+  { id: 'most_viewed', label: 'Most Viewed' },
+];
+
+const EXPERIENCE_LEVELS = [
+  { id: '', label: 'Any Level' },
+  { id: 'entry', label: 'Entry Level' },
+  { id: 'intermediate', label: 'Intermediate' },
+  { id: 'expert', label: 'Expert' },
+];
+
+const AVAILABILITY_OPTIONS = [
+  { id: '', label: 'Any Availability' },
+  { id: 'available', label: 'Available Now' },
+  { id: 'busy', label: 'Busy' },
 ];
 
 const PAGE_SIZE = 24;
@@ -63,12 +77,17 @@ interface Freelancer {
   id: string;
   name: string;
   title: string;
+  headline?: string;
   hourlyRate: number;
   skills: string[];
   rating: number;
   location: string;
   avatarUrl?: string;
   totalProjects?: number;
+  experienceLevel?: string;
+  availabilityStatus?: string;
+  profileSlug?: string;
+  languages?: string;
 }
 
 interface Filters {
@@ -78,6 +97,8 @@ interface Filters {
   minRating: number;
   location: string;
   sortBy: string;
+  experienceLevel: string;
+  availabilityStatus: string;
 }
 
 const PublicFreelancers: React.FC = () => {
@@ -91,6 +112,8 @@ const PublicFreelancers: React.FC = () => {
     minRating: parseFloat(searchParams.get('rating') || '0'),
     location: searchParams.get('location') || '',
     sortBy: searchParams.get('sort') || 'relevance',
+    experienceLevel: searchParams.get('experience') || '',
+    availabilityStatus: searchParams.get('availability') || '',
   });
 
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
@@ -121,6 +144,8 @@ const PublicFreelancers: React.FC = () => {
     if (filters.minRating > 0) params.set('rating', filters.minRating.toString());
     if (filters.location) params.set('location', filters.location);
     if (filters.sortBy !== 'relevance') params.set('sort', filters.sortBy);
+    if (filters.experienceLevel) params.set('experience', filters.experienceLevel);
+    if (filters.availabilityStatus) params.set('availability', filters.availabilityStatus);
     if (currentPage > 1) params.set('page', currentPage.toString());
     const newUrl = params.toString() ? `/freelancers?${params.toString()}` : '/freelancers';
     window.history.replaceState({}, '', newUrl);
@@ -131,7 +156,7 @@ const PublicFreelancers: React.FC = () => {
   useEffect(() => {
     searchFreelancers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, filters.category, filters.rateRange, filters.minRating, filters.location, filters.sortBy, currentPage]);
+  }, [debouncedSearch, filters.category, filters.rateRange, filters.minRating, filters.location, filters.sortBy, filters.experienceLevel, filters.availabilityStatus, currentPage]);
 
   const searchFreelancers = async () => {
     setLoading(true);
@@ -142,6 +167,8 @@ const PublicFreelancers: React.FC = () => {
       if (rateConfig?.min !== undefined) params.min_rate = rateConfig.min;
       if (rateConfig?.max !== undefined) params.max_rate = rateConfig.max;
       if (filters.location) params.location = filters.location;
+      if (filters.experienceLevel) params.experience_level = filters.experienceLevel;
+      if (filters.availabilityStatus) params.availability_status = filters.availabilityStatus;
 
       const res = await api.search.freelancers(debouncedSearch || '', params) as any;
       const data = Array.isArray(res) ? res : (res?.freelancers || []);
@@ -163,13 +190,18 @@ const PublicFreelancers: React.FC = () => {
         return {
           id: String(f.id),
           name: f.name || 'Unknown',
-          title: f.title || f.bio?.substring(0, 80) || 'Freelancer',
+          title: f.headline || f.title || f.bio?.substring(0, 80) || 'Freelancer',
+          headline: f.headline,
           hourlyRate: f.hourly_rate || f.hourlyRate || 0,
           skills: skillsArray,
           rating,
           location: f.location || 'Remote',
           avatarUrl: f.profile_image_url || f.avatarUrl,
           totalProjects: f.total_projects || 0,
+          experienceLevel: f.experience_level,
+          availabilityStatus: f.availability_status,
+          profileSlug: f.profile_slug,
+          languages: f.languages,
         };
       });
 
@@ -204,7 +236,7 @@ const PublicFreelancers: React.FC = () => {
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const handleClearFilters = useCallback(() => {
-    setFilters({ search: '', category: 'all', rateRange: 'all', minRating: 0, location: '', sortBy: 'relevance' });
+    setFilters({ search: '', category: 'all', rateRange: 'all', minRating: 0, location: '', sortBy: 'relevance', experienceLevel: '', availabilityStatus: '' });
     setCurrentPage(1);
   }, []);
 
@@ -215,6 +247,8 @@ const PublicFreelancers: React.FC = () => {
     if (filters.rateRange !== 'all') c++;
     if (filters.minRating > 0) c++;
     if (filters.location) c++;
+    if (filters.experienceLevel) c++;
+    if (filters.availabilityStatus) c++;
     return c;
   }, [filters]);
 
@@ -261,6 +295,34 @@ const PublicFreelancers: React.FC = () => {
           onChange={e => handleFilterChange('location', e.target.value)}
           className={cn(common.locationInput, themed.locationInput)}
         />
+      </div>
+
+      {/* Experience Level */}
+      <div className={common.filterGroup}>
+        <h4 className={cn(common.filterLabel, themed.filterLabel)}>Experience Level</h4>
+        <div className={common.filterOptions}>
+          {EXPERIENCE_LEVELS.map(opt => (
+            <label key={opt.id} className={cn(common.filterOption, themed.filterOption)}>
+              <input type="radio" name="experience" checked={filters.experienceLevel === opt.id} onChange={() => handleFilterChange('experienceLevel', opt.id)} className={common.filterRadio} />
+              <span className={cn(common.filterRadioCustom, themed.filterRadioCustom, filters.experienceLevel === opt.id && common.filterRadioActive)} />
+              <span>{opt.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Availability */}
+      <div className={common.filterGroup}>
+        <h4 className={cn(common.filterLabel, themed.filterLabel)}>Availability</h4>
+        <div className={common.filterOptions}>
+          {AVAILABILITY_OPTIONS.map(opt => (
+            <label key={opt.id} className={cn(common.filterOption, themed.filterOption)}>
+              <input type="radio" name="availability" checked={filters.availabilityStatus === opt.id} onChange={() => handleFilterChange('availabilityStatus', opt.id)} className={common.filterRadio} />
+              <span className={cn(common.filterRadioCustom, themed.filterRadioCustom, filters.availabilityStatus === opt.id && common.filterRadioActive)} />
+              <span>{opt.label}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       {activeFiltersCount > 0 && (
@@ -340,6 +402,8 @@ const PublicFreelancers: React.FC = () => {
                 {filters.rateRange !== 'all' && <span className={cn(common.activeTag, themed.activeTag)}>{RATE_RANGES.find(r => r.id === filters.rateRange)?.label}<button onClick={() => handleFilterChange('rateRange', 'all')} aria-label="Remove"><X size={12} /></button></span>}
                 {filters.minRating > 0 && <span className={cn(common.activeTag, themed.activeTag)}>{filters.minRating}+ stars<button onClick={() => handleFilterChange('minRating', 0)} aria-label="Remove"><X size={12} /></button></span>}
                 {filters.location && <span className={cn(common.activeTag, themed.activeTag)}>{filters.location}<button onClick={() => handleFilterChange('location', '')} aria-label="Remove"><X size={12} /></button></span>}
+                {filters.experienceLevel && <span className={cn(common.activeTag, themed.activeTag)}>{EXPERIENCE_LEVELS.find(e => e.id === filters.experienceLevel)?.label}<button onClick={() => handleFilterChange('experienceLevel', '')} aria-label="Remove"><X size={12} /></button></span>}
+                {filters.availabilityStatus && <span className={cn(common.activeTag, themed.activeTag)}>{AVAILABILITY_OPTIONS.find(a => a.id === filters.availabilityStatus)?.label}<button onClick={() => handleFilterChange('availabilityStatus', '')} aria-label="Remove"><X size={12} /></button></span>}
                 <button className={cn(common.clearAllBtn, themed.clearAllBtn)} onClick={handleClearFilters}>Clear all</button>
               </div>
             )}
@@ -373,12 +437,15 @@ const PublicFreelancers: React.FC = () => {
               <StaggerContainer className={cn(viewMode === 'grid' ? common.grid : common.listView)}>
                 {filteredFreelancers.map(f => (
                   <StaggerItem key={f.id}>
-                    <Link href={`/freelancers/${f.id}`} className={cn(common.card, themed.card)} aria-label={`View ${f.name}'s profile`}>
+                    <Link href={`/freelancers/${f.profileSlug || f.id}`} className={cn(common.card, themed.card)} aria-label={`View ${f.name}'s profile`}>
                       <div className={common.cardHeader}>
                         <img src={f.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(f.name)}&background=random&size=80`} alt={f.name} className={common.avatar} loading="lazy" width={64} height={64} />
                         <div className={common.cardInfo}>
                           <h3 className={cn(common.name, themed.name)}>{f.name}</h3>
                           <p className={cn(common.role, themed.role)}>{f.title}</p>
+                          {f.availabilityStatus === 'available' && (
+                            <span style={{ fontSize: '0.7rem', color: '#27AE60', fontWeight: 600 }}>Available</span>
+                          )}
                         </div>
                       </div>
                       <div className={common.skills}>

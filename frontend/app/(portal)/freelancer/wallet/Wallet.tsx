@@ -1,4 +1,4 @@
-// @AI-HINT: This is the Wallet page for freelancers to manage their earnings and transactions. It is now fully theme-aware and features a premium, investor-grade design.
+// @AI-HINT: This is the Wallet page for freelancers to manage their earnings and transactions. It is now fully theme-aware and features a premium, production-ready design.
 'use client';
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';

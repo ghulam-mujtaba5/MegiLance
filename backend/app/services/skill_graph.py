@@ -1,22 +1,11 @@
 # @AI-HINT: Skill graph and endorsement system service
-"""
-Skill Graph Service - Skill relationships, endorsements, and verification.
-
-Features:
-- Skill taxonomy and relationships
-- Peer endorsements
-- Skill verification tests
-- Skill recommendations
-- Skill analytics
-- Learning paths
-"""
+"""Skill Graph Service - Skill relationships, endorsements, and verification."""
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
 import uuid
-import random
 
 
 class SkillLevel(str, Enum):
@@ -391,7 +380,8 @@ class SkillGraphService:
         answers: Dict[str, str]
     ) -> Dict[str, Any]:
         """Submit verification test answers."""
-        score = random.randint(70, 100)  # Mock score
+        # STUB: Replace with actual answer evaluation logic
+        score = 75  # Default placeholder score
         passed = score >= 80
         
         return {

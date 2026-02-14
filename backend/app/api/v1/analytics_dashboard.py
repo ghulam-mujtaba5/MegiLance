@@ -19,6 +19,7 @@ from datetime import datetime
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import sanitize_text
 from app.services.analytics_dashboard import (
     get_analytics_dashboard_service,
     WidgetType,
@@ -80,8 +81,8 @@ async def create_dashboard(
     service = get_analytics_dashboard_service(db)
     dashboard = await service.create_dashboard(
         current_user["id"],
-        request.name,
-        request.description,
+        sanitize_text(request.name, 200),
+        sanitize_text(request.description, 1000) if request.description else None,
         request.is_default
     )
     return {"dashboard": dashboard}
@@ -122,8 +123,13 @@ async def update_dashboard(
     current_user = Depends(get_current_active_user)
 ):
     """Update dashboard settings."""
+    ALLOWED_DASHBOARD_FIELDS = {"name", "description", "is_default"}
+    safe_updates = {k: v for k, v in updates.items() if k in ALLOWED_DASHBOARD_FIELDS}
+    for k in ("name", "description"):
+        if k in safe_updates and isinstance(safe_updates[k], str):
+            safe_updates[k] = sanitize_text(safe_updates[k], 1000)
     service = get_analytics_dashboard_service(db)
-    result = await service.update_dashboard(current_user["id"], dashboard_id, updates)
+    result = await service.update_dashboard(current_user["id"], dashboard_id, safe_updates)
     return result
 
 
@@ -153,7 +159,7 @@ async def add_widget(
         current_user["id"],
         dashboard_id,
         request.widget_type,
-        request.title,
+        sanitize_text(request.title, 200),
         request.config
     )
     return {"widget": widget}
@@ -168,8 +174,12 @@ async def update_widget(
     current_user = Depends(get_current_active_user)
 ):
     """Update widget settings."""
+    ALLOWED_WIDGET_FIELDS = {"title", "config", "position"}
+    safe_updates = {k: v for k, v in updates.items() if k in ALLOWED_WIDGET_FIELDS}
+    if "title" in safe_updates and isinstance(safe_updates["title"], str):
+        safe_updates["title"] = sanitize_text(safe_updates["title"], 200)
     service = get_analytics_dashboard_service(db)
-    result = await service.update_widget(current_user["id"], dashboard_id, widget_id, updates)
+    result = await service.update_widget(current_user["id"], dashboard_id, widget_id, safe_updates)
     return result
 
 

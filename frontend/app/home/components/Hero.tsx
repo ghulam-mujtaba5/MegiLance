@@ -1,4 +1,4 @@
-// @AI-HINT: Premium Hero component - the billion-dollar first impression. Features animated gradient mesh background, glassmorphism cards, floating 3D elements, and engaging micro-interactions.
+// @AI-HINT: Premium Hero component - the production-ready first impression. Features animated gradient mesh background, glassmorphism cards, floating 3D elements, and engaging micro-interactions.
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -178,7 +178,7 @@ const Hero: React.FC = () => {
           {/* Right Column: 3D Visuals */}
           <div className={commonStyles.rightColumn}>
             <div className={commonStyles.visualContainer}>
-               {/* Stunning 3D floating objects - Repositioned for Right Column */}
+               {/* Enhanced 3D floating objects - Repositioned for Right Column */}
               <div className={cn(commonStyles.floating3D, commonStyles.floating3DTopLeft)}>
                 <FloatingCube size={50} />
               </div>

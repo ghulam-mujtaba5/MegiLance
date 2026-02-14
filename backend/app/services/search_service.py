@@ -1,18 +1,9 @@
 # @AI-HINT: Service layer for search CRUD operations - all DB access via Turso HTTP
-"""
-Search Service - Data access layer for project/freelancer/global search.
-
-Handles all execute_query calls for:
-- Project search with filters
-- Freelancer search with filters
-- Global cross-entity search
-- Autocomplete suggestions
-- Trending items
-"""
+"""Search Service - Data access layer for project/freelancer/global search."""
 
 from typing import Optional, List, Dict, Any
 
-from app.db.turso_http import execute_query, to_str, parse_date
+from app.db.turso_http import execute_query, parse_rows, to_str, parse_date
 
 
 def row_to_project(row: list) -> dict:
@@ -53,8 +44,181 @@ def row_to_user(row: list) -> dict:
     }
 
 
+# ── Sorting maps ──
+PROJECT_SORT_MAP = {
+    "newest": "p.created_at DESC",
+    "oldest": "p.created_at ASC",
+    "budget_high": "p.budget_max DESC",
+    "budget_low": "p.budget_min ASC",
+    "most_proposals": "proposal_count DESC",
+}
+
+FREELANCER_SORT_MAP = {
+    "newest": "u.created_at DESC",
+    "rate_high": "u.hourly_rate DESC",
+    "rate_low": "u.hourly_rate ASC",
+    "rating_high": "avg_rating DESC",
+    "most_reviews": "review_count DESC",
+}
+
+
+def search_projects_advanced(where_clause: str, params: List,
+                             sort: str = "newest") -> dict:
+    """
+    Enhanced project search returning items, total_count, and facets.
+    """
+    order = PROJECT_SORT_MAP.get(sort, "p.created_at DESC")
+
+    # -- count --
+    count_params = params[:-2]  # strip LIMIT/OFFSET
+    count_result = execute_query(
+        f"SELECT COUNT(*) as cnt FROM projects p WHERE {where_clause}",
+        count_params,
+    )
+    total = 0
+    if count_result:
+        rows = parse_rows(count_result)
+        if rows:
+            total = rows[0].get("cnt", 0)
+
+    # -- items with proposal count --
+    result = execute_query(
+        f"""SELECT p.id, p.title, p.description, p.category, p.budget_type,
+                   p.budget_min, p.budget_max, p.experience_level,
+                   p.estimated_duration, p.status, p.skills, p.client_id,
+                   p.created_at, p.updated_at,
+                   COALESCE(pc.proposal_count, 0) AS proposal_count
+            FROM projects p
+            LEFT JOIN (
+                SELECT project_id, COUNT(*) AS proposal_count
+                FROM proposals WHERE status != 'withdrawn'
+                GROUP BY project_id
+            ) pc ON p.id = pc.project_id
+            WHERE {where_clause}
+            ORDER BY {order}
+            LIMIT ? OFFSET ?""",
+        params,
+    )
+    items = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            proj = row_to_project(row)
+            proj["proposal_count"] = (
+                row[14].get("value") if len(row) > 14 and row[14].get("type") != "null" else 0
+            )
+            items.append(proj)
+
+    # -- facets (category counts + experience level counts) --
+    facet_result = execute_query(
+        f"""SELECT
+                category,
+                experience_level,
+                COUNT(*) as cnt
+            FROM projects p
+            WHERE {where_clause}
+            GROUP BY category, experience_level""",
+        count_params,
+    )
+    category_counts: Dict[str, int] = {}
+    experience_counts: Dict[str, int] = {}
+    if facet_result:
+        for fr in parse_rows(facet_result):
+            cat = fr.get("category") or "uncategorized"
+            exp = fr.get("experience_level") or "unspecified"
+            cnt = fr.get("cnt", 0)
+            category_counts[cat] = category_counts.get(cat, 0) + cnt
+            experience_counts[exp] = experience_counts.get(exp, 0) + cnt
+
+    return {
+        "items": items,
+        "total_count": total,
+        "facets": {
+            "categories": category_counts,
+            "experience_levels": experience_counts,
+        },
+    }
+
+
+def search_freelancers_advanced(where_clause: str, params: List,
+                                sort: str = "newest") -> dict:
+    """
+    Enhanced freelancer search with rating data, total_count, and facets.
+    """
+    order = FREELANCER_SORT_MAP.get(sort, "u.created_at DESC")
+
+    # -- count --
+    count_params = params[:-2]
+    count_result = execute_query(
+        f"SELECT COUNT(*) as cnt FROM users u WHERE {where_clause}",
+        count_params,
+    )
+    total = 0
+    if count_result:
+        rows = parse_rows(count_result)
+        if rows:
+            total = rows[0].get("cnt", 0)
+
+    # -- items with rating + completed projects --
+    result = execute_query(
+        f"""SELECT u.id, u.email, u.name, u.first_name, u.last_name,
+                   u.bio, u.hourly_rate, u.location, u.skills, u.user_type,
+                   u.is_active, u.created_at,
+                   COALESCE(rv.avg_rating, 0) AS avg_rating,
+                   COALESCE(rv.review_count, 0) AS review_count,
+                   COALESCE(cc.completed, 0) AS completed_projects
+            FROM users u
+            LEFT JOIN (
+                SELECT reviewee_id, AVG(rating) AS avg_rating, COUNT(*) AS review_count
+                FROM reviews GROUP BY reviewee_id
+            ) rv ON u.id = rv.reviewee_id
+            LEFT JOIN (
+                SELECT freelancer_id, COUNT(*) AS completed
+                FROM contracts WHERE status = 'completed'
+                GROUP BY freelancer_id
+            ) cc ON u.id = cc.freelancer_id
+            WHERE {where_clause}
+            ORDER BY {order}
+            LIMIT ? OFFSET ?""",
+        params,
+    )
+    items = []
+    if result and result.get("rows"):
+        for row in result["rows"]:
+            user = row_to_user(row)
+            user["avg_rating"] = (
+                round(float(row[12].get("value")), 2)
+                if len(row) > 12 and row[12].get("type") != "null" else 0
+            )
+            user["review_count"] = (
+                row[13].get("value")
+                if len(row) > 13 and row[13].get("type") != "null" else 0
+            )
+            user["completed_projects"] = (
+                row[14].get("value")
+                if len(row) > 14 and row[14].get("type") != "null" else 0
+            )
+            items.append(user)
+
+    # -- facets (location counts) --
+    facet_result = execute_query(
+        f"""SELECT COALESCE(u.location, 'unspecified') AS loc, COUNT(*) AS cnt
+            FROM users u WHERE {where_clause} GROUP BY loc""",
+        count_params,
+    )
+    location_counts: Dict[str, int] = {}
+    if facet_result:
+        for fr in parse_rows(facet_result):
+            location_counts[fr.get("loc", "unspecified")] = fr.get("cnt", 0)
+
+    return {
+        "items": items,
+        "total_count": total,
+        "facets": {"locations": location_counts},
+    }
+
+
 def search_projects_db(where_clause: str, params: List) -> List[dict]:
-    """Execute project search query and return parsed project dicts."""
+    """Execute project search query and return parsed project dicts (legacy)."""
     result = execute_query(
         f"""SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, estimated_duration, status, skills, client_id, created_at, updated_at
             FROM projects
@@ -69,7 +233,7 @@ def search_projects_db(where_clause: str, params: List) -> List[dict]:
 
 
 def search_freelancers_db(where_clause: str, params: List) -> List[dict]:
-    """Execute freelancer search query and return parsed user dicts."""
+    """Execute freelancer search query and return parsed user dicts (legacy)."""
     result = execute_query(
         f"""SELECT id, email, name, first_name, last_name, bio, hourly_rate, location, skills, user_type, is_active, created_at
             FROM users

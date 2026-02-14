@@ -16,7 +16,7 @@ import darkStyles from './dashboard.dark.module.css';
 
 
 // @AI-HINT: This is the main Dashboard component, serving as the central hub for all roles.
-// It has been completely redesigned with a premium, investor-grade UI and layout.
+// It has been completely redesigned with a premium, production-ready UI and layout.
 // It uses a responsive grid to ensure a perfect experience on all devices.
 
 

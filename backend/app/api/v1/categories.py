@@ -6,6 +6,7 @@ import re
 
 from app.services import categories_service
 from app.core.security import get_current_user_from_token
+from app.schemas.category import CategoryCreate, CategoryUpdate
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -24,7 +25,7 @@ def generate_slug(name: str) -> str:
 
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_category(
-    category: dict,
+    category: CategoryCreate,
     current_user = Depends(get_current_user)
 ):
     """
@@ -37,20 +38,17 @@ async def create_category(
     if role.lower() != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    name = category.get("name", "")
-    
     # Check if category name exists
-    if categories_service.check_category_name_exists(name):
+    if categories_service.check_category_name_exists(category.name):
         raise HTTPException(status_code=400, detail="Category name already exists")
     
     # Verify parent category exists
-    parent_id = category.get("parent_id")
-    if parent_id:
-        if not categories_service.check_category_exists_by_id(parent_id):
+    if category.parent_id:
+        if not categories_service.check_category_exists_by_id(category.parent_id):
             raise HTTPException(status_code=404, detail="Parent category not found")
     
     # Generate slug
-    slug = generate_slug(name)
+    slug = generate_slug(category.name)
     if categories_service.check_slug_exists(slug):
         slug = f"{slug}-{int(datetime.now(timezone.utc).timestamp())}"
     
@@ -58,12 +56,12 @@ async def create_category(
     
     # Create category
     new_id = categories_service.insert_category(
-        name=name,
+        name=category.name,
         slug=slug,
-        description=category.get("description"),
-        icon=category.get("icon"),
-        parent_id=parent_id,
-        sort_order=category.get("sort_order", 0),
+        description=category.description,
+        icon=category.icon,
+        parent_id=category.parent_id,
+        sort_order=category.sort_order,
         now=now
     )
     
@@ -72,12 +70,12 @@ async def create_category(
     
     return {
         "id": new_id,
-        "name": name,
+        "name": category.name,
         "slug": slug,
-        "description": category.get("description"),
-        "icon": category.get("icon"),
-        "parent_id": parent_id,
-        "sort_order": category.get("sort_order", 0),
+        "description": category.description,
+        "icon": category.icon,
+        "parent_id": category.parent_id,
+        "sort_order": category.sort_order,
         "is_active": True,
         "project_count": 0,
         "created_at": now,
@@ -159,7 +157,7 @@ async def get_category(slug: str):
 @router.patch("/{category_id}", response_model=dict)
 async def update_category(
     category_id: int,
-    update_data: dict,
+    update_data: CategoryUpdate,
     current_user = Depends(get_current_user)
 ):
     """
@@ -175,41 +173,42 @@ async def update_category(
     if not existing:
         raise HTTPException(status_code=404, detail="Category not found")
     
+    data = update_data.model_dump(exclude_unset=True)
     updates = []
     params = []
     
     # Check name uniqueness if changing name
-    if "name" in update_data and update_data["name"] != existing.get("name"):
-        if categories_service.check_category_name_exists(update_data["name"], exclude_id=category_id):
+    if "name" in data and data["name"] != existing.get("name"):
+        if categories_service.check_category_name_exists(data["name"], exclude_id=category_id):
             raise HTTPException(status_code=400, detail="Category name already exists")
         
         updates.append("name = ?")
-        params.append(update_data["name"])
+        params.append(data["name"])
         updates.append("slug = ?")
-        params.append(generate_slug(update_data["name"]))
+        params.append(generate_slug(data["name"]))
     
     # Verify parent if changing
-    if "parent_id" in update_data and update_data["parent_id"]:
-        if update_data["parent_id"] == category_id:
+    if "parent_id" in data and data["parent_id"]:
+        if data["parent_id"] == category_id:
             raise HTTPException(status_code=400, detail="Category cannot be its own parent")
         
-        if not categories_service.check_category_exists_by_id(update_data["parent_id"]):
+        if not categories_service.check_category_exists_by_id(data["parent_id"]):
             raise HTTPException(status_code=404, detail="Parent category not found")
         
         updates.append("parent_id = ?")
-        params.append(update_data["parent_id"])
-    elif "parent_id" in update_data and update_data["parent_id"] is None:
+        params.append(data["parent_id"])
+    elif "parent_id" in data and data["parent_id"] is None:
         updates.append("parent_id = ?")
         params.append(None)
     
     for field in ["description", "icon", "sort_order"]:
-        if field in update_data:
+        if field in data:
             updates.append(f"{field} = ?")
-            params.append(update_data[field])
+            params.append(data[field])
     
-    if "is_active" in update_data:
+    if "is_active" in data:
         updates.append("is_active = ?")
-        params.append(1 if update_data["is_active"] else 0)
+        params.append(1 if data["is_active"] else 0)
     
     if updates:
         updates.append("updated_at = ?")

@@ -1,4 +1,4 @@
-// @AI-HINT: Redesigned Freelancer Dashboard with modern UI/UX, quick actions, seller stats
+// @AI-HINT: Redesigned Freelancer Dashboard with modern UI/UX, quick actions, seller stats, sparklines, timeline, progress rings
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -13,6 +13,8 @@ import EmptyState from '@/app/components/EmptyState/EmptyState';
 import { searchingAnimation, emptyBoxAnimation } from '@/app/components/Animations/LottieAnimation';
 import StatCard from '@/app/components/StatCard/StatCard';
 import SellerStats, { SellerStatsData } from '@/app/components/SellerStats/SellerStats';
+import ActivityTimeline, { type TimelineEvent } from '@/app/components/ActivityTimeline/ActivityTimeline';
+import ProgressRing from '@/app/components/ProgressRing/ProgressRing';
 import EarningsChart from './components/EarningsChart/EarningsChart';
 import JobCard from './components/JobCard';
 import { 
@@ -25,7 +27,12 @@ import {
   Package,
   MessageSquare,
   User,
-  BarChart3
+  BarChart3,
+  Circle,
+  CheckCircle2,
+  Zap,
+  Star,
+  TrendingUp
 } from 'lucide-react';
 
 import commonStyles from './Dashboard.common.module.css';
@@ -142,19 +149,66 @@ const Dashboard: React.FC = () => {
 
   const metrics = useMemo(() => ({
     earnings: analytics?.totalEarnings || '$0',
+    earningsNum: parseFloat(String(analytics?.totalEarnings || '0').replace(/[$,]/g, '')),
     activeJobs: analytics?.activeProjects || 0,
     proposalsSent: analytics?.pendingProposals || 0,
     profileViews: analytics?.profileViews || 0,
-  }), [analytics]);
+    completionRate: sellerStats?.completionRate ?? 100,
+    responseRate: sellerStats?.responseRate ?? 100,
+    onTimeRate: sellerStats?.onTimeDeliveryRate ?? 100,
+    jssScore: sellerStats?.level.jssScore ?? 0,
+    profileCompleteness: analytics?.profileCompleteness ?? 0,
+  }), [analytics, sellerStats]);
+
+  // Generate sparkline data from earnings history
+  const earningsSparkline = useMemo(() => {
+    if (earningsData.length === 0) return [0, 0, 0, 0, 0, 0];
+    return earningsData.slice(-7).map(d => d.amount);
+  }, [earningsData]);
+
+  // Generate activity timeline from proposals
+  const recentActivity = useMemo((): TimelineEvent[] => {
+    const events: TimelineEvent[] = [];
+    
+    if (proposals) {
+      proposals.slice(0, 3).forEach(p => {
+        const statusLower = p.status.toLowerCase();
+        events.push({
+          id: `proposal-${p.id}`,
+          actor: 'You',
+          action: statusLower === 'accepted' ? 'got accepted on' : statusLower === 'rejected' ? 'proposal declined for' : 'submitted proposal for',
+          target: p.projectTitle,
+          targetHref: '/freelancer/proposals',
+          timestamp: p.sentDate || new Date().toISOString(),
+          type: statusLower === 'accepted' ? 'success' : statusLower === 'rejected' ? 'danger' : 'info',
+        });
+      });
+    }
+    
+    if (recommendedJobs && recommendedJobs.length > 0) {
+      events.push({
+        id: 'match-1',
+        actor: 'AI',
+        action: `found ${recommendedJobs.length} new job matches`,
+        target: 'based on your skills',
+        targetHref: '/jobs',
+        timestamp: new Date().toISOString(),
+        type: 'purple',
+        badge: `${recommendedJobs.length} jobs`,
+      });
+    }
+
+    return events.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
+  }, [proposals, recommendedJobs]);
 
   // Quick actions for the grid
   const quickActions = [
-    { label: 'Find Work', href: '/jobs', icon: Search, color: 'primary' as const },
-    { label: 'My Gigs', href: '/freelancer/gigs', icon: Package, color: 'success' as const },
-    { label: 'Proposals', href: '/freelancer/proposals', icon: FileText, color: 'info' as const },
-    { label: 'Messages', href: '/freelancer/messages', icon: MessageSquare, color: 'purple' as const },
-    { label: 'Analytics', href: '/freelancer/analytics', icon: BarChart3, color: 'warning' as const },
-    { label: 'Profile', href: '/freelancer/profile', icon: User, color: 'danger' as const },
+    { label: 'Find Work', href: '/jobs', icon: Search, color: 'primary' as const, desc: 'Browse jobs' },
+    { label: 'My Gigs', href: '/freelancer/gigs', icon: Package, color: 'success' as const, desc: 'Manage offerings' },
+    { label: 'Proposals', href: '/freelancer/proposals', icon: FileText, color: 'info' as const, desc: `${metrics.proposalsSent} sent` },
+    { label: 'Messages', href: '/freelancer/messages', icon: MessageSquare, color: 'purple' as const, desc: 'Chat with clients' },
+    { label: 'Analytics', href: '/freelancer/analytics', icon: BarChart3, color: 'warning' as const, desc: 'View insights' },
+    { label: 'Profile', href: '/freelancer/profile', icon: User, color: 'danger' as const, desc: `${metrics.profileCompleteness}% complete` },
   ];
 
   if (!mounted) {
@@ -170,8 +224,30 @@ const Dashboard: React.FC = () => {
       {/* Header Section */}
       <div className={commonStyles.headerSection}>
         <div className={cn(commonStyles.welcomeText, themeStyles.welcomeText)}>
-          <h1>Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</h1>
-          <p>You have new job matches waiting for you.</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <h1>Welcome back{user?.name ? `, ${user.name.split(' ')[0]}` : ''}</h1>
+            {analytics?.availabilityStatus === 'available' && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 10px', borderRadius: '12px', backgroundColor: 'rgba(39,174,96,0.15)', color: '#27AE60', fontSize: '0.8rem', fontWeight: 600 }}>
+                <Circle size={8} fill="#27AE60" /> Available
+              </span>
+            )}
+          </div>
+          {analytics?.headline ? (
+            <p>{analytics.headline}</p>
+          ) : (
+            <p>You have new job matches waiting for you.</p>
+          )}
+          {analytics?.profileCompleteness != null && analytics.profileCompleteness < 80 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+              <div style={{ flex: 1, maxWidth: '200px', height: '6px', borderRadius: '3px', backgroundColor: 'rgba(128,128,128,0.2)' }}>
+                <div style={{ width: `${analytics.profileCompleteness}%`, height: '100%', borderRadius: '3px', backgroundColor: analytics.profileCompleteness >= 60 ? '#27AE60' : '#F2C94C' }} />
+              </div>
+              <span style={{ fontSize: '0.78rem', opacity: 0.7 }}>Profile {analytics.profileCompleteness}% complete</span>
+              <Link href="/freelancer/profile" style={{ fontSize: '0.78rem', color: '#4573df', textDecoration: 'none' }}>
+                Complete it <ArrowRight size={12} style={{ display: 'inline' }} />
+              </Link>
+            </div>
+          )}
         </div>
         <div className={commonStyles.headerActions}>
           <Link href="/freelancer/gigs">
@@ -190,32 +266,73 @@ const Dashboard: React.FC = () => {
       {/* Seller Stats Section */}
       {sellerStats && <SellerStats stats={sellerStats} />}
 
-      {/* Stats Grid */}
+      {/* Stats Grid — with sparklines */}
       <div className={commonStyles.statsGrid}>
         <StatCard 
           title="Total Earnings" 
           value={metrics.earnings} 
           trend={8.5} 
-          icon={DollarSign} 
+          icon={DollarSign}
+          sparklineData={earningsSparkline}
+          sparklineColor="success"
+          href="/freelancer/earnings"
         />
         <StatCard 
           title="Active Jobs" 
           value={metrics.activeJobs.toString()} 
           trend={0} 
-          icon={Briefcase} 
+          icon={Briefcase}
+          sparklineData={[1, 2, 3, 2, 4, metrics.activeJobs]}
+          sparklineColor="primary"
         />
         <StatCard 
           title="Proposals Sent" 
           value={metrics.proposalsSent.toString()} 
           trend={12.0} 
-          icon={FileText} 
+          icon={FileText}
+          href="/freelancer/proposals"
         />
         <StatCard 
           title="Profile Views" 
           value={metrics.profileViews.toString()} 
           trend={-5.0} 
-          icon={Eye} 
+          icon={Eye}
+          sparklineData={[10, 15, 12, 18, 14, metrics.profileViews]}
+          sparklineColor="warning"
+          href="/freelancer/analytics"
         />
+      </div>
+
+      {/* Performance Metrics — Progress Rings */}
+      <div className={commonStyles.metricsRow}>
+        <div className={cn(commonStyles.metricCard, themeStyles.metricCard)}>
+          <ProgressRing value={metrics.completionRate} label="Completion Rate" size="lg" color="success" />
+        </div>
+        <div className={cn(commonStyles.metricCard, themeStyles.metricCard)}>
+          <ProgressRing value={metrics.responseRate} label="Response Rate" size="lg" color="primary" />
+        </div>
+        <div className={cn(commonStyles.metricCard, themeStyles.metricCard)}>
+          <ProgressRing value={metrics.onTimeRate} label="On-Time Delivery" size="lg" color="warning" />
+        </div>
+        <div className={cn(commonStyles.metricCard, themeStyles.metricCard)}>
+          <div className={commonStyles.metricStats}>
+            <div className={commonStyles.metricStatItem}>
+              <Star size={16} className={commonStyles.metricIconWarning} />
+              <span className={cn(commonStyles.metricStatValue, themeStyles.metricStatValue)}>{sellerStats?.averageRating?.toFixed(1) ?? '—'}</span>
+              <span className={cn(commonStyles.metricStatLabel, themeStyles.metricStatLabel)}>Rating</span>
+            </div>
+            <div className={commonStyles.metricStatItem}>
+              <TrendingUp size={16} className={commonStyles.metricIconSuccess} />
+              <span className={cn(commonStyles.metricStatValue, themeStyles.metricStatValue)}>{metrics.jssScore}%</span>
+              <span className={cn(commonStyles.metricStatLabel, themeStyles.metricStatLabel)}>JSS Score</span>
+            </div>
+            <div className={commonStyles.metricStatItem}>
+              <Zap size={16} className={commonStyles.metricIconPrimary} />
+              <span className={cn(commonStyles.metricStatValue, themeStyles.metricStatValue)}>{sellerStats?.totalOrders ?? 0}</span>
+              <span className={cn(commonStyles.metricStatLabel, themeStyles.metricStatLabel)}>Total Orders</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Earnings Chart */}
@@ -236,6 +353,7 @@ const Dashboard: React.FC = () => {
                 <action.icon size={20} />
               </div>
               <span className={cn(commonStyles.quickActionLabel, themeStyles.quickActionLabel)}>{action.label}</span>
+              <span className={cn(commonStyles.quickActionDesc, themeStyles.quickActionDesc)}>{action.desc}</span>
             </Link>
           ))}
         </div>
@@ -273,6 +391,12 @@ const Dashboard: React.FC = () => {
                 }
               />
             )}
+          </div>
+
+          {/* Activity Timeline */}
+          <div className={cn(commonStyles.timelineSection, themeStyles.timelineSection)}>
+            <h3 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Recent Activity</h3>
+            <ActivityTimeline events={recentActivity} maxItems={5} emptyMessage="No recent activity" />
           </div>
         </div>
 

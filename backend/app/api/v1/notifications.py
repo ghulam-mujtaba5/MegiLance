@@ -5,7 +5,9 @@ from datetime import datetime, timezone
 import json
 
 from app.services import notifications_service
+from app.services.db_utils import paginate_params
 from app.core.security import get_current_user_from_token
+from app.schemas.notification import NotificationCreate, NotificationUpdate
 
 router = APIRouter()
 
@@ -17,11 +19,11 @@ def get_current_user(token_data = Depends(get_current_user_from_token)):
 
 @router.post("", response_model=dict)
 def create_notification(
-    notification: dict,
+    notification: NotificationCreate,
     current_user = Depends(get_current_user)
 ):
     """Create a new notification (admin/system use)"""
-    user_id = notification.get("user_id")
+    user_id = notification.user_id
     current_user_id = current_user.get("user_id")
     role = current_user.get("role", "")
     
@@ -30,17 +32,17 @@ def create_notification(
         raise HTTPException(status_code=403, detail="Only admins can create notifications for other users")
     
     now = datetime.now(timezone.utc).isoformat()
-    data_json = json.dumps(notification.get("data")) if notification.get("data") else None
+    data_json = json.dumps(notification.data) if notification.data else None
     
     new_id = notifications_service.insert_notification(
         user_id=user_id,
-        notification_type=notification.get("notification_type"),
-        title=notification.get("title"),
-        content=notification.get("content"),
+        notification_type=notification.notification_type,
+        title=notification.title,
+        content=notification.content,
         data_json=data_json,
-        priority=notification.get("priority", "medium"),
-        action_url=notification.get("action_url"),
-        expires_at=notification.get("expires_at"),
+        priority=notification.priority,
+        action_url=notification.action_url,
+        expires_at=notification.expires_at.isoformat() if notification.expires_at else None,
         now=now
     )
     
@@ -50,12 +52,12 @@ def create_notification(
     return {
         "id": new_id,
         "user_id": user_id,
-        "notification_type": notification.get("notification_type"),
-        "title": notification.get("title"),
-        "content": notification.get("content"),
-        "data": notification.get("data"),
-        "priority": notification.get("priority", "medium"),
-        "action_url": notification.get("action_url"),
+        "notification_type": notification.notification_type,
+        "title": notification.title,
+        "content": notification.content,
+        "data": notification.data,
+        "priority": notification.priority,
+        "action_url": notification.action_url,
         "is_read": False,
         "created_at": now
     }
@@ -63,14 +65,15 @@ def create_notification(
 
 @router.get("", response_model=dict)
 def get_notifications(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     is_read: Optional[bool] = Query(None),
     notification_type: Optional[str] = Query(None),
     priority: Optional[str] = Query(None),
     current_user = Depends(get_current_user)
 ):
     """Get all notifications for current user"""
+    offset, limit = paginate_params(page, page_size)
     user_id = current_user.get("user_id")
     now = datetime.now(timezone.utc).isoformat()
     
@@ -99,13 +102,13 @@ def get_notifications(
     unread_count = notifications_service.query_unread_count(user_id)
     
     # Get notifications
-    notifications = notifications_service.query_notifications(where_sql, list(params), limit, skip)
+    notifications = notifications_service.query_notifications(where_sql, list(params), limit, offset)
     
     for row in notifications:
         if row.get("data"):
             try:
                 row["data"] = json.loads(row["data"])
-            except:
+            except (json.JSONDecodeError, ValueError):
                 pass
         row["is_read"] = bool(row.get("is_read"))
     
@@ -143,7 +146,7 @@ def get_notification(
     if notification.get("data"):
         try:
             notification["data"] = json.loads(notification["data"])
-        except:
+        except (json.JSONDecodeError, ValueError):
             pass
     
     notification["is_read"] = bool(notification.get("is_read"))
@@ -153,7 +156,7 @@ def get_notification(
 @router.patch("/{notification_id}", response_model=dict)
 def update_notification(
     notification_id: int,
-    notification_update: dict,
+    notification_update: NotificationUpdate,
     current_user = Depends(get_current_user)
 ):
     """Update a notification (mark as read/unread)"""
@@ -171,11 +174,11 @@ def update_notification(
     updates = []
     params = []
     
-    if "is_read" in notification_update:
+    if notification_update.is_read is not None:
         updates.append("is_read = ?")
-        params.append(1 if notification_update["is_read"] else 0)
+        params.append(1 if notification_update.is_read else 0)
         
-        if notification_update["is_read"] and not existing.get("read_at"):
+        if notification_update.is_read and not existing.get("read_at"):
             updates.append("read_at = ?")
             params.append(datetime.now(timezone.utc).isoformat())
     
@@ -190,7 +193,7 @@ def update_notification(
     if updated.get("data"):
         try:
             updated["data"] = json.loads(updated["data"])
-        except:
+        except (json.JSONDecodeError, ValueError):
             pass
     
     updated["is_read"] = bool(updated.get("is_read"))

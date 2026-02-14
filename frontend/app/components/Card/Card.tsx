@@ -1,4 +1,4 @@
-// @AI-HINT: Premium Card component with 3D hover effects, glassmorphism, and billionaire-grade styling. Supports multiple variants for stunning UI.
+// @AI-HINT: Premium Card component with 3D hover effects, glassmorphism, and premium styling. Supports multiple variants for polished UI.
 
 'use client';
 

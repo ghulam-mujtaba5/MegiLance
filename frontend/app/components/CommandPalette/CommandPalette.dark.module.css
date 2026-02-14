@@ -1,0 +1,62 @@
+/* @AI-HINT: Command Palette — dark theme */
+
+.overlay {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.palette {
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.searchInput {
+  color: #e2e8f0;
+}
+
+.shortcutHint {
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+.divider {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.groupLabel {
+  color: #94a3b8;
+}
+
+.resultItem:hover,
+.resultItemActive {
+  background: rgba(69, 115, 223, 0.15);
+}
+
+.resultIcon {
+  background: rgba(69, 115, 223, 0.15);
+  color: #7ba3f7;
+}
+
+.resultLabel {
+  color: #e2e8f0;
+}
+
+.resultDescription {
+  color: #94a3b8;
+}
+
+.resultShortcut {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+}
+
+.footer {
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+}
+
+.footerKey kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}

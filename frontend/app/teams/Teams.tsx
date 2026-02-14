@@ -19,7 +19,7 @@ const team = [
 ];
 
 const values = [
-  { title: 'Quality over Everything', desc: 'We sweat the details to deliver investor-grade experiences.' },
+  { title: 'Quality over Everything', desc: 'We sweat the details to deliver production-ready experiences.' },
   { title: 'Security by Design', desc: 'Privacy, protection, and audits are built-in from day one.' },
   { title: 'Customer Obsession', desc: 'We listen carefully and iterate quickly to solve real problems.' },
 ];

@@ -77,7 +77,7 @@ export default function SubscriptionPage() {
       
       // Fetch real data from APIs
       const [paymentsData, invoicesData] = await Promise.all([
-        paymentsApi.list(10, 0).catch(() => null),
+        paymentsApi.list(1, 10).catch(() => null),
         invoicesApi.list({ page: 1, page_size: 10 }).catch(() => null),
       ]);
 

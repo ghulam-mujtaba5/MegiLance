@@ -97,6 +97,7 @@ async def send_message(
 @router.get("/{conversation_id}/history")
 async def get_conversation_history(
     conversation_id: str,
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get conversation history."""
@@ -107,6 +108,11 @@ async def get_conversation_history(
     if "error" in result:
         raise HTTPException(status_code=404, detail=result["error"])
     
+    # Verify ownership
+    conv_user_id = result.get("conversation", {}).get("user_id")
+    if conv_user_id is not None and conv_user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
     return result
 
 
@@ -114,10 +120,19 @@ async def get_conversation_history(
 async def close_conversation(
     conversation_id: str,
     request: Optional[CloseConversationRequest] = None,
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Close a chatbot conversation."""
     service = get_chatbot_service(db)
+    
+    # Verify conversation exists and ownership
+    history = await service.get_conversation_history(conversation_id)
+    if "error" in history:
+        raise HTTPException(status_code=404, detail=history["error"])
+    conv_user_id = history.get("conversation", {}).get("user_id")
+    if conv_user_id is not None and conv_user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
     
     resolution = request.resolution if request else None
     

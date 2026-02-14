@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.models.user import User
 from app.services.notification_center import (
     get_notification_service, 
@@ -192,10 +192,10 @@ async def unsubscribe_push(
 async def send_notification(
     request: SendNotificationRequest,
     current_user: User = Depends(get_current_active_user),
+    _admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """Send a notification (admin only)."""
-    # Would check admin role in production
     
     service = get_notification_service(db)
     

@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from enum import Enum
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.models.user import User
+from app.services.db_utils import get_user_role, paginate_params
 
 router = APIRouter(prefix="/data-export")
 
@@ -73,10 +75,17 @@ async def create_export(
     format: ExportFormat = ExportFormat.CSV,
     filters: Optional[dict] = None,
     columns: Optional[List[str]] = None,
-    current_user=Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Create a new data export"""
+    # Sensitive data types require admin access
+    admin_only_types = {"users", "payments"}
+    if data_type in admin_only_types and get_user_role(current_user) != "admin":
+        raise HTTPException(
+            status_code=403,
+            detail=f"Admin access required to export {data_type} data"
+        )
     return DataExport(
         id="export-new",
         user_id=str(current_user.id),
@@ -92,12 +101,13 @@ async def create_export(
 @router.get("/list", response_model=List[DataExport])
 async def list_exports(
     status: Optional[ExportStatus] = None,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """List user's exports"""
+    offset, limit = paginate_params(page, page_size)
     return [
         DataExport(
             id=f"export-{i}",

@@ -1,9 +1,5 @@
 # @AI-HINT: Service layer for analytics router - all execute_query calls for admin analytics CRUD
-"""
-Analytics Service - Data access for admin analytics endpoints.
-Provides user, project, revenue, freelancer, client, and platform analytics.
-Separate from advanced_analytics.py (ML/SQLAlchemy) and analytics_dashboard.py (dashboard widgets).
-"""
+"""Analytics Service - Data access for admin analytics endpoints."""
 
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional, Dict, Any

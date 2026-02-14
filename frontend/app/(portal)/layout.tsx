@@ -6,7 +6,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import AppLayout from '../components/AppLayout/AppLayout';
-import { getAuthToken, clearAuthData } from '@/lib/api';
+import { getAuthToken, clearAuthData, authApi } from '@/lib/api';
+import { UnreadCountProvider } from '@/contexts/UnreadCountContext';
 
 export default function PortalLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const router = useRouter();
@@ -34,19 +35,7 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
         }
 
         // Validate token with backend
-        const res = await fetch('/api/auth/me', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!res.ok) {
-          setIsAuthenticated(false);
-          clearAuthData();
-          const currentPath = pathname || '/client/dashboard';
-          router.replace(`/login?returnTo=${encodeURIComponent(currentPath)}`);
-          return;
-        }
-
-        const user = await res.json();
+        const user = await authApi.me();
         const role = (user.user_type || user.role || 'client').toLowerCase();
         setUserRole(role);
         window.localStorage.setItem('user', JSON.stringify(user));
@@ -88,8 +77,10 @@ export default function PortalLayout({ children }: Readonly<{ children: React.Re
   }
 
   return (
-    <AppLayout>
-      {children}
-    </AppLayout>
+    <UnreadCountProvider>
+      <AppLayout>
+        {children}
+      </AppLayout>
+    </UnreadCountProvider>
   );
 }

@@ -1,15 +1,5 @@
 # @AI-HINT: Advanced rate limiting service with tiered limits and analytics
-"""
-Rate Limiting Pro Service - Advanced API rate limiting.
-
-Features:
-- Tiered rate limits by user type
-- IP-based and user-based limiting
-- Rate limit analytics
-- Burst protection
-- Custom endpoint limits
-- Rate limit bypass tokens
-"""
+"""Rate Limiting Pro Service - Advanced API rate limiting."""
 
 import logging
 import time

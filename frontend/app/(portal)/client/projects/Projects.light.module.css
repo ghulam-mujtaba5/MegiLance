@@ -19,6 +19,27 @@
   background-color: var(--color-background-secondary-light);
 }
 
+.kpiStrip {
+  background-color: #ffffff;
+  border-color: var(--color-border-light, #e2e8f0);
+}
+
+.kpiValue {
+  color: var(--color-text-primary-light, #0f172a);
+}
+
+.kpiLabel {
+  color: var(--color-text-secondary-light, #64748b);
+}
+
+.kpiDivider {
+  background-color: var(--color-border-light, #e2e8f0);
+}
+
+.resultsCount {
+  color: var(--color-text-secondary-light, #64748b);
+}
+
 .footer {
   border-color: var(--color-border-light);
 }

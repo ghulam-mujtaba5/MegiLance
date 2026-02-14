@@ -1,0 +1,8 @@
+/* @AI-HINT: Activity Timeline — dark theme */
+.timelineItem::before { background: rgba(255, 255, 255, 0.08); }
+.timelineActor { color: #e2e8f0; }
+.timelineAction { color: #94a3b8; }
+.timelineTarget { color: #7ba3f7; }
+.timelineTime { color: #64748b; }
+.timelineBadge { background: rgba(255, 255, 255, 0.06); color: #94a3b8; }
+.emptyTimeline { color: #94a3b8; }

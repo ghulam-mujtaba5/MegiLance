@@ -1,4 +1,4 @@
-/* AI-HINT: Premium, investor-grade loading component. Per-component CSS only, with .common/.light/.dark modules. Brand-aligned, accessible, responsive. */
+// @AI-HINT: Premium full-page loading animation with brand-aligned styling and per-component CSS modules
 'use client';
 
 import React from 'react';

@@ -1,7 +1,11 @@
-// @AI-HINT: This is the root Next.js home route. It delegates to the main Home component.
+// @AI-HINT: Root homepage route — server component shell with metadata + JSON-LD.
+// Home is dynamically imported so its Three.js/client bundle doesn't block initial paint.
 import type { Metadata } from 'next';
-import Home from './home/Home';
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { BASE_URL, SITE_NAME, buildWebSiteJsonLd, buildHowToJsonLd, jsonLdScriptProps, getKeywordsForPage } from '@/lib/seo';
+
+const Home = dynamic(() => import('./home/Home'), { ssr: true });
 
 export const metadata: Metadata = {
   title: 'MegiLance - AI-Powered Freelance Marketplace | Hire Top Developers, Designers & Experts',
@@ -47,7 +51,9 @@ export default function Page() {
         'Step-by-step guide to hiring world-class freelancers using AI-powered matching on MegiLance.',
         howToSteps
       ))} />
-      <Home />
+      <Suspense>
+        <Home />
+      </Suspense>
     </>
   );
 }

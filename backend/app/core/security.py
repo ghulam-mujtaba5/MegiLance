@@ -10,6 +10,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional, Set, Any, Union
 import logging
 import time
+import threading
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -19,10 +20,12 @@ from passlib.context import CryptContext
 from app.core.config import get_settings
 from app.db.turso_http import execute_query, parse_rows
 
-# In-memory user cache to avoid repeated Turso HTTP lookups per request
-_user_cache: dict = {}  # email -> {"ts": float, "data": dict}
+# Thread-safe bounded LRU user cache to avoid repeated Turso HTTP lookups
+from collections import OrderedDict
 _USER_CACHE_TTL = 300  # 5 minutes
-_USER_CACHE_MAX_SIZE = 1000  # Max cached users to prevent memory exhaustion
+_USER_CACHE_MAX_SIZE = 500
+_user_cache_lock = threading.Lock()
+_user_cache: OrderedDict = OrderedDict()  # email -> {"ts": float, "data": dict}
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -75,6 +78,9 @@ class UserProxy:
 
     def __getitem__(self, key):
         return getattr(self, key)
+
+    def get(self, key, default=None):
+        return getattr(self, key, default)
 
 
 def authenticate_user(email: str, password: str) -> Optional[Any]:
@@ -244,10 +250,14 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> Union[User, UserPro
         raise credentials_exception
 
     try:
-        # Check in-memory user cache first
-        cached = _user_cache.get(email)
-        if cached and time.time() - cached["ts"] < _USER_CACHE_TTL:
-            return UserProxy(cached["data"])
+        # Check bounded LRU user cache first (thread-safe)
+        with _user_cache_lock:
+            cached = _user_cache.get(email)
+            if cached and time.time() - cached["ts"] < _USER_CACHE_TTL:
+                _user_cache.move_to_end(email)
+                return UserProxy(cached["data"])
+            elif cached:
+                del _user_cache[email]
 
         # Fetch user from Turso database using HTTP API
         result = execute_query(
@@ -263,11 +273,13 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> Union[User, UserPro
             raise credentials_exception
         
         row = rows[0]
-        # Evict oldest entries if cache exceeds max size
-        if len(_user_cache) >= _USER_CACHE_MAX_SIZE:
-            oldest_key = min(_user_cache, key=lambda k: _user_cache[k]["ts"])
-            del _user_cache[oldest_key]
-        _user_cache[email] = {"ts": time.time(), "data": row}
+        # Store in bounded LRU cache
+        with _user_cache_lock:
+            if email in _user_cache:
+                _user_cache.move_to_end(email)
+            elif len(_user_cache) >= _USER_CACHE_MAX_SIZE:
+                _user_cache.popitem(last=False)  # Evict LRU entry
+            _user_cache[email] = {"ts": time.time(), "data": row}
         return UserProxy(row)
         
     except HTTPException:
@@ -298,11 +310,11 @@ def get_current_user_from_token(token: str = Depends(oauth2_scheme)) -> dict:
         if payload.get("type") != "access":
             raise credentials_exception
         
-        # Validate expiry
-        exp = payload.get("exp")
-        if exp and datetime.fromtimestamp(exp, tz=timezone.utc) < datetime.now(timezone.utc):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+        # Alias user_id as id for backward compatibility
+        if "user_id" in payload and "id" not in payload:
+            payload["id"] = payload["user_id"]
         
+        # Note: expiry is already validated by jwt.decode() in decode_token()
         return payload
         
     except HTTPException:
@@ -333,8 +345,9 @@ def get_current_active_user(current_user: Union[User, UserProxy] = Depends(get_c
 
 
 def require_admin(current_user: Union[User, UserProxy] = Depends(get_current_active_user)) -> Union[User, UserProxy]:
-    """Require admin role"""
-    if not current_user.role or current_user.role.lower() != "admin":
+    """Require admin role — use as FastAPI Depends() for admin-only endpoints"""
+    from app.services.db_utils import get_user_role
+    if get_user_role(current_user) != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
@@ -344,7 +357,8 @@ def require_admin(current_user: Union[User, UserProxy] = Depends(get_current_act
 
 def check_admin_role(user: Union[User, UserProxy]) -> None:
     """Check if user has admin role, raise 403 if not"""
-    if not user.role or user.role.lower() != "admin":
+    from app.services.db_utils import get_user_role
+    if get_user_role(user) != "admin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"

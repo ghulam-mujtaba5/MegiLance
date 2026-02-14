@@ -1,13 +1,5 @@
 # @AI-HINT: Email templates service for customizable system notifications
-"""
-Email Templates Service - Customizable email templates.
-
-Features:
-- Pre-built email templates
-- Variable substitution
-- Custom templates
-- Template versioning
-"""
+"""Email Templates Service - Customizable email templates."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

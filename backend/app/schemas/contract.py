@@ -61,7 +61,7 @@ class ContractRead(ContractBase):
     freelancer_id: int
     client_id: int
     status: str
-    contract_amount: Optional[float] = None
+    contract_amount: Optional[float] = None  # Legacy alias for amount — prefer 'amount'
     platform_fee: Optional[float] = None
     created_at: datetime
     updated_at: datetime

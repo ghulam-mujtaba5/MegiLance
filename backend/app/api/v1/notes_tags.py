@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import paginate_params
 
 router = APIRouter(prefix="/notes-tags")
 
@@ -45,12 +46,13 @@ async def get_notes(
     entity_type: Optional[str] = None,
     entity_id: Optional[str] = None,
     search: Optional[str] = None,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get user's notes"""
+    offset, limit = paginate_params(page, page_size)
     return [
         Note(
             id=f"note-{i}",

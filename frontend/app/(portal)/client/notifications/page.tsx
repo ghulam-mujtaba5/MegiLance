@@ -1,0 +1,14 @@
+// @AI-HINT: Client Notifications page - uses shared Notifications component
+'use client';
+
+import React from 'react';
+import dynamic from 'next/dynamic';
+
+const Notifications = dynamic(() => import('@/app/components/Notifications/Notifications'), {
+  ssr: false,
+  loading: () => <div style={{ padding: '2rem', textAlign: 'center' }}>Loading notifications...</div>,
+});
+
+export default function ClientNotificationsPage() {
+  return <Notifications />;
+}

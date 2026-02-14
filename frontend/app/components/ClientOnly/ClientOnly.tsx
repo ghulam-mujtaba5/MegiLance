@@ -1,3 +1,4 @@
+// @AI-HINT: Wrapper component that only renders children on the client to prevent SSR hydration mismatches
 'use client';
 
 import React, { useState, useEffect } from 'react';

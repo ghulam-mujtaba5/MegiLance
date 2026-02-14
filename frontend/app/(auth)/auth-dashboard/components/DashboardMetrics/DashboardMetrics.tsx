@@ -1,4 +1,4 @@
-// @AI-HINT: This component displays a grid of key performance metrics (KPIs). It's designed for high-impact visual data representation, a hallmark of investor-grade SaaS dashboards. It's fully responsive and themed.
+// @AI-HINT: This component displays a grid of key performance metrics (KPIs). It's designed for high-impact visual data representation, a hallmark of production-ready SaaS dashboards. It's fully responsive and themed.
 
 'use client';
 

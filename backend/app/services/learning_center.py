@@ -1,15 +1,5 @@
 # @AI-HINT: Learning center service for tutorials and guides
-"""
-Learning Center Service - Educational content and tutorials.
-
-Features:
-- Tutorial management
-- Learning paths
-- Video courses
-- Quizzes
-- Progress tracking
-- Certifications
-"""
+"""Learning Center Service - Educational content and tutorials."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any
@@ -18,7 +8,7 @@ from enum import Enum
 import uuid
 
 
-class ContentType(str, Enum):
+class LearningContentType(str, Enum):
     ARTICLE = "article"
     VIDEO = "video"
     TUTORIAL = "tutorial"
@@ -58,7 +48,7 @@ class LearningCenterService:
             {
                 "content_id": str(uuid.uuid4()),
                 "title": "Getting Started with MegiLance",
-                "type": ContentType.COURSE,
+                "type": LearningContentType.COURSE,
                 "category": LearningCategory.GETTING_STARTED,
                 "difficulty": DifficultyLevel.BEGINNER,
                 "duration_minutes": 45,
@@ -70,7 +60,7 @@ class LearningCenterService:
             {
                 "content_id": str(uuid.uuid4()),
                 "title": "Winning Proposals That Convert",
-                "type": ContentType.VIDEO,
+                "type": LearningContentType.VIDEO,
                 "category": LearningCategory.FREELANCING,
                 "difficulty": DifficultyLevel.INTERMEDIATE,
                 "duration_minutes": 30,
@@ -96,7 +86,7 @@ class LearningCenterService:
                 {
                     "content_id": str(uuid.uuid4()),
                     "title": "Building Your Freelance Brand",
-                    "type": ContentType.ARTICLE,
+                    "type": LearningContentType.ARTICLE,
                     "category": LearningCategory.MARKETING,
                     "difficulty": DifficultyLevel.INTERMEDIATE,
                     "duration_minutes": 15,
@@ -118,7 +108,7 @@ class LearningCenterService:
             {
                 "content_id": str(uuid.uuid4()),
                 "title": f"Introduction to {category.value.replace('_', ' ').title()}",
-                "type": ContentType.TUTORIAL,
+                "type": LearningContentType.TUTORIAL,
                 "difficulty": DifficultyLevel.BEGINNER,
                 "duration_minutes": 20,
                 "rating": 4.6
@@ -132,7 +122,7 @@ class LearningCenterService:
             "content_id": content_id,
             "title": "Getting Started with MegiLance",
             "description": "Learn everything you need to know to start your freelancing journey on MegiLance.",
-            "type": ContentType.COURSE,
+            "type": LearningContentType.COURSE,
             "category": LearningCategory.GETTING_STARTED,
             "difficulty": DifficultyLevel.BEGINNER,
             "duration_minutes": 45,
@@ -458,7 +448,7 @@ class LearningCenterService:
             {
                 "content_id": str(uuid.uuid4()),
                 "title": "Advanced Pricing Strategies",
-                "type": ContentType.VIDEO,
+                "type": LearningContentType.VIDEO,
                 "bookmarked_at": datetime.now(timezone.utc).isoformat()
             }
         ]

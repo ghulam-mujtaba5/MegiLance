@@ -1,0 +1,9 @@
+/* @AI-HINT: ProgressRing — dark theme */
+.ringBg { stroke: #334155; }
+.ringValue { color: #e2e8f0; }
+.ringLabel { color: #94a3b8; }
+
+.ringPrimary { stroke: #7ba3f7; }
+.ringSuccess { stroke: #34d399; }
+.ringWarning { stroke: #fbbf24; }
+.ringDanger { stroke: #f87171; }

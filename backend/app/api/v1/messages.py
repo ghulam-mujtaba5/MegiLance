@@ -8,6 +8,7 @@ import logging
 
 from app.core.security import get_current_user_from_token
 from app.services import messages_service
+from app.services.db_utils import paginate_params
 from app.api.v1.utils import SCRIPT_PATTERN, moderate_content
 
 router = APIRouter()
@@ -132,13 +133,14 @@ def create_conversation(
 
 @router.get("/conversations", response_model=List[dict])
 def get_conversations(
-    skip: int = Query(0, ge=0, le=10000),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     conv_status: Optional[str] = Query(None, alias="status", pattern=r'^(active|closed|blocked)$'),
     archived: Optional[bool] = Query(None),
     current_user = Depends(get_current_user)
 ):
     """Get all conversations for current user"""
+    offset, limit = paginate_params(page, page_size)
     user_id = current_user.get("user_id")
 
     if not user_id:
@@ -150,7 +152,7 @@ def get_conversations(
             detail=f"Invalid status. Must be one of: {', '.join(VALID_CONVERSATION_STATUSES)}"
         )
 
-    return messages_service.list_conversations_for_user(user_id, conv_status, archived, limit, skip)
+    return messages_service.list_conversations_for_user(user_id, conv_status, archived, limit, offset)
 
 
 @router.get("/conversations/{conversation_id}", response_model=dict)
@@ -346,11 +348,12 @@ def send_message(
 @router.get("/messages", response_model=List[dict])
 def get_messages(
     conversation_id: int = Query(...),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=100),
     current_user = Depends(get_current_user)
 ):
     """Get messages for a conversation"""
+    offset, limit = paginate_params(page, page_size)
     user_id = current_user.get("user_id")
 
     # Verify user has access to conversation
@@ -361,7 +364,7 @@ def get_messages(
     if conv.get("client_id") != user_id and conv.get("freelancer_id") != user_id:
         raise HTTPException(status_code=403, detail="Access denied")
 
-    messages = messages_service.fetch_conversation_messages(conversation_id, limit, skip)
+    messages = messages_service.fetch_conversation_messages(conversation_id, limit, offset)
 
     now = datetime.now(timezone.utc).isoformat()
 
@@ -408,7 +411,7 @@ def get_message(
 @router.patch("/messages/{message_id}", response_model=dict)
 def update_message(
     message_id: int,
-    message_update: dict,
+    message_update: MessageUpdate,
     current_user = Depends(get_current_user)
 ):
     """Update a message"""
@@ -418,23 +421,23 @@ def update_message(
     if not ownership:
         raise HTTPException(status_code=404, detail="Message not found")
 
-    if "content" in message_update and ownership.get("sender_id") != user_id:
+    if message_update.content is not None and ownership.get("sender_id") != user_id:
         raise HTTPException(status_code=403, detail="Only sender can edit message")
 
-    if "is_read" in message_update and ownership.get("receiver_id") != user_id:
+    if message_update.is_read is not None and ownership.get("receiver_id") != user_id:
         raise HTTPException(status_code=403, detail="Only receiver can mark as read")
 
     updates = []
     params = []
 
-    if "content" in message_update:
+    if message_update.content is not None:
         updates.append("content = ?")
-        params.append(message_update["content"])
+        params.append(messages_service.sanitize_content(message_update.content))
 
-    if "is_read" in message_update:
+    if message_update.is_read is not None:
         updates.append("is_read = ?")
-        params.append(1 if message_update["is_read"] else 0)
-        if message_update["is_read"]:
+        params.append(1 if message_update.is_read else 0)
+        if message_update.is_read:
             updates.append("read_at = ?")
             params.append(datetime.now(timezone.utc).isoformat())
 
@@ -474,3 +477,29 @@ def get_unread_count(
     user_id = current_user.get("user_id")
     count = messages_service.count_unread_messages(user_id)
     return {"unread_count": count}
+
+
+@router.get("/messages/search/all")
+def search_messages(
+    q: str = Query(..., min_length=2, max_length=200, description="Search query"),
+    conversation_id: Optional[int] = Query(None, description="Search within a specific conversation"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    current_user = Depends(get_current_user)
+):
+    """
+    Search messages across all conversations or within a specific conversation.
+    Only searches messages the user has access to.
+    """
+    offset, limit = paginate_params(page, page_size)
+    user_id = current_user.get("user_id")
+
+    if conversation_id:
+        # Verify access
+        conv = messages_service.get_conversation_participants(conversation_id)
+        if not conv:
+            raise HTTPException(status_code=404, detail="Conversation not found")
+        if conv.get("client_id") != user_id and conv.get("freelancer_id") != user_id:
+            raise HTTPException(status_code=403, detail="Access denied")
+
+    return messages_service.search_messages(user_id, q, conversation_id, limit, offset)

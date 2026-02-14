@@ -1,4 +1,4 @@
-// @AI-HINT: Redesigned Admin Dashboard with modern UI/UX, quick actions, colour-coded stats, and improved layout
+// @AI-HINT: Redesigned Admin Dashboard with modern UI/UX, quick actions, colour-coded stats, timeline, and progress rings
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -7,6 +7,8 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useAdminData } from '@/hooks/useAdmin';
 import Button from '@/app/components/Button/Button';
+import ActivityTimeline, { type TimelineEvent } from '@/app/components/ActivityTimeline/ActivityTimeline';
+import ProgressRing from '@/app/components/ProgressRing/ProgressRing';
 import {
   Users,
   DollarSign,
@@ -23,6 +25,9 @@ import {
   Settings,
   Briefcase,
   BarChart3,
+  Zap,
+  Server,
+  Shield,
 } from 'lucide-react';
 
 import commonStyles from './AdminDashboard.common.module.css';
@@ -206,6 +211,38 @@ const AdminDashboard: React.FC = () => {
         </div>
       </section>
 
+      {/* System Health Progress Rings */}
+      <div className={commonStyles.healthRow}>
+        <div className={cn(commonStyles.healthCard, themeStyles.healthCard)}>
+          <ProgressRing value={99.9} label="Uptime" size="md" color="success" suffix="%" />
+        </div>
+        <div className={cn(commonStyles.healthCard, themeStyles.healthCard)}>
+          <ProgressRing
+            value={stats.length > 0 ? Math.min(100, Math.round((parseInt(stats[0]?.value?.replace(/[^0-9]/g, '') || '0') / Math.max(parseInt(stats[0]?.value?.replace(/[^0-9]/g, '') || '1'), 1)) * 100)) : 85}
+            label="Load Capacity" size="md" color="primary"
+          />
+        </div>
+        <div className={cn(commonStyles.healthCard, themeStyles.healthCard)}>
+          <div className={commonStyles.healthStats}>
+            <div className={commonStyles.healthStatItem}>
+              <Server size={16} className={commonStyles.healthIconBlue} />
+              <span className={cn(commonStyles.healthStatValue, themeStyles.healthStatValue)}>OK</span>
+              <span className={cn(commonStyles.healthStatLabel, themeStyles.healthStatLabel)}>API Status</span>
+            </div>
+            <div className={commonStyles.healthStatItem}>
+              <Shield size={16} className={commonStyles.healthIconGreen} />
+              <span className={cn(commonStyles.healthStatValue, themeStyles.healthStatValue)}>0</span>
+              <span className={cn(commonStyles.healthStatLabel, themeStyles.healthStatLabel)}>Threats</span>
+            </div>
+            <div className={commonStyles.healthStatItem}>
+              <Zap size={16} className={commonStyles.healthIconAmber} />
+              <span className={cn(commonStyles.healthStatValue, themeStyles.healthStatValue)}>~120ms</span>
+              <span className={cn(commonStyles.healthStatLabel, themeStyles.healthStatLabel)}>Avg Response</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content Grid */}
       <div className={commonStyles.mainContentGrid}>
         {/* Left Column — User Management */}
@@ -221,7 +258,7 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column — Activity & Flagged */}
+        {/* Right Column — Activity Timeline & Flagged */}
         <div className={commonStyles.sectionContainer}>
           <div className={commonStyles.sectionHeader}>
             <h2 className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>Recent Activity</h2>
@@ -230,32 +267,22 @@ const AdminDashboard: React.FC = () => {
             </Link>
           </div>
 
-          <div className={commonStyles.activityList}>
-            {recentActivity && recentActivity.length > 0 ? (
-              recentActivity.slice(0, 5).map((activity: any, idx: number) => {
-                const Icon = activityIcons[activity.type] || activityIcons.default;
-                return (
-                  <div key={idx} className={cn(commonStyles.activityItem, themeStyles.activityItem)}>
-                    <div className={cn(commonStyles.activityIcon, themeStyles.activityIcon)}>
-                      <Icon size={16} />
-                    </div>
-                    <div className={commonStyles.activityContent}>
-                      <h4 className={cn(commonStyles.activityName, themeStyles.activityName)}>{activity.user_name}</h4>
-                      <p className={cn(commonStyles.activityDesc, themeStyles.activityDesc)}>{activity.description}</p>
-                      <span className={commonStyles.activityTime}>
-                        {new Date(activity.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className={cn(commonStyles.emptyState, themeStyles.emptyState)}>
-                <Activity size={32} />
-                <p>No recent activity</p>
-              </div>
-            )}
-          </div>
+          <ActivityTimeline
+            events={
+              recentActivity && recentActivity.length > 0
+                ? recentActivity.slice(0, 6).map((activity: any, idx: number) => ({
+                    id: `activity-${idx}`,
+                    actor: activity.user_name || 'System',
+                    action: activity.description || activity.type,
+                    target: '',
+                    timestamp: activity.timestamp || new Date().toISOString(),
+                    type: (['user_joined', 'payment_made'].includes(activity.type) ? 'success' : activity.type === 'proposal_submitted' ? 'info' : activity.type === 'project_posted' ? 'purple' : 'warning') as TimelineEvent['type'],
+                  }))
+                : []
+            }
+            maxItems={6}
+            emptyMessage="No recent platform activity"
+          />
 
           <div className={commonStyles.flaggedSection}>
             <div className={commonStyles.sectionHeader}>

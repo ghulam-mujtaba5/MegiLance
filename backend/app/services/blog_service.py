@@ -139,9 +139,16 @@ class BlogService:
             update_data["reading_time"] = BlogService.calculate_reading_time(update_data["content"])
         update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
 
+        _ALLOWED_BLOG_COLUMNS = frozenset({
+            "title", "slug", "excerpt", "content", "image_url", "author",
+            "tags", "is_published", "is_news_trend", "views", "reading_time", "updated_at",
+        })
+
         set_parts = []
         params: list = []
         for key, value in update_data.items():
+            if key not in _ALLOWED_BLOG_COLUMNS:
+                continue
             set_parts.append(f"{key} = ?")
             if key == "tags":
                 params.append(json.dumps(value))

@@ -13,10 +13,12 @@ IMPORTANT: turso.execute() returns {"columns": [...], "rows": [[...], ...]}
 import json
 import logging
 from datetime import datetime, timezone
-from fastapi import APIRouter, Query, HTTPException, status
+from fastapi import APIRouter, Query, HTTPException, status, Depends
 from typing import Optional, List, Dict, Any
 
 from app.db.turso_http import get_turso_http
+from app.core.security import require_admin, get_current_active_user
+from app.models.user import User
 from app.services.external_project_scraper import (
     scrape_all_sources,
     save_projects_to_db,
@@ -139,8 +141,9 @@ async def list_external_projects(
     params: list = []
 
     if query:
-        conditions.append("(title LIKE ? OR company LIKE ? OR description_plain LIKE ?)")
-        q = f"%{query}%"
+        conditions.append("(title LIKE ? ESCAPE '\\' OR company LIKE ? ESCAPE '\\' OR description_plain LIKE ? ESCAPE '\\')")
+        safe_query = query.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+        q = f"%{safe_query}%"
         params.extend([q, q, q])
 
     if category:
@@ -166,8 +169,9 @@ async def list_external_projects(
     if tags:
         tag_list = [t.strip() for t in tags.split(",") if t.strip()]
         for tag in tag_list:
-            conditions.append("tags LIKE ?")
-            params.append(f"%{tag}%")
+            conditions.append("tags LIKE ? ESCAPE '\\'")
+            safe_tag = tag.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+            params.append(f"%{safe_tag}%")
 
     where = " AND ".join(conditions)
 
@@ -329,7 +333,7 @@ async def get_external_project_stats():
 # ============================================================================
 
 @router.post("/external-projects/scrape")
-async def trigger_scrape():
+async def trigger_scrape(current_user: User = Depends(require_admin)):
     """
     Trigger an immediate scrape of all external project sources.
     This endpoint aggregates projects from RemoteOK, Jobicy, and Arbeitnow,
@@ -367,7 +371,11 @@ async def trigger_scrape():
 
 
 @router.post("/external-projects/{project_id}/flag")
-async def flag_external_project(project_id: int, reason: str = Query(..., min_length=3)):
+async def flag_external_project(
+    project_id: int,
+    reason: str = Query(..., min_length=3),
+    current_user: User = Depends(get_current_active_user)
+):
     """Flag an external project as potentially fraudulent or spam"""
     try:
         turso = get_turso_http()
@@ -387,7 +395,10 @@ async def flag_external_project(project_id: int, reason: str = Query(..., min_le
 
 
 @router.delete("/external-projects/cleanup")
-async def cleanup_old_projects(days: int = Query(90, ge=0, le=365)):
+async def cleanup_old_projects(
+    days: int = Query(90, ge=0, le=365),
+    current_user: User = Depends(require_admin)
+):
     """Remove external projects older than specified days. Use days=0 to clear ALL."""
     try:
         turso = get_turso_http()
@@ -399,7 +410,8 @@ async def cleanup_old_projects(days: int = Query(90, ge=0, le=365)):
         return {"message": "Cleared all external projects"}
 
     turso.execute(
-        f"DELETE FROM external_projects WHERE scraped_at < datetime('now', '-{days} days')"
+        "DELETE FROM external_projects WHERE scraped_at < datetime('now', '-' || CAST(? AS TEXT) || ' days')",
+        [days]
     )
 
     return {"message": f"Cleaned up projects older than {days} days"}

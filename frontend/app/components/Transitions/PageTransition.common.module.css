@@ -5,6 +5,7 @@
 }
 
 .stage {
+  display: contents;
   will-change: transform, opacity, filter;
 }
 

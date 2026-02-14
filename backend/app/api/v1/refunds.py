@@ -10,15 +10,9 @@ from app.schemas.refund import (
     RefundApprove, RefundReject, RefundList
 )
 from app.services import refunds_service
+from app.services.db_utils import get_user_role
 
 router = APIRouter(prefix="/refunds", tags=["refunds"])
-
-
-def _get_user_role(current_user) -> str:
-    user_role = getattr(current_user, 'role', None) or getattr(current_user, 'user_type', 'client')
-    if hasattr(user_role, 'value'):
-        user_role = user_role.value
-    return str(user_role).lower()
 
 
 @router.post("/", response_model=RefundRead, status_code=status.HTTP_201_CREATED)
@@ -58,7 +52,7 @@ async def list_refunds(
     current_user: User = Depends(get_current_user)
 ):
     """List refunds. Users see refunds they requested, admins see all."""
-    user_role = _get_user_role(current_user)
+    user_role = get_user_role(current_user)
     is_admin = user_role == "admin"
 
     refunds, total = refunds_service.list_refunds(
@@ -82,7 +76,7 @@ async def get_refund(
     if not refund:
         raise HTTPException(status_code=404, detail="Refund not found")
 
-    user_role = _get_user_role(current_user)
+    user_role = get_user_role(current_user)
     if user_role != "admin" and refund["requested_by"] != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
@@ -100,7 +94,7 @@ async def update_refund(
     if not existing:
         raise HTTPException(status_code=404, detail="Refund not found")
 
-    user_role = _get_user_role(current_user)
+    user_role = get_user_role(current_user)
     if user_role != "admin":
         if existing["requested_by"] != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized")
@@ -121,7 +115,7 @@ async def approve_refund(
     current_user: User = Depends(get_current_user)
 ):
     """Approve a refund request. Admin only."""
-    if _get_user_role(current_user) != "admin":
+    if get_user_role(current_user) != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
 
     refund_status = refunds_service.get_refund_status(refund_id)
@@ -141,7 +135,7 @@ async def reject_refund(
     current_user: User = Depends(get_current_user)
 ):
     """Reject a refund request. Admin only."""
-    if _get_user_role(current_user) != "admin":
+    if get_user_role(current_user) != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
 
     refund_info = refunds_service.get_refund_status(refund_id, include_reason=True)
@@ -168,7 +162,7 @@ async def process_refund(
     current_user: User = Depends(get_current_user)
 ):
     """Process an approved refund. Admin only. Transfers money back to requester."""
-    if _get_user_role(current_user) != "admin":
+    if get_user_role(current_user) != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
 
     refund_data = refunds_service.get_refund_for_processing(refund_id)
@@ -200,7 +194,7 @@ async def delete_refund(
     if not existing:
         raise HTTPException(status_code=404, detail="Refund not found")
 
-    user_role = _get_user_role(current_user)
+    user_role = get_user_role(current_user)
     if user_role != "admin":
         if existing["requested_by"] != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized")

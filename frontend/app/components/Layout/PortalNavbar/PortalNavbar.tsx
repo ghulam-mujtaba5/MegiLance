@@ -13,49 +13,16 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ProfileMenu, { ProfileMenuItem } from '@/app/components/ProfileMenu/ProfileMenu';
-import { authApi, getAuthToken, clearAuthData } from '@/lib/api';
+import { clearAuthData } from '@/lib/api';
+import { useNotifications } from '@/hooks/useNotifications';
 
 import commonStyles from './PortalNavbar.common.module.css';
 import lightStyles from './PortalNavbar.light.module.css';
 import darkStyles from './PortalNavbar.dark.module.css';
 
-interface Notification {
-  id: string;
-  type: 'message' | 'project' | 'payment' | 'alert' | 'system';
-  title: string;
-  description: string;
-  time: string;
-  read: boolean;
-  actionUrl?: string;
-}
-
 interface PortalNavbarProps {
   userType?: 'client' | 'freelancer' | 'admin' | 'general';
   onMenuToggle?: () => void;
-}
-
-// Fetch real notifications from API
-async function fetchNotifications(): Promise<Notification[]> {
-  const token = getAuthToken();
-  if (!token) return [];
-  try {
-    const res = await fetch('/api/notifications?limit=10', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.notifications || data || []).map((n: any) => ({
-      id: String(n.id),
-      type: n.type || 'system',
-      title: n.title || 'Notification',
-      description: n.message || n.description || '',
-      time: formatTimeAgo(n.created_at),
-      read: n.is_read || false,
-      actionUrl: n.action_url,
-    }));
-  } catch {
-    return [];
-  }
 }
 
 // Format time ago helper
@@ -85,15 +52,26 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
   const [user, setUser] = useState<{ name: string; email?: string; avatar?: string } | null>(null);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showHelpMenu, setShowHelpMenu] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
+  
+  // Real-time notifications via WebSocket
+  const { notifications: rawNotifications, unreadCount, markAsRead: hookMarkAsRead, markAllAsRead: hookMarkAllAsRead } = useNotifications();
   
   const notificationRef = useRef<HTMLDivElement>(null);
   const helpRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  // Map hook notifications to the UI format
+  const notifications = rawNotifications.slice(0, 10).map(n => ({
+    id: String(n.id),
+    type: (n.type || 'system') as 'message' | 'project' | 'payment' | 'alert' | 'system',
+    title: n.title || 'Notification',
+    description: n.message || '',
+    time: formatTimeAgo(n.created_at || ''),
+    read: n.is_read || false,
+    actionUrl: n.action_url,
+  }));
 
   useEffect(() => {
     setMounted(true);
@@ -111,8 +89,7 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
       console.error('Failed to parse user', e);
     }
     
-    // Fetch real notifications
-    fetchNotifications().then(setNotifications);
+    // Fetch real notifications via hook (handled by useNotifications)
   }, []);
 
   // Close dropdowns when clicking outside
@@ -158,11 +135,11 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
   }, [router]);
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    hookMarkAsRead(Number(id));
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    hookMarkAllAsRead();
   };
 
   const getNotificationIcon = (type: string) => {
@@ -260,6 +237,9 @@ const PortalNavbar: React.FC<PortalNavbarProps> = ({ userType = 'client', onMenu
               <Menu size={20} />
             </button>
           )}
+
+          {/* Mobile page title (shown when breadcrumbs are hidden) */}
+          <h1 className={cn(commonStyles.mobilePageTitle, styles.breadcrumbCurrent)}>{pageTitle}</h1>
           
           {/* Breadcrumb navigation */}
           <nav aria-label="Breadcrumb" className={commonStyles.breadcrumb}>

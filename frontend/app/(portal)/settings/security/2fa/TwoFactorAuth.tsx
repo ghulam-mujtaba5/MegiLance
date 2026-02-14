@@ -76,11 +76,15 @@ const TwoFactorAuth: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const data = await api.auth.enable2FA();
-      setSetupData(data);
+      const data = await api.auth.setup2FA() as { secret: string; qr_code?: string; qr_uri?: string; provisioning_uri?: string; backup_codes?: string[] };
+      setSetupData({
+        secret: data.secret,
+        qr_code_url: data.provisioning_uri || data.qr_uri || data.qr_code || '',
+        backup_codes: data.backup_codes || [],
+      });
     } catch (error: any) {
-      console.error('Error enabling 2FA:', error);
-      setError(error.message || 'Failed to enable 2FA');
+      console.error('Error setting up 2FA:', error);
+      setError(error.message || 'Failed to setup 2FA');
     } finally {
       setLoading(false);
     }
@@ -95,13 +99,13 @@ const TwoFactorAuth: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      await api.auth.verify2FA(verificationCode);
+      await api.auth.enable2FA(verificationCode);
       setSuccess('Two-Factor Authentication has been successfully enabled!');
       setIs2FAEnabled(true);
       setSetupData(null);
       setVerificationCode('');
     } catch (error: any) {
-      console.error('Error verifying 2FA:', error);
+      console.error('Error enabling 2FA:', error);
       setError(error.message || 'Invalid verification code');
     } finally {
       setLoading(false);

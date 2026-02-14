@@ -12,6 +12,7 @@ import Textarea from '@/app/components/Textarea/Textarea';
 import Button from '@/app/components/Button/Button';
 import { FileText, CheckCircle, Plus, Trash2 } from 'lucide-react';
 import api from '@/lib/api';
+import type { ContractCreateData } from '@/types/api';
 
 import commonStyles from './ContractWizard.common.module.css';
 import lightStyles from './ContractWizard.light.module.css';
@@ -277,7 +278,7 @@ const ContractWizard: React.FC<ContractWizardProps> = ({
         milestones: JSON.stringify(contractData.milestones)
       };
 
-      const contract: any = await api.contracts.create(payload);
+      const contract: any = await api.contracts.create(payload as ContractCreateData);
 
       if (contract && contract.id) {
         router.push(`/contracts/${contract.id}`);

@@ -73,14 +73,11 @@ const VerifyEmail: React.FC = () => {
   const handleResendVerification = async () => {
     setResending(true);
     try {
-      // This would need the user's email - for now just show success
-      // In real implementation, you'd need to store email or ask user to enter it
-      setTimeout(() => {
-        setResending(false);
-        setMessage('Verification email has been resent! Please check your inbox.');
-      }, 1000);
-    } catch (error) {
-      console.error('Resend error:', error);
+      await api.auth.resendVerification();
+      setMessage('Verification email has been resent! Please check your inbox.');
+    } catch (error: any) {
+      setMessage(error.message || 'Failed to resend verification email. Please log in first.');
+    } finally {
       setResending(false);
     }
   };

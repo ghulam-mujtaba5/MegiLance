@@ -10,7 +10,7 @@ class SkillBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     category: Optional[str] = Field(None, max_length=100)
     description: Optional[str] = None
-    icon_url: Optional[str] = None
+    icon: Optional[str] = None
     is_active: bool = True
     sort_order: int = 0
 
@@ -25,7 +25,7 @@ class SkillUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     category: Optional[str] = Field(None, max_length=100)
     description: Optional[str] = None
-    icon_url: Optional[str] = None
+    icon: Optional[str] = None
     is_active: Optional[bool] = None
     sort_order: Optional[int] = None
 
@@ -43,7 +43,7 @@ class UserSkillBase(BaseModel):
     """Base user skill schema"""
     skill_id: int
     proficiency_level: int = Field(1, ge=1, le=5)
-    years_of_experience: int = Field(0, ge=0)
+    years_experience: int = Field(0, ge=0)
 
 
 class UserSkillCreate(UserSkillBase):
@@ -54,7 +54,8 @@ class UserSkillCreate(UserSkillBase):
 class UserSkillUpdate(BaseModel):
     """Schema for updating user skill"""
     proficiency_level: Optional[int] = Field(None, ge=1, le=5)
-    years_of_experience: Optional[int] = Field(None, ge=0)
+    years_experience: Optional[int] = Field(None, ge=0)
+    is_verified: Optional[bool] = None
 
 
 class UserSkill(UserSkillBase):

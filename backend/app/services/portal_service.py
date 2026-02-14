@@ -6,22 +6,13 @@ from datetime import datetime, timezone
 from typing import Optional, List
 
 from app.db.turso_http import execute_query, to_str, parse_date, get_turso_http
+from app.services.db_utils import get_val as _get_val, safe_str as _safe_str
 
 logger = logging.getLogger(__name__)
 
 # Simple TTL cache for dashboard stats (avoids repeated slow Turso queries)
 _stats_cache: dict = {}
 STATS_CACHE_TTL = 120  # seconds
-
-
-def _get_val(row: list, idx: int):
-    """Extract value from Turso row."""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if cell.get("type") == "null":
-        return None
-    return cell.get("value")
 
 
 def _batch_scalar_queries(queries: list[dict]) -> list:
@@ -45,14 +36,6 @@ def _batch_scalar_queries(queries: list[dict]) -> list:
         logger.error(f"Batch query error: {e}")
         return [None] * len(queries)
 
-
-def _safe_str(val):
-    """Convert bytes to string if needed."""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
 
 
 # ==================== Client Dashboard ====================

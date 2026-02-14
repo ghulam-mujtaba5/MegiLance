@@ -1,3 +1,4 @@
+// @AI-HINT: Breadcrumb navigation component with route-aware auto-generation and theme support
 'use client';
 
 import React, { useState, useEffect } from 'react';

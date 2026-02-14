@@ -23,7 +23,7 @@ const steps: Array<Omit<StepCardProps, 'stepNumber' | 'type'>> = [
   {
     icon: <Search />,
     title: '2. Find Work (as a Freelancer)',
-    description: 'Create a stunning profile and browse projects that match your skills. Our smart matching system helps you find the perfect opportunity.',
+    description: 'Create a polished profile and browse projects that match your skills. Our smart matching system helps you find the perfect opportunity.',
   },
   {
     icon: <Users />,

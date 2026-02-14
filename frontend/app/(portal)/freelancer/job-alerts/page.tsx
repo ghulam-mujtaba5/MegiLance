@@ -59,7 +59,7 @@ const JobAlertsPage: React.FC = () => {
     try {
       setIsLoading(true);
       const data = await api.jobAlerts.getAll();
-      setAlerts(data);
+      setAlerts(data as JobAlert[]);
     } catch (error) {
       console.error('Failed to fetch alerts:', error);
       toaster.error('Failed to load job alerts. Please try again.');
@@ -81,11 +81,11 @@ const JobAlertsPage: React.FC = () => {
 
     try {
       setIsCreating(true);
-      const newAlert = await api.jobAlerts.create({
+      const newAlert = (await api.jobAlerts.create({
         keywords,
         frequency,
         is_ai_powered: isAiPowered,
-      });
+      })) as JobAlert;
       setAlerts([newAlert, ...alerts]);
       toaster.success('Job alert created successfully!');
       

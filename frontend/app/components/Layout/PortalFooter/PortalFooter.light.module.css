@@ -1,12 +1,26 @@
-/* @AI-HINT: Light theme styles for the PortalFooter. */
+/* @AI-HINT: Light theme styles for enterprise PortalFooter */
 
 .footer {
   border-top: 1px solid var(--border-light, #e8eaed);
   background-color: transparent;
 }
 
+.statusText {
+  color: var(--text-tertiary-light, #94a3b8);
+}
+
 .copyright {
   color: var(--text-tertiary-light, #9ca3af);
+}
+
+.versionBadge {
+  background-color: var(--neutral-100, #f1f5f9);
+  color: var(--text-tertiary-light, #94a3b8);
+}
+
+.shortcutHint {
+  background-color: var(--neutral-100, #f1f5f9);
+  color: var(--text-tertiary-light, #94a3b8);
 }
 
 .link {

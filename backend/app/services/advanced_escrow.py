@@ -1,16 +1,5 @@
 # @AI-HINT: Production escrow service with Stripe integration and milestone management
-"""
-Advanced Escrow Service - Secure payment holding and release system.
-
-Features:
-- Stripe Connect integration for payment processing
-- Milestone-based fund releases
-- Automatic dispute holds
-- Refund processing
-- Multi-currency support
-- Fee calculation and splitting
-- Webhook handling for payment events
-"""
+"""Advanced Escrow Service - Secure payment holding and release system."""
 
 import logging
 import secrets

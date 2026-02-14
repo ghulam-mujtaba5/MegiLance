@@ -16,6 +16,7 @@ from app.schemas.milestone import (
     MilestoneApprove
 )
 from app.services import milestones_service
+from app.services.db_utils import paginate_params
 
 router = APIRouter()
 
@@ -62,11 +63,12 @@ async def create_milestone(
 async def list_milestones(
     contract_id: int = Query(..., description="Contract ID (required)"),
     status_filter: Optional[str] = Query(None, alias="status", description="Filter by status"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_active_user)
 ):
     """List milestones for a contract. Only contract parties can view milestones."""
+    offset, limit = paginate_params(page, page_size)
     contract = milestones_service.get_contract_parties(contract_id)
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
@@ -74,7 +76,7 @@ async def list_milestones(
     if current_user.id not in [contract["client_id"], contract["freelancer_id"]]:
         raise HTTPException(status_code=403, detail="You don't have permission to view these milestones")
 
-    return milestones_service.list_milestones(contract_id, status_filter, skip, limit)
+    return milestones_service.list_milestones(contract_id, status_filter, offset, limit)
 
 
 @router.get("/{milestone_id}", response_model=MilestoneSchema)

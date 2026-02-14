@@ -17,6 +17,7 @@ from pydantic import BaseModel
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import sanitize_text
 from app.services.skill_graph import (
     get_skill_graph_service,
     SkillLevel,
@@ -219,7 +220,7 @@ async def request_endorsement(
         endorser_id=request.endorser_id,
         skill_id=request.skill_id,
         project_id=request.project_id,
-        message=request.message
+        message=sanitize_text(request.message, 1000) if request.message else None
     )
     
     return {"request": endorsement_request}
@@ -238,8 +239,8 @@ async def give_endorsement(
         endorser_id=current_user["id"],
         user_id=request.user_id,
         skill_id=request.skill_id,
-        message=request.message,
-        relationship=request.relationship,
+        message=sanitize_text(request.message, 1000),
+        relationship=sanitize_text(request.relationship, 100),
         project_id=request.project_id
     )
     
@@ -260,7 +261,7 @@ async def respond_to_endorsement_request(
         endorser_id=current_user["id"],
         request_id=request_id,
         accept=request.accept,
-        message=request.message
+        message=sanitize_text(request.message, 1000) if request.message else None
     )
     
     return response

@@ -14,7 +14,8 @@ from collections import defaultdict
 
 from app.db.session import get_db
 from app.models.notification import Notification
-from app.core.security import decode_token
+from app.core.security import decode_token, get_current_active_user, require_admin
+from app.models.user import User
 import logging
 
 logger = logging.getLogger("megilance")
@@ -77,7 +78,7 @@ class ConnectionManager:
             for connection in list(self.active_connections[user_id]):
                 try:
                     await connection.send_text(message_json)
-                except:
+                except (json.JSONDecodeError, ValueError):
                     self.disconnect(connection, user_id)
     
     async def broadcast_user_status(self, user_id: int, status: str):
@@ -160,7 +161,7 @@ async def websocket_notifications(
             await websocket.close(code=1008, reason="Invalid token")
             return
         user_id = int(user_id)
-    except:
+    except (ValueError, KeyError):
         await websocket.close(code=1008, reason="Invalid token")
         return
     
@@ -215,7 +216,9 @@ async def websocket_notifications(
 
 
 @router.get("/online-users")
-async def get_online_users():
+async def get_online_users(
+    current_user: User = Depends(get_current_active_user)
+):
     """Get list of currently online users"""
     return {
         "online_users": manager.get_online_users(),
@@ -224,7 +227,10 @@ async def get_online_users():
 
 
 @router.get("/user-status/{user_id}")
-async def get_user_status(user_id: int):
+async def get_user_status(
+    user_id: int,
+    current_user: User = Depends(get_current_active_user)
+):
     """Check if a specific user is online"""
     return {
         "user_id": user_id,
@@ -236,6 +242,8 @@ async def get_user_status(user_id: int):
 async def send_realtime_notification(
     user_id: int,
     notification: dict,
+    current_user: User = Depends(get_current_active_user),
+    _admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     """
@@ -278,11 +286,12 @@ async def send_realtime_notification(
 
 @router.post("/broadcast")
 async def broadcast_notification(
-    notification: dict
+    notification: dict,
+    current_user: User = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """
-    Broadcast a notification to all connected users
-    (Admin only - would require authentication in production)
+    Broadcast a notification to all connected users (admin only).
     """
     await manager.broadcast({
         "type": "broadcast",

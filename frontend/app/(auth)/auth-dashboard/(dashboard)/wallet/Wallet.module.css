@@ -1,4 +1,4 @@
-/* @AI-HINT: This stylesheet provides a premium, investor-grade design for the Wallet page. It uses a CSS grid for layout, custom properties for theming, and is fully responsive. It covers the balance card, metric summaries, payment methods, and a detailed transaction history table. */
+/* @AI-HINT: This stylesheet provides a premium, production-ready design for the Wallet page. It uses a CSS grid for layout, custom properties for theming, and is fully responsive. It covers the balance card, metric summaries, payment methods, and a detailed transaction history table. */
 
 .walletContainer {
   padding: var(--spacing-6);

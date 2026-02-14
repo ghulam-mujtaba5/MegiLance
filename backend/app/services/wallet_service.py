@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from app.db.turso_http import execute_query
+from app.services.db_utils import get_val as _get_val
 
 
 def ensure_wallet_tables():
@@ -75,14 +76,6 @@ def ensure_wallet_tables():
     """)
 
 
-def _get_val(row, idx, default=None):
-    """Helper to extract a value from a Turso row cell."""
-    cell = row[idx] if idx < len(row) else default
-    if isinstance(cell, dict):
-        return cell.get("value") if cell.get("type") != "null" else default
-    return cell if cell is not None else default
-
-
 def get_or_create_balance(user_id: int) -> dict:
     """Get user's wallet balance, creating entry if needed."""
     result = execute_query(
@@ -133,7 +126,8 @@ def get_transaction_history(user_id: int, skip: int, limit: int,
         sql += " AND created_at <= ?"
         params.append(to_date)
 
-    sql += f" ORDER BY created_at DESC LIMIT {limit} OFFSET {skip}"
+    sql += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
+    params.extend([int(limit), int(skip)])
 
     result = execute_query(sql, params)
 
@@ -155,13 +149,21 @@ def get_transaction_history(user_id: int, skip: int, limit: int,
     return transactions
 
 
-def deduct_for_withdrawal(user_id: int, amount: float):
-    """Deduct from available, add to pending for a withdrawal."""
+def deduct_for_withdrawal(user_id: int, amount: float) -> bool:
+    """Deduct from available, add to pending for a withdrawal.
+    Returns True if deduction succeeded, False if insufficient balance (atomic check)."""
     now = datetime.now(timezone.utc).isoformat()
-    execute_query(
-        "UPDATE wallet_balances SET available = available - ?, pending = pending + ?, updated_at = ? WHERE user_id = ?",
-        [amount, amount, now, user_id]
+    result = execute_query(
+        "UPDATE wallet_balances SET available = available - ?, pending = pending + ?, updated_at = ? WHERE user_id = ? AND available >= ?",
+        [amount, amount, now, user_id, amount]
     )
+    # Turso HTTP returns rows_affected for UPDATE statements
+    rows_affected = 0
+    if isinstance(result, dict):
+        rows_affected = result.get("rows_affected", 0)
+    elif isinstance(result, int):
+        rows_affected = result
+    return rows_affected > 0
 
 
 def create_transaction(user_id: int, tx_type: str, amount: float, currency: str,

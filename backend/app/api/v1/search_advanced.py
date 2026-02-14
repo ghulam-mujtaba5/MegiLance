@@ -10,7 +10,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 from app.db.session import get_db
-from app.core.security import get_current_user_optional
+from app.core.security import get_current_user_optional, get_current_active_user, require_admin
 from app.services.search_fts import get_search_service, SearchService
 
 
@@ -152,7 +152,8 @@ async def autocomplete_fts(
 async def get_search_analytics(
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user_optional)
+    current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """
     Get search analytics (admin only)
@@ -174,7 +175,8 @@ async def get_search_analytics(
 @router.post("/reindex")
 async def reindex_search(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user_optional)
+    current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """
     Reindex all searchable content (admin only)
@@ -197,7 +199,7 @@ async def reindex_search(
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail=f"Reindexing failed: {str(e)}"
+            detail="Reindexing failed"
         )
 
 

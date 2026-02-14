@@ -93,16 +93,22 @@ def get_stripe_customer(
     try:
         customer = stripe_service.get_customer(customer_id)
         
+        # Verify ownership
+        if customer.metadata.get("user_id") != str(current_user['id']):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+        
         return StripeCustomerResponse(
             id=customer.id,
             email=customer.email,
             name=customer.name,
             created=customer.created
         )
-    except stripe.error.StripeError as e:
+    except HTTPException:
+        raise
+    except stripe.error.StripeError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail="Customer not found"
         )
 
 
@@ -161,6 +167,10 @@ def get_payment_intent(
     try:
         payment_intent = stripe_service.get_payment_intent(payment_intent_id)
         
+        # Verify ownership
+        if payment_intent.metadata.get("user_id") != str(current_user['id']):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+        
         return PaymentIntentResponse(
             id=payment_intent.id,
             amount=payment_intent.amount,
@@ -168,10 +178,12 @@ def get_payment_intent(
             status=payment_intent.status,
             client_secret=payment_intent.client_secret
         )
-    except stripe.error.StripeError as e:
+    except HTTPException:
+        raise
+    except stripe.error.StripeError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail="Payment intent not found"
         )
 
 
@@ -316,16 +328,22 @@ def get_refund(
     try:
         refund = stripe_service.get_refund(refund_id)
         
+        # Verify ownership
+        if refund.metadata.get("refunded_by") != str(current_user['id']):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+        
         return RefundResponse(
             id=refund.id,
             amount=refund.amount,
             status=refund.status,
             reason=refund.reason
         )
-    except stripe.error.StripeError as e:
+    except HTTPException:
+        raise
+    except stripe.error.StripeError:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
+            detail="Refund not found"
         )
 
 
@@ -529,5 +547,5 @@ async def stripe_webhook(
         logger.error(f"Webhook processing error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Webhook processing error: {str(e)}"
+            detail="Webhook processing error"
         )

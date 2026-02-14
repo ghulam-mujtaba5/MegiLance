@@ -163,9 +163,10 @@ def register_user(request: Request, payload: UserCreate):
         # Ensure password is a string and within bcrypt's 72-byte limit
         password_str = str(payload.password) if payload.password else ""
         if len(password_str.encode('utf-8')) > 72:
-            # Truncate to 72 bytes if needed
-            password_bytes = password_str.encode('utf-8')[:72]
-            password_str = password_bytes.decode('utf-8', errors='ignore')
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Password is too long. Please use a password of 72 bytes or fewer."
+            )
         hashed_password = get_password_hash(password_str)
     except Exception as e:
         logger.error("Password hashing failed: %s (type=%s, length=%d)", e, type(payload.password), len(str(payload.password)) if payload.password else 0, exc_info=True)
@@ -227,6 +228,29 @@ def register_user(request: Request, payload: UserCreate):
             detail="User created but failed to retrieve"
         )
     
+    # Send verification email (non-blocking — don't fail registration on email error)
+    try:
+        import secrets as _secrets
+        from app.services.email_service import email_service
+        from app.db.turso_http import get_turso_http
+        verification_token = _secrets.token_urlsafe(32)
+        turso = get_turso_http()
+        turso.execute(
+            "UPDATE users SET email_verification_token = ? WHERE email = ?",
+            [verification_token, payload.email]
+        )
+        settings = get_settings()
+        frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+        verification_url = f"{frontend_url}/verify-email?token={verification_token}"
+        email_service.send_verification_email(
+            to_email=payload.email,
+            user_name=name or "User",
+            verification_url=verification_url
+        )
+        logger.info("Verification email sent to %s", payload.email)
+    except Exception as e:
+        logger.warning("Failed to send verification email to %s: %s", payload.email, e)
+
     return UserRead(
         id=int(user_data.get("id", 0)),
         email=_safe_str(user_data.get("email")),
@@ -272,7 +296,7 @@ def login_user(request: Request, credentials: LoginRequest):
     if user.profile_data:
         try:
             profile_data = json.loads(user.profile_data)
-        except:
+        except (json.JSONDecodeError, ValueError):
             pass
 
     # Check if 2FA is enabled
@@ -465,7 +489,7 @@ def read_users_me(current_user: User = Depends(get_current_active_user)):
     if current_user.profile_data:
         try:
             profile_data = json.loads(current_user.profile_data)
-        except:
+        except (json.JSONDecodeError, ValueError):
             pass
             
     return UserRead(
@@ -526,10 +550,41 @@ def update_user_me(
         if current_user.profile_data:
             try:
                 current_profile = json.loads(current_user.profile_data)
-            except:
+            except (json.JSONDecodeError, ValueError):
                 pass
         current_profile.update(profile_updates)
         update_data["profile_data"] = json.dumps(current_profile)
+    
+    # Handle JSON-serialized list/dict fields
+    json_fields = [
+        "education", "certifications", "work_history", "achievements",
+        "industry_focus", "tools_and_technologies", "contact_preferences",
+    ]
+    for field in json_fields:
+        if field in update_data:
+            val = update_data[field]
+            if isinstance(val, (list, dict)):
+                update_data[field] = json.dumps(val)
+
+    # Handle languages - can be list or string
+    if "languages" in update_data:
+        val = update_data["languages"]
+        if isinstance(val, list):
+            update_data["languages"] = json.dumps(val)
+
+    # Auto-generate profile slug if not set
+    if "name" in update_data and update_data["name"]:
+        import re as _re
+        from app.db.turso_http import execute_query as _exec_q
+        slug = _re.sub(r'[^a-z0-9]+', '-', update_data["name"].lower()).strip('-')
+        # Check if slug exists for another user
+        existing = _exec_q(
+            "SELECT id FROM users WHERE profile_slug = ? AND id != ?",
+            [slug, current_user.id]
+        )
+        if existing and existing.get("rows"):
+            slug = f"{slug}-{current_user.id}"
+        update_data["profile_slug"] = slug
     
     # Update user fields
     update_result = auth_service.update_user_fields(current_user.id, update_data)
@@ -659,7 +714,7 @@ def verify_2fa_login(
     if current_user.profile_data:
         try:
             profile_data = json.loads(current_user.profile_data)
-        except:
+        except (json.JSONDecodeError, ValueError):
             pass
 
     return AuthResponse(

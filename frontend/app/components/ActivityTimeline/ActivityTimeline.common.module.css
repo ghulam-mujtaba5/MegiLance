@@ -1,0 +1,151 @@
+/* @AI-HINT: Activity Timeline — layout, connector lines, animations */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timelineItem {
+  position: relative;
+  padding-bottom: 1.25rem;
+  animation: slideIn 0.3s ease-out backwards;
+}
+
+.timelineItem:nth-child(1) { animation-delay: 0s; }
+.timelineItem:nth-child(2) { animation-delay: 0.05s; }
+.timelineItem:nth-child(3) { animation-delay: 0.1s; }
+.timelineItem:nth-child(4) { animation-delay: 0.15s; }
+.timelineItem:nth-child(5) { animation-delay: 0.2s; }
+.timelineItem:nth-child(6) { animation-delay: 0.25s; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.timelineItem:last-child {
+  padding-bottom: 0;
+}
+
+/* Connector line */
+.timelineItem::before {
+  content: '';
+  position: absolute;
+  left: -1.25rem;
+  top: 1.5rem;
+  bottom: 0;
+  width: 2px;
+  border-radius: 1px;
+}
+
+.timelineItem:last-child::before {
+  display: none;
+}
+
+/* Dot */
+.timelineDot {
+  position: absolute;
+  left: -1.625rem;
+  top: 0.125rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.timelineDot svg {
+  width: 8px;
+  height: 8px;
+}
+
+/* Content */
+.timelineContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.timelineHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.timelineActor {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.timelineAction {
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.timelineTarget {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.timelineTarget:hover {
+  text-decoration: underline;
+}
+
+.timelineTime {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+.timelineMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.timelineBadge {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+}
+
+/* Dot color variants */
+.dotSuccess { background: rgba(39, 174, 96, 0.15); color: #27AE60; }
+.dotWarning { background: rgba(242, 201, 76, 0.2); color: #d4a017; }
+.dotDanger { background: rgba(232, 17, 35, 0.12); color: #e81123; }
+.dotInfo { background: rgba(69, 115, 223, 0.12); color: #4573df; }
+.dotPurple { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+
+.emptyTimeline {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 0.5rem;
+  opacity: 0.5;
+  text-align: center;
+}
+
+.emptyTimeline p {
+  font-size: 0.875rem;
+}
+
+@media (max-width: 480px) {
+  .timeline {
+    padding-left: 1.5rem;
+  }
+  .timelineDot {
+    left: -1.125rem;
+    width: 12px;
+    height: 12px;
+  }
+}

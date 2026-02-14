@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from ...core.security import get_current_active_user
 from ...services.file_versioning import file_versioning_service
+from ...services.db_utils import sanitize_text
 
 
 router = APIRouter()
@@ -62,7 +63,7 @@ async def create_versioned_file(
         mime_type=file.content_type or "application/octet-stream",
         resource_type=resource_type,
         resource_id=resource_id,
-        description=description
+        description=sanitize_text(description, 500) if description else None
     )
     return result
 
@@ -125,7 +126,7 @@ async def upload_new_version(
             user_id=str(current_user.get("id")),
             file_id=file_id,
             content=content,
-            comment=comment
+            comment=sanitize_text(comment, 500) if comment else None
         )
         return result
     except ValueError as e:

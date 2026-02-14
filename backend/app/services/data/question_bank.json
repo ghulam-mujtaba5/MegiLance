@@ -1,0 +1,135 @@
+{
+  "python": [
+    {
+      "id": "py_001",
+      "type": "mcq",
+      "difficulty": "basic",
+      "question": "What is the output of `print(type([]))`?",
+      "options": ["<class 'list'>", "<class 'array'>", "<class 'tuple'>", "<class 'set'>"],
+      "correct": 0,
+      "points": 1,
+      "time_seconds": 30
+    },
+    {
+      "id": "py_002",
+      "type": "mcq",
+      "difficulty": "basic",
+      "question": "Which keyword is used to define a function in Python?",
+      "options": ["function", "def", "func", "define"],
+      "correct": 1,
+      "points": 1,
+      "time_seconds": 20
+    },
+    {
+      "id": "py_003",
+      "type": "mcq",
+      "difficulty": "intermediate",
+      "question": "What does `*args` allow in a function?",
+      "options": [
+        "Passing keyword arguments",
+        "Passing variable number of arguments",
+        "Unpacking a list",
+        "Creating a generator"
+      ],
+      "correct": 1,
+      "points": 2,
+      "time_seconds": 45
+    },
+    {
+      "id": "py_004",
+      "type": "code",
+      "difficulty": "intermediate",
+      "question": "Write a function `fibonacci(n)` that returns the nth Fibonacci number.",
+      "starter_code": "def fibonacci(n):\n    # Your code here\n    pass",
+      "test_cases": [
+        {"input": [0], "expected": 0},
+        {"input": [1], "expected": 1},
+        {"input": [10], "expected": 55},
+        {"input": [20], "expected": 6765}
+      ],
+      "points": 5,
+      "time_seconds": 300
+    },
+    {
+      "id": "py_005",
+      "type": "code",
+      "difficulty": "expert",
+      "question": "Implement a `LRUCache` class with `get(key)` and `put(key, value)` methods. Capacity is passed to __init__.",
+      "starter_code": "class LRUCache:\n    def __init__(self, capacity: int):\n        pass\n    \n    def get(self, key: int) -> int:\n        pass\n    \n    def put(self, key: int, value: int) -> None:\n        pass",
+      "test_cases": [
+        {
+          "input": ["LRUCache(2)", "put(1,1)", "put(2,2)", "get(1)", "put(3,3)", "get(2)"],
+          "expected": [null, null, null, 1, null, -1]
+        }
+      ],
+      "points": 10,
+      "time_seconds": 900
+    }
+  ],
+  "javascript": [
+    {
+      "id": "js_001",
+      "type": "mcq",
+      "difficulty": "basic",
+      "question": "Which method adds an element to the end of an array?",
+      "options": ["push()", "pop()", "shift()", "unshift()"],
+      "correct": 0,
+      "points": 1,
+      "time_seconds": 30
+    },
+    {
+      "id": "js_002",
+      "type": "mcq",
+      "difficulty": "intermediate",
+      "question": "What is a closure in JavaScript?",
+      "options": [
+        "A function that closes another function",
+        "A function that has access to its outer scope variables",
+        "A way to close a browser window",
+        "A method to end a loop"
+      ],
+      "correct": 1,
+      "points": 2,
+      "time_seconds": 45
+    },
+    {
+      "id": "js_003",
+      "type": "code",
+      "difficulty": "intermediate",
+      "question": "Write a function `debounce(fn, delay)` that returns a debounced version of fn.",
+      "starter_code": "function debounce(fn, delay) {\n  // Your code here\n}",
+      "test_cases": [
+        {"description": "Should delay function call", "manual": true}
+      ],
+      "points": 5,
+      "time_seconds": 300
+    }
+  ],
+  "react": [
+    {
+      "id": "react_001",
+      "type": "mcq",
+      "difficulty": "basic",
+      "question": "What hook is used for side effects in React?",
+      "options": ["useState", "useEffect", "useContext", "useReducer"],
+      "correct": 1,
+      "points": 1,
+      "time_seconds": 30
+    },
+    {
+      "id": "react_002",
+      "type": "mcq",
+      "difficulty": "intermediate",
+      "question": "When does useEffect with an empty dependency array run?",
+      "options": [
+        "On every render",
+        "Only on mount and unmount",
+        "Never",
+        "Only when state changes"
+      ],
+      "correct": 1,
+      "points": 2,
+      "time_seconds": 45
+    }
+  ]
+}

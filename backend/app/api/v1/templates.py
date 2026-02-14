@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import sanitize_text
 from app.models.user import User
 from app.services.templates import (
     get_templates_service,
@@ -75,11 +76,11 @@ async def create_template(
     
     template = await service.create_template(
         user_id=current_user["id"],
-        name=request.name,
+        name=sanitize_text(request.name, 200),
         template_type=request.template_type,
         category=request.category,
         content=request.content,
-        description=request.description,
+        description=sanitize_text(request.description, 2000) if request.description else None,
         variables=request.variables,
         tags=request.tags,
         visibility=request.visibility,
@@ -190,6 +191,9 @@ async def update_template(
     service = get_templates_service(db)
     
     updates = request.dict(exclude_unset=True)
+    for k in ("name", "description"):
+        if k in updates and isinstance(updates[k], str):
+            updates[k] = sanitize_text(updates[k], 2000 if k == "description" else 200)
     template = await service.update_template(
         template_id=template_id,
         user_id=current_user["id"],

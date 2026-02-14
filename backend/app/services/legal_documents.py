@@ -1,10 +1,5 @@
 # @AI-HINT: Legal document center service for NDAs, contracts, and legal templates
-"""
-Legal Document Center Service
-
-Manages legal templates, document generation, e-signatures,
-and contract compliance.
-"""
+"""Legal Document Center Service."""
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session

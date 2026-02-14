@@ -1,4 +1,4 @@
-/* @AI-HINT: Light theme styles for the refactored Profile page. Premium glassmorphism design. */
+/* @AI-HINT: Light theme styles for the enhanced Profile page with sections, arrays, social, share modal. */
 
 .profileContainer {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
@@ -24,8 +24,34 @@
   color: var(--primary, #4573df);
 }
 
+.tagline {
+  color: var(--text-secondary, #6b7280);
+}
+
 .rank {
   background: linear-gradient(135deg, rgba(69, 115, 223, 0.1), rgba(69, 115, 223, 0.05));
+  color: var(--primary, #4573df);
+  border-color: rgba(69, 115, 223, 0.2);
+}
+
+.metaBadge {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-secondary, #6b7280);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Section Nav */
+.navBtn {
+  color: var(--text-secondary, #6b7280);
+}
+
+.navBtn:hover {
+  background: rgba(69, 115, 223, 0.06);
+  color: var(--primary, #4573df);
+}
+
+.navBtnActive {
+  background: rgba(69, 115, 223, 0.1);
   color: var(--primary, #4573df);
   border-color: rgba(69, 115, 223, 0.2);
 }
@@ -40,8 +66,121 @@
   color: var(--text-primary, #1f2937);
 }
 
+.sectionDescription {
+  color: var(--text-secondary, #6b7280);
+}
+
+.fieldLabel {
+  color: var(--text-primary, #1f2937);
+}
+
 .skillsInfo {
   color: var(--text-secondary, #6b7280);
+}
+
+/* Array cards */
+.arrayCard {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.arrayCardTitle {
+  color: var(--primary, #4573df);
+}
+
+.removeBtn {
+  color: #dc2626;
+}
+
+.emptyArrayState {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-secondary, #6b7280);
+}
+
+/* Media cards */
+.mediaCard {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.mediaCardContent h3 {
+  color: var(--text-primary, #1f2937);
+}
+
+/* Settings */
+.settingRow {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.settingRow h3 {
+  color: var(--text-primary, #1f2937);
+}
+
+.settingRow p {
+  color: var(--text-secondary, #6b7280);
+}
+
+.toggleSwitch {
+  background: #d1d5db;
+}
+
+.toggleInput:checked + .toggleSwitch {
+  background: var(--primary, #4573df);
+}
+
+/* Share */
+.shareSection {
+  background: rgba(69, 115, 223, 0.04);
+  border-color: rgba(69, 115, 223, 0.15);
+}
+
+.shareTitle {
+  color: var(--text-primary, #1f2937);
+}
+
+.shareDesc {
+  color: var(--text-secondary, #6b7280);
+}
+
+.shareUrlInput {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-primary, #1f2937);
+}
+
+.shareHints {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--text-secondary, #6b7280);
+}
+
+/* Modal */
+.modalOverlay {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+.shareModal {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.shareModalHeader {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.shareModalHeader h2 {
+  color: var(--text-primary, #1f2937);
+}
+
+.closeBtn {
+  color: var(--text-secondary, #6b7280);
+}
+
+.closeBtn:hover {
+  color: var(--text-primary, #1f2937);
 }
 
 .errors {

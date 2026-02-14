@@ -17,7 +17,7 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.services.fraud_detection import (
     get_fraud_detection_service,
     RiskLevel,
@@ -248,7 +248,8 @@ async def get_fraud_reports(
 @router.get("/config/thresholds")
 async def get_risk_thresholds(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """Get current risk threshold configuration."""
     service = get_fraud_detection_service(db)
@@ -268,7 +269,8 @@ async def get_risk_thresholds(
 async def get_fraud_statistics(
     period_days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """Get fraud detection statistics."""
     return {
@@ -293,7 +295,8 @@ async def get_fraud_statistics(
 @router.get("/dashboard")
 async def get_fraud_dashboard(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """Get fraud detection dashboard data."""
     return {

@@ -495,7 +495,6 @@ def get_leaderboard(
             "jss_score": row[2],
             "completed_orders": row[3],
             "average_rating": row[4],
-            "total_earnings": row[5],
             "full_name": row[6],
             "avatar_url": row[7],
             "badges": LEVEL_BENEFITS.get(row[1], {}).get("badges", [])

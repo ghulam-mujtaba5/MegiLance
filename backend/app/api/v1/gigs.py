@@ -11,6 +11,7 @@ import uuid
 from app.db.turso_http import get_turso_http
 from app.core.security import get_current_active_user
 from app.models.user import User
+from app.services.db_utils import sanitize_text, paginate_params
 from app.schemas.gig import (
     GigCreate, GigUpdate, GigListResponse, GigDetailResponse, GigSellerInfo,
     GigPackageResponse, GigSearchParams, GigSearchResponse,
@@ -39,7 +40,7 @@ def _row_to_gig(row: list, columns: list) -> dict:
                        'basic_features', 'standard_features', 'premium_features'] and val:
                 try:
                     result[col] = json.loads(val) if isinstance(val, str) else val
-                except:
+                except (json.JSONDecodeError, TypeError, ValueError):
                     result[col] = val
             else:
                 result[col] = val
@@ -65,7 +66,7 @@ def _generate_order_number() -> str:
 def create_gig(
     gig_data: GigCreate,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Create a new gig (seller only)."""
     if current_user.user_type != "freelancer":
         raise HTTPException(
@@ -105,23 +106,23 @@ def create_gig(
     """
     
     params = [
-        current_user.id, gig_data.title, slug, gig_data.description, 
-        gig_data.short_description, gig_data.category_id,
+        current_user.id, sanitize_text(gig_data.title), slug, sanitize_text(gig_data.description), 
+        sanitize_text(gig_data.short_description) if gig_data.short_description else None, gig_data.category_id,
         tags_json, search_tags_json,
         # Basic package
-        gig_data.basic_package.title, gig_data.basic_package.description,
+        sanitize_text(gig_data.basic_package.title), sanitize_text(gig_data.basic_package.description),
         gig_data.basic_package.price, gig_data.basic_package.delivery_days,
         gig_data.basic_package.revisions, basic_features_json,
         # Standard package
-        gig_data.standard_package.title if gig_data.standard_package else "Standard",
-        gig_data.standard_package.description if gig_data.standard_package else None,
+        sanitize_text(gig_data.standard_package.title) if gig_data.standard_package else "Standard",
+        sanitize_text(gig_data.standard_package.description) if gig_data.standard_package else None,
         gig_data.standard_package.price if gig_data.standard_package else gig_data.basic_package.price * 2,
         gig_data.standard_package.delivery_days if gig_data.standard_package else gig_data.basic_package.delivery_days,
         gig_data.standard_package.revisions if gig_data.standard_package else gig_data.basic_package.revisions + 1,
         standard_features_json,
         # Premium package
-        gig_data.premium_package.title if gig_data.premium_package else "Premium",
-        gig_data.premium_package.description if gig_data.premium_package else None,
+        sanitize_text(gig_data.premium_package.title) if gig_data.premium_package else "Premium",
+        sanitize_text(gig_data.premium_package.description) if gig_data.premium_package else None,
         gig_data.premium_package.price if gig_data.premium_package else gig_data.basic_package.price * 4,
         gig_data.premium_package.delivery_days if gig_data.premium_package else gig_data.basic_package.delivery_days,
         gig_data.premium_package.revisions if gig_data.premium_package else gig_data.basic_package.revisions + 3,
@@ -150,17 +151,18 @@ def create_gig(
 
 @router.get("", response_model=List[dict])
 def list_gigs(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     category_id: Optional[int] = None,
     seller_id: Optional[int] = None,
-    status: Optional[str] = "active",
+    filter_status: Optional[str] = Query("active", alias="status"),
     search: Optional[str] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
     sort_by: str = Query("created_at", enum=["created_at", "price", "rating", "orders"])
-):
+) -> list[dict]:
     """List/search gigs with filters."""
+    offset, limit = paginate_params(page, page_size)
     turso = get_turso_http()
     
     # Build query
@@ -175,9 +177,9 @@ def list_gigs(
     """
     params = []
     
-    if status:
+    if filter_status:
         sql += " AND g.status = ?"
-        params.append(status)
+        params.append(filter_status)
     
     if category_id:
         sql += " AND g.category_id = ?"
@@ -188,8 +190,9 @@ def list_gigs(
         params.append(seller_id)
     
     if search:
-        sql += " AND (g.title LIKE ? OR g.description LIKE ? OR g.tags LIKE ?)"
-        search_term = f"%{search}%"
+        safe_search = search.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+        sql += " AND (g.title LIKE ? ESCAPE '\\' OR g.description LIKE ? ESCAPE '\\' OR g.tags LIKE ? ESCAPE '\\')"
+        search_term = f"%{safe_search}%"
         params.extend([search_term, search_term, search_term])
     
     if min_price:
@@ -209,7 +212,7 @@ def list_gigs(
     }
     sql += f" ORDER BY g.is_featured DESC, {sort_map.get(sort_by, 'g.created_at DESC')}"
     sql += " LIMIT ? OFFSET ?"
-    params.extend([limit, skip])
+    params.extend([limit, offset])
     
     result = turso.execute(sql, params)
     
@@ -227,7 +230,7 @@ def list_gigs(
 
 
 @router.get("/{gig_id}", response_model=dict)
-def get_gig(gig_id: int):
+def get_gig(gig_id: int) -> dict:
     """Get gig details by ID."""
     turso = get_turso_http()
     
@@ -279,7 +282,7 @@ def get_gig(gig_id: int):
 
 
 @router.get("/slug/{slug}", response_model=dict)
-def get_gig_by_slug(slug: str):
+def get_gig_by_slug(slug: str) -> dict:
     """Get gig details by slug."""
     turso = get_turso_http()
     
@@ -297,7 +300,7 @@ def update_gig(
     gig_id: int,
     gig_data: GigUpdate,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Update a gig (owner only)."""
     turso = get_turso_http()
     
@@ -315,10 +318,21 @@ def update_gig(
     
     update_fields = gig_data.dict(exclude_unset=True)
     
+    ALLOWED_GIG_COLUMNS = frozenset({
+        'title', 'description', 'category', 'subcategory', 'tags', 'images',
+        'extras', 'requirements', 'delivery_time', 'revisions', 'price',
+        'packages',
+    })
+    
+    text_fields = {'title', 'description', 'category', 'subcategory'}
     for field, value in update_fields.items():
+        if field not in ALLOWED_GIG_COLUMNS:
+            continue
         if value is not None:
             if field in ['tags', 'images', 'extras', 'requirements']:
                 value = json.dumps(value)
+            elif field in text_fields:
+                value = sanitize_text(value)
             updates.append(f"{field} = ?")
             params.append(value)
     
@@ -338,7 +352,7 @@ def update_gig(
 def publish_gig(
     gig_id: int,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Publish a draft gig."""
     turso = get_turso_http()
     
@@ -351,13 +365,13 @@ def publish_gig(
     if not result.get("rows"):
         raise HTTPException(status_code=404, detail="Gig not found")
     
-    seller_id, status = result["rows"][0]
+    seller_id, gig_status = result["rows"][0]
     
     if seller_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    if status not in ["draft", "paused"]:
-        raise HTTPException(status_code=400, detail=f"Cannot publish gig with status '{status}'")
+    if gig_status not in ["draft", "paused"]:
+        raise HTTPException(status_code=400, detail=f"Cannot publish gig with status '{gig_status}'")
     
     # Publish
     turso.execute(
@@ -372,7 +386,7 @@ def publish_gig(
 def pause_gig(
     gig_id: int,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Pause an active gig."""
     turso = get_turso_http()
     
@@ -397,7 +411,7 @@ def pause_gig(
 def delete_gig(
     gig_id: int,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Delete a gig (archive it)."""
     turso = get_turso_http()
     
@@ -427,7 +441,7 @@ def delete_gig(
 def create_order(
     order_data: GigOrderCreate,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Create a new gig order (buyer)."""
     turso = get_turso_http()
     
@@ -510,7 +524,7 @@ def create_order(
         order_number, gig_id, current_user.id, seller_id, tier,
         f"{gig[12]} - {tier.capitalize()}", quantity, base_price,
         extras_price, service_fee, total_price, delivery_days, deadline,
-        revisions or 0, order_data.buyer_notes,
+        revisions or 0, sanitize_text(order_data.buyer_notes) if order_data.buyer_notes else None,
         json.dumps(order_data.selected_extras) if order_data.selected_extras else None
     ]
     
@@ -542,12 +556,13 @@ def create_order(
 @router.get("/orders", response_model=List[dict])
 def list_orders(
     role: str = Query("buyer", enum=["buyer", "seller"]),
-    status: Optional[str] = None,
-    skip: int = 0,
-    limit: int = 20,
+    filter_status: Optional[str] = Query(None, alias="status"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_active_user)
-):
+) -> list[dict]:
     """List orders for current user."""
+    offset, limit = paginate_params(page, page_size)
     turso = get_turso_http()
     
     if role == "buyer":
@@ -575,12 +590,12 @@ def list_orders(
     
     params = [current_user.id]
     
-    if status:
+    if filter_status:
         sql += " AND o.status = ?"
-        params.append(status)
+        params.append(filter_status)
     
     sql += " ORDER BY o.created_at DESC LIMIT ? OFFSET ?"
-    params.extend([limit, skip])
+    params.extend([limit, offset])
     
     result = turso.execute(sql, params)
     
@@ -601,7 +616,7 @@ def list_orders(
 def get_order(
     order_id: int,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Get order details."""
     turso = get_turso_http()
     
@@ -645,7 +660,7 @@ def deliver_order(
     order_id: int,
     delivery_data: GigDeliveryCreate,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Submit a delivery for an order (seller)."""
     turso = get_turso_http()
     
@@ -658,13 +673,13 @@ def deliver_order(
     if not result.get("rows"):
         raise HTTPException(status_code=404, detail="Order not found")
     
-    seller_id, status = result["rows"][0]
+    seller_id, order_status = result["rows"][0]
     
     if seller_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    if status not in ["in_progress", "revision_requested"]:
-        raise HTTPException(status_code=400, detail=f"Cannot deliver order with status '{status}'")
+    if order_status not in ["in_progress", "revision_requested"]:
+        raise HTTPException(status_code=400, detail=f"Cannot deliver order with status '{order_status}'")
     
     # Get next delivery number
     count_result = turso.execute(
@@ -684,7 +699,7 @@ def deliver_order(
     source_files_json = json.dumps(delivery_data.source_files) if delivery_data.source_files else None
     
     turso.execute(sql, [
-        order_id, delivery_number, delivery_data.message,
+        order_id, delivery_number, sanitize_text(delivery_data.message) if delivery_data.message else None,
         files_json, source_files_json, delivery_data.is_final or False
     ])
     
@@ -711,7 +726,7 @@ def deliver_order(
 def accept_delivery(
     order_id: int,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Accept a delivery and complete the order (buyer)."""
     turso = get_turso_http()
     
@@ -724,12 +739,12 @@ def accept_delivery(
     if not result.get("rows"):
         raise HTTPException(status_code=404, detail="Order not found")
     
-    buyer_id, seller_id, gig_id, status = result["rows"][0]
+    buyer_id, seller_id, gig_id, order_status = result["rows"][0]
     
     if buyer_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    if status != "delivered":
+    if order_status != "delivered":
         raise HTTPException(status_code=400, detail="Order has not been delivered yet")
     
     # Complete order
@@ -770,7 +785,7 @@ def request_revision(
     order_id: int,
     revision_data: GigRevisionRequest,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Request a revision (buyer)."""
     turso = get_turso_http()
     
@@ -783,12 +798,12 @@ def request_revision(
     if not result.get("rows"):
         raise HTTPException(status_code=404, detail="Order not found")
     
-    buyer_id, status, revisions_allowed, revisions_used = result["rows"][0]
+    buyer_id, order_status, revisions_allowed, revisions_used = result["rows"][0]
     
     if buyer_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    if status != "delivered":
+    if order_status != "delivered":
         raise HTTPException(status_code=400, detail="Can only request revision for delivered orders")
     
     revisions_allowed = revisions_allowed or 0
@@ -810,7 +825,7 @@ def request_revision(
     
     turso.execute(sql, [
         order_id, revision_number, current_user.id,
-        revision_data.description, files_json
+        sanitize_text(revision_data.description), files_json
     ])
     
     # Update order
@@ -841,7 +856,7 @@ def request_revision(
 def create_review(
     review_data: GigReviewCreate,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Leave a review for a completed order (buyer)."""
     turso = get_turso_http()
     
@@ -854,12 +869,12 @@ def create_review(
     if not result.get("rows"):
         raise HTTPException(status_code=404, detail="Order not found")
     
-    buyer_id, seller_id, gig_id, status = result["rows"][0]
+    buyer_id, seller_id, gig_id, order_status = result["rows"][0]
     
     if buyer_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    if status != "completed":
+    if order_status != "completed":
         raise HTTPException(status_code=400, detail="Can only review completed orders")
     
     # Check if already reviewed
@@ -894,8 +909,8 @@ def create_review(
         review_data.order_id, gig_id, current_user.id, seller_id,
         review_data.rating_communication, review_data.rating_service,
         review_data.rating_delivery, review_data.rating_recommendation,
-        rating_overall, review_data.review_text, images_json,
-        review_data.private_feedback
+        rating_overall, sanitize_text(review_data.review_text), images_json,
+        sanitize_text(review_data.private_feedback) if review_data.private_feedback else None
     ])
     
     # Update gig ratings
@@ -946,10 +961,11 @@ def create_review(
 @router.get("/{gig_id}/reviews", response_model=List[dict])
 def get_gig_reviews(
     gig_id: int,
-    skip: int = 0,
-    limit: int = 20
-):
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100)
+) -> list[dict]:
     """Get reviews for a gig."""
+    offset, limit = paginate_params(page, page_size)
     turso = get_turso_http()
     
     sql = """
@@ -964,7 +980,7 @@ def get_gig_reviews(
     LIMIT ? OFFSET ?
     """
     
-    result = turso.execute(sql, [gig_id, limit, skip])
+    result = turso.execute(sql, [gig_id, limit, offset])
     
     reviews = []
     for row in result.get("rows", []):
@@ -993,7 +1009,7 @@ def respond_to_review(
     review_id: int,
     response_data: GigReviewSellerResponse,
     current_user: User = Depends(get_current_active_user)
-):
+) -> dict:
     """Respond to a review (seller)."""
     turso = get_turso_http()
     
@@ -1008,7 +1024,7 @@ def respond_to_review(
     
     turso.execute(
         "UPDATE gig_reviews SET seller_response = ?, seller_responded_at = datetime('now'), updated_at = datetime('now') WHERE id = ?",
-        [response_data.response, review_id]
+        [sanitize_text(response_data.response), review_id]
     )
     
     return {"message": "Response added"}
@@ -1020,9 +1036,9 @@ def respond_to_review(
 
 @router.get("/seller/my-gigs", response_model=List[dict])
 def get_my_gigs(
-    status: Optional[str] = None,
+    filter_status: Optional[str] = Query(None, alias="status"),
     current_user: User = Depends(get_current_active_user)
-):
+) -> list[dict]:
     """Get current user's gigs (seller)."""
     turso = get_turso_http()
     
@@ -1035,9 +1051,9 @@ def get_my_gigs(
     """
     params = [current_user.id]
     
-    if status:
+    if filter_status:
         sql += " AND status = ?"
-        params.append(status)
+        params.append(filter_status)
     
     sql += " ORDER BY created_at DESC"
     

@@ -53,6 +53,64 @@
   gap: 0.75rem;
 }
 
+.filtersRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.resultsCount {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* KPI Summary Strip */
+.kpiStrip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--border-radius-lg, 12px);
+  border: 1px solid transparent;
+  overflow-x: auto;
+}
+
+.kpiItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem;
+  white-space: nowrap;
+}
+
+.kpiItem:first-child {
+  padding-left: 0;
+}
+
+.kpiIcon {
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.kpiValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-family: var(--font-heading, 'Poppins', sans-serif);
+}
+
+.kpiLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+.kpiDivider {
+  width: 1px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));

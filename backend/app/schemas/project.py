@@ -34,6 +34,7 @@ class ProjectRead(ProjectBase):
     client_id: int
     created_at: datetime
     updated_at: datetime
+    proposal_count: Optional[int] = 0
 
     @field_validator('skills', mode='before')
     @classmethod
@@ -41,7 +42,7 @@ class ProjectRead(ProjectBase):
         if isinstance(v, str):
             try:
                 return json.loads(v)
-            except:
+            except (json.JSONDecodeError, ValueError):
                 # If it's a comma-separated string
                 return [s.strip() for s in v.split(',') if s.strip()]
         return v

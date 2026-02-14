@@ -1,16 +1,5 @@
-# @AI-HINT: Advanced AI service with deep learning models for matching, fraud detection, and quality assessment
-"""
-Advanced AI Service
-
-Features:
-- Deep learning models for freelancer-project matching
-- NLP-based skill extraction and semantic matching
-- Fraud detection using anomaly detection
-- Quality assessment for delivered work
-- Price optimization using reinforcement learning
-- Churn prediction
-- Sentiment analysis
-"""
+# @AI-HINT: AI service for matching, fraud detection, and quality assessment
+"""ML-based matching engine, fraud scoring, and content quality analysis."""
 
 from typing import Dict, List, Any, Optional, Tuple
 from decimal import Decimal

@@ -16,6 +16,7 @@ import logging
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.services import community_service
+from app.services.db_utils import sanitize_text, paginate_params
 from pydantic import BaseModel, Field
 
 router = APIRouter()
@@ -114,7 +115,7 @@ async def create_question(
     tags_json = json.dumps(question.tags) if question.tags else "[]"
 
     result = community_service.insert_question(
-        current_user.id, question.title, question.content, tags_json, question.category
+        current_user.id, sanitize_text(question.title), sanitize_text(question.content), tags_json, question.category
     )
 
     if not result:
@@ -129,11 +130,12 @@ async def list_questions(
     tag: Optional[str] = None,
     status_filter: Optional[str] = Query(None, alias="status", pattern="^(open|closed|answered)$"),
     sort_by: str = Query("recent", pattern="^(recent|popular|unanswered)$"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100)
 ):
     """List community questions with filters."""
-    questions = community_service.fetch_questions(category, tag, status_filter, sort_by, skip, limit)
+    offset, limit = paginate_params(page, page_size)
+    questions = community_service.fetch_questions(category, tag, status_filter, sort_by, offset, limit)
     return {"questions": questions, "total": len(questions)}
 
 
@@ -158,7 +160,7 @@ async def create_answer(
     if not community_service.question_exists(question_id):
         raise HTTPException(status_code=404, detail="Question not found")
 
-    community_service.insert_answer(question_id, current_user.id, answer.content)
+    community_service.insert_answer(question_id, current_user.id, sanitize_text(answer.content))
     return {"message": "Answer submitted successfully"}
 
 
@@ -202,7 +204,7 @@ async def create_playbook(
     tags_json = json.dumps(playbook.tags) if playbook.tags else "[]"
 
     community_service.insert_playbook(
-        current_user.id, playbook.title, playbook.description, playbook.content,
+        current_user.id, sanitize_text(playbook.title), sanitize_text(playbook.description), sanitize_text(playbook.content),
         playbook.category, tags_json, playbook.difficulty_level,
     )
     return {"message": "Playbook created as draft. Submit for review to publish."}
@@ -214,11 +216,12 @@ async def list_playbooks(
     difficulty: Optional[str] = Query(None, pattern="^(beginner|intermediate|advanced|expert)$"),
     author_id: Optional[int] = None,
     status_filter: Optional[str] = Query("published", alias="status"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100)
 ):
     """List published playbooks."""
-    playbooks = community_service.fetch_playbooks(category, difficulty, author_id, status_filter, skip, limit)
+    offset, limit = paginate_params(page, page_size)
+    playbooks = community_service.fetch_playbooks(category, difficulty, author_id, status_filter, offset, limit)
     return {"playbooks": playbooks, "total": len(playbooks)}
 
 
@@ -276,7 +279,7 @@ async def create_office_hours(
         raise HTTPException(status_code=400, detail="Office hours must be scheduled in the future")
 
     community_service.insert_office_hours(
-        current_user.id, oh.title, oh.description, oh.scheduled_at.isoformat(),
+        current_user.id, sanitize_text(oh.title), sanitize_text(oh.description), oh.scheduled_at.isoformat(),
         oh.duration_minutes, oh.max_attendees, oh.category, oh.is_public,
     )
     return {"message": "Office hours scheduled successfully"}
@@ -287,11 +290,12 @@ async def list_office_hours(
     status_filter: Optional[str] = Query("upcoming", alias="status", pattern="^(upcoming|past|all)$"),
     host_id: Optional[int] = None,
     category: Optional[str] = None,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100)
 ):
     """List office hours sessions."""
-    sessions = community_service.fetch_office_hours(status_filter, host_id, category, skip, limit)
+    offset, limit = paginate_params(page, page_size)
+    sessions = community_service.fetch_office_hours(status_filter, host_id, category, offset, limit)
     return {"office_hours": sessions, "total": len(sessions)}
 
 

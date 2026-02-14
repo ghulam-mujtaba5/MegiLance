@@ -1,15 +1,5 @@
 # @AI-HINT: Data backup and restore service
-"""
-Backup & Restore Service - User data backup and restoration.
-
-Features:
-- Full account backup
-- Selective data backup
-- Cloud storage integration
-- Scheduled backups
-- Data restoration
-- Backup history
-"""
+"""Backup & Restore Service - User data backup and restoration."""
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any

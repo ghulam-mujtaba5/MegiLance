@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
-import api from '@/lib/api';
+import { searchApi } from '@/lib/api';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
@@ -74,8 +74,9 @@ const Search: React.FC = () => {
       // Search projects if type is All or Project
       if (searchType === 'All' || searchType === 'Project') {
         try {
-          const projects = await (api.search as any).projects?.(searchQuery, { page_size: 10 });
-          allResults.push(...(Array.isArray(projects) ? projects : []).map((p: any) => ({
+          const projectsData = await searchApi.projects(searchQuery, { page_size: 10 });
+          const projects = Array.isArray(projectsData) ? projectsData : (projectsData as any)?.projects || (projectsData as any)?.results || [];
+          allResults.push(...projects.map((p: any) => ({
             id: `project-${p.id}`,
             title: p.title,
             snippet: p.description?.substring(0, 100) + '...' || 'No description',
@@ -90,8 +91,9 @@ const Search: React.FC = () => {
       // Search freelancers if type is All or User
       if (searchType === 'All' || searchType === 'User') {
         try {
-          const users = await (api.search as any).freelancers?.(searchQuery, { page_size: 10 });
-          allResults.push(...(Array.isArray(users) ? users : []).map((u: any) => ({
+          const usersData = await searchApi.freelancers(searchQuery, { page_size: 10 });
+          const users = Array.isArray(usersData) ? usersData : (usersData as any)?.freelancers || (usersData as any)?.results || [];
+          allResults.push(...users.map((u: any) => ({
             id: `user-${u.id}`,
             title: u.full_name || 'Unknown User',
             snippet: u.bio?.substring(0, 100) || u.skills?.join(', ') || 'Freelancer',

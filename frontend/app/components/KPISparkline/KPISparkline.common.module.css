@@ -1,0 +1,58 @@
+/* @AI-HINT: KPI Sparkline — layout and animations */
+
+.sparklineContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sparklineSvg {
+  width: 100%;
+  height: 40px;
+  overflow: visible;
+}
+
+.sparklinePath {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: drawLine 1s ease-out forwards;
+  stroke-dasharray: 500;
+  stroke-dashoffset: 500;
+}
+
+@keyframes drawLine {
+  to { stroke-dashoffset: 0; }
+}
+
+.sparklineArea {
+  opacity: 0.1;
+  animation: fadeArea 0.8s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeArea {
+  to { opacity: 0.15; }
+}
+
+.sparklineDot {
+  r: 3;
+  animation: popDot 0.3s ease-out 0.8s forwards;
+  transform-origin: center;
+  opacity: 0;
+}
+
+@keyframes popDot {
+  from { opacity: 0; transform: scale(0); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.sparklineLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  opacity: 0.55;
+}

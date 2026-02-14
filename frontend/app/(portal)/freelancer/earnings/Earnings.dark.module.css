@@ -1,0 +1,24 @@
+/* Dark Theme - Freelancer Earnings */
+.container { background: #0f0f0f; }
+.title { color: #f9fafb; }
+.subtitle { color: #9ca3af; }
+.statCard { background: #161616; border: 1px solid #2d2d2d; }
+.statValue { color: #f9fafb; }
+.statLabel { color: #9ca3af; }
+.periodBtn { background: #1f1f1f; color: #d1d5db; }
+.periodBtn:hover { background: #2d2d2d; }
+.periodBtnActive { background: #4573df !important; color: #fff !important; }
+.section { background: #161616; border: 1px solid #2d2d2d; }
+.sectionTitle { color: #f9fafb; }
+.chartBar { background: #4573df; }
+.chartBarLabel { color: #9ca3af; }
+.chartBarValue { color: #f9fafb; }
+.breakdownItem { background: #1a1a1a; }
+.breakdownLabel { color: #d1d5db; }
+.breakdownValue { color: #f9fafb; }
+.tableWrapper { background: #161616; border: 1px solid #2d2d2d; }
+.th { background: #1a1a1a; color: #9ca3af; border-bottom: 1px solid #2d2d2d; }
+.td { color: #d1d5db; border-bottom: 1px solid #1f1f1f; }
+.tr:hover { background: #1a1a1a; }
+.emptyState { background: #161616; color: #9ca3af; }
+.emptyState h3 { color: #f9fafb; }

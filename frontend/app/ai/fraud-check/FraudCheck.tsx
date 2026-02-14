@@ -1,4 +1,4 @@
-// @AI-HINT: Premium AI Fraud Check page with billion-dollar quality UI. Features animated score visualization, real-time analysis feedback, and advanced risk assessment.
+// @AI-HINT: Premium AI Fraud Check page with production-ready quality UI. Features animated score visualization, real-time analysis feedback, and advanced risk assessment.
 'use client';
 
 import React, { useState, useCallback } from 'react';

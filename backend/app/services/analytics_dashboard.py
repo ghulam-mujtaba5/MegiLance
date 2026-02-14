@@ -1,15 +1,5 @@
 # @AI-HINT: Advanced analytics dashboard service
-"""
-Analytics Dashboard Service - Comprehensive business intelligence.
-
-Features:
-- Real-time metrics
-- Custom dashboards
-- KPI tracking
-- Data visualization
-- Alerts & thresholds
-- Predictive analytics
-"""
+"""Analytics Dashboard Service - Comprehensive business intelligence."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

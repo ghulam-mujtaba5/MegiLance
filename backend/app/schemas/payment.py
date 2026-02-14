@@ -19,6 +19,7 @@ class PaymentCreate(BaseModel):
     to_user_id: Optional[int] = Field(default=None, description="Recipient user ID when no contract is provided")
     amount: float = Field(gt=0, description="Payment amount")
     currency: str = "USD"
+    payment_type: Optional[str] = Field(default="milestone", description="Payment type: milestone, full, hourly, escrow, refund, bonus")
     description: Optional[str] = None
 
 

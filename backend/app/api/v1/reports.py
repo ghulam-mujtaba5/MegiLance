@@ -17,6 +17,7 @@ from datetime import datetime
 from app.db.session import get_db
 from app.core.security import get_current_active_user
 from app.models.user import User
+from app.services.db_utils import get_user_role
 from app.services.reports import (
     ReportGenerationService,
     ReportType,
@@ -54,7 +55,7 @@ async def get_report_types(
     """Get available report types."""
     service = ReportGenerationService(db)
     
-    role = getattr(current_user, 'role', 'user')
+    role = get_user_role(current_user)
     reports = await service.get_available_reports(role)
     
     return {
@@ -99,7 +100,7 @@ async def generate_report(
     ]
     
     if report_type in admin_reports:
-        if not hasattr(current_user, 'role') or current_user.role != 'admin':
+        if get_user_role(current_user) != "admin":
             raise HTTPException(
                 status_code=403,
                 detail="Admin access required for this report"

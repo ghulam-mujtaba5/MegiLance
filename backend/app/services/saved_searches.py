@@ -1,14 +1,5 @@
 # @AI-HINT: Saved search queries - persistent user search preferences and alerts
-"""
-Saved Searches Service - Persistent Search Queries & Alerts
-
-Features:
-- Save search criteria for reuse
-- Search alerts with email notifications
-- Search history tracking
-- Popular searches analytics
-- Category-based search templates
-"""
+"""Saved Searches Service - Persistent Search Queries & Alerts."""
 
 import uuid
 import json
@@ -280,35 +271,9 @@ class SavedSearchesService:
         raise ValueError("Saved search not found")
     
     def _generate_mock_results(self, category: str, criteria: Dict) -> List[Dict]:
-        """Generate mock search results."""
-        import random
-        
-        count = random.randint(5, 25)
-        
-        if category == "projects":
-            return [
-                {
-                    "id": str(uuid.uuid4()),
-                    "title": f"Project {i+1}",
-                    "budget": random.randint(500, 10000),
-                    "category": "development",
-                    "posted_at": datetime.now(timezone.utc).isoformat()
-                }
-                for i in range(count)
-            ]
-        elif category == "freelancers":
-            return [
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": f"Freelancer {i+1}",
-                    "rating": round(random.uniform(3.5, 5.0), 1),
-                    "hourly_rate": random.randint(20, 150),
-                    "skills": ["Python", "JavaScript", "React"][:random.randint(1, 3)]
-                }
-                for i in range(count)
-            ]
-        
-        return [{"id": str(uuid.uuid4()), "type": category} for _ in range(count)]
+        """STUB: Return empty results until real search backend is integrated."""
+        # TODO: Query actual search index (e.g., Meilisearch / Elasticsearch)
+        return []
     
     async def add_to_history(
         self,

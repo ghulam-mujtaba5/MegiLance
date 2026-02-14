@@ -1,16 +1,5 @@
 # @AI-HINT: Advanced analytics service with ML predictions and market intelligence
-"""
-Advanced Analytics Service - ML-powered analytics and business intelligence.
-
-Features:
-- Revenue forecasting with time series analysis
-- Cohort analysis for user retention
-- Predictive churn modeling
-- Market trend analysis
-- Platform health metrics
-- Custom report generation
-- Real-time dashboards
-"""
+"""Advanced Analytics Service - ML-powered analytics and business intelligence."""
 
 import logging
 from datetime import datetime, timedelta, timezone
@@ -19,7 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, or_, desc
 from collections import defaultdict
 import math
-import random  # For simulation - replace with real ML in production
+# STUB: Trend analysis uses heuristic fallbacks; replace with ML pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -508,16 +497,14 @@ class AdvancedAnalyticsService:
                 if budgets
             }
             
-            # Simulate trend direction (in production, compare with previous period)
+            # STUB: Deterministic fallback until historical data pipeline exists
             trends = []
             for skill, count in top_skills:
-                trend_direction = random.choice(["up", "stable", "down"])
-                trend_percent = random.randint(-20, 40)
                 trends.append({
                     "skill": skill,
                     "demand_count": count,
-                    "trend": trend_direction,
-                    "change_percent": trend_percent
+                    "trend": "stable",
+                    "change_percent": 0
                 })
             
             return {

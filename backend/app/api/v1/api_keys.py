@@ -26,6 +26,11 @@ router = APIRouter()
 
 # ============== Pydantic Models ==============
 
+ALLOWED_SCOPES = {"read", "write", "delete", "projects", "users", "analytics"}
+PRIVILEGED_SCOPES = {"admin", "payments", "webhooks"}
+ALLOWED_TIERS = {"free", "basic"}
+ADMIN_TIERS = {"premium", "enterprise"}
+
 class CreateAPIKeyRequest(BaseModel):
     """Request to create a new API key."""
     name: str = Field(..., min_length=1, max_length=100, description="Display name for the key")
@@ -80,16 +85,28 @@ async def create_api_key(
     - `premium` - 1,000 req/min, 100,000 req/day
     - `enterprise` - 5,000 req/min, 1,000,000 req/day
     """
+    from app.services.db_utils import sanitize_text
+    user_role = current_user.get("role", "")
+    # Filter out privileged scopes for non-admin users
+    scopes = request.scopes
+    if user_role != "admin":
+        scopes = [s for s in scopes if s not in PRIVILEGED_SCOPES]
+        if not scopes:
+            raise HTTPException(status_code=400, detail="No valid scopes provided")
+    # Restrict tier for non-admin users
+    tier = request.tier
+    if user_role != "admin" and tier in ADMIN_TIERS:
+        tier = "basic"
     try:
         result = await api_key_service.create_api_key(
             db=db,
             user_id=str(current_user.get("id")),
-            name=request.name,
-            scopes=request.scopes,
-            tier=request.tier,
+            name=sanitize_text(request.name, 100),
+            scopes=scopes,
+            tier=tier,
             expires_in_days=request.expires_in_days,
             ip_whitelist=request.ip_whitelist,
-            description=request.description
+            description=sanitize_text(request.description, 500) if request.description else None
         )
         return result
     except ValueError as e:

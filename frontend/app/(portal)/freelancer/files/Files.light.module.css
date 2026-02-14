@@ -1,0 +1,270 @@
+/* @AI-HINT: Freelancer file management light theme colors */
+
+.container {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+.title {
+  color: #0f172a;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Stats */
+.statCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.statIcon {
+  background: #eff6ff;
+  color: #4573df;
+}
+
+.statLabel {
+  color: #64748b;
+}
+
+.statValue {
+  color: #0f172a;
+}
+
+/* Filter */
+.searchInput {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.searchInput:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.filterSelect {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.viewToggle {
+  border-color: #e2e8f0;
+}
+
+.viewBtn {
+  background: #ffffff;
+  color: #64748b;
+}
+
+.viewBtn:hover {
+  background: #f1f5f9;
+}
+
+.viewBtnActive {
+  background: #4573df;
+  color: #ffffff;
+}
+
+/* Breadcrumb */
+.breadcrumbBtn {
+  color: #4573df;
+}
+
+.breadcrumbBtn:hover {
+  background: #eff6ff;
+}
+
+.breadcrumbSep {
+  color: #94a3b8;
+}
+
+.breadcrumbCurrent {
+  color: #0f172a;
+}
+
+/* Table */
+.fileTable th {
+  color: #64748b;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.fileTable td {
+  border-color: #f1f5f9;
+  color: #475569;
+}
+
+.fileTable tr:hover {
+  background: #f8fafc;
+}
+
+.fileName {
+  color: #0f172a;
+}
+
+.actionBtn:hover {
+  background: #f1f5f9;
+  color: #4573df;
+}
+
+/* Card */
+.fileCardWrapper {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.fileCardWrapper:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #cbd5e1;
+}
+
+.fileCardPreview {
+  background: #f1f5f9;
+}
+
+.fileCardName {
+  color: #0f172a;
+}
+
+.fileCardMeta {
+  color: #94a3b8;
+}
+
+.fileCardActions {
+  border-color: #f1f5f9;
+}
+
+/* Empty State */
+.emptyState {
+  color: #64748b;
+}
+
+.emptyTitle {
+  color: #0f172a;
+}
+
+/* Modal */
+.modal {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modalContent {
+  background: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  border-color: #e2e8f0;
+}
+
+.modalHeader h2 {
+  color: #0f172a;
+}
+
+.closeBtn {
+  color: #64748b;
+}
+
+.closeBtn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.modalFooter {
+  border-color: #e2e8f0;
+}
+
+/* Dropzone */
+.dropzone {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.dropzone:hover {
+  border-color: #4573df;
+  background: #eff6ff;
+}
+
+.dropzoneActive {
+  border-color: #4573df;
+  background: #eff6ff;
+}
+
+.dropzoneText {
+  color: #0f172a;
+}
+
+.dropzoneHint {
+  color: #94a3b8;
+}
+
+/* Upload Item */
+.uploadItem {
+  background: #f8fafc;
+}
+
+.uploadItemName {
+  color: #0f172a;
+}
+
+.uploadItemSize {
+  color: #94a3b8;
+}
+
+.progressBar {
+  background: #e2e8f0;
+}
+
+.progressFill {
+  background: #4573df;
+}
+
+.uploadItemRemove {
+  color: #dc2626;
+}
+
+.uploadItemRemove:hover {
+  background: #fee2e2;
+}
+
+/* Form */
+.formGroup label {
+  color: #374151;
+}
+
+.input,
+.textarea {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+.tagBadge {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+/* Context Menu */
+.contextMenu {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.contextMenuItem {
+  color: #475569;
+}
+
+.contextMenuItem:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}

@@ -581,7 +581,16 @@ export function buildPersonJsonLd(person: {
   image?: string;
   path: string;
   skills?: string[];
+  socialUrls?: string[];
+  languages?: string[];
+  tools?: string[];
 }) {
+  const sameAs = (person.socialUrls || []).filter(Boolean);
+  const knowsAbout = [
+    ...(person.skills || []),
+    ...(person.tools || []),
+  ].filter(Boolean);
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -590,7 +599,9 @@ export function buildPersonJsonLd(person: {
     description: person.description,
     ...(person.image ? { image: toAbsoluteUrl(person.image) } : {}),
     url: toAbsoluteUrl(person.path),
-    ...(person.skills ? { knowsAbout: person.skills } : {}),
+    ...(knowsAbout.length > 0 ? { knowsAbout } : {}),
+    ...(sameAs.length > 0 ? { sameAs } : {}),
+    ...(person.languages && person.languages.length > 0 ? { knowsLanguage: person.languages } : {}),
     memberOf: {
       '@type': 'Organization',
       name: SITE_NAME,

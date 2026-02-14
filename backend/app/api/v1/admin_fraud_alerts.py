@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from app.core.security import get_current_user, check_admin_role
 from app.db.session import get_db
 from app.models import User
+from app.services.db_utils import paginate_params
 
 router = APIRouter()
 
@@ -20,18 +21,19 @@ class FraudAlertUpdate(BaseModel):
 @router.get("")
 async def list_fraud_alerts(
     user: User = Depends(get_current_user),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=100),
     status: Optional[str] = Query(None),
     severity: Optional[str] = Query(None),
 ):
     """List fraud alerts (mock implementation)"""
     check_admin_role(user)
+    offset, limit = paginate_params(page, page_size)
     return {
         "alerts": [],
         "total": 0,
-        "skip": skip,
-        "limit": limit,
+        "page": page,
+        "page_size": page_size,
         "message": "Mock implementation - FraudAlert model pending"
     }
 

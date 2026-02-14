@@ -128,7 +128,6 @@ async def match_freelancers_to_project(
             matches.append({
                 "freelancer_id": fl["freelancer_id"],
                 "name": fl["name"],
-                "email": fl["email"],
                 "skills": freelancer_skills,
                 "hourly_rate": fl["hourly_rate"],
                 "rating": fl["rating"],
@@ -588,7 +587,7 @@ async def generate_proposal(
         expertise = "transforming data into actionable insights"
     elif "design" in desc_lower or "ui" in desc_lower:
         project_type = "design"
-        expertise = "creating visually stunning and functional designs"
+        expertise = "creating visually polished and functional designs"
     else:
         project_type = "software development"
         expertise = "delivering high-quality technical solutions"

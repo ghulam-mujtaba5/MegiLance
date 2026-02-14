@@ -1,11 +1,11 @@
-// @AI-HINT: This is the modernized client projects page, using the new ProjectCard, custom controls, and a clean, responsive layout.
+// @AI-HINT: Corporate client projects page with KPI summary, enterprise controls, and polished card grid
 'use client';
 
 import React, { useState, useMemo } from 'react';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Download, Search, AlertTriangle, SearchX } from 'lucide-react';
+import { PlusCircle, Download, Search, AlertTriangle, SearchX, Briefcase, CheckCircle2, Clock, TrendingUp } from 'lucide-react';
 import { useClientData } from '@/hooks/useClient';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
@@ -97,6 +97,15 @@ const Projects: React.FC = () => {
     return sortedProjects.slice(start, start + itemsPerPage);
   }, [sortedProjects, currentPage, itemsPerPage]);
 
+  // KPI calculations
+  const kpis = useMemo(() => {
+    const total = projects.length;
+    const active = projects.filter(p => p.status === 'In Progress').length;
+    const completed = projects.filter(p => p.status === 'Completed').length;
+    const totalBudget = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
+    return { total, active, completed, totalBudget };
+  }, [projects]);
+
   if (error) {
     return <EmptyState title="Error" description="Failed to load projects. Please try again later." icon={<AlertTriangle size={48} />} animationData={errorAlertAnimation} animationWidth={120} animationHeight={120} />;
   }
@@ -123,9 +132,38 @@ const Projects: React.FC = () => {
                 a.click();
                 URL.revokeObjectURL(url);
               }}>Export</Button>
-              <Button iconBefore={<PlusCircle size={16} />} onClick={() => router.push('/portal/client/projects/create')}>New Project</Button>
+              <Button iconBefore={<PlusCircle size={16} />} onClick={() => router.push('/client/post-job')}>New Project</Button>
             </div>
           </header>
+        </ScrollReveal>
+
+        {/* KPI Summary Strip */}
+        <ScrollReveal delay={0.05}>
+          <div className={cn(common.kpiStrip, themed.kpiStrip)}>
+            <div className={cn(common.kpiItem, themed.kpiItem)}>
+              <Briefcase size={16} className={common.kpiIcon} />
+              <span className={cn(common.kpiValue, themed.kpiValue)}>{kpis.total}</span>
+              <span className={cn(common.kpiLabel, themed.kpiLabel)}>Total</span>
+            </div>
+            <div className={cn(common.kpiDivider, themed.kpiDivider)} />
+            <div className={cn(common.kpiItem, themed.kpiItem)}>
+              <Clock size={16} className={common.kpiIcon} />
+              <span className={cn(common.kpiValue, themed.kpiValue)}>{kpis.active}</span>
+              <span className={cn(common.kpiLabel, themed.kpiLabel)}>Active</span>
+            </div>
+            <div className={cn(common.kpiDivider, themed.kpiDivider)} />
+            <div className={cn(common.kpiItem, themed.kpiItem)}>
+              <CheckCircle2 size={16} className={common.kpiIcon} />
+              <span className={cn(common.kpiValue, themed.kpiValue)}>{kpis.completed}</span>
+              <span className={cn(common.kpiLabel, themed.kpiLabel)}>Completed</span>
+            </div>
+            <div className={cn(common.kpiDivider, themed.kpiDivider)} />
+            <div className={cn(common.kpiItem, themed.kpiItem)}>
+              <TrendingUp size={16} className={common.kpiIcon} />
+              <span className={cn(common.kpiValue, themed.kpiValue)}>${kpis.totalBudget.toLocaleString()}</span>
+              <span className={cn(common.kpiLabel, themed.kpiLabel)}>Total Budget</span>
+            </div>
+          </div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
@@ -138,15 +176,20 @@ const Projects: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={common.searchInput}
             />
-            <div className={common.filters}>
-              <Select id="status-filter" aria-label="Filter by status" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
-              <Select
-                id="sort-key"
-                aria-label="Sort projects by"
-                options={SORT_OPTIONS}
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as 'updatedAt' | 'title' | 'budget' | 'progress')}
-              />
+            <div className={common.filtersRow}>
+              <span className={cn(common.resultsCount, themed.resultsCount)}>
+                {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
+              </span>
+              <div className={common.filters}>
+                <Select id="status-filter" aria-label="Filter by status" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
+                <Select
+                  id="sort-key"
+                  aria-label="Sort projects by"
+                  options={SORT_OPTIONS}
+                  value={sortKey}
+                  onChange={(e) => setSortKey(e.target.value as 'updatedAt' | 'title' | 'budget' | 'progress')}
+                />
+              </div>
             </div>
           </div>
         </ScrollReveal>

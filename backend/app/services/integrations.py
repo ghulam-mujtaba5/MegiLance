@@ -1,15 +1,5 @@
 # @AI-HINT: Third-party integrations hub for Slack, GitHub, Jira, etc.
-"""
-Integrations Hub Service - Third-party service integrations.
-
-Features:
-- OAuth-based integrations
-- Slack notifications
-- GitHub project sync
-- Jira issue linking
-- Trello board sync
-- Google Calendar integration
-"""
+"""Integrations Hub Service - Third-party service integrations."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

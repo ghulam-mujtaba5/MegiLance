@@ -161,12 +161,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, toggleSidebar, userType,
 
       <footer className={cn(commonStyles.sidebarFooter, themeStyles.sidebarFooter)}>
         <div className={cn(commonStyles.userInfo, themeStyles.userInfo)}>
-          <UserAvatar 
-            src={user?.avatar} 
-            name={user?.name || 'User'} 
-            size="large" 
-            className={commonStyles.avatar} 
-          />
+          <div className={commonStyles.avatarWrapper}>
+            <UserAvatar 
+              src={user?.avatar} 
+              name={user?.name || 'User'} 
+              size="large" 
+              className={commonStyles.avatar} 
+            />
+            <span className={commonStyles.onlineDot} aria-label="Online" />
+          </div>
           <div
             className={cn(
               commonStyles.userDetails,

@@ -1,26 +1,14 @@
 # @AI-HINT: AI writing assistant for proposals and descriptions
-"""
-AI Writing Assistant Service - AI-powered content generation and enhancement.
-
-Features:
-- Proposal writing assistance
-- Project description optimization
-- Profile bio generation
-- Message drafting
-- Content improvement suggestions
-- Tone adjustment
-- Grammar and style checking
-"""
+"""AI Writing Assistant Service - AI-powered content generation and enhancement."""
 
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from enum import Enum
 import uuid
-import random
 
 
-class ContentType(str, Enum):
+class WritingContentType(str, Enum):
     PROPOSAL = "proposal"
     PROJECT_DESCRIPTION = "project_description"
     PROFILE_BIO = "profile_bio"
@@ -86,7 +74,7 @@ Best regards"""
         
         return {
             "id": str(uuid.uuid4()),
-            "content_type": ContentType.PROPOSAL.value,
+            "content_type": WritingContentType.PROPOSAL.value,
             "content": proposal,
             "tone": tone.value,
             "word_count": len(proposal.split()),
@@ -134,7 +122,7 @@ We're looking forward to reviewing your proposals and finding the right partner 
         
         return {
             "id": str(uuid.uuid4()),
-            "content_type": ContentType.PROJECT_DESCRIPTION.value,
+            "content_type": WritingContentType.PROJECT_DESCRIPTION.value,
             "content": description,
             "tone": tone.value,
             "word_count": len(description.split()),
@@ -163,7 +151,7 @@ We're looking forward to reviewing your proposals and finding the right partner 
 
 **What Sets Me Apart:**
 
-✓ Proven track record with {random.randint(50, 200)}+ successful projects
+✓ Proven track record with {experience_years * 10}+ successful projects
 ✓ Clear communication and timely delivery
 ✓ Client satisfaction is my top priority
 ✓ Always staying updated with the latest trends
@@ -174,7 +162,7 @@ Let's collaborate and bring your vision to life! I'm available for both short-te
         
         return {
             "id": str(uuid.uuid4()),
-            "content_type": ContentType.PROFILE_BIO.value,
+            "content_type": WritingContentType.PROFILE_BIO.value,
             "content": bio,
             "tone": tone.value,
             "word_count": len(bio.split()),
@@ -241,7 +229,7 @@ Best regards"""
         
         return {
             "id": str(uuid.uuid4()),
-            "content_type": ContentType.MESSAGE.value,
+            "content_type": WritingContentType.MESSAGE.value,
             "content": message,
             "intent": intent,
             "tone": tone.value,
@@ -281,7 +269,7 @@ Best regards"""
         self,
         user_id: int,
         content: str,
-        content_type: ContentType,
+        content_type: WritingContentType,
         improvements: List[str] = None  # clarity, grammar, tone, length
     ) -> Dict[str, Any]:
         """Improve existing content."""
@@ -366,8 +354,8 @@ Best regards"""
         timeline_days: int
     ) -> Dict[str, Any]:
         """Analyze project feasibility."""
-        # Mock logic for now
-        complexity_score = random.randint(1, 10)
+        # STUB: Replace with ML-based complexity analysis
+        complexity_score = min(10, max(1, len(project_description.split()) // 50))
         budget_realism = "High" if budget_max > 1000 else "Low"
         timeline_realism = "Realistic" if timeline_days > 7 else "Tight"
         
@@ -397,7 +385,7 @@ Best regards"""
                 "reading_time_minutes": len(words) / 200
             },
             "readability": {
-                "score": random.randint(60, 90),
+                "score": min(100, max(0, 100 - int(len(words) / max(len(sentences), 1) * 2))),
                 "level": "Professional",
                 "grade_level": "12th grade"
             },
@@ -452,35 +440,35 @@ Best regards"""
     # Templates
     async def get_writing_templates(
         self,
-        content_type: Optional[ContentType] = None
+        content_type: Optional[WritingContentType] = None
     ) -> List[Dict[str, Any]]:
         """Get writing templates."""
         templates = [
             {
                 "id": "tpl-proposal-1",
                 "name": "Professional Proposal",
-                "content_type": ContentType.PROPOSAL.value,
+                "content_type": WritingContentType.PROPOSAL.value,
                 "structure": ["greeting", "introduction", "qualifications", "approach", "timeline", "closing"],
                 "variables": ["client_name", "project_name", "skills", "rate"]
             },
             {
                 "id": "tpl-proposal-2",
                 "name": "Concise Proposal",
-                "content_type": ContentType.PROPOSAL.value,
+                "content_type": WritingContentType.PROPOSAL.value,
                 "structure": ["greeting", "value_proposition", "cta"],
                 "variables": ["client_name", "key_benefit"]
             },
             {
                 "id": "tpl-bio-1",
                 "name": "Developer Bio",
-                "content_type": ContentType.PROFILE_BIO.value,
+                "content_type": WritingContentType.PROFILE_BIO.value,
                 "structure": ["intro", "expertise", "achievements", "cta"],
                 "variables": ["name", "role", "years", "skills"]
             },
             {
                 "id": "tpl-desc-1",
                 "name": "Project Brief",
-                "content_type": ContentType.PROJECT_DESCRIPTION.value,
+                "content_type": WritingContentType.PROJECT_DESCRIPTION.value,
                 "structure": ["overview", "requirements", "deliverables", "timeline"],
                 "variables": ["project_type", "features", "budget"]
             }

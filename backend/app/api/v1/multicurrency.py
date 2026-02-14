@@ -75,8 +75,8 @@ async def list_currencies(
     try:
         currencies = await currency_service.get_supported_currencies()
         return [CurrencyInfo(**curr) for curr in currencies]
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to fetch currencies")
 
 
 @router.get("/cryptocurrencies", response_model=List[CurrencyInfo])
@@ -87,8 +87,8 @@ async def list_cryptocurrencies(
     try:
         cryptos = await currency_service.get_supported_cryptocurrencies()
         return [CurrencyInfo(**crypto) for crypto in cryptos]
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to fetch cryptocurrencies")
 
 
 # Exchange Rates
@@ -107,8 +107,8 @@ async def get_exchange_rate(
         return ExchangeRateResponse(**rate_data)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to fetch exchange rate")
 
 
 # Currency Conversion
@@ -127,8 +127,8 @@ async def convert_currency(
         return ConversionResponse(**conversion)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Currency conversion failed")
 
 
 # Payments
@@ -145,14 +145,13 @@ async def create_payment(
             currency=request.currency.upper(),
             sender_id=str(current_user.id),
             recipient_id=request.recipient_id,
-            description=request.description,
-            db=db
+            description=request.description
         )
         return PaymentResponse(**payment)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Payment creation failed")
 
 
 @router.post("/crypto-payment", response_model=PaymentResponse, status_code=status.HTTP_201_CREATED)
@@ -184,8 +183,8 @@ async def create_crypto_payment(
         return PaymentResponse(**payment)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Crypto payment creation failed")
 
 
 # Price Suggestions
@@ -205,8 +204,8 @@ async def get_price_suggestion(
             currency=currency.upper()
         )
         return suggestion
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Price suggestion failed")
 
 
 # Payment History
@@ -225,8 +224,8 @@ async def get_payment_history(
             offset=offset
         )
         return {"payments": history, "total": len(history)}
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to fetch payment history")
 
 
 # Instant Payout
@@ -247,5 +246,5 @@ async def request_payout(
         return payout
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Payout request failed")

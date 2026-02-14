@@ -1,15 +1,5 @@
 # @AI-HINT: Content moderation service for safety and compliance
-"""
-Content Moderation Service - AI-powered content safety.
-
-Features:
-- Text content analysis
-- Profanity filtering
-- Spam detection
-- Image moderation
-- Report handling
-- User reputation
-"""
+"""Content Moderation Service - AI-powered content safety."""
 
 import logging
 import re
@@ -23,7 +13,7 @@ import secrets
 logger = logging.getLogger(__name__)
 
 
-class ContentType(str, Enum):
+class ModerationContentType(str, Enum):
     """Content types for moderation."""
     TEXT = "text"
     IMAGE = "image"
@@ -93,9 +83,13 @@ class ContentModerationService:
     Provides AI-powered content safety checks and reporting.
     """
     
+    # TODO: migrate in-memory stores to database for persistence and scalability
+    _MAX_LOGS = 5000
+    _MAX_REPORTS = 2000
+    _MAX_VIOLATIONS_PER_USER = 100
+
     def __init__(self, db: Session):
         self.db = db
-        # In-memory storage
         self._moderation_logs: List[Dict[str, Any]] = []
         self._reports: Dict[str, Dict[str, Any]] = {}
         self._user_violations: Dict[int, List[Dict[str, Any]]] = defaultdict(list)
@@ -105,7 +99,7 @@ class ContentModerationService:
     async def moderate_text(
         self,
         text: str,
-        content_type: ContentType,
+        content_type: ModerationContentType,
         user_id: Optional[int] = None,
         context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
@@ -185,6 +179,8 @@ class ContentModerationService:
         }
         
         self._moderation_logs.append(log_entry)
+        if len(self._moderation_logs) > self._MAX_LOGS:
+            self._moderation_logs = self._moderation_logs[-self._MAX_LOGS:]
         
         # Track user violations
         if user_id and violations:
@@ -202,7 +198,7 @@ class ContentModerationService:
         self,
         reporter_id: int,
         reported_user_id: int,
-        content_type: ContentType,
+        content_type: ModerationContentType,
         content_id: str,
         violation_type: ViolationType,
         description: str
@@ -225,6 +221,9 @@ class ContentModerationService:
             "moderator_notes": None
         }
         
+        if len(self._reports) >= self._MAX_REPORTS:
+            oldest_key = next(iter(self._reports))
+            del self._reports[oldest_key]
         self._reports[report_id] = report
         
         logger.info(f"Content report submitted: {report_id}")
@@ -385,11 +384,11 @@ class ContentModerationService:
     def _check_pii(
         self,
         text: str,
-        content_type: ContentType
+        content_type: ModerationContentType
     ) -> List[str]:
         """Check for personal information."""
         # Only flag PII in public contexts
-        if content_type not in [ContentType.PROJECT, ContentType.PROFILE, ContentType.REVIEW]:
+        if content_type not in [ModerationContentType.PROJECT, ModerationContentType.PROFILE, ModerationContentType.REVIEW]:
             return []
         
         found = []
@@ -426,6 +425,9 @@ class ContentModerationService:
     ) -> None:
         """Track user violations and update reputation."""
         for violation in violations:
+            violations_list = self._user_violations[user_id]
+            if len(violations_list) >= self._MAX_VIOLATIONS_PER_USER:
+                self._user_violations[user_id] = violations_list[-self._MAX_VIOLATIONS_PER_USER + 1:]
             self._user_violations[user_id].append({
                 **violation,
                 "timestamp": datetime.now(timezone.utc).isoformat()

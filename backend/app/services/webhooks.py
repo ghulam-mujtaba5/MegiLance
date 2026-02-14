@@ -1,15 +1,5 @@
 # @AI-HINT: Webhook management service for third-party integrations
-"""
-Webhook Service - Outbound webhook management.
-
-Features:
-- Webhook registration
-- Event subscription
-- Delivery management
-- Retry logic
-- Signature verification
-- Delivery logs
-"""
+"""Webhook Service - Outbound webhook management."""
 
 import logging
 import hashlib

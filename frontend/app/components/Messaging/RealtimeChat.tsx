@@ -1,11 +1,13 @@
-// @AI-HINT: Real-time chat component using WebSocket
+// @AI-HINT: Real-time chat component using WebSocket with read receipts and typing indicators
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { useWebSocket } from '@/hooks/useWebSocket';
-import { SendHorizontal, Circle } from 'lucide-react';
+import { useTypingIndicator } from '@/hooks/useTypingIndicator';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { SendHorizontal, Circle, Check, CheckCheck } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 
@@ -19,23 +21,35 @@ interface ChatMessage {
   sender_name: string;
   message: string;
   timestamp: string;
+  read_by?: string[];
+  read_at?: string;
 }
 
 interface RealtimeChatProps {
   roomId: string;
+  conversationId: number;
   currentUserId: string;
   currentUserName: string;
+  otherUserId?: number;
+  otherUserName?: string;
 }
 
-const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomId, currentUserId, currentUserName }) => {
+const RealtimeChat: React.FC<RealtimeChatProps> = ({
+  roomId,
+  conversationId,
+  currentUserId,
+  currentUserName,
+  otherUserId,
+  otherUserName,
+}) => {
   const { resolvedTheme } = useTheme();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { connected, on, off, joinRoom, leaveRoom, sendMessage, send } = useWebSocket();
+  const { connected, on, off, joinRoom, leaveRoom, sendMessage, sendReadReceipt } = useWebSocket();
+  const { typingUsers, isAnyoneTyping, getTypingText, sendTyping, stopTyping } = useTypingIndicator(conversationId);
+  const { isOnline } = useOnlineStatus(otherUserId ? [otherUserId] : []);
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
   const styles = {
@@ -58,41 +72,40 @@ const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomId, currentUserId, curr
     if (connected) {
       joinRoom(roomId);
 
-      // Listen for messages
       const handleMessage = (data: ChatMessage) => {
         setMessages((prev) => [...prev, data]);
-      };
-
-      // Listen for typing events
-      const handleTyping = (data: { user_name: string }) => {
-        if (data.user_name !== currentUserName) {
-          setTypingUsers((prev) => {
-            if (!prev.includes(data.user_name)) {
-              return [...prev, data.user_name];
-            }
-            return prev;
-          });
-          
-          // Remove typing indicator after 3 seconds
-          setTimeout(() => {
-            setTypingUsers((prev) => prev.filter((name) => name !== data.user_name));
-          }, 3000);
+        // Send read receipt for messages from others
+        if (data.sender_id !== currentUserId && data.id) {
+          sendReadReceipt(parseInt(data.id), conversationId);
         }
       };
 
+      const handleReadReceipt = (data: { message_id: string; read_by: string; read_at: string }) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === data.message_id
+              ? {
+                  ...msg,
+                  read_by: [...(msg.read_by || []), data.read_by],
+                  read_at: data.read_at,
+                }
+              : msg
+          )
+        );
+      };
+
       on('message', handleMessage);
-      on('user_typing', handleTyping);
+      on('read_receipt', handleReadReceipt);
 
       return () => {
         off('message', handleMessage);
-        off('user_typing', handleTyping);
+        off('read_receipt', handleReadReceipt);
         leaveRoom(roomId);
       };
     }
-  }, [connected, roomId, currentUserName, joinRoom, leaveRoom, on, off]);
+  }, [connected, roomId, currentUserId, conversationId, joinRoom, leaveRoom, on, off, sendReadReceipt]);
 
   useEffect(() => {
-    // Scroll to bottom when new messages arrive
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
@@ -104,28 +117,47 @@ const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomId, currentUserId, curr
       sender_name: currentUserName,
     });
 
+    stopTyping(conversationId, parseInt(currentUserId));
     setNewMessage('');
   };
 
-  const handleTyping = () => {
-    // Send typing event
-    send('typing', { room: roomId, user_name: currentUserName });
-
-    // Clear existing timeout
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-
-    // Set new timeout to stop typing indicator
-    typingTimeoutRef.current = setTimeout(() => {
-      send('stop_typing', { room: roomId, user_name: currentUserName });
-    }, 1000);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(e.target.value);
+    sendTyping(conversationId, parseInt(currentUserId), currentUserName);
   };
+
+  const getReadStatus = (msg: ChatMessage) => {
+    if (msg.sender_id !== currentUserId) return null;
+    if (msg.read_by && msg.read_by.length > 0) {
+      return (
+        <span title={`Read${msg.read_at ? ` at ${new Date(msg.read_at).toLocaleTimeString()}` : ''}`}>
+          <CheckCheck size={14} style={{ color: '#4573df' }} />
+        </span>
+      );
+    }
+    return (
+      <span title="Sent">
+        <Check size={14} style={{ opacity: 0.5 }} />
+      </span>
+    );
+  };
+
+  const otherOnline = otherUserId ? isOnline(otherUserId) : false;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2 className={styles.title}>Chat</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h2 className={styles.title}>{otherUserName || 'Chat'}</h2>
+          {otherUserId && (
+            <span style={{
+              fontSize: 12,
+              color: otherOnline ? '#22c55e' : '#9ca3af',
+            }}>
+              {otherOnline ? 'Online' : 'Offline'}
+            </span>
+          )}
+        </div>
         <div className={styles.status}>
           <Circle className={connected ? 'text-green-500' : 'text-gray-400'} size={10} fill={connected ? '#22c55e' : '#9ca3af'} />
           <span>{connected ? 'Connected' : 'Disconnected'}</span>
@@ -145,14 +177,15 @@ const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomId, currentUserId, curr
               <div className={styles.messageSender}>{msg.sender_name}</div>
             )}
             <div className={styles.messageText}>{msg.message}</div>
-            <div className={styles.messageTime}>
+            <div className={styles.messageTime} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {getReadStatus(msg)}
             </div>
           </div>
         ))}
-        {typingUsers.length > 0 && (
+        {isAnyoneTyping && (
           <div className={styles.typing}>
-            {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+            {getTypingText()}
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -164,10 +197,7 @@ const RealtimeChat: React.FC<RealtimeChatProps> = ({ roomId, currentUserId, curr
           type="text"
           placeholder="Type a message..."
           value={newMessage}
-          onChange={(e) => {
-            setNewMessage(e.target.value);
-            handleTyping();
-          }}
+          onChange={handleInputChange}
           onKeyPress={(e) => {
             if (e.key === 'Enter') {
               handleSend();

@@ -1,5 +1,4 @@
-// Thin wrapper to preserve legacy import path '@/app/components/Logo/Logo'
-// Re-exports the MegiLanceLogo component.
+// @AI-HINT: Legacy import wrapper re-exporting MegiLanceLogo for backwards compatibility
 'use client';
 import React from 'react';
 import MegiLanceLogo from '@/app/components/MegiLanceLogo/MegiLanceLogo';

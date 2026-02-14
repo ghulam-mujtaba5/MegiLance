@@ -1,4 +1,4 @@
-/* AI-HINT: Premium page transition wrapper. Per-component CSS (common/light/dark). Animates route changes subtly and efficiently. */
+// @AI-HINT: Premium page transition wrapper for smooth route change effects using per-component CSS modules
 'use client';
 
 import React from 'react';

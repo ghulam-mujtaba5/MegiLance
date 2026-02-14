@@ -21,9 +21,12 @@ import json
 import secrets
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, decode_token
+from app.core.config import get_settings
 from app.models.user import User
 from app.services import video_communication_service as vc_service
+
+settings = get_settings()
 
 router = APIRouter(prefix="/video", tags=["video"])
 
@@ -90,9 +93,9 @@ class WebRTCService:
         ]
         self.turn_servers = [
             {
-                "urls": "turn:turn.megilance.com:3478",
-                "username": "megilance",
-                "credential": "secretpassword"
+                "urls": getattr(settings, 'TURN_SERVER_URL', 'turn:turn.megilance.com:3478'),
+                "username": getattr(settings, 'TURN_USERNAME', 'megilance'),
+                "credential": getattr(settings, 'TURN_CREDENTIAL', '')
             }
         ]
 
@@ -299,7 +302,21 @@ manager = ConnectionManager()
 
 @router.websocket("/ws/{room_id}")
 async def websocket_signaling(websocket: WebSocket, room_id: str):
-    """WebSocket endpoint for WebRTC signaling"""
+    """WebSocket endpoint for WebRTC signaling (requires token auth)"""
+    # Authenticate via query parameter token
+    token = websocket.query_params.get("token")
+    if not token:
+        await websocket.close(code=4001, reason="Missing authentication token")
+        return
+    try:
+        payload = decode_token(token)
+        if not payload or not payload.get("sub"):
+            await websocket.close(code=4001, reason="Invalid token")
+            return
+    except Exception:
+        await websocket.close(code=4001, reason="Invalid token")
+        return
+
     await manager.connect(room_id, websocket)
 
     try:

@@ -1,14 +1,5 @@
 # @AI-HINT: Templates service for reusable project/proposal/contract templates
-"""
-Templates Service - Reusable template management.
-
-Features:
-- Project templates
-- Proposal templates
-- Contract templates
-- Milestone templates
-- Template marketplace
-"""
+"""Templates Service - Reusable template management."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

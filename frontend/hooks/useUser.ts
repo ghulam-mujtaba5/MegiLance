@@ -3,6 +3,19 @@ import api from '@/lib/api';
 
 // @AI-HINT: Hook to fetch current user profile from /api/auth/me endpoint.
 
+/** Shape returned by /api/auth/me — includes optional legacy/alias fields */
+interface MeResponse {
+  id: number | string;
+  name?: string;
+  full_name?: string;
+  email: string;
+  role?: string;
+  user_type?: string;
+  profile_image_url?: string;
+  avatar_url?: string;
+  notification_count?: number;
+}
+
 export type CurrentUser = {
   id: number;
   name: string;
@@ -26,22 +39,22 @@ export function useUser() {
       setLoading(true);
       setError(null);
       try {
-        const userData = await api.auth.me();
+        const userData = await api.auth.me() as MeResponse;
         if (isMounted) {
-          const name = userData.name || (userData as any).full_name || 'User';
+          const name = userData.name || userData.full_name || 'User';
           setUser({
             id: Number(userData.id),
             name,
             fullName: name,
             email: userData.email,
-            avatar: (userData as any).profile_image_url || (userData as any).avatar_url || '/images/avatars/avatar-1.png',
-            profile_image_url: (userData as any).profile_image_url,
-            user_type: userData.role || (userData as any).user_type || 'client',
-            notificationCount: (userData as any).notification_count || 0,
+            avatar: userData.profile_image_url || userData.avatar_url || '/images/avatars/avatar-1.png',
+            profile_image_url: userData.profile_image_url,
+            user_type: userData.role || userData.user_type || 'client',
+            notificationCount: userData.notification_count || 0,
           });
         }
-      } catch (err: any) {
-        if (isMounted) setError(err?.message ?? 'Failed to load user');
+      } catch (err: unknown) {
+        if (isMounted) setError(err instanceof Error ? err.message : 'Failed to load user');
       } finally {
         if (isMounted) setLoading(false);
       }

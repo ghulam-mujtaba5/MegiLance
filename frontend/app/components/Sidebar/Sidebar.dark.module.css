@@ -63,6 +63,10 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
+.onlineDot {
+  border-color: #0f1419;
+}
+
 .userName {
   color: #f1f3f5;
 }

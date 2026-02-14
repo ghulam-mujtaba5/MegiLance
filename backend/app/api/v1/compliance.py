@@ -18,7 +18,7 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.services.compliance import (
     get_compliance_service,
     ComplianceFramework,
@@ -259,7 +259,8 @@ async def update_cookie_preferences(
 async def create_privacy_impact_assessment(
     request: PIARequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """Create a privacy impact assessment."""
     service = get_compliance_service(db)
@@ -279,7 +280,8 @@ async def generate_compliance_report(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """Generate compliance report."""
     service = get_compliance_service(db)

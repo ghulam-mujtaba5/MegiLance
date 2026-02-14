@@ -6,115 +6,173 @@ Turso remote database ONLY - no local fallback.
 """
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from typing import Optional, List, Dict, Any
-from functools import lru_cache
+from collections import OrderedDict
 import time
 import threading
+import logging
 from app.core.config import get_settings
 
-# Simple TTL cache for read queries
-_query_cache: Dict[str, tuple] = {}  # key -> (result, timestamp)
+logger = logging.getLogger(__name__)
+
+# Thread-safe LRU TTL cache for read queries
 _QUERY_CACHE_TTL = 30  # 30 seconds
 _QUERY_CACHE_MAX = 500
 _cache_lock = threading.Lock()
 
 
+class _LRUTTLCache:
+    """Thread-safe LRU cache with TTL expiry for query results."""
+
+    def __init__(self, max_size: int = _QUERY_CACHE_MAX, ttl: float = _QUERY_CACHE_TTL):
+        self._max_size = max_size
+        self._ttl = ttl
+        self._data: OrderedDict[str, tuple] = OrderedDict()  # key -> (result, timestamp)
+        self._lock = threading.Lock()
+
+    def get(self, key: str) -> Optional[Any]:
+        with self._lock:
+            item = self._data.get(key)
+            if item is None:
+                return None
+            result, ts = item
+            if time.time() - ts > self._ttl:
+                del self._data[key]
+                return None
+            # Move to end (most recently used)
+            self._data.move_to_end(key)
+            return result
+
+    def put(self, key: str, value: Any) -> None:
+        with self._lock:
+            if key in self._data:
+                self._data.move_to_end(key)
+                self._data[key] = (value, time.time())
+            else:
+                if len(self._data) >= self._max_size:
+                    self._data.popitem(last=False)  # Evict least recently used
+                self._data[key] = (value, time.time())
+
+    def invalidate_all(self) -> None:
+        with self._lock:
+            self._data.clear()
+
+    def __len__(self) -> int:
+        with self._lock:
+            return len(self._data)
+
+
+_query_cache = _LRUTTLCache()
+
+
 class TursoHTTP:
-    """Synchronous HTTP client for Turso remote database ONLY"""
+    """Thread-safe synchronous HTTP client for Turso remote database.
     
-    _instance = None
-    _url: str = None
-    _token: str = None
-    _initialized: bool = False
-    _session: requests.Session = None
+    Uses a singleton pattern with thread-safe initialization via double-checked
+    locking. The underlying requests.Session uses connection pooling with retries.
+    """
+    
+    _instance: Optional['TursoHTTP'] = None
+    _init_lock = threading.Lock()
+    
+    def __init__(self, url: str, token: str):
+        self._url = url
+        self._token = token
+        # Thread-safe requests.Session with connection pool and retry
+        self._session = requests.Session()
+        from app.core.config import get_settings
+        _settings = get_settings()
+        adapter = HTTPAdapter(
+            pool_connections=_settings.turso_pool_connections,
+            pool_maxsize=_settings.turso_pool_maxsize,
+            max_retries=Retry(
+                total=2,
+                backoff_factor=0.3,
+                status_forcelist=[502, 503, 504],
+                allowed_methods=["POST"],
+            ),
+        )
+        self._session.mount("https://", adapter)
+        self._session.mount("http://", adapter)
+        self._session.headers.update({
+            "Authorization": f"Bearer {self._token}",
+            "Content-Type": "application/json",
+        })
     
     @classmethod
     def reset_instance(cls):
         """Reset singleton instance - used when settings change"""
-        if cls._session:
-            cls._session.close()
-        cls._instance = None
-        cls._session = None
-        cls._initialized = False
+        with cls._init_lock:
+            if cls._instance is not None:
+                try:
+                    cls._instance._session.close()
+                except Exception:
+                    pass
+                cls._instance = None
+            _query_cache.invalidate_all()
     
     @classmethod
-    def get_instance(cls) -> Optional['TursoHTTP']:
-        """Get singleton instance of TursoHTTP client - Turso remote database ONLY"""
-        if cls._instance is None:
-            settings = get_settings()
-            cls._instance = cls()
+    def get_instance(cls) -> 'TursoHTTP':
+        """Get singleton instance with thread-safe double-checked locking."""
+        if cls._instance is not None:
+            return cls._instance
+        
+        with cls._init_lock:
+            # Double-check after acquiring lock
+            if cls._instance is not None:
+                return cls._instance
             
-            # Require Turso configuration
+            settings = get_settings()
+            
             if not settings.turso_database_url or not settings.turso_auth_token:
                 raise RuntimeError(
                     "Turso database not configured. "
                     "Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN environment variables."
                 )
             
-            # Check for placeholder tokens
             if "CHANGE_ME" in (settings.turso_auth_token or "") or len(settings.turso_auth_token or "") < 50:
                 raise RuntimeError(
                     "Invalid Turso auth token. "
                     "Please set a valid TURSO_AUTH_TOKEN in environment variables."
                 )
             
-            cls._url = settings.turso_database_url.replace("libsql://", "https://")
-            if not cls._url.endswith("/"):
-                cls._url += "/"
-            cls._token = settings.turso_auth_token
+            url = settings.turso_database_url.replace("libsql://", "https://")
+            if not url.endswith("/"):
+                url += "/"
             
-            # Persistent HTTP session for connection reuse (avoids TCP+TLS handshake per request)
-            cls._session = requests.Session()
-            cls._session.headers.update({
-                "Authorization": f"Bearer {cls._token}",
-                "Content-Type": "application/json",
-            })
+            cls._instance = cls(url, settings.turso_auth_token)
+            logger.info(f"Turso HTTP client initialized: {url[:50]}...")
             
-            print(f"[TURSO] HTTP client initialized: {cls._url[:50]}...")
-                
         return cls._instance
     
-    def execute(self, sql: str, params: List[Any] = None) -> Dict[str, Any]:
-        """
-        Execute a SQL query against Turso remote database.
-        SELECT queries are cached for _QUERY_CACHE_TTL seconds.
-        """
+    def execute(self, sql: str, params: Optional[List[Any]] = None) -> Dict[str, Any]:
+        """Execute a SQL query. SELECT queries are cached with LRU+TTL."""
         if params is None:
             params = []
         
-        # Cache SELECT queries
         sql_upper = sql.strip().upper()
         is_read = sql_upper.startswith("SELECT") or sql_upper.startswith("WITH")
         
         if is_read:
             cache_key = f"{sql}:{params}"
-            with _cache_lock:
-                cached = _query_cache.get(cache_key)
-                if cached:
-                    result, ts = cached
-                    if time.time() - ts < _QUERY_CACHE_TTL:
-                        return result
-                    else:
-                        del _query_cache[cache_key]
+            cached = _query_cache.get(cache_key)
+            if cached is not None:
+                return cached
         
         result = self._execute_remote(sql, params)
         
         if is_read:
-            with _cache_lock:
-                # Evict if over max
-                if len(_query_cache) >= _QUERY_CACHE_MAX:
-                    oldest_key = min(_query_cache, key=lambda k: _query_cache[k][1])
-                    del _query_cache[oldest_key]
-                _query_cache[cache_key] = (result, time.time())
+            _query_cache.put(cache_key, result)
         else:
-            # Write query — invalidate all cached reads
-            with _cache_lock:
-                _query_cache.clear()
+            # Write query — invalidate read cache to avoid stale data
+            _query_cache.invalidate_all()
         
         return result
 
     def _execute_remote(self, sql: str, params: List[Any]) -> Dict[str, Any]:
-        """Execute query against Turso HTTP API"""
+        """Execute query against Turso HTTP API with proper timeout."""
         response = self._session.post(
             self._url,
             json={
@@ -127,7 +185,7 @@ class TursoHTTP:
         )
         
         if response.status_code != 200:
-            raise Exception(f"Turso HTTP error: {response.status_code} - {response.text}")
+            raise Exception(f"Turso HTTP error: {response.status_code} - {response.text[:500]}")
         
         data = response.json()
         if not data or len(data) == 0:
@@ -140,7 +198,7 @@ class TursoHTTP:
         }
     
     def execute_many(self, statements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Execute multiple statements against Turso remote database"""
+        """Execute multiple statements in a batch against Turso."""
         response = self._session.post(
             self._url,
             json={"statements": statements},
@@ -148,7 +206,7 @@ class TursoHTTP:
         )
         
         if response.status_code != 200:
-            raise Exception(f"Turso HTTP error: {response.status_code} - {response.text}")
+            raise Exception(f"Turso HTTP error: {response.status_code} - {response.text[:500]}")
         
         data = response.json()
         results = []
@@ -158,20 +216,21 @@ class TursoHTTP:
                 "columns": result.get("columns", []),
                 "rows": result.get("rows", [])
             })
+        _query_cache.invalidate_all()
         return results
     
-    def fetch_one(self, sql: str, params: List[Any] = None) -> Optional[List[Any]]:
+    def fetch_one(self, sql: str, params: Optional[List[Any]] = None) -> Optional[List[Any]]:
         """Execute query and return first row or None"""
         result = self.execute(sql, params)
         rows = result.get("rows", [])
         return rows[0] if rows else None
     
-    def fetch_all(self, sql: str, params: List[Any] = None) -> List[List[Any]]:
+    def fetch_all(self, sql: str, params: Optional[List[Any]] = None) -> List[List[Any]]:
         """Execute query and return all rows"""
         result = self.execute(sql, params)
         return result.get("rows", [])
     
-    def fetch_scalar(self, sql: str, params: List[Any] = None) -> Any:
+    def fetch_scalar(self, sql: str, params: Optional[List[Any]] = None) -> Any:
         """Execute query and return single value"""
         row = self.fetch_one(sql, params)
         return row[0] if row else None

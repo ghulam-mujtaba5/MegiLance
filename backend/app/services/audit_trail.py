@@ -1,17 +1,5 @@
 # @AI-HINT: Comprehensive audit trail system for compliance and security
-"""
-Audit Trail Service - Complete audit logging and compliance system.
-
-Features:
-- All user actions logged
-- Data change tracking
-- IP and device tracking
-- Export for compliance
-- Search and filtering
-- Retention policies
-- Tamper-proof logging
-- GDPR compliance support
-"""
+"""Audit Trail Service - Complete audit logging and compliance system."""
 
 import logging
 import hashlib

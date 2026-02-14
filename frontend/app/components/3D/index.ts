@@ -1,8 +1,8 @@
-// @AI-HINT: 3D Components barrel export - Premium scroll-triggered 3D scenes with billionaire-level effects
+// @AI-HINT: 3D Components barrel export - Premium scroll-triggered 3D scenes with premium effects
 export * from './ThreeD';
 export { default as ThreeD } from './ThreeD';
 
-// Billionaire-level 3D Components
+// Premium 3D Components
 export {
   MagneticElement,
   AuroraWrapper,

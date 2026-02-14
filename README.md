@@ -10,9 +10,9 @@ description: High-level platform overview, quick start, architecture summary, an
 
 # MegiLance 2.0 🚀
 
-> @AI-HINT: Market-leading freelancing platform with cutting-edge features exceeding all major competitors
+> @AI-HINT: Full-stack freelancing platform — Next.js + FastAPI + Turso
 
-> **The World's Most Advanced AI-Powered Freelancing Platform**
+> **AI-Powered Freelancing Platform**
 
 [![Deploy Status](https://github.com/ghulam-mujtaba5/MegiLance/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/ghulam-mujtaba5/MegiLance/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -729,7 +729,7 @@ MIT License - See [LICENSE](LICENSE) for details
 
 ## 🙏 Acknowledgments
 
-**Built with cutting-edge technology:**
+**Built with:**
 - FastAPI & Next.js teams for excellent frameworks
 - Turso for distributed SQLite magic
 - CoinGecko & ExchangeRate-API for real-time rates
@@ -763,7 +763,7 @@ MIT License - See [LICENSE](LICENSE) for details
 
 # MegiLance Frontend
 
-A premium, investor-grade frontend for the MegiLance platform built with Next.js (App Router), TypeScript, CSS Modules, and a theme-aware design system.
+A premium, production-ready frontend for the MegiLance platform built with Next.js (App Router), TypeScript, CSS Modules, and a theme-aware design system.
 
 ## Vision
 - Pixel-perfect, modern UI matching products like Linear, Vercel, GitHub, Toptal, and Figma.

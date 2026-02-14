@@ -12,6 +12,9 @@ from app.models.user import User
 from app.models.skill import Skill
 from datetime import datetime
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class SearchService:
@@ -82,7 +85,7 @@ class SearchService:
                     else:
                         skills_list = project.skills
                     skills_text = " ".join(skills_list)
-                except:
+                except (json.JSONDecodeError, TypeError, ValueError):
                     skills_text = str(project.skills)
             
             # Insert new entry
@@ -102,7 +105,7 @@ class SearchService:
             self.db.commit()
         except Exception as e:
             self.db.rollback()
-            print(f"Error indexing project {project.id}: {e}")
+            logger.error("Failed to index project %s: %s", project.id, e)
     
     def index_user(self, user: User):
         """Index a user for full-text search"""
@@ -122,7 +125,7 @@ class SearchService:
                     else:
                         skills_list = user.skills
                     skills_text = " ".join(skills_list)
-                except:
+                except (json.JSONDecodeError, TypeError, ValueError):
                     skills_text = str(user.skills)
             
             # Insert new entry
@@ -142,7 +145,7 @@ class SearchService:
             self.db.commit()
         except Exception as e:
             self.db.rollback()
-            print(f"Error indexing user {user.id}: {e}")
+            logger.error("Failed to index user %s: %s", user.id, e)
     
     def index_skill(self, skill: Skill):
         """Index a skill for full-text search"""
@@ -169,7 +172,7 @@ class SearchService:
             self.db.commit()
         except Exception as e:
             self.db.rollback()
-            print(f"Error indexing skill {skill.id}: {e}")
+            logger.error("Failed to index skill %s: %s", skill.id, e)
     
     def search_projects(
         self,

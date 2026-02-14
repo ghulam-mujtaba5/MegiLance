@@ -112,6 +112,15 @@ _ALLOWED_USER_COLUMNS = frozenset({
     "profile_image_url", "location", "profile_data",
     "two_factor_enabled", "two_factor_secret", "two_factor_backup_codes",
     "account_balance", "phone", "company", "website", "updated_at",
+    # Enhanced profile fields
+    "tagline", "headline", "experience_level", "years_of_experience",
+    "languages", "timezone", "availability_status", "education", "certifications",
+    "work_history", "linkedin_url", "github_url", "website_url", "twitter_url",
+    "dribbble_url", "behance_url", "stackoverflow_url", "phone_number",
+    "video_intro_url", "resume_url", "availability_hours", "preferred_project_size",
+    "industry_focus", "tools_and_technologies", "achievements",
+    "testimonials_enabled", "contact_preferences", "profile_visibility",
+    "profile_slug", "profile_views", "seller_level",
 })
 
 

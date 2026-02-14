@@ -1,14 +1,5 @@
 # @AI-HINT: Activity feed service - timeline of user activities and platform events
-"""
-Activity Feed Service - User Activity Timeline & Social Features
-
-Features:
-- User activity timeline
-- Following/followers system
-- Activity aggregation
-- Privacy controls
-- Real-time updates
-"""
+"""Activity Feed Service - User Activity Timeline & Social Features."""
 
 import uuid
 from datetime import datetime, timedelta, timezone

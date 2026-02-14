@@ -10,6 +10,7 @@ import json
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.services import portal_service
+from app.services.db_utils import paginate_params
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -32,6 +33,9 @@ class FreelancerDashboardStats(BaseModel):
     pending_proposals: int
     success_rate: float
     average_rating: Optional[float]
+    profile_views: Optional[int] = 0
+    availability_status: Optional[str] = None
+    profile_completeness: Optional[int] = None
 
 
 class CreateProjectRequest(BaseModel):
@@ -85,12 +89,13 @@ async def get_client_dashboard_stats(client: User = Depends(get_client_user)):
 @router.get("/client/projects")
 async def get_client_projects(
     status: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     client: User = Depends(get_client_user)
 ):
     """Get client's projects"""
-    return portal_service.get_client_projects_list(client.id, status, limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.get_client_projects_list(client.id, status, limit, offset)
 
 
 @router.post("/client/projects", status_code=status.HTTP_201_CREATED)
@@ -124,22 +129,24 @@ async def create_client_project(
 @router.get("/client/proposals")
 async def get_client_proposals(
     project_id: Optional[int] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     client: User = Depends(get_client_user)
 ):
     """Get proposals for client's projects"""
-    return portal_service.get_client_proposals_list(client.id, project_id, limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.get_client_proposals_list(client.id, project_id, limit, offset)
 
 
 @router.get("/client/payments")
 async def get_client_payments(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     client: User = Depends(get_client_user)
 ):
     """Get client's payment history"""
-    return portal_service.get_payments_list(client.id, "from", limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.get_payments_list(client.id, "from", limit, offset)
 
 
 @router.get("/client/spending/monthly")
@@ -187,29 +194,35 @@ async def get_client_wallet(client: User = Depends(get_client_user)):
 async def get_freelancer_dashboard_stats(freelancer: User = Depends(get_freelancer_user)):
     """Get freelancer dashboard statistics"""
     data = portal_service.get_freelancer_stats(freelancer.id)
+    data["profile_views"] = getattr(freelancer, "profile_views", 0) or 0
+    data["availability_status"] = getattr(freelancer, "availability_status", None)
+    from app.services.profile_validation import get_profile_completeness
+    data["profile_completeness"] = get_profile_completeness(freelancer)
     return FreelancerDashboardStats(**data)
 
 
 @router.get("/freelancer/jobs")
 async def get_freelancer_jobs(
     category: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get available jobs for freelancer"""
-    return portal_service.get_available_jobs(category, limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.get_available_jobs(category, limit, offset)
 
 
 @router.get("/freelancer/projects")
 async def get_freelancer_projects(
     status: Optional[str] = Query(None),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get freelancer's active contracts/projects"""
-    return portal_service.get_freelancer_contracts(freelancer.id, status, limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.get_freelancer_contracts(freelancer.id, status, limit, offset)
 
 
 @router.post("/freelancer/proposals", status_code=status.HTTP_201_CREATED)
@@ -247,12 +260,13 @@ async def submit_freelancer_proposal(
 
 @router.get("/freelancer/proposals")
 async def get_freelancer_proposals(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get freelancer's submitted proposals"""
-    return portal_service.get_freelancer_proposals_list(freelancer.id, limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.get_freelancer_proposals_list(freelancer.id, limit, offset)
 
 
 @router.get("/freelancer/portfolio")
@@ -333,23 +347,25 @@ async def get_freelancer_monthly_earnings(
 
 @router.get("/freelancer/payments")
 async def get_freelancer_payments(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     freelancer: User = Depends(get_freelancer_user)
 ):
     """Get freelancer's payment history"""
-    return portal_service.get_payments_list(freelancer.id, "to", limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.get_payments_list(freelancer.id, "to", limit, offset)
 
 
 # ============ SHARED ENDPOINTS ============
 
 @router.get("/freelancers")
 async def list_freelancers(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200)
 ):
     """List all freelancers - public endpoint"""
-    return portal_service.list_all_freelancers(limit, skip)
+    offset, limit = paginate_params(page, page_size)
+    return portal_service.list_all_freelancers(limit, offset)
 
 class WithdrawRequest(BaseModel):
     amount: float

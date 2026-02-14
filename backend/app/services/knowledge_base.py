@@ -1,10 +1,5 @@
 # @AI-HINT: Knowledge base and FAQ service for help articles and documentation
-"""
-Knowledge Base & FAQ Service
-
-Manages help articles, FAQ entries, documentation,
-and intelligent search for user support.
-"""
+"""Knowledge Base & FAQ Service."""
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session
@@ -39,7 +34,7 @@ class ArticleStatus(str, Enum):
     ARCHIVED = "archived"
 
 
-class ContentType(str, Enum):
+class KnowledgeContentType(str, Enum):
     ARTICLE = "article"
     FAQ = "faq"
     TUTORIAL = "tutorial"
@@ -129,7 +124,7 @@ HELP_ARTICLES = [
         "title": "Getting Started Guide for Freelancers",
         "slug": "freelancer-getting-started",
         "category": ArticleCategory.GETTING_STARTED,
-        "content_type": ContentType.GUIDE,
+        "content_type": KnowledgeContentType.GUIDE,
         "excerpt": "Learn how to set up your profile, find projects, and win your first contract.",
         "content": """
 # Getting Started as a Freelancer
@@ -172,7 +167,7 @@ Research market rates for your skills. Consider starting slightly lower to build
         "title": "Getting Started Guide for Clients",
         "slug": "client-getting-started",
         "category": ArticleCategory.GETTING_STARTED,
-        "content_type": ContentType.GUIDE,
+        "content_type": KnowledgeContentType.GUIDE,
         "excerpt": "Learn how to post projects, hire freelancers, and manage contracts.",
         "content": "...",
         "tags": ["client", "getting started", "hiring"],

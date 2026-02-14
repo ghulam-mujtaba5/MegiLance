@@ -89,7 +89,7 @@ export default function HireClient() {
               {skills.map((skill) => (
                 <Link
                   key={skill.slug}
-                  href={`/hire/${skill.slug}/startup`}
+                  href={`/hire/${skill.slug}`}
                   className={cn(commonStyles.skillCard, themed.skillCard)}
                 >
                   <div className={cn(commonStyles.skillName, themed.skillName)}>

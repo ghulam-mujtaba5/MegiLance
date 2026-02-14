@@ -10,27 +10,9 @@ from typing import List, Optional, Dict, Any
 import json
 
 from app.db.turso_http import execute_query, to_str, parse_date
+from app.services.db_utils import get_val as _get_val, safe_str as _safe_str
 
 logger = logging.getLogger(__name__)
-
-
-def _get_val(row: list, idx: int):
-    """Extract value from Turso row"""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if cell.get("type") == "null":
-        return None
-    return cell.get("value")
-
-
-def _safe_str(val):
-    """Convert bytes to string if needed"""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
 
 
 def _proposal_from_row(row: list) -> dict:
@@ -369,7 +351,7 @@ def get_proposal_with_project_details(proposal_id: int) -> Optional[dict]:
     proposal = _proposal_from_row(row)
 
     proj_result = execute_query(
-        "SELECT client_id, title, description, budget_type FROM projects WHERE id = ?",
+        "SELECT client_id, title, description, budget_type, status FROM projects WHERE id = ?",
         [proposal["project_id"]]
     )
     if proj_result and proj_result.get("rows"):
@@ -378,6 +360,7 @@ def get_proposal_with_project_details(proposal_id: int) -> Optional[dict]:
         proposal["_project_title"] = _safe_str(_get_val(proj_row, 1)) or "Untitled Project"
         proposal["_project_description"] = _safe_str(_get_val(proj_row, 2)) or ""
         proposal["_project_budget_type"] = _safe_str(_get_val(proj_row, 3)) or "fixed"
+        proposal["_project_status"] = _safe_str(_get_val(proj_row, 4)) or "open"
     else:
         proposal["_project_client_id"] = None
 
@@ -415,9 +398,26 @@ def accept_proposal(proposal_id: int, proposal: dict, client_id: int) -> Optiona
         ["rejected", now, project_id, proposal_id, "submitted"]
     )
 
-    # Create contract
+    # Create contract with tiered fee
     contract_amount = bid_amount if bid_amount > 0 else hourly_rate
-    platform_fee = contract_amount * 0.1
+
+    # Calculate tiered fee based on lifetime billing between client and freelancer
+    lifetime_billing = 0
+    try:
+        lb_result = execute_query(
+            """SELECT COALESCE(SUM(amount), 0) FROM payments
+               WHERE from_user_id = ? AND to_user_id = ? AND status = 'completed'""",
+            [client_id, freelancer_id]
+        )
+        if lb_result and lb_result.get("rows"):
+            lifetime_billing = float(lb_result["rows"][0][0] or 0)
+    except Exception:
+        pass
+
+    from app.api.v1.payments import calculate_tiered_fee
+    fee_info = calculate_tiered_fee(contract_amount, lifetime_billing)
+    platform_fee = fee_info["fee"]
+
     start_date = now
     end_date = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
 
@@ -442,11 +442,136 @@ def accept_proposal(proposal_id: int, proposal: dict, client_id: int) -> Optiona
     return get_proposal_raw(proposal_id)
 
 
-def reject_proposal(proposal_id: int) -> Optional[dict]:
-    """Reject a proposal. Returns updated proposal dict."""
+def reject_proposal(proposal_id: int, reason: str = None) -> Optional[dict]:
+    """Reject a proposal with optional reason. Returns updated proposal dict."""
     now = datetime.now(timezone.utc).isoformat()
     execute_query(
         "UPDATE proposals SET status = ?, updated_at = ? WHERE id = ?",
         ["rejected", now, proposal_id]
     )
+
+    if reason:
+        # Store rejection reason in draft_data as JSON metadata
+        existing_data = {}
+        raw = execute_query("SELECT draft_data FROM proposals WHERE id = ?", [proposal_id])
+        if raw and raw.get("rows") and raw["rows"][0][0]:
+            try:
+                existing_data = json.loads(raw["rows"][0][0])
+            except (json.JSONDecodeError, TypeError):
+                pass
+        existing_data["rejection_reason"] = reason
+        existing_data["rejected_at"] = now
+        execute_query(
+            "UPDATE proposals SET draft_data = ? WHERE id = ?",
+            [json.dumps(existing_data), proposal_id]
+        )
+
     return get_proposal_raw(proposal_id)
+
+
+def shortlist_proposal(proposal_id: int) -> Optional[dict]:
+    """Mark a proposal as shortlisted. Returns updated proposal dict."""
+    now = datetime.now(timezone.utc).isoformat()
+    execute_query(
+        "UPDATE proposals SET status = ?, updated_at = ? WHERE id = ?",
+        ["shortlisted", now, proposal_id]
+    )
+    return get_proposal_raw(proposal_id)
+
+
+def withdraw_proposal(proposal_id: int) -> Optional[dict]:
+    """Freelancer withdraws their proposal. Returns updated proposal dict."""
+    now = datetime.now(timezone.utc).isoformat()
+    execute_query(
+        "UPDATE proposals SET status = ?, updated_at = ? WHERE id = ?",
+        ["withdrawn", now, proposal_id]
+    )
+    return get_proposal_raw(proposal_id)
+
+
+def create_counter_offer(proposal_id: int, counter_data: dict) -> Optional[dict]:
+    """
+    Store counter-offer details in draft_data and update proposal.
+    """
+    now = datetime.now(timezone.utc).isoformat()
+
+    # Load existing metadata
+    existing_metadata = {}
+    raw = execute_query("SELECT draft_data FROM proposals WHERE id = ?", [proposal_id])
+    if raw and raw.get("rows") and raw["rows"][0][0]:
+        try:
+            existing_metadata = json.loads(raw["rows"][0][0])
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    # Append counter-offer to history
+    if "counter_offers" not in existing_metadata:
+        existing_metadata["counter_offers"] = []
+    existing_metadata["counter_offers"].append(counter_data)
+    existing_metadata["latest_counter"] = counter_data
+
+    execute_query(
+        "UPDATE proposals SET draft_data = ?, status = ?, updated_at = ? WHERE id = ?",
+        [json.dumps(existing_metadata), "submitted", now, proposal_id]
+    )
+    return get_proposal_raw(proposal_id)
+
+
+def get_freelancer_proposal_stats(freelancer_id: int) -> dict:
+    """
+    Compute proposal statistics for a freelancer.
+    """
+    # Status breakdown
+    result = execute_query(
+        """SELECT status, COUNT(*) as cnt
+           FROM proposals
+           WHERE freelancer_id = ? AND is_draft = 0
+           GROUP BY status""",
+        [freelancer_id]
+    )
+    status_counts = {}
+    total = 0
+    for row in (result.get("rows", []) if result else []):
+        s = _safe_str(_get_val(row, 0)) or "unknown"
+        c = int(_get_val(row, 1) or 0)
+        status_counts[s] = c
+        total += c
+
+    accepted = status_counts.get("accepted", 0)
+    rejected = status_counts.get("rejected", 0)
+    decided = accepted + rejected
+    acceptance_rate = round((accepted / decided) * 100, 1) if decided > 0 else 0
+
+    # Average bid
+    avg_result = execute_query(
+        """SELECT COALESCE(AVG(bid_amount), 0), COALESCE(AVG(hourly_rate), 0)
+           FROM proposals
+           WHERE freelancer_id = ? AND is_draft = 0 AND bid_amount > 0""",
+        [freelancer_id]
+    )
+    avg_bid = 0
+    avg_rate = 0
+    if avg_result and avg_result.get("rows"):
+        avg_bid = round(float(avg_result["rows"][0][0] or 0), 2)
+        avg_rate = round(float(avg_result["rows"][0][1] or 0), 2)
+
+    # Recent activity (last 30 days)
+    thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+    recent_result = execute_query(
+        """SELECT COUNT(*) FROM proposals
+           WHERE freelancer_id = ? AND is_draft = 0 AND created_at >= ?""",
+        [freelancer_id, thirty_days_ago]
+    )
+    recent_count = 0
+    if recent_result and recent_result.get("rows"):
+        recent_count = int(recent_result["rows"][0][0] or 0)
+
+    return {
+        "freelancer_id": freelancer_id,
+        "total_proposals": total,
+        "status_breakdown": status_counts,
+        "acceptance_rate": acceptance_rate,
+        "average_bid_amount": avg_bid,
+        "average_hourly_rate": avg_rate,
+        "proposals_last_30_days": recent_count,
+    }

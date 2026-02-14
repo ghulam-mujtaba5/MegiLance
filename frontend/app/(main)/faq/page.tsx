@@ -5,7 +5,7 @@ import FAQ from './FAQ';
 
 // FAQ data duplicated here for JSON-LD (kept in sync with FAQ.tsx faqData)
 const faqStructuredData = [
-  { question: 'What is MegiLance?', answer: 'MegiLance is a next-generation freelance platform that leverages AI for intelligent matching and blockchain for secure, transparent payments. We focus on providing an investor-grade user experience for both clients and freelancers.' },
+  { question: 'What is MegiLance?', answer: 'MegiLance is a next-generation freelance platform that leverages AI for intelligent matching and blockchain for secure, transparent payments. We focus on providing an production-ready user experience for both clients and freelancers.' },
   { question: 'How do the fees work?', answer: 'MegiLance operates on a simple, tiered fee structure: Basic plan charges 5% per transaction, Standard plan charges 3%, and Premium plan charges just 1%. These are significantly lower than industry standards of 20%+. There are no hidden charges, subscription requirements, or withdrawal penalties.' },
   { question: 'Is my data and payment information secure?', answer: 'Yes. We employ enterprise-grade security including end-to-end encryption, smart contracts for trustless transactions, JWT authentication with secure token rotation, bcrypt password hashing, and regular security audits.' },
   { question: 'What kind of freelancers can I find?', answer: 'MegiLance hosts talent across Software Development, UI/UX Design, AI/ML Engineering, Data Science, Digital Marketing, Content Writing, Video Editing, and many more fields. Our AI matching ensures you connect with the perfect expert.' },

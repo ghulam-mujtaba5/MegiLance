@@ -77,7 +77,7 @@ Best regards`
     name: 'Design & Creative',
     content: `Hello!
 
-I'm a professional designer with a passion for creating stunning visuals. Your project caught my attention, and I'd love to bring your vision to life.
+I'm a professional designer with a passion for creating polished visuals. Your project caught my attention, and I'd love to bring your vision to life.
 
 **What I Offer:**
 - Modern, user-centric design approach

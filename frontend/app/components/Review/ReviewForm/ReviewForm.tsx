@@ -112,8 +112,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     setSubmitting(true);
     try {
       await api.reviews.create({
-        contract_id: contractId,
-        reviewed_user_id: revieweeId,
+        contract_id: Number(contractId),
+        reviewed_user_id: Number(revieweeId),
         rating: review.rating,
         review_text: review.comment,
         quality_rating: review.criteria.quality,

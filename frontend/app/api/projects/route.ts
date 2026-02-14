@@ -53,9 +53,6 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
-    // Log the request for debugging
-    console.log('Creating project with data:', JSON.stringify(body, null, 2));
 
     const backendResponse = await fetch(`${BACKEND_URL}/api/projects`, {
       method: 'POST',

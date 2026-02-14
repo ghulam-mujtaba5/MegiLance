@@ -1,14 +1,5 @@
 # @AI-HINT: Report generation service for PDF/Excel exports
-"""
-Report Generation Service - Generate PDF and Excel reports.
-
-Features:
-- PDF report generation
-- Excel/CSV export
-- Scheduled reports
-- Report templates
-- Email delivery
-"""
+"""Report Generation Service - Generate PDF and Excel reports."""
 
 import logging
 import io
@@ -76,9 +67,12 @@ class ReportGenerationService:
     Generates PDF and Excel reports for various data.
     """
     
+    # TODO: migrate in-memory stores to database for persistence and scalability
+    _MAX_REPORTS = 2000
+    _MAX_SCHEDULED = 500
+
     def __init__(self, db: Session):
         self.db = db
-        # In-memory storage
         self._reports: Dict[str, Dict[str, Any]] = {}
         self._templates: Dict[str, Dict[str, Any]] = {}
         self._scheduled_reports: Dict[str, Dict[str, Any]] = {}
@@ -157,6 +151,9 @@ class ReportGenerationService:
             "error": None
         }
         
+        if len(self._reports) >= self._MAX_REPORTS:
+            oldest_key = next(iter(self._reports))
+            del self._reports[oldest_key]
         self._reports[report_id] = report
         
         # Generate report data
@@ -257,6 +254,9 @@ class ReportGenerationService:
             "run_count": 0
         }
         
+        if len(self._scheduled_reports) >= self._MAX_SCHEDULED:
+            oldest_key = next(iter(self._scheduled_reports))
+            del self._scheduled_reports[oldest_key]
         self._scheduled_reports[schedule_id] = scheduled
         
         return scheduled

@@ -59,7 +59,7 @@ class FraudDetectionService:
             if user.profile_data:
                 try:
                     profile_data = json.loads(user.profile_data) if isinstance(user.profile_data, str) else user.profile_data
-                except:
+                except (json.JSONDecodeError, TypeError, ValueError):
                     profile_data = {}
             
             if not profile_data.get('bio') or not profile_data.get('skills'):

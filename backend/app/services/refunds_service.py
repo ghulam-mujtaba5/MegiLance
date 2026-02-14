@@ -191,9 +191,9 @@ def get_user_balance(user_id: int) -> float:
 def process_refund(refund_id: int, payment_id: int, requested_by: int,
                    amount: float, current_balance: float):
     """Execute the refund: update user balance, payment status, and refund status."""
-    new_balance = current_balance + amount
     now = datetime.now(timezone.utc).isoformat()
-    execute_query("UPDATE users SET account_balance = ? WHERE id = ?", [new_balance, requested_by])
+    # Atomic balance update to prevent race conditions
+    execute_query("UPDATE users SET account_balance = account_balance + ? WHERE id = ?", [amount, requested_by])
     execute_query("UPDATE payments SET status = 'refunded' WHERE id = ?", [payment_id])
     execute_query("""
         UPDATE refunds SET status = 'processed', processed_at = ?, updated_at = ? WHERE id = ?

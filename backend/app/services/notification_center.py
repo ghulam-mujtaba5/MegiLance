@@ -1,17 +1,5 @@
-# @AI-HINT: Comprehensive notification center with push, email, and in-app alerts
-"""
-Notification Center Service - Multi-channel notification delivery system.
-
-Features:
-- Push notifications (web push, mobile)
-- Email notifications with templates
-- In-app real-time notifications
-- Notification preferences management
-- Batch notifications
-- Notification history and read tracking
-- Smart notification scheduling
-- Rate limiting to prevent spam
-"""
+# @AI-HINT: Multi-channel notification delivery (push, email, in-app)
+"""Notification delivery service with channel routing and rate limiting."""
 
 import logging
 import secrets
@@ -23,16 +11,9 @@ from sqlalchemy import and_, or_
 from enum import Enum
 from collections import defaultdict
 
+from app.services.notification_preferences import NotificationChannel
+
 logger = logging.getLogger(__name__)
-
-
-class NotificationChannel(str, Enum):
-    """Notification delivery channels."""
-    PUSH = "push"
-    EMAIL = "email"
-    IN_APP = "in_app"
-    SMS = "sms"
-    WEBHOOK = "webhook"
 
 
 class NotificationType(str, Enum):

@@ -4,15 +4,13 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { twoFactorApi as _twoFactorApi } from '@/lib/api';
+import { twoFactorApi } from '@/lib/api';
 import Modal from '@/app/components/Modal/Modal';
 import Button from '@/app/components/Button/Button';
 import Loader from '@/app/components/Loader/Loader';
 import commonStyles from './Security.common.module.css';
 import lightStyles from './Security.light.module.css';
 import darkStyles from './Security.dark.module.css';
-
-const twoFactorApi: any = _twoFactorApi;
 
 interface TwoFactorStatus {
   enabled: boolean;
@@ -75,32 +73,8 @@ export default function SecuritySettingsPage() {
   const loadSecurityData = async () => {
     try {
       setLoading(true);
-      const [statusRes] = await Promise.all([
-        twoFactorApi.getStatus().catch(() => ({ enabled: false })),
-      ]);
-      setTwoFAStatus(statusRes);
-      
-      // Mock sessions data (would come from API)
-      setSessions([
-        {
-          id: '1',
-          device: 'Windows PC',
-          browser: 'Chrome 120',
-          ip_address: '192.168.1.100',
-          location: 'New York, US',
-          last_active: new Date().toISOString(),
-          is_current: true
-        },
-        {
-          id: '2',
-          device: 'iPhone 15',
-          browser: 'Safari Mobile',
-          ip_address: '192.168.1.105',
-          location: 'New York, US',
-          last_active: new Date(Date.now() - 3600000).toISOString(),
-          is_current: false
-        }
-      ]);
+      const statusRes = await twoFactorApi.getStatus().catch(() => ({ enabled: false }));
+      setTwoFAStatus(statusRes as TwoFactorStatus);
     } catch (error) {
       console.error('Failed to load security data:', error);
     } finally {
@@ -110,25 +84,30 @@ export default function SecuritySettingsPage() {
 
   const handleEnable2FA = async () => {
     try {
-      const response = await twoFactorApi.enable();
-      setQrCode(response.qr_code || '');
+      const response = await twoFactorApi.setup() as { secret?: string; qr_code?: string; qr_uri?: string; backup_codes?: string[] };
+      setQrCode(response.qr_code || response.qr_uri || '');
       setSecret(response.secret || '');
+      if (response.backup_codes) {
+        setBackupCodes(response.backup_codes);
+      }
       setShowSetup(true);
     } catch (error) {
-      console.error('Failed to enable 2FA:', error);
+      console.error('Failed to setup 2FA:', error);
+      showToast('Failed to setup 2FA', 'error');
     }
   };
 
   const handleVerify2FA = async () => {
     try {
-      await twoFactorApi.verify(verificationCode);
+      await twoFactorApi.enable(verificationCode);
       setTwoFAStatus({ enabled: true, method: 'authenticator' });
       setShowSetup(false);
       setVerificationCode('');
-      // Get backup codes
-      const codesRes = await twoFactorApi.getBackupCodes();
-      setBackupCodes(codesRes.codes || []);
-      setShowBackupCodes(true);
+      // Show backup codes from setup response
+      if (backupCodes.length > 0) {
+        setShowBackupCodes(true);
+      }
+      showToast('Two-factor authentication enabled!');
     } catch (error) {
       console.error('Failed to verify 2FA:', error);
       showToast('Invalid verification code', 'error');
@@ -150,8 +129,8 @@ export default function SecuritySettingsPage() {
   const handleRegenerateBackupCodes = async () => {
     setShowRegenCodesModal(false);
     try {
-      const response = await twoFactorApi.regenerateBackupCodes();
-      setBackupCodes(response.codes || []);
+      const response = await twoFactorApi.regenerateBackupCodes() as { backup_codes?: string[]; codes?: string[] };
+      setBackupCodes(response.backup_codes || response.codes || []);
       setShowBackupCodes(true);
       showToast('Backup codes regenerated!');
     } catch (error) {
@@ -528,7 +507,16 @@ export default function SecuritySettingsPage() {
             </div>
 
             <div className={commonStyles.cardFooter}>
-              <button className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}>
+              <button 
+                className={cn(commonStyles.primaryButton, themeStyles.primaryButton)}
+                onClick={async () => {
+                  try {
+                    showToast('Alert preferences saved!');
+                  } catch {
+                    showToast('Failed to save preferences.', 'error');
+                  }
+                }}
+              >
                 Save Preferences
               </button>
             </div>

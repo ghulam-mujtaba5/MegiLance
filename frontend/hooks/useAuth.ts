@@ -57,6 +57,9 @@ interface UserApiResponse {
  * Normalize user data from various API response shapes
  */
 function normalizeUser(userData: UserApiResponse): User {
+  if (!userData || !userData.email || !userData.id) {
+    throw new Error('Invalid user data received from API');
+  }
   return {
     id: Number(userData.id),
     email: userData.email,
@@ -126,8 +129,8 @@ export function useAuth(): UseAuthReturn {
           return;
         }
 
-        // Try to get user from localStorage first for quick render
-        const cachedUser = localStorage.getItem(AUTH.USER_KEY);
+        // Try to get user from sessionStorage first for quick render
+        const cachedUser = sessionStorage.getItem(AUTH.USER_KEY);
         if (cachedUser) {
           try {
             const parsed = JSON.parse(cachedUser);
@@ -145,14 +148,15 @@ export function useAuth(): UseAuthReturn {
           setUser(normalized);
           setError(null);
         }
-        localStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
+        sessionStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
       } catch (err) {
         console.error('Failed to load user:', err);
         if (err instanceof APIError && err.status === 401) {
           // Token expired, clear all auth data including localStorage 
           clearAuthData();
           clearAuthCookie();
-          localStorage.removeItem(AUTH.USER_KEY);
+          sessionStorage.removeItem(AUTH.USER_KEY);
+          localStorage.removeItem(AUTH.USER_KEY); // Clean up legacy
           if (isMounted.current) setUser(null);
         }
         if (isMounted.current) {
@@ -175,14 +179,14 @@ export function useAuth(): UseAuthReturn {
       const response = await api.auth.login(email, password);
       
       // Check if 2FA is required
-      if ((response as any).requires_2fa) {
+      if ('requires_2fa' in response && response.requires_2fa) {
         throw new Error('2FA_REQUIRED');
       }
 
       const normalized = normalizeUser(response.user);
 
       if (isMounted.current) setUser(normalized);
-      localStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
+      sessionStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
       setAuthToken(response.access_token);
 
       // Set cookie for middleware (secure)
@@ -222,7 +226,8 @@ export function useAuth(): UseAuthReturn {
   const logout = useCallback(() => {
     clearAuthData();
     clearAuthCookie();
-    localStorage.removeItem(AUTH.USER_KEY);
+    sessionStorage.removeItem(AUTH.USER_KEY);
+    localStorage.removeItem(AUTH.USER_KEY); // Clean up legacy
     localStorage.removeItem(AUTH.REFRESH_TOKEN_KEY);
     if (isMounted.current) setUser(null);
     if (refreshIntervalRef.current) {
@@ -237,7 +242,7 @@ export function useAuth(): UseAuthReturn {
       const normalized = normalizeUser(userData);
 
       if (isMounted.current) setUser(normalized);
-      localStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
+      sessionStorage.setItem(AUTH.USER_KEY, JSON.stringify(normalized));
     } catch (err) {
       console.error('Failed to refresh user:', err);
       throw err;

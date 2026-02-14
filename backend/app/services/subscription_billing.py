@@ -1,10 +1,5 @@
 # @AI-HINT: Subscription and billing management service for premium features and plans
-"""
-Subscription & Billing Service
-
-Manages subscription plans, billing cycles, payment processing,
-and premium feature access.
-"""
+"""Subscription & Billing Service."""
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session

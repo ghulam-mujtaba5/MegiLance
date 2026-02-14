@@ -15,6 +15,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.security import get_current_user_from_token
 from app.services import skills_service
+from app.services.db_utils import paginate_params
+from app.schemas.skill import SkillCreate, SkillUpdate, UserSkillCreate, UserSkillUpdate
 
 router = APIRouter()
 
@@ -31,11 +33,12 @@ async def list_skills(
     category: Optional[str] = Query(None, description="Filter by category"),
     search: Optional[str] = Query(None, description="Search in name or description"),
     active_only: bool = Query(True, description="Only active skills"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=200)
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=200)
 ):
     """List all skills in the catalog. Public endpoint."""
-    return skills_service.list_skills(category, search, active_only, skip, limit)
+    offset, limit = paginate_params(page, page_size)
+    return skills_service.list_skills(category, search, active_only, offset, limit)
 
 
 @router.get("/categories")
@@ -74,7 +77,7 @@ async def get_skill(skill_id: int):
 
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_skill(
-    skill_data: dict,
+    skill_data: SkillCreate,
     current_user=Depends(get_current_user)
 ):
     """Create a new skill (admin only)."""
@@ -82,17 +85,16 @@ async def create_skill(
     if role.lower() != "admin":
         raise HTTPException(status_code=403, detail="Only admins can create skills")
 
-    name = skill_data.get("name", "")
-    if skills_service.skill_name_exists(name):
+    if skills_service.skill_name_exists(skill_data.name):
         raise HTTPException(status_code=400, detail="A skill with this name already exists")
 
-    return skills_service.create_skill(skill_data)
+    return skills_service.create_skill(skill_data.model_dump())
 
 
 @router.patch("/{skill_id}", response_model=dict)
 async def update_skill(
     skill_id: int,
-    skill_data: dict,
+    skill_data: SkillUpdate,
     current_user=Depends(get_current_user)
 ):
     """Update a skill (admin only)."""
@@ -103,11 +105,12 @@ async def update_skill(
     if not skills_service.skill_exists(skill_id):
         raise HTTPException(status_code=404, detail="Skill not found")
 
-    if "name" in skill_data:
-        if skills_service.skill_name_exists(skill_data["name"], exclude_id=skill_id):
+    data = skill_data.model_dump(exclude_unset=True)
+    if "name" in data:
+        if skills_service.skill_name_exists(data["name"], exclude_id=skill_id):
             raise HTTPException(status_code=400, detail="A skill with this name already exists")
 
-    updated = skills_service.update_skill(skill_id, skill_data)
+    updated = skills_service.update_skill(skill_id, data)
     if not updated:
         raise HTTPException(status_code=404, detail="Skill not found")
     return updated
@@ -146,12 +149,12 @@ async def list_user_skills(
 
 @router.post("/user-skills", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def add_user_skill(
-    user_skill_data: dict,
+    user_skill_data: UserSkillCreate,
     current_user=Depends(get_current_user)
 ):
     """Add a skill to current user's profile."""
     user_id = current_user.get("user_id")
-    skill_id = user_skill_data.get("skill_id")
+    skill_id = user_skill_data.skill_id
 
     if not skills_service.active_skill_exists(skill_id):
         raise HTTPException(status_code=404, detail="Skill not found or inactive")
@@ -159,13 +162,13 @@ async def add_user_skill(
     if skills_service.user_has_skill(user_id, skill_id):
         raise HTTPException(status_code=400, detail="You already have this skill in your profile")
 
-    return skills_service.add_user_skill(user_id, user_skill_data)
+    return skills_service.add_user_skill(user_id, user_skill_data.model_dump())
 
 
 @router.patch("/user-skills/{user_skill_id}", response_model=dict)
 async def update_user_skill(
     user_skill_id: int,
-    user_skill_data: dict,
+    user_skill_data: UserSkillUpdate,
     current_user=Depends(get_current_user)
 ):
     """Update a user skill. Users can update own; admins can verify."""
@@ -177,15 +180,16 @@ async def update_user_skill(
         raise HTTPException(status_code=404, detail="User skill not found")
 
     is_admin = role.lower() == "admin"
+    data = user_skill_data.model_dump(exclude_unset=True)
     if is_admin:
         pass
     elif user_id == owner.get("user_id"):
-        if "is_verified" in user_skill_data:
+        if "is_verified" in data:
             raise HTTPException(status_code=403, detail="You cannot verify your own skills")
     else:
         raise HTTPException(status_code=403, detail="You don't have permission to update this skill")
 
-    updated = skills_service.update_user_skill(user_skill_id, user_skill_data, is_admin, user_id)
+    updated = skills_service.update_user_skill(user_skill_id, data, is_admin, user_id)
     if not updated:
         raise HTTPException(status_code=404, detail="User skill not found")
     return updated

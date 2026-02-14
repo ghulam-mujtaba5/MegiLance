@@ -24,6 +24,13 @@ from app.services.skill_assessment import (
 router = APIRouter()
 
 
+def _verify_session_owner(engine, session_id: str, user_id: int):
+    """Verify the assessment session belongs to the current user."""
+    session = engine._active_sessions.get(session_id)
+    if session and session.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+
 # ============================================================================
 # SCHEMAS
 # ============================================================================
@@ -151,6 +158,7 @@ async def get_question(
     Returns question without correct answer.
     """
     engine = get_assessment_engine(db)
+    _verify_session_owner(engine, session_id, current_user.id)
     question = engine.get_question(session_id, index)
     
     if not question:
@@ -178,6 +186,7 @@ async def submit_answer(
     Supports MCQ (int), multi-select (list), code (str).
     """
     engine = get_assessment_engine(db)
+    _verify_session_owner(engine, session_id, current_user.id)
     result = engine.submit_answer(
         session_id=session_id,
         question_id=request.question_id,
@@ -203,6 +212,7 @@ async def record_focus_event(
     Used to detect tab switching during assessment.
     """
     engine = get_assessment_engine(db)
+    _verify_session_owner(engine, session_id, current_user.id)
     engine.record_focus_event(session_id, request.event_type)
     
     return {"success": True}
@@ -224,6 +234,7 @@ async def complete_assessment(
     Triggers auto-grading and badge assignment.
     """
     engine = get_assessment_engine(db)
+    _verify_session_owner(engine, session_id, current_user.id)
     result = engine.complete_assessment(session_id)
     
     if "error" in result:
@@ -245,6 +256,7 @@ async def get_assessment_results(
     Get results for a completed assessment
     """
     engine = get_assessment_engine(db)
+    _verify_session_owner(engine, session_id, current_user.id)
     result = engine.complete_assessment(session_id)
     
     if result.get("status") != "completed":

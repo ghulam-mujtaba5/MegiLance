@@ -92,13 +92,13 @@ const Payments: React.FC = () => {
   }, [sortedPayments, currentPage, itemsPerPage]);
   
   const kpis = useMemo(() => {
-      const totalPaid = payments
-        .filter(p => p.status === 'Paid' || p.status === 'Completed')
-        .reduce((sum, p) => sum + p.amount, 0);
+      const completed = payments.filter(p => p.status === 'Paid' || p.status === 'Completed');
+      const totalPaid = completed.reduce((sum, p) => sum + p.amount, 0);
       const totalPending = payments
         .filter(p => p.status === 'Pending')
         .reduce((sum, p) => sum + p.amount, 0);
-      return { totalPaid, totalPending };
+      const avgPayment = completed.length > 0 ? totalPaid / completed.length : 0;
+      return { totalPaid, totalPending, avgPayment, completedCount: completed.length };
   }, [payments]);
 
   if (error) {
@@ -133,9 +133,9 @@ const Payments: React.FC = () => {
 
         <ScrollReveal delay={0.1}>
           <section className={common.kpiGrid}>
-            <DashboardWidget icon={DollarSign} title="Total Paid" value={`$${kpis.totalPaid.toLocaleString()}`} trend={<Trend direction="up" value="+5.2%" />} />
-            <DashboardWidget icon={TrendingUp} title="Avg. Payment" value={`$${(kpis.totalPaid / (payments.length || 1)).toFixed(2)}`} />
-            <DashboardWidget icon={TrendingDown} title="Pending" value={`$${kpis.totalPending.toLocaleString()}`} trend={<Trend direction="down" value="-1.8%" />} />
+            <DashboardWidget icon={DollarSign} title="Total Paid" value={`$${kpis.totalPaid.toLocaleString()}`} trend={<Trend direction="up" value={`${kpis.completedCount} txns`} />} />
+            <DashboardWidget icon={TrendingUp} title="Avg. Payment" value={`$${kpis.avgPayment.toFixed(2)}`} />
+            <DashboardWidget icon={TrendingDown} title="Pending" value={`$${kpis.totalPending.toLocaleString()}`} trend={kpis.totalPending > 0 ? <Trend direction="down" value="pending" /> : undefined} />
           </section>
         </ScrollReveal>
 
@@ -149,9 +149,14 @@ const Payments: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className={common.searchInput}
             />
-            <div className={common.filters}>
-              <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
-              <Select id="sort-key" options={SORT_OPTIONS} value={sortKey} onChange={(e) => setSortKey(e.target.value)} />
+            <div className={common.filtersRow}>
+              <span className={cn(common.resultsCount, themed.resultsCount)}>
+                {filteredPayments.length} result{filteredPayments.length !== 1 ? 's' : ''}
+              </span>
+              <div className={common.filters}>
+                <Select id="status-filter" options={STATUS_OPTIONS} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} />
+                <Select id="sort-key" options={SORT_OPTIONS} value={sortKey} onChange={(e) => setSortKey(e.target.value)} />
+              </div>
             </div>
           </div>
         </ScrollReveal>

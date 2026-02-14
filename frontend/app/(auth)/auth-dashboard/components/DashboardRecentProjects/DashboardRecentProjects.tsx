@@ -1,4 +1,4 @@
-// @AI-HINT: This component displays a list of recent projects in a premium, sortable table. It's designed for a scannable overview of project status, progress, and deadlines, a key feature in investor-grade project management dashboards.
+// @AI-HINT: This component displays a list of recent projects in a premium, sortable table. It's designed for a scannable overview of project status, progress, and deadlines, a key feature in production-ready project management dashboards.
 
 'use client';
 

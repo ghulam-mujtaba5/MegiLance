@@ -118,7 +118,7 @@ const Invoices: React.FC = () => {
         line_items: lineItems,
         notes: notes || undefined,
       };
-      await invoicesApi.create(formData);
+      await invoicesApi.create(formData as unknown as Record<string, unknown>);
       setShowCreateForm(false);
       resetForm();
       loadInvoices();

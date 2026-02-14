@@ -1,3 +1,4 @@
+// @AI-HINT: Scroll-triggered reveal animation wrapper using IntersectionObserver
 'use client';
 
 import React from 'react';

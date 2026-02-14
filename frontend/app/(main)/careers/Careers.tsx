@@ -97,7 +97,7 @@ const values = [
   { 
     icon: Zap, 
     title: 'Quality with Taste', 
-    description: 'We build investor-grade products that delight users with attention to every detail.'
+    description: 'We build production-ready products that delight users with attention to every detail.'
   },
   { 
     icon: Shield, 

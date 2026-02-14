@@ -29,8 +29,8 @@ async def create_tag(
 
     try:
         return tags_service.find_or_create_tag(name, tag_type)
-    except ValueError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except ValueError:
+        raise HTTPException(status_code=500, detail="Failed to create tag")
 
 
 @router.get("/", response_model=List[dict])

@@ -8,7 +8,9 @@ import api from '@/lib/api';
 import {
   Star, MapPin, Clock, CheckCircle, DollarSign,
   Linkedin, Github, Globe, Mail, Phone,
-  Calendar, Award, ThumbsUp, MessageCircle
+  Calendar, Award, ThumbsUp, MessageCircle,
+  Briefcase, GraduationCap, Languages, Video, ExternalLink,
+  Twitter, Palette, Layers
 } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import StarRating from '@/app/components/StarRating/StarRating';
@@ -75,12 +77,31 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
         avatarUrl: data.profile_image_url,
         hourlyRate: data.hourly_rate,
         joinedAt: data.joined_at,
-        title: data.title || data.user_type || 'Freelancer',
+        title: data.headline || data.title || data.user_type || 'Freelancer',
+        tagline: data.tagline,
         skills: Array.isArray(data.skills) ? data.skills : (data.skills ? [data.skills] : []),
         linkedinUrl: data.linkedin_url,
         githubUrl: data.github_url,
         websiteUrl: data.website_url,
+        twitterUrl: data.twitter_url,
+        dribbbleUrl: data.dribbble_url,
+        behanceUrl: data.behance_url,
+        stackoverflowUrl: data.stackoverflow_url,
         phone: data.phone_number,
+        experienceLevel: data.experience_level,
+        yearsOfExperience: data.years_of_experience,
+        availabilityStatus: data.availability_status,
+        languages: data.languages,
+        timezone: data.timezone,
+        videoIntroUrl: data.video_intro_url,
+        availabilityHours: data.availability_hours,
+        preferredProjectSize: data.preferred_project_size,
+        industryFocus: data.industry_focus,
+        toolsAndTechnologies: data.tools_and_technologies,
+        education: data.education ? (typeof data.education === 'string' ? JSON.parse(data.education) : data.education) : [],
+        certifications: data.certifications ? (typeof data.certifications === 'string' ? JSON.parse(data.certifications) : data.certifications) : [],
+        workHistory: data.work_history ? (typeof data.work_history === 'string' ? JSON.parse(data.work_history) : data.work_history) : [],
+        achievements: data.achievements ? (typeof data.achievements === 'string' ? JSON.parse(data.achievements) : data.achievements) : [],
       });
     } catch (error) {
       console.error('Failed to load profile:', error);
@@ -196,6 +217,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
           <p className={cn(commonStyles.subtitle, themed.subtitle)}>
             {profile.title}
           </p>
+          {profile.tagline && (
+            <p className={cn(commonStyles.subtitle, themed.subtitle)} style={{ fontSize: '0.9rem', opacity: 0.8 }}>
+              {profile.tagline}
+            </p>
+          )}
 
           <div className={commonStyles.metaRow}>
             {profile.location && (
@@ -214,6 +240,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
               <div className={cn(commonStyles.metaItem, themed.metaItem)}>
                 <DollarSign size={14} aria-hidden="true" />
                 <span>${profile.hourlyRate}/hr</span>
+              </div>
+            )}
+            {profile.experienceLevel && (
+              <div className={cn(commonStyles.metaItem, themed.metaItem)}>
+                <Briefcase size={14} aria-hidden="true" />
+                <span>{profile.experienceLevel.charAt(0).toUpperCase() + profile.experienceLevel.slice(1)} Level</span>
+                {profile.yearsOfExperience && <span> ({profile.yearsOfExperience} yrs)</span>}
+              </div>
+            )}
+            {profile.languages && (
+              <div className={cn(commonStyles.metaItem, themed.metaItem)}>
+                <Languages size={14} aria-hidden="true" />
+                <span>{profile.languages}</span>
               </div>
             )}
           </div>
@@ -235,12 +274,23 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
           <div className={cn(commonStyles.availability, themed.availability)}>
             <Clock size={14} aria-hidden="true" />
             <span>
-              {profile.availability === 'immediate'
+              {profile.availabilityStatus === 'available'
                 ? 'Available Now'
-                : profile.availability === 'within-week'
-                  ? 'Available Within a Week'
-                  : 'Available Within a Month'}
+                : profile.availabilityStatus === 'busy'
+                  ? 'Currently Busy'
+                  : profile.availabilityStatus === 'on_vacation'
+                    ? 'On Vacation'
+                    : profile.availabilityStatus === 'unavailable'
+                      ? 'Unavailable'
+                      : profile.availability === 'immediate'
+                        ? 'Available Now'
+                        : profile.availability === 'within-week'
+                          ? 'Available Within a Week'
+                          : 'Available Within a Month'}
             </span>
+            {profile.availabilityHours && (
+              <span> &middot; {profile.availabilityHours} hrs/week</span>
+            )}
           </div>
         </div>
 
@@ -277,6 +327,111 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
             {profile.skills.map((skill: string, index: number) => (
               <span key={index} className={cn(commonStyles.skillTag, themed.skillTag)}>
                 {skill}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Tools & Technologies */}
+      {profile.toolsAndTechnologies && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="tools-heading">
+          <h2 id="tools-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            Tools & Technologies
+          </h2>
+          <div className={cn(commonStyles.skillsGrid, themed.skillsGrid)}>
+            {profile.toolsAndTechnologies.split(',').map((tool: string, i: number) => (
+              <span key={i} className={cn(commonStyles.skillTag, themed.skillTag)}>
+                {tool.trim()}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Video Introduction */}
+      {profile.videoIntroUrl && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="video-heading">
+          <h2 id="video-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            <Video size={18} aria-hidden="true" /> Video Introduction
+          </h2>
+          <a
+            href={profile.videoIntroUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(commonStyles.socialLink, themed.socialLink)}
+          >
+            <ExternalLink size={14} aria-hidden="true" />
+            Watch Introduction Video
+          </a>
+        </section>
+      )}
+
+      {/* Education */}
+      {profile.education?.length > 0 && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="education-heading">
+          <h2 id="education-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            <GraduationCap size={18} aria-hidden="true" /> Education
+          </h2>
+          {profile.education.map((edu: any, i: number) => (
+            <div key={i} className={cn(commonStyles.reviewCard, themed.reviewCard)} style={{ marginBottom: '0.75rem' }}>
+              <div>
+                <p className={cn(commonStyles.reviewerName, themed.reviewerName)}>{edu.degree || edu.title}</p>
+                <p className={cn(commonStyles.reviewProject, themed.reviewProject)}>{edu.institution || edu.school}</p>
+                {edu.year && <time className={cn(commonStyles.reviewDate, themed.reviewDate)}>{edu.year}</time>}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Certifications */}
+      {profile.certifications?.length > 0 && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="certs-heading">
+          <h2 id="certs-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            <Award size={18} aria-hidden="true" /> Certifications
+          </h2>
+          {profile.certifications.map((cert: any, i: number) => (
+            <div key={i} className={cn(commonStyles.reviewCard, themed.reviewCard)} style={{ marginBottom: '0.75rem' }}>
+              <div>
+                <p className={cn(commonStyles.reviewerName, themed.reviewerName)}>{cert.name || cert.title}</p>
+                <p className={cn(commonStyles.reviewProject, themed.reviewProject)}>{cert.issuer || cert.organization}</p>
+                {cert.year && <time className={cn(commonStyles.reviewDate, themed.reviewDate)}>{cert.year}</time>}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Work History */}
+      {profile.workHistory?.length > 0 && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="work-heading">
+          <h2 id="work-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            <Briefcase size={18} aria-hidden="true" /> Work History
+          </h2>
+          {profile.workHistory.map((work: any, i: number) => (
+            <div key={i} className={cn(commonStyles.reviewCard, themed.reviewCard)} style={{ marginBottom: '0.75rem' }}>
+              <div>
+                <p className={cn(commonStyles.reviewerName, themed.reviewerName)}>{work.title || work.role}</p>
+                <p className={cn(commonStyles.reviewProject, themed.reviewProject)}>{work.company}</p>
+                {work.duration && <time className={cn(commonStyles.reviewDate, themed.reviewDate)}>{work.duration}</time>}
+                {work.description && <p className={cn(commonStyles.aboutText, themed.aboutText)} style={{ marginTop: '0.5rem' }}>{work.description}</p>}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Achievements */}
+      {profile.achievements?.length > 0 && (
+        <section className={cn(commonStyles.section, themed.section)} aria-labelledby="achievements-heading">
+          <h2 id="achievements-heading" className={cn(commonStyles.sectionTitle, themed.sectionTitle)}>
+            <Award size={18} aria-hidden="true" /> Achievements
+          </h2>
+          <div className={cn(commonStyles.skillsGrid, themed.skillsGrid)}>
+            {profile.achievements.map((achievement: any, i: number) => (
+              <span key={i} className={cn(commonStyles.skillTag, themed.skillTag)}>
+                {typeof achievement === 'string' ? achievement : achievement.title || achievement.name}
               </span>
             ))}
           </div>
@@ -462,6 +617,54 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId }) => {
             >
               <Globe size={16} aria-hidden="true" />
               Website
+            </a>
+          )}
+          {profile.twitterUrl && (
+            <a
+              href={profile.twitterUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(commonStyles.socialLink, themed.socialLink)}
+              aria-label="Visit Twitter/X profile"
+            >
+              <Twitter size={16} aria-hidden="true" />
+              Twitter
+            </a>
+          )}
+          {profile.dribbbleUrl && (
+            <a
+              href={profile.dribbbleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(commonStyles.socialLink, themed.socialLink)}
+              aria-label="Visit Dribbble profile"
+            >
+              <Palette size={16} aria-hidden="true" />
+              Dribbble
+            </a>
+          )}
+          {profile.behanceUrl && (
+            <a
+              href={profile.behanceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(commonStyles.socialLink, themed.socialLink)}
+              aria-label="Visit Behance profile"
+            >
+              <Layers size={16} aria-hidden="true" />
+              Behance
+            </a>
+          )}
+          {profile.stackoverflowUrl && (
+            <a
+              href={profile.stackoverflowUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(commonStyles.socialLink, themed.socialLink)}
+              aria-label="Visit Stack Overflow profile"
+            >
+              <ExternalLink size={16} aria-hidden="true" />
+              Stack Overflow
             </a>
           )}
         </div>

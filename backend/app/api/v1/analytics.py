@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, Query, HTTPException
 from typing import List
 from datetime import datetime, timedelta, timezone
 
-from app.core.security import get_current_user
+from app.core.security import get_current_user, require_admin
 from app.services import analytics_service
+from app.db.turso_http import get_turso_http
 from app.schemas.analytics_schemas import (
     TrendAnalysisRequest,
     DateRangeRequest,
@@ -25,17 +26,11 @@ from app.schemas.analytics_schemas import (
     IntervalEnum,
     SortByEnum
 )
+import logging
+
+logger = logging.getLogger("megilance")
 
 router = APIRouter()
-
-
-def require_admin(current_user = Depends(get_current_user)):
-    """Check if user is admin"""
-    user_type = current_user.get("user_type", "").lower()
-    role = current_user.get("role", "").lower()
-    if user_type != "admin" and role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    return current_user
 
 
 # ==================== User Analytics ====================
@@ -255,3 +250,257 @@ async def get_dashboard_summary(
         "health": analytics_service.get_platform_health(),
         "engagement": analytics_service.get_engagement_metrics(30)
     }
+
+
+# ==================== User-Facing Dashboards ====================
+
+@router.get(
+    "/dashboard/freelancer",
+    summary="Get freelancer personal dashboard"
+)
+async def get_freelancer_dashboard(
+    period: str = Query("month", pattern=r'^(week|month|quarter|year)$'),
+    current_user = Depends(get_current_user)
+):
+    """
+    Comprehensive freelancer dashboard with earnings, proposal stats,
+    active contracts, and performance metrics. Accessible by the freelancer only.
+    """
+    user_id = current_user.get("user_id") or current_user.get("id")
+    user_type = (current_user.get("user_type") or "").lower()
+    if user_type != "freelancer":
+        raise HTTPException(status_code=403, detail="Only freelancers can access this dashboard")
+
+    try:
+        turso = get_turso_http()
+        now = datetime.now(timezone.utc)
+        period_days = {"week": 7, "month": 30, "quarter": 90, "year": 365}
+        period_start = (now - timedelta(days=period_days[period])).isoformat()
+
+        # Earnings in period
+        earnings = turso.fetch_one(
+            """SELECT COALESCE(SUM(amount), 0), COUNT(*),
+                      COALESCE(SUM(platform_fee), 0)
+               FROM payments WHERE to_user_id = ? AND status = 'completed'
+               AND created_at >= ?""",
+            [user_id, period_start]
+        )
+        period_earnings = round(float(earnings[0]), 2) if earnings else 0
+        period_transactions = int(earnings[1]) if earnings else 0
+        period_fees = round(float(earnings[2]), 2) if earnings else 0
+
+        # All-time earnings
+        all_time = turso.fetch_one(
+            "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE to_user_id = ? AND status = 'completed'",
+            [user_id]
+        )
+        all_time_earnings = round(float(all_time[0]), 2) if all_time else 0
+
+        # Active contracts
+        active_contracts = turso.fetch_one(
+            "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status = 'active'",
+            [user_id]
+        )
+        active_contract_count = int(active_contracts[0]) if active_contracts else 0
+
+        # Completed contracts
+        completed_contracts = turso.fetch_one(
+            "SELECT COUNT(*) FROM contracts WHERE freelancer_id = ? AND status = 'completed'",
+            [user_id]
+        )
+        completed_count = int(completed_contracts[0]) if completed_contracts else 0
+
+        # Proposal stats
+        proposals = turso.execute(
+            """SELECT status, COUNT(*) FROM proposals
+               WHERE freelancer_id = ? AND is_draft = 0
+               GROUP BY status""",
+            [user_id]
+        )
+        prop_breakdown = {}
+        prop_total = 0
+        for row in proposals.get("rows", []):
+            s = row[0] or "unknown"
+            c = int(row[1] or 0)
+            prop_breakdown[s] = c
+            prop_total += c
+
+        accepted = prop_breakdown.get("accepted", 0)
+        rejected = prop_breakdown.get("rejected", 0)
+        decided = accepted + rejected
+        acceptance_rate = round((accepted / decided) * 100, 1) if decided > 0 else 0
+
+        # Average rating
+        avg_rating = turso.fetch_one(
+            "SELECT AVG(rating), COUNT(*) FROM reviews WHERE reviewee_id = ? AND is_public = 1",
+            [user_id]
+        )
+        rating = round(float(avg_rating[0]), 2) if avg_rating and avg_rating[0] else 0
+        review_count = int(avg_rating[1]) if avg_rating else 0
+
+        # Pending milestones
+        pending_ms = turso.fetch_one(
+            """SELECT COUNT(*), COALESCE(SUM(amount), 0)
+               FROM milestones m
+               JOIN contracts c ON m.contract_id = c.id
+               WHERE c.freelancer_id = ? AND m.status IN ('pending', 'submitted')""",
+            [user_id]
+        )
+
+        return {
+            "user_id": user_id,
+            "period": period,
+            "earnings": {
+                "period_total": period_earnings,
+                "period_transactions": period_transactions,
+                "period_fees_paid": period_fees,
+                "period_net": round(period_earnings - period_fees, 2),
+                "all_time_total": all_time_earnings,
+            },
+            "contracts": {
+                "active": active_contract_count,
+                "completed": completed_count,
+            },
+            "proposals": {
+                "total": prop_total,
+                "acceptance_rate": acceptance_rate,
+                "status_breakdown": prop_breakdown,
+            },
+            "reputation": {
+                "average_rating": rating,
+                "total_reviews": review_count,
+            },
+            "milestones": {
+                "pending_count": int(pending_ms[0]) if pending_ms else 0,
+                "pending_amount": round(float(pending_ms[1]), 2) if pending_ms else 0,
+            },
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("get_freelancer_dashboard failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=503, detail="Database temporarily unavailable")
+
+
+@router.get(
+    "/dashboard/client",
+    summary="Get client personal dashboard"
+)
+async def get_client_dashboard(
+    period: str = Query("month", pattern=r'^(week|month|quarter|year)$'),
+    current_user = Depends(get_current_user)
+):
+    """
+    Comprehensive client dashboard with spending, project stats,
+    active contracts, and hiring metrics. Accessible by the client only.
+    """
+    user_id = current_user.get("user_id") or current_user.get("id")
+    user_type = (current_user.get("user_type") or "").lower()
+    if user_type != "client":
+        raise HTTPException(status_code=403, detail="Only clients can access this dashboard")
+
+    try:
+        turso = get_turso_http()
+        now = datetime.now(timezone.utc)
+        period_days = {"week": 7, "month": 30, "quarter": 90, "year": 365}
+        period_start = (now - timedelta(days=period_days[period])).isoformat()
+
+        # Spending in period
+        spending = turso.fetch_one(
+            """SELECT COALESCE(SUM(amount), 0), COUNT(*)
+               FROM payments WHERE from_user_id = ? AND status = 'completed'
+               AND created_at >= ?""",
+            [user_id, period_start]
+        )
+        period_spending = round(float(spending[0]), 2) if spending else 0
+        period_transactions = int(spending[1]) if spending else 0
+
+        # All-time spending
+        all_time = turso.fetch_one(
+            "SELECT COALESCE(SUM(amount), 0) FROM payments WHERE from_user_id = ? AND status = 'completed'",
+            [user_id]
+        )
+        all_time_spending = round(float(all_time[0]), 2) if all_time else 0
+
+        # Project stats
+        project_stats = turso.execute(
+            "SELECT status, COUNT(*) FROM projects WHERE client_id = ? GROUP BY status",
+            [user_id]
+        )
+        proj_breakdown = {}
+        proj_total = 0
+        for row in project_stats.get("rows", []):
+            s = row[0] or "unknown"
+            c = int(row[1] or 0)
+            proj_breakdown[s] = c
+            proj_total += c
+
+        # Active contracts
+        active_contracts = turso.fetch_one(
+            "SELECT COUNT(*) FROM contracts WHERE client_id = ? AND status = 'active'",
+            [user_id]
+        )
+
+        # Completed contracts
+        completed_contracts = turso.fetch_one(
+            "SELECT COUNT(*) FROM contracts WHERE client_id = ? AND status = 'completed'",
+            [user_id]
+        )
+
+        # Total proposals received on user's projects
+        proposals_received = turso.fetch_one(
+            """SELECT COUNT(*)
+               FROM proposals pr
+               JOIN projects p ON pr.project_id = p.id
+               WHERE p.client_id = ? AND pr.is_draft = 0""",
+            [user_id]
+        )
+
+        # Pending milestones to approve
+        pending_ms = turso.fetch_one(
+            """SELECT COUNT(*), COALESCE(SUM(m.amount), 0)
+               FROM milestones m
+               JOIN contracts c ON m.contract_id = c.id
+               WHERE c.client_id = ? AND m.status = 'submitted'""",
+            [user_id]
+        )
+
+        # Average rating given
+        avg_given = turso.fetch_one(
+            "SELECT AVG(rating), COUNT(*) FROM reviews WHERE reviewer_id = ?",
+            [user_id]
+        )
+
+        return {
+            "user_id": user_id,
+            "period": period,
+            "spending": {
+                "period_total": period_spending,
+                "period_transactions": period_transactions,
+                "all_time_total": all_time_spending,
+            },
+            "projects": {
+                "total": proj_total,
+                "status_breakdown": proj_breakdown,
+            },
+            "contracts": {
+                "active": int(active_contracts[0]) if active_contracts else 0,
+                "completed": int(completed_contracts[0]) if completed_contracts else 0,
+            },
+            "hiring": {
+                "total_proposals_received": int(proposals_received[0]) if proposals_received else 0,
+                "average_rating_given": round(float(avg_given[0]), 2) if avg_given and avg_given[0] else 0,
+                "reviews_given": int(avg_given[1]) if avg_given else 0,
+            },
+            "milestones_to_approve": {
+                "count": int(pending_ms[0]) if pending_ms else 0,
+                "amount": round(float(pending_ms[1]), 2) if pending_ms else 0,
+            },
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("get_client_dashboard failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=503, detail="Database temporarily unavailable")

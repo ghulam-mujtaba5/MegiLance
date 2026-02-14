@@ -1,7 +1,25 @@
 // @AI-HINT: Dynamic sitemap generation for Google Search Console indexing.
-// Covers all public pages, programmatic SEO hire pages, blog, category pages, and landing pages.
-// Maximized for indexing coverage and page ranking.
+// Covers all public pages, programmatic SEO hire pages, blog, category pages,
+// landing pages, AND dynamic content (jobs, gigs, freelancers, blog posts).
 import type { MetadataRoute } from 'next';
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+
+/** Safely fetch a paginated list from the backend API, returning [] on failure. */
+async function fetchPublicList<T>(path: string, params: Record<string, string> = {}): Promise<T[]> {
+  try {
+    const qs = new URLSearchParams({ page: '1', page_size: '500', ...params });
+    const res = await fetch(`${BACKEND_URL}/api${path}?${qs}`, {
+      next: { revalidate: 3600 }, // ISR: regenerate every hour
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    // Handle both plain arrays and { items: [...] } wrappers
+    return Array.isArray(data) ? data : Array.isArray(data.items) ? data.items : [];
+  } catch {
+    return [];
+  }
+}
 
 // ── Programmatic SEO: Skill × Industry combinations for /hire/[skill]/[industry] ──
 const HIRE_SKILLS = [
@@ -25,9 +43,17 @@ const HIRE_INDUSTRIES = [
   'insurance', 'legal', 'agriculture', 'energy', 'fashion', 'food-delivery',
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.site';
   const currentDate = new Date();
+
+  // ── Fetch dynamic content in parallel ─────────────────────────────────
+  const [projects, gigs, freelancers, blogPosts] = await Promise.all([
+    fetchPublicList<{ id: number; updated_at?: string }>('/projects', { status: 'open' }),
+    fetchPublicList<{ slug: string; updated_at?: string }>('/gigs', { status: 'active' }),
+    fetchPublicList<{ id: number; updated_at?: string }>('/marketplace/freelancers'),
+    fetchPublicList<{ slug: string; updated_at?: string; created_at?: string }>('/blog', { is_published: 'true' }),
+  ]);
 
   // ── Static / marketing pages ──────────────────────────────────────────
   const topLevelPaths = [
@@ -157,5 +183,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
-  return [...staticPages, ...skillPages, ...hirePages];
+  // ── Dynamic content pages ────────────────────────────────────────────
+  const jobPages: MetadataRoute.Sitemap = projects.map((p) => ({
+    url: `${baseUrl}/jobs/${p.id}`,
+    lastModified: p.updated_at ? new Date(p.updated_at) : currentDate,
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }));
+
+  const gigPages: MetadataRoute.Sitemap = gigs.map((g) => ({
+    url: `${baseUrl}/gigs/${g.slug}`,
+    lastModified: g.updated_at ? new Date(g.updated_at) : currentDate,
+    changeFrequency: 'daily' as const,
+    priority: 0.8,
+  }));
+
+  const freelancerPages: MetadataRoute.Sitemap = freelancers.map((f) => ({
+    url: `${baseUrl}/freelancers/${f.id}`,
+    lastModified: f.updated_at ? new Date(f.updated_at) : currentDate,
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
+
+  const blogPages: MetadataRoute.Sitemap = blogPosts.map((b) => ({
+    url: `${baseUrl}/blog/${b.slug}`,
+    lastModified: b.updated_at ? new Date(b.updated_at) : b.created_at ? new Date(b.created_at) : currentDate,
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...skillPages, ...hirePages, ...jobPages, ...gigPages, ...freelancerPages, ...blogPages];
 }

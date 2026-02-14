@@ -61,3 +61,27 @@
   background-color: #f1f5f9;
   color: #0f172a;
 }
+
+/* ── Quick Action Description ───────── */
+.quickActionDesc { color: #94a3b8; }
+
+/* ── Metrics Row ────────────────────── */
+.metricCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.metricStatValue { color: #0f172a; }
+.metricStatLabel { color: #64748b; }
+
+/* ── Timeline Section ───────────────── */
+.timelineSection { border-color: #e2e8f0; }
+
+/* ── Insight Card ───────────────────── */
+.insightCard {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+.insightTitle { color: #334155; }
+.insightValue { color: #0f172a; }
+.insightLabel { color: #94a3b8; }

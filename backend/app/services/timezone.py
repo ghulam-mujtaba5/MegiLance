@@ -1,14 +1,5 @@
 # @AI-HINT: Timezone management service for global users
-"""
-Timezone Management Service - Smart timezone handling and scheduling.
-
-Features:
-- User timezone preferences
-- Automatic timezone detection
-- Time conversion utilities
-- Availability across timezones
-- Meeting time suggestions
-"""
+"""Timezone Management Service - Smart timezone handling and scheduling."""
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any

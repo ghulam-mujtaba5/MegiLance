@@ -1,5 +1,5 @@
-// @AI-HINT: Premium SaaS Login component for MegiLance platform. This is the main authentication interface that handles three user roles (Admin, Client, Freelancer) with investor-grade UI quality. Features secure login, role selection, social authentication, and responsive design following exact MegiLance brand guidelines. Uses per-component CSS architecture with .common.css, .light.css, .dark.css theming. Designed to match quality standards of Linear, Vercel, GitHub, and Upwork Pro.
-// @AI-HINT: Premium SaaS Login component for MegiLance. Redesigned for investor-grade UI/UX quality, matching standards of Vercel, Linear, and Toptal. Features a modern two-panel layout, role-based dynamic content, and pixel-perfect implementation of the official brand playbook.
+// @AI-HINT: Premium SaaS Login component for MegiLance platform. This is the main authentication interface that handles three user roles (Admin, Client, Freelancer) with production-ready UI quality. Features secure login, role selection, social authentication, and responsive design following exact MegiLance brand guidelines. Uses per-component CSS architecture with .common.css, .light.css, .dark.css theming. Designed to match quality standards of Linear, Vercel, GitHub, and Upwork Pro.
+// @AI-HINT: Premium SaaS Login component for MegiLance. Redesigned for production-ready UI/UX quality, matching standards of Vercel, Linear, and Toptal. Features a modern two-panel layout, role-based dynamic content, and pixel-perfect implementation of the official brand playbook.
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -12,6 +12,7 @@ import api from '@/lib/api';
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import AuthBrandingPanel from '@/app/components/Auth/BrandingPanel/BrandingPanel';
+import DevQuickLogin from '@/app/components/Auth/DevQuickLogin/DevQuickLogin';
 import Checkbox from '@/app/components/Checkbox/Checkbox';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
@@ -345,7 +346,12 @@ const Login: React.FC = () => {
             <span className={styles.dividerText}>OR</span>
           </StaggerItem>
 
-          {/* DevQuickLogin commented out - Turbopack stale cache fix */}
+          <StaggerItem>
+            <DevQuickLogin
+              onCredentialSelect={handleDevQuickLogin}
+              onAutoLogin={handleDevAutoLogin}
+            />
+          </StaggerItem>
 
           <StaggerItem>
             {needs2FA ? (

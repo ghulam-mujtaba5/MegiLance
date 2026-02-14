@@ -23,6 +23,7 @@ import {
   Play,
 } from 'lucide-react';
 
+import { gigsApi } from '@/lib/api';
 import common from './GigsList.common.module.css';
 import light from './GigsList.light.module.css';
 import dark from './GigsList.dark.module.css';
@@ -58,18 +59,11 @@ const GigsList: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch gigs from API
     const fetchGigs = async () => {
       try {
-        const response = await fetch('/api/gigs/seller/my-gigs', {
-          credentials: 'include',
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setGigs(Array.isArray(data) ? data : data.items || data.gigs || []);
-        } else {
-          setGigs([]);
-        }
+        const data = await gigsApi.myGigs();
+        const items = data as any;
+        setGigs(Array.isArray(items) ? items : items?.items || items?.gigs || []);
       } catch (error) {
         console.error('Failed to fetch gigs:', error);
         setGigs([]);
@@ -128,7 +122,6 @@ const GigsList: React.FC = () => {
 
   const handleToggleStatus = async (gigId: string, currentStatus: Gig['status']) => {
     const newStatus = currentStatus === 'active' ? 'paused' : 'active';
-    const endpoint = newStatus === 'paused' ? 'pause' : 'publish';
     // Optimistic update
     setGigs(prev =>
       prev.map(g =>
@@ -136,10 +129,11 @@ const GigsList: React.FC = () => {
       )
     );
     try {
-      await fetch(`/api/gigs/${gigId}/${endpoint}`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      if (newStatus === 'paused') {
+        await gigsApi.pause(gigId);
+      } else {
+        await gigsApi.publish(gigId);
+      }
     } catch {
       // Revert on error
       setGigs(prev =>
@@ -157,12 +151,9 @@ const GigsList: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await fetch(`/api/gigs/${deleteTarget}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
+      await gigsApi.delete(deleteTarget);
     } catch {
-      // Optimistic removal
+      // Continue with optimistic removal
     }
     setGigs(prev => prev.filter(g => g.id !== deleteTarget));
     setDeleteTarget(null);

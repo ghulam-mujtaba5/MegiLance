@@ -53,7 +53,7 @@ const Press: React.FC = () => {
   const [copied, setCopied] = React.useState(false);
 
   const copyBoilerplate = () => {
-    const text = 'MegiLance is an AI-powered freelance marketplace that connects businesses with top talent through intelligent matching. Featuring secure USDC escrow payments with zero fees, real-time collaboration tools, and investor-grade security, MegiLance is revolutionizing how the world works together.';
+    const text = 'MegiLance is an AI-powered freelance marketplace that connects businesses with top talent through intelligent matching. Featuring secure USDC escrow payments with zero fees, real-time collaboration tools, and production-ready security, MegiLance is revolutionizing how the world works together.';
     navigator.clipboard?.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

@@ -1,14 +1,5 @@
 # @AI-HINT: File versioning service - track file versions, diffs, and rollbacks
-"""
-File Versioning Service - Document Version Control
-
-Features:
-- Version history for uploaded files
-- Diff between versions
-- Rollback to previous versions
-- Lock files for editing
-- Compare versions
-"""
+"""File Versioning Service - Document Version Control."""
 
 import uuid
 import hashlib

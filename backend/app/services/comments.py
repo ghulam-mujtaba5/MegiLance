@@ -1,15 +1,5 @@
 # @AI-HINT: Comments service - threaded commenting system for projects, proposals, and deliverables
-"""
-Comments Service - Threaded Discussion System
-
-Features:
-- Nested/threaded comments
-- Rich text support (Markdown)
-- Mentions (@username)
-- Reactions (emoji)
-- Edit history
-- Comment moderation
-"""
+"""Comments Service - Threaded Discussion System."""
 
 import uuid
 import re

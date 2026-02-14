@@ -16,7 +16,8 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
+from app.models.user import User
 from app.core.feature_flags import (
     get_feature_flags,
     FeatureFlags,
@@ -168,11 +169,9 @@ async def track_exposure(
 @router.get("/admin/all")
 async def admin_get_all_flags(
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Get all feature flags (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     all_flags = await flags.get_all_flags()
@@ -201,11 +200,9 @@ async def admin_get_all_flags(
 async def admin_get_flag(
     flag_name: str,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Get a specific flag details (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     flag = await flags.get_flag(flag_name)
@@ -232,11 +229,9 @@ async def admin_get_flag(
 async def admin_create_flag(
     request: CreateFlagRequest,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Create a new feature flag (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     existing = await flags.get_flag(request.name)
@@ -275,11 +270,9 @@ async def admin_update_flag(
     flag_name: str,
     request: UpdateFlagRequest,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Update a feature flag (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     flag = await flags.get_flag(flag_name)
@@ -324,11 +317,9 @@ async def admin_update_flag(
 async def admin_delete_flag(
     flag_name: str,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Delete a feature flag (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     flag = await flags.get_flag(flag_name)
@@ -346,11 +337,9 @@ async def admin_update_rollout(
     flag_name: str,
     percentage: int = Query(..., ge=0, le=100),
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Quick update of rollout percentage (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     flag = await flags.get_flag(flag_name)
@@ -373,11 +362,9 @@ async def admin_update_rollout(
 async def admin_get_flag_analytics(
     flag_name: str,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Get analytics for a specific flag (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     analytics = await flags.get_analytics(flag_name)
@@ -403,11 +390,9 @@ async def admin_get_flag_analytics(
 @router.get("/admin/analytics/summary")
 async def admin_get_analytics_summary(
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Get analytics summary for all flags (admin only)."""
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     flags = get_feature_flags()
     all_analytics = await flags.get_analytics()

@@ -1,15 +1,5 @@
 # @AI-HINT: Portfolio builder service for professional showcases
-"""
-Portfolio Builder Service - Professional portfolio creation and showcase.
-
-Features:
-- Portfolio templates
-- Project showcase
-- Media galleries
-- Case studies
-- Testimonial display
-- Custom domains
-"""
+"""Portfolio Builder Service - Professional portfolio creation and showcase."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

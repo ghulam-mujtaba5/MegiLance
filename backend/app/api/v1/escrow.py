@@ -9,6 +9,7 @@ from app.schemas.escrow import (
     EscrowRelease, EscrowRefund, EscrowBalance
 )
 from app.services import escrow_service
+from app.services.db_utils import get_user_role
 
 router = APIRouter(prefix="/escrow", tags=["escrow"])
 
@@ -48,10 +49,7 @@ async def list_escrow(
     current_user: User = Depends(get_current_user)
 ):
     """List escrow records. Clients see escrow they funded, freelancers see escrow for their contracts."""
-    user_role = getattr(current_user, 'role', None) or getattr(current_user, 'user_type', 'client')
-    if hasattr(user_role, 'value'):
-        user_role = user_role.value
-    user_role = str(user_role).lower()
+    user_role = get_user_role(current_user)
 
     return escrow_service.list_escrows(current_user.id, user_role, contract_id, status_filter, limit, offset)
 
@@ -66,10 +64,7 @@ async def get_escrow_balance(
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
 
-    user_role = getattr(current_user, 'role', None) or getattr(current_user, 'user_type', 'client')
-    if hasattr(user_role, 'value'):
-        user_role = user_role.value
-    user_role = str(user_role).lower()
+    user_role = get_user_role(current_user)
 
     if user_role == "client" and contract["client_id"] != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
@@ -122,10 +117,7 @@ async def refund_escrow(
     if not escrow:
         raise HTTPException(status_code=404, detail="Escrow not found")
 
-    user_role = getattr(current_user, 'role', None) or getattr(current_user, 'user_type', 'client')
-    if hasattr(user_role, 'value'):
-        user_role = user_role.value
-    user_role = str(user_role).lower()
+    user_role = get_user_role(current_user)
 
     if user_role != "admin" and escrow["client_id"] != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
@@ -154,10 +146,7 @@ async def get_escrow(
 
     freelancer_id = escrow_service.get_freelancer_id_for_contract(escrow["contract_id"])
 
-    user_role = getattr(current_user, 'role', None) or getattr(current_user, 'user_type', 'client')
-    if hasattr(user_role, 'value'):
-        user_role = user_role.value
-    user_role = str(user_role).lower()
+    user_role = get_user_role(current_user)
 
     if escrow["client_id"] != current_user.id and freelancer_id != current_user.id:
         if user_role != "admin":

@@ -12,6 +12,7 @@ import Input from '@/app/components/Input/Input';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { Users, UserPlus, X, Mail, Shield } from 'lucide-react';
+import { adminApi } from '@/lib/api';
 
 import commonStyles from './UserManagement.common.module.css';
 import lightStyles from './UserManagement.light.module.css';
@@ -29,13 +30,9 @@ const UserManagementPage: React.FC = () => {
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const apiModule = await import('@/lib/api') as any;
-        const adminApi = apiModule.adminApi;
-        if (adminApi?.getUsers) {
-          const data = await adminApi.getUsers({ page: 1, limit: 20 });
-          if (data?.users || Array.isArray(data)) {
-            setUsers(data.users || data);
-          }
+        const data = await adminApi.getUsers({ page: 1, page_size: 20 }) as any;
+        if (data?.users || Array.isArray(data)) {
+          setUsers(data.users || data);
         }
       } catch {
         // API not available
@@ -56,10 +53,8 @@ const UserManagementPage: React.FC = () => {
     }
     setSubmitting(true);
     try {
-      const apiModule = await import('@/lib/api') as any;
-      const adminApi = apiModule.adminApi;
-      if (adminApi?.inviteUser) {
-        await adminApi.inviteUser({ email: inviteEmail, role: inviteRole });
+      if ((adminApi as any).inviteUser) {
+        await (adminApi as any).inviteUser({ email: inviteEmail, role: inviteRole });
       }
       notify({ title: 'Invitation sent', description: `Invited ${inviteEmail} as ${inviteRole}.`, variant: 'success', duration: 3000 });
       setInviteEmail('');
@@ -151,7 +146,7 @@ const UserManagementPage: React.FC = () => {
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' }}>
-                      {['Name', 'Email', 'Role', 'Status'].map(h => (
+                      {['Name', 'Email', 'Role', 'Headline', 'Status'].map(h => (
                         <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#888' : '#666' }}>{h}</th>
                       ))}
                     </tr>
@@ -166,6 +161,7 @@ const UserManagementPage: React.FC = () => {
                             {u.role || u.user_type || '--'}
                           </span>
                         </td>
+                        <td style={{ padding: '0.75rem 1rem', color: isDark ? '#aaa' : '#666', fontSize: '0.85rem' }}>{u.headline || '--'}</td>
                         <td style={{ padding: '0.75rem 1rem' }}>
                           <span style={{ width: 8, height: 8, borderRadius: '50%', display: 'inline-block', marginRight: 6, background: u.is_active ? '#27AE60' : '#e81123' }} />
                           {u.is_active ? 'Active' : 'Inactive'}

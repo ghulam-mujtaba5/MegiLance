@@ -1,15 +1,5 @@
 # @AI-HINT: Mobile push notification service for iOS/Android
-"""
-Push Notification Service - FCM and APNs integration.
-
-Features:
-- Firebase Cloud Messaging (FCM) for Android
-- Apple Push Notification Service (APNs) for iOS
-- Device token management
-- Notification templates
-- Batch notifications
-- Silent push for data sync
-"""
+"""Push Notification Service - FCM and APNs integration."""
 
 from datetime import datetime, timezone
 from typing import Optional, List, Dict, Any

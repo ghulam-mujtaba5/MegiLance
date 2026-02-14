@@ -16,73 +16,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from datetime import datetime, timezone
 
 from app.core.security import get_current_user_from_token
+from app.schemas.review import ReviewCreateRequest, ReviewUpdateRequest
 from app.services import reviews_service
+from app.services.db_utils import paginate_params
 
 router = APIRouter()
-
-# === Input Validation Constants ===
-MAX_REVIEW_TEXT_LENGTH = 2000
-MIN_REVIEW_TEXT_LENGTH = 20
-MIN_RATING = 1.0
-MAX_RATING = 5.0
-
-
-def _validate_rating(rating: float, field_name: str = "Rating") -> float:
-    """Validate rating is within acceptable range"""
-    if rating is None:
-        return None
-    if not isinstance(rating, (int, float)):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{field_name} must be a number"
-        )
-    if rating < MIN_RATING or rating > MAX_RATING:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"{field_name} must be between {MIN_RATING} and {MAX_RATING}"
-        )
-    return float(rating)
-
-
-def _validate_review_text(text: str) -> str:
-    """Validate review text content"""
-    if not text:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Review text is required"
-        )
-    
-    text = text.strip()
-    
-    if len(text) < MIN_REVIEW_TEXT_LENGTH:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Review text must be at least {MIN_REVIEW_TEXT_LENGTH} characters"
-        )
-    
-    if len(text) > MAX_REVIEW_TEXT_LENGTH:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Review text exceeds maximum length of {MAX_REVIEW_TEXT_LENGTH} characters"
-        )
-    
-    return text
-
-
-def _validate_review_data(review_data: dict) -> None:
-    """Validate all review input data"""
-    # Validate main rating
-    if "rating" in review_data:
-        _validate_rating(review_data["rating"], "Overall rating")
-    
-    # Validate sub-ratings
-    for field in ["communication_rating", "quality_rating", "professionalism_rating", "deadline_rating"]:
-        if field in review_data and review_data[field] is not None:
-            _validate_rating(review_data[field], field.replace("_", " ").title())
-    
-    # Validate review text
-    if "review_text" in review_data:
-        review_data["review_text"] = _validate_review_text(review_data["review_text"])
 
 
 def get_current_user(token_data = Depends(get_current_user_from_token)):
@@ -92,7 +30,7 @@ def get_current_user(token_data = Depends(get_current_user_from_token)):
 
 @router.post("", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def create_review(
-    review_data: dict,
+    review_data: ReviewCreateRequest,
     current_user = Depends(get_current_user)
 ):
     """
@@ -104,29 +42,18 @@ async def create_review(
     - One review per party per contract
     - Contract must be completed
     """
-    # Validate input
-    _validate_review_data(review_data)
-    
     user_id = current_user.get("user_id")
-    contract_id = review_data.get("contract_id")
-    reviewed_user_id = review_data.get("reviewed_user_id")
-    
-    # Validate required fields
-    if not contract_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Contract ID is required"
-        )
-    if not reviewed_user_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Reviewed user ID is required"
-        )
+    contract_id = review_data.contract_id
+    reviewed_user_id = review_data.reviewed_user_id
     
     # Get contract
     contract = reviews_service.get_contract_by_id(contract_id)
     if not contract:
         raise HTTPException(status_code=404, detail="Contract not found")
+    
+    # Contract must be completed before reviews are allowed
+    if contract.get("status") != "completed":
+        raise HTTPException(status_code=400, detail="Can only review completed contracts")
     
     # Verify user is part of the contract
     if user_id not in [contract.get("client_id"), contract.get("freelancer_id")]:
@@ -149,15 +76,15 @@ async def create_review(
     
     # Prepare rating breakdown
     rating_breakdown = {
-        "communication": review_data.get("communication_rating"),
-        "quality": review_data.get("quality_rating"),
-        "professionalism": review_data.get("professionalism_rating"),
-        "deadline": review_data.get("deadline_rating")
+        "communication": review_data.communication_rating,
+        "quality": review_data.quality_rating,
+        "professionalism": review_data.professionalism_rating,
+        "deadline": review_data.deadline_rating
     }
     
-    rating = review_data.get("rating", 5.0)
-    is_public = review_data.get("is_public", True)
-    review_text = review_data.get("review_text")
+    rating = review_data.rating
+    is_public = review_data.is_public
+    review_text = review_data.review_text
     
     # Create review
     new_id = reviews_service.create_review(
@@ -174,10 +101,10 @@ async def create_review(
         "reviewer_id": user_id,
         "reviewed_user_id": reviewed_user_id,
         "rating": rating,
-        "communication_rating": review_data.get("communication_rating"),
-        "quality_rating": review_data.get("quality_rating"),
-        "professionalism_rating": review_data.get("professionalism_rating"),
-        "deadline_rating": review_data.get("deadline_rating"),
+        "communication_rating": review_data.communication_rating,
+        "quality_rating": review_data.quality_rating,
+        "professionalism_rating": review_data.professionalism_rating,
+        "deadline_rating": review_data.deadline_rating,
         "review_text": review_text,
         "is_public": is_public,
         "created_at": now,
@@ -191,19 +118,22 @@ async def list_reviews(
     reviewer_id: Optional[int] = Query(None, description="Filter by reviewer"),
     contract_id: Optional[int] = Query(None, description="Filter by contract"),
     min_rating: Optional[float] = Query(None, ge=1.0, le=5.0, description="Minimum rating"),
+    max_rating: Optional[float] = Query(None, ge=1.0, le=5.0, description="Maximum rating"),
     is_public: Optional[bool] = Query(None, description="Filter by public status"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    sort: Optional[str] = Query("newest", description="Sort: newest, oldest, highest, lowest"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user = Depends(get_current_user)
 ):
     """
-    List reviews with filtering.
+    List reviews with filtering and sorting.
     
     Only public reviews are visible unless you're:
     - The reviewer
     - The reviewed user
     - An admin
     """
+    offset, limit = paginate_params(page, page_size)
     current_user_id = current_user.get("user_id")
     role = current_user.get("role", "")
     
@@ -226,6 +156,10 @@ async def list_reviews(
         where_clauses.append("rating >= ?")
         params.append(min_rating)
     
+    if max_rating is not None:
+        where_clauses.append("rating <= ?")
+        params.append(max_rating)
+    
     # Privacy filter
     if role.lower() != "admin":
         where_clauses.append("(is_public = 1 OR reviewer_id = ? OR reviewee_id = ?)")
@@ -236,17 +170,31 @@ async def list_reviews(
         params.append(1 if is_public else 0)
     
     where_sql = " AND ".join(where_clauses) if where_clauses else "1=1"
-    params.extend([limit, skip])
     
-    rows = reviews_service.query_reviews(where_sql, params)
+    # Sorting
+    sort_map = {
+        "newest": "r.created_at DESC",
+        "oldest": "r.created_at ASC",
+        "highest": "r.rating DESC",
+        "lowest": "r.rating ASC",
+    }
+    order_by = sort_map.get(sort, "r.created_at DESC")
+    
+    params.extend([limit, offset])
+    
+    rows = reviews_service.query_reviews(where_sql, params, order_by=order_by)
     output = []
     for row in rows:
         # Parse breakdown
         breakdown = {}
+        response_data = None
         try:
             if row.get("rating_breakdown"):
                 breakdown = json.loads(row.get("rating_breakdown"))
-        except:
+                # Extract response if present
+                if "response" in breakdown:
+                    response_data = breakdown.pop("response")
+        except (json.JSONDecodeError, TypeError, ValueError):
             pass
             
         output.append({
@@ -261,6 +209,7 @@ async def list_reviews(
             "deadline_rating": breakdown.get("deadline"),
             "review_text": row.get("comment"),
             "is_public": bool(row.get("is_public")),
+            "response": response_data,
             "created_at": row.get("created_at"),
             "updated_at": row.get("updated_at"),
             "project_title": row.get("project_title"),
@@ -325,7 +274,7 @@ async def get_review(
     try:
         if row.get("rating_breakdown"):
             breakdown = json.loads(row.get("rating_breakdown"))
-    except:
+    except (json.JSONDecodeError, TypeError, ValueError):
         pass
 
     return {
@@ -348,7 +297,7 @@ async def get_review(
 @router.patch("/{review_id}", response_model=dict)
 async def update_review(
     review_id: int,
-    review_data: dict,
+    review_data: ReviewUpdateRequest,
     current_user = Depends(get_current_user)
 ):
     """
@@ -373,31 +322,36 @@ async def update_review(
     try:
         if review.get("rating_breakdown"):
             current_breakdown = json.loads(review.get("rating_breakdown"))
-    except:
+    except (json.JSONDecodeError, TypeError, ValueError):
         pass
         
     breakdown_changed = False
-    for field in ["communication_rating", "quality_rating", "professionalism_rating", "deadline_rating"]:
-        if field in review_data:
-            key = field.replace("_rating", "")
-            current_breakdown[key] = review_data[field]
+    for field_name, attr_name in [
+        ("communication", "communication_rating"),
+        ("quality", "quality_rating"),
+        ("professionalism", "professionalism_rating"),
+        ("deadline", "deadline_rating"),
+    ]:
+        value = getattr(review_data, attr_name, None)
+        if value is not None:
+            current_breakdown[field_name] = value
             breakdown_changed = True
             
     if breakdown_changed:
         updates.append("rating_breakdown = ?")
         params.append(json.dumps(current_breakdown))
 
-    if "rating" in review_data:
+    if review_data.rating is not None:
         updates.append("rating = ?")
-        params.append(review_data["rating"])
+        params.append(review_data.rating)
         
-    if "review_text" in review_data:
+    if review_data.review_text is not None:
         updates.append("comment = ?")
-        params.append(review_data["review_text"])
+        params.append(review_data.review_text)
         
-    if "is_public" in review_data:
+    if review_data.is_public is not None:
         updates.append("is_public = ?")
-        params.append(1 if review_data["is_public"] else 0)
+        params.append(1 if review_data.is_public else 0)
     
     if updates:
         updates.append("updated_at = ?")
@@ -433,3 +387,57 @@ async def delete_review(
         raise HTTPException(status_code=403, detail="Only the reviewer or admin can delete this review")
     
     reviews_service.delete_review_record(review_id)
+
+
+@router.post("/{review_id}/respond", response_model=dict)
+async def respond_to_review(
+    review_id: int,
+    response_text: str = Query(..., min_length=10, max_length=2000, description="Response text"),
+    current_user = Depends(get_current_user)
+):
+    """
+    The reviewed user responds to a review (like Upwork/Fiverr reply feature).
+    Only the person who was reviewed can respond, and only once per review.
+    """
+    user_id = current_user.get("user_id")
+
+    review = reviews_service.get_review_by_id(review_id)
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+
+    # Only the reviewed person can respond
+    if user_id != review.get("reviewee_id"):
+        raise HTTPException(status_code=403, detail="Only the reviewed user can respond to this review")
+
+    # Check if already responded
+    breakdown = {}
+    try:
+        raw = review.get("rating_breakdown")
+        if raw:
+            breakdown = json.loads(raw) if isinstance(raw, str) else raw
+    except (json.JSONDecodeError, TypeError):
+        pass
+
+    if breakdown.get("response"):
+        raise HTTPException(status_code=400, detail="You have already responded to this review")
+
+    # Store response in rating_breakdown JSON
+    now = datetime.now(timezone.utc).isoformat()
+    breakdown["response"] = {
+        "text": response_text,
+        "responded_by": user_id,
+        "responded_at": now,
+    }
+
+    reviews_service.update_review_fields(
+        review_id,
+        "rating_breakdown = ?, updated_at = ?",
+        [json.dumps(breakdown), now, review_id]
+    )
+
+    return {
+        "review_id": review_id,
+        "response_text": response_text,
+        "responded_at": now,
+        "message": "Response added successfully"
+    }

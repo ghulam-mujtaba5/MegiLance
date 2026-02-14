@@ -20,6 +20,8 @@ interface UserRow {
   role: 'Admin' | 'Client' | 'Freelancer';
   status: 'Active' | 'Suspended';
   joined: string;
+  headline: string;
+  availabilityStatus: string;
 }
 
 const ROLES = ['All', 'Admin', 'Client', 'Freelancer'] as const;
@@ -99,7 +101,9 @@ const AdminUsers: React.FC = () => {
           email: u.email || '',
           role: u.user_type || 'User',
           status: u.is_active ? 'Active' : 'Suspended',
-          joined: u.joined_at || new Date().toISOString()
+          joined: u.joined_at || new Date().toISOString(),
+          headline: u.headline || '',
+          availabilityStatus: u.availability_status || '',
         }));
         
         // Client-side status filter if needed (imperfect)
@@ -196,8 +200,8 @@ const AdminUsers: React.FC = () => {
   };
 
   const exportCSV = () => {
-    const header = ['Name', 'Email', 'Role', 'Status', 'Joined'];
-    const rowsCsv = sorted.map(r => [r.name, r.email, r.role, r.status, r.joined]);
+    const header = ['Name', 'Email', 'Role', 'Status', 'Headline', 'Availability', 'Joined'];
+    const rowsCsv = sorted.map(r => [r.name, r.email, r.role, r.status, r.headline, r.availabilityStatus, r.joined]);
     const csv = [header, ...rowsCsv]
       .map(cols => cols.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
       .join('\n');

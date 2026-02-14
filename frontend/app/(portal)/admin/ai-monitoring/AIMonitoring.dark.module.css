@@ -12,4 +12,13 @@
 .metric { color: var(--text-primary); }
 
 .list .item { background: var(--surface); border: 1px solid var(--border); }
+.item:hover { background: rgba(69, 115, 223, 0.08); }
 .meta { color: var(--text-secondary); }
+
+.chipActive { background: rgba(69, 115, 223, 0.15); color: var(--primary); opacity: 1; }
+
+.th { border-bottom-color: var(--border); color: var(--text-secondary); }
+.tr { border-bottom-color: var(--border); }
+.tr:hover { background: rgba(255,255,255,0.03); }
+
+.accuracyFill { background: linear-gradient(90deg, var(--primary), var(--success, #27AE60)); }

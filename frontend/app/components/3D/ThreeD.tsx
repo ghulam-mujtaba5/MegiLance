@@ -1,4 +1,4 @@
-// @AI-HINT: Premium 3D CSS Objects Component - Stunning visual elements for billionaire-grade UI
+// @AI-HINT: Premium 3D CSS Objects Component - Enhanced visual elements for premium UI
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -405,7 +405,7 @@ export function SectionDivider3D({
 }
 
 // ==========================================
-// MAGNETIC CURSOR ELEMENT - BILLIONAIRE LEVEL
+// MAGNETIC CURSOR ELEMENT - PREMIUM
 // ==========================================
 export function MagneticElement({ 
   children,
@@ -477,7 +477,7 @@ export function MagneticElement({
 }
 
 // ==========================================
-// AURORA WRAPPER - BILLIONAIRE LEVEL
+// AURORA WRAPPER - PREMIUM
 // ==========================================
 export function AuroraWrapper({ 
   children,
@@ -502,7 +502,7 @@ export function AuroraWrapper({
 }
 
 // ==========================================
-// LIQUID METAL CARD - BILLIONAIRE LEVEL
+// LIQUID METAL CARD - PREMIUM
 // ==========================================
 export function LiquidMetalCard({ 
   children,
@@ -522,7 +522,7 @@ export function LiquidMetalCard({
 }
 
 // ==========================================
-// HOLOGRAPHIC BADGE - BILLIONAIRE LEVEL
+// HOLOGRAPHIC BADGE - PREMIUM
 // ==========================================
 export function HolographicBadge({ 
   children,
@@ -544,7 +544,7 @@ export function HolographicBadge({
 }
 
 // ==========================================
-// DEPTH PARALLAX CONTAINER - BILLIONAIRE LEVEL
+// DEPTH PARALLAX CONTAINER - PREMIUM
 // ==========================================
 export function DepthParallax({ 
   children,
@@ -591,7 +591,7 @@ export function DepthParallax({
 }
 
 // ==========================================
-// GLOW BUTTON - BILLIONAIRE LEVEL
+// GLOW BUTTON - PREMIUM
 // ==========================================
 export function GlowButton3D({ 
   children,
@@ -634,7 +634,7 @@ const ThreeD = {
   BackgroundScene3D,
   StatsCard3D,
   SectionDivider3D,
-  // Billionaire-level components
+  // Premium components
   MagneticElement,
   AuroraWrapper,
   LiquidMetalCard,

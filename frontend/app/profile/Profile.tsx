@@ -22,6 +22,13 @@ interface ApiUser {
   bio?: string;
   role?: string;
   profile_picture_url?: string;
+  headline?: string;
+  location?: string;
+  phone_number?: string;
+  linkedin_url?: string;
+  github_url?: string;
+  website_url?: string;
+  twitter_url?: string;
 }
 
 interface ApiProject {
@@ -139,12 +146,30 @@ const Profile: React.FC = () => {
                 <h1 className={cn(commonStyles.name, themeStyles.name)}>
                   {user?.full_name || 'Your Name'}
                 </h1>
+                {user?.headline && (
+                  <p style={{ fontSize: '1.05rem', fontWeight: 500, opacity: 0.85, margin: '2px 0 4px' }}>
+                    {user.headline}
+                  </p>
+                )}
                 <p className={cn(commonStyles.bio, themeStyles.bio)}>
                   {user?.bio || 'Add a bio to tell others about yourself.'}
                 </p>
-                <span className={cn(commonStyles.role, themeStyles.role)}>
-                  {user?.role === 'client' ? '👔 Client' : user?.role === 'admin' ? '🛡️ Admin' : '👤 User'}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '4px' }}>
+                  <span className={cn(commonStyles.role, themeStyles.role)}>
+                    {user?.role === 'client' ? '👔 Client' : user?.role === 'admin' ? '🛡️ Admin' : '👤 User'}
+                  </span>
+                  {user?.location && (
+                    <span style={{ fontSize: '0.85rem', opacity: 0.7 }}>📍 {user.location}</span>
+                  )}
+                </div>
+                {(user?.linkedin_url || user?.github_url || user?.website_url || user?.twitter_url) && (
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '8px', flexWrap: 'wrap' }}>
+                    {user.linkedin_url && <a href={user.linkedin_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.85rem', color: '#4573df' }}>LinkedIn</a>}
+                    {user.github_url && <a href={user.github_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.85rem', color: '#4573df' }}>GitHub</a>}
+                    {user.twitter_url && <a href={user.twitter_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.85rem', color: '#4573df' }}>Twitter</a>}
+                    {user.website_url && <a href={user.website_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.85rem', color: '#4573df' }}>Website</a>}
+                  </div>
+                )}
               </div>
             </header>
           </ScrollReveal>

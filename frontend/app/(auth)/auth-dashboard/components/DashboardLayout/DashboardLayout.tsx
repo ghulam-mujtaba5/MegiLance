@@ -1,4 +1,4 @@
-// @AI-HINT: This component establishes the primary layout structure for the dashboard, featuring a sidebar and a main content area. This is a foundational piece for a premium, investor-grade user experience.
+// @AI-HINT: This component establishes the primary layout structure for the dashboard, featuring a sidebar and a main content area. This is a foundational piece for a premium, production-ready user experience.
 
 'use client';
 

@@ -14,8 +14,11 @@ from app.models.contract import Contract
 from app.models.review import Review
 from datetime import datetime, timedelta
 import json
+import logging
 import math
 from collections import defaultdict
+
+logger = logging.getLogger(__name__)
 
 
 class MatchingEngine:
@@ -71,7 +74,7 @@ class MatchingEngine:
             self.db.commit()
         except Exception as e:
             self.db.rollback()
-            print(f"Error creating matching tables: {e}")
+            logger.error("Failed to create matching tables: %s", e)
     
     def calculate_skill_match_score(self, project_skills: List[str], freelancer_skills: List[str]) -> float:
         """
@@ -243,7 +246,7 @@ class MatchingEngine:
                 project_skills = json.loads(project.skills)
             else:
                 project_skills = project.skills or []
-        except:
+        except (json.JSONDecodeError, TypeError, ValueError):
             project_skills = []
         
         try:
@@ -251,7 +254,7 @@ class MatchingEngine:
                 freelancer_skills = json.loads(freelancer.skills)
             else:
                 freelancer_skills = freelancer.skills or []
-        except:
+        except (json.JSONDecodeError, TypeError, ValueError):
             freelancer_skills = []
         
         # Calculate individual factors
@@ -313,7 +316,6 @@ class MatchingEngine:
                 recommendations.append({
                     "freelancer_id": freelancer.id,
                     "freelancer_name": freelancer.name,
-                    "freelancer_email": freelancer.email,
                     "freelancer_bio": freelancer.bio,
                     "hourly_rate": freelancer.hourly_rate,
                     "location": freelancer.location,
@@ -341,7 +343,7 @@ class MatchingEngine:
                     }
                 )
                 self.db.commit()
-            except:
+            except Exception:
                 self.db.rollback()
         
         return recommendations[:limit]
@@ -405,7 +407,7 @@ class MatchingEngine:
                 }
             )
             self.db.commit()
-        except:
+        except Exception:
             self.db.rollback()
 
 

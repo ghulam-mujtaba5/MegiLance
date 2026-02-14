@@ -1,13 +1,5 @@
 # @AI-HINT: Service layer for notification CRUD operations - all DB access via Turso HTTP
-"""
-Notifications Service - Data access layer for notification management.
-
-Handles all execute_query calls for:
-- Notification creation, retrieval, update, deletion
-- Read/unread status management
-- Unread count queries
-- Utility function for sending notifications from other modules
-"""
+"""Notifications Service - Data access layer for notification management."""
 
 import json
 from datetime import datetime, timezone

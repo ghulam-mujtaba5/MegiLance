@@ -1,16 +1,5 @@
 # @AI-HINT: KYC/Identity verification service with document upload and validation
-"""
-Identity Verification Service - KYC (Know Your Customer) implementation.
-
-Features:
-- Document upload and storage (ID, passport, driver's license)
-- OCR text extraction for document validation
-- Face matching between document and selfie
-- Address verification
-- Multi-level verification tiers
-- Admin review workflow
-- Verification status tracking
-"""
+"""Identity Verification Service - KYC (Know Your Customer) implementation."""
 
 import logging
 import hashlib
@@ -474,9 +463,9 @@ class IdentityVerificationService:
         
         In production, would integrate with Twilio or similar.
         """
-        # Simplified verification (in production, check against sent code)
-        # For demo, accept code "123456"
-        if verification_code != "123456":
+        # Verify against stored code
+        stored_code = self._verifications.get(user_id, {}).get("pending_phone_code")
+        if not stored_code or verification_code != stored_code:
             return {
                 "success": False,
                 "error": "Invalid verification code"
@@ -527,7 +516,7 @@ class IdentityVerificationService:
         In production, would send SMS via Twilio.
         """
         # Generate and store verification code
-        code = "123456"  # In production: secrets.randbelow(900000) + 100000
+        code = str(secrets.randbelow(900000) + 100000)
         
         # Store pending verification
         if user_id not in self._verifications:

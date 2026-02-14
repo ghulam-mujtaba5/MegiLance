@@ -1,9 +1,10 @@
 # @AI-HINT: Payment model for tracking all financial transactions on the platform
-from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey
+from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime, timezone
 from typing import Optional, TYPE_CHECKING, List
+from decimal import Decimal
 import enum
 
 if TYPE_CHECKING:
@@ -32,6 +33,7 @@ class PaymentStatus(enum.Enum):
 
 class PaymentMethod(enum.Enum):
     """Payment method enumeration"""
+    PLATFORM = "platform"  # Default: Stripe / platform payment
     USDC = "usdc"
     BTC = "btc"
     ETH = "eth"
@@ -45,15 +47,15 @@ class Payment(Base):
     milestone_id: Mapped[int] = mapped_column(ForeignKey("milestones.id"), nullable=True, index=True)
     from_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     to_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
-    amount: Mapped[float] = mapped_column(Float)
+    amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))
     payment_type: Mapped[str] = mapped_column(String(20), default=PaymentType.PROJECT.value, index=True)
-    payment_method: Mapped[str] = mapped_column(String(20), default=PaymentMethod.USDC.value)
+    payment_method: Mapped[str] = mapped_column(String(20), default=PaymentMethod.PLATFORM.value)
     status: Mapped[str] = mapped_column(String(20), default=PaymentStatus.PENDING.value, index=True)
     transaction_id: Mapped[str] = mapped_column(String(200), nullable=True, unique=True)
     blockchain_tx_hash: Mapped[str] = mapped_column(String(200), nullable=True)  # Blockchain transaction hash
     payment_details: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # Stored as JSON string (DB-neutral)
-    platform_fee: Mapped[float] = mapped_column(Float, default=0.0)
-    freelancer_amount: Mapped[float] = mapped_column(Float)  # Amount after platform fee
+    platform_fee: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"))
+    freelancer_amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))  # Amount after platform fee
     description: Mapped[str] = mapped_column(Text, nullable=True)
     processed_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)

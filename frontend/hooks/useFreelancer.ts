@@ -97,6 +97,9 @@ export type FreelancerAnalytics = {
   applicationsSent?: number;
   successRate?: number;
   averageRating?: number;
+  availabilityStatus?: string;
+  profileCompleteness?: number;
+  headline?: string;
 };
 
 export type MonthlyEarning = {
@@ -241,7 +244,11 @@ export function useFreelancerData() {
           totalEarnings: `$${statsJson.total_earnings || 0}`,
           completedProjects: statsJson.completed_projects || 0,
           successRate: statsJson.success_rate || 0,
-          averageRating: statsJson.average_rating || 0
+          averageRating: statsJson.average_rating || 0,
+          profileViews: statsJson.profile_views || 0,
+          availabilityStatus: statsJson.availability_status || undefined,
+          profileCompleteness: statsJson.profile_completeness ?? undefined,
+          headline: statsJson.headline || undefined,
         });
         
         // Map Monthly Earnings

@@ -157,14 +157,15 @@ const Onboarding: React.FC = () => {
     setLoading(true);
     try {
       // Save profile data to backend
-      await (api as any).profile?.update?.({
+      await api.auth.updateProfile({
         title: data.title,
         bio: data.bio,
         location: data.location,
         skills: data.skills.join(', '),
-        experience_level: data.experienceLevel,
         hourly_rate: data.hourlyRate ? parseFloat(data.hourlyRate) : undefined,
         profile_image_url: data.avatarUrl || undefined,
+        experience_level: data.experienceLevel || undefined,
+        headline: data.title || undefined,
       });
     } catch {
       // Continue even if API fails — user can update profile later

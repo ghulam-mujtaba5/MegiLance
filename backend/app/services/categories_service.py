@@ -1,12 +1,5 @@
 # @AI-HINT: Service layer for category CRUD operations - all DB access via Turso HTTP
-"""
-Categories Service - Data access layer for category management.
-
-Handles all execute_query calls for:
-- Category creation, listing, retrieval, update, deletion
-- Slug uniqueness checks, parent validation
-- Hierarchical category tree queries
-"""
+"""Categories Service - Data access layer for category management."""
 
 from typing import Optional, List, Dict, Any
 

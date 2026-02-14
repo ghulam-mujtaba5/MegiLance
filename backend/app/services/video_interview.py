@@ -1,15 +1,5 @@
 # @AI-HINT: Video interview service with WebRTC signaling and scheduling
-"""
-Video Interview Service - WebRTC-based video calling for client-freelancer interviews.
-
-Features:
-- Interview scheduling with calendar integration
-- WebRTC signaling server for peer-to-peer video
-- Recording management and playback
-- Screen sharing support
-- Interview notes and rating
-- Automatic reminders
-"""
+"""Video Interview Service - WebRTC-based video calling for client-freelancer interviews."""
 
 import logging
 import json

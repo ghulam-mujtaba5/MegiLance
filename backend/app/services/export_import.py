@@ -1,15 +1,5 @@
 # @AI-HINT: Comprehensive data export/import system for user data portability
-"""
-Export/Import Service - Data portability and backup system.
-
-Features:
-- Full account data export (GDPR compliant)
-- Selective data export
-- Multiple formats (JSON, CSV, PDF)
-- Data import with validation
-- Backup scheduling
-- Progress tracking
-"""
+"""Export/Import Service - Data portability and backup system."""
 
 import logging
 import json

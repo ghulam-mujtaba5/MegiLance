@@ -1,4 +1,4 @@
-// @/app/components/RadioGroup/RadioGroup.tsx
+// @AI-HINT: Accessible theme-aware RadioGroup component for single-option selection in forms
 'use client';
 
 import React from 'react';

@@ -41,6 +41,9 @@ coverage/
 .tap/
 .jest-cache/
 pytest_cache/
+.pytest_cache/
+htmlcov/
+.coverage
 
 # OS / IDE
 .DS_Store

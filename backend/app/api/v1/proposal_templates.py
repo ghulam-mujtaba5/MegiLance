@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from datetime import datetime, timezone
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import paginate_params
 
 router = APIRouter(prefix="/proposal-templates")
 
@@ -36,12 +37,13 @@ class TemplateVariable(BaseModel):
 @router.get("/", response_model=List[ProposalTemplate])
 async def get_my_templates(
     tag: Optional[str] = None,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Get user's proposal templates"""
+    offset, limit = paginate_params(page, page_size)
     return [
         ProposalTemplate(
             id="template-1",
@@ -185,12 +187,13 @@ async def duplicate_template(
 async def browse_public_templates(
     category: Optional[str] = None,
     search: Optional[str] = None,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user=Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """Browse public templates"""
+    offset, limit = paginate_params(page, page_size)
     return [
         ProposalTemplate(
             id="public-1",

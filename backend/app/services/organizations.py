@@ -1,13 +1,5 @@
 # @AI-HINT: Organization/Workspace service for multi-tenant team management
-"""
-Organization Service - Multi-tenant workspace and team management.
-
-Features:
-- Organizations/Workspaces
-- Team member management
-- Role-based access control
-- Organization settings
-"""
+"""Organization Service - Multi-tenant workspace and team management."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

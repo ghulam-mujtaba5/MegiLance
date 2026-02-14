@@ -1,10 +1,5 @@
 # @AI-HINT: User feedback system for NPS surveys, feature requests, and satisfaction tracking
-"""
-User Feedback System Service
-
-Manages feedback collection, NPS surveys, feature requests,
-satisfaction tracking, and feedback analytics.
-"""
+"""User Feedback System Service."""
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session

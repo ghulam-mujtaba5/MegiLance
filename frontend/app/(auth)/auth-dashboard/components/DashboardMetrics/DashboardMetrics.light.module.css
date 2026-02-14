@@ -1,4 +1,4 @@
-/* AI-HINT: Premium light theme for Dashboard Metrics. Uses subtle gradients, refined borders, and brand-aligned colors for an investor-grade UI. */
+/* AI-HINT: Premium light theme for Dashboard Metrics. Uses subtle gradients, refined borders, and brand-aligned colors for an production-ready UI. */
 
 .metricCard {
   background: linear-gradient(145deg, var(--surface) 0%, var(--surface-alt) 100%);

@@ -1,0 +1,17 @@
+/* @AI-HINT: KPI Sparkline — light theme */
+.sparklinePath { stroke: #4573df; }
+.sparklineArea { fill: #4573df; }
+.sparklineDot { fill: #4573df; }
+.sparklineLabel { color: #666; }
+
+.sparklinePathSuccess { stroke: #27AE60; }
+.sparklineAreaSuccess { fill: #27AE60; }
+.sparklineDotSuccess { fill: #27AE60; }
+
+.sparklinePathWarning { stroke: #d4a017; }
+.sparklineAreaWarning { fill: #d4a017; }
+.sparklineDotWarning { fill: #d4a017; }
+
+.sparklinePathDanger { stroke: #e81123; }
+.sparklineAreaDanger { fill: #e81123; }
+.sparklineDotDanger { fill: #e81123; }

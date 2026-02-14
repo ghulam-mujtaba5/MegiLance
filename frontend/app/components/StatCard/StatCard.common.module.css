@@ -68,3 +68,11 @@
 .trendLabel {
   margin-left: 0.25rem;
 }
+
+.sparklineWrapper {
+  margin-top: 0.25rem;
+}
+
+.cardLink {
+  cursor: pointer;
+}

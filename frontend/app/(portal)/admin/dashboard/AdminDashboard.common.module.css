@@ -178,6 +178,50 @@
 
 /* ── Main Content Grid ──────────────────────────────────── */
 
+/* ── System Health Row ──────────────────────────────────── */
+
+.healthRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr;
+  gap: 1.25rem;
+}
+
+.healthCard {
+  padding: 1.5rem;
+  border-radius: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.healthStats {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.healthStatItem {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.healthIconBlue  { color: #3b82f6; }
+.healthIconGreen { color: #16a34a; }
+.healthIconAmber { color: #f59e0b; }
+
+.healthStatValue {
+  font-size: 1.125rem;
+  font-weight: 700;
+  min-width: 1.5rem;
+}
+
+.healthStatLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
 .mainContentGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -298,6 +342,7 @@
   .headerTitle { font-size: 1.375rem; }
   .statsGrid { grid-template-columns: 1fr 1fr; }
   .quickActionsGrid { grid-template-columns: 1fr; }
+  .healthRow { grid-template-columns: 1fr; gap: 1rem; }
 }
 
 @media (max-width: 480px) {

@@ -12,12 +12,13 @@ Features:
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from typing import Optional, List, Dict, Any
-from pydantic import BaseModel
+from typing import Optional, List, Dict, Any, Literal
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 from app.db.session import get_db
 from app.core.security import get_current_active_user
+from app.services.db_utils import sanitize_text
 from app.services.invoice_tax import (
     get_invoice_tax_service,
     InvoiceStatus,
@@ -59,7 +60,7 @@ class UpdateInvoiceRequest(BaseModel):
 
 
 class SendInvoiceRequest(BaseModel):
-    email_to: str
+    email_to: EmailStr
     message: Optional[str] = None
 
 
@@ -90,7 +91,7 @@ class UpdateTaxRateRequest(BaseModel):
 
 
 class ExportAccountingRequest(BaseModel):
-    format: str  # quickbooks, xero, csv
+    format: Literal["quickbooks", "xero", "csv"]
     date_from: datetime
     date_to: datetime
 
@@ -98,7 +99,7 @@ class ExportAccountingRequest(BaseModel):
 class CreateRecurringInvoiceRequest(BaseModel):
     client_id: int
     items: List[InvoiceItem]
-    frequency: str
+    frequency: Literal["weekly", "biweekly", "monthly", "quarterly", "yearly"]
     start_date: datetime
     end_date: Optional[datetime] = None
 
@@ -114,6 +115,10 @@ async def create_invoice(
     service = get_invoice_tax_service(db)
     
     items = [item.dict() for item in request.items]
+    # Sanitize item descriptions
+    for item in items:
+        if "description" in item and isinstance(item["description"], str):
+            item["description"] = sanitize_text(item["description"], 500)
     tax_rates = [tr.dict() for tr in request.tax_rates] if request.tax_rates else None
     
     invoice = await service.create_invoice(
@@ -122,7 +127,7 @@ async def create_invoice(
         items=items,
         payment_terms=request.payment_terms,
         tax_rates=tax_rates,
-        notes=request.notes,
+        notes=sanitize_text(request.notes, 2000) if request.notes else None,
         due_date=request.due_date,
         currency=request.currency
     )
@@ -222,7 +227,7 @@ async def send_invoice(
         invoice_id=invoice_id,
         user_id=current_user["id"],
         email_to=request.email_to,
-        message=request.message
+        message=sanitize_text(request.message, 2000) if request.message else None
     )
     
     return result
@@ -244,7 +249,7 @@ async def record_payment(
         amount=request.amount,
         payment_method=request.payment_method,
         payment_date=request.payment_date,
-        reference=request.reference
+        reference=sanitize_text(request.reference, 500) if request.reference else None
     )
     
     return result
@@ -263,7 +268,7 @@ async def cancel_invoice(
     result = await service.cancel_invoice(
         invoice_id=invoice_id,
         user_id=current_user["id"],
-        reason=request.reason
+        reason=sanitize_text(request.reason, 1000)
     )
     
     return result

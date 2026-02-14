@@ -53,6 +53,7 @@ import {
   adminNavItems,
   NavItem as ConfigNavItem
 } from '@/app/config/navigation';
+import { useUnreadCounts } from '@/contexts/UnreadCountContext';
 
 // Map string icon names to React components
 const iconMap: Record<string, React.ReactNode> = {
@@ -122,6 +123,9 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
   const { resolvedTheme } = useTheme(); // Use hook for theme
   const [openSubmenus, setOpenSubmenus] = React.useState<Record<string, boolean>>({});
 
+  // Get real-time unread counts for badge display
+  const { counts: unreadCounts } = useUnreadCounts();
+
   // Helper to convert ConfigNavItem to local NavItem
   const mapConfigItems = (items: ConfigNavItem[]): NavItem[] => {
     return items.map(item => ({
@@ -150,6 +154,17 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
         }
       })();
 
+  // Inject real-time badge counts for Messages and Notifications nav items
+  const navItemsWithBadges = computedNavItems.map(item => {
+    if (item.label === 'Messages' && unreadCounts.messages > 0) {
+      return { ...item, badge: unreadCounts.messages > 99 ? '99+' : unreadCounts.messages };
+    }
+    if (item.label === 'Notifications' && unreadCounts.notifications > 0) {
+      return { ...item, badge: unreadCounts.notifications > 99 ? '99+' : unreadCounts.notifications };
+    }
+    return item;
+  });
+
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
   const toggleSubmenu = (href: string) => {
@@ -170,7 +185,7 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
     <aside className={sidebarClasses}>
       <nav className={styles.sidebarNavNav}>
         <ul className={styles.sidebarNavList}>
-          {computedNavItems.map((item) => {
+          {navItemsWithBadges.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
             const isSubmenuOpen = openSubmenus[item.href];
             

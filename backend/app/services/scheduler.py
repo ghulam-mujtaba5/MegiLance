@@ -1,14 +1,5 @@
 # @AI-HINT: Scheduled tasks service for background job management
-"""
-Scheduled Tasks Service - Background job management.
-
-Features:
-- Cron-like scheduling
-- One-time and recurring tasks
-- Task queue management
-- Retry logic
-- Task history
-"""
+"""Scheduled Tasks Service - Background job management."""
 
 import logging
 import asyncio

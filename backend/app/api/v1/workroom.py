@@ -15,6 +15,7 @@ from app.core.security import get_current_active_user
 from app.core.config import get_settings
 from app.models.user import User
 from app.services import workroom_service
+from app.services.db_utils import paginate_params
 from pydantic import BaseModel, Field
 
 router = APIRouter()
@@ -341,13 +342,14 @@ async def delete_file(
 @router.get("/contracts/{contract_id}/discussions")
 async def list_discussions(
     contract_id: int,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user: User = Depends(get_current_active_user)
 ):
     """List discussions in a contract workroom."""
+    offset, limit = paginate_params(page, page_size)
     _verify_contract_access(contract_id, current_user.id)
-    discussions = workroom_service.list_contract_discussions(contract_id, limit, skip)
+    discussions = workroom_service.list_contract_discussions(contract_id, limit, offset)
     return {"discussions": discussions, "total": len(discussions)}
 
 
@@ -415,13 +417,14 @@ async def add_reply(
 @router.get("/contracts/{contract_id}/activity")
 async def get_workroom_activity(
     contract_id: int,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=100),
     current_user: User = Depends(get_current_active_user)
 ):
     """Get activity feed for a workroom."""
+    offset, limit = paginate_params(page, page_size)
     _verify_contract_access(contract_id, current_user.id)
-    activities = workroom_service.get_activity_feed(contract_id, limit, skip)
+    activities = workroom_service.get_activity_feed(contract_id, limit, offset)
     return {"activities": activities, "total": len(activities)}
 
 

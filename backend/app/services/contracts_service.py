@@ -1,17 +1,11 @@
 # @AI-HINT: Service layer for contract CRUD operations - all DB access via Turso HTTP
-"""
-Contracts Service - Data access layer for contract management.
-
-Handles all execute_query calls for:
-- Contract listing, retrieval, creation, update, deletion
-- Project/proposal/user validation for contracts
-- Direct hire flow (project + proposal + contract creation)
-"""
+"""Contracts Service - Data access layer for contract management."""
 
 import logging
 from typing import Optional, List, Dict, Any
 
 from app.db.turso_http import execute_query, parse_date, parse_rows
+from app.services.db_utils import get_val as _get_val, safe_str as _safe_str
 
 logger = logging.getLogger(__name__)
 
@@ -28,25 +22,6 @@ CONTRACT_SELECT_SQL = """
     LEFT JOIN projects p ON c.project_id = p.id
     LEFT JOIN users u ON c.client_id = u.id
 """
-
-
-def _get_val(row: list, idx: int):
-    """Extract value from Turso row."""
-    if idx >= len(row):
-        return None
-    cell = row[idx]
-    if cell.get("type") == "null":
-        return None
-    return cell.get("value")
-
-
-def _safe_str(val):
-    """Convert bytes to string if needed."""
-    if val is None:
-        return None
-    if isinstance(val, bytes):
-        return val.decode('utf-8')
-    return str(val) if val else None
 
 
 def contract_from_row(row: list) -> dict:
@@ -76,7 +51,7 @@ def contract_from_row(row: list) -> dict:
     }
 
 
-def query_user_contracts(user_id: int, status: Optional[str], limit: int, skip: int) -> List[dict]:
+def query_user_contracts(user_id: int, status: Optional[str], limit: int, offset: int) -> List[dict]:
     """List contracts for a user with optional status filter."""
     where_sql = "WHERE (c.client_id = ? OR c.freelancer_id = ?)"
     params = [user_id, user_id]
@@ -85,7 +60,7 @@ def query_user_contracts(user_id: int, status: Optional[str], limit: int, skip: 
         where_sql += " AND c.status = ?"
         params.append(status.lower())
 
-    params.extend([limit, skip])
+    params.extend([limit, offset])
 
     result = execute_query(
         f"{CONTRACT_SELECT_SQL} {where_sql} ORDER BY c.created_at DESC LIMIT ? OFFSET ?",
@@ -264,7 +239,8 @@ def fetch_contract_for_update(contract_id: str) -> Optional[dict]:
 
 _ALLOWED_CONTRACT_SET_PARTS = frozenset({
     "title", "description", "status", "rate", "rate_type",
-    "start_date", "end_date", "terms", "updated_at",
+    "amount", "hourly_rate", "retainer_amount", "retainer_frequency",
+    "milestones", "start_date", "end_date", "terms", "updated_at",
 })
 
 

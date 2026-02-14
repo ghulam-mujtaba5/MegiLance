@@ -129,13 +129,20 @@ app = FastAPI(
 # Rate limiting
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-# In-memory idempotency cache (for POST/PUT mutations)
-_idempotency_cache: dict[str, tuple[int, dict, float]] = {}  # key -> (status, body, timestamp)
+# Bounded idempotency cache using OrderedDict for O(1) LRU eviction
+from collections import OrderedDict
+import threading
+
 _IDEMPOTENCY_TTL = 3600  # 1 hour
-_IDEMPOTENCY_MAX_SIZE = 10000  # Prevent unbounded memory growth
+_IDEMPOTENCY_MAX_SIZE = 5000
+_idempotency_cache: OrderedDict[str, tuple[int, dict, float]] = OrderedDict()
+_idempotency_lock = threading.Lock()
+_idempotency_evict_counter = 0  # Periodic eviction instead of per-request
+
 
 class RequestIDMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
+        global _idempotency_evict_counter
         request_id = request.headers.get("X-Request-Id") or str(uuid.uuid4())
         start = time.time()
 
@@ -143,16 +150,18 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
         idempotency_key = request.headers.get("X-Idempotency-Key")
         if idempotency_key and request.method in ("POST", "PUT", "PATCH"):
             cache_key = f"{request.method}:{request.url.path}:{idempotency_key}"
-            cached = _idempotency_cache.get(cache_key)
-            if cached:
-                status, body, cached_at = cached
-                if time.time() - cached_at < _IDEMPOTENCY_TTL:
-                    response = JSONResponse(status_code=status, content=body)
-                    response.headers["X-Request-Id"] = request_id
-                    response.headers["X-Idempotent-Replayed"] = "true"
-                    return response
-                else:
-                    del _idempotency_cache[cache_key]
+            with _idempotency_lock:
+                cached = _idempotency_cache.get(cache_key)
+                if cached:
+                    cached_status, body, cached_at = cached
+                    if time.time() - cached_at < _IDEMPOTENCY_TTL:
+                        _idempotency_cache.move_to_end(cache_key)
+                        response = JSONResponse(status_code=cached_status, content=body)
+                        response.headers["X-Request-Id"] = request_id
+                        response.headers["X-Idempotent-Replayed"] = "true"
+                        return response
+                    else:
+                        del _idempotency_cache[cache_key]
 
         response = None
         try:
@@ -160,24 +169,30 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
             return response
         finally:
             duration_ms = int((time.time() - start) * 1000)
-            client_ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or request.client.host if request.client else "unknown"
+            client_ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or (request.client.host if request.client else "unknown")
             extra = logging.LoggerAdapter(logger, {"request_id": request_id, "path": request.url.path})
-            extra.info(f"request.complete method={request.method} duration_ms={duration_ms} status={response.status_code if response else 'error'} client_ip={client_ip}")
+            status_code = response.status_code if response else 'error'
+            extra.info(f"request.complete method={request.method} path={request.url.path} duration_ms={duration_ms} status={status_code} client_ip={client_ip}")
             if response is not None:
                 response.headers["X-Request-Id"] = request_id
                 response.headers["X-Response-Time"] = f"{duration_ms}ms"
 
-            # Evict expired idempotency entries periodically
-            if _idempotency_cache:
-                now = time.time()
-                expired = [k for k, v in _idempotency_cache.items() if now - v[2] > _IDEMPOTENCY_TTL]
-                for k in expired:
-                    del _idempotency_cache[k]
-                # Hard cap: if still over max size, remove oldest entries
-                if len(_idempotency_cache) > _IDEMPOTENCY_MAX_SIZE:
-                    sorted_keys = sorted(_idempotency_cache, key=lambda k: _idempotency_cache[k][2])
-                    for k in sorted_keys[:len(_idempotency_cache) - _IDEMPOTENCY_MAX_SIZE]:
-                        del _idempotency_cache[k]
+            # Periodic eviction: every 100 requests instead of every request
+            _idempotency_evict_counter += 1
+            if _idempotency_evict_counter >= 100:
+                _idempotency_evict_counter = 0
+                with _idempotency_lock:
+                    now = time.time()
+                    # Remove expired from front (oldest first in OrderedDict)
+                    while _idempotency_cache:
+                        key, (_, _, ts) = next(iter(_idempotency_cache.items()))
+                        if now - ts > _IDEMPOTENCY_TTL:
+                            _idempotency_cache.popitem(last=False)
+                        else:
+                            break
+                    # Hard cap
+                    while len(_idempotency_cache) > _IDEMPOTENCY_MAX_SIZE:
+                        _idempotency_cache.popitem(last=False)
 
 app.add_middleware(RequestIDMiddleware)
 

@@ -1,19 +1,7 @@
-# @AI-HINT: Multi-currency payment system with real-time exchange rates, crypto support, and advanced financial features
-"""
-Multi-Currency Payment Service
+# @AI-HINT: Multi-currency payment service with exchange rates and crypto support
+"""Handles currency conversion, crypto payments, and multi-currency transactions."""
 
-Features:
-- 150+ fiat currency support
-- Cryptocurrency payments (Bitcoin, Ethereum, USDC, USDT)
-- Real-time exchange rate conversion
-- Dynamic pricing engine
-- Payment routing optimization
-- Split payments and multi-party transactions
-- Instant payouts
-- Currency hedging
-- Tax automation
-"""
-
+import logging
 from typing import Optional, Dict, List, Any
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -22,6 +10,8 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 import httpx
 import json
+
+logger = logging.getLogger(__name__)
 
 from app.core.config import get_settings
 from app.db.session import get_db
@@ -155,7 +145,7 @@ class MultiCurrencyPaymentService:
             
         except Exception as e:
             # Fallback to database stored rates
-            print(f"Error fetching exchange rate: {e}")
+            logger.error("Failed to fetch exchange rate: %s", e)
             return await self._get_fallback_rate(from_currency, to_currency)
 
     async def _get_crypto_exchange_rate(self, from_currency: str, to_currency: str) -> Decimal:
@@ -647,11 +637,10 @@ class MultiCurrencyPaymentService:
             return {"error": "Unsupported payout method"}
         
         if "error" not in result:
-            # Deduct from balance
-            new_balance = balance - amount
+            # Atomic balance deduction to prevent race conditions
             execute_query("""
-                UPDATE users SET account_balance = ? WHERE id = ?
-            """, [float(new_balance), user_id])
+                UPDATE users SET account_balance = account_balance - ? WHERE id = ? AND account_balance >= ?
+            """, [float(amount), user_id, float(amount)])
             
             # Record payout
             execute_query("""

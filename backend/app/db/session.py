@@ -1,6 +1,8 @@
 """
-@AI-HINT: Database session management - Turso HTTP API primary, SQLAlchemy fallback
-All environments use Turso HTTP API. SQLAlchemy ORM is optional fallback.
+@AI-HINT: Database session management - Turso HTTP API primary, SQLAlchemy fallback (DEAD CODE)
+ARCHITECTURE NOTE: sqlalchemy-libsql is never installed in production — get_engine() always
+returns None. All runtime DB operations use Turso HTTP API (turso_http.py).
+The SQLAlchemy code paths below are kept as reference / Alembic compatibility only.
 """
 
 from sqlalchemy import create_engine, event, Engine, text
@@ -159,7 +161,11 @@ def get_turso_client():
 
 
 def execute_query(query: str, params: list = None):
-    """Execute a raw SQL query using Turso"""
+    """Execute a raw SQL query using Turso.
+    
+    Returns turso_http format: {"columns": [...], "rows": [...]} where rows are
+    positional lists. The SQLAlchemy fallback (unreachable) returns list of dicts.
+    """
     try:
         # Try Turso HTTP client first
         turso_client = get_turso_client()

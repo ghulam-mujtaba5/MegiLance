@@ -1,15 +1,5 @@
 # @AI-HINT: Compliance center service for regulatory compliance
-"""
-Compliance Center Service - GDPR, regulatory compliance management.
-
-Features:
-- GDPR compliance
-- Data retention policies
-- Consent management
-- Compliance reporting
-- Audit trails
-- Data subject requests
-"""
+"""Compliance Center Service - GDPR, regulatory compliance management."""
 
 from sqlalchemy.orm import Session
 from typing import Optional, List, Dict, Any

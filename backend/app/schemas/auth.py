@@ -8,7 +8,7 @@ from app.schemas.user import UserRead
 
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=6)
+    password: str = Field(min_length=8)
 
 
 class RefreshTokenRequest(BaseModel):

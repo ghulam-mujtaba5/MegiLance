@@ -12,7 +12,7 @@ Provides:
 """
 
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Literal
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from ...db.session import get_db
 from ...core.security import get_current_active_user
 from ...services.activity_feed import activity_feed_service
+from ...services.db_utils import sanitize_text
 
 
 router = APIRouter()
@@ -29,9 +30,9 @@ router = APIRouter()
 
 class CreateActivityRequest(BaseModel):
     """Request to create an activity."""
-    activity_type: str = Field(..., description="Type of activity")
+    activity_type: str = Field(..., max_length=100, description="Type of activity")
     data: Dict[str, Any] = Field(..., description="Activity-specific data")
-    privacy: str = Field(default="public", description="public, followers, private")
+    privacy: Literal["public", "followers", "private"] = Field(default="public", description="public, followers, private")
     target_user_id: Optional[str] = None
 
 
@@ -327,7 +328,7 @@ async def comment_on_activity(
             db=db,
             user_id=str(current_user.get("id")),
             activity_id=activity_id,
-            comment=request.comment
+            comment=sanitize_text(request.comment, 1000)
         )
         return result
     except ValueError as e:

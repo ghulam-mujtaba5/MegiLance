@@ -12,7 +12,8 @@ from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
+from app.models.user import User
 from app.services.knowledge_base import (
     get_knowledge_base_service,
     ArticleCategory,
@@ -218,14 +219,14 @@ async def get_page_help(
 async def submit_feedback(
     request: FeedbackRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """Mark content as helpful or not helpful."""
     service = get_knowledge_base_service(db)
     result = await service.mark_helpful(
         request.content_type,
         request.content_id,
-        current_user["id"],
+        current_user.id,
         request.helpful
     )
     return result
@@ -235,12 +236,12 @@ async def submit_feedback(
 @router.get("/quick-help")
 async def get_quick_help(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user)
 ):
     """Get quick help resources for current user."""
     service = get_knowledge_base_service(db)
     
-    user_role = current_user.get("role", "freelancer")
+    user_role = getattr(current_user, 'user_type', None) or getattr(current_user, 'role', 'freelancer')
     
     return {
         "getting_started": await service.get_articles(
@@ -257,14 +258,11 @@ async def get_quick_help(
 async def admin_create_article(
     request: CreateArticleRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Admin: Create a new article."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
     service = get_knowledge_base_service(db)
-    result = await service.create_article(current_user["id"], request.dict())
+    result = await service.create_article(current_user.id, request.dict())
     return result
 
 
@@ -273,14 +271,11 @@ async def admin_update_article(
     article_id: str,
     updates: Dict[str, Any],
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Admin: Update an article."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
     service = get_knowledge_base_service(db)
-    result = await service.update_article(current_user["id"], article_id, updates)
+    result = await service.update_article(current_user.id, article_id, updates)
     return result
 
 
@@ -288,25 +283,20 @@ async def admin_update_article(
 async def admin_delete_article(
     article_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Admin: Delete an article."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
-    
     service = get_knowledge_base_service(db)
-    result = await service.delete_article(current_user["id"], article_id)
+    result = await service.delete_article(current_user.id, article_id)
     return result
 
 
 @router.get("/admin/stats")
 async def admin_get_kb_stats(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """Admin: Get knowledge base statistics."""
-    if current_user.get("role") != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     return {
         "total_articles": len([]),  # Would query actual count

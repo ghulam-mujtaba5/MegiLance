@@ -482,7 +482,7 @@ export default function OnboardingTourWizard({
         interested_features: onboardingData.interestedFeatures,
         skip_reminder: onboardingData.skipReminder,
         completed_at: new Date().toISOString()
-      });
+      } as any);
 
       // Mark onboarding as complete in localStorage
       localStorage.setItem('onboarding_complete', 'true');

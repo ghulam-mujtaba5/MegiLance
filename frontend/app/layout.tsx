@@ -3,8 +3,6 @@ import './globals.css';
 import '../styles/themes/light.css';
 import '../styles/themes/dark.css';
 import '../styles/tokens.css';
-import '../styles/animations.css';
-import '../styles/effects.css';
 import './styles/theme.css';
 
 import ClientRoot from './ClientRoot';

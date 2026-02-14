@@ -1,4 +1,4 @@
-// @AI-HINT: Premium AI Chatbot page with billion-dollar quality UI/UX. Features glass morphism, typing indicators, suggestions, and smooth animations.
+// @AI-HINT: Premium AI Chatbot page with production-ready quality UI/UX. Features glass morphism, typing indicators, suggestions, and smooth animations.
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';

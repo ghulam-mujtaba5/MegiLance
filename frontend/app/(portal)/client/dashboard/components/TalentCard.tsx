@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
-import { MoreHorizontal, Star, MapPin } from 'lucide-react';
+import { MoreHorizontal, Star, MapPin, Circle } from 'lucide-react';
 import UserAvatar from '@/app/components/UserAvatar/UserAvatar';
 import commonStyles from './TalentCard.common.module.css';
 import lightStyles from './TalentCard.light.module.css';
@@ -14,9 +14,12 @@ interface TalentCardProps {
   rating?: number;
   location?: string;
   hourlyRate?: string;
+  headline?: string;
+  availabilityStatus?: string;
+  experienceLevel?: string;
 }
 
-const TalentCard: React.FC<TalentCardProps> = ({ name, role, avatar, rating = 5.0, location, hourlyRate }) => {
+const TalentCard: React.FC<TalentCardProps> = ({ name, role, avatar, rating = 5.0, location, hourlyRate, headline, availabilityStatus, experienceLevel }) => {
   const { resolvedTheme } = useTheme();
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
@@ -33,7 +36,13 @@ const TalentCard: React.FC<TalentCardProps> = ({ name, role, avatar, rating = 5.
       
       <div className={commonStyles.info}>
         <h4 className={cn(commonStyles.name, themeStyles.name)}>{name}</h4>
-        <p className={cn(commonStyles.role, themeStyles.role)}>{role}</p>
+        <p className={cn(commonStyles.role, themeStyles.role)}>{headline || role}</p>
+        {availabilityStatus === 'available' && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.7rem', color: '#27AE60', fontWeight: 600 }}>
+            <Circle size={6} fill="#27AE60" color="#27AE60" aria-hidden="true" />
+            Available
+          </span>
+        )}
       </div>
 
       <div className={commonStyles.meta}>

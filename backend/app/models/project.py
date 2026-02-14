@@ -1,8 +1,9 @@
 # @AI-HINT: Project model - client job postings with budget, timeline, and status management
-from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Enum, Boolean
+from sqlalchemy import String, Integer, Float, DateTime, Text, ForeignKey, Enum, Boolean, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 from datetime import datetime, timezone
+from decimal import Decimal
 from typing import List, Optional, TYPE_CHECKING
 import enum
 
@@ -39,8 +40,8 @@ class Project(Base):
     description: Mapped[str] = mapped_column(Text)
     category: Mapped[str] = mapped_column(String(100))
     budget_type: Mapped[str] = mapped_column(String(20))  # Fixed or Hourly
-    budget_min: Mapped[float] = mapped_column(Float, nullable=True)
-    budget_max: Mapped[float] = mapped_column(Float, nullable=True)
+    budget_min: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=True)
+    budget_max: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=True)
     experience_level: Mapped[str] = mapped_column(String(20))  # Entry, Intermediate, Expert
     estimated_duration: Mapped[str] = mapped_column(String(50))  # Less than 1 week, 1-4 weeks, etc.
     skills: Mapped[str] = mapped_column(Text)  # JSON string of skills

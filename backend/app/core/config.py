@@ -109,15 +109,21 @@ class Settings(BaseSettings):
     # Get from: https://resend.com/api-keys
     RESEND_API_KEY: Optional[str] = None
     
-    # Monitoring
+    # Monitoring & Logging
     sentry_dsn: Optional[str] = None
     log_level: str = "INFO"
     
-    # Additional settings from .env (aliases — prefer canonical fields above)
-    refresh_token_expire_days: int = 7
+    # Connection Pool
+    turso_pool_connections: int = 10
+    turso_pool_maxsize: int = 20
+
+    # Redis (Optional — caching/sessions)
     redis_host: Optional[str] = None
     redis_port: Optional[int] = None
     redis_db: Optional[int] = None
+    
+    # Token Aliases (prefer canonical fields above)
+    refresh_token_expire_days: int = 7
 
     model_config = SettingsConfigDict(
         env_file=".env",

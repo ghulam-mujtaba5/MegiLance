@@ -1,4 +1,4 @@
-// @AI-HINT: Enterprise page - Premium investor-grade marketing page with stats, features, case studies, testimonials, and CTAs
+// @AI-HINT: Enterprise page - Premium production-ready marketing page with stats, features, case studies, testimonials, and CTAs
 'use client';
 
 import React from 'react';

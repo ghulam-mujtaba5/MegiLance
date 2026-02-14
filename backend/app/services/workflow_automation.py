@@ -1,10 +1,5 @@
 # @AI-HINT: Workflow automation service for triggers, actions, and automated processes
-"""
-Workflow Automation Service
-
-Manages automated workflows, triggers, conditions,
-and actions for business process automation.
-"""
+"""Workflow Automation Service."""
 
 from typing import Dict, Any, List, Optional
 from sqlalchemy.orm import Session

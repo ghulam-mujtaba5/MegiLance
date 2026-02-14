@@ -16,7 +16,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.models.user import User
 from app.services.i18n import InternationalizationService, Language
 
@@ -253,10 +253,10 @@ async def format_date(
 async def add_translation(
     request: AddTranslationRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user),
+    _admin = Depends(require_admin)
 ):
     """Add a new translation (admin only)."""
-    # Would check admin status in production
     service = InternationalizationService(db)
     
     result = service.add_translation(

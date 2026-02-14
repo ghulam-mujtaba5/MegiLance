@@ -2,13 +2,8 @@
 'use client';
 
 import { Suspense } from 'react';
-import dynamic from 'next/dynamic';
 import Skeleton from '@/app/components/Animations/Skeleton/Skeleton';
-
-// Dynamically import the Login component
-const Login = dynamic(() => import('./Login'), {
-  loading: () => <Skeleton className="w-full h-96" />
-});
+import Login from './Login';
 
 const LoginPage = () => {
   return (

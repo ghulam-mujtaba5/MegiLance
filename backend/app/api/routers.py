@@ -35,6 +35,8 @@ from .v1 import (
     blog,
     # Public clients showcase
     public_clients,
+    # Public freelancer profiles
+    public_profiles,
     # Fiverr/Upwork Feature Parity - Gig Marketplace & Seller Tiers
     gigs, seller_stats, talent_invitations,
     external_projects,
@@ -327,6 +329,9 @@ api_router.include_router(blog.router, prefix="/blog", tags=["blog"])
 
 # Public clients showcase (no auth required)
 api_router.include_router(public_clients.router, tags=["public-clients"])
+
+# Public freelancer profiles (no auth required - shareable profiles)
+api_router.include_router(public_profiles.router, prefix="/freelancers", tags=["public-profiles"])
 
 # ============================================================================
 # FIVERR/UPWORK FEATURE PARITY - Gig Marketplace & Seller Tier System

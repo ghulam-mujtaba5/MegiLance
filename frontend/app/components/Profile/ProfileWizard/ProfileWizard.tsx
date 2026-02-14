@@ -172,7 +172,25 @@ const ProfileWizard: React.FC = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      await api.users.completeProfile(profileData);
+      await api.users.completeProfile({
+        first_name: profileData.firstName,
+        last_name: profileData.lastName,
+        title: profileData.title,
+        headline: profileData.title,
+        bio: profileData.bio,
+        location: profileData.location,
+        timezone: profileData.timezone,
+        profile_image_url: profileData.avatarUrl || undefined,
+        skills: profileData.skills.join(', '),
+        hourly_rate: profileData.hourlyRate ? parseFloat(profileData.hourlyRate) : undefined,
+        experience_level: profileData.experienceLevel || undefined,
+        availability_status: profileData.availability || undefined,
+        languages: profileData.languages.join(', '),
+        phone_number: profileData.phoneNumber || undefined,
+        linkedin_url: profileData.linkedinUrl || undefined,
+        github_url: profileData.githubUrl || undefined,
+        website_url: profileData.websiteUrl || undefined,
+      } as unknown as Record<string, unknown>);
       router.push('/dashboard?onboarding=complete');
     } catch (error: any) {
       setErrors({ general: error.message || 'Failed to save profile' });

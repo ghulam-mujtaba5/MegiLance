@@ -1,4 +1,7 @@
-# @AI-HINT: Database initialization - runs Alembic migrations and creates initial tables
+# @AI-HINT: Database initialization - LEGACY/DEAD CODE with Turso HTTP
+# Since MegiLance uses Turso HTTP API exclusively, engine is always None
+# and this function returns immediately. Tables are managed via turso_schema.sql.
+# Kept for SQLAlchemy model registration side-effects (imports).
 import subprocess
 import sys
 from pathlib import Path

@@ -18,7 +18,7 @@ from pydantic import BaseModel
 import logging
 
 from app.db.session import get_db
-from app.core.security import get_current_active_user
+from app.core.security import get_current_active_user, require_admin
 from app.models.user import User
 from app.services.advanced_analytics import (
     AdvancedAnalyticsService,
@@ -39,7 +39,7 @@ async def get_revenue_forecast(
     months_ahead: int = Query(6, ge=1, le=24, description="Months to forecast"),
     include_confidence: bool = Query(True, description="Include confidence intervals"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """
     Get ML-powered revenue forecast.
@@ -47,8 +47,6 @@ async def get_revenue_forecast(
     Uses time series analysis to predict future revenue with confidence intervals.
     Admin only endpoint.
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
         service = get_advanced_analytics_service(db)
@@ -70,15 +68,13 @@ async def get_revenue_breakdown(
     start_date: Optional[datetime] = Query(None, description="Period start"),
     end_date: Optional[datetime] = Query(None, description="Period end"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """
     Get revenue breakdown by category, type, and source.
     
     Admin only endpoint.
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
         service = get_advanced_analytics_service(db)
@@ -104,7 +100,7 @@ async def get_cohort_analysis(
     cohort_type: str = Query("monthly", description="Cohort grouping: monthly or weekly"),
     metric: str = Query("retention", description="Metric to analyze"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """
     Perform cohort analysis for user retention.
@@ -112,8 +108,6 @@ async def get_cohort_analysis(
     Tracks how user cohorts behave over time periods.
     Admin only endpoint.
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     if cohort_type not in ["monthly", "weekly"]:
         raise HTTPException(status_code=400, detail="Invalid cohort type")
@@ -146,10 +140,12 @@ async def get_churn_predictions(
     Admin only endpoint (unless checking own prediction).
     """
     # Allow users to check their own churn risk
-    if user_id and user_id != current_user.id and current_user.role != "admin":
+    from app.services.db_utils import get_user_role
+    role = get_user_role(current_user)
+    if user_id and user_id != current_user.id and role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
     
-    if not user_id and current_user.role != "admin":
+    if not user_id and role != "admin":
         # Non-admins can only see their own prediction
         user_id = current_user.id
     
@@ -201,7 +197,7 @@ async def get_market_trends(
 @router.get("/platform-health")
 async def get_platform_health(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """
     Get comprehensive platform health metrics.
@@ -209,8 +205,6 @@ async def get_platform_health(
     Includes user engagement, activity levels, and conversion rates.
     Admin only endpoint.
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
         service = get_advanced_analytics_service(db)
@@ -231,7 +225,7 @@ async def get_platform_health(
 @router.get("/dashboard-summary")
 async def get_analytics_dashboard(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """
     Get combined analytics dashboard data.
@@ -239,8 +233,6 @@ async def get_analytics_dashboard(
     Returns key metrics for admin dashboard in single request.
     Admin only endpoint.
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     try:
         service = get_advanced_analytics_service(db)
@@ -287,15 +279,13 @@ async def generate_custom_report(
     end_date: Optional[datetime] = Query(None),
     format: str = Query("json", description="Output format: json, csv"),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(require_admin)
 ):
     """
     Generate custom analytics report.
     
     Admin only endpoint.
     """
-    if current_user.role != "admin":
-        raise HTTPException(status_code=403, detail="Admin access required")
     
     valid_types = ["revenue", "users", "projects", "engagement"]
     if report_type not in valid_types:

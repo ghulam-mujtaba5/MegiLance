@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import api from '@/lib/api';
 
 import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
@@ -71,21 +72,8 @@ const ResetPassword: React.FC = () => {
           return;
         }
         
-        const res = await fetch('/api/auth/reset-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            token,
-            new_password: formData.password,
-          }),
-        });
-        
-        if (res.ok) {
-          setSubmitted(true);
-        } else {
-          const error = await res.json().catch(() => ({}));
-          setErrors({ password: '', confirmPassword: error.detail || 'Failed to reset password. The link may have expired.' });
-        }
+        await api.auth.resetPassword(token, formData.password);
+        setSubmitted(true);
       } catch (error) {
         setErrors({ password: '', confirmPassword: 'Failed to reset password. Please try again.' });
       } finally {

@@ -3,10 +3,18 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status, Request, U
 from typing import List, Optional
 import json
 import uuid
+import os
+import re
 from pathlib import Path
 
 from app.core.security import get_current_user_from_token
 from app.services import portfolio_service
+from app.services.db_utils import paginate_params
+from app.schemas.portfolio import PortfolioItemCreate, PortfolioItemUpdate
+from app.api.v1.uploads import (
+    PORTFOLIO_DIR, ALLOWED_IMAGE_TYPES, MAX_PORTFOLIO_SIZE,
+    sanitize_filename, validate_file_content, validate_path
+)
 
 router = APIRouter()
 
@@ -23,7 +31,7 @@ def _process_tags(items):
                 if isinstance(item["tags"], list):
                     continue
                 item["tags"] = json.loads(item["tags"])
-            except:
+            except (json.JSONDecodeError, ValueError):
                 item["tags"] = []
         else:
             item["tags"] = []
@@ -32,11 +40,12 @@ def _process_tags(items):
 @router.get("/", response_model=List[dict])
 def list_portfolio_items(
     user_id: Optional[int] = Query(None, description="Filter by freelancer ID"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     current_user = Depends(get_current_user)
 ):
     """List portfolio items for a user"""
+    offset, limit = paginate_params(page, page_size)
     target_user_id = user_id if user_id else current_user.get("user_id")
 
     if target_user_id != current_user.get("user_id"):
@@ -44,7 +53,7 @@ def list_portfolio_items(
         if check is None or check is False:
             raise HTTPException(status_code=404, detail="Portfolio not found")
 
-    items = portfolio_service.list_portfolio_items(target_user_id, skip, limit)
+    items = portfolio_service.list_portfolio_items(target_user_id, offset, limit)
     return _process_tags(items)
 
 
@@ -63,7 +72,7 @@ def get_portfolio_item(
 
 @router.post("/", response_model=dict, status_code=status.HTTP_201_CREATED)
 def create_portfolio_item(
-    portfolio_item: dict,
+    portfolio_item: PortfolioItemCreate,
     current_user = Depends(get_current_user)
 ):
     """Create a new portfolio item (JSON)"""
@@ -75,15 +84,15 @@ def create_portfolio_item(
         )
 
     user_id = current_user.get("user_id")
-    tags_json = json.dumps(portfolio_item.get("tags", []))
+    tags_json = json.dumps(portfolio_item.tags or [])
 
     try:
         new_id, now = portfolio_service.create_portfolio_item_record(
             user_id,
-            portfolio_item.get("title"),
-            portfolio_item.get("description"),
-            portfolio_item.get("image_url"),
-            portfolio_item.get("project_url"),
+            portfolio_item.title,
+            portfolio_item.description,
+            portfolio_item.image_url,
+            portfolio_item.project_url,
             tags_json
         )
     except RuntimeError:
@@ -92,11 +101,11 @@ def create_portfolio_item(
     return {
         "id": new_id,
         "freelancer_id": user_id,
-        "title": portfolio_item.get("title"),
-        "description": portfolio_item.get("description"),
-        "image_url": portfolio_item.get("image_url"),
-        "project_url": portfolio_item.get("project_url"),
-        "tags": portfolio_item.get("tags", []),
+        "title": portfolio_item.title,
+        "description": portfolio_item.description,
+        "image_url": portfolio_item.image_url,
+        "project_url": portfolio_item.project_url,
+        "tags": portfolio_item.tags or [],
         "created_at": now,
         "updated_at": now
     }
@@ -126,11 +135,10 @@ async def create_portfolio_item_wizard(
     if technologies_json:
         try:
             tags = json.loads(technologies_json)
-        except:
+        except (json.JSONDecodeError, ValueError):
             pass
 
-    upload_dir = Path("uploads/portfolio")
-    upload_dir.mkdir(parents=True, exist_ok=True)
+    PORTFOLIO_DIR.mkdir(parents=True, exist_ok=True)
 
     image_url = ""
 
@@ -138,18 +146,29 @@ async def create_portfolio_item_wizard(
         if key.startswith("image_") and not key.endswith("_caption") and not key.endswith("_is_cover"):
             if isinstance(value, UploadFile):
                 content = await value.read()
-                if content:
-                    filename = f"{uuid.uuid4()}_{value.filename}"
-                    file_path = upload_dir / filename
-                    with open(file_path, "wb") as f:
-                        f.write(content)
+                if not content:
+                    continue
+                # Validate file size
+                if len(content) > MAX_PORTFOLIO_SIZE:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"File too large. Maximum size: {MAX_PORTFOLIO_SIZE / 1024 / 1024}MB"
+                    )
+                # Validate MIME type from content bytes
+                validate_file_content(content, ALLOWED_IMAGE_TYPES)
+                # Sanitize filename and save securely
+                safe_filename = sanitize_filename(value.filename or "portfolio.jpg")
+                file_path = PORTFOLIO_DIR / safe_filename
+                validate_path(safe_filename, PORTFOLIO_DIR)
+                with open(file_path, "wb") as f:
+                    f.write(content)
 
-                    index = key.split("_")[1]
-                    is_cover = form.get(f"image_{index}_is_cover") == "true"
+                index = key.split("_")[1]
+                is_cover = form.get(f"image_{index}_is_cover") == "true"
 
-                    saved_url = f"/uploads/portfolio/{filename}"
-                    if is_cover or not image_url:
-                        image_url = saved_url
+                saved_url = f"/uploads/portfolio/{safe_filename}"
+                if is_cover or not image_url:
+                    image_url = saved_url
 
     user_id = current_user.get("user_id")
     tags_json = json.dumps(tags)
@@ -177,7 +196,7 @@ async def create_portfolio_item_wizard(
 @router.put("/{portfolio_item_id}", response_model=dict)
 def update_portfolio_item(
     portfolio_item_id: int,
-    portfolio_item: dict,
+    portfolio_item: PortfolioItemUpdate,
     current_user = Depends(get_current_user)
 ):
     """Update a portfolio item"""
@@ -189,7 +208,8 @@ def update_portfolio_item(
     if owner.get("freelancer_id") != user_id:
         raise HTTPException(status_code=403, detail="Not authorized to update this portfolio item")
 
-    updated = portfolio_service.update_portfolio_item_record(portfolio_item_id, portfolio_item)
+    update_data = portfolio_item.model_dump(exclude_unset=True)
+    updated = portfolio_service.update_portfolio_item_record(portfolio_item_id, update_data)
     if not updated:
         return {}
 

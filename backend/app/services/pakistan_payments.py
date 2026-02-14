@@ -1,18 +1,5 @@
 # @AI-HINT: Pakistan-friendly payment gateway supporting USDC (Polygon), AirTM, JazzCash, EasyPaisa, Wise
-"""
-Pakistan Payment Gateway Service
-
-Stripe is NOT available in Pakistan. This service provides alternatives:
-
-1. USDC on Polygon (RECOMMENDED) - Near-zero fees (~$0.01), instant, global
-2. AirTM - P2P exchange platform supporting PKR
-3. JazzCash - Pakistan's leading mobile wallet
-4. EasyPaisa - Telenor's mobile payment solution  
-5. Wise (TransferWise) - International bank transfers
-6. Payoneer - Freelancer payment platform
-
-All these work in Pakistan and have free or low-cost tiers!
-"""
+"""Pakistan Payment Gateway Service."""
 
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone

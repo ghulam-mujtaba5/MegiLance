@@ -10,5 +10,8 @@ export { useDashboardData } from './useDashboardData';
 export { useAdminData as useAdmin } from './useAdmin';
 export { useUser } from './useUser';
 export { useWebSocket } from './useWebSocket';
+export { useNotifications } from './useNotifications';
+export { useOnlineStatus } from './useOnlineStatus';
+export { useTypingIndicator } from './useTypingIndicator';
 export { default as useAnimatedCounter } from './useAnimatedCounter';
 export { default as useIntersectionObserver } from './useIntersectionObserver';

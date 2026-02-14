@@ -1,16 +1,5 @@
 # @AI-HINT: Advanced invoice and tax management service
-"""
-Invoice & Tax Management Service - Professional invoicing with tax calculations.
-
-Features:
-- Invoice generation and management
-- Multiple tax rate support
-- Tax jurisdiction handling
-- Invoice templates
-- Payment tracking
-- Tax reporting
-- Export to accounting software
-"""
+"""Invoice & Tax Management Service - Professional invoicing with tax calculations."""
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Dict, Any

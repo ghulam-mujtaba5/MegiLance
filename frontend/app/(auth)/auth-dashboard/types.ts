@@ -16,7 +16,7 @@ export interface User {
 
 /**
  * Represents a single metric displayed on the dashboard.
- * Conforms to investor-grade UI standards for data visualization.
+ * Conforms to production-ready UI standards for data visualization.
  */
 export interface DashboardMetric {
   id: number | string;

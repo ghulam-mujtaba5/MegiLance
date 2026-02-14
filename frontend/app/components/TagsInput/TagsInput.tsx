@@ -1,4 +1,4 @@
-// @/app/components/TagsInput/TagsInput.tsx
+// @AI-HINT: Interactive tags input component for adding/removing keyword tags with keyboard support
 'use client';
 
 import React, { useState, KeyboardEvent } from 'react';
