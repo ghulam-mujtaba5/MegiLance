@@ -228,6 +228,42 @@ async def get_engagement_metrics(
     return analytics_service.get_engagement_metrics(days)
 
 
+# ==================== Cohort & Growth Analytics ====================
+
+@router.get(
+    "/cohorts/registration",
+    summary="Get registration cohort analysis"
+)
+async def get_registration_cohorts(
+    months: int = Query(default=6, ge=2, le=12, description="Number of months to analyze"),
+    current_user = Depends(require_admin)
+):
+    """Monthly cohort retention analysis. Admin only."""
+    return analytics_service.get_registration_cohort_analysis(months)
+
+
+@router.get(
+    "/funnel/conversion",
+    summary="Get platform conversion funnel"
+)
+async def get_conversion_funnel(
+    current_user = Depends(require_admin)
+):
+    """Platform conversion funnel from registration to payment. Admin only."""
+    return analytics_service.get_conversion_funnel()
+
+
+@router.get(
+    "/growth/summary",
+    summary="Get platform growth summary"
+)
+async def get_growth_summary(
+    current_user = Depends(require_admin)
+):
+    """Key metrics with week-over-week and month-over-month changes. Admin only."""
+    return analytics_service.get_growth_summary()
+
+
 # ==================== Dashboard Summary ====================
 
 @router.get(

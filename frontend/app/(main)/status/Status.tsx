@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
+import { StatusIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 import { 
   CheckCircle, XCircle, AlertCircle, Clock, RefreshCw, 
   Database, Server, MessageSquare, Brain, CreditCard,
@@ -188,13 +190,18 @@ const Status: React.FC = () => {
         <div className={common.container}>
           <ScrollReveal>
             <div className={common.header}>
-              <h1 className={common.title}>
-                <Activity className="inline-block mr-3 mb-1" size={40} />
-                System Status
-              </h1>
-              <p className={cn(common.subtitle, themed.subtitle)}>
-                Real-time status of MegiLance services
-              </p>
+              <div className={common.heroRow}>
+                <div className={common.heroContent}>
+                  <h1 className={common.title}>
+                    <Activity className="inline-block mr-3 mb-1" size={40} />
+                    System Status
+                  </h1>
+                  <p className={cn(common.subtitle, themed.subtitle)}>
+                    Real-time status of MegiLance services
+                  </p>
+                </div>
+                <StatusIllustration className={illustrationStyles.heroIllustrationSmall} />
+              </div>
               
               {/* Hero Status Banner */}
               <div className={cn(common.heroStatusBanner, themed.heroStatusBanner, common[`heroStatus${overallStatus.charAt(0).toUpperCase() + overallStatus.slice(1)}`])}>

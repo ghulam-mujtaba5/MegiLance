@@ -7,13 +7,14 @@ import HireClient from './HireClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Hire Freelancers by Skill - Find Expert Developers, Designers & More',
-    description: 'Browse and hire top freelancers by skill on MegiLance. Find React developers ($75/hr avg), Python developers ($80/hr avg), UI/UX designers ($65/hr avg), and 30+ other specializations. Verified profiles, escrow payments, satisfaction guaranteed.',
+    title: 'Hire Freelancers Online - Web Developers, Graphic Designers & Experts for Hire',
+    description: 'Hire freelancers by skill on MegiLance. Find and hire web developers, graphic designers, Python developers, and 30+ specializations. Verified profiles, escrow payments, satisfaction guaranteed. Better Upwork alternative with lower fees.',
     path: '/hire',
     keywords: getKeywordsForPage(['transactional', 'technology'], [
-      'hire freelancers by skill', 'find developer', 'hire designer online',
-      'freelance rates by skill', 'best freelancers to hire', 'outsource to freelancer',
-      'hire remote developer', 'hire experts online',
+      'hire freelancers', 'hire web developer', 'hire graphic designer',
+      'developers for hire', 'programmer for hire', 'hire python developers',
+      'hire a web designer', 'hire a virtual assistant',
+      'freelance web developer', 'freelance website designer',
     ]),
   });
 }

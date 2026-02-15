@@ -87,15 +87,7 @@ export default function WorkflowsPage() {
         { id: 't6', name: 'Daily Standup', description: 'Daily status update reminder', category: 'Communication', trigger: 'schedule', popularity: 73 }
       ];
 
-      if (transformedWorkflows.length > 0) {
-        setWorkflows(transformedWorkflows);
-      } else {
-        // Use default demo workflows
-        setWorkflows([
-          { id: 'wf_001', name: 'Auto-respond to proposals', description: 'Send acknowledgment when new proposal received', trigger: { type: 'proposal_received', config: {} }, actions: [{ type: 'send_message', config: { template: 'proposal_ack' } }], isActive: true, lastRun: new Date().toISOString(), runCount: 45, createdAt: new Date().toISOString() },
-          { id: 'wf_002', name: 'Milestone notification', description: 'Notify client when milestone is complete', trigger: { type: 'milestone_completed', config: {} }, actions: [{ type: 'send_email', config: { to: 'client' } }], isActive: true, runCount: 12, createdAt: new Date().toISOString() },
-        ]);
-      }
+      setWorkflows(transformedWorkflows);
       setTemplates(defaultTemplates);
     } catch (error) {
       console.error('Failed to fetch workflows:', error);

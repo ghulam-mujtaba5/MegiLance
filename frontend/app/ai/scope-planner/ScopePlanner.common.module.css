@@ -1,0 +1,237 @@
+/* @AI-HINT: Scope Planner – common layout, structure, animations */
+
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+  min-height: 100vh;
+}
+
+/* Header */
+.header { text-align: center; margin-bottom: 2rem; }
+.headerBadge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.08em; padding: 6px 14px; border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+.title { font-size: 2rem; font-weight: 700; margin: 0; }
+.subtitle { font-size: 0.95rem; margin-top: 0.4rem; }
+
+/* Stepper */
+.stepper {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; margin-bottom: 2rem;
+}
+.stepItem { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; z-index: 1; }
+.stepDot {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 600; transition: all 0.3s;
+}
+.stepDotActive { transform: scale(1.15); }
+.stepDotCompleted {}
+.stepLabel { font-size: 0.72rem; font-weight: 500; white-space: nowrap; }
+.stepLabelActive { font-weight: 700; }
+.stepLine { flex: 1; height: 2px; min-width: 40px; transition: background 0.3s; }
+.stepLineActive {}
+
+/* Forms */
+.formCard {
+  border-radius: 16px; padding: 2rem;
+  margin-bottom: 1.5rem; border: 1px solid transparent;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.formTitle { font-size: 1.15rem; font-weight: 700; margin: 0 0 1.25rem; display: flex; align-items: center; gap: 8px; }
+.formGroup { display: flex; flex-direction: column; gap: 6px; flex: 1; margin-bottom: 1rem; }
+.formRow { display: flex; gap: 1rem; margin-bottom: 0; }
+.label { font-size: 0.82rem; font-weight: 600; }
+.labelHint { font-weight: 400; opacity: 0.65; font-size: 0.78rem; }
+
+/* Type grid */
+.typeGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.typeCard {
+  padding: 14px 10px; border: 2px solid transparent; border-radius: 10px;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+}
+.typeCardSelected {}
+.typeCardLabel { font-size: 0.82rem; font-weight: 600; }
+
+/* Complexity */
+.complexityRow { display: flex; gap: 10px; }
+.complexityCard {
+  flex: 1; padding: 12px; border: 2px solid transparent; border-radius: 10px;
+  cursor: pointer; transition: all 0.2s; text-align: center;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.complexityCardSelected {}
+.complexityLabel { font-size: 0.82rem; font-weight: 600; }
+.complexityMult { font-size: 0.72rem; }
+
+/* Inputs */
+.textInput, .numberInput {
+  padding: 10px 12px; border-radius: 8px; border: 1px solid transparent;
+  font-size: 0.9rem; width: 100%; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.textarea {
+  padding: 10px 12px; border-radius: 8px; border: 1px solid transparent;
+  font-size: 0.9rem; width: 100%; outline: none; resize: vertical; font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.select {
+  padding: 10px 12px; border-radius: 8px; border: 1px solid transparent;
+  font-size: 0.9rem; width: 100%; outline: none; cursor: pointer;
+  transition: border-color 0.2s; appearance: none;
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 14px;
+}
+
+/* Team section */
+.sectionHeader { display: flex; justify-content: space-between; align-items: center; margin: 1rem 0 0.5rem; }
+.sectionLabel { font-size: 0.88rem; font-weight: 600; }
+.addBtn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 14px; border-radius: 8px; font-size: 0.8rem;
+  font-weight: 600; border: none; cursor: pointer; transition: all 0.2s;
+}
+.memberRow {
+  display: flex; gap: 8px; align-items: center; padding: 8px;
+  border-radius: 8px; margin-bottom: 6px;
+}
+.smallSelect, .smallInput {
+  padding: 8px 10px; border-radius: 6px; border: 1px solid transparent;
+  font-size: 0.82rem; outline: none; transition: border-color 0.2s;
+}
+.smallSelect { flex: 2; appearance: none; cursor: pointer; }
+.smallInput { flex: 1; }
+.removeBtn {
+  width: 30px; height: 30px; border-radius: 6px; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+}
+
+/* Tags */
+.tagInputRow { display: flex; gap: 8px; margin-bottom: 8px; }
+.tagList { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 500;
+}
+.tag button {
+  background: none; border: none; cursor: pointer; padding: 0;
+  display: flex; align-items: center; opacity: 0.7;
+}
+.tag button:hover { opacity: 1; }
+
+/* Processing */
+.processingContainer { display: flex; flex-direction: column; align-items: center; padding: 3rem 0; }
+.processingOrb { position: relative; width: 72px; height: 72px; margin-bottom: 1.5rem; }
+.processingOrbInner {
+  width: 72px; height: 72px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  animation: pulse-orb 1.8s ease-in-out infinite;
+}
+.processingSubtitle { font-size: 0.88rem; margin-top: 0.3rem; }
+.processingSteps { display: flex; flex-direction: column; gap: 10px; margin-top: 1.5rem; }
+.processingStep { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
+.processingStepCircle {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Results */
+.resultsContainer { display: flex; flex-direction: column; gap: 1.5rem; }
+.resultsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+
+/* Hero */
+.priceHero {
+  border-radius: 16px; padding: 2.5rem; text-align: center;
+  position: relative; overflow: hidden;
+}
+.priceHeroGlow {
+  position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
+  width: 200%; height: 200%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(69,115,223,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.priceHeroLabel { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.priceHeroValue { font-size: 2.5rem; font-weight: 800; margin: 0.4rem 0; }
+.priceHeroMeta { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+.priceHeroMetaItem { font-size: 0.82rem; }
+
+/* Result cards */
+.resultCard {
+  border-radius: 14px; padding: 1.5rem;
+  border: 1px solid transparent; transition: box-shadow 0.3s;
+}
+.resultCardFullWidth { grid-column: 1 / -1; }
+.resultCardHeader { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+.resultCardIcon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.resultCardTitle { font-size: 0.95rem; font-weight: 700; margin: 0; }
+.miniTitle { font-size: 0.82rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+
+.calcList { display: flex; flex-direction: column; }
+.calcRow { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.84rem; border-bottom: 1px solid rgba(128,128,128,0.12); }
+.calcRowTotal { font-weight: 700; font-size: 0.92rem; border-top: 2px solid; border-bottom: none; padding-top: 10px; }
+
+/* Phases */
+.phaseRow { margin-bottom: 12px; }
+.phaseHeader { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.phaseLabel { font-size: 0.82rem; font-weight: 600; }
+.phaseWeeks { font-size: 0.78rem; }
+.phaseBar { height: 6px; border-radius: 3px; background: rgba(128,128,128,0.15); overflow: hidden; }
+.phaseBarFill { height: 100%; border-radius: 3px; transition: width 0.8s; }
+.phaseDesc { font-size: 0.78rem; margin-top: 4px; }
+
+/* Risks */
+.riskItem { padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid transparent; }
+.riskTitle { font-size: 0.82rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.riskSeverity { font-size: 0.7rem; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+.riskMsg { font-size: 0.78rem; margin-top: 4px; }
+.riskMitigation { font-size: 0.75rem; margin-top: 4px; font-style: italic; }
+
+/* Score */
+.scoreBar { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+.scoreBarTrack { flex: 1; height: 8px; border-radius: 4px; background: rgba(128,128,128,0.15); overflow: hidden; }
+.scoreBarFill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+.scoreValue { font-size: 0.9rem; font-weight: 700; }
+
+/* Recommendations */
+.recsGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.recItem { padding: 12px; border-radius: 8px; border-left: 3px solid transparent; }
+.recTitle { font-size: 0.82rem; font-weight: 700; }
+.recMsg { font-size: 0.78rem; margin-top: 4px; }
+
+/* Navigation */
+.navBar { display: flex; align-items: center; margin-top: 1.5rem; }
+.navSpacer { flex: 1; }
+.navButtonBack, .navButtonNext {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px; border-radius: 10px; font-size: 0.88rem;
+  font-weight: 600; border: none; cursor: pointer; transition: all 0.2s;
+}
+.actionsBar { display: flex; gap: 12px; margin-left: auto; }
+.actionBtnPrimary, .actionBtnSecondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 10px; font-size: 0.88rem;
+  font-weight: 600; border: none; cursor: pointer; transition: all 0.2s;
+}
+
+.disclaimer { text-align: center; font-size: 0.75rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(128,128,128,0.15); }
+
+@keyframes pulse-orb {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .formRow, .complexityRow { flex-direction: column; }
+  .typeGrid { grid-template-columns: repeat(2, 1fr); }
+  .resultsGrid { grid-template-columns: 1fr; }
+  .recsGrid { grid-template-columns: 1fr; }
+  .priceHeroValue { font-size: 1.8rem; }
+  .memberRow { flex-wrap: wrap; }
+}

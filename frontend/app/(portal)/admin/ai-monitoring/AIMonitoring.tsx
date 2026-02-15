@@ -16,43 +16,7 @@ interface LogRow { id: string; ts: string; level: 'info' | 'warn' | 'error'; mes
 const LEVELS = ['All', 'info', 'warn', 'error'] as const;
 const TIME_RANGES = ['24h', '7d', '30d'] as const;
 
-// Demo latency data points (ms) per hour/day
-const LATENCY_DATA = [142, 128, 135, 110, 118, 95, 102, 88, 105, 92, 98, 85, 112, 104, 96, 89, 108, 115, 99, 91, 87, 94, 101, 97];
-const ERROR_RATE_DATA = [2.1, 1.8, 2.4, 1.5, 3.2, 2.0, 1.6, 1.9, 2.8, 1.4, 1.7, 2.3];
-const THROUGHPUT_DATA = [420, 380, 510, 460, 490, 530, 480, 520, 550, 500, 470, 540];
-
-const MODEL_STATS = [
-  { name: 'Fraud Detection', calls: 12840, avgLatency: 95, errorRate: 1.2, accuracy: 97.3 },
-  { name: 'Price Estimation', calls: 8920, avgLatency: 142, errorRate: 0.8, accuracy: 94.1 },
-  { name: 'Rank & Match', calls: 15300, avgLatency: 68, errorRate: 0.5, accuracy: 96.8 },
-  { name: 'Chatbot NLP', calls: 6450, avgLatency: 210, errorRate: 2.1, accuracy: 91.5 },
-];
-
-function buildPolyline(data: number[], width: number, height: number, padding = 20): string {
-  const maxVal = Math.max(...data);
-  const minVal = Math.min(...data);
-  const range = maxVal - minVal || 1;
-  return data.map((v, i) => {
-    const x = (i / (data.length - 1)) * (width - padding * 2) + padding;
-    const y = height - padding - ((v - minVal) / range) * (height - padding * 2);
-    return `${x},${y}`;
-  }).join(' ');
-}
-
-function buildAreaPath(data: number[], width: number, height: number, padding = 20): string {
-  const maxVal = Math.max(...data);
-  const minVal = Math.min(...data);
-  const range = maxVal - minVal || 1;
-  const points = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * (width - padding * 2) + padding;
-    const y = height - padding - ((v - minVal) / range) * (height - padding * 2);
-    return `${x},${y}`;
-  });
-  const firstX = padding;
-  const lastX = width - padding;
-  const bottom = height - padding;
-  return `M ${firstX},${bottom} L ${points.join(' L ')} L ${lastX},${bottom} Z`;
-}
+// Chart rendering functions reserved for when monitoring API provides time-series data
 
 const AIMonitoring: React.FC = () => {
   const { resolvedTheme } = useTheme();
@@ -64,33 +28,20 @@ const AIMonitoring: React.FC = () => {
   const [timeRange, setTimeRange] = useState<(typeof TIME_RANGES)[number]>('24h');
 
   const kpis: KPI[] = useMemo(() => {
-    if (!ai?.aiStats) return [
-      { id: 'k1', label: 'Model Accuracy', value: '96.2%', trend: 'up', delta: '+0.4%' },
-      { id: 'k2', label: 'Total API Calls', value: '43,510', trend: 'up', delta: '+12%' },
-      { id: 'k3', label: 'Avg Latency', value: '102ms', trend: 'down', delta: '-8ms' },
-      { id: 'k4', label: 'Error Rate', value: '1.8%', trend: 'down', delta: '-0.3%' },
-      { id: 'k5', label: 'Fraud Detections', value: '847', trend: 'up', delta: '+23' },
-      { id: 'k6', label: 'Active Models', value: '4', trend: 'flat', delta: '' },
-    ];
+    const stats = ai?.aiStats;
+    const totalCalls = (stats?.fraudDetections ?? 0) + (stats?.priceEstimations ?? 0) + (stats?.chatbotSessions ?? 0);
     return [
-      { id: 'k1', label: 'Model Accuracy', value: ai.aiStats.rankModelAccuracy ?? '0%', trend: 'up', delta: '+0.4%' },
-      { id: 'k2', label: 'Total API Calls', value: String(((ai.aiStats.fraudDetections ?? 0) + (ai.aiStats.priceEstimations ?? 0) + (ai.aiStats.chatbotSessions ?? 0)).toLocaleString()), trend: 'up', delta: '+12%' },
-      { id: 'k3', label: 'Avg Latency', value: '102ms', trend: 'down', delta: '-8ms' },
-      { id: 'k4', label: 'Error Rate', value: '1.8%', trend: 'down', delta: '-0.3%' },
-      { id: 'k5', label: 'Fraud Detections', value: String(ai.aiStats.fraudDetections ?? 0), trend: 'up', delta: '+23' },
-      { id: 'k6', label: 'Active Models', value: '4', trend: 'flat', delta: '' },
+      { id: 'k1', label: 'Model Accuracy', value: stats?.rankModelAccuracy ?? '0%' },
+      { id: 'k2', label: 'Total API Calls', value: totalCalls.toLocaleString() },
+      { id: 'k3', label: 'Avg Latency', value: '—' },
+      { id: 'k4', label: 'Error Rate', value: '—' },
+      { id: 'k5', label: 'Fraud Detections', value: String(stats?.fraudDetections ?? 0) },
+      { id: 'k6', label: 'Active Models', value: totalCalls > 0 ? '4' : '0' },
     ];
   }, [ai?.aiStats]);
 
   const logs: LogRow[] = useMemo(() => {
-    if (!Array.isArray(ai?.recentFraudAlerts)) return [
-      { id: '1', ts: new Date().toISOString(), level: 'info', message: 'Rank model re-trained successfully', model: 'Rank & Match', latencyMs: 1240 },
-      { id: '2', ts: new Date(Date.now() - 300000).toISOString(), level: 'warn', message: 'High latency detected on price estimation endpoint', model: 'Price Estimation', latencyMs: 890 },
-      { id: '3', ts: new Date(Date.now() - 600000).toISOString(), level: 'error', message: 'Chatbot timeout — fallback response served', model: 'Chatbot NLP', latencyMs: 5000 },
-      { id: '4', ts: new Date(Date.now() - 900000).toISOString(), level: 'info', message: 'Fraud detection batch completed: 142 profiles scanned', model: 'Fraud Detection', latencyMs: 4200 },
-      { id: '5', ts: new Date(Date.now() - 1200000).toISOString(), level: 'warn', message: 'Model accuracy dipped below 95% threshold', model: 'Price Estimation', latencyMs: 0 },
-      { id: '6', ts: new Date(Date.now() - 1800000).toISOString(), level: 'info', message: 'Daily API usage summary generated', model: 'System', latencyMs: 320 },
-    ];
+    if (!Array.isArray(ai?.recentFraudAlerts) || ai.recentFraudAlerts.length === 0) return [];
     return (ai.recentFraudAlerts as any[]).map((l, idx) => ({
       id: String(l.id ?? idx),
       ts: l.timestamp ?? '',
@@ -100,6 +51,17 @@ const AIMonitoring: React.FC = () => {
       latencyMs: 0,
     }));
   }, [ai?.recentFraudAlerts]);
+
+  const modelStats = useMemo(() => {
+    const stats = ai?.aiStats;
+    if (!stats) return [];
+    return [
+      { name: 'Fraud Detection', calls: stats.fraudDetections ?? 0 },
+      { name: 'Price Estimation', calls: stats.priceEstimations ?? 0 },
+      { name: 'Rank & Match', calls: 0 },
+      { name: 'Chatbot NLP', calls: stats.chatbotSessions ?? 0 },
+    ].filter(m => m.calls > 0);
+  }, [ai?.aiStats]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -183,62 +145,16 @@ const AIMonitoring: React.FC = () => {
             <div className={cn(common.panel, themed.panel)} aria-label="Latency chart">
               <div className={common.panelHeader}>
                 <div className={cn(common.cardTitle, themed.cardTitle)}>Latency (ms)</div>
-                <div className={cn(common.chipRow)}>
-                  <span className={cn(common.chip, themed.chipActive)}>Avg: {Math.round(LATENCY_DATA.reduce((a, b) => a + b) / LATENCY_DATA.length)}ms</span>
-                  <span className={cn(common.chip)}>P95: {Math.round(LATENCY_DATA.sort((a, b) => a - b)[Math.floor(LATENCY_DATA.length * 0.95)])}ms</span>
-                </div>
               </div>
-              <svg width="100%" height="200" viewBox="0 0 340 200" preserveAspectRatio="none" role="img" aria-label="Latency over time">
-                <desc>Area chart showing API latency over time with values ranging from {Math.min(...LATENCY_DATA)}ms to {Math.max(...LATENCY_DATA)}ms</desc>
-                {/* Grid lines */}
-                {[0, 1, 2, 3, 4].map(i => (
-                  <line key={i} x1="20" y1={20 + i * 40} x2="320" y2={20 + i * 40} stroke="currentColor" strokeOpacity="0.1" strokeDasharray="4" />
-                ))}
-                {/* Y-axis labels */}
-                <text x="16" y="24" fontSize="9" fill="currentColor" opacity="0.5" textAnchor="end">{Math.max(...LATENCY_DATA)}</text>
-                <text x="16" y="184" fontSize="9" fill="currentColor" opacity="0.5" textAnchor="end">{Math.min(...LATENCY_DATA)}</text>
-                {/* Area fill */}
-                <path d={buildAreaPath(LATENCY_DATA, 340, 200)} fill="currentColor" opacity="0.08" />
-                {/* Line */}
-                <polyline points={buildPolyline(LATENCY_DATA, 340, 200)} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
-                {/* Data dots */}
-                {LATENCY_DATA.map((v, i) => {
-                  const maxV = Math.max(...LATENCY_DATA);
-                  const minV = Math.min(...LATENCY_DATA);
-                  const x = (i / (LATENCY_DATA.length - 1)) * 300 + 20;
-                  const y = 200 - 20 - ((v - minV) / (maxV - minV)) * 160;
-                  return <circle key={i} cx={x} cy={y} r="2.5" fill="currentColor" opacity="0.6" />;
-                })}
-              </svg>
+              <div className={common.emptyState} role="status">No latency monitoring data available yet.</div>
             </div>
 
             {/* Error Rate Chart */}
             <div className={cn(common.panel, themed.panel)} aria-label="Error rate chart">
               <div className={common.panelHeader}>
                 <div className={cn(common.cardTitle, themed.cardTitle)}>Error Rate (%)</div>
-                <span className={cn(common.chip, themed.chipActive)}>Avg: {(ERROR_RATE_DATA.reduce((a, b) => a + b) / ERROR_RATE_DATA.length).toFixed(1)}%</span>
               </div>
-              <svg width="100%" height="200" viewBox="0 0 340 200" preserveAspectRatio="none" role="img" aria-label="Error rate per period">
-                <desc>Bar chart showing error rate percentages over time</desc>
-                {[0, 1, 2, 3, 4].map(i => (
-                  <line key={i} x1="20" y1={20 + i * 40} x2="320" y2={20 + i * 40} stroke="currentColor" strokeOpacity="0.1" strokeDasharray="4" />
-                ))}
-                {ERROR_RATE_DATA.map((v, i) => {
-                  const maxV = Math.max(...ERROR_RATE_DATA);
-                  const barW = 18;
-                  const gap = (300 - ERROR_RATE_DATA.length * barW) / (ERROR_RATE_DATA.length + 1);
-                  const x = 20 + gap + i * (barW + gap);
-                  const barH = (v / (maxV * 1.2)) * 160;
-                  const y = 180 - barH;
-                  const isHigh = v > 2.5;
-                  return (
-                    <g key={i}>
-                      <rect x={x} y={y} width={barW} height={barH} rx="3" fill={isHigh ? 'var(--error, #e81123)' : 'currentColor'} opacity={isHigh ? 0.85 : 0.6} />
-                      <text x={x + barW / 2} y={y - 4} fontSize="8" fill="currentColor" opacity="0.6" textAnchor="middle">{v}%</text>
-                    </g>
-                  );
-                })}
-              </svg>
+              <div className={common.emptyState} role="status">No error rate monitoring data available yet.</div>
             </div>
           </ScrollReveal>
 
@@ -246,16 +162,8 @@ const AIMonitoring: React.FC = () => {
           <ScrollReveal className={cn(common.panel, themed.panel)} aria-label="Throughput chart">
             <div className={common.panelHeader}>
               <div className={cn(common.cardTitle, themed.cardTitle)}>Throughput (requests/min)</div>
-              <span className={cn(common.chip, themed.chipActive)}>Total: {THROUGHPUT_DATA.reduce((a, b) => a + b).toLocaleString()}</span>
             </div>
-            <svg width="100%" height="160" viewBox="0 0 640 160" preserveAspectRatio="none" role="img" aria-label="Request throughput over time">
-              <desc>Area chart showing request throughput</desc>
-              {[0, 1, 2, 3].map(i => (
-                <line key={i} x1="20" y1={15 + i * 40} x2="620" y2={15 + i * 40} stroke="currentColor" strokeOpacity="0.08" strokeDasharray="4" />
-              ))}
-              <path d={buildAreaPath(THROUGHPUT_DATA, 640, 160, 20)} fill="currentColor" opacity="0.06" />
-              <polyline points={buildPolyline(THROUGHPUT_DATA, 640, 160, 20)} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
-            </svg>
+            <div className={common.emptyState} role="status">No throughput monitoring data available yet.</div>
           </ScrollReveal>
 
           {/* ── Model Performance Table ── */}
@@ -273,22 +181,19 @@ const AIMonitoring: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {MODEL_STATS.map(m => (
-                    <tr key={m.name} className={cn(common.tr, themed.tr)}>
-                      <td className={common.td}>{m.name}</td>
-                      <td className={common.td}>{m.calls.toLocaleString()}</td>
-                      <td className={common.td}>{m.avgLatency}ms</td>
-                      <td className={common.td}>
-                        <span className={m.errorRate > 2 ? common.textError : ''}>{m.errorRate}%</span>
-                      </td>
-                      <td className={common.td}>
-                        <div className={common.accuracyBar}>
-                          <div className={cn(common.accuracyFill, themed.accuracyFill)} style={{ width: `${m.accuracy}%` }} />
-                          <span className={common.accuracyLabel}>{m.accuracy}%</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {modelStats.length === 0 ? (
+                    <tr><td colSpan={5} className={common.td}><div className={common.emptyState}>No model performance data available.</div></td></tr>
+                  ) : (
+                    modelStats.map(m => (
+                      <tr key={m.name} className={cn(common.tr, themed.tr)}>
+                        <td className={common.td}>{m.name}</td>
+                        <td className={common.td}>{m.calls.toLocaleString()}</td>
+                        <td className={common.td}>—</td>
+                        <td className={common.td}>—</td>
+                        <td className={common.td}>—</td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

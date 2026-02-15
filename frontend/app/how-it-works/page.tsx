@@ -4,10 +4,14 @@ import HowItWorksClient from './HowItWorksClient';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'How It Works',
-    description: 'Learn how MegiLance connects clients and freelancers using AI matching and secure blockchain payments. Step-by-step guide for posting projects and hiring talent.',
+    title: 'How It Works - Hire Freelancers & Find Freelance Jobs Online',
+    description: 'Learn how to hire freelancers and find freelance jobs online on MegiLance. Step-by-step guide: post projects, get AI-matched with experts, collaborate securely. The easiest Upwork alternative.',
     path: '/how-it-works',
-    keywords: ['how freelancing works', 'hire freelancers step by step', 'freelance platform guide', 'MegiLance process'],
+    keywords: [
+      'how to hire freelancers', 'find freelance jobs online', 'freelance work online',
+      'how freelancing works', 'hire freelancers step by step', 'upwork alternative guide',
+      'freelancer website guide', 'freelance marketplace how to',
+    ],
   });
 }
 

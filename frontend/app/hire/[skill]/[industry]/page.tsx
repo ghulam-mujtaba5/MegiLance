@@ -119,18 +119,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
   
-  const title = `Hire ${skill.name} for ${industry.name} | Top Talent | MegiLance`;
-  const description = `Find expert ${skill.name}s specializing in ${industry.name}. Average rate: $${skill.avgRate}/hr. Verified profiles, secure payments, satisfaction guaranteed.`;
+  const title = `Hire ${skill.name} for ${industry.name} - Freelance ${skill.category} Experts | MegiLance`;
+  const description = `Hire freelance ${skill.name.toLowerCase()}s specializing in ${industry.name} on MegiLance. Average rate: $${skill.avgRate}/hr. Verified profiles, secure escrow payments. Best freelancer website for ${industry.name.toLowerCase()} projects.`;
   
   return {
     title,
     description,
     keywords: [
-      `hire ${skill.name.toLowerCase()}`,
+      `hire ${skill.name.toLowerCase()} ${industry.name.toLowerCase()}`,
       `${industry.name.toLowerCase()} ${skill.name.toLowerCase()}`,
-      `freelance ${skill.name.toLowerCase()}`,
-      `${skill.category.toLowerCase()} developer`,
-      `${industry.name.toLowerCase()} technology`,
+      `freelance ${skill.name.toLowerCase()} ${industry.name.toLowerCase()}`,
+      `${skill.name.toLowerCase()} for hire`,
+      `${industry.name.toLowerCase()} freelancer`,
+      `hire ${skill.category.toLowerCase()} expert`,
     ],
     openGraph: {
       title,

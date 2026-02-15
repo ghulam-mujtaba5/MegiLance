@@ -1,18 +1,39 @@
-# @AI-HINT: AI services data access layer - database operations for AI feature endpoints
+# @AI-HINT: AI services data access layer with enriched queries, skill parsing, and rating/completion data
+"""
+AI Services Data Access v2.0 - Enriched queries with rating data,
+completion metrics, skill normalization, and market intelligence.
+"""
 import json
 import re
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 from app.db.turso_http import execute_query, to_str
 
 logger = logging.getLogger("megilance")
 
 
+def _parse_skills(raw: Any) -> List[str]:
+    """Robustly parse a skills field from DB (JSON string, list, or CSV)."""
+    if not raw:
+        return []
+    if isinstance(raw, list):
+        return [str(s).strip() for s in raw if s]
+    if isinstance(raw, str):
+        try:
+            parsed = json.loads(raw)
+            if isinstance(parsed, list):
+                return [str(s).strip() for s in parsed if s]
+        except (json.JSONDecodeError, TypeError, ValueError):
+            pass
+        return [s.strip() for s in raw.split(",") if s.strip()]
+    return []
+
+
 def get_project_with_skills(project_id: int) -> Optional[dict]:
     """Get project details including skills for matching. Returns None if not found."""
     result = execute_query(
-        "SELECT id, title, skills_required, category FROM projects WHERE id = ?",
+        "SELECT id, title, skills_required, category, budget_min, budget_max, experience_level FROM projects WHERE id = ?",
         [project_id]
     )
     if not result or not result.get("rows"):
@@ -20,11 +41,7 @@ def get_project_with_skills(project_id: int) -> Optional[dict]:
 
     row = result["rows"][0]
     skills_str = to_str(row[2]) or ""
-
-    try:
-        required_skills = json.loads(skills_str) if skills_str else []
-    except Exception:
-        required_skills = skills_str.split(",") if skills_str else []
+    required_skills = _parse_skills(skills_str)
 
     return {
         "id": row[0].get("value") if row[0].get("type") != "null" else None,
@@ -32,16 +49,32 @@ def get_project_with_skills(project_id: int) -> Optional[dict]:
         "skills_str": skills_str,
         "required_skills": required_skills,
         "category": to_str(row[3]),
+        "budget_min": row[4].get("value") if len(row) > 4 and row[4].get("type") != "null" else None,
+        "budget_max": row[5].get("value") if len(row) > 5 and row[5].get("type") != "null" else None,
+        "experience_level": to_str(row[6]) if len(row) > 6 else None,
     }
 
 
 def get_active_freelancers(limit: int) -> List[dict]:
-    """Get active freelancers for matching."""
+    """Get active freelancers with ratings and completion data for matching."""
     result = execute_query(
-        """SELECT u.id, u.name, u.email, u.skills, u.hourly_rate, NULL as rating,
-                  u.profile_image_url, u.bio, NULL as completed_projects
+        """SELECT u.id, u.name, u.email, u.skills, u.hourly_rate,
+                  COALESCE(rv.avg_rating, 0) AS rating,
+                  u.profile_image_url, u.bio,
+                  COALESCE(cc.completed, 0) AS completed_projects,
+                  u.location
            FROM users u
+           LEFT JOIN (
+               SELECT reviewee_id, AVG(rating) AS avg_rating
+               FROM reviews GROUP BY reviewee_id
+           ) rv ON u.id = rv.reviewee_id
+           LEFT JOIN (
+               SELECT freelancer_id, COUNT(*) AS completed
+               FROM contracts WHERE status = 'completed'
+               GROUP BY freelancer_id
+           ) cc ON u.id = cc.freelancer_id
            WHERE u.user_type = 'Freelancer' AND u.is_active = 1
+           ORDER BY COALESCE(rv.avg_rating, 0) * COALESCE(cc.completed, 0) DESC
            LIMIT ?""",
         [limit]
     )
@@ -53,13 +86,9 @@ def get_active_freelancers(limit: int) -> List[dict]:
     for row in result["rows"]:
         freelancer_id = row[0].get("value") if row[0].get("type") != "null" else None
         skills_str = to_str(row[3]) or ""
+        freelancer_skills = _parse_skills(skills_str)
 
-        try:
-            freelancer_skills = json.loads(skills_str) if skills_str else []
-        except Exception:
-            freelancer_skills = skills_str.split(",") if skills_str else []
-
-        rating = row[5].get("value") if row[5].get("type") != "null" else 0
+        rating = float(row[5].get("value", 0)) if row[5].get("type") != "null" else 0.0
 
         freelancers.append({
             "freelancer_id": freelancer_id,
@@ -67,10 +96,11 @@ def get_active_freelancers(limit: int) -> List[dict]:
             "email": to_str(row[2]),
             "skills": freelancer_skills,
             "hourly_rate": row[4].get("value") if row[4].get("type") != "null" else None,
-            "rating": rating,
+            "rating": round(rating, 2),
             "profile_image": to_str(row[6]),
-            "bio": to_str(row[7]),
+            "bio": (to_str(row[7]) or "")[:300],
             "completed_projects": row[8].get("value") if row[8].get("type") != "null" else 0,
+            "location": to_str(row[9]) if len(row) > 9 else None,
         })
 
     return freelancers
@@ -242,9 +272,22 @@ def get_user_profile_for_suggestions(user_id: int) -> Optional[dict]:
 
 
 def get_user_skills_and_rate(user_id: int) -> Optional[dict]:
-    """Get user skills and hourly rate. Returns None if not found."""
+    """Get user skills and hourly rate with completion data. Returns None if not found."""
     result = execute_query(
-        "SELECT skills, hourly_rate FROM users WHERE id = ?",
+        """SELECT u.skills, u.hourly_rate, u.location,
+                  COALESCE(rv.avg_rating, 0) AS avg_rating,
+                  COALESCE(cc.completed, 0) AS completed_projects
+           FROM users u
+           LEFT JOIN (
+               SELECT reviewee_id, AVG(rating) AS avg_rating
+               FROM reviews GROUP BY reviewee_id
+           ) rv ON u.id = rv.reviewee_id
+           LEFT JOIN (
+               SELECT freelancer_id, COUNT(*) AS completed
+               FROM contracts WHERE status = 'completed'
+               GROUP BY freelancer_id
+           ) cc ON u.id = cc.freelancer_id
+           WHERE u.id = ?""",
         [user_id]
     )
 
@@ -254,25 +297,32 @@ def get_user_skills_and_rate(user_id: int) -> Optional[dict]:
     row = result["rows"][0]
     skills_str = to_str(row[0]) or ""
     hourly_rate = row[1].get("value") if row[1].get("type") != "null" else 0
-
-    try:
-        user_skills = json.loads(skills_str) if skills_str else []
-    except Exception:
-        user_skills = skills_str.split(",") if skills_str else []
+    user_skills = _parse_skills(skills_str)
 
     return {
         "skills": user_skills,
         "hourly_rate": hourly_rate,
+        "location": to_str(row[2]) if len(row) > 2 else None,
+        "avg_rating": round(float(row[3].get("value", 0)), 2) if len(row) > 3 and row[3].get("type") != "null" else 0,
+        "completed_projects": row[4].get("value") if len(row) > 4 and row[4].get("type") != "null" else 0,
     }
 
 
 def get_open_projects(limit: int) -> List[dict]:
-    """Get open projects for job recommendations."""
+    """Get open projects with proposal counts for job recommendations."""
     result = execute_query(
-        """SELECT id, title, description, skills_required, budget_min, budget_max, category
-           FROM projects
-           WHERE status = 'open'
-           ORDER BY created_at DESC
+        """SELECT p.id, p.title, p.description, p.skills_required,
+                  p.budget_min, p.budget_max, p.category,
+                  p.experience_level, p.created_at,
+                  COALESCE(pc.proposal_count, 0) AS proposal_count
+           FROM projects p
+           LEFT JOIN (
+               SELECT project_id, COUNT(*) AS proposal_count
+               FROM proposals WHERE status != 'withdrawn'
+               GROUP BY project_id
+           ) pc ON p.id = pc.project_id
+           WHERE p.status = 'open'
+           ORDER BY p.created_at DESC
            LIMIT ?""",
         [limit]
     )
@@ -284,11 +334,7 @@ def get_open_projects(limit: int) -> List[dict]:
     for row in result["rows"]:
         project_id = row[0].get("value") if row[0].get("type") != "null" else None
         proj_skills_str = to_str(row[3]) or ""
-
-        try:
-            proj_skills = json.loads(proj_skills_str) if proj_skills_str else []
-        except Exception:
-            proj_skills = proj_skills_str.split(",") if proj_skills_str else []
+        proj_skills = _parse_skills(proj_skills_str)
 
         budget_min = row[4].get("value") if row[4].get("type") != "null" else 0
         budget_max = row[5].get("value") if row[5].get("type") != "null" else 0
@@ -296,11 +342,14 @@ def get_open_projects(limit: int) -> List[dict]:
         projects.append({
             "project_id": project_id,
             "title": to_str(row[1]),
-            "description": to_str(row[2]) or "",
+            "description": (to_str(row[2]) or "")[:400],
             "skills": proj_skills,
             "budget_min": budget_min,
             "budget_max": budget_max,
             "category": to_str(row[6]),
+            "experience_level": to_str(row[7]) if len(row) > 7 else None,
+            "created_at": to_str(row[8]) if len(row) > 8 else None,
+            "proposal_count": row[9].get("value") if len(row) > 9 and row[9].get("type") != "null" else 0,
         })
 
     return projects

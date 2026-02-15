@@ -8,6 +8,26 @@
   color: #f8fafc;
 }
 
+.subtitle {
+  color: #94a3b8;
+}
+
+.tab {
+  color: #94a3b8;
+  border-bottom: 2px solid transparent;
+}
+
+.tab:hover {
+  color: #6b93f5;
+  background: rgba(107, 147, 245, 0.08);
+}
+
+.tabActive {
+  color: #6b93f5;
+  border-bottom-color: #6b93f5;
+  background: rgba(107, 147, 245, 0.08);
+}
+
 .metricCard {
   background: #1e293b;
   border: 1px solid #334155;
@@ -28,4 +48,88 @@
 
 .chartTitle {
   color: #f8fafc;
+}
+
+.healthGauge {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.gaugeTrack {
+  stroke: #334155;
+}
+
+.gaugeNumber {
+  color: #f8fafc;
+}
+
+.gaugeLabel {
+  color: #6b93f5;
+}
+
+.healthMetaValue {
+  color: #f8fafc;
+}
+
+.healthMetaLabel {
+  color: #94a3b8;
+}
+
+.growthCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.growthCardTitle {
+  color: #94a3b8;
+}
+
+.growthCardValue {
+  color: #f8fafc;
+}
+
+.funnelContainer {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.funnelTitle {
+  color: #f8fafc;
+}
+
+.funnelLabel {
+  color: #cbd5e1;
+}
+
+.funnelBarOuter {
+  background: #0f172a;
+}
+
+.funnelCount {
+  color: #f8fafc;
+}
+
+.funnelPct {
+  color: #94a3b8;
+}
+
+.engagementCard {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.engagementValue {
+  color: #f8fafc;
+}
+
+.engagementLabel {
+  color: #94a3b8;
+}
+
+.sectionTitle {
+  color: #f8fafc;
+}
+
+.loadingState {
+  color: #94a3b8;
 }

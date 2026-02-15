@@ -83,7 +83,7 @@ export default function EarningsPage() {
           const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
           monthlyEarnings.push({
             month: d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
-            amount: Math.max(0, totalEarned / 6 * (0.5 + Math.random())),
+            amount: Math.round(totalEarned / 6 * 100) / 100,
           });
         }
       }

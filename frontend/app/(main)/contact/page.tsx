@@ -5,10 +5,13 @@ import Contact from './Contact';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Contact Us',
-    description: 'Get in touch with the MegiLance team for support, partnerships, or general inquiries. We respond within 24 hours.',
+    title: 'Contact Us - MegiLance Freelance Marketplace Support',
+    description: 'Get in touch with MegiLance team for freelance marketplace support, partnerships, or inquiries. We respond within 24 hours. Help with hiring freelancers, payments, and account issues.',
     path: '/contact',
-    keywords: ['contact MegiLance', 'freelance support', 'customer service', 'help desk'],
+    keywords: [
+      'contact MegiLance', 'freelance marketplace support', 'freelancer website help',
+      'customer service', 'hire freelancers help', 'payment support',
+    ],
   });
 }
 

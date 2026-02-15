@@ -78,19 +78,6 @@ function formatDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
 }
 
-const DEMO_FILES: FileItem[] = [
-  { id: '1', name: 'Project Assets', type: 'folder', size: 0, project_name: 'Web Redesign', uploaded_at: '2025-12-01T10:00:00Z', updated_at: '2026-01-15T14:30:00Z', parent_id: null, tags: ['assets'] },
-  { id: '2', name: 'Contracts', type: 'folder', size: 0, project_name: 'General', uploaded_at: '2025-11-10T08:00:00Z', updated_at: '2026-02-01T09:00:00Z', parent_id: null, tags: ['legal'] },
-  { id: '3', name: 'design-mockup-v3.pdf', type: 'file', mimeType: 'application/pdf', size: 4500000, project_name: 'Web Redesign', uploaded_at: '2026-01-20T16:00:00Z', updated_at: '2026-01-20T16:00:00Z', parent_id: null, tags: ['design'] },
-  { id: '4', name: 'logo-final.png', type: 'file', mimeType: 'image/png', size: 820000, project_name: 'Brand Identity', uploaded_at: '2026-01-18T11:30:00Z', updated_at: '2026-01-18T11:30:00Z', parent_id: null, tags: ['design', 'brand'] },
-  { id: '5', name: 'invoice-jan-2026.pdf', type: 'file', mimeType: 'application/pdf', size: 120000, project_name: 'Billing', uploaded_at: '2026-02-01T09:00:00Z', updated_at: '2026-02-01T09:00:00Z', parent_id: null, tags: ['billing'] },
-  { id: '6', name: 'project-timeline.xlsx', type: 'file', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: 350000, project_name: 'Web Redesign', uploaded_at: '2025-12-15T13:00:00Z', updated_at: '2026-01-10T10:00:00Z', parent_id: null, tags: ['planning'] },
-  { id: '7', name: 'meeting-notes.txt', type: 'file', mimeType: 'text/plain', size: 8500, project_name: 'Web Redesign', uploaded_at: '2026-02-10T15:00:00Z', updated_at: '2026-02-10T15:00:00Z', parent_id: null, tags: [] },
-  { id: '8', name: 'source-code.zip', type: 'file', mimeType: 'application/zip', size: 15000000, project_name: 'Mobile App', uploaded_at: '2026-02-05T12:00:00Z', updated_at: '2026-02-05T12:00:00Z', parent_id: null, tags: ['code'] },
-  { id: '9', name: 'Deliverables', type: 'folder', size: 0, project_name: 'Mobile App', uploaded_at: '2025-12-20T10:00:00Z', updated_at: '2026-02-08T11:00:00Z', parent_id: null, tags: [] },
-  { id: '10', name: 'wireframes.fig', type: 'file', mimeType: 'application/octet-stream', size: 6200000, project_name: 'Web Redesign', uploaded_at: '2025-12-22T14:00:00Z', updated_at: '2026-01-05T09:00:00Z', parent_id: null, tags: ['design'] },
-];
-
 export default function FilesPage() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -132,12 +119,12 @@ export default function FilesPage() {
           parent_id: f.parent_id || null,
           tags: f.tags || [],
         }));
-        setFiles(items.length > 0 ? items : DEMO_FILES);
+        setFiles(items);
       } else {
-        setFiles(DEMO_FILES);
+        setFiles([]);
       }
     } catch {
-      setFiles(DEMO_FILES);
+      setFiles([]);
     } finally {
       setLoading(false);
     }

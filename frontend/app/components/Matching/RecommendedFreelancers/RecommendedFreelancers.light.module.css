@@ -43,6 +43,15 @@
   border-color: rgba(69, 115, 223, 0.3);
 }
 
+.qualityBadge {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.fitReason {
+  background: rgba(69, 115, 223, 0.06);
+  color: var(--neutral-700, #334155);
+}
+
 .avatar {
   background: linear-gradient(135deg, var(--neutral-200, #e2e8f0), var(--neutral-300, #cbd5e1));
   color: var(--neutral-600, #475569);

@@ -5,10 +5,14 @@ import Pricing from './Pricing';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Pricing & Plans',
-    description: 'Simple, transparent pricing. Start free with 5% fees, or upgrade to Premium for just 1%. No hidden charges, no subscriptions required.',
+    title: 'Pricing & Plans - Low Fees Freelance Marketplace | Upwork Alternative',
+    description: 'MegiLance pricing starts free with 5% fees — upgrade to Premium for just 1%. The best Upwork alternative with the lowest freelance marketplace fees. No hidden charges, no subscriptions.',
     path: '/pricing',
-    keywords: ['MegiLance pricing', 'freelance platform fees', 'cheap freelance marketplace', 'freelancer rates'],
+    keywords: [
+      'freelance marketplace', 'upwork alternative', 'freelance platform fees',
+      'cheap freelance marketplace', 'MegiLance pricing', 'lowest freelancer fees',
+      'fiverr freelance alternative', 'best freelance websites pricing',
+    ],
   });
 }
 

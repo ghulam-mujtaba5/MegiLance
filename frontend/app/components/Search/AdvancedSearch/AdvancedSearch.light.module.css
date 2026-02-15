@@ -102,3 +102,31 @@
   border-color: #4573df;
   outline: none;
 }
+
+.trendingSection {
+  background: #f7fafc;
+  border-color: #e2e8f0;
+}
+
+.trendingSectionTitle {
+  color: #2d3748;
+}
+
+.trendingColumnTitle {
+  color: #64748b;
+}
+
+.trendingItem {
+  border-color: #e2e8f0;
+  color: #2d3748;
+}
+
+.trendingItem:hover {
+  background: #ffffff;
+  border-color: #4573df;
+}
+
+.trendingBadge {
+  background: rgba(69, 115, 223, 0.1);
+  color: #4573df;
+}

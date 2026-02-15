@@ -67,6 +67,24 @@ export const analyticsApi = {
 
   getUserDistribution: () => 
     apiFetch('/analytics/users/location-distribution'),
+
+  getPlatformHealth: () =>
+    apiFetch('/analytics/platform/health'),
+
+  getEngagementMetrics: (days: number = 30) =>
+    apiFetch(`/analytics/engagement/metrics?days=${days}`),
+
+  getRevenueStats: (days: number = 30) =>
+    apiFetch(`/analytics/revenue/stats?days=${days}`),
+
+  getRegistrationCohorts: (months: number = 6) =>
+    apiFetch(`/analytics/cohorts/registration?months=${months}`),
+
+  getConversionFunnel: () =>
+    apiFetch('/analytics/funnel/conversion'),
+
+  getGrowthSummary: () =>
+    apiFetch('/analytics/growth/summary'),
 };
 
 export const metricsApi = {

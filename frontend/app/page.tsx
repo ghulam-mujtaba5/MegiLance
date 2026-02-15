@@ -8,19 +8,21 @@ import { BASE_URL, SITE_NAME, buildWebSiteJsonLd, buildHowToJsonLd, jsonLdScript
 const Home = dynamic(() => import('./home/Home'), { ssr: true });
 
 export const metadata: Metadata = {
-  title: 'MegiLance - AI-Powered Freelance Marketplace | Hire Top Developers, Designers & Experts',
-  description: 'MegiLance is the #1 AI-powered freelance marketplace. Hire top developers, designers, writers & marketers. Secure blockchain payments, smart AI matching, real-time collaboration. Zero fees for freelancers. Better than Upwork & Fiverr.',
-  keywords: getKeywordsForPage(['brand', 'transactional', 'informational', 'longTail'], [
-    'hire top freelancers', 'best freelance website 2025', 'freelance marketplace with AI',
-    'secure freelance platform', 'zero commission freelancing', 'crypto payments freelancers',
+  title: 'MegiLance - Freelancer Website | Hire Freelance Web Developers, Designers & Experts Online',
+  description: 'MegiLance is the #1 AI-powered freelancer website and best Upwork alternative. Hire freelance web developers, graphic designers, content writers & virtual assistants online. Freelance jobs online with zero commission, secure escrow payments & AI matching. Better than Fiverr.',
+  keywords: getKeywordsForPage(['brand', 'transactional', 'informational', 'longTail', 'technology'], [
+    'freelancer website', 'freelance jobs online', 'freelance work online',
+    'best freelance websites', 'hire freelancers', 'upwork alternative',
+    'fiverr alternative', 'freelance website designer', 'zero commission freelancing',
+    'virtual assistant jobs remote', 'best freelancing website 2026',
   ]),
   alternates: {
     canonical: BASE_URL,
     languages: { 'en-US': BASE_URL, 'x-default': BASE_URL },
   },
   openGraph: {
-    title: 'MegiLance - The Future of Freelancing | AI-Powered Marketplace',
-    description: 'Join 50,000+ professionals on MegiLance. AI-powered matching finds your perfect freelancer in minutes. Blockchain payments, escrow protection, and zero fees for freelancers.',
+    title: 'MegiLance - Best Freelancer Website | Hire Top Freelancers Online',
+    description: 'Join 50,000+ professionals on MegiLance. Find freelance jobs online or hire top freelance developers, designers & writers. AI-powered matching, escrow payments, zero commission. Best Upwork & Fiverr alternative.',
     url: BASE_URL,
     siteName: SITE_NAME,
     type: 'website',
@@ -30,8 +32,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@megilance',
     creator: '@megilance',
-    title: 'MegiLance - Hire Top Freelancers with AI Matching',
-    description: 'The smartest way to hire freelancers. AI matching, blockchain payments, zero fees. Join MegiLance today.',
+    title: 'MegiLance - Best Freelancer Website | Freelance Jobs Online',
+    description: 'Hire top freelance web developers, designers & writers online. AI matching, zero commission, secure payments. The best Upwork & Fiverr alternative.',
   },
 };
 

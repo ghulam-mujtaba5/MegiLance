@@ -1,13 +1,11 @@
-// @AI-HINT: This is the Next.js route file for the AI Price Estimator page. Uses enhanced V2 component
-// with SmartSelect dropdowns, AI recommendations, and modern UX.
+// @AI-HINT: Route for AI Price Estimator Pro — general-purpose, market-aware pricing tool
 'use client';
 
 import React from 'react';
-import PriceEstimatorEnhanced from './PriceEstimatorEnhanced';
-
+import PriceEstimatorPro from './PriceEstimatorPro';
 
 const PriceEstimatorPage = () => {
-  return <PriceEstimatorEnhanced />;
+  return <PriceEstimatorPro />;
 };
 
 export default PriceEstimatorPage;

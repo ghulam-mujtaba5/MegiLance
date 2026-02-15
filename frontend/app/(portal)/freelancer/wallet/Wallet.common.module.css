@@ -14,6 +14,23 @@
   padding: 0 var(--space-2);
 }
 
+.heroRow {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.heroContent {
+  flex: 1 1 55%;
+}
+
+@media (max-width: 900px) {
+  .heroRow {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+}
+
 .title {
   font-family: var(--font-poppins);
   font-size: var(--font-size-xxl);

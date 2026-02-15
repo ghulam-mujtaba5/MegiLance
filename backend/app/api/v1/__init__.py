@@ -40,6 +40,8 @@ from . import (
     ai_writing,
     # Chatbot
     chatbot,
+    # General-Purpose AI Price Estimator
+    price_estimator,
 )
 
 __all__ = [
@@ -71,4 +73,5 @@ __all__ = [
     "pakistan_payments", "blog", "public_clients",
     "gigs", "seller_stats", "talent_invitations",
     "external_projects", "ai_writing", "chatbot",
+    "price_estimator",
 ]

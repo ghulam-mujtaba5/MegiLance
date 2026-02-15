@@ -1,0 +1,694 @@
+/* @AI-HINT: Light theme styles for AI Price Estimator Pro */
+
+/* Container */
+.container {
+  background: linear-gradient(135deg, #f0f4ff 0%, #fdf8ff 50%, #fff7ed 100%);
+  color: #1a1f36;
+}
+
+.loadingContainer {
+  color: #64748b;
+}
+
+/* Header */
+.headerBadge {
+  background: rgba(69, 115, 223, 0.1);
+  color: #4573df;
+}
+
+.title {
+  color: #1a1f36;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Stepper */
+.stepDot {
+  background: #e2e8f0;
+  color: #94a3b8;
+}
+
+.stepDotActive {
+  background: #4573df;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.stepDotCompleted {
+  background: #27ae60;
+  color: #fff;
+}
+
+.stepLabel {
+  color: #94a3b8;
+}
+
+.stepLabelActive {
+  color: #4573df;
+}
+
+.stepLine {
+  background: #e2e8f0;
+}
+
+.stepLineActive {
+  background: #4573df;
+}
+
+/* Category Card */
+.categoryCard {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.categoryCard:hover {
+  border-color: #4573df;
+  box-shadow: 0 4px 16px rgba(69, 115, 223, 0.12);
+}
+
+.categoryCardSelected {
+  border-color: #4573df;
+  background: linear-gradient(135deg, #f5f8ff 0%, #f0f4ff 100%);
+  box-shadow: 0 4px 16px rgba(69, 115, 223, 0.15);
+}
+
+.categoryIconBox {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+}
+
+.categoryName {
+  color: #1a1f36;
+}
+
+.categoryDescription {
+  color: #64748b;
+}
+
+.categoryServiceCount {
+  color: #94a3b8;
+}
+
+/* Service Card */
+.serviceCard {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.serviceCard:hover {
+  border-color: #4573df;
+}
+
+.serviceCardSelected {
+  border-color: #4573df;
+  background: rgba(69, 115, 223, 0.06);
+}
+
+.serviceLabel {
+  color: #1a1f36;
+}
+
+.serviceRate {
+  color: #4573df;
+}
+
+.serviceDemandHigh {
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+}
+
+.serviceDemandMedium {
+  background: rgba(242, 201, 76, 0.15);
+  color: #d4a017;
+}
+
+.serviceDemandLow {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+.backLink {
+  color: #4573df;
+}
+
+/* Form Card */
+.formCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.label {
+  color: #374151;
+}
+
+.labelHint {
+  color: #94a3b8;
+}
+
+.textarea {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.textarea::placeholder {
+  color: #94a3b8;
+}
+
+.select {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.select:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.numberInput {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.numberInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.numberInput::placeholder {
+  color: #94a3b8;
+}
+
+.featureTag {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+}
+
+.featureTagRemove {
+  color: #4573df;
+}
+
+.addFeatureInput {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.addFeatureInput:focus {
+  border-color: #4573df;
+}
+
+.addFeatureInput::placeholder {
+  color: #94a3b8;
+}
+
+.addFeatureBtn {
+  background: #4573df;
+  color: #fff;
+}
+
+.addFeatureBtn:hover {
+  background: #3a63cc;
+}
+
+/* Navigation */
+.navButtonBack {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.navButtonBack:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.navButtonNext {
+  background: linear-gradient(135deg, #4573df, #5b88f0);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
+}
+
+.navButtonNext:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(69, 115, 223, 0.35);
+}
+
+/* Processing */
+.processingContainer {
+  color: #1a1f36;
+}
+
+.processingOrb {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.15), rgba(124, 58, 237, 0.1));
+}
+
+.processingOrbInner {
+  background: linear-gradient(135deg, #4573df, #7c3aed);
+  color: #fff;
+}
+
+.processingSubtitle {
+  color: #64748b;
+}
+
+.processingStep {
+  color: #64748b;
+}
+
+.processingStepCircle {
+  border-color: #e2e8f0;
+}
+
+/* Results */
+.priceHero {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 32px rgba(69, 115, 223, 0.08);
+}
+
+.priceHeroGlow {
+  background: #4573df;
+}
+
+.priceHeroLabel {
+  color: #64748b;
+}
+
+.priceHeroValue {
+  color: #1a1f36;
+}
+
+.priceHeroDivider {
+  color: #e2e8f0;
+}
+
+.priceHeroMetaItem {
+  background: rgba(69, 115, 223, 0.06);
+  color: #4573df;
+}
+
+.resultCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.resultCardIcon {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+}
+
+.resultCardTitle {
+  color: #1a1f36;
+}
+
+/* Breakdown */
+.breakdownItemLabel {
+  color: #4b5563;
+}
+
+.breakdownItemValue {
+  color: #1a1f36;
+}
+
+.breakdownItemHours {
+  color: #94a3b8;
+}
+
+.progressBar {
+  background: #f1f5f9;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df, #5b88f0);
+}
+
+/* Market */
+.marketTier {
+  background: #fafbfc;
+}
+
+.marketTierLabel {
+  color: #4b5563;
+}
+
+.marketTierBar {
+  background: #f1f5f9;
+}
+
+.marketTierFill {
+  background: linear-gradient(90deg, #4573df, #5b88f0);
+}
+
+.marketTierValue {
+  color: #1a1f36;
+}
+
+.marketTierActive {
+  background: rgba(69, 115, 223, 0.06);
+  border: 1px solid rgba(69, 115, 223, 0.3);
+}
+
+.marketPosition {
+  background: rgba(69, 115, 223, 0.06);
+  color: #4573df;
+}
+
+/* Factors */
+.factorItem {
+  background: #fafbfc;
+}
+
+.factorName {
+  color: #94a3b8;
+}
+
+.factorVal {
+  color: #1a1f36;
+}
+
+.factorUp {
+  background: #27ae60;
+}
+
+.factorNeutral {
+  background: #94a3b8;
+}
+
+.factorDown {
+  background: #e74c3c;
+}
+
+/* Timeline */
+.timelineStatValue {
+  color: #1a1f36;
+}
+
+.timelineStatLabel {
+  color: #64748b;
+}
+
+.timelineDivider {
+  background: #e2e8f0;
+}
+
+/* ROI */
+.roiItem {
+  background: #fafbfc;
+}
+
+.roiItemIcon {
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+}
+
+.roiItemTitle {
+  color: #1a1f36;
+}
+
+.roiItemMessage {
+  color: #64748b;
+}
+
+/* Actions */
+.actionBtnPrimary {
+  background: linear-gradient(135deg, #4573df, #5b88f0);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
+}
+
+.actionBtnSecondary {
+  background: #f1f5f9;
+  color: #4573df;
+}
+
+.actionBtnSecondary:hover {
+  background: #e2e8f0;
+}
+
+/* Country Selector */
+.countrySearchInput {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.countrySearchInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.countrySearchInput::placeholder {
+  color: #94a3b8;
+}
+
+.countryDropdown {
+  background: #fff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.countryRegionLabel {
+  color: #94a3b8;
+  background: #fafbfc;
+}
+
+.countryOption {
+  color: #1a1f36;
+}
+
+.countryOption:hover {
+  background: rgba(69, 115, 223, 0.06);
+}
+
+.countryOptionSelected {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+}
+
+.countryMult {
+  color: #94a3b8;
+}
+
+.selectedCountryBadge {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+  border: 1px solid rgba(69, 115, 223, 0.2);
+}
+
+.selectedCountryRemove {
+  color: #4573df;
+}
+
+/* Regional Analysis */
+.regionCompareItem {
+  background: #fafbfc;
+  border: 1px solid #e2e8f0;
+}
+
+.regionCompareName {
+  color: #64748b;
+}
+
+.regionCompareRate {
+  color: #1a1f36;
+}
+
+.regionalContextItem {
+  background: #fafbfc;
+}
+
+.regionalContextTitle {
+  color: #1a1f36;
+}
+
+.regionalContextMsg {
+  color: #64748b;
+}
+
+.pppContext {
+  background: rgba(69, 115, 223, 0.04);
+  border: 1px solid rgba(69, 115, 223, 0.12);
+  color: #374151;
+}
+
+.pppLabel {
+  color: #4573df;
+}
+
+/* Field Hint */
+.fieldHint {
+  color: #94a3b8;
+}
+
+/* Guidance Tip */
+.guidanceTip {
+  background: rgba(69, 115, 223, 0.04);
+  border: 1px solid rgba(69, 115, 223, 0.12);
+}
+
+.guidanceTipIcon {
+  background: rgba(69, 115, 223, 0.1);
+  color: #4573df;
+}
+
+.guidanceTipTitle {
+  color: #1a1f36;
+}
+
+.guidanceTipText {
+  color: #64748b;
+}
+
+/* Option Impact */
+.optionImpact {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.optionImpactBadge {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+}
+
+/* Hours Wizard */
+.hoursWizardToggle {
+  background: rgba(69, 115, 223, 0.04);
+  border-color: rgba(69, 115, 223, 0.2);
+  color: #4573df;
+}
+
+.hoursWizardToggle:hover {
+  background: rgba(69, 115, 223, 0.08);
+  border-color: rgba(69, 115, 223, 0.4);
+}
+
+.hoursWizard {
+  background: #fafbfc;
+  border: 1px solid #e2e8f0;
+  border-top: none;
+}
+
+.hoursWizardIntro {
+  color: #64748b;
+}
+
+.wizardQuestionLabel {
+  color: #374151;
+}
+
+.wizardOption {
+  background: #fff;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.wizardOption:hover {
+  border-color: rgba(69, 115, 223, 0.4);
+}
+
+.wizardOptionSelected {
+  background: rgba(69, 115, 223, 0.06);
+  border-color: #4573df;
+  color: #4573df;
+}
+
+.wizardOptionHours {
+  color: #94a3b8;
+}
+
+.wizardCalcBtn {
+  background: linear-gradient(135deg, #4573df, #5b88f0);
+  color: #fff;
+}
+
+.wizardCalcBtn:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.hoursResultCard {
+  background: rgba(39, 174, 96, 0.04);
+  border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.hoursResultValue {
+  color: #27ae60;
+}
+
+.hoursResultRange {
+  color: #64748b;
+}
+
+.confidenceHigh {
+  background: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+}
+
+.confidenceMedium {
+  background: rgba(242, 201, 76, 0.15);
+  color: #d4a017;
+}
+
+.confidenceLow {
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+}
+
+.hoursBreakdownItem {
+  color: #4b5563;
+  border-bottom-color: #f1f5f9;
+}
+
+.hoursBreakdownHours {
+  color: #27ae60;
+}
+
+.hoursApplyBtn {
+  background: #27ae60;
+  color: #fff;
+}
+
+.hoursApplyBtn:hover {
+  background: #219a52;
+}
+
+/* Pricing Guide */
+.guideFormula {
+  background: rgba(69, 115, 223, 0.04);
+  border: 1px solid rgba(69, 115, 223, 0.12);
+  color: #1a1f36;
+}
+
+.guideSection {
+  background: #fafbfc;
+  border: 1px solid #e2e8f0;
+}
+
+.guideSectionTitle {
+  color: #1a1f36;
+}
+
+.guideSectionText {
+  color: #4b5563;
+}
+
+.guideList {
+  color: #4b5563;
+}
+
+/* Disclaimer */
+.disclaimer {
+  background: #f8fafc;
+  color: #94a3b8;
+}

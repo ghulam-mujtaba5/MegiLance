@@ -62,65 +62,62 @@ const Analytics: React.FC = () => {
 
   // Transform API data or use fallback computed values
   const data = useMemo<AnalyticsData>(() => {
-    const mult = range === 'Last 7 days' ? 0.6 : range === 'Last 90 days' ? 1.2 : 1;
-    const seg = segment === 'Clients' ? 1.1 : segment === 'Freelancers' ? 0.9 : 1;
-
-    // Use API data if available, otherwise use computed fallback
+    // Use API data if available, otherwise show zeros
     if (apiData?.summary) {
       const s = apiData.summary;
       return {
         kpis: [
           { 
             label: 'Revenue', 
-            value: `$${(s.total_revenue || 48895 * mult * seg).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 
-            delta: `+${s.revenue_growth || '12.5'}%` 
+            value: `$${(s.total_revenue || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, 
+            delta: s.revenue_growth ? `+${s.revenue_growth}%` : '—' 
           },
           { 
             label: 'Active Projects', 
-            value: (s.active_projects || Math.round(24 * mult * seg)).toString(), 
-            delta: `+${s.projects_delta || 3}` 
+            value: (s.active_projects || 0).toString(), 
+            delta: s.projects_delta ? `+${s.projects_delta}` : '—' 
           },
           { 
             label: 'New Users', 
-            value: (s.new_users || Math.round(120 * mult * seg)).toString(), 
-            delta: `+${s.users_delta || 18}` 
+            value: (s.new_users || 0).toString(), 
+            delta: s.users_delta ? `+${s.users_delta}` : '—' 
           },
           { 
             label: 'Conversion Rate', 
-            value: `${(s.conversion_rate || 4.2 * mult).toFixed(1)}%`, 
-            delta: `+${s.conversion_delta || '0.3'}%` 
+            value: s.conversion_rate ? `${Number(s.conversion_rate).toFixed(1)}%` : '0%', 
+            delta: s.conversion_delta ? `+${s.conversion_delta}%` : '—' 
           },
         ],
         bars: apiData.revenueTrends?.data?.map((d: any) => d.value) || 
-              Array.from({ length: 12 }, (_, i) => Math.round((30 + i * 5) * mult * seg)),
+              Array.from({ length: 12 }, () => 0),
         points: apiData.userStats?.growth?.map((d: any, i: number) => ({ 
           x: (i + 1) * 10, 
-          y: 20 + (d.value || Math.sin(i / 2) * 15 * mult * seg) 
-        })) || Array.from({ length: 10 }, (_, i) => ({ x: (i + 1) * 10, y: 20 + Math.sin(i / 2) * 15 * mult * seg })),
+          y: 20 + (d.value || 0) 
+        })) || Array.from({ length: 10 }, (_, i) => ({ x: (i + 1) * 10, y: 20 })),
         table: [
-          { metric: 'Signups', value: s.signups || Math.round(320 * mult * seg) },
-          { metric: 'Trials Started', value: s.trials || Math.round(170 * mult * seg) },
-          { metric: 'Upgrades', value: s.upgrades || Math.round(42 * mult * seg) },
-          { metric: 'Churned', value: s.churned || Math.round(9 * mult * seg) },
+          { metric: 'Signups', value: s.signups || 0 },
+          { metric: 'Trials Started', value: s.trials || 0 },
+          { metric: 'Upgrades', value: s.upgrades || 0 },
+          { metric: 'Churned', value: s.churned || 0 },
         ],
       };
     }
 
-    // Fallback computed data when API data is not available
+    // No API data available - show zeros
     return {
       kpis: [
-        { label: 'Revenue', value: `$${(48895 * mult * seg).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, delta: '+12.5%' },
-        { label: 'Active Projects', value: Math.round(24 * mult * seg).toString(), delta: '+3' },
-        { label: 'New Users', value: Math.round(120 * mult * seg).toString(), delta: '+18' },
-        { label: 'Conversion Rate', value: `${(4.2 * mult).toFixed(1)}%`, delta: '+0.3%' },
+        { label: 'Revenue', value: '$0', delta: '—' },
+        { label: 'Active Projects', value: '0', delta: '—' },
+        { label: 'New Users', value: '0', delta: '—' },
+        { label: 'Conversion Rate', value: '0%', delta: '—' },
       ],
-      bars: Array.from({ length: 12 }, (_, i) => Math.round((30 + i * 5) * mult * seg)),
-      points: Array.from({ length: 10 }, (_, i) => ({ x: (i + 1) * 10, y: 20 + Math.sin(i / 2) * 15 * mult * seg })),
+      bars: Array.from({ length: 12 }, () => 0),
+      points: Array.from({ length: 10 }, (_, i) => ({ x: (i + 1) * 10, y: 20 })),
       table: [
-        { metric: 'Signups', value: Math.round(320 * mult * seg) },
-        { metric: 'Trials Started', value: Math.round(170 * mult * seg) },
-        { metric: 'Upgrades', value: Math.round(42 * mult * seg) },
-        { metric: 'Churned', value: Math.round(9 * mult * seg) },
+        { metric: 'Signups', value: 0 },
+        { metric: 'Trials Started', value: 0 },
+        { metric: 'Upgrades', value: 0 },
+        { metric: 'Churned', value: 0 },
       ],
     };
   }, [range, segment, apiData]);

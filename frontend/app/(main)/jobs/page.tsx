@@ -6,10 +6,14 @@ import { buildMeta, buildCollectionPageJsonLd, buildBreadcrumbJsonLd, jsonLdScri
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Find Freelance Jobs',
-    description: 'Browse and apply for freelance jobs on MegiLance. Find projects in web development, design, writing, AI/ML, and more. Secure payments, AI matching, zero fees.',
+    title: 'Freelance Jobs Online - Find Remote Freelance Work & Projects',
+    description: 'Browse and apply for freelance jobs online on MegiLance. Find freelance work online in web development, design, writing, AI/ML, virtual assistant jobs remote, and more. Secure payments with AI matching.',
     path: '/jobs',
-    keywords: ['freelance jobs', 'find work online', 'remote freelance projects', 'hire developers', 'web development jobs'],
+    keywords: [
+      'freelance jobs online', 'freelance work online', 'find freelance jobs',
+      'virtual assistant jobs remote', 'remote freelance projects',
+      'freelance web developer jobs', 'freelancer website jobs',
+    ],
   });
 }
 

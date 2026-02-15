@@ -91,8 +91,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: 'Hire Freelancers | MegiLance' };
   }
 
-  const title = `Hire ${skill.name}s - Browse by Industry | MegiLance`;
-  const description = `Find top ${skill.name}s on MegiLance. Average rate: $${skill.avgRate}/hr. Browse ${INDUSTRIES.length} industries, verified profiles, secure escrow payments.`;
+  const title = `Hire ${skill.name}s Online - Freelance ${skill.name}s for Hire | MegiLance`;
+  const description = `Hire freelance ${skill.name.toLowerCase()}s on MegiLance. Average rate: $${skill.avgRate}/hr. Browse ${INDUSTRIES.length} industries, verified profiles, secure escrow payments. Best freelancer website to hire ${skill.category.toLowerCase()} experts.`;
 
   return {
     title,
@@ -103,6 +103,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       `${skill.name.toLowerCase()} for hire`,
       `${skill.category.toLowerCase()} freelancer`,
       `remote ${skill.name.toLowerCase()}`,
+      `hire ${skill.name.toLowerCase()} online`,
+      `best freelance ${skill.name.toLowerCase()}`,
     ],
     openGraph: {
       title,

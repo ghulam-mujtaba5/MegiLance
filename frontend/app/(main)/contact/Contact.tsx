@@ -17,6 +17,8 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
+import { ContactIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 
 import common from './Contact.common.module.css';
 import light from './Contact.light.module.css';
@@ -114,10 +116,15 @@ const Contact: React.FC = () => {
         <div className={styles.container}>
           <ScrollReveal>
             <header className={styles.header}>
-              <h1 className={styles.title}>Get in Touch</h1>
-              <p className={styles.subtitle}>
-                Have a question or a project in mind? We&apos;d love to hear from you.
-              </p>
+              <div className={common.heroRow}>
+                <div className={common.heroContent}>
+                  <h1 className={styles.title}>Get in Touch</h1>
+                  <p className={styles.subtitle}>
+                    Have a question or a project in mind? We&apos;d love to hear from you.
+                  </p>
+                </div>
+                <ContactIllustration className={illustrationStyles.heroIllustrationSmall} />
+              </div>
             </header>
           </ScrollReveal>
 

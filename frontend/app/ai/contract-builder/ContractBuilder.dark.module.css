@@ -1,0 +1,98 @@
+/* @AI-HINT: Dark theme styles for Contract Builder */
+
+.container { background: linear-gradient(135deg, #0c0f1a 0%, #111827 50%, #0f1724 100%); color: #e2e8f0; }
+
+.headerBadge { background: rgba(69,115,223,0.2); color: #7ba0f7; }
+.title { color: #f1f5f9; }
+.subtitle { color: #94a3b8; }
+
+.stepDot { background: #1e293b; color: #64748b; }
+.stepDotActive { background: #4573df; color: #fff; box-shadow: 0 4px 12px rgba(69,115,223,0.4); }
+.stepDotCompleted { background: #27ae60; color: #fff; }
+.stepLabel { color: #64748b; }
+.stepLabelActive { color: #7ba0f7; }
+.stepLine { background: #1e293b; }
+.stepLineActive { background: #4573df; }
+
+.formCard { background: rgba(30,41,59,0.6); border: 1px solid rgba(51,65,85,0.6); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.formTitle { color: #f1f5f9; }
+.label { color: #cbd5e1; }
+.labelHint { color: #64748b; }
+
+.textInput { background: rgba(15,23,42,0.6); border-color: rgba(51,65,85,0.8); color: #e2e8f0; }
+.textInput:focus { border-color: #4573df; box-shadow: 0 0 0 3px rgba(69,115,223,0.15); }
+.textInput::placeholder { color: #64748b; }
+
+.numberInput { background: rgba(15,23,42,0.6); border-color: rgba(51,65,85,0.8); color: #e2e8f0; }
+.numberInput:focus { border-color: #4573df; box-shadow: 0 0 0 3px rgba(69,115,223,0.15); }
+.numberInput::placeholder { color: #64748b; }
+
+.select {
+  background: rgba(15,23,42,0.6); border-color: rgba(51,65,85,0.8); color: #e2e8f0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+.select:focus { border-color: #4573df; box-shadow: 0 0 0 3px rgba(69,115,223,0.15); }
+
+.textarea { background: rgba(15,23,42,0.6); border-color: rgba(51,65,85,0.8); color: #e2e8f0; }
+.textarea:focus { border-color: #4573df; box-shadow: 0 0 0 3px rgba(69,115,223,0.15); }
+.textarea::placeholder { color: #64748b; }
+
+.typeCard { background: rgba(30,41,59,0.5); border-color: rgba(51,65,85,0.6); }
+.typeCard:hover { border-color: rgba(69,115,223,0.5); }
+.typeCardSelected { border-color: #4573df; background: rgba(69,115,223,0.1); box-shadow: 0 4px 12px rgba(69,115,223,0.15); }
+.typeIcon { background: rgba(69,115,223,0.15); color: #7ba0f7; }
+.typeLabel { color: #f1f5f9; }
+.typeDesc { color: #94a3b8; }
+
+.clauseCatTitle { color: #7ba0f7; }
+.clauseCard { background: rgba(15,23,42,0.4); border-color: rgba(51,65,85,0.6); }
+.clauseCard:hover { border-color: rgba(69,115,223,0.5); }
+.clauseCardSelected { border-color: #4573df; background: rgba(69,115,223,0.1); }
+.clauseLabel { color: #f1f5f9; }
+.clauseDesc { color: #94a3b8; }
+
+.navButtonBack { background: rgba(30,41,59,0.8); color: #94a3b8; }
+.navButtonBack:hover:not(:disabled) { background: rgba(30,41,59,1); }
+.navButtonNext { background: linear-gradient(135deg, #4573df, #5b88f0); color: #fff; box-shadow: 0 4px 12px rgba(69,115,223,0.35); }
+.navButtonNext:hover:not(:disabled) { box-shadow: 0 6px 20px rgba(69,115,223,0.45); }
+
+.processingContainer { color: #f1f5f9; }
+.processingOrbInner { background: linear-gradient(135deg, #4573df, #7c3aed); color: #fff; }
+.processingSubtitle { color: #94a3b8; }
+.processingStepCircle { border-color: #334155; }
+
+.priceHero { background: rgba(30,41,59,0.6); border: 1px solid rgba(51,65,85,0.6); box-shadow: 0 8px 32px rgba(69,115,223,0.08); }
+.priceHeroGlow { background: #4573df; }
+.priceHeroLabel { color: #94a3b8; }
+.priceHeroValue { color: #f1f5f9; }
+.priceHeroMetaItem { background: rgba(69,115,223,0.12); color: #7ba0f7; }
+
+.resultCard { background: rgba(30,41,59,0.6); border: 1px solid rgba(51,65,85,0.6); }
+.resultCardIcon { background: rgba(69,115,223,0.15); color: #7ba0f7; }
+.resultCardTitle { color: #f1f5f9; }
+
+.scoreValue { color: #f1f5f9; }
+.factorRow { color: #94a3b8; }
+
+.riskItem { background: rgba(15,23,42,0.4); }
+.riskTitle { color: #f1f5f9; }
+.riskMsg { color: #94a3b8; }
+.riskRec { color: #64748b; }
+
+.partyBox { background: rgba(15,23,42,0.4); }
+.partyLabel { color: #7ba0f7; }
+.partyName { color: #f1f5f9; }
+.partyDetail { color: #94a3b8; }
+
+.clauseSection { background: rgba(15,23,42,0.4); }
+.clauseSectionHeader { color: #f1f5f9; }
+.clauseSectionHeader:hover { background: rgba(69,115,223,0.06); }
+.clauseSectionBody { color: #cbd5e1; }
+
+.calcRow { color: #cbd5e1; border-bottom: 1px solid rgba(51,65,85,0.4); }
+
+.actionBtnPrimary { background: linear-gradient(135deg, #4573df, #5b88f0); color: #fff; box-shadow: 0 4px 12px rgba(69,115,223,0.35); }
+.actionBtnSecondary { background: rgba(30,41,59,0.8); color: #7ba0f7; }
+.actionBtnSecondary:hover { background: rgba(30,41,59,1); }
+
+.disclaimer { background: rgba(15,23,42,0.4); color: #64748b; }

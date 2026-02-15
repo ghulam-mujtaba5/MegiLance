@@ -1,0 +1,64 @@
+/* @AI-HINT: Common styles for inline SVG illustrations used in hero sections */
+
+.heroIllustration {
+  flex: 0 0 auto;
+  width: 340px;
+  height: 260px;
+  color: var(--text-secondary, #666);
+}
+
+.heroIllustrationSmall {
+  width: 260px;
+  height: 200px;
+  color: var(--text-secondary, #666);
+}
+
+.heroIllustrationCompact {
+  width: 220px;
+  height: 170px;
+  color: var(--text-secondary, #666);
+}
+
+.emptyStateIllustration {
+  width: 200px;
+  height: 160px;
+  margin: 0 auto;
+  color: var(--text-secondary, #666);
+}
+
+.loginIllustration {
+  width: 240px;
+  height: 220px;
+  margin: 0 auto;
+  color: var(--text-secondary, #666);
+}
+
+@media (max-width: 900px) {
+  .heroIllustration {
+    width: 260px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .heroIllustration {
+    width: 200px;
+    height: 150px;
+  }
+  .heroIllustrationSmall {
+    width: 180px;
+    height: 140px;
+  }
+  .heroIllustrationCompact {
+    width: 160px;
+    height: 120px;
+  }
+  .emptyStateIllustration {
+    width: 160px;
+    height: 120px;
+  }
+  .loginIllustration {
+    width: 180px;
+    height: 160px;
+  }
+}

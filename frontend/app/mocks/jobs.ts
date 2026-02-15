@@ -42,9 +42,6 @@ export function clearDraft() {
 }
 
 export async function submitJob(input: CreateJobInput): Promise<CreateJobResult> {
-  // Simulate network latency
-  await new Promise((r) => setTimeout(r, 600));
-  
   // Get token from localStorage
   const token = typeof window !== 'undefined' ? getAuthToken() : null;
   

@@ -1,0 +1,364 @@
+/* @AI-HINT: Dark theme styles for Invoice Generator */
+
+/* Container */
+.container {
+  background: linear-gradient(135deg, #0c0f1a 0%, #111827 50%, #0f1724 100%);
+  color: #e2e8f0;
+}
+
+/* Header */
+.headerBadge {
+  background: rgba(69, 115, 223, 0.2);
+  color: #7ba0f7;
+}
+
+.title {
+  color: #f1f5f9;
+}
+
+.subtitle {
+  color: #94a3b8;
+}
+
+/* Stepper */
+.stepDot {
+  background: #1e293b;
+  color: #64748b;
+}
+
+.stepDotActive {
+  background: #4573df;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.4);
+}
+
+.stepDotCompleted {
+  background: #27ae60;
+  color: #fff;
+}
+
+.stepLabel {
+  color: #64748b;
+}
+
+.stepLabelActive {
+  color: #7ba0f7;
+}
+
+.stepLine {
+  background: #1e293b;
+}
+
+.stepLineActive {
+  background: #4573df;
+}
+
+/* Form Card */
+.formCard {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.formTitle {
+  color: #f1f5f9;
+}
+
+.label {
+  color: #cbd5e1;
+}
+
+.labelHint {
+  color: #64748b;
+}
+
+.textInput {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.8);
+  color: #e2e8f0;
+}
+
+.textInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.textInput::placeholder {
+  color: #64748b;
+}
+
+.textarea {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.8);
+  color: #e2e8f0;
+}
+
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.textarea::placeholder {
+  color: #64748b;
+}
+
+.select {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.8);
+  color: #e2e8f0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.select:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.numberInput {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(51, 65, 85, 0.8);
+  color: #e2e8f0;
+}
+
+.numberInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.15);
+}
+
+.numberInput::placeholder {
+  color: #64748b;
+}
+
+/* Line Items */
+.itemRow {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+}
+
+.itemIndex {
+  background: rgba(69, 115, 223, 0.15);
+  color: #7ba0f7;
+}
+
+.itemFieldLabel {
+  color: #64748b;
+}
+
+.itemTotal {
+  color: #f1f5f9;
+}
+
+.itemRemove {
+  color: #ef4444;
+  opacity: 0.5;
+}
+
+.itemRemove:hover {
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.addItemBtn {
+  color: #7ba0f7;
+  border-color: rgba(69, 115, 223, 0.3);
+}
+
+.addItemBtn:hover {
+  background: rgba(69, 115, 223, 0.08);
+  border-color: #4573df;
+}
+
+.subtotalDisplay {
+  color: #f1f5f9;
+}
+
+/* Template */
+.templateCard {
+  background: rgba(30, 41, 59, 0.6);
+  border-color: rgba(51, 65, 85, 0.6);
+}
+
+.templateCard:hover {
+  border-color: rgba(69, 115, 223, 0.5);
+}
+
+.templateCardSelected {
+  border-color: #4573df;
+  background: rgba(69, 115, 223, 0.1);
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.15);
+}
+
+.templateLabel {
+  color: #f1f5f9;
+}
+
+/* Navigation */
+.navButtonBack {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+}
+
+.navButtonBack:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 1);
+}
+
+.navButtonNext {
+  background: linear-gradient(135deg, #4573df, #5b88f0);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.35);
+}
+
+.navButtonNext:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(69, 115, 223, 0.45);
+}
+
+/* Processing */
+.processingContainer {
+  color: #f1f5f9;
+}
+
+.processingOrb {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.2), rgba(124, 58, 237, 0.15));
+}
+
+.processingOrbInner {
+  background: linear-gradient(135deg, #4573df, #7c3aed);
+  color: #fff;
+}
+
+.processingSubtitle {
+  color: #94a3b8;
+}
+
+.processingStepCircle {
+  border-color: #334155;
+}
+
+/* Results */
+.priceHero {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  box-shadow: 0 8px 32px rgba(69, 115, 223, 0.08);
+}
+
+.priceHeroGlow {
+  background: #4573df;
+}
+
+.priceHeroLabel {
+  color: #94a3b8;
+}
+
+.priceHeroValue {
+  color: #f1f5f9;
+}
+
+.priceHeroMetaItem {
+  background: rgba(69, 115, 223, 0.12);
+  color: #7ba0f7;
+}
+
+.invoiceHeroDate {
+  color: #94a3b8;
+}
+
+.invoiceHeroTemplate {
+  color: #7ba0f7;
+}
+
+.invoiceHeroWords {
+  color: #94a3b8;
+}
+
+.resultCard {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+}
+
+.resultCardIcon {
+  background: rgba(69, 115, 223, 0.15);
+  color: #7ba0f7;
+}
+
+.resultCardTitle {
+  color: #f1f5f9;
+}
+
+/* Parties */
+.partyBox {
+  background: rgba(15, 23, 42, 0.4);
+}
+
+.partyLabel {
+  color: #7ba0f7;
+}
+
+.partyName {
+  color: #f1f5f9;
+}
+
+.partyDetail {
+  color: #94a3b8;
+}
+
+/* Breakdown */
+.breakdownItemLabel {
+  color: #cbd5e1;
+}
+
+.breakdownItemValue {
+  color: #f1f5f9;
+}
+
+.breakdownItemHours {
+  color: #64748b;
+}
+
+.progressBar {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df, #7ba0f7);
+}
+
+/* Calculations */
+.calcRow {
+  color: #cbd5e1;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+/* Timeline */
+.timelineStatValue {
+  color: #f1f5f9;
+}
+
+.timelineStatLabel {
+  color: #94a3b8;
+}
+
+.timelineDivider {
+  background: #334155;
+}
+
+/* Actions */
+.actionBtnPrimary {
+  background: linear-gradient(135deg, #4573df, #5b88f0);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.35);
+}
+
+.actionBtnSecondary {
+  background: rgba(30, 41, 59, 0.8);
+  color: #7ba0f7;
+}
+
+.actionBtnSecondary:hover {
+  background: rgba(30, 41, 59, 1);
+}
+
+/* Disclaimer */
+.disclaimer {
+  background: rgba(15, 23, 42, 0.4);
+  color: #64748b;
+}

@@ -48,80 +48,11 @@ export default function LegalDocumentsPage() {
       setLoading(true);
       const response = await legalDocsApi.list().catch(() => null);
       
-      // Use API data if available, otherwise fall back to demo data
+      // Use API data if available
       let documentsData: LegalDocument[] = [];
       
       if (response && (response.documents?.length > 0 || Array.isArray(response) && response.length > 0)) {
         documentsData = response.documents || response;
-      } else {
-        // Demo data for display when no real documents exist
-        documentsData = [
-          {
-            id: '1',
-            title: 'Platform Terms of Service',
-            type: 'terms',
-            version: '2.1',
-            status: 'signed',
-            requires_signature: true,
-            signed_at: new Date(Date.now() - 90 * 86400000).toISOString(),
-            updated_at: new Date(Date.now() - 180 * 86400000).toISOString(),
-            content_preview: 'These Terms of Service govern your use of the MegiLance platform...',
-          },
-          {
-            id: '2',
-            title: 'Privacy Policy',
-            type: 'privacy',
-            version: '1.5',
-            status: 'signed',
-            requires_signature: true,
-            signed_at: new Date(Date.now() - 90 * 86400000).toISOString(),
-            updated_at: new Date(Date.now() - 120 * 86400000).toISOString(),
-            content_preview: 'Your privacy is important to us. This policy explains how we collect...',
-          },
-          {
-            id: '3',
-            title: 'Non-Disclosure Agreement (NDA)',
-            type: 'nda',
-            version: '1.0',
-            status: 'pending',
-            requires_signature: true,
-            expires_at: new Date(Date.now() + 7 * 86400000).toISOString(),
-            updated_at: new Date(Date.now() - 7 * 86400000).toISOString(),
-            content_preview: 'This Non-Disclosure Agreement is entered into by and between...',
-          },
-          {
-            id: '4',
-            title: 'Freelancer Service Agreement',
-            type: 'agreement',
-            version: '3.0',
-            status: 'pending',
-            requires_signature: true,
-            updated_at: new Date(Date.now() - 14 * 86400000).toISOString(),
-            content_preview: 'This Freelancer Service Agreement outlines the terms under which...',
-          },
-          {
-            id: '5',
-            title: 'Project Contract - Website Redesign',
-            type: 'contract',
-            version: '1.0',
-            status: 'signed',
-            requires_signature: true,
-            signed_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-            expires_at: new Date(Date.now() + 60 * 86400000).toISOString(),
-            updated_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-            content_preview: 'Contract for the website redesign project between...',
-          },
-          {
-            id: '6',
-            title: 'Data Processing Agreement',
-            type: 'agreement',
-            version: '1.2',
-            status: 'not_required',
-            requires_signature: false,
-            updated_at: new Date(Date.now() - 60 * 86400000).toISOString(),
-            content_preview: 'This Data Processing Agreement supplements the Terms of Service...',
-          },
-        ];
       }
 
       setDocuments(documentsData);

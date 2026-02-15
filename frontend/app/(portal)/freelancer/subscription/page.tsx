@@ -144,17 +144,10 @@ export default function SubscriptionPage() {
 
       setPlans(defaultPlans);
       setSubscription(currentSubscription);
-      setBillingHistory(billingData.length > 0 ? billingData : [
-        { id: 'inv_001', date: '2025-01-01', amount: 0, status: 'paid', invoiceUrl: '#' },
-      ]);
+      setBillingHistory(billingData);
     } catch (error) {
       console.error('Failed to fetch subscription data:', error);
-      // Set fallback data
-      setPlans([
-        { id: 'free', name: 'Free', tier: 'free', price: 0, billingPeriod: 'monthly', features: ['5 proposals/month'], limits: { projects: 1, proposals: 5, storage: '100MB', support: 'Community' } },
-        { id: 'starter', name: 'Starter', tier: 'starter', price: 19, billingPeriod: 'monthly', features: ['25 proposals/month'], limits: { projects: 5, proposals: 25, storage: '5GB', support: 'Email' } },
-        { id: 'professional', name: 'Professional', tier: 'professional', price: 49, billingPeriod: 'monthly', popular: true, features: ['Unlimited proposals'], limits: { projects: -1, proposals: -1, storage: '50GB', support: 'Priority' } },
-      ]);
+      setPlans([]);
     } finally {
       setLoading(false);
     }

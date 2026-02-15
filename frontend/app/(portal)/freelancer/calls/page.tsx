@@ -71,66 +71,11 @@ export default function VideoCallsPage() {
       setLoading(true);
       const response = await videoCallsApi.getHistory().catch(() => ({ calls: [] })) as any;
       
-      // Use API data if available, otherwise fall back to demo data
+      // Use API data if available
       let callsData: VideoCall[] = [];
       
       if (response && (response.calls?.length > 0 || Array.isArray(response) && response.length > 0)) {
         callsData = response.calls || response;
-      } else {
-        // Demo data for display when no real calls exist
-        callsData = [
-          {
-            id: '1',
-            room_id: 'MEET-ABC123',
-            title: 'Project Kickoff Meeting',
-            participants: [
-              { id: '1', name: 'John Smith', role: 'Client' },
-              { id: '2', name: 'Sarah Johnson', role: 'Freelancer' },
-            ],
-            scheduled_at: new Date(Date.now() + 3600000).toISOString(),
-            status: 'scheduled',
-            has_recording: false,
-          },
-          {
-            id: '2',
-            room_id: 'MEET-XYZ789',
-            title: 'Weekly Sync',
-            participants: [
-              { id: '1', name: 'Tech Solutions Team', role: 'Client' },
-              { id: '2', name: 'Me', role: 'Freelancer' },
-            ],
-            scheduled_at: new Date(Date.now() + 86400000).toISOString(),
-            status: 'scheduled',
-            has_recording: false,
-          },
-          {
-            id: '3',
-            room_id: 'MEET-DEF456',
-            title: 'Design Review',
-            participants: [
-              { id: '1', name: 'Creative Agency', role: 'Client' },
-            ],
-            started_at: new Date(Date.now() - 86400000).toISOString(),
-            ended_at: new Date(Date.now() - 86400000 + 2700000).toISOString(),
-            duration: 45,
-            status: 'completed',
-            has_recording: true,
-          },
-          {
-            id: '4',
-            room_id: 'MEET-GHI321',
-            title: 'API Integration Discussion',
-            participants: [
-              { id: '1', name: 'Enterprise Corp', role: 'Client' },
-              { id: '2', name: 'Dev Team Lead', role: 'Tech Lead' },
-            ],
-            started_at: new Date(Date.now() - 172800000).toISOString(),
-            ended_at: new Date(Date.now() - 172800000 + 3600000).toISOString(),
-            duration: 60,
-            status: 'completed',
-            has_recording: true,
-          },
-        ];
       }
 
       setCalls(callsData);

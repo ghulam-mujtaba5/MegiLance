@@ -1,0 +1,365 @@
+/* @AI-HINT: Light theme styles for Invoice Generator */
+
+/* Container */
+.container {
+  background: linear-gradient(135deg, #f0f4ff 0%, #fdf8ff 50%, #fff7ed 100%);
+  color: #1a1f36;
+}
+
+/* Header */
+.headerBadge {
+  background: rgba(69, 115, 223, 0.1);
+  color: #4573df;
+}
+
+.title {
+  color: #1a1f36;
+}
+
+.subtitle {
+  color: #64748b;
+}
+
+/* Stepper */
+.stepDot {
+  background: #e2e8f0;
+  color: #94a3b8;
+}
+
+.stepDotActive {
+  background: #4573df;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
+}
+
+.stepDotCompleted {
+  background: #27ae60;
+  color: #fff;
+}
+
+.stepLabel {
+  color: #94a3b8;
+}
+
+.stepLabelActive {
+  color: #4573df;
+}
+
+.stepLine {
+  background: #e2e8f0;
+}
+
+.stepLineActive {
+  background: #4573df;
+}
+
+/* Form Card */
+.formCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.formTitle {
+  color: #1a1f36;
+}
+
+.label {
+  color: #374151;
+}
+
+.labelHint {
+  color: #94a3b8;
+}
+
+.textInput {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.textInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.textInput::placeholder {
+  color: #94a3b8;
+}
+
+.textarea {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.textarea:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.textarea::placeholder {
+  color: #94a3b8;
+}
+
+.select {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.select:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.numberInput {
+  background: #fafbfc;
+  border-color: #e2e8f0;
+  color: #1a1f36;
+}
+
+.numberInput:focus {
+  border-color: #4573df;
+  box-shadow: 0 0 0 3px rgba(69, 115, 223, 0.1);
+}
+
+.numberInput::placeholder {
+  color: #94a3b8;
+}
+
+/* Line Items */
+.itemRow {
+  background: #fafbfc;
+  border: 1px solid #e2e8f0;
+}
+
+.itemIndex {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+}
+
+.itemFieldLabel {
+  color: #94a3b8;
+}
+
+.itemTotal {
+  color: #1a1f36;
+}
+
+.itemRemove {
+  color: #dc2626;
+  opacity: 0.5;
+}
+
+.itemRemove:hover {
+  opacity: 1;
+  background: rgba(220, 38, 38, 0.08);
+}
+
+.addItemBtn {
+  color: #4573df;
+  border-color: rgba(69, 115, 223, 0.3);
+}
+
+.addItemBtn:hover {
+  background: rgba(69, 115, 223, 0.06);
+  border-color: #4573df;
+}
+
+.subtotalDisplay {
+  color: #1a1f36;
+}
+
+/* Template */
+.templateCard {
+  background: #fff;
+  border-color: #e2e8f0;
+}
+
+.templateCard:hover {
+  border-color: #4573df;
+}
+
+.templateCardSelected {
+  border-color: #4573df;
+  background: rgba(69, 115, 223, 0.06);
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.12);
+}
+
+.templateLabel {
+  color: #1a1f36;
+}
+
+/* Navigation */
+.navButtonBack {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.navButtonBack:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.navButtonNext {
+  background: linear-gradient(135deg, #4573df, #5b88f0);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
+}
+
+.navButtonNext:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(69, 115, 223, 0.35);
+}
+
+/* Processing */
+.processingContainer {
+  color: #1a1f36;
+}
+
+.processingOrb {
+  background: linear-gradient(135deg, rgba(69, 115, 223, 0.15), rgba(124, 58, 237, 0.1));
+}
+
+.processingOrbInner {
+  background: linear-gradient(135deg, #4573df, #7c3aed);
+  color: #fff;
+}
+
+.processingSubtitle {
+  color: #64748b;
+}
+
+.processingStepCircle {
+  border-color: #e2e8f0;
+}
+
+/* Results */
+.priceHero {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 32px rgba(69, 115, 223, 0.08);
+}
+
+.priceHeroGlow {
+  background: #4573df;
+}
+
+.priceHeroLabel {
+  color: #64748b;
+}
+
+.priceHeroValue {
+  color: #1a1f36;
+}
+
+.priceHeroMetaItem {
+  background: rgba(69, 115, 223, 0.06);
+  color: #4573df;
+}
+
+.invoiceHeroDate {
+  color: #64748b;
+}
+
+.invoiceHeroTemplate {
+  color: #4573df;
+}
+
+.invoiceHeroWords {
+  color: #64748b;
+}
+
+.resultCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.resultCardIcon {
+  background: rgba(69, 115, 223, 0.08);
+  color: #4573df;
+}
+
+.resultCardTitle {
+  color: #1a1f36;
+}
+
+/* Parties */
+.partyBox {
+  background: #fafbfc;
+}
+
+.partyLabel {
+  color: #4573df;
+}
+
+.partyName {
+  color: #1a1f36;
+}
+
+.partyDetail {
+  color: #64748b;
+}
+
+/* Breakdown */
+.breakdownItemLabel {
+  color: #4b5563;
+}
+
+.breakdownItemValue {
+  color: #1a1f36;
+}
+
+.breakdownItemHours {
+  color: #94a3b8;
+}
+
+.progressBar {
+  background: #f1f5f9;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #4573df, #5b88f0);
+}
+
+/* Calculations */
+.calcRow {
+  color: #4b5563;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Timeline */
+.timelineStatValue {
+  color: #1a1f36;
+}
+
+.timelineStatLabel {
+  color: #64748b;
+}
+
+.timelineDivider {
+  background: #e2e8f0;
+}
+
+/* Actions */
+.actionBtnPrimary {
+  background: linear-gradient(135deg, #4573df, #5b88f0);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.25);
+}
+
+.actionBtnSecondary {
+  background: #f1f5f9;
+  color: #4573df;
+}
+
+.actionBtnSecondary:hover {
+  background: #e2e8f0;
+}
+
+/* Disclaimer */
+.disclaimer {
+  background: #f8fafc;
+  color: #94a3b8;
+}

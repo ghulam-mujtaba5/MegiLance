@@ -6,10 +6,10 @@ import PublicLayout from '../layouts/PublicLayout/PublicLayout';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | MegiLance',
-    default: 'MegiLance – AI-Powered Freelancing Platform',
+    template: '%s | MegiLance - Freelancer Website',
+    default: 'MegiLance – Best Freelancer Website | Hire Freelance Developers & Designers',
   },
-  description: 'Connect with top freelancers and clients on MegiLance. AI-powered matching, secure payments, and real-time collaboration tools.',
+  description: 'MegiLance is the best freelancer website to hire freelancers, find freelance jobs online, and connect with verified experts. AI-powered matching, secure escrow payments, and lower fees than Upwork.',
   openGraph: {
     type: 'website',
     siteName: 'MegiLance',

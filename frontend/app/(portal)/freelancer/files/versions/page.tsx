@@ -107,29 +107,9 @@ function FileVersionsPage() {
 
       if (fileInfoFromApi) {
         setFileInfo(fileInfoFromApi);
-      } else {
-        // Fallback demo data
-        setFileInfo({
-          id: id,
-          name: 'project-design-v3.fig',
-          projectId: 'proj_001',
-          projectName: 'E-commerce Website Design',
-          totalVersions: 5,
-          currentVersion: 5,
-          createdAt: '2025-01-05'
-        });
       }
 
-      if (transformedVersions.length > 0) {
-        setVersions(transformedVersions);
-      } else {
-        // Fallback demo versions
-        setVersions([
-          { id: 'v5', versionNumber: 5, fileName: 'project-design-v3.fig', fileSize: 4520000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-25T14:30:00Z', changeNote: 'Final design with client feedback incorporated', downloadUrl: '#', isCurrent: true },
-          { id: 'v4', versionNumber: 4, fileName: 'project-design-v3.fig', fileSize: 4380000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-23T10:15:00Z', changeNote: 'Updated color scheme and typography', downloadUrl: '#', isCurrent: false },
-          { id: 'v3', versionNumber: 3, fileName: 'project-design-v2.fig', fileSize: 4150000, mimeType: 'application/octet-stream', uploadedBy: 'You', uploadedAt: '2025-01-20T16:45:00Z', changeNote: 'Added checkout flow screens', downloadUrl: '#', isCurrent: false },
-        ]);
-      }
+      setVersions(transformedVersions);
     } catch (error) {
       console.error('Failed to fetch file versions:', error);
       setVersions([]);

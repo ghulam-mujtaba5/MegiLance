@@ -70,6 +70,12 @@ export const categoriesApi = {
   list: () => apiFetch('/categories/'),
   getTree: () => apiFetch('/categories/tree'),
   getBySlug: (slug: string) => apiFetch(`/categories/${slug}`),
+  create: (data: { name: string; slug: string; description?: string }) =>
+    apiFetch('/categories/', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: ResourceId, data: { name: string; slug: string; description?: string }) =>
+    apiFetch(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: ResourceId) =>
+    apiFetch(`/categories/${id}`, { method: 'DELETE' }),
 };
 
 export const tagsApi = {

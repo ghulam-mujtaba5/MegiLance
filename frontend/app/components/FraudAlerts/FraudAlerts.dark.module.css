@@ -160,3 +160,49 @@
   background: #242424;
   border-top-color: #2a2a2a;
 }
+
+/* Flags */
+.flagItem {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #3a3a3a;
+  color: #bbb;
+}
+
+/* Signal toggle */
+.signalToggle {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #3a3a3a;
+  color: #ddd;
+}
+
+.signalToggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Signal breakdown */
+.signalBreakdown {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: #2a2a2a;
+}
+
+.signalProgress {
+  background: #333;
+}
+
+.signalFlag {
+  background: rgba(255, 255, 255, 0.06);
+  color: #aaa;
+}
+
+/* Recommendations */
+.recommendationsList {
+  background: rgba(39, 174, 96, 0.06);
+  border-color: rgba(39, 174, 96, 0.2);
+}
+
+/* Detail text */
+.detailText {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ccc;
+  border: 1px solid #2a2a2a;
+}

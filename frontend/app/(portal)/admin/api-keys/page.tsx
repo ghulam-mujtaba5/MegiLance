@@ -71,45 +71,7 @@ export default function ApiKeysPage() {
       setLoading(true);
       const response = await apiKeysApi.list().catch(() => null) as any;
       
-      // Use API data if available, otherwise fall back to demo data
-      let keysData: ApiKey[] = [];
-      
-      if (response && (response.keys?.length > 0 || Array.isArray(response) && response.length > 0)) {
-        keysData = response.keys || response;
-      } else {
-        // Demo data for display when no real API keys exist
-        keysData = [
-          {
-            id: '1',
-            name: 'Production API',
-            key_preview: 'mk_live_****XYZ789',
-            permissions: ['read:projects', 'write:projects', 'read:payments'],
-            created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-            last_used_at: new Date(Date.now() - 3600000).toISOString(),
-            expires_at: new Date(Date.now() + 60 * 86400000).toISOString(),
-            status: 'active',
-          },
-          {
-            id: '2',
-            name: 'Analytics Dashboard',
-            key_preview: 'mk_live_****ABC123',
-            permissions: ['read:analytics', 'read:projects'],
-            created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
-            last_used_at: new Date(Date.now() - 86400000).toISOString(),
-            status: 'active',
-          },
-          {
-            id: '3',
-            name: 'Legacy Integration',
-            key_preview: 'mk_test_****DEF456',
-            permissions: ['read:users'],
-            created_at: new Date(Date.now() - 180 * 86400000).toISOString(),
-            expires_at: new Date(Date.now() - 10 * 86400000).toISOString(),
-            status: 'expired',
-          },
-        ];
-      }
-
+      const keysData: ApiKey[] = response?.keys || (Array.isArray(response) ? response : []);
       setApiKeys(keysData);
     } catch (error) {
       console.error('Failed to load API keys:', error);
@@ -127,20 +89,20 @@ export default function ApiKeysPage() {
         scopes: newKey.permissions,
       } as any) as any;
 
+      if (!response?.key) {
+        showToast('Failed to create API key: no key returned', 'error');
+        return;
+      }
       // Show the new key (only shown once)
       setNewKeyData({
-        key: response?.key || 'mk_live_' + Math.random().toString(36).substring(2, 15),
-        secret: response?.secret || Math.random().toString(36).substring(2, 30),
+        key: response.key,
+        secret: response.secret || '',
       });
       
       loadApiKeys();
     } catch (error) {
       console.error('Failed to create API key:', error);
-      // Mock successful creation
-      setNewKeyData({
-        key: 'mk_live_' + Math.random().toString(36).substring(2, 15),
-        secret: Math.random().toString(36).substring(2, 30),
-      });
+      showToast('Failed to create API key', 'error');
     }
   };
 

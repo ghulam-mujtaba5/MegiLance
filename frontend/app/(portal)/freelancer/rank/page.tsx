@@ -9,9 +9,12 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { Trophy, Star, Clock, Users, DollarSign, TrendingUp } from 'lucide-react';
+import { gamificationApi as _gamificationApi } from '@/lib/api';
 import commonStyles from './Rank.common.module.css';
 import lightStyles from './Rank.light.module.css';
 import darkStyles from './Rank.dark.module.css';
+
+const gamificationApi: any = _gamificationApi;
 
 interface RankData {
   current_rank: string;
@@ -62,30 +65,46 @@ export default function RankPage() {
   const loadRankData = async () => {
     try {
       setLoading(true);
-      // Rank API not yet implemented, using demo data
-      
-      // Demo data
+      const [rankRes, badgesRes] = await Promise.all([
+        gamificationApi.getMyRank().catch(() => null),
+        gamificationApi.getBadges().catch(() => null),
+      ]);
+
+      if (!rankRes) {
+        setRankData(null);
+        return;
+      }
+
+      const badgesList = Array.isArray(badgesRes) ? badgesRes : badgesRes?.badges || [];
+      const currentLevel = rankRes.level || 1;
+      const currentRankInfo = RANKS[currentLevel - 1] || RANKS[0];
+      const nextRankInfo = RANKS[currentLevel] || RANKS[RANKS.length - 1];
+      const points = rankRes.points || 0;
+      const pointsForNext = nextRankInfo.points - points;
+      const progressRange = nextRankInfo.points - currentRankInfo.points;
+      const progressPercent = progressRange > 0 ? Math.round(((points - currentRankInfo.points) / progressRange) * 100) : 100;
+
       setRankData({
-        current_rank: 'Professional',
-        rank_level: 3,
-        total_points: 1247,
-        points_to_next: 253,
-        next_rank: 'Expert',
-        progress_percent: 75,
-        badges: [
-          { id: '1', name: 'First Project', description: 'Completed your first project', icon: '🎉', earned_at: '2024-01-15', rarity: 'common' },
-          { id: '2', name: 'Fast Responder', description: 'Average response time under 1 hour', icon: '⚡', earned_at: '2024-02-20', rarity: 'uncommon' },
-          { id: '3', name: 'Five Star', description: 'Received 10 five-star reviews', icon: '⭐', earned_at: '2024-03-10', rarity: 'rare' },
-          { id: '4', name: 'On Time Master', description: '100% on-time delivery rate', icon: '⏰', earned_at: '2024-04-05', rarity: 'rare' },
-          { id: '5', name: 'Client Favorite', description: '5 repeat clients', icon: '❤️', earned_at: '2024-05-15', rarity: 'epic' },
-          { id: '6', name: 'Top Earner', description: 'Earned $10,000+ on platform', icon: '💰', earned_at: '2024-06-01', rarity: 'epic' },
-        ],
+        current_rank: rankRes.rank || currentRankInfo.name,
+        rank_level: currentLevel,
+        total_points: points,
+        points_to_next: Math.max(0, pointsForNext),
+        next_rank: nextRankInfo.name,
+        progress_percent: Math.min(100, Math.max(0, progressPercent)),
+        badges: badgesList.map((b: any) => ({
+          id: String(b.id),
+          name: b.name || 'Badge',
+          description: b.description || '',
+          icon: b.icon || '🏅',
+          earned_at: b.earned_at || b.created_at || '',
+          rarity: b.rarity || 'common',
+        })),
         stats: {
-          completed_projects: 34,
-          on_time_delivery: 97,
-          client_satisfaction: 98,
-          repeat_clients: 8,
-          total_earnings: 28500,
+          completed_projects: rankRes.completed_projects || rankRes.stats?.completed_projects || 0,
+          on_time_delivery: rankRes.on_time_delivery || rankRes.stats?.on_time_delivery || 0,
+          client_satisfaction: rankRes.client_satisfaction || rankRes.stats?.client_satisfaction || 0,
+          repeat_clients: rankRes.repeat_clients || rankRes.stats?.repeat_clients || 0,
+          total_earnings: rankRes.total_earnings || rankRes.stats?.total_earnings || 0,
         },
       });
     } catch (error) {

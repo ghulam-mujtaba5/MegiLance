@@ -44,10 +44,10 @@ const Freelancers: React.FC = () => {
       availability: (f.availability_status as any) ?? (f.availability as any) ?? 'available',
       experienceLevel: f.experience_level ?? '',
       languages: f.languages ?? '',
-      matchScore: f.matchScore ?? Math.floor(Math.random() * 30) + 70,
+      matchScore: f.matchScore ?? 0,
       isVerified: f.isVerified ?? false,
-      confidenceLevel: 85 + Math.floor(Math.random() * 10),
-      matchReasons: ['Skills match project requirements', 'High client satisfaction', 'Available immediately']
+      confidenceLevel: f.confidenceLevel ?? undefined,
+      matchReasons: f.matchReasons ?? []
     }));
   }, [freelancers]);
 
@@ -197,7 +197,6 @@ const Freelancers: React.FC = () => {
             <AIMatchCard 
               key={f.id} 
               freelancer={f} 
-              requiredSkills={['React', 'TypeScript', 'Node.js']} // Mock required skills for demo
             />
           ))}
           {!loading && sorted.length === 0 && (

@@ -1,11 +1,11 @@
-// @AI-HINT: Premium component displaying AI-powered freelancer recommendations with match visualization, skill matching, and interactive cards
+// @AI-HINT: Premium AI-powered freelancer recommendations v2.0 — match quality labels, fit reasons, category matching visualization
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { Sparkles, RefreshCw, DollarSign, Star, Clock, MessageSquare, Eye, CheckCircle, User } from 'lucide-react';
+import { Sparkles, RefreshCw, DollarSign, Star, Clock, MessageSquare, Eye, CheckCircle, User, Award, Shield, Zap } from 'lucide-react';
 import commonStyles from './RecommendedFreelancers.common.module.css';
 import lightStyles from './RecommendedFreelancers.light.module.css';
 import darkStyles from './RecommendedFreelancers.dark.module.css';
@@ -26,11 +26,22 @@ interface FreelancerMatch {
   hourly_rate: number;
   skills: string[];
   match_score: number;
+  match_quality?: string;
   match_reasons: string[];
+  why_good_fit?: string;
   rating?: number;
   completed_projects?: number;
   available?: boolean;
+  response_rate?: number;
 }
+
+const QUALITY_CONFIG: Record<string, { color: string; icon: React.ReactNode; label: string }> = {
+  excellent: { color: '#27AE60', icon: <Award size={12} />, label: 'Excellent Match' },
+  strong: { color: '#4573df', icon: <Zap size={12} />, label: 'Strong Match' },
+  good: { color: '#F2C94C', icon: <CheckCircle size={12} />, label: 'Good Match' },
+  fair: { color: '#ff9800', icon: <Shield size={12} />, label: 'Fair Match' },
+  weak: { color: '#94a3b8', icon: <User size={12} />, label: 'Potential Match' },
+};
 
 export default function RecommendedFreelancers({ 
   projectId, 
@@ -57,7 +68,6 @@ export default function RecommendedFreelancers({
       if (response && response.matches && response.matches.length > 0) {
         setFreelancers(response.matches);
       } else {
-        // Fallback demo data
         setFreelancers([
           {
             id: '1',
@@ -66,10 +76,13 @@ export default function RecommendedFreelancers({
             hourly_rate: 85,
             skills: ['React', 'TypeScript', 'Node.js', 'GraphQL'],
             match_score: 0.96,
+            match_quality: 'excellent',
             match_reasons: ['Strong React experience', 'Within budget range', 'Excellent reviews'],
+            why_good_fit: 'Expert in React with 96% skill match and 4.9 rating across 47 completed projects',
             rating: 4.9,
             completed_projects: 47,
-            available: true
+            available: true,
+            response_rate: 95
           },
           {
             id: '2',
@@ -78,10 +91,13 @@ export default function RecommendedFreelancers({
             hourly_rate: 95,
             skills: ['Vue.js', 'Python', 'AWS', 'Docker'],
             match_score: 0.89,
+            match_quality: 'strong',
             match_reasons: ['Backend expertise', 'High success rate'],
+            why_good_fit: 'Full-stack expertise with strong backend focus and AWS deployment experience',
             rating: 4.8,
             completed_projects: 62,
-            available: true
+            available: true,
+            response_rate: 88
           },
           {
             id: '3',
@@ -89,55 +105,20 @@ export default function RecommendedFreelancers({
             title: 'UI/UX Developer',
             hourly_rate: 75,
             skills: ['Figma', 'CSS', 'React', 'Tailwind'],
-            match_score: 0.84,
+            match_score: 0.78,
+            match_quality: 'good',
             match_reasons: ['Design skills match', 'Available immediately'],
+            why_good_fit: 'Design-focused developer with excellent UI/UX portfolio',
             rating: 4.7,
             completed_projects: 31,
-            available: true
+            available: true,
+            response_rate: 92
           }
         ]);
       }
     } catch (error) {
       console.error('Failed to fetch recommended freelancers:', error);
-      // Fallback demo data on error
-      setFreelancers([
-        {
-          id: '1',
-          name: 'Sarah Jenkins',
-          title: 'Senior React Developer',
-          hourly_rate: 85,
-          skills: ['React', 'TypeScript', 'Node.js', 'GraphQL'],
-          match_score: 0.96,
-          match_reasons: ['Strong React experience', 'Within budget range', 'Excellent reviews'],
-          rating: 4.9,
-          completed_projects: 47,
-          available: true
-        },
-        {
-          id: '2',
-          name: 'Michael Chen',
-          title: 'Full Stack Engineer',
-          hourly_rate: 95,
-          skills: ['Vue.js', 'Python', 'AWS', 'Docker'],
-          match_score: 0.89,
-          match_reasons: ['Backend expertise', 'High success rate'],
-          rating: 4.8,
-          completed_projects: 62,
-          available: true
-        },
-        {
-          id: '3',
-          name: 'Jessica Wu',
-          title: 'UI/UX Developer',
-          hourly_rate: 75,
-          skills: ['Figma', 'CSS', 'React', 'Tailwind'],
-          match_score: 0.84,
-          match_reasons: ['Design skills match', 'Available immediately'],
-          rating: 4.7,
-          completed_projects: 31,
-          available: true
-        }
-      ]);
+      setFreelancers([]);
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -153,19 +134,19 @@ export default function RecommendedFreelancers({
     fetchFreelancers();
   };
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
+  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase();
 
-  const isSkillMatched = (skill: string) => {
-    return projectSkills.some(ps => ps.toLowerCase() === skill.toLowerCase());
-  };
+  const isSkillMatched = (skill: string) => 
+    projectSkills.some(ps => ps.toLowerCase() === skill.toLowerCase());
 
-  const getScoreColor = (score: number) => {
-    if (score >= 0.9) return '#27AE60';
-    if (score >= 0.8) return '#4573df';
-    if (score >= 0.7) return '#F2C94C';
-    return '#94a3b8';
+  const getQualityConfig = (quality?: string, score?: number) => {
+    if (quality && QUALITY_CONFIG[quality]) return QUALITY_CONFIG[quality];
+    const s = score || 0;
+    if (s >= 0.85) return QUALITY_CONFIG.excellent;
+    if (s >= 0.70) return QUALITY_CONFIG.strong;
+    if (s >= 0.55) return QUALITY_CONFIG.good;
+    if (s >= 0.40) return QUALITY_CONFIG.fair;
+    return QUALITY_CONFIG.weak;
   };
 
   if (!resolvedTheme) return null;
@@ -201,13 +182,11 @@ export default function RecommendedFreelancers({
     );
   }
 
-  // Calculate stroke dasharray for circular progress
   const radius = 22;
   const circumference = 2 * Math.PI * radius;
 
   return (
     <div className={commonStyles.container}>
-      {/* SVG Gradient Definitions */}
       <svg width="0" height="0" className={commonStyles.srOnly}>
         <defs>
           <linearGradient id="matchGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -233,7 +212,7 @@ export default function RecommendedFreelancers({
               AI-Recommended Freelancers
             </h3>
             <p className={cn(commonStyles.subtitle, themeStyles.subtitle)}>
-              Matched based on skills, budget, and availability
+              Matched using skill synonyms, category analysis, and performance data
             </p>
           </div>
         </div>
@@ -251,14 +230,24 @@ export default function RecommendedFreelancers({
         </button>
       </div>
 
-      {/* Freelancer Cards Grid */}
+      {/* Freelancer Cards */}
       <div className={commonStyles.grid}>
         {freelancers.map((freelancer) => {
           const scorePercent = Math.round(freelancer.match_score * 100);
           const strokeDashoffset = circumference - (freelancer.match_score * circumference);
+          const quality = getQualityConfig(freelancer.match_quality, freelancer.match_score);
           
           return (
             <div key={freelancer.id} className={cn(commonStyles.card, themeStyles.card)}>
+              {/* Quality Badge */}
+              <div 
+                className={cn(commonStyles.qualityBadge, themeStyles.qualityBadge)}
+                style={{ borderColor: quality.color, color: quality.color }}
+              >
+                {quality.icon}
+                <span>{quality.label}</span>
+              </div>
+
               {/* Card Header */}
               <div className={commonStyles.cardHeader}>
                 <div className={commonStyles.userInfo}>
@@ -282,26 +271,17 @@ export default function RecommendedFreelancers({
                 
                 {/* Match Score Circle */}
                 <div className={commonStyles.matchScoreWrapper}>
-                  <svg 
-                    className={commonStyles.matchScoreCircle}
-                    width="56" 
-                    height="56" 
-                    viewBox="0 0 56 56"
-                  >
+                  <svg className={commonStyles.matchScoreCircle} width="56" height="56" viewBox="0 0 56 56">
                     <circle
                       className={cn(commonStyles.matchScoreBg, themeStyles.matchScoreBg)}
-                      cx="28"
-                      cy="28"
-                      r={radius}
+                      cx="28" cy="28" r={radius}
                     />
                     <circle
                       className={cn(commonStyles.matchScoreProgress, themeStyles.matchScoreProgress)}
-                      cx="28"
-                      cy="28"
-                      r={radius}
+                      cx="28" cy="28" r={radius}
                       strokeDasharray={circumference}
                       strokeDashoffset={strokeDashoffset}
-                      stroke={getScoreColor(freelancer.match_score)}
+                      stroke={quality.color}
                     />
                   </svg>
                   <div className={commonStyles.matchScoreText}>
@@ -315,6 +295,14 @@ export default function RecommendedFreelancers({
                 </div>
               </div>
 
+              {/* Why Good Fit */}
+              {freelancer.why_good_fit && (
+                <div className={cn(commonStyles.fitReason, themeStyles.fitReason)}>
+                  <Sparkles size={12} />
+                  <span>{freelancer.why_good_fit}</span>
+                </div>
+              )}
+
               {/* Stats Row */}
               <div className={cn(commonStyles.statsRow, themeStyles.statsRow)}>
                 <div className={cn(commonStyles.stat, themeStyles.stat)}>
@@ -323,15 +311,15 @@ export default function RecommendedFreelancers({
                     ${freelancer.hourly_rate}/hr
                   </span>
                 </div>
-                {freelancer.rating && (
+                {freelancer.rating != null && (
                   <div className={cn(commonStyles.stat, themeStyles.stat)}>
                     <Star size={14} className={commonStyles.statIcon} />
                     <span className={cn(commonStyles.statValue, themeStyles.statValue)}>
-                      {freelancer.rating}
+                      {freelancer.rating.toFixed(1)}
                     </span>
                   </div>
                 )}
-                {freelancer.completed_projects && (
+                {freelancer.completed_projects != null && (
                   <div className={cn(commonStyles.stat, themeStyles.stat)}>
                     <Clock size={14} className={commonStyles.statIcon} />
                     <span className={cn(commonStyles.statValue, themeStyles.statValue)}>
@@ -339,11 +327,19 @@ export default function RecommendedFreelancers({
                     </span>
                   </div>
                 )}
+                {freelancer.response_rate != null && (
+                  <div className={cn(commonStyles.stat, themeStyles.stat)}>
+                    <Zap size={14} className={commonStyles.statIcon} />
+                    <span className={cn(commonStyles.statValue, themeStyles.statValue)}>
+                      {freelancer.response_rate}% reply
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Skills */}
               <div className={commonStyles.skills}>
-                {(freelancer.skills || []).slice(0, 4).map((skill) => (
+                {(freelancer.skills || []).slice(0, 5).map((skill) => (
                   <span 
                     key={skill} 
                     className={cn(
@@ -356,6 +352,11 @@ export default function RecommendedFreelancers({
                     {skill}
                   </span>
                 ))}
+                {(freelancer.skills || []).length > 5 && (
+                  <span className={cn(commonStyles.skill, themeStyles.skill)}>
+                    +{freelancer.skills.length - 5}
+                  </span>
+                )}
               </div>
 
               {/* AI Reasons */}
@@ -365,7 +366,7 @@ export default function RecommendedFreelancers({
                     <Sparkles size={12} /> AI Insights
                   </span>
                   <div className={commonStyles.reasonsList}>
-                    {freelancer.match_reasons.slice(0, 2).map((reason, idx) => (
+                    {freelancer.match_reasons.slice(0, 3).map((reason, idx) => (
                       <span key={idx} className={cn(commonStyles.reason, themeStyles.reason)}>
                         <CheckCircle size={10} /> {reason}
                       </span>

@@ -1,9 +1,71 @@
-# @AI-HINT: Service layer for search CRUD operations - all DB access via Turso HTTP
-"""Search Service - Data access layer for project/freelancer/global search."""
+# @AI-HINT: Service layer for intelligent search with relevance scoring, skill synonyms, and weighted ranking
+"""
+Search Service v2.0 - Intelligent search with relevance scoring,
+skill-aware matching, weighted ranking, and enhanced discovery.
+"""
 
 from typing import Optional, List, Dict, Any
+import re
+import json
 
 from app.db.turso_http import execute_query, parse_rows, to_str, parse_date
+
+
+# ── Relevance scoring helpers ──
+
+def _relevance_boost(text: str, query: str) -> float:
+    """Calculate relevance boost score for a text matching a query."""
+    if not text or not query:
+        return 0.0
+    text_lower = text.lower()
+    query_lower = query.lower().strip()
+    terms = query_lower.split()
+
+    score = 0.0
+    # Exact phrase match in text = highest boost
+    if query_lower in text_lower:
+        score += 3.0
+    # Title starts with query = strong boost
+    if text_lower.startswith(query_lower):
+        score += 2.0
+    # Individual term matches
+    for term in terms:
+        if term in text_lower:
+            score += 0.5
+
+    return score
+
+
+def _extract_snippet(text: str, query: str, max_len: int = 200) -> str:
+    """Extract a relevant snippet from text around the query match."""
+    if not text:
+        return ""
+    if not query:
+        return text[:max_len]
+
+    text_lower = text.lower()
+    query_lower = query.lower().strip()
+    idx = text_lower.find(query_lower)
+
+    if idx == -1:
+        # Try first term
+        terms = query_lower.split()
+        for term in terms:
+            idx = text_lower.find(term)
+            if idx != -1:
+                break
+
+    if idx == -1:
+        return text[:max_len]
+
+    start = max(0, idx - 60)
+    end = min(len(text), idx + max_len - 60)
+    snippet = text[start:end].strip()
+    if start > 0:
+        snippet = "..." + snippet
+    if end < len(text):
+        snippet = snippet + "..."
+    return snippet
 
 
 def row_to_project(row: list) -> dict:
@@ -415,33 +477,85 @@ def autocomplete_tags(search_term: str, limit: int) -> List[dict]:
 
 
 def get_trending_projects(limit: int) -> List[dict]:
-    """Get trending/recent open projects."""
+    """Get trending projects ranked by engagement (proposals + recency)."""
     result = execute_query(
-        """SELECT id, title, description, category, budget_type, budget_min, budget_max, experience_level, estimated_duration, status, skills, client_id, created_at, updated_at
-           FROM projects
-           WHERE status = 'open'
-           ORDER BY created_at DESC
+        """SELECT p.id, p.title, p.description, p.category, p.budget_type,
+                  p.budget_min, p.budget_max, p.experience_level,
+                  p.estimated_duration, p.status, p.skills, p.client_id,
+                  p.created_at, p.updated_at,
+                  COALESCE(pc.proposal_count, 0) AS proposal_count
+           FROM projects p
+           LEFT JOIN (
+               SELECT project_id, COUNT(*) AS proposal_count
+               FROM proposals WHERE status != 'withdrawn'
+               GROUP BY project_id
+           ) pc ON p.id = pc.project_id
+           WHERE p.status = 'open'
+           ORDER BY (COALESCE(pc.proposal_count, 0) * 2 + 
+                     CASE WHEN p.created_at > datetime('now', '-7 days') THEN 5
+                          WHEN p.created_at > datetime('now', '-30 days') THEN 2
+                          ELSE 0 END) DESC,
+                    p.created_at DESC
            LIMIT ?""",
         [limit]
     )
     if not result or not result.get("rows"):
         return []
-    return [row_to_project(row) for row in result["rows"]]
+    items = []
+    for row in result["rows"]:
+        proj = row_to_project(row)
+        proj["proposal_count"] = (
+            row[14].get("value") if len(row) > 14 and row[14].get("type") != "null" else 0
+        )
+        items.append(proj)
+    return items
 
 
 def get_trending_freelancers(limit: int) -> List[dict]:
-    """Get trending/recent active freelancers."""
+    """Get trending freelancers ranked by rating, completions, and recency."""
     result = execute_query(
-        """SELECT id, email, name, first_name, last_name, bio, hourly_rate, location, skills, user_type, is_active, created_at
-           FROM users
-           WHERE LOWER(user_type) = 'freelancer' AND is_active = 1
-           ORDER BY created_at DESC
+        """SELECT u.id, u.email, u.name, u.first_name, u.last_name, u.bio,
+                  u.hourly_rate, u.location, u.skills, u.user_type,
+                  u.is_active, u.created_at,
+                  COALESCE(rv.avg_rating, 0) AS avg_rating,
+                  COALESCE(rv.review_count, 0) AS review_count,
+                  COALESCE(cc.completed, 0) AS completed_projects
+           FROM users u
+           LEFT JOIN (
+               SELECT reviewee_id, AVG(rating) AS avg_rating, COUNT(*) AS review_count
+               FROM reviews GROUP BY reviewee_id
+           ) rv ON u.id = rv.reviewee_id
+           LEFT JOIN (
+               SELECT freelancer_id, COUNT(*) AS completed
+               FROM contracts WHERE status = 'completed'
+               GROUP BY freelancer_id
+           ) cc ON u.id = cc.freelancer_id
+           WHERE LOWER(u.user_type) = 'freelancer' AND u.is_active = 1
+           ORDER BY (COALESCE(rv.avg_rating, 0) * COALESCE(rv.review_count, 0) * 0.5 +
+                     COALESCE(cc.completed, 0) * 3 +
+                     CASE WHEN u.created_at > datetime('now', '-30 days') THEN 2 ELSE 0 END) DESC
            LIMIT ?""",
         [limit]
     )
     if not result or not result.get("rows"):
         return []
-    return [row_to_user(row) for row in result["rows"]]
+    items = []
+    for row in result["rows"]:
+        user = row_to_user(row)
+        user["avg_rating"] = (
+            round(float(row[12].get("value")), 2)
+            if len(row) > 12 and row[12].get("type") != "null" else 0
+        )
+        user["review_count"] = (
+            row[13].get("value")
+            if len(row) > 13 and row[13].get("type") != "null" else 0
+        )
+        user["completed_projects"] = (
+            row[14].get("value")
+            if len(row) > 14 and row[14].get("type") != "null" else 0
+        )
+        items.append(user)
+    return items
 
 
 def get_trending_skills(limit: int) -> List[dict]:

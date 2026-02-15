@@ -204,6 +204,14 @@ const nextConfig = {
         ],
       },
       {
+        // RSS feed should be fresh but cacheable
+        source: '/blog/feed.xml',
+        headers: [
+          { key: 'Content-Type', value: 'application/rss+xml; charset=utf-8' },
+          { key: 'Cache-Control', value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200' },
+        ],
+      },
+      {
         // Preconnect to external resources for faster loading
         source: '/:path*',
         headers: [

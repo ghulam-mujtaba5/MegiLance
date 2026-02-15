@@ -18,6 +18,8 @@ import VirtualList from '@/app/components/DataTableExtras/VirtualList';
 import Modal from '@/app/components/Modal/Modal';
 import { useToaster } from '@/app/components/Toast/ToasterProvider';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { WalletIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 import commonStyles from './Wallet.common.module.css';
 import lightStyles from './Wallet.light.module.css';
 import darkStyles from './Wallet.dark.module.css';
@@ -186,8 +188,13 @@ const Wallet: React.FC = () => {
       <div className={styles.container}>
         <ScrollReveal>
           <header className={styles.header}>
-            <h1 className={styles.title}>My Wallet</h1>
-            <p className={styles.subtitle}>View your balance, transactions, and manage withdrawals.</p>
+            <div className={styles.heroRow}>
+              <div className={styles.heroContent}>
+                <h1 className={styles.title}>My Wallet</h1>
+                <p className={styles.subtitle}>View your balance, transactions, and manage withdrawals.</p>
+              </div>
+              <WalletIllustration className={illustrationStyles.heroIllustrationSmall} />
+            </div>
           </header>
         </ScrollReveal>
 

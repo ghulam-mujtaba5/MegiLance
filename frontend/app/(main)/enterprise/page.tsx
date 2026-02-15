@@ -6,10 +6,13 @@ import Enterprise from './Enterprise';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Enterprise Solutions',
-    description: 'Scale your workforce with MegiLance Enterprise. Dedicated account managers, custom workflows, SSO integration, and compliance-ready freelancer management.',
+    title: 'Enterprise Freelance Marketplace - Hire Developers & Designers at Scale',
+    description: 'MegiLance Enterprise: hire freelance web developers, designers, and experts at scale. Dedicated account managers, SSO, compliance-ready freelancer management. The best Upwork alternative for enterprise.',
     path: '/enterprise',
-    keywords: ['enterprise freelancing', 'managed teams', 'corporate freelance', 'enterprise workforce'],
+    keywords: [
+      'enterprise freelancing', 'hire freelancers enterprise', 'upwork alternative enterprise',
+      'hire web developer enterprise', 'managed freelance teams', 'corporate freelance marketplace',
+    ],
   });
 }
 

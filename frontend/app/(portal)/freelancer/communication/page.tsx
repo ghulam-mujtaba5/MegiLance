@@ -96,12 +96,6 @@ export default function CommunicationPage() {
           created_at: m.created_at,
           attachments: m.attachments || []
         })));
-      } else {
-        // Demo inbox messages
-        setMessages([
-          { id: '1', sender_id: 'user1', sender_name: 'John Client', subject: 'Project Discussion', preview: 'Hi, I wanted to discuss the project requirements...', content: 'Hi, I wanted to discuss the project requirements in more detail. Can we schedule a call this week?', is_read: false, is_starred: true, created_at: new Date().toISOString() },
-          { id: '2', sender_id: 'user2', sender_name: 'Sarah Manager', subject: 'Contract Update', preview: 'Your contract has been approved...', content: 'Your contract has been approved. Please review the terms and sign at your earliest convenience.', is_read: true, is_starred: false, created_at: new Date(Date.now() - 86400000).toISOString() }
-        ]);
       }
 
       const sentArray = Array.isArray(sentRes) ? sentRes : sentRes?.messages || sentRes?.items || [];
@@ -128,19 +122,24 @@ export default function CommunicationPage() {
           action_url: n.action_url,
           created_at: n.created_at
         })));
-      } else {
-        // Demo notifications
-        setNotifications([
-          { id: 'n1', type: 'success', title: 'Payment Received', message: 'You received $500 for Project Alpha', is_read: false, created_at: new Date().toISOString() },
-          { id: 'n2', type: 'info', title: 'New Proposal', message: 'You have a new proposal invitation', is_read: true, action_url: '/freelancer/proposals', created_at: new Date(Date.now() - 3600000).toISOString() }
-        ]);
       }
 
-      // Demo announcements (usually static or from a separate endpoint)
-      setAnnouncements([
-        { id: 'a1', title: 'Platform Update', content: 'We have released new features including improved messaging and file sharing.', priority: 'normal', created_at: new Date().toISOString() },
-        { id: 'a2', title: 'Scheduled Maintenance', content: 'Platform maintenance scheduled for Sunday 2AM-4AM UTC.', priority: 'high', expires_at: new Date(Date.now() + 604800000).toISOString(), created_at: new Date(Date.now() - 172800000).toISOString() }
-      ]);
+      // Fetch announcements from API
+      try {
+        const { default: api } = await import('@/lib/api');
+        const announcementsRes = await (api as any).announcements?.list?.().catch(() => null);
+        const announcementArray = Array.isArray(announcementsRes) ? announcementsRes : announcementsRes?.announcements || announcementsRes?.items || [];
+        setAnnouncements(announcementArray.map((a: any) => ({
+          id: a.id?.toString(),
+          title: a.title || 'Announcement',
+          content: a.content || a.message || '',
+          priority: a.priority || 'normal',
+          expires_at: a.expires_at,
+          created_at: a.created_at
+        })));
+      } catch {
+        setAnnouncements([]);
+      }
     } catch (error) {
       console.error('Failed to load communication data:', error);
     } finally {

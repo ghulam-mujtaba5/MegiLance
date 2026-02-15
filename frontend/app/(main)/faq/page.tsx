@@ -19,10 +19,14 @@ const faqStructuredData = [
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Frequently Asked Questions',
-    description: 'Answers to common questions about MegiLance — pricing, security, AI matching, payments, escrow, and getting started as a freelancer or client.',
+    title: 'FAQ - Freelance Marketplace Questions Answered',
+    description: 'Answers to common questions about MegiLance freelance marketplace — pricing, security, AI matching, escrow payments, and getting started. The best Upwork alternative FAQ.',
     path: '/faq',
-    keywords: ['MegiLance FAQ', 'freelance questions', 'how freelancing works', 'payment security FAQ'],
+    keywords: [
+      'freelance marketplace FAQ', 'how freelancing works', 'freelancer website FAQ',
+      'MegiLance FAQ', 'upwork alternative questions', 'escrow payment FAQ',
+      'hire freelancers FAQ', 'freelance jobs online questions',
+    ],
   });
 }
 

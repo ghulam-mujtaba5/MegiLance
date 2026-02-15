@@ -8,6 +8,8 @@ import Accordion, { AccordionItem } from '@/app/components/Accordion/Accordion';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
+import { FAQIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 import common from './FAQ.common.module.css';
 import light from './FAQ.light.module.css';
 import dark from './FAQ.dark.module.css';
@@ -109,9 +111,14 @@ const FAQ: React.FC = () => {
         
         <ScrollReveal>
           <header className={styles.header}>
-            <span className={styles.badge}>Answers you need</span>
-            <h1 id="faq-title" className={styles.title}>Frequently Asked Questions</h1>
-            <p className={styles.subtitle}>Quick, clear answers about our platform, security, and how to get started.</p>
+            <div className={common.heroRow}>
+              <div className={common.heroContent}>
+                <span className={styles.badge}>Answers you need</span>
+                <h1 id="faq-title" className={styles.title}>Frequently Asked Questions</h1>
+                <p className={styles.subtitle}>Quick, clear answers about our platform, security, and how to get started.</p>
+              </div>
+              <FAQIllustration className={illustrationStyles.heroIllustration} />
+            </div>
           </header>
         </ScrollReveal>
 

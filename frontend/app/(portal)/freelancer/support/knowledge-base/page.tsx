@@ -57,28 +57,8 @@ export default function KnowledgeBasePage() {
         knowledgeBaseApi.getPopular().catch(() => []),
       ]);
 
-      // Mock categories if API doesn't return them
-      const defaultCategories: Category[] = categoriesRes.length > 0 ? categoriesRes : [
-        { id: '1', name: 'Getting Started', icon: '🚀', description: 'New to MegiLance? Start here', article_count: 12 },
-        { id: '2', name: 'Account & Settings', icon: '⚙️', description: 'Manage your profile and preferences', article_count: 8 },
-        { id: '3', name: 'Projects & Contracts', icon: '📋', description: 'Create and manage work', article_count: 15 },
-        { id: '4', name: 'Payments & Billing', icon: '💰', description: 'Handle transactions safely', article_count: 10 },
-        { id: '5', name: 'Security', icon: '🔒', description: 'Protect your account', article_count: 6 },
-        { id: '6', name: 'Freelancer Guide', icon: '💼', description: 'Tips for freelancers', article_count: 20 },
-        { id: '7', name: 'Client Guide', icon: '🏢', description: 'Tips for hiring clients', article_count: 14 },
-        { id: '8', name: 'Troubleshooting', icon: '🔧', description: 'Resolve common issues', article_count: 9 },
-      ];
-
-      // Mock popular articles
-      const defaultPopular: Article[] = popularRes.length > 0 ? popularRes : [
-        { id: '1', title: 'How to create your first project', slug: 'create-first-project', category_id: '1', excerpt: 'Learn the basics of posting a job on MegiLance', content: '', views: 15420, helpful_count: 892, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-        { id: '2', title: 'Setting up secure payment methods', slug: 'payment-setup', category_id: '4', excerpt: 'Add and verify your payment information', content: '', views: 12350, helpful_count: 756, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-        { id: '3', title: 'Building an effective portfolio', slug: 'effective-portfolio', category_id: '6', excerpt: 'Tips for showcasing your best work', content: '', views: 10890, helpful_count: 654, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-        { id: '4', title: 'Understanding escrow payments', slug: 'escrow-explained', category_id: '4', excerpt: 'How escrow protects both freelancers and clients', content: '', views: 9870, helpful_count: 543, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-      ];
-
-      setCategories(defaultCategories);
-      setPopularArticles(defaultPopular);
+      setCategories(Array.isArray(categoriesRes) ? categoriesRes : []);
+      setPopularArticles(Array.isArray(popularRes) ? popularRes : []);
     } catch (error) {
       console.error('Failed to load knowledge base:', error);
     } finally {
@@ -92,13 +72,7 @@ export default function KnowledgeBasePage() {
     setSearchResults(null);
     try {
       const articlesRes = await knowledgeBaseApi.getArticles(categoryId);
-      // Mock articles if API doesn't return them
-      const mockArticles: Article[] = articlesRes.articles || [
-        { id: '1', title: 'Getting started guide', slug: 'getting-started', category_id: categoryId, excerpt: 'Everything you need to know to begin', content: 'Full article content here...', views: 5420, helpful_count: 320, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-        { id: '2', title: 'Complete setup walkthrough', slug: 'setup-walkthrough', category_id: categoryId, excerpt: 'Step by step configuration', content: 'Full article content here...', views: 4350, helpful_count: 256, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-        { id: '3', title: 'Best practices', slug: 'best-practices', category_id: categoryId, excerpt: 'Pro tips for success', content: 'Full article content here...', views: 3890, helpful_count: 198, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-      ];
-      setArticles(mockArticles);
+      setArticles(articlesRes.articles || []);
     } catch (error) {
       console.error('Failed to load articles:', error);
     }
@@ -123,43 +97,7 @@ export default function KnowledgeBasePage() {
   const handleArticleSelect = async (article: Article) => {
     try {
       const fullArticle = await knowledgeBaseApi.getArticle(article.id);
-      setSelectedArticle(fullArticle || {
-        ...article,
-        content: `
-# ${article.title}
-
-${article.excerpt}
-
-## Overview
-This is a comprehensive guide covering everything you need to know about this topic. Follow along to learn the best practices and tips.
-
-## Step 1: Getting Started
-First, make sure you have completed the initial setup. Navigate to your dashboard and locate the relevant section.
-
-## Step 2: Configuration
-Configure your settings according to your needs. Here are some recommended options:
-- Enable notifications for important updates
-- Set your preferences for communication
-- Review security settings
-
-## Step 3: Best Practices
-Follow these guidelines for the best experience:
-1. Always keep your profile updated
-2. Respond to messages promptly
-3. Maintain clear communication with all parties
-
-## Troubleshooting
-If you encounter any issues:
-- Clear your browser cache
-- Try logging out and back in
-- Contact support if the issue persists
-
-## Related Articles
-- [Getting Started Guide](/help/getting-started)
-- [Security Best Practices](/help/security)
-- [Payment Setup](/help/payments)
-        `
-      });
+      setSelectedArticle(fullArticle || article);
     } catch (error) {
       console.error('Failed to load article:', error);
     }

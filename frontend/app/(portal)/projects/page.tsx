@@ -11,6 +11,8 @@ import Button from '@/app/components/Button/Button';
 import { Badge } from '@/app/components/Badge';
 import Loading from '@/app/components/Loading/Loading';
 import EmptyState from '@/app/components/EmptyState/EmptyState';
+import { ProjectsIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 import { Briefcase, Search, Filter, ChevronRight, Calendar, DollarSign, Users, Clock } from 'lucide-react';
 import commonStyles from './Projects.common.module.css';
 import lightStyles from './Projects.light.module.css';
@@ -167,7 +169,7 @@ export default function PortalProjectsPage() {
           </StaggerContainer>
         ) : (
           <EmptyState
-            icon={<Briefcase size={48} />}
+            icon={<ProjectsIllustration className={illustrationStyles.emptyStateIllustration} />}
             title="No projects found"
             description={searchQuery ? 'Try adjusting your search or filter' : 'Check back later for new opportunities'}
           />

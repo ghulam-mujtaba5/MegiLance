@@ -1,4 +1,4 @@
-// @AI-HINT: Advanced search - faceted filters, saved searches, autocomplete
+// @AI-HINT: Advanced search v2.0 — faceted filters, saved searches, autocomplete, trending section, relevance hints
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { 
   Search, SlidersHorizontal, Star, MapPin, DollarSign,
-  Clock, Bookmark, Save, X, ChevronDown
+  Clock, Bookmark, Save, X, ChevronDown, TrendingUp, Flame, Sparkles
 } from 'lucide-react';
 import Button from '@/app/components/Button/Button';
 import Select from '@/app/components/Select/Select';
@@ -46,6 +46,22 @@ interface SearchSuggestion {
   count?: number;
 }
 
+interface TrendingItem {
+  id: string;
+  title?: string;
+  name?: string;
+  proposal_count?: number;
+  avg_rating?: number;
+  completed_projects?: number;
+}
+
+const SUGGESTION_ICONS: Record<string, React.ReactNode> = {
+  project: <Bookmark size={14} />,
+  freelancer: <Star size={14} />,
+  skill: <Sparkles size={14} />,
+  category: <SlidersHorizontal size={14} />,
+};
+
 const AdvancedSearch: React.FC = () => {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
@@ -58,6 +74,8 @@ const AdvancedSearch: React.FC = () => {
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [searchName, setSearchName] = useState('');
+  const [trendingProjects, setTrendingProjects] = useState<TrendingItem[]>([]);
+  const [trendingFreelancers, setTrendingFreelancers] = useState<TrendingItem[]>([]);
 
   const [filters, setFilters] = useState<SearchFilters>({
     query: searchParams.get('q') || '',
@@ -121,6 +139,7 @@ const AdvancedSearch: React.FC = () => {
   useEffect(() => {
     loadRecentSearches();
     loadSavedSearches();
+    loadTrending();
   }, []);
 
   useEffect(() => {
@@ -135,7 +154,11 @@ const AdvancedSearch: React.FC = () => {
   const loadRecentSearches = () => {
     const recent = localStorage.getItem('recentSearches');
     if (recent) {
-      setRecentSearches(JSON.parse(recent).slice(0, 5));
+      try {
+        setRecentSearches(JSON.parse(recent).slice(0, 5));
+      } catch {
+        setRecentSearches([]);
+      }
     }
   };
 
@@ -145,6 +168,19 @@ const AdvancedSearch: React.FC = () => {
       setSavedSearches(data);
     } catch (error) {
       console.error('Failed to load saved searches:', error);
+    }
+  };
+
+  const loadTrending = async () => {
+    try {
+      const [projects, freelancers]: any[] = await Promise.allSettled([
+        (api.search as any).trending?.('projects', 5),
+        (api.search as any).trending?.('freelancers', 5),
+      ]).then(results => results.map(r => r.status === 'fulfilled' ? r.value : []));
+      setTrendingProjects(Array.isArray(projects) ? projects : []);
+      setTrendingFreelancers(Array.isArray(freelancers) ? freelancers : []);
+    } catch {
+      // Trending is non-critical
     }
   };
 
@@ -162,12 +198,10 @@ const AdvancedSearch: React.FC = () => {
     e?.preventDefault();
     setLoading(true);
 
-    // Add to recent searches
     const recent = [filters.query, ...recentSearches.filter(s => s !== filters.query)].slice(0, 5);
     setRecentSearches(recent);
     localStorage.setItem('recentSearches', JSON.stringify(recent));
 
-    // Build query string
     const params = new URLSearchParams();
     if (filters.query) params.set('q', filters.query);
     if (filters.category !== 'all') params.set('category', filters.category);
@@ -243,6 +277,8 @@ const AdvancedSearch: React.FC = () => {
     return value && value !== 'all' && value !== '';
   }).length;
 
+  const hasTrending = trendingProjects.length > 0 || trendingFreelancers.length > 0;
+
   return (
     <div className={styles.container}>
       <form onSubmit={handleSearch} className={styles.searchBar}>
@@ -269,8 +305,11 @@ const AdvancedSearch: React.FC = () => {
                     setShowSuggestions(false);
                   }}
                 >
+                  <span className={commonStyles.suggestionIcon}>
+                    {SUGGESTION_ICONS[suggestion.type] || <Search size={14} />}
+                  </span>
                   <span className={styles.suggestionText}>{suggestion.text}</span>
-                  {suggestion.count && (
+                  {suggestion.count != null && (
                     <span className={styles.suggestionCount}>({suggestion.count})</span>
                   )}
                 </button>
@@ -318,6 +357,65 @@ const AdvancedSearch: React.FC = () => {
         </div>
       )}
 
+      {/* Trending Section */}
+      {hasTrending && !filters.query && (
+        <div className={cn(commonStyles.trendingSection, themeStyles.trendingSection)}>
+          <h3 className={cn(commonStyles.trendingSectionTitle, themeStyles.trendingSectionTitle)}>
+            <Flame size={16} /> Trending Now
+          </h3>
+          <div className={commonStyles.trendingGrid}>
+            {trendingProjects.length > 0 && (
+              <div className={commonStyles.trendingColumn}>
+                <h4 className={cn(commonStyles.trendingColumnTitle, themeStyles.trendingColumnTitle)}>
+                  <TrendingUp size={14} /> Hot Projects
+                </h4>
+                {trendingProjects.slice(0, 3).map((item) => (
+                  <button
+                    key={item.id}
+                    className={cn(commonStyles.trendingItem, themeStyles.trendingItem)}
+                    onClick={() => {
+                      setFilters({ ...filters, query: item.title || '' });
+                      handleSearch();
+                    }}
+                  >
+                    <span className={commonStyles.trendingItemTitle}>{item.title}</span>
+                    {item.proposal_count != null && (
+                      <span className={cn(commonStyles.trendingBadge, themeStyles.trendingBadge)}>
+                        {item.proposal_count} bids
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+            {trendingFreelancers.length > 0 && (
+              <div className={commonStyles.trendingColumn}>
+                <h4 className={cn(commonStyles.trendingColumnTitle, themeStyles.trendingColumnTitle)}>
+                  <Star size={14} /> Top Freelancers
+                </h4>
+                {trendingFreelancers.slice(0, 3).map((item) => (
+                  <button
+                    key={item.id}
+                    className={cn(commonStyles.trendingItem, themeStyles.trendingItem)}
+                    onClick={() => {
+                      setFilters({ ...filters, query: item.name || '' });
+                      handleSearch();
+                    }}
+                  >
+                    <span className={commonStyles.trendingItemTitle}>{item.name}</span>
+                    {item.avg_rating != null && (
+                      <span className={cn(commonStyles.trendingBadge, themeStyles.trendingBadge)}>
+                        <Star size={10} /> {item.avg_rating.toFixed(1)}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {showFilters && (
         <div className={styles.filtersPanel}>
           <div className={styles.filterGrid}>
@@ -334,6 +432,9 @@ const AdvancedSearch: React.FC = () => {
                   { value: 'design', label: 'Design' },
                   { value: 'writing', label: 'Writing' },
                   { value: 'marketing', label: 'Marketing' },
+                  { value: 'data', label: 'Data & Analytics' },
+                  { value: 'devops', label: 'DevOps & Cloud' },
+                  { value: 'ai-ml', label: 'AI & Machine Learning' },
                 ]}
               />
             </div>
@@ -415,6 +516,7 @@ const AdvancedSearch: React.FC = () => {
                 onChange={(e) => setFilters({ ...filters, rating: e.target.value })}
                 options={[
                   { value: 'all', label: 'All Ratings' },
+                  { value: '3.5', label: '3.5+ Stars' },
                   { value: '4', label: '4+ Stars' },
                   { value: '4.5', label: '4.5+ Stars' },
                 ]}
@@ -459,6 +561,7 @@ const AdvancedSearch: React.FC = () => {
                 onChange={(e) => setFilters({ ...filters, sortBy: e.target.value })}
                 options={[
                   { value: 'relevance', label: 'Relevance' },
+                  { value: 'trending', label: 'Trending' },
                   { value: 'date', label: 'Newest First' },
                   { value: 'price-low', label: 'Price: Low to High' },
                   { value: 'price-high', label: 'Price: High to Low' },

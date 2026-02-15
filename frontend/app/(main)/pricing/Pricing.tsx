@@ -10,6 +10,8 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
+import { PricingIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 import commonStyles from './Pricing.common.module.css';
 import lightStyles from './Pricing.light.module.css';
 import darkStyles from './Pricing.dark.module.css';
@@ -101,11 +103,16 @@ const Pricing: React.FC = () => {
       <main id="main-content" className={styles.root}>
         <ScrollReveal>
           <div className={styles.header}>
-            <h1 className={styles.title}>Transparent, Low Fees</h1>
-            <p className={styles.subtitle}>
-              As an FYP project, MegiLance demonstrates how blockchain can reduce platform fees to 5-10% 
-              compared to the industry standard of 20%+.
-            </p>
+            <div className={commonStyles.heroRow}>
+              <div className={commonStyles.heroContent}>
+                <h1 className={styles.title}>Transparent, Low Fees</h1>
+                <p className={styles.subtitle}>
+                  As an FYP project, MegiLance demonstrates how blockchain can reduce platform fees to 5-10% 
+                  compared to the industry standard of 20%+.
+                </p>
+              </div>
+              <PricingIllustration className={illustrationStyles.heroIllustrationSmall} />
+            </div>
           </div>
         </ScrollReveal>
 

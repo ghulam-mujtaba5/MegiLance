@@ -31,18 +31,29 @@ const RecommendedTalent: React.FC = () => {
       try {
         const response = await matchingApi.getRecommendations();
         if (response && response.recommendations) {
-          const mappedTalents: FreelancerMatchData[] = response.recommendations.map((rec: any) => ({
-            id: String(rec.freelancer_id),
-            name: rec.freelancer_name,
-            title: rec.freelancer_bio ? rec.freelancer_bio.substring(0, 30) + '...' : 'Freelancer',
-            avatarUrl: rec.profile_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.freelancer_name)}&background=random`,
-            matchScore: Math.round(rec.match_score * 100),
-            skills: rec.match_factors?.skill_match ? ['High Skill Match'] : ['Top Rated'],
-            hourlyRate: 45 + Math.floor(Math.random() * 50), // Mock rate if not provided
-            rating: 4.5 + Math.random() * 0.5, // Mock rating
-            confidenceLevel: 85 + Math.floor(Math.random() * 10), // Mock confidence
-            matchReasons: rec.match_factors?.skill_match ? ['Skills align with project'] : ['High historical performance']
-          }));
+          const mappedTalents: FreelancerMatchData[] = response.recommendations.map((rec: any) => {
+            const factors = rec.match_factors || {};
+            const reasons: string[] = [];
+            if (factors.skill_match > 0.5) reasons.push('Skills align with project');
+            if (factors.avg_rating > 0.7) reasons.push('Highly rated by clients');
+            if (factors.success_rate > 0.7) reasons.push('High project success rate');
+            if (factors.availability > 0.5) reasons.push('Available now');
+            if (factors.budget_match > 0.5) reasons.push('Budget compatible');
+            if (reasons.length === 0) reasons.push('Strong overall match');
+
+            return {
+              id: String(rec.freelancer_id),
+              name: rec.freelancer_name,
+              title: rec.freelancer_bio ? rec.freelancer_bio.substring(0, 30) + '...' : 'Freelancer',
+              avatarUrl: rec.profile_image_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(rec.freelancer_name)}&background=random`,
+              matchScore: Math.round((rec.match_score || 0) * 100),
+              skills: rec.match_factors?.skill_match ? ['High Skill Match'] : ['Top Rated'],
+              hourlyRate: rec.hourly_rate || 0,
+              rating: factors.avg_rating ? factors.avg_rating * 5 : undefined,
+              confidenceLevel: rec.match_score ? Math.round(rec.match_score * 100) : undefined,
+              matchReasons: reasons,
+            };
+          });
           setTalents(mappedTalents);
           setContext(response.context || '');
         }

@@ -40,6 +40,10 @@ from .v1 import (
     # Fiverr/Upwork Feature Parity - Gig Marketplace & Seller Tiers
     gigs, seller_stats, talent_invitations,
     external_projects,
+    price_estimator,
+    # Standalone Public Tools
+    invoice_generator, contract_builder_standalone, income_calculator,
+    scope_planner, expense_tax_calculator,
 )
 
 
@@ -115,6 +119,16 @@ api_router.include_router(client.router, prefix="/client", tags=["client"])
 
 # AI services
 api_router.include_router(ai_services.router, prefix="/ai", tags=["ai"])
+
+# AI Price Estimator - General-purpose pricing intelligence (public)
+api_router.include_router(price_estimator.router, prefix="/price-estimator", tags=["price-estimator"])
+
+# Standalone Public Tools
+api_router.include_router(invoice_generator.router, prefix="/invoice-generator", tags=["invoice-generator"])
+api_router.include_router(contract_builder_standalone.router, prefix="/contract-builder-standalone", tags=["contract-builder-standalone"])
+api_router.include_router(income_calculator.router, prefix="/income-calculator", tags=["income-calculator"])
+api_router.include_router(scope_planner.router, prefix="/scope-planner", tags=["scope-planner"])
+api_router.include_router(expense_tax_calculator.router, prefix="/expense-tax-calculator", tags=["expense-tax-calculator"])
 
 # Skill Assessments - Professional skill verification
 api_router.include_router(assessments.router, prefix="/assessments", tags=["assessments"])

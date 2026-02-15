@@ -8,6 +8,8 @@ import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
+import { AboutIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 import { 
   Globe, 
   Shield, 
@@ -67,12 +69,17 @@ const About: React.FC = () => {
       <main id="main-content" role="main" aria-labelledby="about-title" className={styles.root}>
         <header className={styles.hero}>
           <ScrollReveal direction="down">
-            <h1 id="about-title" className={styles.title}>About MegiLance</h1>
-            <p className={styles.subtitle}>
-              A hybrid decentralized freelancing platform that strategically integrates Artificial Intelligence 
-              for enhanced intelligence and Blockchain technology for secure, trustless transactions. Built to 
-              empower freelancers worldwide with fair pay, transparent reputation, and low-cost payments.
-            </p>
+            <div className={common.heroRow}>
+              <div className={common.heroContent}>
+                <h1 id="about-title" className={styles.title}>About MegiLance</h1>
+                <p className={styles.subtitle}>
+                  A hybrid decentralized freelancing platform that strategically integrates Artificial Intelligence 
+                  for enhanced intelligence and Blockchain technology for secure, trustless transactions. Built to 
+                  empower freelancers worldwide with fair pay, transparent reputation, and low-cost payments.
+                </p>
+              </div>
+              <AboutIllustration className={illustrationStyles.heroIllustration} />
+            </div>
           </ScrollReveal>
         </header>
 

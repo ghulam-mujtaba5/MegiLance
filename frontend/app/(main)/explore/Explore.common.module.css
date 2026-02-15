@@ -28,6 +28,30 @@
   padding-top: 1rem;
 }
 
+.heroRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  max-width: 960px;
+  margin: 0 auto 1.5rem;
+}
+
+.heroContent {
+  flex: 1 1 55%;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .heroRow {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .heroContent {
+    text-align: center;
+  }
+}
+
 .title {
   font-size: 3rem;
   font-weight: 700;

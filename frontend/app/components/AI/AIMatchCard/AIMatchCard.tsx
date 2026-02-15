@@ -1,4 +1,4 @@
-// @AI-HINT: Enhanced AI Match Card - Premium visualization for AI-powered freelancer matches with animated score rings, skill matching, and AI insights
+// @AI-HINT: AI Match Card v2.0 — uses backend match_quality labels, why_good_fit, category-level matching, animated score rings
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -7,13 +7,13 @@ import {
   Sparkles, 
   Star, 
   DollarSign, 
-  Clock, 
   CheckCircle, 
   MessageSquare, 
   UserPlus,
   Zap,
   TrendingUp,
-  Award
+  Award,
+  Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import commonStyles from './AIMatchCard.common.module.css';
@@ -31,10 +31,13 @@ export interface FreelancerMatchData {
   skills: string[];
   matchedSkills?: string[];
   matchScore: number; // 0-100
+  matchQuality?: string; // excellent | strong | good | fair | weak (from backend)
   confidenceLevel?: number; // 0-100
   matchReasons?: string[];
+  whyGoodFit?: string; // from backend matching engine
   availability?: 'available' | 'busy' | 'away';
   completedProjects?: number;
+  responseRate?: number;
 }
 
 interface AIMatchCardProps {
@@ -46,6 +49,14 @@ interface AIMatchCardProps {
   showActions?: boolean;
   compact?: boolean;
 }
+
+const QUALITY_MAP: Record<string, { label: string; icon: React.ReactNode; colorVar: string }> = {
+  excellent: { label: 'Excellent Match', icon: <Award size={14} />, colorVar: '#27AE60' },
+  strong:    { label: 'Strong Match',    icon: <Zap size={14} />,   colorVar: '#4573df' },
+  good:      { label: 'Good Match',      icon: <CheckCircle size={14} />, colorVar: '#F2C94C' },
+  fair:      { label: 'Fair Match',      icon: <Shield size={14} />, colorVar: '#ff9800' },
+  weak:      { label: 'Potential Match',  icon: <Sparkles size={14} />, colorVar: '#94a3b8' },
+};
 
 const AIMatchCard: React.FC<AIMatchCardProps> = ({
   freelancer,
@@ -60,16 +71,11 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
   const [mounted, setMounted] = useState(false);
   const [animatedScore, setAnimatedScore] = useState(0);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
-  // Animate the score circle
   useEffect(() => {
     if (mounted) {
-      const timer = setTimeout(() => {
-        setAnimatedScore(freelancer.matchScore);
-      }, 100);
+      const timer = setTimeout(() => setAnimatedScore(freelancer.matchScore), 100);
       return () => clearTimeout(timer);
     }
   }, [mounted, freelancer.matchScore]);
@@ -78,40 +84,37 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
 
   const themeStyles = resolvedTheme === 'light' ? lightStyles : darkStyles;
 
-  // Determine matched skills
   const matchedSkills = freelancer.matchedSkills || 
     freelancer.skills.filter(skill => 
       requiredSkills.some(req => req.toLowerCase() === skill.toLowerCase())
     );
 
-  // Calculate score ring progress
-  const circumference = 2 * Math.PI * 30; // radius = 30
+  const circumference = 2 * Math.PI * 30;
   const strokeDashoffset = circumference - (animatedScore / 100) * circumference;
 
-  // Get score color class
+  // Resolve quality from backend label or fallback to score-based
+  const resolveQuality = () => {
+    if (freelancer.matchQuality && QUALITY_MAP[freelancer.matchQuality]) {
+      return QUALITY_MAP[freelancer.matchQuality];
+    }
+    const s = freelancer.matchScore;
+    if (s >= 85) return QUALITY_MAP.excellent;
+    if (s >= 70) return QUALITY_MAP.strong;
+    if (s >= 55) return QUALITY_MAP.good;
+    if (s >= 40) return QUALITY_MAP.fair;
+    return QUALITY_MAP.weak;
+  };
+
+  const quality = resolveQuality();
+
   const getScoreColorClass = () => {
     if (animatedScore >= 85) return themeStyles.scoreCircleProgressExcellent;
     if (animatedScore >= 65) return themeStyles.scoreCircleProgressGood;
     return themeStyles.scoreCircleProgressFair;
   };
 
-  // Get match label
-  const getMatchLabel = () => {
-    if (freelancer.matchScore >= 90) return 'Excellent Match';
-    if (freelancer.matchScore >= 75) return 'Great Match';
-    if (freelancer.matchScore >= 60) return 'Good Match';
-    return 'Potential Match';
-  };
-
-  // Get initials for avatar fallback
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const getInitials = (name: string) =>
+    name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <div className={cn(commonStyles.container)}>
@@ -122,7 +125,7 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
           <span>AI Matched</span>
         </div>
 
-        {/* Header with Avatar and Info */}
+        {/* Header */}
         <div className={commonStyles.header}>
           <div className={cn(commonStyles.avatar, themeStyles.avatar)}>
             {freelancer.avatarUrl ? (
@@ -143,16 +146,22 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
                 <DollarSign />
                 ${freelancer.hourlyRate}/hr
               </span>
-              {freelancer.rating && (
+              {freelancer.rating != null && (
                 <span className={commonStyles.metaItem}>
                   <Star />
                   {freelancer.rating.toFixed(1)} ({freelancer.reviewCount || 0})
                 </span>
               )}
-              {freelancer.completedProjects && (
+              {freelancer.completedProjects != null && (
                 <span className={commonStyles.metaItem}>
                   <Award />
                   {freelancer.completedProjects} projects
+                </span>
+              )}
+              {freelancer.responseRate != null && (
+                <span className={commonStyles.metaItem}>
+                  <Zap />
+                  {freelancer.responseRate}% reply
                 </span>
               )}
             </div>
@@ -175,22 +184,12 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
               </defs>
               <circle
                 className={cn(commonStyles.scoreCircleTrack, themeStyles.scoreCircleTrack)}
-                cx="36"
-                cy="36"
-                r="30"
+                cx="36" cy="36" r="30"
               />
               <circle
-                className={cn(
-                  commonStyles.scoreCircleProgress,
-                  getScoreColorClass()
-                )}
-                cx="36"
-                cy="36"
-                r="30"
-                style={{
-                  strokeDasharray: circumference,
-                  strokeDashoffset: strokeDashoffset
-                }}
+                className={cn(commonStyles.scoreCircleProgress, getScoreColorClass())}
+                cx="36" cy="36" r="30"
+                style={{ strokeDasharray: circumference, strokeDashoffset }}
               />
             </svg>
             <span className={cn(commonStyles.scoreValue, themeStyles.scoreValue)}>
@@ -198,8 +197,13 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
             </span>
           </div>
           <div className={commonStyles.scoreDetails}>
-            <div className={cn(commonStyles.scoreLabel, themeStyles.scoreLabel)}>
-              {getMatchLabel()}
+            {/* Quality badge from backend */}
+            <div
+              className={cn(commonStyles.qualityBadge, themeStyles.qualityBadge)}
+              style={{ borderColor: quality.colorVar, color: quality.colorVar }}
+            >
+              {quality.icon}
+              <span>{quality.label}</span>
             </div>
             {freelancer.confidenceLevel !== undefined && (
               <div className={cn(commonStyles.scoreConfidence, themeStyles.scoreConfidence)}>
@@ -217,7 +221,15 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
           </div>
         </div>
 
-        {/* Skills Section */}
+        {/* Why Good Fit (from backend matching engine) */}
+        {freelancer.whyGoodFit && !compact && (
+          <div className={cn(commonStyles.fitReason, themeStyles.fitReason)}>
+            <Sparkles size={14} className={commonStyles.fitReasonIcon} />
+            <span>{freelancer.whyGoodFit}</span>
+          </div>
+        )}
+
+        {/* Skills */}
         {!compact && (
           <div className={commonStyles.skillsSection}>
             <div className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>
@@ -233,8 +245,7 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
                   <span
                     key={skill}
                     className={cn(
-                      commonStyles.skill,
-                      themeStyles.skill,
+                      commonStyles.skill, themeStyles.skill,
                       isMatched && cn(commonStyles.skillMatched, themeStyles.skillMatched)
                     )}
                   >
@@ -252,7 +263,7 @@ const AIMatchCard: React.FC<AIMatchCardProps> = ({
           </div>
         )}
 
-        {/* AI Insights Section */}
+        {/* AI Insights */}
         {freelancer.matchReasons && freelancer.matchReasons.length > 0 && !compact && (
           <div className={cn(commonStyles.insightsSection, themeStyles.insightsSection)}>
             <div className={cn(commonStyles.sectionTitle, themeStyles.sectionTitle)}>

@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal } from '@/app/components/Animations';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
 import { AnimatedOrb, ParticlesSystem } from '@/app/components/3D';
+import { ExploreIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 import { 
   Layers, Code, Database, Users, CreditCard, MessageSquare, 
   Shield, Search, Brain, FileText, BarChart3, Settings,
@@ -433,12 +435,17 @@ const Explore: React.FC = () => {
           {/* Header */}
           <ScrollReveal threshold={0}>
             <div className={common.header}>
-              <h1 className={common.title}>🚀 MegiLance Platform Explorer</h1>
-              <p className={cn(common.subtitle, themed.subtitle)}>
-                {PLATFORM_OVERVIEW.totalPages} Pages • {PLATFORM_OVERVIEW.apiEndpointsLabel} Backend API Endpoints • {PLATFORM_OVERVIEW.dbTablesLabel} Database Tables • {PLATFORM_OVERVIEW.frontendApiClients} Frontend API Clients
-                <br />
-                <strong>Concise overview of whats built and wired end-to-end</strong>
-              </p>
+              <div className={common.heroRow}>
+                <div className={common.heroContent}>
+                  <h1 className={common.title}>🚀 MegiLance Platform Explorer</h1>
+                  <p className={cn(common.subtitle, themed.subtitle)}>
+                    {PLATFORM_OVERVIEW.totalPages} Pages • {PLATFORM_OVERVIEW.apiEndpointsLabel} Backend API Endpoints • {PLATFORM_OVERVIEW.dbTablesLabel} Database Tables • {PLATFORM_OVERVIEW.frontendApiClients} Frontend API Clients
+                    <br />
+                    <strong>Concise overview of whats built and wired end-to-end</strong>
+                  </p>
+                </div>
+                <ExploreIllustration className={illustrationStyles.heroIllustrationSmall} />
+              </div>
               
               {/* Real-time Platform Stats */}
               <div className={cn(common.heroStats, themed.heroStats)}>

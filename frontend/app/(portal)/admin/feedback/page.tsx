@@ -91,73 +91,27 @@ export default function AdminFeedbackPage() {
       }));
 
       // Calculate stats from data
+      const ratedItems = transformedFeedback.filter(f => f.rating);
       const calculatedStats: FeedbackStats = {
-        totalFeedback: transformedFeedback.length || 247,
+        totalFeedback: transformedFeedback.length,
         newToday: transformedFeedback.filter(f => {
           const today = new Date().toDateString();
           return new Date(f.createdAt).toDateString() === today;
-        }).length || 12,
-        avgRating: transformedFeedback.filter(f => f.rating).reduce((sum, f) => sum + (f.rating || 0), 0) / 
-                   (transformedFeedback.filter(f => f.rating).length || 1) || 4.2,
-        responseRate: Math.round((transformedFeedback.filter(f => f.response).length / (transformedFeedback.length || 1)) * 100) || 87,
+        }).length,
+        avgRating: ratedItems.length > 0
+          ? ratedItems.reduce((sum, f) => sum + (f.rating || 0), 0) / ratedItems.length
+          : 0,
+        responseRate: transformedFeedback.length > 0
+          ? Math.round((transformedFeedback.filter(f => f.response).length / transformedFeedback.length) * 100)
+          : 0,
         byType: ['feature', 'bug', 'improvement', 'praise', 'complaint'].map(type => ({
           type,
           count: transformedFeedback.filter(f => f.type === type).length
         }))
       };
 
-      if (transformedFeedback.length > 0) {
-        setFeedbackItems(transformedFeedback);
-        setStats(calculatedStats);
-      } else {
-        // Demo data if API fails or empty
-        setStats({
-          totalFeedback: 247,
-          newToday: 12,
-          avgRating: 4.2,
-          responseRate: 87,
-          byType: [
-            { type: 'feature', count: 85 },
-            { type: 'bug', count: 42 },
-            { type: 'improvement', count: 65 },
-            { type: 'praise', count: 38 },
-            { type: 'complaint', count: 17 }
-          ]
-        });
-        
-        setFeedbackItems([
-          {
-            id: '1',
-            userId: 'u1',
-            userName: 'Alice Smith',
-            userEmail: 'alice@example.com',
-            userType: 'freelancer',
-            type: 'feature',
-            category: 'Projects',
-            subject: 'Add dark mode to project dashboard',
-            message: 'It would be great to have a dark mode option for late night work.',
-            status: 'new',
-            priority: 'medium',
-            createdAt: new Date().toISOString(),
-            rating: 5
-          },
-          {
-            id: '2',
-            userId: 'u2',
-            userName: 'Bob Jones',
-            userEmail: 'bob@example.com',
-            userType: 'client',
-            type: 'bug',
-            category: 'Payments',
-            subject: 'Payment failed error',
-            message: 'I tried to pay an invoice but got a 500 error.',
-            status: 'in_review',
-            priority: 'high',
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            rating: 2
-          }
-        ]);
-      }
+      setFeedbackItems(transformedFeedback);
+      setStats(calculatedStats);
     } catch (error) {
       console.error('Failed to load feedback', error);
     } finally {

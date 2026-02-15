@@ -4,13 +4,13 @@ import { buildMeta, buildBreadcrumbJsonLd, buildFAQJsonLd, jsonLdScriptProps } f
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'For Clients - Hire Expert Freelancers in Minutes with AI Matching',
-    description: 'Post your project and get matched with top-rated freelancers in minutes. MegiLance\'s AI analyzes 7 factors to find your perfect match. Escrow payment protection, milestone tracking, and real-time collaboration. Start hiring today.',
+    title: 'For Clients - Hire Freelancers with AI Matching | Best Upwork Alternative',
+    description: 'Post your project and hire freelancers in minutes. MegiLance\'s AI matches you with top freelance web developers, designers, and experts. Escrow payment protection, milestone tracking. The best Upwork alternative for clients.',
     path: '/clients',
     keywords: [
-      'hire freelancers', 'post a project', 'find freelancers', 'hire developers',
-      'outsource project', 'hire remote team', 'AI freelancer matching',
-      'secure escrow payments', 'hire designers online', 'best place to hire freelancers',
+      'hire freelancers', 'upwork alternative', 'post a project', 'find freelancers',
+      'hire web developer', 'hire graphic designer', 'hire a virtual assistant',
+      'AI freelancer matching', 'secure escrow payments', 'best freelance websites',
     ],
   });
 }

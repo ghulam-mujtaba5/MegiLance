@@ -321,9 +321,7 @@ const GigCreate: React.FC = () => {
         setError(errorData.detail || 'Failed to create gig');
       }
     } catch (err) {
-      // For demo, simulate success
-      setCreatedGigSlug('demo-gig-' + Date.now());
-      setIsSuccess(true);
+      setError('Failed to create gig. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

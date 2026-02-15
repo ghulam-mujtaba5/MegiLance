@@ -15,6 +15,32 @@
   margin-bottom: 3rem;
 }
 
+.heroRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.heroContent {
+  flex: 1 1 55%;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .heroRow {
+    flex-direction: column;
+    text-align: center;
+  }
+  .heroContent {
+    text-align: center;
+  }
+  .heroContent .title {
+    justify-content: center;
+  }
+}
+
 .title {
   font-size: 3rem;
   font-weight: 700;

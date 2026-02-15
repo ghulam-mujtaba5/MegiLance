@@ -91,50 +91,7 @@ export default function WebhooksPage() {
       setLoading(true);
       const response = await webhooksApi.list().catch(() => null) as any;
       
-      // Use API data if available, otherwise fall back to demo data
-      let webhookData: Webhook[] = [];
-      
-      if (response && (response.webhooks?.length > 0 || Array.isArray(response) && response.length > 0)) {
-        webhookData = response.webhooks || response;
-      } else {
-        // Demo data for display when no real webhooks exist
-        webhookData = [
-          {
-            id: '1',
-            name: 'Slack Notifications',
-            url: 'https://hooks.slack.com/services/xxx/yyy/zzz',
-            events: ['project.created', 'proposal.submitted', 'payment.completed'],
-            status: 'active',
-            created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
-            last_triggered_at: new Date(Date.now() - 3600000).toISOString(),
-            success_count: 245,
-            failure_count: 3,
-          },
-          {
-            id: '2',
-            name: 'CRM Integration',
-            url: 'https://api.crm.example.com/webhooks',
-            events: ['user.registered', 'user.verified', 'contract.signed'],
-            status: 'active',
-            created_at: new Date(Date.now() - 90 * 86400000).toISOString(),
-            last_triggered_at: new Date(Date.now() - 86400000).toISOString(),
-            success_count: 128,
-            failure_count: 0,
-          },
-          {
-            id: '3',
-            name: 'Analytics Tracker',
-            url: 'https://analytics.example.com/ingest',
-            events: ['project.completed', 'milestone.completed', 'payment.completed'],
-            status: 'failing',
-            created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
-            last_triggered_at: new Date(Date.now() - 172800000).toISOString(),
-            success_count: 45,
-            failure_count: 12,
-          },
-        ];
-      }
-
+      const webhookData: Webhook[] = response?.webhooks || (Array.isArray(response) ? response : []);
       setWebhooks(webhookData);
     } catch (error) {
       console.error('Failed to load webhooks:', error);
@@ -197,21 +154,7 @@ export default function WebhooksPage() {
     try {
       const response = await webhooksApi.getLogs(webhook.id).catch(() => null) as any;
       
-      // Use API data if available, otherwise fall back to demo data
-      let logsData: DeliveryLog[] = [];
-      
-      if (response && (response.logs?.length > 0 || Array.isArray(response) && response.length > 0)) {
-        logsData = response.logs || response;
-      } else {
-        // Demo logs for display
-        logsData = [
-          { id: '1', webhook_id: webhook.id, event: 'project.created', status: 'success', response_code: 200, delivered_at: new Date(Date.now() - 3600000).toISOString(), duration_ms: 245 },
-          { id: '2', webhook_id: webhook.id, event: 'payment.completed', status: 'success', response_code: 200, delivered_at: new Date(Date.now() - 7200000).toISOString(), duration_ms: 189 },
-          { id: '3', webhook_id: webhook.id, event: 'proposal.submitted', status: 'failed', response_code: 500, delivered_at: new Date(Date.now() - 86400000).toISOString(), duration_ms: 5023 },
-          { id: '4', webhook_id: webhook.id, event: 'project.created', status: 'success', response_code: 200, delivered_at: new Date(Date.now() - 172800000).toISOString(), duration_ms: 312 },
-        ];
-      }
-      
+      const logsData: DeliveryLog[] = response?.logs || (Array.isArray(response) ? response : []);
       setDeliveryLogs(logsData);
       setShowLogsModal(true);
     } catch (error) {

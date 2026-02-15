@@ -64,6 +64,15 @@
   color: var(--neutral-900, #0f172a);
 }
 
+.qualityBadge {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.fitReason {
+  background: rgba(69, 115, 223, 0.06);
+  color: var(--neutral-700, #334155);
+}
+
 .scoreLabel {
   color: var(--neutral-600, #475569);
 }

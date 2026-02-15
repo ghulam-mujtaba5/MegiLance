@@ -159,3 +159,49 @@
   background: #f5f5f5;
   border-top-color: #e5e5e5;
 }
+
+/* Flags */
+.flagItem {
+  background: #f0f0f0;
+  border-color: #e0e0e0;
+  color: #555;
+}
+
+/* Signal toggle */
+.signalToggle {
+  background: #f5f5f5;
+  border-color: #e0e0e0;
+  color: #333;
+}
+
+.signalToggle:hover {
+  background: #ebebeb;
+}
+
+/* Signal breakdown */
+.signalBreakdown {
+  background: #f9f9f9;
+  border-color: #e5e5e5;
+}
+
+.signalProgress {
+  background: #e5e5e5;
+}
+
+.signalFlag {
+  background: #f0f0f0;
+  color: #555;
+}
+
+/* Recommendations */
+.recommendationsList {
+  background: #f5fdf5;
+  border-color: #c8e6c8;
+}
+
+/* Detail text */
+.detailText {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #e5e5e5;
+}

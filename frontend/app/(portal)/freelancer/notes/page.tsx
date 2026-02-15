@@ -229,7 +229,8 @@ export default function NotesPage() {
   const handleCreateTag = async () => {
     if (!newTagName.trim()) return;
     const token = localStorage.getItem('token');
-    const tagColor = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+    const TAG_COLORS = ['#4573df', '#27AE60', '#e81123', '#F2C94C', '#ff9800', '#9B59B6', '#1ABC9C', '#E67E22'];
+    const tagColor = TAG_COLORS[newTagName.length % TAG_COLORS.length];
     
     try {
       const res = await fetch('/api/notes-tags/tags', {

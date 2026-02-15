@@ -32,7 +32,7 @@ export type FAQItem = {
 
 export const SITE_NAME = 'MegiLance';
 export const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://megilance.site';
-export const SITE_DESCRIPTION = 'MegiLance is the AI-powered freelance marketplace connecting businesses with world-class freelancers. Hire top developers, designers, writers & more with secure blockchain payments, smart AI matching, and zero fees for freelancers.';
+export const SITE_DESCRIPTION = 'MegiLance is the #1 AI-powered freelance marketplace and best Upwork & Fiverr alternative. Hire top freelance web developers, designers, writers & experts online. Secure escrow payments, smart AI matching, zero commission for freelancers. Find freelance jobs and work online.';
 export const SITE_TAGLINE = 'The Future of Freelancing';
 export const SITE_LOGO = `${BASE_URL}/icon-512.png`;
 export const SOCIAL_LINKS = [
@@ -45,7 +45,9 @@ export const SOCIAL_LINKS = [
 ];
 
 // ─── SEO Keyword Taxonomy ─────────────────────────────────────────────────────
-// Comprehensive keywords grouped by intent for maximum SERP coverage
+// Data-driven keywords from Semrush research (Feb 2026). Grouped by intent.
+// Volume = avg monthly searches (US). Competition indexed 0-100.
+// Priority: HIGH = high volume + low competition, MEDIUM = balanced, LOW = niche.
 
 export const SEO_KEYWORDS = {
   // Brand keywords
@@ -53,60 +55,95 @@ export const SEO_KEYWORDS = {
     'MegiLance', 'megilance', 'megilance.com', 'MegiLance freelance', 'MegiLance platform',
     'MegiLance marketplace', 'MegiLance app', 'MegiLance AI freelancing',
   ],
-  // High-intent transactional keywords
+
+  // HIGH-VOLUME transactional keywords (Semrush-validated, sorted by volume)
+  // "freelancer website" 1,900/mo CI:23 | "freelance jobs online" 880/mo CI:23
+  // "freelance work online" 880/mo CI:23 | "freelance website designer" 480/mo CI:29
+  // "freelance web developer" 320/mo CI:22 | "hire freelancers" 260/mo CI:87
   transactional: [
-    'hire freelancers', 'hire developers online', 'hire remote developers',
-    'hire web developer', 'hire graphic designer', 'hire content writer',
-    'hire UI UX designer', 'hire mobile app developer', 'hire data scientist',
-    'hire AI developer', 'hire blockchain developer', 'hire DevOps engineer',
-    'find freelance work', 'get freelance jobs', 'freelance jobs online',
-    'post a project', 'post freelance job', 'outsource development',
+    'freelancer website', 'freelance jobs online', 'freelance work online',
+    'freelance website designer', 'freelance web developer', 'hire a virtual assistant',
+    'hire freelancers', 'hire graphic designer', 'hire web developer',
+    'developers for hire', 'programmer for hire', 'freelance shopify developer',
+    'hire python developers', 'hire wordpress developer', 'hire a web designer',
+    'hire illustrator', 'hire content writer', 'hire UI UX designer',
+    'hire mobile app developer', 'hire data scientist', 'hire AI developer',
+    'freelance app developers', 'app developer freelancer', 'hire php developers',
+    'hire freelance graphic designer', 'hire freelance web developer',
+    'hire freelance developers', 'hire a python programmer',
+    'freelance mobile app developer', 'hire a javascript developer',
   ],
-  // Informational keywords
+
+  // COMPARISON & INFORMATIONAL keywords (competitor-positioning)
+  // "upwork alternative" 210/mo CI:28 | "sites similar to upwork" 110/mo CI:45
+  // "like fiverr" 210/mo CI:50 | "best freelance websites" 140/mo CI:54
   informational: [
+    'upwork alternative', 'fiverr alternative', 'sites similar to upwork',
+    'like fiverr', 'fiverr similar sites', 'best freelance websites',
     'best freelance platform', 'best freelance marketplace', 'top freelance websites',
-    'freelance marketplace comparison', 'upwork alternative', 'fiverr alternative',
-    'freelancer alternative', 'toptal alternative', 'best platform for freelancers',
-    'freelancing platform for developers', 'AI powered freelancing',
-    'blockchain payments freelancing', 'zero fee freelancing platform',
+    'fiverr type sites', 'places like fiverr', 'apps like fiverr',
+    'better than fiverr', 'freelancer alternative', 'toptal alternative',
+    'best platform for freelancers', 'AI powered freelancing',
+    'zero fee freelancing platform', 'zero commission freelance platform',
+    'freelance marketplace comparison', 'best freelancing website 2026',
   ],
-  // Industry/niche keywords
+
+  // Industry/niche keywords (service-category targeting)
   industry: [
     'freelance web development', 'freelance mobile development', 'freelance AI development',
     'freelance graphic design', 'freelance content writing', 'freelance digital marketing',
     'freelance SEO services', 'freelance video editing', 'freelance data science',
     'freelance machine learning', 'freelance blockchain', 'freelance cloud computing',
     'freelance cybersecurity', 'freelance WordPress development', 'freelance Shopify development',
+    'virtual assistant jobs remote', 'freelance full stack developer',
   ],
-  // Technology keywords
+
+  // Technology-specific keywords (Semrush-validated, low competition)
+  // "freelance shopify developer" 110/mo CI:15 | "shopify freelancer" 110/mo CI:15
+  // "freelance react developer" 10/mo CI:0 | "freelance java developer" 10/mo CI:43
   technology: [
+    'freelance shopify developer', 'shopify freelancer', 'freelance react developer',
+    'freelance wordpress developer', 'freelance full stack developer',
     'React developer freelance', 'Python developer freelance', 'Node.js developer freelance',
     'JavaScript developer freelance', 'TypeScript developer freelance', 'Flutter developer freelance',
     'Angular developer freelance', 'Vue.js developer freelance', 'AWS architect freelance',
     'full stack developer freelance', 'backend developer freelance', 'frontend developer freelance',
+    'freelance java developer', 'freelance php developer', 'freelance ios developer',
+    'freelance android developer', 'freelance front end developer',
   ],
-  // Long-tail keywords
+
+  // Long-tail keywords (high intent, low competition, high monetization)
+  // "hire a python programmer" monetization:25.51 | "best freelance websites" monetization:20.74
+  // "freelance full stack developer" monetization:18.05
   longTail: [
     'how to hire freelancers online', 'best platform to find freelancers',
+    'website to hire freelancers', 'find freelancers', 'find freelance developers',
+    'hire freelancers online', 'best marketplace for freelancers',
+    'online freelance marketplace', 'freelance services marketplace',
+    'freelance developer marketplace', 'freelance marketplace platform',
     'secure freelance payments', 'AI matching freelance platform', 'escrow payments freelancing',
     'remote talent hiring platform', 'freelance marketplace with blockchain',
     'hire verified freelancers', 'freelance platform low fees', 'instant freelancer matching',
-    'best freelancing website 2025', 'top freelance platforms 2025',
     'freelance project management tool', 'freelance collaboration platform',
+    'freelance services marketplace for businesses',
   ],
-  // Location keywords
+
+  // Location/remote-work keywords
   location: [
     'hire freelancers worldwide', 'global freelance marketplace', 'international freelancers',
     'remote work platform', 'distributed teams hiring', 'cross-border freelance payments',
     'hire freelancers from Pakistan', 'hire freelancers from India',
     'hire freelancers from Philippines', 'hire freelancers from Eastern Europe',
+    'freelance web designer near me', 'virtual assistant jobs remote',
   ],
-  // Feature keywords
+
+  // Feature/USP keywords
   features: [
     'AI freelancer matching', 'smart contract payments', 'blockchain escrow system',
     'real-time collaboration tools', 'video calling freelance', 'milestone payments',
     'freelancer verification system', 'skill assessment platform', 'portfolio showcase',
     'time tracking freelance', 'invoice generation freelance',
+    'zero commission freelancing', 'no fee freelance platform',
   ],
 };
 

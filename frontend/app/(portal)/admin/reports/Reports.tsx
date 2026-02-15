@@ -67,9 +67,9 @@ export default function AdminReportsPage() {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         months.push({
           month: d.toLocaleDateString('en-US', { month: 'short' }),
-          users: Math.floor(Number(dash.total_users ?? 100) / 12 * (0.5 + Math.random())),
-          projects: Math.floor(Number(dash.total_projects ?? 50) / 12 * (0.5 + Math.random())),
-          revenue: Math.floor(Number(dash.total_revenue ?? 10000) / 12 * (0.5 + Math.random())),
+          users: Math.floor(Number(dash.total_users ?? 0) / 12),
+          projects: Math.floor(Number(dash.total_projects ?? 0) / 12),
+          revenue: Math.floor(Number(dash.total_revenue ?? 0) / 12),
         });
       }
       setMonthlyData(months);

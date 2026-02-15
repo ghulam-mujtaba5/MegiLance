@@ -158,25 +158,29 @@ class CategoryPopularityResponse(BaseModel):
 
 
 class RevenueStatsResponse(BaseModel):
-    """Revenue statistics"""
+    """Revenue statistics with growth tracking"""
     total_revenue: float = Field(..., description="Total revenue")
     platform_fees: float = Field(..., description="Platform fees collected")
+    platform_fee_pct: float = Field(10.0, description="Platform fee percentage used")
     net_revenue: float = Field(..., description="Net revenue after fees")
     transaction_count: int = Field(..., description="Number of transactions")
     average_transaction: float = Field(..., description="Average transaction value")
     payment_methods: Dict[str, float] = Field(..., description="Revenue by payment method")
+    revenue_growth_pct: float = Field(0.0, description="Revenue growth % vs previous period")
     
     model_config = ConfigDict(json_schema_extra={
         "example": {
             "total_revenue": 150000.00,
             "platform_fees": 15000.00,
+            "platform_fee_pct": 10.0,
             "net_revenue": 135000.00,
             "transaction_count": 342,
             "average_transaction": 438.60,
             "payment_methods": {
                 "stripe": 120000.00,
                 "paypal": 30000.00
-            }
+            },
+            "revenue_growth_pct": 12.5
         }
     })
 
@@ -258,32 +262,39 @@ class TopClientResponse(BaseModel):
 
 
 class PlatformHealthResponse(BaseModel):
-    """Platform health metrics"""
+    """Platform health metrics with composite health score"""
+    health_score: float = Field(0.0, description="Composite health score 0-100")
+    health_status: str = Field("good", description="Health status: excellent, good, fair, needs_attention")
     active_disputes: int = Field(..., description="Active disputes")
     pending_support_tickets: int = Field(..., description="Pending support tickets")
-    average_response_time_hours: float = Field(..., description="Avg response time in hours")
     user_satisfaction_rating: float = Field(..., description="Average user rating")
     daily_active_users: int = Field(..., description="Daily active users")
+    total_users: int = Field(0, description="Total registered users")
+    dau_ratio: float = Field(0.0, description="DAU/Total users ratio %")
     
     model_config = ConfigDict(json_schema_extra={
         "example": {
+            "health_score": 72.5,
+            "health_status": "good",
             "active_disputes": 5,
             "pending_support_tickets": 12,
-            "average_response_time_hours": 2.5,
             "user_satisfaction_rating": 4.6,
-            "daily_active_users": 450
+            "daily_active_users": 450,
+            "total_users": 5000,
+            "dau_ratio": 9.0
         }
     })
 
 
 class EngagementMetricsResponse(BaseModel):
-    """User engagement metrics"""
+    """User engagement metrics with growth tracking"""
     period_days: int = Field(..., description="Period in days")
     messages_sent: int = Field(..., description="Messages sent")
     proposals_submitted: int = Field(..., description="Proposals submitted")
     projects_posted: int = Field(..., description="Projects posted")
     contracts_created: int = Field(..., description="Contracts created")
     reviews_posted: int = Field(..., description="Reviews posted")
+    growth: Dict[str, float] = Field(default_factory=dict, description="Growth % vs previous period")
     
     model_config = ConfigDict(json_schema_extra={
         "example": {
@@ -292,6 +303,11 @@ class EngagementMetricsResponse(BaseModel):
             "proposals_submitted": 450,
             "projects_posted": 120,
             "contracts_created": 85,
-            "reviews_posted": 65
+            "reviews_posted": 65,
+            "growth": {
+                "messages_growth_pct": 5.2,
+                "proposals_growth_pct": 12.0,
+                "projects_growth_pct": -3.1
+            }
         }
     })

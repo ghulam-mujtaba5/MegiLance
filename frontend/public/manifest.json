@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "MegiLance - AI-Powered Freelance Marketplace",
+  "name": "MegiLance - Best Freelancer Website | Hire Freelance Developers & Designers",
   "short_name": "MegiLance",
-  "description": "AI-powered freelancing platform connecting top talent with clients worldwide. Hire developers, designers, and experts. Secure blockchain payments, smart AI matching, milestone-based contracts, and seamless collaboration tools.",
+  "description": "Best freelancer website and Upwork alternative. Hire freelance web developers, designers, and experts online. Find freelance jobs with AI matching, secure escrow payments, and the lowest fees in the freelance marketplace.",
   "start_url": "/?source=pwa",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],

@@ -10,6 +10,8 @@ import type { LucideIcon } from 'lucide-react';
 import commonStyles from './BrandingPanel.common.module.css';
 import lightStyles from './BrandingPanel.light.module.css';
 import darkStyles from './BrandingPanel.dark.module.css';
+import { LoginIllustration } from '@/app/components/Illustrations/Illustrations';
+import illustrationStyles from '@/app/components/Illustrations/Illustrations.module.css';
 
 export interface RoleConfig {
   brandIcon: LucideIcon;
@@ -46,6 +48,7 @@ const AuthBrandingPanel: React.FC<AuthBrandingPanelProps> = ({ roleConfig }) => 
         <div className={styles.brandingIconWrapper}>
           <BrandIcon className={styles.brandingIcon} />
         </div>
+        <LoginIllustration className={illustrationStyles.loginIllustration} />
         <h2 className={styles.brandingTitle}>{brandTitle}</h2>
         <p className={styles.brandingText}>{brandText}</p>
       </div>

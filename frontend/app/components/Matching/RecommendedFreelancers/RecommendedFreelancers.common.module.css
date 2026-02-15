@@ -113,6 +113,32 @@
   transform: translateY(-4px);
 }
 
+/* Quality Badge */
+.qualityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  border: 1.5px solid;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: fit-content;
+}
+
+/* Fit Reason */
+.fitReason {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
 .cardHeader {
   display: flex;
   justify-content: space-between;

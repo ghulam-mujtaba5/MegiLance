@@ -5,10 +5,13 @@ import About from './About';
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'About Us',
-    description: 'Learn about MegiLance’s mission to elevate global freelancing with AI-powered matching, secure blockchain payments, and zero fees for freelancers.',
+    title: 'About MegiLance - Best Freelancer Website & Upwork Alternative',
+    description: 'MegiLance is the best freelancer website built as a modern Upwork alternative. AI-powered matching, secure escrow payments, and the lowest fees in the freelance marketplace. Our mission: empower freelancers worldwide.',
     path: '/about',
-    keywords: ['about MegiLance', 'freelance platform mission', 'AI freelancing', 'company story'],
+    keywords: [
+      'about MegiLance', 'freelancer website', 'best freelance websites',
+      'upwork alternative', 'freelance marketplace', 'AI freelancing platform',
+    ],
   });
 }
 

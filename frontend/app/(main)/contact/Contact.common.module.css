@@ -18,6 +18,28 @@
   margin-bottom: 4rem;
 }
 
+.heroRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.heroContent {
+  flex: 1 1 55%;
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .heroRow {
+    flex-direction: column;
+    text-align: center;
+  }
+  .heroContent {
+    text-align: center;
+  }
+}
+
 .title {
   font-family: 'Poppins', sans-serif;
   font-size: 2.5rem;

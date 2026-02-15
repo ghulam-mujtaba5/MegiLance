@@ -503,3 +503,294 @@
   gap: 8px;
   margin-top: 16px;
 }
+
+/* Stat header with icon */
+.statHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statIconTotal { color: #4573df; }
+.statIconPending { color: #f2a93e; }
+.statIconCritical { color: #e81123; }
+.statIconResolved { color: #27ae60; }
+
+/* Title with icon */
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Severity badge */
+.severityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sevcritical {
+  background: rgba(232, 17, 35, 0.12);
+  color: #e81123;
+}
+
+.sevhigh {
+  background: rgba(242, 169, 62, 0.12);
+  color: #c87a00;
+}
+
+.sevmedium {
+  background: rgba(255, 185, 0, 0.12);
+  color: #997602;
+}
+
+.sevlow {
+  background: rgba(39, 174, 96, 0.12);
+  color: #1a8a4a;
+}
+
+/* Status badge */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.statusPending {
+  background: rgba(242, 169, 62, 0.12);
+  color: #c87a00;
+}
+
+.statusInvestigating {
+  background: rgba(69, 115, 223, 0.12);
+  color: #4573df;
+}
+
+.statusResolved {
+  background: rgba(39, 174, 96, 0.12);
+  color: #27ae60;
+}
+
+.statusFalsePositive {
+  background: rgba(128, 128, 128, 0.12);
+  color: #808080;
+}
+
+/* Alert user row */
+.alertUser {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Alert time with icon */
+.alertTime {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Flags */
+.flagsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.flagItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+/* Signal toggle button */
+.signalToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
+
+.signalToggle:hover {
+  opacity: 0.8;
+}
+
+/* Signal breakdown */
+.signalBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.signalRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.signalInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signalIcon {
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.signalLabel {
+  font-size: 12px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.signalScore {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0.8;
+}
+
+.signalProgress {
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.signalFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.signalFlags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.signalFlag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Risk gauge */
+.riskGauge {
+  display: block;
+}
+
+/* Modal gauge section */
+.modalGauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+/* Detail grid */
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* Recommendations */
+.recommendationsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.recommendationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.recIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #27ae60;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  color: #fff;
+  z-index: 9999;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideUp 0.3s ease;
+}
+
+.toastSuccess {
+  background-color: #27ae60;
+}
+
+.toastError {
+  background-color: #e81123;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+}

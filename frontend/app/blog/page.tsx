@@ -4,10 +4,14 @@ import { buildMeta, buildCollectionPageJsonLd, buildBreadcrumbJsonLd, jsonLdScri
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Blog - Insights on Freelancing & Remote Work',
-    description: 'Read the latest articles on freelancing tips, remote work trends, AI technology, and blockchain payments from the MegiLance team.',
+    title: 'Freelancing Blog - Tips for Freelance Jobs Online & Remote Work',
+    description: 'Expert guides on freelance jobs online, remote work tips, how to find freelance work online, virtual assistant jobs remote, and earning more as a freelancer. Insights from the MegiLance team.',
     path: '/blog',
-    keywords: ['freelancing blog', 'remote work tips', 'AI freelancing', 'web3 payments', 'freelancer guides'],
+    keywords: [
+      'freelance jobs online', 'freelance work online', 'freelancing blog',
+      'remote work tips', 'virtual assistant jobs remote', 'freelancer guides',
+      'how to freelance', 'best freelance websites', 'upwork alternative tips',
+    ],
   });
 }
 

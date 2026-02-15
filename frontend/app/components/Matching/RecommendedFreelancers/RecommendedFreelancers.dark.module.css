@@ -44,6 +44,15 @@
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
 }
 
+.qualityBadge {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.fitReason {
+  background: rgba(69, 115, 223, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .avatar {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
   color: rgba(255, 255, 255, 0.7);

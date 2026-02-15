@@ -39,10 +39,8 @@ const PaginatedJobGrid: React.FC<PaginatedJobGridProps> = ({ storageKey, jobs, s
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 500); // Simulate loading
-    return () => clearTimeout(timer);
-  }, [query, sortKey, sortDir, page, pageSize]);
+    setLoading(jobs.length === 0);
+  }, [jobs, query, sortKey, sortDir, page, pageSize]);
 
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();

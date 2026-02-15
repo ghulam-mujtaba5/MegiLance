@@ -6,10 +6,14 @@ import { buildMeta, buildCollectionPageJsonLd, buildBreadcrumbJsonLd, jsonLdScri
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMeta({
-    title: 'Find & Hire Top Freelancers',
-    description: 'Browse and hire verified freelancers on MegiLance. Connect with experts in development, design, marketing, AI/ML, and more. AI-powered matching.',
+    title: 'Hire Freelancers - Find & Hire Top Freelance Web Developers & Designers',
+    description: 'Hire freelancers on MegiLance — find top freelance web developers, freelance website designers, graphic designers, and verified experts. AI-powered matching, escrow protection. Best Upwork alternative for hiring.',
     path: '/freelancers',
-    keywords: ['hire freelancers', 'find developers', 'top freelancers', 'verified talent', 'remote experts'],
+    keywords: [
+      'hire freelancers', 'freelance web developer', 'freelance website designer',
+      'hire graphic designer', 'developers for hire', 'programmer for hire',
+      'top freelancers', 'verified freelancers', 'upwork alternative',
+    ],
   });
 }
 

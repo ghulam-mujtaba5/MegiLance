@@ -9,20 +9,20 @@ import {
 } from '@/lib/seo';
 
 export const metadata = buildMeta({
-  title: 'Explore Freelance Services & Gigs',
+  title: 'Freelance Services & Gigs - Hire Freelance Website Designers & Developers',
   description:
-    'Browse thousands of freelance services from verified professionals. Web development, design, writing, marketing, AI & more. Find the perfect gig for your project.',
+    'Browse freelance services on MegiLance. Hire freelance website designers, web developers, graphic designers, content writers, and more. Best freelance marketplace with verified professionals and secure payments.',
   path: '/gigs',
   keywords: [
     'freelance services',
-    'gigs',
+    'freelance website designer',
+    'freelance web developer',
     'hire freelancers',
-    'web development',
+    'gigs',
     'graphic design',
     'content writing',
-    'digital marketing',
-    'app development',
-    'SEO services',
+    'freelance marketplace',
+    'best freelance websites',
     'MegiLance',
   ],
 });
