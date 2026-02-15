@@ -38,13 +38,13 @@ export function middleware(request: NextRequest) {
 
   // === CONTENT SECURITY POLICY (CSP) ===
   if (process.env.NODE_ENV === 'production') {
-    // Nonce-based CSP following Next.js best practices
-    // See: https://nextjs.org/docs/app/guides/content-security-policy
-    const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+    // CSP compatible with Next.js App Router (inline scripts/styles required for hydration)
+    // 'unsafe-inline' is needed because Next.js injects inline scripts/styles for hydration,
+    // JSON-LD structured data, and theme initialization that cannot carry nonces automatically.
     const cspDirectives = [
       "default-src 'self'",
-      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com`,
-      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",
       "connect-src 'self' https://api.stripe.com https://www.google-analytics.com wss: https:",
@@ -58,8 +58,6 @@ export function middleware(request: NextRequest) {
       "media-src 'self'",
     ];
     response.headers.set('Content-Security-Policy', cspDirectives.join('; '));
-    // Pass nonce to server components via request header
-    response.headers.set('x-nonce', nonce);
   }
 
   // === HSTS (Strict Transport Security) ===
