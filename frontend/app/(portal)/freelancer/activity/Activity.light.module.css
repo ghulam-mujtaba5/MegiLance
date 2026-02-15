@@ -1,7 +1,7 @@
 /* @AI-HINT: Activity Feed - light theme colors */
 
 .container {
-  background-color: #f8fafc;
+  background: linear-gradient(170deg, #f0f4ff 0%, #ffffff 40%, #faf8ff 100%);
   color: #0f172a;
 }
 
@@ -23,8 +23,11 @@
 }
 
 .filters {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .filterButton {
@@ -53,8 +56,11 @@
 
 /* Empty State */
 .emptyState {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .emptyTitle {
@@ -72,13 +78,17 @@
 
 /* Activity Card */
 .activityCard {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .activityCard:hover {
-  border-color: #cbd5e1;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-color: rgba(69, 115, 223, 0.2);
+  box-shadow: 0 8px 24px rgba(69, 115, 223, 0.1);
+  transform: translateY(-2px);
 }
 
 .unread {
@@ -120,10 +130,12 @@
 
 /* Load More */
 .loadMoreButton {
-  background-color: #f1f5f9;
-  color: #475569;
+  background: linear-gradient(135deg, #4573df, #6366f1);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(69, 115, 223, 0.3);
 }
 
 .loadMoreButton:hover {
-  background-color: #e2e8f0;
+  box-shadow: 0 6px 20px rgba(69, 115, 223, 0.4);
+  transform: translateY(-1px);
 }

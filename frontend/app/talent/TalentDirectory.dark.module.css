@@ -1,7 +1,7 @@
 /* @AI-HINT: Public talent directory - dark theme */
 
 .main {
-  background-color: #0f172a;
+  background: linear-gradient(170deg, #0a0f1a 0%, #0f172a 40%, #0f1225 100%);
 }
 
 .title {
@@ -13,8 +13,10 @@
 }
 
 .searchInput {
-  background-color: #1e293b;
-  border-color: #334155;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(51, 65, 85, 0.6);
   color: #f1f5f9;
 }
 
@@ -28,12 +30,14 @@
 }
 
 .card {
-  background-color: #1e293b;
-  border-color: #334155;
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-color: rgba(51, 65, 85, 0.5);
 }
 
 .card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 24px rgba(69, 115, 223, 0.15);
 }
 
 .name {
@@ -45,8 +49,8 @@
 }
 
 .rankBadge {
-  background-color: #6b8ef9;
-  color: #0f172a;
+  background: linear-gradient(135deg, #6b8ef9, #4573df);
+  color: #ffffff;
 }
 
 .skillTag {

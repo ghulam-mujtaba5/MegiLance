@@ -1,15 +1,19 @@
 /* @AI-HINT: Dark theme styles for the main settings layout. */
 
+.container {
+  background: linear-gradient(170deg, #0a0f1a 0%, #0f172a 40%, #0f1225 100%);
+}
+
 .header {
-  border-bottom: 1px solid var(--border-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .title {
-  color: var(--text-primary-dark);
+  color: #f1f5f9;
 }
 
 .subtitle {
-  color: var(--text-secondary-dark);
+  color: #94a3b8;
 }
 
 .sidebar {
@@ -18,7 +22,9 @@
 
 .content {
   border-radius: 12px;
-  border: 1px solid var(--border-dark);
-  background-color: var(--bg-primary-dark);
-  box-shadow: var(--shadow-sm-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }

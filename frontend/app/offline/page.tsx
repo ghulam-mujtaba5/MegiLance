@@ -3,7 +3,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 import { WifiOff, RefreshCw } from 'lucide-react';
+import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { AnimatedOrb, ParticlesSystem } from '@/app/components/3D';
+
+import common from './Offline.common.module.css';
+import light from './Offline.light.module.css';
+import dark from './Offline.dark.module.css';
 
 const OfflinePage: React.FC = () => {
   const { resolvedTheme } = useTheme();
@@ -15,52 +22,39 @@ const OfflinePage: React.FC = () => {
     return () => window.removeEventListener('online', handleOnline);
   }, []);
 
-  const isDark = resolvedTheme === 'dark';
+  if (!resolvedTheme) return null;
+
+  const themed = resolvedTheme === 'dark' ? dark : light;
 
   return (
-    <main style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      background: isDark ? '#0f0f1a' : '#f8f9fc',
-      color: isDark ? '#e0e0e0' : '#333',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      textAlign: 'center',
-    }}>
-      <div style={{
-        width: 80, height: 80, borderRadius: '50%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: isDark ? 'rgba(69,115,223,0.15)' : 'rgba(69,115,223,0.1)',
-        marginBottom: '1.5rem',
-      }}>
-        <WifiOff size={36} color="#4573df" />
+    <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="blue" size={350} blur={90} opacity={0.08} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="purple" size={300} blur={70} opacity={0.06} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={8} className="absolute inset-0" />
       </div>
-      <h1 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 700, marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
-        You&apos;re Offline
-      </h1>
-      <p style={{ fontSize: '1rem', maxWidth: 420, lineHeight: 1.6, opacity: 0.8, marginBottom: '2rem' }}>
-        It looks like you&apos;ve lost your internet connection. Check your network and try again.
-      </p>
-      <button
-        onClick={() => window.location.reload()}
-        style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          padding: '0.75rem 1.5rem', borderRadius: '0.75rem',
-          background: '#4573df', color: '#fff', border: 'none',
-          fontSize: '0.9375rem', fontWeight: 600, cursor: 'pointer',
-          transition: 'transform 0.2s, box-shadow 0.2s',
-        }}
-        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(69,115,223,0.3)'; }}
-        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-        aria-label="Retry connection"
-      >
-        <RefreshCw size={18} /> Try Again
-      </button>
-      {online && <p style={{ marginTop: '1rem', color: '#27AE60', fontWeight: 600 }}>Back online! Reloading...</p>}
-    </main>
+      <main className={cn(common.page, themed.page)}>
+        <ScrollReveal>
+          <div className={cn(common.iconWrapper, themed.iconWrapper)}>
+            <WifiOff size={40} color="#4573df" />
+          </div>
+          <h1 className={cn(common.title, themed.title)}>
+            You&apos;re Offline
+          </h1>
+          <p className={cn(common.description, themed.description)}>
+            It looks like you&apos;ve lost your internet connection. Check your network and try again.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className={cn(common.retryButton, themed.retryButton)}
+            aria-label="Retry connection"
+          >
+            <RefreshCw size={18} /> Try Again
+          </button>
+          {online && <p className={cn(common.onlineMessage, themed.onlineMessage)}>Back online! Reloading...</p>}
+        </ScrollReveal>
+      </main>
+    </PageTransition>
   );
 };
 

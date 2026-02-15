@@ -1,0 +1,32 @@
+/* @AI-HINT: Dark theme colors for PWA offline fallback page */
+
+.page {
+  background: linear-gradient(170deg, #0a0f1a 0%, #0f0f1a 40%, #11132a 100%);
+  color: #e0e0e0;
+}
+
+.iconWrapper {
+  background: rgba(69, 115, 223, 0.15);
+}
+
+.title {
+  color: #f4f4f5;
+}
+
+.description {
+  color: #a1a1aa;
+}
+
+.retryButton {
+  background: linear-gradient(135deg, #4573df 0%, #2563eb 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(69, 115, 223, 0.3);
+}
+
+.retryButton:hover {
+  box-shadow: 0 8px 24px rgba(69, 115, 223, 0.4);
+}
+
+.onlineMessage {
+  color: #27AE60;
+}

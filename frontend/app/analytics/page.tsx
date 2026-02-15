@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import { BarChart3, Users, Briefcase, DollarSign, TrendingUp, Clock, FileText, Star } from 'lucide-react';
 
 import commonStyles from './Analytics.common.module.css';
@@ -67,10 +68,16 @@ const AnalyticsPage: React.FC = () => {
 
   if (!resolvedTheme) return null;
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
-  const isDark = resolvedTheme === 'dark';
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={15} className="absolute inset-0" />
+        <div className="absolute top-[60%] right-[15%] opacity-10"><FloatingCube /></div>
+        <div className="absolute top-[20%] left-[10%] opacity-10"><FloatingSphere /></div>
+      </div>
       <main className={cn(commonStyles.page, themeStyles.page)}>
         <div className={commonStyles.container}>
           <ScrollReveal>
@@ -83,28 +90,28 @@ const AnalyticsPage: React.FC = () => {
           </ScrollReveal>
 
           {loading ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}>
+            <div className={commonStyles.statsGrid}>
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} style={{ padding: '1.5rem', borderRadius: '1rem', background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)', height: 120 }} />
+                <div key={i} className={cn(commonStyles.skeletonCard, themeStyles.skeletonCard)} />
               ))}
             </div>
           ) : (
             <ScrollReveal delay={0.1}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}>
+              <div className={commonStyles.statsGrid}>
                 {stats.map((stat, index) => (
-                  <div key={index} style={{ padding: '1.5rem', borderRadius: '1rem', background: isDark ? 'rgba(255,255,255,0.05)' : '#fff', border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                      <div style={{ width: 40, height: 40, borderRadius: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isDark ? 'rgba(69,115,223,0.15)' : 'rgba(69,115,223,0.1)', color: '#4573df' }}>
+                  <div key={index} className={cn(commonStyles.statCard, themeStyles.statCard)}>
+                    <div className={commonStyles.statTop}>
+                      <div className={cn(commonStyles.iconBox, themeStyles.iconBox)}>
                         {stat.icon}
                       </div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 600, color: stat.positive ? '#27AE60' : '#e81123' }}>
+                      <span className={cn(commonStyles.changeLabel, stat.positive ? commonStyles.changePositive : commonStyles.changeNegative)}>
                         {stat.change}
                       </span>
                     </div>
-                    <div style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.25rem', color: isDark ? '#fff' : '#111' }}>
+                    <div className={cn(commonStyles.statValue, themeStyles.statValue)}>
                       {stat.value}
                     </div>
-                    <div style={{ fontSize: '0.875rem', color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>
+                    <div className={cn(commonStyles.statLabel, themeStyles.statLabel)}>
                       {stat.label}
                     </div>
                   </div>

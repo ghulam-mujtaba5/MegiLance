@@ -1,7 +1,7 @@
 /* @AI-HINT: Dark theme styles for gigs marketplace page */
 
 .themeWrapper {
-  background-color: #0f0f1a;
+  background: linear-gradient(170deg, #0a0f1a 0%, #0f0f1a 40%, #11132a 100%);
   color: #e4e4e7;
 }
 
@@ -67,8 +67,11 @@
 
 /* Sidebar */
 .sidebarCard {
-  background-color: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .filterLabel {

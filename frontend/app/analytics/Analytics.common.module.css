@@ -34,10 +34,72 @@
   line-height: 1.6;
 }
 
+/* Stats Grid */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.skeletonCard {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  height: 120px;
+}
+
+.statCard {
+  padding: 1.5rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.statCard:hover {
+  transform: translateY(-3px);
+}
+
+.statTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.iconBox {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4573df;
+}
+
+.changeLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.changePositive {
+  color: #27AE60;
+}
+
+.changeNegative {
+  color: #e81123;
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+}
+
 .buttonPrimary {
-  /* This class is used inside the EmptyState action prop, 
-     but ideally we should use the Button component there. 
-     Keeping it for compatibility if needed, but we'll try to use Button component in the page. */
   display: inline-flex;
   align-items: center;
   justify-content: center;

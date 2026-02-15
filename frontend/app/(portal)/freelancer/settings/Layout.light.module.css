@@ -1,15 +1,19 @@
 /* @AI-HINT: Light theme styles for the main settings layout. */
 
+.container {
+  background: linear-gradient(170deg, #f0f4ff 0%, #ffffff 40%, #faf8ff 100%);
+}
+
 .header {
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .title {
-  color: var(--text-primary-light);
+  color: #0f172a;
 }
 
 .subtitle {
-  color: var(--text-secondary-light);
+  color: #64748b;
 }
 
 .sidebar {
@@ -18,7 +22,9 @@
 
 .content {
   border-radius: 12px;
-  border: 1px solid var(--border-light);
-  background-color: var(--bg-primary-light);
-  box-shadow: var(--shadow-sm-light);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }

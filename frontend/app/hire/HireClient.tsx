@@ -5,6 +5,8 @@ import React from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/app/components/Animations';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import commonStyles from './Hire.common.module.css';
 import lightStyles from './Hire.light.module.css';
 import darkStyles from './Hire.dark.module.css';
@@ -62,8 +64,21 @@ export default function HireClient() {
   const themed = resolvedTheme === 'dark' ? darkStyles : lightStyles;
 
   return (
+    <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={450} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={350} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={12} className="absolute inset-0" />
+        <div className="absolute top-32 left-16 opacity-10">
+          <FloatingCube size={55} />
+        </div>
+        <div className="absolute bottom-40 right-16 opacity-10">
+          <FloatingSphere size={45} />
+        </div>
+      </div>
     <main className={cn(commonStyles.page, themed.page)}>
       {/* Hero */}
+      <ScrollReveal>
       <section className={cn(commonStyles.hero, themed.hero)}>
         <h1 className={cn(commonStyles.heroTitle, themed.heroTitle)}>
           Hire Top Freelancers
@@ -73,15 +88,19 @@ export default function HireClient() {
           Find the perfect match for your project.
         </p>
       </section>
+      </ScrollReveal>
 
       {/* Skills by Category */}
       <section className={commonStyles.skillsSection}>
+        <ScrollReveal>
         <h2 className={cn(commonStyles.skillsSectionTitle, themed.skillsSectionTitle)}>
           Browse by Skill
         </h2>
+        </ScrollReveal>
         
         {Object.entries(SKILL_CATEGORIES).map(([category, skills]) => (
-          <div key={category} className={commonStyles.categoryGroup}>
+          <ScrollReveal key={category}>
+          <div className={commonStyles.categoryGroup}>
             <h3 className={cn(commonStyles.categoryTitle, themed.categoryTitle)}>
               {category}
             </h3>
@@ -102,10 +121,12 @@ export default function HireClient() {
               ))}
             </div>
           </div>
+          </ScrollReveal>
         ))}
       </section>
 
       {/* Top Industries */}
+      <ScrollReveal>
       <section className={cn(commonStyles.industriesSection, themed.industriesSection)}>
         <h2 className={cn(commonStyles.industriesSectionTitle, themed.industriesSectionTitle)}>
           Popular Industries
@@ -125,8 +146,10 @@ export default function HireClient() {
           ))}
         </div>
       </section>
+      </ScrollReveal>
 
       {/* CTA */}
+      <ScrollReveal>
       <section className={commonStyles.ctaSection}>
         <h2 className={cn(commonStyles.ctaTitle, themed.ctaTitle)}>
           Ready to Start Your Project?
@@ -138,6 +161,8 @@ export default function HireClient() {
           Post a Project
         </Link>
       </section>
+      </ScrollReveal>
     </main>
+    </PageTransition>
   );
 }

@@ -1,14 +1,15 @@
 /* AI-HINT: Dark theme overrides for Privacy Policy page. */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.themeWrapper { background: linear-gradient(180deg, #0a0f1a 0%, #0f172a 100%); color: var(--text-primary); }
 .subtitle { color: var(--text-secondary); }
-.meta { color: var(--text-tertiary); }
+.meta { color: var(--text-tertiary); background: rgba(88, 166, 255, 0.1); }
 
-.toc { background: var(--surface-elev); border-color: var(--border); }
-.tocTitle { color: var(--text-primary); }
+.toc { background: rgba(30, 41, 59, 0.5); border-color: rgba(255, 255, 255, 0.06); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); }
+.tocTitle { color: var(--text-tertiary); }
 .tocLink { color: var(--text-secondary); }
-.tocLink:hover { background: var(--surface); color: var(--text-primary); }
+.tocLink:hover { background: rgba(88, 166, 255, 0.08); color: #58a6ff; }
 
-.section { background: var(--surface-elev); border-color: var(--border); }
+.section { background: rgba(30, 41, 59, 0.3); border-color: rgba(255, 255, 255, 0.05); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); }
+.section:hover { border-color: rgba(88, 166, 255, 0.15); box-shadow: 0 8px 24px rgba(88, 166, 255, 0.06); }
 .section h2 { color: var(--text-primary); }
 .section p, .section li { color: var(--text-secondary); }

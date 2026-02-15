@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 import SettingsNav from './components/SettingsNav/SettingsNav';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 
 import commonStyles from './Layout.common.module.css';
 import lightStyles from './Layout.light.module.css';
@@ -21,6 +22,13 @@ export default function FreelancerSettingsLayout({ children }: FreelancerSetting
 
   return (
     <div className={cn(commonStyles.container, styles.container)}>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={15} className="absolute inset-0" />
+        <div className="absolute top-[60%] right-[15%] opacity-10"><FloatingCube /></div>
+        <div className="absolute top-[20%] left-[10%] opacity-10"><FloatingSphere /></div>
+      </div>
       <header className={cn(commonStyles.header, styles.header)}>
         <h1 className={cn(commonStyles.title, styles.title)}>Settings</h1>
         <p className={cn(commonStyles.subtitle, styles.subtitle)}>

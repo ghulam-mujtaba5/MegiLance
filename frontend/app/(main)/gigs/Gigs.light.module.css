@@ -1,7 +1,7 @@
 /* @AI-HINT: Light theme styles for gigs marketplace page */
 
 .themeWrapper {
-  background-color: #f8fafc;
+  background: linear-gradient(170deg, #f0f4ff 0%, #f8fafc 40%, #faf8ff 100%);
   color: #1a1a2e;
 }
 
@@ -15,9 +15,11 @@
 
 /* Search and Filter */
 .searchBar {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-color: rgba(226, 232, 240, 0.6);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .searchInput {
@@ -68,9 +70,11 @@
 
 /* Sidebar */
 .sidebarCard {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(226, 232, 240, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
 
 .filterLabel {

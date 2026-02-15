@@ -1,16 +1,18 @@
 /* AI-HINT: Dark theme overrides for Teams page. */
 
-.themeWrapper { background: var(--surface); color: var(--text-primary); }
+.themeWrapper { background: linear-gradient(170deg, #0a0f1a 0%, #0f172a 40%, #0f1225 100%); color: var(--text-primary); }
 .subtitle { color: var(--text-secondary); }
 
-.card { background: var(--surface-elev); border: 1px solid var(--border); }
+.card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+.card:hover { box-shadow: 0 8px 24px rgba(69, 115, 223, 0.15); }
 .name { color: var(--text-primary); }
 .role, .bio { color: var(--text-secondary); }
 
-.valueCard { background: var(--surface-elev); border: 1px solid var(--border); }
+.valueCard { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(51, 65, 85, 0.5); }
+.valueCard:hover { box-shadow: 0 8px 20px rgba(69, 115, 223, 0.12); }
 .valueTitle { color: var(--text-primary); }
 
-.button { background: var(--primary); color: var(--text-on-primary); }
-.button:hover { filter: brightness(1.06); }
-.buttonSecondary { color: var(--text-primary); border: 1px solid var(--border); }
-.buttonSecondary:hover { background: var(--surface); }
+.button { background: linear-gradient(135deg, #4573df 0%, #2563eb 100%); color: var(--text-on-primary); box-shadow: 0 4px 14px rgba(69, 115, 223, 0.3); }
+.button:hover { filter: brightness(1.06); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(69, 115, 223, 0.4); }
+.buttonSecondary { color: var(--text-primary); border: 1px solid rgba(51, 65, 85, 0.5); backdrop-filter: blur(8px); }
+.buttonSecondary:hover { background: rgba(30, 41, 59, 0.5); }

@@ -1,93 +1,110 @@
 /* Cookies Page Common Styles */
 .page {
   min-height: 100vh;
-  padding: 2rem 0;
+  padding: 4rem 0 2rem;
+  position: relative;
 }
 
 .container {
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 3.5rem;
 }
 
 .title {
-  font-size: 3rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
   margin: 0 0 1rem 0;
   line-height: 1.2;
 }
 
 .subtitle {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   margin: 0;
-  opacity: 0.8;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
 }
 
 .section {
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .sectionTitle {
-  font-size: 1.75rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
   font-weight: 600;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 1.25rem 0;
   color: var(--text-primary);
 }
 
 .content {
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.8;
   margin: 0 0 1.5rem 0;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .cookiesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .cookieCard {
   background: var(--card-bg);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 14px;
+  padding: 1.75rem;
   border: 1px solid var(--card-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.cookieCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .cookieTitle {
-  font-size: 1.25rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.15rem;
   font-weight: 600;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.75rem 0;
   color: var(--text-primary);
 }
 
 .cookieDescription {
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.7;
   margin: 0;
   color: var(--text-secondary);
 }
 
 .emailLink {
-  color: var(--primary-color);
+  color: var(--primary-color, #4573df);
   text-decoration: none;
   font-weight: 600;
+  transition: opacity 0.2s ease;
 }
 
 .emailLink:hover {
   text-decoration: underline;
+  opacity: 0.85;
 }
 
 @media (max-width: 768px) {
   .title {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
   }
   
   .cookiesGrid {

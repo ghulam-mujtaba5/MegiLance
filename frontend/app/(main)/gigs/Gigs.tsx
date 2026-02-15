@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import GigCard from '@/app/components/GigCard/GigCard';
 import Button from '@/app/components/Button/Button';
+import { PageTransition, ScrollReveal } from '@/app/components/Animations';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import {
   Search,
   SlidersHorizontal,
@@ -318,9 +320,22 @@ const Gigs: React.FC = () => {
   );
 
   return (
+    <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={12} className="absolute inset-0" />
+        <div className="absolute top-20 left-10 opacity-10">
+          <FloatingCube size={60} />
+        </div>
+        <div className="absolute bottom-32 right-20 opacity-10">
+          <FloatingSphere size={50} />
+        </div>
+      </div>
     <main className={cn(common.page, themed.themeWrapper)}>
       <div className={common.container}>
         {/* Header */}
+        <ScrollReveal>
         <header className={common.header}>
           <div className={common.headerTop}>
             <div className={common.headerContent}>
@@ -364,6 +379,7 @@ const Gigs: React.FC = () => {
             </button>
           </div>
         </header>
+        </ScrollReveal>
 
         {/* Categories */}
         <div className={common.categoriesSection}>
@@ -565,6 +581,7 @@ const Gigs: React.FC = () => {
         )}
       </div>
     </main>
+    </PageTransition>
   );
 };
 

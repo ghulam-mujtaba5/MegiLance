@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Github, Twitter, Linkedin } from 'lucide-react';
 
 import { MegiLanceLogo } from '@/app/components/MegiLanceLogo/MegiLanceLogo';
+import FooterGlobe from './FooterGlobe';
 
 import commonStyles from './PublicFooter.common.module.css';
 import lightStyles from './PublicFooter.light.module.css';
@@ -70,6 +71,7 @@ const PublicFooter = () => {
 
   return (
     <footer className={cn(commonStyles.footer, styles.footer)}>
+      <FooterGlobe />
       <div className={cn(commonStyles.container, styles.container)}>
         <div className={commonStyles.mainContent}>
           <div className={commonStyles.brandColumn}>

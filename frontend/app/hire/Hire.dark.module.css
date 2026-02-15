@@ -1,11 +1,13 @@
 /* @AI-HINT: Hire directory page - dark theme colors */
 
 .page {
-  background-color: #111827;
+  background: linear-gradient(170deg, #0a0f1a 0%, #111827 40%, #0f1225 100%);
 }
 
 .hero {
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  background: linear-gradient(135deg, rgba(31, 41, 55, 0.6) 0%, rgba(17, 24, 39, 0.6) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .heroTitle {
@@ -25,8 +27,16 @@
 }
 
 .skillCard {
-  background-color: #1f2937;
-  border-color: #374151;
+  background: rgba(31, 41, 55, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(55, 65, 81, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.skillCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -5px rgba(69, 115, 223, 0.2);
 }
 
 .skillName {
@@ -46,7 +56,15 @@
 }
 
 .industryCard {
-  background-color: #374151;
+  background: rgba(55, 65, 81, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.industryCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(69, 115, 223, 0.15);
 }
 
 .industryName {
@@ -62,10 +80,14 @@
 }
 
 .ctaButton {
-  background-color: #2563eb;
+  background: linear-gradient(135deg, #4573df 0%, #2563eb 100%);
   color: #ffffff;
+  box-shadow: 0 4px 14px rgba(69, 115, 223, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .ctaButton:hover {
-  background-color: #3b82f6;
+  background: linear-gradient(135deg, #5a85ed 0%, #3b82f6 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(69, 115, 223, 0.4);
 }

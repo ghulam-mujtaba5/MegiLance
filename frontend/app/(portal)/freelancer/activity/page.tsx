@@ -8,6 +8,7 @@ import { activityFeedApi } from '@/lib/api';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
 import { StaggerContainer, StaggerItem } from '@/app/components/Animations/StaggerContainer';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import commonStyles from './Activity.common.module.css';
 import lightStyles from './Activity.light.module.css';
 import darkStyles from './Activity.dark.module.css';
@@ -170,6 +171,13 @@ export default function ActivityPage() {
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={15} className="absolute inset-0" />
+        <div className="absolute top-[60%] right-[15%] opacity-10"><FloatingCube /></div>
+        <div className="absolute top-[20%] left-[10%] opacity-10"><FloatingSphere /></div>
+      </div>
       <div className={cn(commonStyles.container, themeStyles.container)}>
         <ScrollReveal>
           <div className={commonStyles.header}>

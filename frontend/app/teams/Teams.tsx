@@ -5,6 +5,7 @@ import React from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition, ScrollReveal, StaggerContainer } from '@/components/Animations';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import common from './Teams.common.module.css';
 import light from './Teams.light.module.css';
 import dark from './Teams.dark.module.css';
@@ -30,6 +31,17 @@ const Teams: React.FC = () => {
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={480} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={380} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={12} className="absolute inset-0" />
+        <div className="absolute top-28 left-12 opacity-10">
+          <FloatingCube size={55} />
+        </div>
+        <div className="absolute bottom-36 right-16 opacity-10">
+          <FloatingSphere size={45} />
+        </div>
+      </div>
       <main className={cn(common.page, themed.themeWrapper)}>
         <div className={common.container}>
           <ScrollReveal>

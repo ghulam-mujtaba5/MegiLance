@@ -1,12 +1,39 @@
 /* Analytics.light.module.css */
 .page {
-  background: var(--background-primary);
+  background: linear-gradient(170deg, #f0f4ff 0%, #ffffff 40%, #faf8ff 100%);
 }
 
 .title {
-  color: var(--text-primary);
+  color: #0f172a;
 }
 
 .subtitle {
-  color: var(--text-secondary);
+  color: #64748b;
+}
+
+.skeletonCard {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 24px rgba(69, 115, 223, 0.12);
+  border-color: rgba(69, 115, 223, 0.2);
+}
+
+.iconBox {
+  background: rgba(69, 115, 223, 0.1);
+}
+
+.statValue {
+  color: #111827;
+}
+
+.statLabel {
+  color: rgba(0, 0, 0, 0.5);
 }

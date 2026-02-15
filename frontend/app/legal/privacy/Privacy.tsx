@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import common from './Privacy.common.module.css';
 import light from './Privacy.light.module.css';
 import dark from './Privacy.dark.module.css';
@@ -28,6 +29,17 @@ const Privacy: React.FC = () => {
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={450} blur={90} opacity={0.08} className="absolute top-[-10%] left-[-10%]" />
+        <AnimatedOrb variant="blue" size={400} blur={80} opacity={0.06} className="absolute bottom-[-8%] right-[-12%]" />
+        <ParticlesSystem count={10} className="absolute inset-0" />
+        <div className="absolute top-20 right-12 opacity-[0.07] animate-float-slow">
+          <FloatingCube size={34} />
+        </div>
+        <div className="absolute bottom-36 left-16 opacity-[0.07] animate-float-medium">
+          <FloatingSphere size={26} variant="gradient" />
+        </div>
+      </div>
       <main className={cn(common.page, themed.themeWrapper)}>
         <div className={common.container}>
           <ScrollReveal>

@@ -1,7 +1,7 @@
 /* @AI-HINT: Light theme styles for the How It Works section. */
 
 .howItWorks {
-  background: radial-gradient(circle at 50% 50%, #ffffff, #f0f4f8);
+  background: linear-gradient(180deg, #f8fcff 0%, #eef6ff 100%);
 }
 
 .tagline {

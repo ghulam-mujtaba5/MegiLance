@@ -1,6 +1,6 @@
 /* @AI-HINT: Dark theme colors for Install component */
 .container {
-  background-color: #111827;
+  background: linear-gradient(170deg, #0a0f1a 0%, #111827 40%, #0f1225 100%);
 }
 
 .title {
@@ -12,8 +12,16 @@
 }
 
 .feature {
-  background-color: #1f2937;
-  border: 1px solid #374151;
+  background: rgba(31, 41, 55, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(69, 115, 223, 0.15);
 }
 
 .featureTitle {

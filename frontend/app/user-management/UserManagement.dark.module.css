@@ -1,12 +1,86 @@
 /* UserManagement.dark.module.css */
 .page {
-  background: var(--background-primary);
+  background: linear-gradient(170deg, #0a0f1a 0%, #0f172a 40%, #0f1225 100%);
 }
 
 .title {
-  color: var(--text-primary);
+  color: #f1f5f9;
 }
 
 .subtitle {
-  color: var(--text-secondary);
+  color: #94a3b8;
+}
+
+/* Invite Card */
+.inviteCard {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.inviteTitle {
+  color: #ffffff;
+}
+
+.closeBtn {
+  color: #aaa;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.fieldLabel {
+  color: #cbd5e1;
+}
+
+.roleSelect {
+  background: #1a1a2e;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.roleSelect:focus {
+  border-color: #4573df;
+  outline: none;
+}
+
+/* Table */
+.tableWrapper {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tableHead {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.th {
+  color: #888;
+}
+
+.tableRow {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tableRow:hover {
+  background: rgba(69, 115, 223, 0.05);
+}
+
+.tdPrimary {
+  color: #ffffff;
+}
+
+.tdSecondary {
+  color: #cbd5e1;
+}
+
+.tdMuted {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.roleBadge {
+  background: rgba(69, 115, 223, 0.15);
 }

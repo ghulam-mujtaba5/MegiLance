@@ -11,6 +11,7 @@ import Button from '@/app/components/Button/Button';
 import Input from '@/app/components/Input/Input';
 import { PageTransition } from '@/app/components/Animations/PageTransition';
 import { ScrollReveal } from '@/app/components/Animations/ScrollReveal';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 import { Users, UserPlus, X, Mail, Shield } from 'lucide-react';
 import { adminApi } from '@/lib/api';
 
@@ -44,7 +45,6 @@ const UserManagementPage: React.FC = () => {
   if (!resolvedTheme) return null;
 
   const themeStyles = resolvedTheme === 'dark' ? darkStyles : lightStyles;
-  const isDark = resolvedTheme === 'dark';
 
   const handleInvite = async () => {
     if (!inviteEmail || !inviteEmail.includes('@')) {
@@ -70,6 +70,13 @@ const UserManagementPage: React.FC = () => {
 
   return (
     <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="purple" size={500} blur={90} opacity={0.1} className="absolute top-[-10%] right-[-10%]" />
+        <AnimatedOrb variant="blue" size={400} blur={70} opacity={0.08} className="absolute bottom-[-10%] left-[-10%]" />
+        <ParticlesSystem count={15} className="absolute inset-0" />
+        <div className="absolute top-[60%] right-[15%] opacity-10"><FloatingCube /></div>
+        <div className="absolute top-[20%] left-[10%] opacity-10"><FloatingSphere /></div>
+      </div>
       <main className={cn(commonStyles.page, themeStyles.page)}>
         <div className={commonStyles.container}>
           <ScrollReveal>
@@ -84,30 +91,25 @@ const UserManagementPage: React.FC = () => {
           {/* Invite Form */}
           {showInviteForm && (
             <ScrollReveal>
-              <div style={{
-                padding: '1.5rem', borderRadius: '1rem', marginBottom: '2rem',
-                background: isDark ? 'rgba(255,255,255,0.05)' : '#fff',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <h3 style={{ fontWeight: 600, color: isDark ? '#fff' : '#111' }}>Invite User</h3>
-                  <button onClick={() => setShowInviteForm(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isDark ? '#aaa' : '#666' }} aria-label="Close invite form">
+              <div className={cn(commonStyles.inviteCard, themeStyles.inviteCard)}>
+                <div className={commonStyles.inviteHeader}>
+                  <h3 className={cn(commonStyles.inviteTitle, themeStyles.inviteTitle)}>Invite User</h3>
+                  <button onClick={() => setShowInviteForm(false)} className={cn(commonStyles.closeBtn, themeStyles.closeBtn)} aria-label="Close invite form">
                     <X size={20} />
                   </button>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <label htmlFor="invite-email" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: isDark ? '#ccc' : '#555' }}>
-                      <Mail size={14} style={{ display: 'inline', marginRight: 4 }} /> Email
+                <div className={commonStyles.inviteFields}>
+                  <div className={commonStyles.fieldGroup}>
+                    <label htmlFor="invite-email" className={cn(commonStyles.fieldLabel, themeStyles.fieldLabel)}>
+                      <Mail size={14} className={commonStyles.labelIcon} /> Email
                     </label>
                     <Input id="invite-email" type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} placeholder="user@example.com" />
                   </div>
-                  <div style={{ minWidth: 140 }}>
-                    <label htmlFor="invite-role" style={{ display: 'block', fontSize: '0.875rem', marginBottom: '0.5rem', color: isDark ? '#ccc' : '#555' }}>
-                      <Shield size={14} style={{ display: 'inline', marginRight: 4 }} /> Role
+                  <div className={commonStyles.roleGroup}>
+                    <label htmlFor="invite-role" className={cn(commonStyles.fieldLabel, themeStyles.fieldLabel)}>
+                      <Shield size={14} className={commonStyles.labelIcon} /> Role
                     </label>
-                    <select id="invite-role" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: `1px solid ${isDark ? 'rgba(255,255,255,0.2)' : '#ccc'}`, background: isDark ? '#1a1a2e' : '#fff', color: isDark ? '#fff' : '#111' }}>
+                    <select id="invite-role" value={inviteRole} onChange={(e) => setInviteRole(e.target.value)} className={cn(commonStyles.roleSelect, themeStyles.roleSelect)}>
                       <option value="client">Client</option>
                       <option value="freelancer">Freelancer</option>
                       <option value="admin">Admin</option>
@@ -137,33 +139,33 @@ const UserManagementPage: React.FC = () => {
             </ScrollReveal>
           ) : (
             <ScrollReveal delay={0.1}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+              <div className={commonStyles.tableActions}>
                 <Button variant="primary" iconBefore={<UserPlus size={18} />} onClick={() => setShowInviteForm(true)}>
                   Invite User
                 </Button>
               </div>
-              <div style={{ borderRadius: '1rem', overflow: 'hidden', border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}` }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <div className={cn(commonStyles.tableWrapper, themeStyles.tableWrapper)}>
+                <table className={commonStyles.table}>
                   <thead>
-                    <tr style={{ background: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)' }}>
+                    <tr className={cn(commonStyles.tableHead, themeStyles.tableHead)}>
                       {['Name', 'Email', 'Role', 'Headline', 'Status'].map(h => (
-                        <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', color: isDark ? '#888' : '#666' }}>{h}</th>
+                        <th key={h} className={cn(commonStyles.th, themeStyles.th)}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {users.map((u: any, i: number) => (
-                      <tr key={u.id || i} style={{ borderTop: `1px solid ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}` }}>
-                        <td style={{ padding: '0.75rem 1rem', color: isDark ? '#fff' : '#111' }}>{u.name || u.full_name || '--'}</td>
-                        <td style={{ padding: '0.75rem 1rem', color: isDark ? '#ccc' : '#555' }}>{u.email || '--'}</td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <span style={{ padding: '2px 8px', borderRadius: 9999, fontSize: '0.75rem', fontWeight: 600, background: isDark ? 'rgba(69,115,223,0.15)' : 'rgba(69,115,223,0.1)', color: '#4573df' }}>
+                      <tr key={u.id || i} className={cn(commonStyles.tableRow, themeStyles.tableRow)}>
+                        <td className={cn(commonStyles.td, themeStyles.tdPrimary)}>{u.name || u.full_name || '--'}</td>
+                        <td className={cn(commonStyles.td, themeStyles.tdSecondary)}>{u.email || '--'}</td>
+                        <td className={commonStyles.td}>
+                          <span className={cn(commonStyles.roleBadge, themeStyles.roleBadge)}>
                             {u.role || u.user_type || '--'}
                           </span>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', color: isDark ? '#aaa' : '#666', fontSize: '0.85rem' }}>{u.headline || '--'}</td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <span style={{ width: 8, height: 8, borderRadius: '50%', display: 'inline-block', marginRight: 6, background: u.is_active ? '#27AE60' : '#e81123' }} />
+                        <td className={cn(commonStyles.td, themeStyles.tdMuted)}>{u.headline || '--'}</td>
+                        <td className={commonStyles.td}>
+                          <span className={cn(commonStyles.statusDot, u.is_active ? commonStyles.statusActive : commonStyles.statusInactive)} />
                           {u.is_active ? 'Active' : 'Inactive'}
                         </td>
                       </tr>

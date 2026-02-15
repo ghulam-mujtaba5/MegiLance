@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
+import { PageTransition, ScrollReveal, StaggerContainer } from '@/app/components/Animations';
+import { AnimatedOrb, ParticlesSystem, FloatingCube, FloatingSphere } from '@/app/components/3D';
 
 import { getAuthToken } from '@/lib/api';
 import commonStyles from './TalentDirectory.common.module.css';
@@ -94,7 +96,20 @@ const TalentDirectoryPage = () => {
   if (!resolvedTheme) return null;
 
   return (
+    <PageTransition>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <AnimatedOrb variant="blue" size={450} blur={90} opacity={0.1} className="absolute top-[-10%] left-[-10%]" />
+        <AnimatedOrb variant="purple" size={380} blur={70} opacity={0.08} className="absolute bottom-[-10%] right-[-10%]" />
+        <ParticlesSystem count={12} className="absolute inset-0" />
+        <div className="absolute top-24 right-16 opacity-10">
+          <FloatingCube size={55} />
+        </div>
+        <div className="absolute bottom-40 left-12 opacity-10">
+          <FloatingSphere size={45} />
+        </div>
+      </div>
     <main className={styles.main}>
+      <ScrollReveal>
       <header className={styles.header}>
         <h1 className={styles.title}>Explore Top Talent</h1>
         <p className={styles.subtitle}>Discover AI-ranked freelancers for your projects.</p>
@@ -108,6 +123,7 @@ const TalentDirectoryPage = () => {
           />
         </div>
       </header>
+      </ScrollReveal>
       {loading ? (
         <div className={commonStyles.loadingCenter}>
           <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
@@ -140,6 +156,7 @@ const TalentDirectoryPage = () => {
         </ul>
       )}
     </main>
+    </PageTransition>
   );
 };
 
