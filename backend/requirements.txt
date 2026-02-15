@@ -44,7 +44,7 @@ pytest-cov==6.0.0
 # Note: Requires Rust toolchain to compile on Windows
 # Install Rust from: https://rustup.rs/
 # Or use Docker for deployment (includes pre-built packages)
-sqlalchemy-libsql==0.2.2
+sqlalchemy-libsql==0.2.0
 requests==2.31.0
 
 # MongoDB - Optional (for blog/advanced features only)
