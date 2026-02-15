@@ -172,6 +172,27 @@ const nextConfig = {
         ],
       },
       {
+        source: '/login',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, private' },
+          { key: 'Vary', value: 'RSC, Next-Router-State-Tree, Next-Router-Prefetch' },
+        ],
+      },
+      {
+        source: '/signup',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, private' },
+          { key: 'Vary', value: 'RSC, Next-Router-State-Tree, Next-Router-Prefetch' },
+        ],
+      },
+      {
+        source: '/forgot-password',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, private' },
+          { key: 'Vary', value: 'RSC, Next-Router-State-Tree, Next-Router-Prefetch' },
+        ],
+      },
+      {
         source: '/_next/static/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },

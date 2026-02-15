@@ -120,11 +120,23 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  // Prevent browser caching of authenticated portal pages
+  // Prevent browser/CDN caching of authenticated portal pages
   if (isProtectedPath) {
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     response.headers.set('Pragma', 'no-cache');
   }
+
+  // Prevent CDN from caching auth pages (login, signup, etc.)
+  // CDN can cache RSC flight payloads (text/x-component) and serve them
+  // for HTML page loads, causing blank/broken pages.
+  if (isAuthPath) {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    response.headers.set('Pragma', 'no-cache');
+  }
+
+  // Tell CDN to vary cache by RSC header so RSC flight requests
+  // and full HTML page loads are cached separately
+  response.headers.set('Vary', 'RSC, Next-Router-State-Tree, Next-Router-Prefetch');
 
   // Prevent authenticated users from accessing auth pages
   const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
